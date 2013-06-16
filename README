@@ -10,8 +10,8 @@ risk, and don't blame us if it breaks anything!
 Architecture
 ------------
 
-pgAdmin 4 is being written as a web application in Python, using jQuery for the
-client side processing and UI. On the server side, CherryPy and Backbone are
+pgAdmin 4 is being written as a web application in Python, using jQuery and 
+Backbone for the client side processing and UI. On the server side, CherryPy is
 being considered.
 
 Although developed using web technologies, we intend for pgAdmin 4 to be usable
