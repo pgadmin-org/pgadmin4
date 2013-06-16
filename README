@@ -1,0 +1,71 @@
+pgAdmin 4
+=========
+
+pgAdmin 4 is a rewrite of the popular pgAdmin3 management tool for the
+PostgreSQL (http://www.postgresql.org) database. 
+
+At present, it is an experimental/proof of concept project. Use at your own
+risk, and don't blame us if it breaks anything!
+
+Architecture
+------------
+
+pgAdmin 4 is being written as a web application in Python, using jQuery for the
+client side processing and UI. On the server side, CherryPy and Backbone are
+being considered.
+
+Although developed using web technologies, we intend for pgAdmin 4 to be usable
+either on a web server using a browser, or standalone on a workstation. The
+runtime/ subdirectory contains a QT based runtime application intended to allow
+this - it is essentially a browser and Python interpretor in one package which
+will be capable of hosting the Python application and presenting it to the user
+as a desktop application.
+
+Building
+--------
+
+To build the runtime, the following packages must be installed:
+
+- QT 4.6 or above (older versions may work, but haven't been tested).
+- Python 2.6 or above.
+
+Assuming both qmake and python-config are in the path:
+
+$ cd $PGADMIN4_SRC/runtime
+$ qmake
+Project MESSAGE: Building for QT5+...
+$ make
+...
+
+On Linux, an executable called 'pgAdmin4' will be built, and on Mac OS X, an
+app bundle called pgAdmin4.app will be created.
+
+At the time of writing, no attempt has been made to build the runtime on a
+Windows system, though in theory it should work.
+
+Support
+-------
+
+pgAdmin 4 is completely experiemental and unsupported!
+
+Project info
+------------
+
+The source code repository can be found here:
+
+http://git.postgresql.org/gitweb/?p=pgadmin4.git;a=summary
+
+A Redmine project for pgAdmin 4 can be found at the address below. A PostgreSQL
+community account is required to access this site. Please note that at present
+only project developers can log bug and feature requests:
+
+https://redmine.postgresql.org/projects/pgadmin4
+
+If you wish to discuss pgAdmin 4, or contribute to the project, please use the
+pgAdmin Hackers mailing list:
+
+pgadmin-hackers@postgresql.org
+
+-- 
+Dave Page
+pgAdmin Project Lead
