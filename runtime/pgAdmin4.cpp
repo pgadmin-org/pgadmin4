@@ -9,9 +9,12 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#include "pgAdmin4.h"
+
 // Must be before QT
 #include <Python.h>
 
+// QT headers
 #include <QtGlobal>
 
 #if QT_VERSION >= 0x050000
@@ -20,16 +23,30 @@
 #include <QApplication>
 #endif
 
+// App headers
 #include "BrowserWindow.h"
+#include "Server.h"
 
 int main(int argc, char * argv[])
 {
     // Create the QT application
     QApplication app(argc, argv);
 
-    // Initialise Python
-    Py_SetProgramName(argv[0]);
-    Py_Initialize();
+    // Fire up the webserver
+    // TODO: Find an unused port number to use
+    Server *server = new Server();
+
+    if (!server->Init())
+    {
+	qDebug() << server->getError();
+
+        QString error("An error occurred initialising the application server:\n\n" + server->getError());
+        QMessageBox::critical(NULL, QString("Fatal Error"), error);
+	
+        exit(1);
+    }
+
+    server->start();
 
     // Create & show the main window
     BrowserWindow browserWindow;
@@ -37,9 +54,6 @@ int main(int argc, char * argv[])
 
     // Go!
     return app.exec();
-
-    // Shutdown Python
-    Py_Finalize();
 }
 
 

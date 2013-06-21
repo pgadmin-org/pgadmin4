@@ -12,6 +12,8 @@
 #ifndef BROWSERWINDOW_H
 #define BROWSERWINDOW_H
 
+#include "pgAdmin4.h"
+
 #include <QtGlobal>
 
 #if QT_VERSION >= 0x050000
@@ -48,7 +50,6 @@ private:
 
     void createActions();
     void createMenus();
-    QString execPython(QString script);
 };
 
-#endif
+#endif // BROWSERWINDOW_H

@@ -9,9 +9,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-// Must be before QT
-#include <Python.h>
+#include "pgAdmin4.h"
 
+// QT headers
 #include <QtGlobal>
 
 #if QT_VERSION >= 0x050000
@@ -27,6 +27,7 @@
 #include <QLineEdit>
 #endif
 
+// App headers
 #include "BrowserWindow.h"
 
 // Constructor
@@ -39,11 +40,8 @@ BrowserWindow::BrowserWindow()
     webView = new QWebView(this);
     setCentralWidget(webView);
 
-    // Execute some python and set the web text
-    QString data = execPython(tr("from time import time,ctime\n"
-                                 "print 'Today is <b>%s</b><br /><i>This is python-generated HTML.</i>' % ctime(time())\n"));
-
-    webView->setHtml(data);
+    // Display the app
+    webView->setUrl(QString("http://127.0.0.1:8080"));
 }
 
 // Create the actions for the window
@@ -99,33 +97,3 @@ void BrowserWindow::openUrl()
         webView->setUrl(url);
 }
 
-QString BrowserWindow::execPython(QString script)
-{
-    // This python script allows us to capture stdout/stderr
-    QString stdOutErr =
-tr("import sys\n\
-class CatchStdoutStderr:\n\
-    def __init__(self):\n\
-        self.op = ''\n\
-    def write(self, txt):\n\
-        self.op += txt\n\
-catchStdoutStderr = CatchStdoutStderr()\n\
-sys.stdout = catchStdoutStderr\n\
-sys.stderr = catchStdoutStderr\n\
-");
-
-    // Create the main module, and call the redirect code.
-    PyObject *pModule = PyImport_AddModule("__main__");
-    PyRun_SimpleString(stdOutErr.toUtf8().constData());
-
-    // Now execute the actual script
-    PyRun_SimpleString(script.toUtf8().constData());
-
-    // Get the catcher object
-    PyObject *catcher = PyObject_GetAttrString(pModule,"catchStdoutStderr");
-    PyErr_Print();
-
-    PyObject *output = PyObject_GetAttrString(catcher,"op");
-
-    return QString(PyString_AsString(output));
-}

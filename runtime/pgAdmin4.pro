@@ -15,9 +15,11 @@ QMAKE_CXXFLAGS += $$system(python-config --includes)
 QMAKE_LFLAGS += $$system(python-config --ldflags)
 
 # Source code
-HEADERS     =   BrowserWindow.h
+HEADERS     =   BrowserWindow.h \
+                Server.h
 SOURCES     =   pgAdmin4.cpp \
-                BrowserWindow.cpp
+                BrowserWindow.cpp \
+                Server.cpp
 FORMS       =   BrowserWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
