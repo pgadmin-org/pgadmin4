@@ -36,6 +36,9 @@ class BrowserWindow : public QMainWindow
 public:
     BrowserWindow();
 
+protected slots:
+    void finishLoading(bool);
+
 private slots:
     void openUrl();
     void about();
@@ -48,8 +51,12 @@ private:
     QAction *exitAction;
     QAction *aboutAction;
 
+    bool m_initialload;
+    int m_loadattempt;
+
     void createActions();
     void createMenus();
+    void pause(int seconds = 1);
 };
 
 #endif // BROWSERWINDOW_H

@@ -25,7 +25,10 @@
 #include <QApplication>
 #endif
 
-// char *PGA_APPNAME = "pgAdmin 4";
-const QString PGA_APPNAME = QString("pgAdmin 4");
+// Application name
+const QString PGA_APP_NAME = QString("pgAdmin 4");
+
+// Server URL
+const QString PGA_SERVER_URL = QString("http://127.0.0.1:8080");
 
 #endif // PGADMIN4_H

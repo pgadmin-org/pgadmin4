@@ -25,7 +25,7 @@
 Server::Server()
 {
     // Initialise Python
-    Py_SetProgramName(PGA_APPNAME.toUtf8().data());
+    Py_SetProgramName(PGA_APP_NAME.toUtf8().data());
     Py_Initialize();
 }
 
