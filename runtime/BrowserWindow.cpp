@@ -98,11 +98,24 @@ void BrowserWindow::finishLoading(bool ok)
         if (m_loadattempt < 5)
         {
             qDebug() << "Initial load failed. Retrying in" << m_loadattempt << "seconds.";
-            webView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. Retrying in %1 seconds, ") +
-                                     tr("or click <a href=\"%2\">here</a> to try again now.</p>")).arg(m_loadattempt).arg(PGA_SERVER_URL));
+
+            if (m_loadattempt == 1)
+            {
+                webView->setHtml(tr("<p>Connecting...</p>"));
+            }
+            else
+            {
+                webView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. Retrying in %1 seconds, ") +
+                                         tr("or click <a href=\"%2\">here</a> to try again now.</p>")).arg(m_loadattempt).arg(PGA_SERVER_URL));
+            }
 
             pause(m_loadattempt);
             webView->setUrl(PGA_SERVER_URL);
+            
+            // Even if the server comes up while we're looping, Linux won't
+            // properly display the HTML data unless we explicitly process events. 
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);    
+
             m_loadattempt++;
             return;
         }
