@@ -15,6 +15,8 @@
 #include <Python.h>
 
 // QT headers
+#include <QDebug>
+#include <QDir>
 #include <QMessageBox>
 
 // App headers

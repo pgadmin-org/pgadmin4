@@ -21,6 +21,7 @@
 #include <QtWidgets>
 #else
 #include <QApplication>
+#include <QDebug>
 #endif
 
 // App headers

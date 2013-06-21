@@ -12,6 +12,10 @@
 #ifndef PGADMIN4_H
 #define PGADMIN4_H
 
+// Include the Python header here as it needs to appear before any QT 
+// headers anywhere in the app.
+#include <Python.h>
+
 // QT headers
 #include <QtGlobal>
 
