@@ -32,10 +32,9 @@
 
 
 // Constructor
-BrowserWindow::BrowserWindow(quint16 port)
+BrowserWindow::BrowserWindow(QString url)
 {
-    // Setup the URL the browser will connect to
-    m_appServerUrl = QString("http://localhost:%1").arg(port);
+    m_appServerUrl = url;
 
     // Setup the UI
     createActions();
@@ -54,7 +53,7 @@ BrowserWindow::BrowserWindow(quint16 port)
     // Display the app
     m_initialLoad = true;
     m_loadAttempt = 1;
-    webView->setUrl(QString("http://localhost/:%1").arg(9876));
+    webView->setUrl(m_appServerUrl);
 }
 
 

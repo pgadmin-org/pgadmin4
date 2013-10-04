@@ -60,7 +60,7 @@ bool Server::Init()
 
     if (!QFile::exists(m_appfile))
     {
-	setError("Failed to locate pgAdmin4.py, terminating server thread.");
+        setError(tr("Failed to locate pgAdmin4.py, terminating server thread."));
         return false;
     }
 
@@ -73,7 +73,7 @@ void Server::run()
     FILE *cp = fopen(m_appfile.toUtf8().data(), "r");
     if (!cp)
     {
-        setError("Failed to open the application file: " + m_appfile + ", server thread exiting.");
+        setError(QString(tr("Failed to open the application file: %1, server thread exiting.")).arg(m_appfile));
         return;
     }
 
@@ -81,7 +81,7 @@ void Server::run()
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
 
     if (PyRun_SimpleFile(cp, m_appfile.toUtf8().data()) != 0)
-        setError("Failed to launch the application server, server thread exiting.");
+        setError(tr("Failed to launch the application server, server thread exiting."));
 
     fclose(cp);
 }

@@ -34,7 +34,7 @@ class BrowserWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    BrowserWindow(quint16 port);
+    BrowserWindow(QString url);
 
 protected:
     void closeEvent(QCloseEvent *event);

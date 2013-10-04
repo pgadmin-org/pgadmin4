@@ -38,7 +38,8 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME);
 
-    // Find an unused port number.
+    // Find an unused port number. Essentially, we're just reserving one
+    // here that CherryPy will use when we start up the server.
     QTcpSocket socket;
     socket.bind(0, QAbstractSocket::DontShareAddress);
     quint16 port = socket.localPort();
@@ -50,19 +51,89 @@ int main(int argc, char * argv[])
     {
         qDebug() << server->getError();
 
-        QString error("An error occurred initialising the application server:\n\n" + server->getError());
-        QMessageBox::critical(NULL, QString("Fatal Error"), error);
+        QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 	
         exit(1);
     }
 
     server->start();
 
+    // Generate the app server URL
+    QString appServerUrl = QString("http://localhost:%1").arg(port);
+
+    // Now the server should be up, we'll attempt to connect and get a response.
+    // We'll retry in a loop a few time before aborting if necessary. The browser
+    // will also retry - that shouldn't (in theory) be necessary, but it won't
+    // hurt.
+    int attempt = 0;
+    while (attempt++ < 10)
+    {
+        bool alive = PingServer(QUrl(appServerUrl));
+
+        if (alive)
+        {
+            break;
+        }
+
+        if (attempt == 10)
+        {
+            QString error(QWidget::tr("The application server could not be contacted."));
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
+        }
+
+        sleep(1);
+    }
+
     // Create & show the main window
-    BrowserWindow browserWindow(port);
+    BrowserWindow browserWindow(appServerUrl);
     browserWindow.show();
 
     // Go!
     return app.exec();
 }
 
+<<<<<<< HEAD
+=======
+bool PingServer(QUrl url)
+{
+    QNetworkAccessManager manager;
+    QEventLoop loop;
+    QNetworkReply *reply;
+    QVariant redirectUrl;
+
+    url.setPath("/ping");
+
+    do
+    {
+        reply = manager.get(QNetworkRequest(url));
+
+        QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+
+        redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+        url = redirectUrl.toUrl();
+
+        if (!redirectUrl.isNull())
+            delete reply;
+
+    } while (!redirectUrl.isNull());
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        return false;
+    }
+
+    QString response = reply->readAll();
+
+    if (response != "PING")
+    {
+        qDebug() << "Failed to connect, server response: " << response;
+        return false;
+    }
+
+    return true;
+}
+>>>>>>> Have the runtime check in a loop to see if the app server is up before
