@@ -12,9 +12,11 @@ import cherrypy
 from time import time,ctime
 
 
-# This is the main application class that we'll run under CherryPy. For now,
-# we'll just output some basic HTML so we can see that everything is running.
+# This is the main application class that we'll run under CherryPy.
 class pgAdmin4(object):
+
+    # The main index page
+    @cherrypy.expose
     def index(self):
         output = """
 Today is <b>%s</b>
@@ -25,7 +27,11 @@ Today is <b>%s</b>
 
         return output
 
-    index.exposed = True
+
+    # A special URL used to "ping" the server
+    @cherrypy.expose
+    def ping(self):
+        return "PING"
 
 
 # Start the web server. The port number should have already been set by the
