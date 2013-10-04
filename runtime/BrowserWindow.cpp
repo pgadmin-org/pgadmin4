@@ -42,10 +42,25 @@ BrowserWindow::BrowserWindow()
     setCentralWidget(webView);
     connect(webView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
 
+    // Restore the geometry
+    QSettings settings;
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
+
     // Display the app
     m_initialload = true;
     m_loadattempt = 1;
     webView->setUrl(PGA_SERVER_URL);
+}
+
+
+// Save the window geometry on close
+void BrowserWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings;
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
+    QMainWindow::closeEvent(event);
 }
 
 

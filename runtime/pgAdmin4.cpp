@@ -33,6 +33,11 @@ int main(int argc, char * argv[])
     // Create the QT application
     QApplication app(argc, argv);
 
+    // Setup the settings management
+    QCoreApplication::setOrganizationName("pgAdmin Development Team");
+    QCoreApplication::setOrganizationDomain("pgadmin.org");
+    QCoreApplication::setApplicationName(PGA_APP_NAME);
+
     // Fire up the webserver
     // TODO: Find an unused port number to use
     Server *server = new Server();

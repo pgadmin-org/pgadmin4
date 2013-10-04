@@ -36,6 +36,9 @@ class BrowserWindow : public QMainWindow
 public:
     BrowserWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 protected slots:
     void finishLoading(bool);
 
