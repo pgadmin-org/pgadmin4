@@ -34,7 +34,7 @@ class BrowserWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    BrowserWindow();
+    BrowserWindow(quint16 port);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -47,6 +47,7 @@ private slots:
     void about();
 
 private:
+    QString m_appServerUrl;
     QWebView *webView;
     QMenu *fileMenu;
     QMenu *helpMenu;
@@ -54,8 +55,8 @@ private:
     QAction *exitAction;
     QAction *aboutAction;
 
-    bool m_initialload;
-    int m_loadattempt;
+    bool m_initialLoad;
+    int m_loadAttempt;
 
     void createActions();
     void createMenus();

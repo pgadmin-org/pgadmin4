@@ -32,8 +32,12 @@
 
 
 // Constructor
-BrowserWindow::BrowserWindow()
+BrowserWindow::BrowserWindow(quint16 port)
 {
+    // Setup the URL the browser will connect to
+    m_appServerUrl = QString("http://localhost:%1").arg(port);
+
+    // Setup the UI
     createActions();
     createMenus();
 
@@ -48,9 +52,9 @@ BrowserWindow::BrowserWindow()
     restoreState(settings.value("windowState").toByteArray());
 
     // Display the app
-    m_initialload = true;
-    m_loadattempt = 1;
-    webView->setUrl(PGA_SERVER_URL);
+    m_initialLoad = true;
+    m_loadAttempt = 1;
+    webView->setUrl(QString("http://localhost/:%1").arg(9876));
 }
 
 
@@ -106,43 +110,38 @@ void BrowserWindow::createMenus()
 // Process loading finished signals from the web view.
 void BrowserWindow::finishLoading(bool ok)
 {
-    if (m_initialload && !ok)
+    if (m_initialLoad && !ok)
     {
         // The load attempt failed. Try again up to 4 times with an
         // incremental backoff.
-        if (m_loadattempt < 5)
+        if (m_loadAttempt < 5)
         {
-            qDebug() << "Initial load failed. Retrying in" << m_loadattempt << "seconds.";
-
-            if (m_loadattempt == 1)
+            if (m_loadAttempt > 1)
             {
-                webView->setHtml(tr("<p>Connecting...</p>"));
+                qDebug() << "Initial connection failed. Retrying in" << m_loadAttempt << "seconds.";
+                webView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. Retrying in %1 seconds, ") +
+                                         tr("or click <a href=\"%2\">here</a> to try again now.</p>")).arg(m_loadAttempt).arg(m_appServerUrl));
             }
             else
             {
-                webView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. Retrying in %1 seconds, ") +
-                                         tr("or click <a href=\"%2\">here</a> to try again now.</p>")).arg(m_loadattempt).arg(PGA_SERVER_URL));
+               webView->setHtml(QString(tr("<p>Connecting to the application server...</p>")));
             }
 
-            pause(m_loadattempt);
-            webView->setUrl(PGA_SERVER_URL);
-            
-            // Even if the server comes up while we're looping, Linux won't
-            // properly display the HTML data unless we explicitly process events. 
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);    
+            pause(m_loadAttempt);
+            webView->setUrl(m_appServerUrl);
+            m_loadAttempt++;
 
-            m_loadattempt++;
             return;
         }
         else
         {
-            qDebug() << "Initial page load failed after multiple attempts. Aborting.";
+            qDebug() << "Initial connection failed after multiple attempts. Aborting.";
             webView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. ") +
-                                     tr("Click <a href=\"%1\">here</a> to try again.</p>")).arg(PGA_SERVER_URL));
+                                     tr("Click <a href=\"%1\">here</a> to try again.</p>")).arg(m_appServerUrl));
         }
     }
 
-    m_initialload = false;
+    m_initialLoad = false;
 }
 
 

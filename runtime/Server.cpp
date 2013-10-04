@@ -22,8 +22,11 @@
 // App headers
 #include "Server.h"
 
-Server::Server()
+Server::Server(quint16 port)
 {
+    // Appserver port
+    m_port = port;
+
     // Initialise Python
     Py_SetProgramName(PGA_APP_NAME.toUtf8().data());
     Py_Initialize();
@@ -73,6 +76,9 @@ void Server::run()
         setError("Failed to open the application file: " + m_appfile + ", server thread exiting.");
         return;
     }
+
+    // Set the port number
+    PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
 
     if (PyRun_SimpleFile(cp, m_appfile.toUtf8().data()) != 0)
         setError("Failed to launch the application server, server thread exiting.");

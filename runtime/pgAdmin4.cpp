@@ -38,13 +38,17 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME);
 
+    // Find an unused port number.
+    QTcpSocket socket;
+    socket.bind(0, QAbstractSocket::DontShareAddress);
+    quint16 port = socket.localPort();
+
     // Fire up the webserver
-    // TODO: Find an unused port number to use
-    Server *server = new Server();
+    Server *server = new Server(port);
 
     if (!server->Init())
     {
-	qDebug() << server->getError();
+        qDebug() << server->getError();
 
         QString error("An error occurred initialising the application server:\n\n" + server->getError());
         QMessageBox::critical(NULL, QString("Fatal Error"), error);
@@ -55,11 +59,10 @@ int main(int argc, char * argv[])
     server->start();
 
     // Create & show the main window
-    BrowserWindow browserWindow;
+    BrowserWindow browserWindow(port);
     browserWindow.show();
 
     // Go!
     return app.exec();
 }
-
 

@@ -7,11 +7,14 @@ includedir = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect
 if includedir not in sys.path:
     sys.path.insert(0, includedir)
 
-# Do some stuff
+# Rock n' roll...
 import cherrypy
 from time import time,ctime
 
-class HelloWorld(object):
+
+# This is the main application class that we'll run under CherryPy. For now,
+# we'll just output some basic HTML so we can see that everything is running.
+class pgAdmin4(object):
     def index(self):
         output = """
 Today is <b>%s</b>
@@ -21,6 +24,21 @@ Today is <b>%s</b>
 <a href="http://www.pgadmin.org/">pgAdmin 4</a>""" % ctime(time())
 
         return output
+
     index.exposed = True
 
-cherrypy.quickstart(HelloWorld())
+
+# Start the web server. The port number should have already been set by the
+# runtime if we're running in desktop mode, otherwise we'll just use the 
+# CherryPy default.
+
+try:
+    cherrypy.server.socket_port = PGADMIN_PORT
+except:
+    pass
+
+try:
+    cherrypy.quickstart(pgAdmin4())
+except IOError:
+    print "Unexpected error: ", sys.exc_info()[0]
+    
