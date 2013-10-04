@@ -16,7 +16,8 @@ QMAKE_LFLAGS += $$system(python-config --ldflags)
 
 # Source code
 HEADERS     =   BrowserWindow.h \
-                Server.h
+                Server.h \
+                pgAdmin4.h
 SOURCES     =   pgAdmin4.cpp \
                 BrowserWindow.cpp \
                 Server.cpp
