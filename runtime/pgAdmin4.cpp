@@ -95,8 +95,8 @@ int main(int argc, char * argv[])
     return app.exec();
 }
 
-<<<<<<< HEAD
-=======
+
+// Ping the application server to see if it's alive
 bool PingServer(QUrl url)
 {
     QNetworkAccessManager manager;
@@ -136,4 +136,4 @@ bool PingServer(QUrl url)
 
     return true;
 }
->>>>>>> Have the runtime check in a loop to see if the app server is up before
+
