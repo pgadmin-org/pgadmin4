@@ -15,6 +15,9 @@ from logging import *
 # Log settings
 ##########################################################################
 
+# Debug mode?
+DEBUG = true
+
 # Application log level - one of:
 #   CRITICAL	50
 #   ERROR	40
@@ -40,6 +43,17 @@ LOG_FILE = 'pgadmin4.log'
 # The default port on which the app server will listen if not set in the
 # environment by the runtime
 DEFAULT_SERVER_PORT = 5050
+
+# Enable CSRF protection?
+CSRF_ENABLED = True
+
+# Secret key for signing CSRF data. Override this in config_local.py if 
+# running on a web server
+CSRF_SESSION_KEY = 'SuperSecret'
+
+# Secret key for signing cookies. Override this in config_local.py if 
+# running on a web server
+SECRET_KEY = 'SuperSecret'
 
 ##########################################################################
 # Local config settings
