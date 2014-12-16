@@ -5,30 +5,47 @@
 # Copyright (C) 2013 - 2014, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# pgAdmin4.py - Main application entry point
+# pgadmin4.py - Main application entry point
 #
 ##########################################################################
 
-import os, sys, inspect
-from time import time, ctime
-from flask import Flask
 import logging
+import os, sys
+from flask import Flask
+from time import time, ctime
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
 sys.path.append(os.path.dirname(__file__))
 
 # Configuration settings
-from config import *
+import config
 
 # Setup the app object
 app = Flask(__name__)
 
+#
 # Setup logging and log the application startup
+#
+
 logging.addLevelName(25, 'SQL')
-logging.basicConfig(filename=PGADMIN_LOG_FILE, format=PGADMIN_LOG_FORMAT, level=logging.DEBUG)
-app.logger.setLevel(PGADMIN_LOG_LEVEL)
+app.logger.setLevel(logging.DEBUG)
+
+# File logging
+fh = logging.FileHandler(config.LOG_FILE)
+fh.setLevel(config.FILE_LOG_LEVEL)
+fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+app.logger.addHandler(fh)
+
+# Console logging
+ch = logging.StreamHandler()
+ch.setLevel(config.CONSOLE_LOG_LEVEL)
+ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
+app.logger.addHandler(ch)
+
+app.logger.debug('################################################################################')
 app.logger.debug('Starting pgAdmin 4...')
+app.logger.debug('################################################################################')
 
 # The main index page
 @app.route("/")
@@ -52,13 +69,15 @@ def ping():
 # runtime if we're running in desktop mode, otherwise we'll just use the 
 # Flask default.
 if 'PGADMIN_PORT' in globals():
+    app.logger.debug('PGADMIN_PORT set in the runtime environment to %s', PGADMIN_PORT)
     server_port = PGADMIN_PORT
 else:
-    server_port = 5000
+    app.logger.debug('PGADMIN_PORT is not set in the runtime environment, using default of %s', config.DEFAULT_SERVER_PORT)
+    server_port = config.DEFAULT_SERVER_PORT
 
 if __name__ == '__main__':
     try:
         app.run(port=server_port)
     except IOError:
-        print "Unexpected error: ", sys.exc_info()[0]
+        app.logger.error("Error starting the web server: %s", sys.exc_info())
 

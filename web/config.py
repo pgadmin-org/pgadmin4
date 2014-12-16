@@ -11,6 +11,10 @@
 
 from logging import *
 
+##########################################################################
+# Log settings
+##########################################################################
+
 # Application log level - one of:
 #   CRITICAL	50
 #   ERROR	40
@@ -19,13 +23,27 @@ from logging import *
 #   INFO	20
 #   DEBUG       10
 #   NOTSET	0
-PGADMIN_LOG_LEVEL = DEBUG
+CONSOLE_LOG_LEVEL = WARNING
+FILE_LOG_LEVEL = DEBUG
+
+# Log format. 
+CONSOLE_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+FILE_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
-PGADMIN_LOG_FILE = 'pgadmin4.log'
+LOG_FILE = 'pgadmin4.log'
 
-# Log format. See 
-PGADMIN_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+##########################################################################
+# Server settings
+##########################################################################
+
+# The default port on which the app server will listen if not set in the
+# environment by the runtime
+DEFAULT_SERVER_PORT = 5050
+
+##########################################################################
+# Local config settings
+##########################################################################
 
 # Load local config overrides
 try:
