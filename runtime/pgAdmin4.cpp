@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
     QCoreApplication::setApplicationName(PGA_APP_NAME);
 
     // Find an unused port number. Essentially, we're just reserving one
-    // here that CherryPy will use when we start up the server.
+    // here that Flask will use when we start up the server.
     QTcpSocket socket;
     socket.bind(0, QAbstractSocket::DontShareAddress);
     quint16 port = socket.localPort();
@@ -59,6 +59,30 @@ int main(int argc, char * argv[])
 
     server->start();
 
+    // This is a hack. Wait a second and then check to see if the server thread
+    // is still running. If it's not, we probably had a startup error
+    sleep(1);
+
+    // Any errors?
+    if (server->isFinished() || server->getError().length() > 0)
+    {
+        qDebug() << server->getError();
+
+        QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        // Allow the user to tweak the Python Path if needed
+        QSettings settings;
+        bool ok;
+
+        QString path = QInputDialog::getText(NULL, QWidget::tr("Python Path"), QWidget::tr("Set the Python search path:"), QLineEdit::Normal, settings.value("PythonPath").toString(), &ok);
+
+        if (ok)
+            settings.setValue("PythonPath", path);
+
+        exit(1);
+    }
+
     // Generate the app server URL
     QString appServerUrl = QString("http://localhost:%1").arg(port);
 
@@ -67,7 +91,7 @@ int main(int argc, char * argv[])
     // will also retry - that shouldn't (in theory) be necessary, but it won't
     // hurt.
     int attempt = 0;
-    while (attempt++ < 10)
+    while (attempt++ < 3)
     {
         bool alive = PingServer(QUrl(appServerUrl));
 

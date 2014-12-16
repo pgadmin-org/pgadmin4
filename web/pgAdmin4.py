@@ -1,50 +1,39 @@
 import os, sys, inspect
-
-# We need to include the include/ directory in sys.path to ensure that we can
-# fine everything we need when running in the standalone runtime. This tries
-# to find the "real" path to use, regardless of any symlinks.
-includedir = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0],"include")))
-if includedir not in sys.path:
-    sys.path.insert(0, includedir)
-
-# Rock n' roll...
-import cherrypy
 from time import time,ctime
+from flask import Flask
 
+app = Flask(__name__)
 
-# This is the main application class that we'll run under CherryPy.
-class pgAdmin4(object):
+# The main index page
+@app.route("/")
+def index():
 
-    # The main index page
-    @cherrypy.expose
-    def index(self):
-        output = """
+    output = """
 Today is <b>%s</b>
 <br />
-<i>This is CherryPy-generated HTML.</i>
+<i>This is Flask-generated HTML.</i>
 <br /><br />
 <a href="http://www.pgadmin.org/">pgAdmin 4</a>""" % ctime(time())
 
-        return output
+    return output
 
 
-    # A special URL used to "ping" the server
-    @cherrypy.expose
-    def ping(self):
-        return "PING"
-
+# A special URL used to "ping" the server
+@app.route("/ping")
+def ping():
+    return "PING"
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the 
-# CherryPy default.
+# Flask default.
+if 'PGADMIN_PORT' in globals():
+    server_port = PGADMIN_PORT
+else:
+    server_port = 5000
 
-try:
-    cherrypy.server.socket_port = PGADMIN_PORT
-except:
-    pass
+if __name__ == '__main__':
+    try:
+        app.run(port=server_port)
+    except IOError:
+        print "Unexpected error: ", sys.exc_info()[0]
 
-try:
-    cherrypy.quickstart(pgAdmin4())
-except IOError:
-    print "Unexpected error: ", sys.exc_info()[0]
-    

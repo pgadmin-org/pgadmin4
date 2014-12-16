@@ -44,6 +44,7 @@ protected slots:
 
 private slots:
     void openUrl();
+    void pythonPath();
     void about();
 
 private:
@@ -52,6 +53,7 @@ private:
     QMenu *fileMenu;
     QMenu *helpMenu;
     QAction *openUrlAction;
+    QAction *pythonPathAction;
     QAction *exitAction;
     QAction *aboutAction;
 

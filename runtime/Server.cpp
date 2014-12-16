@@ -23,13 +23,23 @@
 #include "Server.h"
 
 Server::Server(quint16 port)
-{
+{    
     // Appserver port
     m_port = port;
 
     // Initialise Python
     Py_SetProgramName(PGA_APP_NAME.toUtf8().data());
     Py_Initialize();
+
+    // Setup the search path
+    QSettings settings;
+    QString python_path = settings.value("PythonPath").toString();
+
+    if (python_path.length() > 0)
+    {
+        PyObject* sysPath = PySys_GetObject((char*)"path");
+        PyList_Append(sysPath, PyString_FromString(python_path.toUtf8().data()));
+    }
 }
 
 Server::~Server()

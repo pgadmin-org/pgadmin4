@@ -47,8 +47,8 @@ BrowserWindow::BrowserWindow(QString url)
 
     // Restore the geometry
     QSettings settings;
-    restoreGeometry(settings.value("geometry").toByteArray());
-    restoreState(settings.value("windowState").toByteArray());
+    restoreGeometry(settings.value("Browser/Geometry").toByteArray());
+    restoreState(settings.value("Browser/WindowState").toByteArray());
 
     // Display the app
     m_initialLoad = true;
@@ -61,8 +61,8 @@ BrowserWindow::BrowserWindow(QString url)
 void BrowserWindow::closeEvent(QCloseEvent *event)
 {
     QSettings settings;
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("windowState", saveState());
+    settings.setValue("Browser/Geometry", saveGeometry());
+    settings.setValue("Browser/WindowState", saveState());
     QMainWindow::closeEvent(event);
 }
 
@@ -75,6 +75,11 @@ void BrowserWindow::createActions()
     openUrlAction->setShortcut(tr("Ctrl+U"));
     openUrlAction->setStatusTip(tr("Open a URL"));
     connect(openUrlAction, SIGNAL(triggered()), this, SLOT(openUrl()));
+
+    // Set the Python Path
+    pythonPathAction = new QAction(tr("&Python Path..."), this);
+    pythonPathAction->setStatusTip(tr("Set the Python search path"));
+    connect(pythonPathAction, SIGNAL(triggered()), this, SLOT(pythonPath()));
 
     // Exit the app
     exitAction = new QAction(tr("E&xit"), this);
@@ -95,6 +100,8 @@ void BrowserWindow::createMenus()
     // File
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openUrlAction);
+    fileMenu->addSeparator();
+    fileMenu->addAction(pythonPathAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
@@ -165,9 +172,22 @@ void BrowserWindow::about()
 void BrowserWindow::openUrl()
 {
     bool ok;
-    QString url = QInputDialog::getText(this, tr("Enter a URL"), tr("URL:"), QLineEdit::Normal, "http://", &ok);
+    QString url = QInputDialog::getText(this, tr("Open URL"), tr("Enter a URL"), QLineEdit::Normal, "http://", &ok);
 
     if (ok && !url.isEmpty())
         webView->setUrl(url);
 }
+
+// Open an arbitrary URL
+void BrowserWindow::pythonPath()
+{
+    QSettings settings;
+    bool ok;
+
+    QString path = QInputDialog::getText(this, tr("Python Path"), tr("Set the Python search path:"), QLineEdit::Normal, settings.value("PythonPath").toString(), &ok);
+
+    if (ok)
+        settings.setValue("PythonPath", path);
+}
+
 
