@@ -31,17 +31,22 @@ app = Flask(__name__, static_url_path='')
 logging.addLevelName(25, 'SQL')
 app.logger.setLevel(logging.DEBUG)
 
+# We also need to update the handler on the webserver in order to see request
+logger = logging.getLogger('werkzeug')
+
 # File logging
 fh = logging.FileHandler(config.LOG_FILE)
 fh.setLevel(config.FILE_LOG_LEVEL)
 fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
 app.logger.addHandler(fh)
+logger.addHandler(fh)
 
 # Console logging
 ch = logging.StreamHandler()
 ch.setLevel(config.CONSOLE_LOG_LEVEL)
 ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
 app.logger.addHandler(ch)
+logger.addHandler(ch)
 
 app.logger.debug('################################################################################')
 app.logger.debug('Starting pgAdmin 4...')
