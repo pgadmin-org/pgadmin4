@@ -16,7 +16,7 @@ from logging import *
 ##########################################################################
 
 # Debug mode?
-DEBUG = true
+DEBUG = True
 
 # Application log level - one of:
 #   CRITICAL	50
