@@ -5,7 +5,7 @@
 # Copyright (C) 2013 - 2014, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# pgadmin4.py - Main application entry point
+# pgAdmin4.py - Main application entry point
 #
 ##########################################################################
 
@@ -22,7 +22,7 @@ sys.path.append(os.path.dirname(__file__))
 import config
 
 # Setup the app object
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 #
 # Setup logging and log the application startup
