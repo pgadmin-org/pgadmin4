@@ -24,10 +24,11 @@ import config
 # Setup the app object
 app = Flask(__name__, static_url_path='')
 
-#
+##########################################################################
 # Setup logging and log the application startup
-#
+##########################################################################
 
+# Add SQL level logging, and set the base logging level
 logging.addLevelName(25, 'SQL')
 app.logger.setLevel(logging.DEBUG)
 
@@ -72,6 +73,10 @@ Today is <b>%s</b>
 @app.route("/ping")
 def ping():
     return "PING"
+
+##########################################################################
+# Server starup
+##########################################################################
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the 
