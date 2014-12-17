@@ -12,6 +12,26 @@
 from logging import *
 
 ##########################################################################
+# Application settings
+##########################################################################
+
+# Name of the application to display in the UI
+APP_NAME = 'pgAdmin 4'
+
+# Application version number components
+APP_MAJOR = 1
+APP_MINOR = 0
+APP_REVISION = 0
+
+# Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
+# for GA releases.
+APP_SUFFIX = 'dev'
+
+# DO NOT CHANGE!
+# The application version string, constructed from the components
+APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)
+
+##########################################################################
 # Log settings
 ##########################################################################
 

@@ -52,7 +52,7 @@ app.logger.addHandler(ch)
 logger.addHandler(ch)
 
 app.logger.info('################################################################################')
-app.logger.info('Starting pgAdmin 4...')
+app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
 app.logger.info('################################################################################')
 
 # The main index page
@@ -64,7 +64,7 @@ Today is <b>%s</b>
 <br />
 <i>This is Flask-generated HTML.</i>
 <br /><br />
-<a href="http://www.pgadmin.org/">pgAdmin 4</a>""" % ctime(time())
+<a href="http://www.pgadmin.org/">%s v%s</a>""" % (ctime(time()), config.APP_NAME, config.APP_VERSION)
 
     return output
 
