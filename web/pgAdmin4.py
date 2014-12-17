@@ -31,8 +31,11 @@ app = Flask(__name__, static_url_path='')
 logging.addLevelName(25, 'SQL')
 app.logger.setLevel(logging.DEBUG)
 
-# We also need to update the handler on the webserver in order to see request
+# We also need to update the handler on the webserver in order to see request. 
+# Setting the level prevents werkzeug from setting up it's own stream handler
+# thus ensuring all the logging goes through the pgAdmin logger.
 logger = logging.getLogger('werkzeug')
+logger.setLevel(logging.INFO)
 
 # File logging
 fh = logging.FileHandler(config.LOG_FILE)
@@ -48,9 +51,9 @@ ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
 app.logger.addHandler(ch)
 logger.addHandler(ch)
 
-app.logger.debug('################################################################################')
-app.logger.debug('Starting pgAdmin 4...')
-app.logger.debug('################################################################################')
+app.logger.info('################################################################################')
+app.logger.info('Starting pgAdmin 4...')
+app.logger.info('################################################################################')
 
 # The main index page
 @app.route("/")
