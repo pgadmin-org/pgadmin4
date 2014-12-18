@@ -31,12 +31,16 @@ APP_SUFFIX = 'dev'
 # The application version string, constructed from the components
 APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)
 
+# DO NOT CHANGE!
+# List of modules to enable
+MODULES = [ 'utils' ]
+
 ##########################################################################
 # Log settings
 ##########################################################################
 
 # Debug mode?
-DEBUG = True
+DEBUG = False
 
 # Application log level - one of:
 #   CRITICAL	50
@@ -47,7 +51,7 @@ DEBUG = True
 #   DEBUG       10
 #   NOTSET	0
 CONSOLE_LOG_LEVEL = WARNING
-FILE_LOG_LEVEL = DEBUG
+FILE_LOG_LEVEL = INFO
 
 # Log format. 
 CONSOLE_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
