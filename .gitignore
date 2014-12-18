@@ -1,0 +1,14 @@
+*.pyc
+*.o
+build-*
+.DS_Store
+runtime/.qmake.cache
+runtime/Makefile
+runtime/moc_BrowserWindow.cpp
+runtime/moc_Server.cpp
+runtime/pgAdmin4.app/
+runtime/pgAdmin4.pro.user
+runtime/pgAdmin4.pro.user.2.7pre1
+runtime/pgAdmin4.pro.user.3.0-pre1
+runtime/ui_BrowserWindow.h
+web/config_local.py
