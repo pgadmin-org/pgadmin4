@@ -30,6 +30,7 @@ def create_app(app_name=config.APP_NAME):
     # Add SQL level logging, and set the base logging level
     logging.addLevelName(25, 'SQL')
     app.logger.setLevel(logging.DEBUG)
+    app.logger.handlers = []
 
     # We also need to update the handler on the webserver in order to see request. 
     # Setting the level prevents werkzeug from setting up it's own stream handler
