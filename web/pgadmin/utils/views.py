@@ -10,14 +10,17 @@
 ##########################################################################
 
 import config
-from utils import module
+from flask import Blueprint
 from time import time, ctime
+
+# Initialise the module
+blueprint = Blueprint('utils', __name__)
 
 ##########################################################################
 # A test page
 ##########################################################################
-@module.route("/test")
-def index():
+@blueprint.route("/test")
+def test():
 
     output = """
 Today is <b>%s</b>
@@ -31,6 +34,6 @@ Today is <b>%s</b>
 ##########################################################################
 # A special URL used to "ping" the server
 ##########################################################################
-@module.route("/ping")
+@blueprint.route("/ping")
 def ping():
     return "PING"

@@ -10,9 +10,7 @@
 ##########################################################################
 
 import logging
-import os, sys
 from flask import Flask
-from time import time, ctime
 
 # Configuration settings
 import config
@@ -59,6 +57,11 @@ def create_app(app_name=config.APP_NAME):
  
     # Register all the modules
     for m in config.MODULES:
-        app.register_module(__import__('%s.views' % m).module)
+        app.logger.debug('Loading module %s' % m)
+        module = __import__(m, globals(), locals(), ['views'], -1)
+        app.register_blueprint(module.views.blueprint)
+
+    app.logger.debug('URL map: %s' % app.url_map)
     
     return app
+
