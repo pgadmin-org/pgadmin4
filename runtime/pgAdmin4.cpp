@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
     }
 
     // Generate the app server URL
-    QString appServerUrl = QString("http://localhost:%1").arg(port);
+    QString appServerUrl = QString("http://localhost:%1/utils/test").arg(port);
 
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary. The browser
@@ -128,7 +128,7 @@ bool PingServer(QUrl url)
     QNetworkReply *reply;
     QVariant redirectUrl;
 
-    url.setPath("/ping");
+    url.setPath("/utils/ping");
 
     do
     {
