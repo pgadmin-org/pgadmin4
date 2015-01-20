@@ -9,7 +9,7 @@
 #
 ##########################################################################
 
-import logging
+import inspect, logging, os
 from flask import Flask
 
 # Configuration settings
@@ -54,12 +54,26 @@ def create_app(app_name=config.APP_NAME):
     app.logger.info('################################################################################')
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('################################################################################')
- 
+
     # Register all the modules
-    for m in config.MODULES:
-        app.logger.debug('Loading module %s' % m)
-        module = __import__(m, globals(), locals(), ['views'], -1)
-        app.register_blueprint(module.views.blueprint)
+    path = os.path.dirname(os.path.realpath(__file__))
+    files = os.listdir(path)
+    for f in files:
+        d = os.path.join(path, f)
+        if os.path.isdir(d) and os.path.isfile(os.path.join(d, '__init__.py')):
+
+            if f in config.MODULE_BLACKLIST:
+                app.logger.info('Skipping blacklisted module: %s' % f)
+                continue
+
+            # Looks like a module, so import it, and register the blueprint if present
+            # We rely on the ordering of syspath to ensure we actually get the right
+            # module here.
+            app.logger.info('Examining potential module: %s' % d)
+            module = __import__(f, globals(), locals(), ['views'], -1)
+            if hasattr(module.views, 'blueprint'):
+                app.logger.info('Registering blueprint module: %s' % f)
+                app.register_blueprint(module.views.blueprint)
 
     app.logger.debug('URL map: %s' % app.url_map)
     

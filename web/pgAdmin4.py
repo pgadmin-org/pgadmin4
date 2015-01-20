@@ -13,8 +13,7 @@ import os, sys
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pgadmin'))
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
 import config
 from pgadmin import create_app
