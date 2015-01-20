@@ -9,12 +9,14 @@
 #
 ##########################################################################
 
+MODULE_NAME = 'utils'
+
 import config
-from flask import Blueprint
+from flask import Blueprint, render_template
 from time import time, ctime
 
 # Initialise the module
-blueprint = Blueprint('utils', __name__)
+blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix='/' + MODULE_NAME)
 
 ##########################################################################
 # A test page
