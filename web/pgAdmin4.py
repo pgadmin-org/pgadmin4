@@ -37,7 +37,7 @@ else:
     server_port = config.DEFAULT_SERVER_PORT
 
 try:
-    app.run(port=server_port)
+    app.run(port=server_port, debug=False)
 except IOError:
     app.logger.error("Error starting the app server: %s", sys.exc_info())
 
