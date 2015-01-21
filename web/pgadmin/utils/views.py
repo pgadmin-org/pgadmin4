@@ -5,10 +5,9 @@
 # Copyright (C) 2013 - 2014, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# utils/views.py - Utility views
-#
 ##########################################################################
 
+"""A blueprint module providing utility functions for the application."""
 MODULE_NAME = 'utils'
 
 import config
@@ -23,7 +22,7 @@ blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url
 ##########################################################################
 @blueprint.route("/test")
 def test():
-
+    """Generate a simple test page to demonstrate that output can be rendered."""
     output = """
 Today is <b>%s</b>
 <br />
@@ -38,4 +37,6 @@ Today is <b>%s</b>
 ##########################################################################
 @blueprint.route("/ping")
 def ping():
+    """Generate a "PING" response to indicate that the server is alive."""
     return "PING"
+

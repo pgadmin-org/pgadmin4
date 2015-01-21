@@ -5,9 +5,10 @@
 # Copyright (C) 2013 - 2014, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# pgadmin/__init__.py - Main application startup
-#
 ##########################################################################
+
+"""The main pgAdmin module. This handles the application initialisation tasks,
+such as setup of logging, dynamic loading of modules etc."""
 
 import inspect, logging, os
 from flask import Flask
@@ -16,8 +17,8 @@ from flask import Flask
 import config
 
 def create_app(app_name=config.APP_NAME):
-
-    # Setup the app object
+    """Create the Flask application, startup logging and dynamically load
+    additional modules (blueprints) that are found in this directory."""
     app = Flask(__name__, static_url_path='')
     app.config.from_object(config)
 
