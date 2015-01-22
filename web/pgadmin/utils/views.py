@@ -12,6 +12,7 @@ MODULE_NAME = 'utils'
 
 import config
 from flask import Blueprint, render_template
+from flask.ext.security import login_required
 from time import time, ctime
 
 # Initialise the module
@@ -21,6 +22,7 @@ blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url
 # A test page
 ##########################################################################
 @blueprint.route("/test")
+@login_required
 def test():
     """Generate a simple test page to demonstrate that output can be rendered."""
     output = """

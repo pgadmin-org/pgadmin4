@@ -10,6 +10,7 @@
 ##########################################################################
 
 from logging import *
+import os
 
 ##########################################################################
 # Application settings
@@ -73,11 +74,48 @@ CSRF_ENABLED = True
 
 # Secret key for signing CSRF data. Override this in config_local.py if 
 # running on a web server
-CSRF_SESSION_KEY = 'SuperSecret'
+CSRF_SESSION_KEY = 'SuperSecret1'
 
 # Secret key for signing cookies. Override this in config_local.py if 
 # running on a web server
-SECRET_KEY = 'SuperSecret'
+SECRET_KEY = 'SuperSecret2'
+
+# Salt used when hashing passwords. Override this in config_local.py if
+# running on a web server
+SECURITY_PASSWORD_SALT = 'SuperSecret3'
+
+# Hashing algorithm used for password storage
+SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
+
+##########################################################################
+# User account and settings storage
+##########################################################################
+
+# The default path to the SQLite database used to store user accounts and
+# settings. This default places the file in the same directory as this
+# config file, but generates an absolute path for use througout the app.
+SQLITE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pgadmin4.db')
+
+##########################################################################
+# Mail server settings
+##########################################################################
+
+# These settings are used when running in web server mode for confirming
+# and resetting passwords etc.
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'username'
+MAIL_PASSWORD = 'SuperSecret'
+
+##########################################################################
+# Mail content settings
+##########################################################################
+
+# These settings define the content of password reset emails
+SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for %s" % APP_NAME
+SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE = "Your %s password has been reset" % APP_NAME
+SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = "Your password for %s has been changed" % APP_NAME
 
 ##########################################################################
 # Local config settings

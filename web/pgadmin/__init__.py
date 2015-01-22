@@ -10,8 +10,13 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 
-import inspect, logging, os
 from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
+from flask_mail import Mail
+from settings_model import db, Role, User
+
+import inspect, logging, os
 
 # Configuration settings
 import config
@@ -56,7 +61,26 @@ def create_app(app_name=config.APP_NAME):
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('################################################################################')
 
-    # Register all the modules
+    ##########################################################################
+    # Setup authentication
+    ##########################################################################
+   
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
+    app.config['SECURITY_RECOVERABLE'] = True
+    app.config['SECURITY_CHANGEABLE'] = True
+
+    # Create database connection object and mailer
+    db.init_app(app)
+    mail = Mail(app)
+
+    # Setup Flask-Security
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    security = Security(app, user_datastore)
+
+    ##########################################################################
+    # Load plugin modules
+    ##########################################################################
+
     path = os.path.dirname(os.path.realpath(__file__))
     files = os.listdir(path)
     for f in files:
@@ -76,7 +100,6 @@ def create_app(app_name=config.APP_NAME):
                 app.logger.info('Registering blueprint module: %s' % f)
                 app.register_blueprint(module.views.blueprint)
 
+    # All done!
     app.logger.debug('URL map: %s' % app.url_map)
-    
     return app
-

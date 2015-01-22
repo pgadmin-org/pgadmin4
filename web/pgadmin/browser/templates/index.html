@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block body %}
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">pgAdmin 4</a>
+   </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{{ url_for('security.change_password') }}">Change Password</a></li>
+            <li><a href="{{ url_for('utils.test') }}">Test URL</a></li>
+            <li><a href="{{ url_for('utils.ping') }}">Ping</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ url_for('security.logout') }}">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><img src="{{ username | gravatar }}" width="18" height="18"> {{ username }}</a></li>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>pgAdmin 4</h1>
+    <p>Welcome to pgAdmin 4.</p>
+    <p><a class="btn btn-primary btn-lg" href="http://www.pgadmin.org/" role="button">Learn more &raquo;</a></p>
+  </div>
+</div>
+
+{% include 'messages.html' %}
+{% endblock %}
