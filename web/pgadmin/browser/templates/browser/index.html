@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}{{ config.APP_NAME }}{% endblock %}
 {% block body %}
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -9,10 +10,11 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">pgAdmin 4</a>
+      <a class="navbar-brand" href="#">{{ config.APP_NAME }}</a>
    </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
       <ul class="nav navbar-nav">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
@@ -21,6 +23,14 @@
             <li><a href="{{ url_for('utils.ping') }}">Ping</a></li>
           </ul>
         </li>
+
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+
+          </ul>
+        </li>
+
       </ul>
       {% if config.SERVER_MODE %}
       <ul class="nav navbar-nav navbar-right">
@@ -38,14 +48,6 @@
 
   </div>
 </nav>
-
-<div class="jumbotron">
-  <div class="container">
-    <h1>pgAdmin 4</h1>
-    <p>Welcome to pgAdmin 4.</p>
-    <p><a class="btn btn-primary btn-lg" href="http://www.pgadmin.org/" role="button">Learn more &raquo;</a></p>
-  </div>
-</div>
-
-{% include 'messages.html' %}
+{% include 'browser/body.html' %}
+{% include 'browser/messages.html' %}
 {% endblock %}

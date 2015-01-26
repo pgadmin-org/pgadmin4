@@ -34,4 +34,4 @@ def index():
                         use_ssl=False,
                         base_url=None)
 
-    return render_template('index.html', username=current_user.email)
+    return render_template(MODULE_NAME + '/index.html', username=current_user.email)
