@@ -10,9 +10,10 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 
-from flask import Flask
+from flask import Flask, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
+from flask_security.utils import login_user
 from flask_mail import Mail
 from settings_model import db, Role, User
 
@@ -66,8 +67,12 @@ def create_app(app_name=config.APP_NAME):
     ##########################################################################
    
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
-    app.config['SECURITY_RECOVERABLE'] = True
-    app.config['SECURITY_CHANGEABLE'] = True
+
+    # Only enable password related functionality in server mode.
+    if config.SERVER_MODE == True:
+        # TODO: Figure out how to disable /logout and /login
+        app.config['SECURITY_RECOVERABLE'] = True
+        app.config['SECURITY_CHANGEABLE'] = True
 
     # Create database connection object and mailer
     db.init_app(app)
@@ -100,6 +105,29 @@ def create_app(app_name=config.APP_NAME):
                 app.logger.info('Registering blueprint module: %s' % f)
                 app.register_blueprint(module.views.blueprint)
 
+    ##########################################################################
+    # Handle the desktop login
+    ##########################################################################
+
+    @app.before_request
+    def before_request():
+        """Login the default user if running in desktop mode"""
+        if config.SERVER_MODE == False:
+            user = user_datastore.get_user(config.DESKTOP_USER)
+
+            # Throw an error if we failed to find the desktop user, to give
+            # the sysadmin a hint. We'll continue to try to login anyway as
+            # that'll through a nice 500 error for us.
+            if user is None:
+                app.logger.error('The desktop user %s was not found in the configuration database.' % config.DESKTOP_USER)
+                abort(401)
+
+            login_user(user)
+
+    ##########################################################################
     # All done!
+    ##########################################################################
+
     app.logger.debug('URL map: %s' % app.url_map)
     return app
+

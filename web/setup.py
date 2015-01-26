@@ -16,7 +16,7 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
 from settings_model import db, Role, User
 
-import getpass, os, sys
+import getpass, os, random, sys, string
 
 # Configuration settings
 import config
@@ -31,8 +31,8 @@ print "======================================\n"
 
 local_config = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config_local.py')
 if not os.path.isfile(local_config):
-    print "%s does not exist.\n" % local_config
-    print "Before running this script, ensure that config_local.py has been created"
+    print "The configuration file %s does not exist.\n" % local_config
+    print "Before running this application, ensure that config_local.py has been created"
     print "and sets values for SECRET_KEY, SECURITY_PASSWORD_SALT and CSRF_SESSION_KEY"
     print "at bare minimum. See config.py for more information and a complete list of"
     print "settings. Exiting..."
@@ -43,18 +43,26 @@ if os.path.isfile(config.SQLITE_PATH):
     print "The configuration database %s already exists and will not be overwritten.\nExiting..." % config.SQLITE_PATH
     sys.exit(1)
 
-# Prompt the user for their default username and password.
-print "Enter the email address and password to use for the initial pgAdmin user account:\n"
-email = ''
-while email == '':
-    email = raw_input("Email address: ")
+if config.SERVER_MODE == False:
+    print "NOTE: Configuring authentication for DESKTOP mode."
+    email = config.DESKTOP_USER 
+    p1 = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
 
-pprompt = lambda: (getpass.getpass(), getpass.getpass('Retype password: '))
+else:
+    print "NOTE: Configuring authentication for SERVER mode.\n"
 
-p1, p2 = pprompt()
-while p1 != p2:
-    print('Passwords do not match. Try again')
+    # Prompt the user for their default username and password.
+    print "Enter the email address and password to use for the initial pgAdmin user account:\n"
+    email = ''
+    while email == '':
+        email = raw_input("Email address: ")
+
+    pprompt = lambda: (getpass.getpass(), getpass.getpass('Retype password: '))
+
     p1, p2 = pprompt()
+    while p1 != p2:
+        print('Passwords do not match. Try again')
+        p1, p2 = pprompt()
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

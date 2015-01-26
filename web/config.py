@@ -65,6 +65,17 @@ LOG_FILE = 'pgadmin4.log'
 # Server settings
 ##########################################################################
 
+# The server mode determines whether or not we're running on a web server
+# requiring user authentication, or desktop mode which uses an automatic
+# default login.
+#
+# DO NOT DISABLE SERVER MODE IF RUNNING ON A WEBSERVER!!
+SERVER_MODE = True
+
+# User ID (email address) to use for the default user in desktop mode.
+# The default should be fine here, as it's not exposed in the app.
+DESKTOP_USER = 'pgadmin4@pgadmin.org'
+
 # The default port on which the app server will listen if not set in the
 # environment by the runtime
 DEFAULT_SERVER_PORT = 5050
