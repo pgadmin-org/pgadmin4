@@ -10,9 +10,12 @@
 """A blueprint module implementing the about box."""
 MODULE_NAME = 'about'
 
+from flask import Blueprint, current_app, render_template, __version__
+from flask.ext.security import current_user, login_required
+
+import sys
+
 import config
-from flask import Blueprint, current_app, render_template
-from flask.ext.security import login_required
 
 # Initialise the module
 blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix='/' + MODULE_NAME)
@@ -24,4 +27,13 @@ blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url
 @login_required
 def index():
     """Render the about box."""
-    return render_template(MODULE_NAME + '/index.html')
+    info = { }
+    info['python_version'] = sys.version
+    info['flask_version'] = __version__
+    if config.SERVER_MODE == True:
+        info['app_mode'] = 'Server'
+    else:
+        info['app_mode'] = 'Desktop'
+    info['current_user'] = current_user.email
+    
+    return render_template(MODULE_NAME + '/index.html', info=info)

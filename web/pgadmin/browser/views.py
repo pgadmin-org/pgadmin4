@@ -39,11 +39,12 @@ def index():
                         use_ssl=False,
                         base_url=None)
 
-    # Get the menu items from the module
+    # Get the plugin elements from the module
     file_items = [ ]
     edit_items = [ ]
     tools_items = [ ]
     help_items = [ ]
+    js_code = ''
     
     for module in modules:
         # Get the edit menu items
@@ -61,15 +62,21 @@ def index():
         # Get the help menu items
         if 'browser' in dir(module) and 'get_help_menu_items' in dir(module.browser):
             help_items.extend(module.browser.get_help_menu_items())
+            
+        # Get any Javascript code
+        if 'browser' in dir(module) and 'get_javascript_code' in dir(module.browser):
+            js_code += (module.browser.get_javascript_code())
 
     file_items = sorted(file_items, key=lambda k: k['priority'])
     edit_items = sorted(edit_items, key=lambda k: k['priority'])
     tools_items = sorted(tools_items, key=lambda k: k['priority'])
     help_items = sorted(help_items, key=lambda k: k['priority'])
     
+    # Get any Javascript snippets
     return render_template(MODULE_NAME + '/index.html', 
                            username=current_user.email, 
                            file_items=file_items, 
                            edit_items=edit_items, 
                            tools_items=tools_items, 
-                           help_items=help_items)
+                           help_items=help_items,
+                           js_code = js_code)

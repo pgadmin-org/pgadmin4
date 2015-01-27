@@ -1,1 +1,28 @@
-About {{ config.APP_NAME }}
+<div class="row">
+    <div class="col-sm-3"><b>Version</b></div>
+    <div class="col-sm-9">{{ config.APP_VERSION }}</div>
+</div>
+<div class="row">
+    <div class="col-sm-3"><b>Copyright</b></div>
+    <div class="col-sm-9">{{ config.APP_COPYRIGHT }}</div>
+</div>
+<div class="row">
+    <div class="col-sm-3"><b>Python Version</b></div>
+    <div class="col-sm-9">{{ info.python_version }}</div>
+</div>
+<div class="row">
+    <div class="col-sm-3"><b>Flask Version</b></div>
+    <div class="col-sm-9">{{ info.flask_version }}</div>
+</div>
+<div class="row">
+    <div class="col-sm-3"><b>Application Mode</b></div>
+    <div class="col-sm-9">{{ info.app_mode }}</div>
+</div>
+<div class="row">
+    <div class="col-sm-3"><b>Current User</b></div>
+    <div class="col-sm-9">{{ info.current_user }}</div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3 pull-right"><img src="{{ url_for('static', filename='img/logo-right-128.png') }}" alt="{{ config.APP_NAME }}"></div>
+</div>
