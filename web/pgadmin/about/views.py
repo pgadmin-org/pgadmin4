@@ -7,22 +7,21 @@
 #
 ##########################################################################
 
-"""A blueprint module providing utility functions for the application."""
-MODULE_NAME = 'utils'
+"""A blueprint module implementing the about box."""
+MODULE_NAME = 'about'
 
 import config
-from flask import Blueprint, render_template
+from flask import Blueprint, current_app, render_template
 from flask.ext.security import login_required
-from time import time, ctime
 
 # Initialise the module
 blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix='/' + MODULE_NAME)
 
 ##########################################################################
-# A special URL used to "ping" the server
+# A test page
 ##########################################################################
-@blueprint.route("/ping")
-def ping():
-    """Generate a "PING" response to indicate that the server is alive."""
-    return "PING"
-
+@blueprint.route("/")
+@login_required
+def index():
+    """Render the about box."""
+    return render_template(MODULE_NAME + '/index.html')

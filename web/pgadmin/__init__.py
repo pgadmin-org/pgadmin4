@@ -17,10 +17,13 @@ from flask_security.utils import login_user
 from flask_mail import Mail
 from settings_model import db, Role, User
 
-import inspect, logging, os
+import inspect, imp, logging, os
 
 # Configuration settings
 import config
+
+# Global module list
+modules = [ ]
 
 def create_app(app_name=config.APP_NAME):
     """Create the Flask application, startup logging and dynamically load
@@ -88,6 +91,7 @@ def create_app(app_name=config.APP_NAME):
 
     path = os.path.dirname(os.path.realpath(__file__))
     files = os.listdir(path)
+
     for f in files:
         d = os.path.join(path, f)
         if os.path.isdir(d) and os.path.isfile(os.path.join(d, '__init__.py')):
@@ -98,10 +102,16 @@ def create_app(app_name=config.APP_NAME):
 
             # Looks like a module, so import it, and register the blueprint if present
             # We rely on the ordering of syspath to ensure we actually get the right
-            # module here.
+            # module here. Note that we also try to load the 'browser' module for
+            # the browser integration hooks.
             app.logger.info('Examining potential module: %s' % d)
-            module = __import__(f, globals(), locals(), ['views'], -1)
-            if hasattr(module.views, 'blueprint'):
+            module = __import__(f, globals(), locals(), ['browser', 'views'], -1)
+
+            # Add the module to the global module list
+            modules.append(module)
+            
+            # Register the blueprint if present
+            if 'views' in dir(module) and 'blueprint' in dir(module.views):
                 app.logger.info('Registering blueprint module: %s' % f)
                 app.register_blueprint(module.views.blueprint)
 
