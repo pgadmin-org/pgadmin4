@@ -34,7 +34,7 @@ APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
 # List of modules to skip when dynamically loading
-MODULE_BLACKLIST = [ ]
+MODULE_BLACKLIST = [ 'test' ]
 
 ##########################################################################
 # Log settings
