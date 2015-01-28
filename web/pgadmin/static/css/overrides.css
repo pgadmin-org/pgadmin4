@@ -1,5 +1,10 @@
 /* Overrides/fixes for pgAdmin specific styling in Bootstrap */
 
+/* Use the full width of the screen */
+.container {
+    width: 100% !important;
+}
+    
 /* Restyle the Alertify dialogs */
 .alertify .ajs-dialog {
     border: 0px solid rgba(0,0,0,.2);
