@@ -46,9 +46,10 @@ function test_dialog() {
     if (!alertify.myAlert) {
         alertify.dialog('myAlert', function factory() {
             return {
-                main:function(title, message) {
+                main:function(title, message, data) {
                     this.set('title', title);
                     this.message = message;
+                    this.data = data;
                 },
                 setup:function() {
                     return { 
@@ -59,6 +60,9 @@ function test_dialog() {
                 },
                 prepare:function() {
                     this.setContent(this.message);
+                },
+                callback:function(closeEvent) {
+                    alertify.alert('Close Event', 'You pressed: ' + closeEvent.button.text + ' on ' + this.data);    
                 }
             }
         },
@@ -66,5 +70,8 @@ function test_dialog() {
     }
 
     alertify.myAlert('Dialog Test',
-        'This is a test dialog from Alertify!');
+        'This is a test dialog from Alertify!', 'This is dialog 1');
+        
+    alertify.myAlert('Dialog Test 2',
+        'This is another test dialog from Alertify!', 'This is dialog 2');
 }

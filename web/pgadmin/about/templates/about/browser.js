@@ -20,13 +20,11 @@ function about_show() {
                 setup:function() {
                     return { 
                         buttons:[{ text: "OK", key: 27, className: "btn btn-primary" }],
-                        focus: { element: 0 },
-                        options: { modal: 0, overflow: false, resizable: true }
+                        options: { modal: 0, resizable: true }
                     };
                 },
                 build:function() {
-                    this.elements.body.style.minHeight = "450px";
-                    this.elements.body.style.minWidth = "800px";
+
                 },
                 prepare:function() {
                     this.setContent(this.message);
@@ -38,8 +36,7 @@ function about_show() {
     var content = '';
     $.get("{{ url_for('about.index') }}", 
         function(data) { 
-            alertify.aboutDialog('About {{ config.APP_NAME }}', data);
+            alertify.aboutDialog('About {{ config.APP_NAME }}', data).resizeTo(800, 450);
         }
     );
-    
 }
