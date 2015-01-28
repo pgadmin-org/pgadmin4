@@ -1,1 +1,11 @@
 /* Overrides/fixes for pgAdmin specific styling in Bootstrap */
+
+/* Restyle the Alertify dialogs */
+.alertify .ajs-dialog {
+    border: 0px solid rgba(0,0,0,.2);
+}
+
+.alertify .ajs-header {
+    background-color: #428bca;
+    color: #fff;
+}
