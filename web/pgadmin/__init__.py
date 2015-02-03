@@ -15,7 +15,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
 from flask_security.utils import login_user
 from flask_mail import Mail
-from settings_model import db, Role, User
+from settings.settings_model import db, Role, User
 
 import inspect, imp, logging, os
 

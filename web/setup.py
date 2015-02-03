@@ -14,7 +14,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
-from settings_model import db, Role, User
+from settings.settings_model import db, Role, User
 
 import getpass, os, random, sys, string
 
