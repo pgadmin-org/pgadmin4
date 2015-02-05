@@ -21,7 +21,7 @@ from pgadmin import modules
 import config
 
 # Initialise the module
-blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix='/' + MODULE_NAME)
+blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static', template_folder='templates', url_prefix='/' + MODULE_NAME)
 
 ##########################################################################
 # A test page

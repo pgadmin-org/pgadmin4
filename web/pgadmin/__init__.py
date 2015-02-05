@@ -28,7 +28,7 @@ modules = [ ]
 def create_app(app_name=config.APP_NAME):
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
-    app = Flask(__name__, static_url_path='')
+    app = Flask(__name__, static_url_path='/static')
     app.config.from_object(config)
 
     ##########################################################################
@@ -114,6 +114,9 @@ def create_app(app_name=config.APP_NAME):
             if 'views' in dir(module) and 'blueprint' in dir(module.views):
                 app.logger.info('Registering blueprint module: %s' % f)
                 app.register_blueprint(module.views.blueprint)
+                app.logger.debug('   - root_path:       %s' % module.views.blueprint.root_path)
+                app.logger.debug('   - static_folder:   %s' % module.views.blueprint.static_folder)
+                app.logger.debug('   - template_folder: %s' % module.views.blueprint.template_folder)
 
     ##########################################################################
     # Handle the desktop login
@@ -133,7 +136,7 @@ def create_app(app_name=config.APP_NAME):
                 abort(401)
 
             login_user(user)
-
+    
     ##########################################################################
     # All done!
     ##########################################################################

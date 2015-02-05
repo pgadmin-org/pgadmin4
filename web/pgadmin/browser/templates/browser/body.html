@@ -1,7 +1,85 @@
-<div class="jumbotron">
-  <div class="container">
-    <h1>pgAdmin 4</h1>
-    <p>Welcome to pgAdmin 4.</p>
-    <p><a class="btn btn-primary btn-lg" href="http://www.pgadmin.org/" role="button">Learn more &raquo;</a></p>
-  </div>
+<link rel="stylesheet" href="{{ url_for('.static', filename='css/browser.css') }}" />
+
+<div id="container" class="browser-pane-container">
+
+<div id="browser" class="pane ui-layout-west" class="browser-browser-pane">
+    <p>Browser Pane</p>
 </div>
+
+<div class="pane ui-layout-center browser-inner-pane" id="inner">
+  <div class="pane ui-layout-center browser-center-pane">
+    <ul class="nav nav-tabs browser-tab-bar" role="tablist">
+      <li role="presentation" class="active"><a href="#dashboard" aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
+      <li role="presentation"><a href="#properties" aria-controls="profile" role="tab" data-toggle="tab">Properties</a></li>
+      <li role="presentation"><a href="#statistics" aria-controls="messages" role="tab" data-toggle="tab">Statistics</a></li>
+      <li role="presentation"><a href="#dependencies" aria-controls="settings" role="tab" data-toggle="tab">Dependencies</a></li>
+      <li role="presentation"><a href="#dependents" aria-controls="settings" role="tab" data-toggle="tab">Dependents</a></li>
+    </ul>
+    <div class="tab-content browser-tab-panes">
+      <div role="tabpanel" class="tab-pane browser-tab-pane active" id="dashboard">
+        <iframe class="browser-tab-content" src="http://www.pgadmin.org/" frameborder="0"></iframe>
+      </div>
+      <div role="tabpanel" class="tab-pane browser-tab-pane" id="properties">Properties Pane</div>
+      <div role="tabpanel" class="tab-pane browser-tab-pane" id="statistics">Statistics Pane</div>
+      <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependencies">Dependencies Pane</div>
+      <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependents">Dependents Pane</div>
+    </div>
+  </div>
+  <div class="ui-layout-south">SQL Pane</div>
+</div>
+
+<script language="javascript">
+// create page layout
+$('#container').layout({
+        center: {
+        
+                maskContents:           true
+        },
+        west: {
+                size:		        250,
+                spacing_closed:	        22,
+                togglerLength_closed:   140,
+                togglerAlign_closed:    "top",
+                togglerContent_closed:  'B<br />r<br />o<br />w<br />s<br />e<br />r',
+                togglerTip_closed:      "Open & Pin Browser",
+                sliderTip:	        "Slide Open Browser",
+                slideTrigger_open:      "mouseover",
+
+        }
+});
+$('#inner').layout({
+        south: {
+                size:		        250,
+                spacing_closed:	        22,
+                togglerLength_closed:   140,
+                togglerAlign_closed:    "right",
+                togglerContent_closed:  'SQL Pane',
+                togglerTip_closed:      "Open & Pin SQL Pane",
+                sliderTip:	        "Slide Open SQL Pane",
+                slideTrigger_open:      "mouseover",
+
+        }
+});
+
+$('#dashboard a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#properties a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#statistics a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#dependencies a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#dependents a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+
+</script>
