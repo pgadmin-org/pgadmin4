@@ -1,0 +1,13 @@
+This is a list of the third party libraries/code used in the application, not
+including Python modules installed via Pip which are listed in requirements.txt.
+
+Library           Version     Licence      URL
+=======           =======     =======      ===
+QT                4.6.2+      LGPL v2.1/3  http://www.qt.io/ 
+Bootstrap         3.3.1       MIT          http://getbootstrap.com/
+jQuery            1.11.1      MIT          http://jquery.com/
+Modernizr         2.6.2       MIT/BSD      http://modernizr.com/
+AlertifyJS        1.1.0       MIT          http://alertifyjs.com/
+jQuery-UI         1.11.2      MIT          http://jqueryui.com/
+jQuery-Layout     1.4.3       MIT/GPL      http://layout.jquery-dev.com/
+       
