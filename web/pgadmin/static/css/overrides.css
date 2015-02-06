@@ -1,4 +1,4 @@
-/* Overrides/fixes for pgAdmin specific styling in Bootstrap */
+/* Overrides/fixes for pgAdmin specific styling */
 
 /* Use the full width of the screen */
 .container {
@@ -13,4 +13,9 @@
 .alertify .ajs-header {
     background-color: #428bca;
     color: #fff;
+}
+
+/* iFrames should have no border */
+iframe {
+    border-width: 0;
 }

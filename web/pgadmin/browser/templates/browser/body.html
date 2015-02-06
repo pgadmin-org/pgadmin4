@@ -2,33 +2,35 @@
 
 <div id="container" class="browser-pane-container">
 
-<div id="browser" class="pane ui-layout-west" class="browser-browser-pane">
+  <div id="browser" class="pane ui-layout-west browser-browser-pane">
     <p>Browser Pane</p>
-</div>
-
-<div class="pane ui-layout-center browser-inner-pane" id="inner">
-  <div class="pane ui-layout-center browser-center-pane">
-    <ul class="nav nav-tabs browser-tab-bar" role="tablist">
-      <li role="presentation" class="active"><a href="#dashboard" aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
-      <li role="presentation"><a href="#properties" aria-controls="profile" role="tab" data-toggle="tab">Properties</a></li>
-      <li role="presentation"><a href="#statistics" aria-controls="messages" role="tab" data-toggle="tab">Statistics</a></li>
-      <li role="presentation"><a href="#dependencies" aria-controls="settings" role="tab" data-toggle="tab">Dependencies</a></li>
-      <li role="presentation"><a href="#dependents" aria-controls="settings" role="tab" data-toggle="tab">Dependents</a></li>
-    </ul>
-    <div class="tab-content browser-tab-panes">
-      <div role="tabpanel" class="tab-pane browser-tab-pane active" id="dashboard">
-        <iframe class="browser-tab-content" src="http://www.pgadmin.org/" frameborder="0"></iframe>
-      </div>
-      <div role="tabpanel" class="tab-pane browser-tab-pane" id="properties">Properties Pane</div>
-      <div role="tabpanel" class="tab-pane browser-tab-pane" id="statistics">Statistics Pane</div>
-      <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependencies">Dependencies Pane</div>
-      <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependents">Dependents Pane</div>
-    </div>
   </div>
-  <div class="ui-layout-south">SQL Pane</div>
+
+  <div class="pane ui-layout-center browser-inner-pane" id="inner">
+    <div class="pane ui-layout-center browser-center-pane">
+      <ul class="nav nav-tabs browser-tab-bar" role="tablist">
+        <li role="presentation" class="active"><a href="#dashboard" aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
+        <li role="presentation"><a href="#properties" aria-controls="profile" role="tab" data-toggle="tab">Properties</a></li>
+        <li role="presentation"><a href="#statistics" aria-controls="messages" role="tab" data-toggle="tab">Statistics</a></li>
+        <li role="presentation"><a href="#dependencies" aria-controls="settings" role="tab" data-toggle="tab">Dependencies</a></li>
+        <li role="presentation"><a href="#dependents" aria-controls="settings" role="tab" data-toggle="tab">Dependents</a></li>
+      </ul>
+      <div class="tab-content browser-tab-panes">
+        <div role="tabpanel" class="tab-pane browser-tab-pane active" id="dashboard">
+          <iframe class="browser-tab-content" src="http://www.pgadmin.org/"></iframe>
+        </div>
+        <div role="tabpanel" class="tab-pane browser-tab-pane" id="properties">Properties Pane</div>
+        <div role="tabpanel" class="tab-pane browser-tab-pane" id="statistics">Statistics Pane</div>
+        <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependencies">Dependencies Pane</div>
+        <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependents">Dependents Pane</div>
+      </div>
+    </div>
+    <div class="ui-layout-south">SQL Pane</div>
+  </div>
+
 </div>
 
-<script language="javascript">
+<script>
 // create page layout
 $('#container').layout({
         center: {
@@ -83,3 +85,4 @@ $('#dependents a').click(function (e) {
 })
 
 </script>
+
