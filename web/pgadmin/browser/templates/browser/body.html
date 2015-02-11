@@ -34,12 +34,19 @@
 
 function storeLayout(pane, $pane, paneState, paneOptions) {
     state = layout.readState();
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Size", value: state.center.children.layout1.south.size });
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Hidden", value: state.center.children.layout1.south.initHidden });
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Closed", value: state.center.children.layout1.south.initClosed });
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Size", value: state.west.size });
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Hidden", value: state.west.initHidden });
-    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Closed", value: state.west.initClosed });
+    settings = { setting1: "Browser/SQLPane/Size", 
+                 value1: state.center.children.layout1.south.size, 
+                 setting2: "Browser/SQLPane/Closed", 
+                 value2: state.center.children.layout1.south.initClosed,
+                 setting3: "Browser/BrowserPane/Size", 
+                 value3: state.west.size,
+                 setting4: "Browser/BrowserPane/Closed", 
+                 value4: state.west.initClosed,
+                 count: 4
+               }
+    
+    $.post("{{ url_for('settings.store') }}", settings);
+
     return true
 }
 
@@ -62,12 +69,10 @@ function getSetting(setting, defval) {
 }
 
 // Get the previous settings
-var sqlPaneSize = getSetting("Browser/SQL-Pane/Size", "250")
-var sqlPaneHidden = (getSetting("Browser/SQL-Pane/Hidden", "false") == "true" ? true : false)
-var sqlPaneClosed = (getSetting("Browser/SQL-Pane/Closed", "false") == "true" ? true : false)
-var browserPaneSize = getSetting("Browser/Browser-Pane/Size", "250")
-var browserPaneHidden = (getSetting("Browser/Browser-Pane/Hidden", "false") == "true" ? true : false)
-var browserPaneClosed = (getSetting("Browser/Browser-Pane/Closed", "false") == "true" ? true : false)
+var sqlPaneSize = getSetting("Browser/SQLPane/Size", "250")
+var sqlPaneClosed = (getSetting("Browser/SQLPane/Closed", "false") == "true" ? true : false)
+var browserPaneSize = getSetting("Browser/BrowserPane/Size", "250")
+var browserPaneClosed = (getSetting("Browser/BrowserPane/Closed", "false") == "true" ? true : false)
 
 var layout        
 var layoutDefault = {
@@ -80,7 +85,6 @@ var layoutDefault = {
         center__onresize:               "storeLayout",
         south__maskContents:            true,
         south__size:		        sqlPaneSize,
-        south__initHidden:              sqlPaneHidden,
         south__initClosed:              sqlPaneClosed,
         south__spacing_closed:	        22,
         south__togglerLength_closed:    140,
@@ -92,7 +96,6 @@ var layoutDefault = {
     }],
     west__maskContents:             true,
     west__size:		            browserPaneSize,
-    west__initHidden:               browserPaneHidden,
     west__initClosed:               browserPaneClosed,
     west__spacing_closed:	    22,
     west__togglerLength_closed:     140,

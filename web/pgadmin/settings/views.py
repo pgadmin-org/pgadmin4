@@ -23,12 +23,16 @@ blueprint = Blueprint(MODULE_NAME, __name__, url_prefix='/' + MODULE_NAME)
 @blueprint.route("/store/<setting>/<value>", methods=['GET'])
 @login_required
 def store(setting=None, value=None):
-    """Store a configuration setting."""
+    """Store a configuration setting, or if this is a POST request and a  
+    count value is present, store multiple settings at once."""
     if request.method == 'POST':
-        setting = request.form['setting']
-        value = request.form['value']
-        
-    store_setting(setting, value)
+        if 'count' in request.form:
+            for x in range(int(request.form['count'])):
+                store_setting(request.form['setting%d' % (x+1)], request.form['value%d' % (x+1)])
+        else:
+            store_setting(request.form['setting'], request.form['value'])
+    else:
+        store_setting(setting, value)
     
     return ''
 
