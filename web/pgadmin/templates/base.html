@@ -42,7 +42,9 @@
         <script src="{{ url_for('static', filename='js/vendor/jquery-ui/jquery-ui.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/vendor/jquery-layout/jquery.layout.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/vendor/jquery-layout/plugins/jquery.layout.state.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script>
+{% include "js/settings.js" %}
+        </script>
         
         <script>
             alertify.defaults.transition = "zoom";

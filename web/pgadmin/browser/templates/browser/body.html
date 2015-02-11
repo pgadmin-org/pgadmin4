@@ -50,29 +50,11 @@ function storeLayout(pane, $pane, paneState, paneOptions) {
     return true
 }
 
-function getSetting(setting, defval) {
-    var value
-    $.ajaxSetup({
-        async: false
-    });
-
-    $.post("{{ url_for('settings.get') }}", { setting: setting, default: defval })
-        .done(function(data) {
-            value = data
-        }); 
-        
-    $.ajaxSetup({
-        async: true
-    });
-    
-    return value
-}
-
 // Get the previous settings
-var sqlPaneSize = getSetting("Browser/SQLPane/Size", "250")
-var sqlPaneClosed = (getSetting("Browser/SQLPane/Closed", "false") == "true" ? true : false)
-var browserPaneSize = getSetting("Browser/BrowserPane/Size", "250")
-var browserPaneClosed = (getSetting("Browser/BrowserPane/Closed", "false") == "true" ? true : false)
+var sqlPaneSize = getIntegerSetting("Browser/SQLPane/Size", 250)
+var sqlPaneClosed = getBooleanSetting("Browser/SQLPane/Closed", false)
+var browserPaneSize = getIntegerSetting("Browser/BrowserPane/Size", 250)
+var browserPaneClosed = getBooleanSetting("Browser/BrowserPane/Closed", false)
 
 var layout        
 var layoutDefault = {
