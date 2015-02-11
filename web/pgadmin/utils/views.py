@@ -13,7 +13,6 @@ MODULE_NAME = 'utils'
 import config
 from flask import Blueprint, render_template
 from flask.ext.security import login_required
-from time import time, ctime
 
 # Initialise the module
 blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static', template_folder='templates', url_prefix='/' + MODULE_NAME)

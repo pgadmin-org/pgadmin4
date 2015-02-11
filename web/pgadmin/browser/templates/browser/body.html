@@ -2,12 +2,12 @@
 
 <div id="container" class="browser-pane-container">
 
-  <div id="browser" class="pane ui-layout-west browser-browser-pane">
+  <div class="pane ui-layout-west browser-browser-pane">
     <p>Browser Pane</p>
   </div>
 
-  <div class="pane ui-layout-center browser-inner-pane" id="inner">
-    <div class="pane ui-layout-center browser-center-pane">
+  <div class="pane ui-layout-center browser-inner-pane" id="outer-center">
+    <div class="pane ui-layout-center browser-center-pane" id="inner-center">
       <ul class="nav nav-tabs browser-tab-bar" role="tablist">
         <li role="presentation" class="active"><a href="#dashboard" aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
         <li role="presentation"><a href="#properties" aria-controls="profile" role="tab" data-toggle="tab">Properties</a></li>
@@ -31,38 +31,82 @@
 </div>
 
 <script>
-// create page layout
-$('#container').layout({
-        center: {
+
+function storeLayout(pane, $pane, paneState, paneOptions) {
+    state = layout.readState();
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Size", value: state.center.children.layout1.south.size });
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Hidden", value: state.center.children.layout1.south.initHidden });
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/SQL-Pane/Closed", value: state.center.children.layout1.south.initClosed });
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Size", value: state.west.size });
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Hidden", value: state.west.initHidden });
+    $.post("{{ url_for('settings.store') }}", { setting: "Browser/Browser-Pane/Closed", value: state.west.initClosed });
+    return true
+}
+
+function getSetting(setting, defval) {
+    var value
+    $.ajaxSetup({
+        async: false
+    });
+
+    $.post("{{ url_for('settings.get') }}", { setting: setting, default: defval })
+        .done(function(data) {
+            value = data
+        }); 
         
-                maskContents:           true
-        },
-        west: {
-                size:		        250,
-                spacing_closed:	        22,
-                togglerLength_closed:   140,
-                togglerAlign_closed:    "top",
-                togglerContent_closed:  'B<br />r<br />o<br />w<br />s<br />e<br />r',
-                togglerTip_closed:      "Open & Pin Browser",
-                sliderTip:	        "Slide Open Browser",
-                slideTrigger_open:      "mouseover",
+    $.ajaxSetup({
+        async: true
+    });
+    
+    return value
+}
 
-        }
-});
-$('#inner').layout({
-        south: {
-                size:		        250,
-                spacing_closed:	        22,
-                togglerLength_closed:   140,
-                togglerAlign_closed:    "right",
-                togglerContent_closed:  'SQL Pane',
-                togglerTip_closed:      "Open & Pin SQL Pane",
-                sliderTip:	        "Slide Open SQL Pane",
-                slideTrigger_open:      "mouseover",
+// Get the previous settings
+var sqlPaneSize = getSetting("Browser/SQL-Pane/Size", "250")
+var sqlPaneHidden = (getSetting("Browser/SQL-Pane/Hidden", "false") == "true" ? true : false)
+var sqlPaneClosed = (getSetting("Browser/SQL-Pane/Closed", "false") == "true" ? true : false)
+var browserPaneSize = getSetting("Browser/Browser-Pane/Size", "250")
+var browserPaneHidden = (getSetting("Browser/Browser-Pane/Hidden", "false") == "true" ? true : false)
+var browserPaneClosed = (getSetting("Browser/Browser-Pane/Closed", "false") == "true" ? true : false)
 
-        }
-});
+var layout        
+var layoutDefault = {
+    center__maskContents:           true,
+    center__paneSelector:           "#outer-center",
+    center__maskContents:           true,
+    center__children:               [{
+        center__paneSelector:           "#inner-center",
+        center__maskContents:           true,
+        center__onresize:               "storeLayout",
+        south__maskContents:            true,
+        south__size:		        sqlPaneSize,
+        south__initHidden:              sqlPaneHidden,
+        south__initClosed:              sqlPaneClosed,
+        south__spacing_closed:	        22,
+        south__togglerLength_closed:    140,
+        south__togglerAlign_closed:     "right",
+        south__togglerContent_closed:   'SQL Pane',
+        south__togglerTip_closed:       "Open & Pin SQL Pane",
+        south__sliderTip:	        "Slide Open SQL Pane",
+        south__slideTrigger_open:       "mouseover",
+    }],
+    west__maskContents:             true,
+    west__size:		            browserPaneSize,
+    west__initHidden:               browserPaneHidden,
+    west__initClosed:               browserPaneClosed,
+    west__spacing_closed:	    22,
+    west__togglerLength_closed:     140,
+    west__togglerAlign_closed:      "top",
+    west__togglerContent_closed:    'B<br />r<br />o<br />w<br />s<br />e<br />r',
+    west__togglerTip_closed:        "Open & Pin Browser",
+    west__sliderTip:	            "Slide Open Browser",
+    west__slideTrigger_open:        "mouseover",
+};
 
+layout = $('#container').layout(layoutDefault);
+
+
+// Make the tabs, umm, tabable
 $('#dashboard a').click(function (e) {
   e.preventDefault()
   $(this).tab('show')

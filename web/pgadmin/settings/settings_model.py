@@ -43,7 +43,5 @@ class Setting(db.Model):
     __tablename__ = 'setting'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     setting = db.Column(db.String(255), primary_key=True)
-    boolean_value = db.Column(db.Boolean())
-    integer_value = db.Column(db.Integer())
-    string_value = db.Column(db.String(1024))
+    value = db.Column(db.String(1024))
     
