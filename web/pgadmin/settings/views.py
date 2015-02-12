@@ -17,7 +17,7 @@ from flask.ext.security import login_required
 from . import get_setting, store_setting
 
 # Initialise the module
-blueprint = Blueprint(MODULE_NAME, __name__, url_prefix='/' + MODULE_NAME)
+blueprint = Blueprint(MODULE_NAME, __name__, template_folder='templates', url_prefix='/' + MODULE_NAME)
 
 @blueprint.route("/store", methods=['POST'])
 @blueprint.route("/store/<setting>/<value>", methods=['GET'])

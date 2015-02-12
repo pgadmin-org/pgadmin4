@@ -42,9 +42,6 @@
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/jquery-ui/jquery-ui.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/jquery-ui/jquery-ui.min.js') }}">{% endif %}</script>
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/jquery-layout/jquery.layout.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/jquery-layout/jquery.layout.min.js') }}">{% endif %}</script>
         <script src="{{ url_for('static', filename='js/vendor/jquery-layout/plugins/jquery.layout.state.js') }}"></script>
-        <script>
-{% include "js/settings.js" %}
-        </script>
         
         <script>
             alertify.defaults.transition = "zoom";
