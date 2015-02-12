@@ -50,12 +50,6 @@ function storeLayout(pane, $pane, paneState, paneOptions) {
     return true
 }
 
-// Get the previous settings
-var sqlPaneSize = getIntegerSetting("Browser/SQLPane/Size", 250)
-var sqlPaneClosed = getBooleanSetting("Browser/SQLPane/Closed", false)
-var browserPaneSize = getIntegerSetting("Browser/BrowserPane/Size", 250)
-var browserPaneClosed = getBooleanSetting("Browser/BrowserPane/Closed", false)
-
 var layout        
 var layoutDefault = {
     center__maskContents:           true,
@@ -66,8 +60,8 @@ var layoutDefault = {
         center__maskContents:           true,
         center__onresize:               "storeLayout",
         south__maskContents:            true,
-        south__size:		        sqlPaneSize,
-        south__initClosed:              sqlPaneClosed,
+        south__size:		        {{ layout_settings.sql_size }},
+        south__initClosed:              {{ layout_settings.sql_closed }},
         south__spacing_closed:	        22,
         south__togglerLength_closed:    140,
         south__togglerAlign_closed:     "right",
@@ -77,8 +71,8 @@ var layoutDefault = {
         south__slideTrigger_open:       "mouseover",
     }],
     west__maskContents:             true,
-    west__size:		            browserPaneSize,
-    west__initClosed:               browserPaneClosed,
+    west__size:		            {{ layout_settings.browser_size }},
+    west__initClosed:               {{ layout_settings.browser_closed }},
     west__spacing_closed:	    22,
     west__togglerLength_closed:     140,
     west__togglerAlign_closed:      "top",

@@ -17,6 +17,7 @@ from flask.ext.login import current_user
 from inspect import getmoduleinfo, getmembers
 
 from pgadmin import modules
+from pgadmin.settings import get_setting
 
 import config
 
@@ -72,11 +73,18 @@ def index():
     tools_items = sorted(tools_items, key=lambda k: k['priority'])
     help_items = sorted(help_items, key=lambda k: k['priority'])
     
-    # Get any Javascript snippets
+    # Get the layout settings
+    layout_settings = {}
+    layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
+    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default=False)
+    layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
+    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default=False)
+    
     return render_template(MODULE_NAME + '/index.html', 
                            username=current_user.email, 
                            file_items=file_items, 
                            edit_items=edit_items, 
                            tools_items=tools_items, 
                            help_items=help_items,
-                           js_code = js_code)
+                           js_code = js_code,
+                           layout_settings = layout_settings)
