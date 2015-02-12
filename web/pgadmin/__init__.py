@@ -15,6 +15,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
 from flask_security.utils import login_user
 from flask_mail import Mail
+from htmlmin.minify import html_minify
 from settings.settings_model import db, Role, User
 
 import inspect, imp, logging, os
@@ -136,7 +137,21 @@ def create_app(app_name=config.APP_NAME):
                 abort(401)
 
             login_user(user)
-    
+
+    ##########################################################################
+    # Minify output
+    ##########################################################################    
+    @app.after_request
+    def response_minify(response):
+        """Minify html response to decrease traffic"""
+        if config.MINIFY_HTML and not config.DEBUG:
+            if response.content_type == u'text/html; charset=utf-8':
+                response.set_data(
+                    html_minify(response.get_data(as_text=True))
+                )
+
+        return response
+
     ##########################################################################
     # All done!
     ##########################################################################

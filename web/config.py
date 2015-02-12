@@ -101,6 +101,9 @@ SECURITY_PASSWORD_SALT = 'SuperSecret3'
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 
+# Should HTML be minified on the fly when not in debug mode?
+MINIFY_HTML = True;
+
 ##########################################################################
 # User account and settings storage
 ##########################################################################

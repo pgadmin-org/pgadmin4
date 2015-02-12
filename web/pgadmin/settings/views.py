@@ -11,7 +11,7 @@
 MODULE_NAME = 'settings'
 
 import config
-from flask import Blueprint, abort, request
+from flask import Blueprint, Response, abort, request
 from flask.ext.security import login_required
 
 from . import get_setting, store_setting
@@ -51,4 +51,8 @@ def get(setting=None, default=None):
     except:
         return ''
     
-    return value
+    resp = Response(response=value,
+                    status=200,
+                    mimetype="text/plain")
+    
+    return resp
