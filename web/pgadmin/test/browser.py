@@ -22,7 +22,6 @@ def get_file_menu_items():
             {'name': 'Test Notifier', 'priority': 600, 'url': '#', 'onclick': 'test_notifier()'},
            ]
     
-def get_javascript_code():
-    """Render from the template and return any Javascript code snippets required
-    in the browser"""
-    return render_template("test/browser.js")
+def get_scripts():
+    """Return a list of script URLs to include in the rendered page header"""
+    return [ url_for('test.static', filename='js/test.js') ]

@@ -10,7 +10,7 @@
 """A blueprint module implementing the core pgAdmin browser."""
 MODULE_NAME = 'browser'
 
-from flask import Blueprint, current_app, render_template
+from flask import Blueprint, current_app, render_template, url_for
 from flaskext.gravatar import Gravatar
 from flask.ext.security import login_required
 from flask.ext.login import current_user
@@ -45,7 +45,19 @@ def index():
     edit_items = [ ]
     tools_items = [ ]
     help_items = [ ]
-    js_code = ''
+    stylesheets = [ ]
+    scripts = [ ]
+        
+    # Add browser stylesheets
+    stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
+    stylesheets.append(url_for('browser.static', filename='css/browser.css'))
+    stylesheets.append(url_for('browser.static', filename='css/aciTree/css/aciTree.css'))
+    
+    # Add browser scripts
+    scripts.append(url_for('static', filename='js/codemirror/codemirror.js'))
+    scripts.append(url_for('static', filename='js/codemirror/mode/sql.js'))
+    scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciPlugin.min.js'))
+    scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.min.js'))
     
     for module in modules:
         # Get the edit menu items
@@ -63,10 +75,14 @@ def index():
         # Get the help menu items
         if 'browser' in dir(module) and 'get_help_menu_items' in dir(module.browser):
             help_items.extend(module.browser.get_help_menu_items())
-            
-        # Get any Javascript code
-        if 'browser' in dir(module) and 'get_javascript_code' in dir(module.browser):
-            js_code += (module.browser.get_javascript_code())
+        
+        # Get any stylesheets
+        if 'browser' in dir(module) and 'get_stylesheets' in dir(module.browser):
+            stylesheets += module.browser.get_stylesheets()
+                    
+        # Get any scripts
+        if 'browser' in dir(module) and 'get_scripts' in dir(module.browser):
+            scripts += module.browser.get_scripts()
 
     file_items = sorted(file_items, key=lambda k: k['priority'])
     edit_items = sorted(edit_items, key=lambda k: k['priority'])
@@ -74,7 +90,7 @@ def index():
     help_items = sorted(help_items, key=lambda k: k['priority'])
     
     # Get the layout settings
-    layout_settings = {}
+    layout_settings = { }
     layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
     layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
     layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
@@ -86,5 +102,6 @@ def index():
                            edit_items=edit_items, 
                            tools_items=tools_items, 
                            help_items=help_items,
-                           js_code = js_code,
+                           stylesheets = stylesheets,
+                           scripts = scripts,
                            layout_settings = layout_settings)
