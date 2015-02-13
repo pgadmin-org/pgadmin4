@@ -11,7 +11,7 @@
 MODULE_NAME = 'settings'
 
 import config
-from flask import Blueprint, Response, abort, request
+from flask import Blueprint, Response, abort, request, render_template
 from flask.ext.security import login_required
 
 from . import get_setting, store_setting
@@ -19,6 +19,14 @@ from . import get_setting, store_setting
 # Initialise the module
 blueprint = Blueprint(MODULE_NAME, __name__, template_folder='templates', url_prefix='/' + MODULE_NAME)
 
+@blueprint.route("/settings.js")
+@login_required
+def script():
+    """Render the required Javascript"""
+    return Response(response=render_template("settings/settings.js"),
+                    status=200,
+                    mimetype="application/javascript")
+    
 @blueprint.route("/store", methods=['POST'])
 @blueprint.route("/store/<setting>/<value>", methods=['GET'])
 @login_required

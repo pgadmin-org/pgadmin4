@@ -9,9 +9,8 @@
 
 """Browser integration functions for settings."""
 
-from flask import render_template
+from flask import url_for
     
-def get_javascript_code():
-    """Render from the template and return any Javascript code snippets required
-    in the browser"""
-    return render_template("settings/browser.js")
+def get_scripts():
+    """Return a list of script URLs to include in the rendered page header"""
+    return [ url_for('settings.script') ]

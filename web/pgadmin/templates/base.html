@@ -25,8 +25,7 @@
         {% if stylesheets is defined %}
         <!-- View specified stylesheets -->
         {% for stylesheet in stylesheets %}
-        <link rel="stylesheet" href="{{ stylesheet }}">
-        {% endfor %}
+        <link rel="stylesheet" href="{{ stylesheet }}">{% endfor %}
         {% endif %}
         
         <!-- Base template scripts -->
@@ -41,8 +40,7 @@
         {% if scripts is defined %}
         <!-- View specified scripts -->
         {% for script in scripts %}
-        <script src="{{ script }}"></script>
-        {% endfor %}
+        <script src="{{ script }}"></script>{% endfor %}
         {% endif %}
     </head>
     <body>

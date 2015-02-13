@@ -19,37 +19,29 @@
 
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-          {% for file_item in file_items %}
-            <li><a href="{{ file_item.url }}" onclick="{{ file_item.onclick|safe }}">{{ file_item.name }}</a></li>
-          {% endfor %}
+          <ul class="dropdown-menu" role="menu">{% for file_item in file_items %}
+            <li><a href="{{ file_item.url }}" onclick="{{ file_item.onclick|safe }}">{{ file_item.name }}</a></li>{% endfor %}
           </ul>
         </li>
 
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-          {% for edit_item in edit_items %}
-            <li><a href="{{ edit_item.url }}" onclick="{{ edit_item.onclick|safe }}">{{ edit_item.name }}</a></li>
-          {% endfor %}
+          <ul class="dropdown-menu" role="menu">{% for edit_item in edit_items %}
+            <li><a href="{{ edit_item.url }}" onclick="{{ edit_item.onclick|safe }}">{{ edit_item.name }}</a></li>{% endfor %}
           </ul>
         </li>
         
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Tools <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-          {% for tools_item in tools_items %}
-            <li><a href="{{ tools_item.url }}" onclick="{{ tools_item.onclick|safe }}">{{ tools_item.name }}</a></li>
-          {% endfor %}
+          <ul class="dropdown-menu" role="menu">{% for tools_item in tools_items %}
+            <li><a href="{{ tools_item.url }}" onclick="{{ tools_item.onclick|safe }}">{{ tools_item.name }}</a></li>{% endfor %}
           </ul>
         </li>
         
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-          {% for help_item in help_items %}
-            <li><a href="{{ help_item.url }}" onclick="{{ help_item.onclick|safe }}">{{ help_item.name }}</a></li>
-          {% endfor %}
+          <ul class="dropdown-menu" role="menu">{% for help_item in help_items %}
+            <li><a href="{{ help_item.url }}" onclick="{{ help_item.onclick|safe }}">{{ help_item.name }}</a></li>{% endfor %}
           </ul>
         </li>
 

@@ -22,3 +22,8 @@ blueprint = Blueprint(MODULE_NAME, __name__)
 def index():
     """Redirect users hitting the root to the browser"""
     return redirect(url_for('browser.index'))
+
+@blueprint.route('/favicon.ico')
+def favicon():
+    """Redirect to the favicon"""
+    return redirect(url_for('static', filename='favicon.ico'))

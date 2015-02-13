@@ -10,7 +10,7 @@
 """A blueprint module implementing the about box."""
 MODULE_NAME = 'about'
 
-from flask import Blueprint, current_app, render_template, __version__
+from flask import Blueprint, Response, current_app, render_template, __version__
 from flask.ext.security import current_user, login_required
 
 import sys
@@ -37,3 +37,11 @@ def index():
     info['current_user'] = current_user.email
     
     return render_template(MODULE_NAME + '/index.html', info=info)
+    
+@blueprint.route("/about.js")
+@login_required
+def script():
+    """Render the required Javascript"""
+    return Response(response=render_template("about/about.js"),
+                    status=200,
+                    mimetype="application/javascript")

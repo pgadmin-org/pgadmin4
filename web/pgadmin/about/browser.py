@@ -20,8 +20,7 @@ def get_help_menu_items():
              'priority': 999, 
              'url': "#", 
              'onclick': "about_show()"}]
-    
-def get_javascript_code():
-    """Render from the template and return any Javascript code snippets required
-    in the browser"""
-    return render_template("about/browser.js")
+
+def get_scripts():
+    """Return a list of script URLs to include in the rendered page header"""
+    return [ url_for('about.script') ]
