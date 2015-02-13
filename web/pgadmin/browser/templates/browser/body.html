@@ -2,11 +2,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/codemirror/codemirror.css') }}" />
 <script src="{{ url_for('static', filename='js/vendor/codemirror/codemirror.js') }}"></script>
 <script src="{{ url_for('static', filename='js/vendor/codemirror/mode/sql.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('.static', filename='css/aciTree/css/aciTree.css') }}" />
+<script src="{{ url_for('.static', filename='js/aciTree/jquery.aciPlugin.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/aciTree/jquery.aciTree.min.js') }}"></script>
+
 
 <div id="container" class="browser-pane-container">
 
   <div class="pane ui-layout-west browser-browser-pane">
-    <p>Browser Pane</p>
+    <div id="tree" class="aciTree">
+    </div>
   </div>
 
   <div class="pane ui-layout-center browser-inner-pane" id="outer-center">
@@ -160,6 +165,13 @@ var editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
   lineNumbers: true,
   mode: "text/x-sql",
   readOnly: true,
+});
+
+// Initialise the treeview
+$('#tree').aciTree({
+        ajax: {
+            url: '/static/tree.json'
+        }
 });
 
 </script>

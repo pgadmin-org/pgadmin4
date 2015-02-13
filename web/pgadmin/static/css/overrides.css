@@ -19,3 +19,8 @@
 iframe {
     border-width: 0;
 }
+
+/* Ensure the codemirror editor displays full height gutters when resized */
+.CodeMirror, .CodeMirror-gutters {
+    height: 100% !important; 
+} 

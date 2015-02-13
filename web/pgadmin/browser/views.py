@@ -76,9 +76,9 @@ def index():
     # Get the layout settings
     layout_settings = {}
     layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
-    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default=False)
+    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
     layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
-    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default=False)
+    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default="false")
     
     return render_template(MODULE_NAME + '/index.html', 
                            username=current_user.email, 

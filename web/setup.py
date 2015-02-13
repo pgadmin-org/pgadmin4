@@ -14,7 +14,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
-from pgadmin.settings.settings_model import db, Role, User
+from pgadmin.settings.settings_model import db, Role, User, ServerGroup
 
 import getpass, os, random, sys, string
 
@@ -75,6 +75,12 @@ with app.app_context():
     user_datastore.create_role(name='Administrators', description='pgAdmin Administrators Role')
     user_datastore.create_user(email=email, password=password)
     user_datastore.add_role_to_user(email, 'Administrators')
+    
+    # Get the user's ID and create the default server group
+    user = User.query.filter_by(email=email).first()
+    server_group = ServerGroup(user_id=user.id, name="Servers")
+    db.session.merge(server_group)
+    
     db.session.commit()
 
 # Done!
