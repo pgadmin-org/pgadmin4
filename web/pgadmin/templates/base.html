@@ -28,19 +28,19 @@
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
-        <script src="{{ url_for('static', filename='js/vendor/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/jquery-1.11.2.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/jquery-1.11.2.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/bootstrap.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/bootstrap.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/alertifyjs/alertify.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/alertifyjs/alertify.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/jquery-ui/jquery-ui.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/jquery-ui/jquery-ui.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/vendor/jquery-layout/jquery.layout.js') }}">{% else %}<script src="{{ url_for('static', filename='js/vendor/jquery-layout/jquery.layout.min.js') }}">{% endif %}</script>
-        <script src="{{ url_for('static', filename='js/vendor/jquery-layout/plugins/jquery.layout.state.js') }}"></script>
+        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}">{% endif %}</script>
+        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/bootstrap.js') }}">{% else %}<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">{% endif %}</script>
+        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.js') }}">{% else %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.min.js') }}">{% endif %}</script>
+        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-ui/jquery-ui.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-ui/jquery-ui.min.js') }}">{% endif %}</script>
+        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-layout/jquery.layout.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-layout/jquery.layout.min.js') }}">{% endif %}</script>
+        <script src="{{ url_for('static', filename='js/jquery-layout/plugins/jquery.layout.state.js') }}"></script>
         
         <script>
             alertify.defaults.transition = "zoom";
