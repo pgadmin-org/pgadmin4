@@ -24,3 +24,12 @@ iframe {
 .CodeMirror, .CodeMirror-gutters {
     height: 100% !important; 
 } 
+
+/* Padding for the treeview */
+.browser-browser-pane {
+    padding-left: 0;
+}
+
+.icon-servers {
+    background: url('/static/servers.png') 0 0 no-repeat !important;
+}
