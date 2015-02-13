@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="{{ url_for('.static', filename='css/browser.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/codemirror/codemirror.css') }}" />
+<script src="{{ url_for('static', filename='js/vendor/codemirror/codemirror.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vendor/codemirror/mode/sql.js') }}"></script>
 
 <div id="container" class="browser-pane-container">
 
@@ -25,7 +28,52 @@
         <div role="tabpanel" class="tab-pane browser-tab-pane" id="dependents">Dependents Pane</div>
       </div>
     </div>
-    <div class="ui-layout-south">SQL Pane</div>
+    <div class="ui-layout-south" style="padding: 0;">
+        <textarea id="sql-textarea" name="sql-textarea">-- Table: tickets_detail
+
+-- DROP TABLE tickets_detail;
+
+CREATE TABLE tickets_detail
+(
+  id serial NOT NULL,
+  ticket_id integer NOT NULL,
+  logger_id integer NOT NULL,
+  added timestamp with time zone NOT NULL,
+  detail text NOT NULL,
+  msgid character varying(100),
+  CONSTRAINT tickets_detail_pkey PRIMARY KEY (id),
+  CONSTRAINT ticket_id_refs_id_6b8dc130 FOREIGN KEY (ticket_id)
+      REFERENCES tickets_ticket (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED,
+  CONSTRAINT tickets_detail_logger_id_fkey FOREIGN KEY (logger_id)
+      REFERENCES auth_user (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE tickets_detail
+  OWNER TO helpdesk;
+
+-- Index: tickets_detail_logger_id
+
+-- DROP INDEX tickets_detail_logger_id;
+
+CREATE INDEX tickets_detail_logger_id
+  ON tickets_detail
+  USING btree
+  (logger_id);
+
+-- Index: tickets_detail_ticket_id
+
+-- DROP INDEX tickets_detail_ticket_id;
+
+CREATE INDEX tickets_detail_ticket_id
+  ON tickets_detail
+  USING btree
+  (ticket_id);
+</textarea>
+    </div>
   </div>
 
 </div>
@@ -87,25 +135,32 @@ layout = $('#container').layout(layoutDefault);
 
 // Make the tabs, umm, tabable
 $('#dashboard a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
+    e.preventDefault()
+    $(this).tab('show')
 })
 $('#properties a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
+    e.preventDefault()
+    $(this).tab('show')
 })
 $('#statistics a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
+    e.preventDefault()
+    $(this).tab('show')
 })
 $('#dependencies a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
+    e.preventDefault()
+    $(this).tab('show')
 })
 $('#dependents a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
+    e.preventDefault()
+    $(this).tab('show')
 })
+
+// Syntax highlight the SQL Pane
+var editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
+  lineNumbers: true,
+  mode: "text/x-sql",
+  readOnly: true,
+});
 
 </script>
 
