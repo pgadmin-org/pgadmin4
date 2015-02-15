@@ -10,12 +10,13 @@
 """A blueprint module implementing the core pgAdmin browser."""
 MODULE_NAME = 'browser'
 
-from flask import Blueprint, current_app, render_template, url_for
+from flask import Blueprint, Response, current_app, render_template, url_for
 from flaskext.gravatar import Gravatar
 from flask.ext.security import login_required
 from flask.ext.login import current_user
 from inspect import getmoduleinfo, getmembers
 
+from . import nodes
 from pgadmin import modules
 from pgadmin.settings import get_setting
 
@@ -24,9 +25,6 @@ import config
 # Initialise the module
 blueprint = Blueprint(MODULE_NAME, __name__, static_folder='static', template_folder='templates', url_prefix='/' + MODULE_NAME)
 
-##########################################################################
-# A test page
-##########################################################################
 @blueprint.route("/")
 @login_required
 def index():
@@ -47,42 +45,48 @@ def index():
     help_items = [ ]
     stylesheets = [ ]
     scripts = [ ]
+
+    modules_and_nodes = modules + nodes
         
     # Add browser stylesheets
     stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
     stylesheets.append(url_for('browser.static', filename='css/browser.css'))
     stylesheets.append(url_for('browser.static', filename='css/aciTree/css/aciTree.css'))
+    stylesheets.append(url_for('browser.browser_css'))
     
     # Add browser scripts
     scripts.append(url_for('static', filename='js/codemirror/codemirror.js'))
     scripts.append(url_for('static', filename='js/codemirror/mode/sql.js'))
+    scripts.append(url_for('browser.static', filename='js/utils.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciPlugin.min.js'))
+    scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.dom.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.min.js'))
+    scripts.append(url_for('browser.browser_js'))
     
-    for module in modules:
+    for module in modules_and_nodes:
         # Get the edit menu items
-        if 'browser' in dir(module) and 'get_file_menu_items' in dir(module.browser):
-            file_items.extend(module.browser.get_file_menu_items())
+        if 'hooks' in dir(module) and 'get_file_menu_items' in dir(module.hooks):
+            file_items.extend(module.hooks.get_file_menu_items())
     
         # Get the edit menu items
-        if 'browser' in dir(module) and 'get_edit_menu_items' in dir(module.browser):
-            edit_items.extend(module.browser.get_edit_menu_items())
+        if 'hooks' in dir(module) and 'get_edit_menu_items' in dir(module.hooks):
+            edit_items.extend(module.hooks.get_edit_menu_items())
 
         # Get the tools menu items
-        if 'browser' in dir(module) and 'get_tools_menu_items' in dir(module.browser):
-            tools_items.extend(module.browser.get_tools_menu_items())
+        if 'hooks' in dir(module) and 'get_tools_menu_items' in dir(module.hooks):
+            tools_items.extend(module.hooks.get_tools_menu_items())
     
         # Get the help menu items
-        if 'browser' in dir(module) and 'get_help_menu_items' in dir(module.browser):
-            help_items.extend(module.browser.get_help_menu_items())
+        if 'hooks' in dir(module) and 'get_help_menu_items' in dir(module.hooks):
+            help_items.extend(module.hooks.get_help_menu_items())
         
         # Get any stylesheets
-        if 'browser' in dir(module) and 'get_stylesheets' in dir(module.browser):
-            stylesheets += module.browser.get_stylesheets()
+        if 'hooks' in dir(module) and 'get_stylesheets' in dir(module.hooks):
+            stylesheets += module.hooks.get_stylesheets()
                     
         # Get any scripts
-        if 'browser' in dir(module) and 'get_scripts' in dir(module.browser):
-            scripts += module.browser.get_scripts()
+        if 'hooks' in dir(module) and 'get_scripts' in dir(module.hooks):
+            scripts += module.hooks.get_scripts()
 
     file_items = sorted(file_items, key=lambda k: k['priority'])
     edit_items = sorted(edit_items, key=lambda k: k['priority'])
@@ -105,3 +109,61 @@ def index():
                            stylesheets = stylesheets,
                            scripts = scripts,
                            layout_settings = layout_settings)
+
+@blueprint.route("/browser.js")
+@login_required
+def browser_js():
+    """Render and return JS snippets from the nodes and modules."""
+    snippets = ''
+    modules_and_nodes = modules + nodes
+    
+    for module in modules_and_nodes:
+        if 'hooks' in dir(module) and 'get_script_snippets' in dir(module.hooks):
+            snippets += module.hooks.get_script_snippets()
+            
+    resp = Response(response=snippets,
+                status=200,
+                mimetype="application/javascript")
+    
+    return resp
+
+@blueprint.route("/browser.css")
+@login_required
+def browser_css():
+    """Render and return CSS snippets from the nodes and modules."""
+    snippets = ''
+    modules_and_nodes = modules + nodes
+    
+    for module in modules_and_nodes:
+        if 'hooks' in dir(module) and 'get_css_snippets' in dir(module.hooks):
+            snippets += module.hooks.get_css_snippets()
+            
+    resp = Response(response=snippets,
+                status=200,
+                mimetype="text/css")
+    
+    return resp
+
+@blueprint.route("/root-nodes.json")
+@login_required
+def get_nodes():
+    """Build a list of treeview nodes from the child modules."""
+    value = '['
+    
+    for node in nodes:
+        if 'hooks' in dir(node) and 'get_nodes' in dir(node.hooks):
+            value += node.hooks.get_nodes() + ','
+        
+    if value[-1:] == ',':
+        value = value[:-1]
+        
+    value += ']'
+    
+    resp = Response(response=value,
+                status=200,
+                mimetype="text/json")
+    
+    return resp
+    
+        
+        

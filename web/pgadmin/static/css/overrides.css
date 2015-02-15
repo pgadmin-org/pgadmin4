@@ -15,6 +15,11 @@
     color: #fff;
 }
 
+.alertify .ajs-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 /* iFrames should have no border */
 iframe {
     border-width: 0;
@@ -30,6 +35,13 @@ iframe {
     padding-left: 0;
 }
 
-.icon-servers {
-    background: url('/static/servers.png') 0 0 no-repeat !important;
+/* Alert info panel */
+.alert-info-panel {
+    border: 2px solid #a1a1a1;
+    margin-top: 2em;
+    padding: 5px 5px; 
+    background: #dddddd;
+    border-radius: 5px;
+    height: 8em;
+    overflow: scroll;
 }

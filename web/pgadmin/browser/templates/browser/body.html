@@ -153,17 +153,18 @@ $('#dependents a').click(function (e) {
 
 // Syntax highlight the SQL Pane
 var editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
-  lineNumbers: true,
-  mode: "text/x-sql",
-  readOnly: true,
+    lineNumbers: true,
+    mode: "text/x-sql",
+    readOnly: true,
 });
 
 // Initialise the treeview
 $('#tree').aciTree({
-        ajax: {
-            url: '/static/tree.json'
-        }
+    ajax: {
+        url: '{{ url_for('browser.get_nodes') }}'
+    },
 });
+var treeApi = $('#tree').aciTree('api');
 
 </script>
 

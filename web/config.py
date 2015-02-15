@@ -39,6 +39,10 @@ APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)
 # List of modules to skip when dynamically loading
 MODULE_BLACKLIST = [ 'test' ]
 
+# DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
+# List of treeview browser nodes to skip when dynamically loading
+NODE_BLACKLIST = [ ]
+
 ##########################################################################
 # Log settings
 ##########################################################################

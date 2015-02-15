@@ -103,10 +103,10 @@ def create_app(app_name=config.APP_NAME):
 
             # Looks like a module, so import it, and register the blueprint if present
             # We rely on the ordering of syspath to ensure we actually get the right
-            # module here. Note that we also try to load the 'browser' module for
-            # the browser integration hooks.
+            # module here. Note that we also try to load the 'hooks' module for
+            # the browser integration hooks and other similar functions.
             app.logger.info('Examining potential module: %s' % d)
-            module = __import__(f, globals(), locals(), ['browser', 'views'], -1)
+            module = __import__(f, globals(), locals(), ['hooks', 'views'], -1)
 
             # Add the module to the global module list
             modules.append(module)
@@ -118,6 +118,11 @@ def create_app(app_name=config.APP_NAME):
                 app.logger.debug('   - root_path:       %s' % module.views.blueprint.root_path)
                 app.logger.debug('   - static_folder:   %s' % module.views.blueprint.static_folder)
                 app.logger.debug('   - template_folder: %s' % module.views.blueprint.template_folder)
+                
+            # Register any sub-modules
+            if 'hooks' in dir(module) and 'register_submodules' in dir(module.hooks):
+                app.logger.info('Registering sub-modules in %s' % f)
+                module.hooks.register_submodules(app)
 
     ##########################################################################
     # Handle the desktop login

@@ -10,10 +10,12 @@
 """Views for setting and storing configuration options."""
 MODULE_NAME = 'settings'
 
-import config
+import traceback
 from flask import Blueprint, Response, abort, request, render_template
 from flask.ext.security import login_required
 
+import config
+from utils.ajax import make_json_result
 from . import get_setting, store_setting
 
 # Initialise the module
@@ -33,16 +35,30 @@ def script():
 def store(setting=None, value=None):
     """Store a configuration setting, or if this is a POST request and a  
     count value is present, store multiple settings at once."""
-    if request.method == 'POST':
-        if 'count' in request.form:
-            for x in range(int(request.form['count'])):
-                store_setting(request.form['setting%d' % (x+1)], request.form['value%d' % (x+1)])
-        else:
-            store_setting(request.form['setting'], request.form['value'])
-    else:
-        store_setting(setting, value)
+    success = 1
+    errorcode = 0
+    errormsg = ''
     
-    return ''
+    try:
+        if request.method == 'POST':
+            if 'count' in request.form:
+                for x in range(int(request.form['count'])):
+                    store_setting(request.form['setting%d' % (x+1)], request.form['value%d' % (x+1)])
+            else:
+                store_setting(request.form['setting'], request.form['value'])
+        else:
+            store_setting(setting, value)
+    except Exception as e:
+        success = 0
+        errormsg = e.message
+        
+    value = make_json_result(success=success, errormsg=errormsg, info=traceback.format_exc(), result=request.form)
+    
+    resp = Response(response=value,
+                    status=200,
+                    mimetype="text/json")
+    
+    return resp
 
 @blueprint.route("/get", methods=['POST'])
 @blueprint.route("/get/<setting>", methods=['GET'])
@@ -53,14 +69,21 @@ def get(setting=None, default=None):
     if request.method == 'POST':
         setting = request.form['setting']
         default = request.form['default']
-        
+    
+    success = 1
+    errorcode = 0
+    errormsg = ''
+    
     try:
         value = get_setting(setting, default)
-    except:
-        return ''
-    
+    except Exception as e:
+        success = 0
+        errormsg = e.message
+
+    value = make_json_result(success=success, errormsg=errormsg, info=traceback.format_exc(), result=request.form)
+        
     resp = Response(response=value,
                     status=200,
-                    mimetype="text/plain")
+                    mimetype="text/json")
     
     return resp
