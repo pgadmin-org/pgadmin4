@@ -166,5 +166,30 @@ $('#tree').aciTree({
 });
 var treeApi = $('#tree').aciTree('api');
 
+$('#tree').contextMenu({
+        selector: '.aciTreeLine',
+        build: function(element) {
+            var item = treeApi.itemFrom(element);
+            var menu = {
+            };
+ 
+             menu['rename'] = {
+                name: 'Rename server group',
+                callback: function() { rename_server_group(item); }
+            };
+                       
+            menu['delete'] = {
+                name: 'Delete server group',
+                callback: function() { delete_server_group(item); }
+            };
+
+            return {
+                autoHide: true,
+                items: menu,
+                callback: null
+            };
+        }
+    });
+
 </script>
 

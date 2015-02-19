@@ -17,7 +17,7 @@ import traceback
 from flask import Blueprint, Response, current_app, request
 from flask.ext.security import current_user, login_required
 
-from utils.ajax import make_json_result
+from utils.ajax import make_json_response
 from pgadmin.settings.settings_model import db, ServerGroup
 import config
 
@@ -50,15 +50,70 @@ def add():
         data['id'] = servergroup.id
         data['name'] = servergroup.name
         
-    value = make_json_result(success=success, 
-                             errormsg=errormsg, 
-                             info=traceback.format_exc(), 
-                             result=request.form, 
-                             data=data)
-    
-    resp = Response(response=value,
-                    status=200,
-                    mimetype="text/json")
-    
-    return resp
-    
+    return make_json_response(success=success, 
+                              errormsg=errormsg, 
+                              info=traceback.format_exc(), 
+                              result=request.form, 
+                              data=data)
+
+@blueprint.route('/delete/', methods=['POST'])
+@login_required
+def delete():
+    """Delete a server group node in the settings database"""
+    success = 1
+    errormsg = ''
+
+    if request.form['id'] != '':
+        # There can be only one record at most
+        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        
+        if servergroup is None:
+            success = 0
+            errormsg = 'The specified server group could not be found.'
+        else:
+            try:
+                db.session.delete(servergroup)
+                db.session.commit()
+            except Exception as e:
+                success = 0
+                errormsg = e.message
+
+    else:
+        success = 0
+        errormsg = "No server group  was specified."
+            
+    return make_json_response(success=success, 
+                              errormsg=errormsg, 
+                              info=traceback.format_exc(), 
+                              result=request.form)
+
+@blueprint.route('/rename/', methods=['POST'])
+@login_required
+def rename():
+    """Rename a server group node in the settings database"""
+    success = 1
+    errormsg = ''
+
+    if request.form['id'] != '':
+        # There can be only one record at most
+        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        
+        if servergroup is None:
+            success = 0
+            errormsg = 'The specified server group could not be found.'
+        else:
+            try:
+                servergroup.name = request.form['name']
+                db.session.commit()
+            except Exception as e:
+                success = 0
+                errormsg = e.message
+
+    else:
+        success = 0
+        errormsg = "No server group was specified."
+            
+    return make_json_response(success=success, 
+                              errormsg=errormsg, 
+                              info=traceback.format_exc(), 
+                              result=request.form)

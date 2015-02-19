@@ -9,10 +9,11 @@
 
 """Utility functions for dealing with AJAX."""
 
+from flask import Response
 import json
 
-def make_json_result(success=1, errormsg='', info='', result={}, data={}):
-    """Create a JSON response document describing the results of a request and
+def make_json_response(success=1, errormsg='', info='', result={}, data={}):
+    """Create a HTML response document describing the results of a request and
     containing the data."""
     doc = { }
     doc['success'] = success
@@ -21,4 +22,7 @@ def make_json_result(success=1, errormsg='', info='', result={}, data={}):
     doc['result'] = result
     doc['data'] = data
 
-    return json.dumps(doc)
+    response = Response(response=json.dumps(doc),
+                        status=200,
+                        mimetype="text/json")
+    return response

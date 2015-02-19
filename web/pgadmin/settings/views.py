@@ -15,7 +15,7 @@ from flask import Blueprint, Response, abort, request, render_template
 from flask.ext.security import login_required
 
 import config
-from utils.ajax import make_json_result
+from utils.ajax import make_json_response
 from . import get_setting, store_setting
 
 # Initialise the module
@@ -52,13 +52,10 @@ def store(setting=None, value=None):
         success = 0
         errormsg = e.message
         
-    value = make_json_result(success=success, errormsg=errormsg, info=traceback.format_exc(), result=request.form)
-    
-    resp = Response(response=value,
-                    status=200,
-                    mimetype="text/json")
-    
-    return resp
+    return make_json_response(success=success, 
+                              errormsg=errormsg, 
+                              info=traceback.format_exc(), 
+                              result=request.form)
 
 @blueprint.route("/get", methods=['POST'])
 @blueprint.route("/get/<setting>", methods=['GET'])
@@ -80,10 +77,7 @@ def get(setting=None, default=None):
         success = 0
         errormsg = e.message
 
-    value = make_json_result(success=success, errormsg=errormsg, info=traceback.format_exc(), result=request.form)
-        
-    resp = Response(response=value,
-                    status=200,
-                    mimetype="text/json")
-    
-    return resp
+    return make_json_response(success=success, 
+                              errormsg=errormsg, 
+                              info=traceback.format_exc(), 
+                              result=request.form)

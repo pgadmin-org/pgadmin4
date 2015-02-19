@@ -9,7 +9,7 @@
 
 """Integration hooks for server groups."""
 
-from flask import url_for
+from flask import render_template, url_for
 from flask.ext.security import current_user
 
 from pgadmin.settings.settings_model import db, ServerGroup
@@ -33,37 +33,7 @@ def get_file_menu_items():
     
 def get_script_snippets():
     """Return the script snippets needed to handle treeview node operations."""
-    script = """function add_server_group() {
-    var alert = alertify.prompt(
-        'Add a server group',
-        'Enter a name for the new server group', 
-        '', 
-        function(evt, value) { $.post("%s", { name: value })
-                                    .done(function(data) {
-                                        if (data.success == 0) {
-                                            report_error(data.errormsg, data.info);
-                                        } else {
-                                            var item = {
-                                                id: data.data.id,
-                                                label: data.data.name,
-                                                inode: true,
-                                                open: false,
-                                                icon: 'icon-server-group'
-                                            }
-
-                                            treeApi.append(null, {
-                                                itemData: item
-                                            });
-
-                                        }
-                                    })
-                             },
-        function(evt, value) { }
-    );
-    alert.show();
-}
-""" % url_for('NODE-server-group.add')
-    return script
+    return render_template('server_groups/server_groups.js')
 
 def get_css_snippets():
     """Return the CSS needed to display the treeview node image."""
