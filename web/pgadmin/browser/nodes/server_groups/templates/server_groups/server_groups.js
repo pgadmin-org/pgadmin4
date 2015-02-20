@@ -18,7 +18,7 @@ function add_server_group() {
                             icon: 'icon-server-group'
                         }
 
-                        treeApi.append(null, {
+                        tree.append(null, {
                             itemData: item
                         });
 
@@ -35,21 +35,21 @@ function add_server_group() {
 function delete_server_group(item) {
     alertify.confirm(
         'Delete server group?',
-        'Are you sure you wish to delete the server group "{0}"?'.replace('{0}', treeApi.getLabel(item)),
+        'Are you sure you wish to delete the server group "{0}"?'.replace('{0}', tree.getLabel(item)),
         function() {
-            var id = treeApi.getId(item)
+            var id = tree.getId(item)
             $.post("{{ url_for('NODE-server-group.delete') }}", { id: id })
                 .done(function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
-                        var next = treeApi.next(item);
-                        var prev = treeApi.prev(item);
-                        treeApi.remove(item);
+                        var next = tree.next(item);
+                        var prev = tree.prev(item);
+                        tree.remove(item);
                         if (next.length) {
-                            treeApi.select(next);
+                            tree.select(next);
                         } else if (prev.length) {
-                            treeApi.select(prev);
+                            tree.select(prev);
                         }
                     }
                 }
@@ -64,15 +64,15 @@ function rename_server_group(item) {
     alertify.prompt(
         'Rename server group',
         'Enter a new name for the server group', 
-        treeApi.getLabel(item), 
+        tree.getLabel(item), 
         function(evt, value) {
-            var id = treeApi.getId(item)
+            var id = tree.getId(item)
             $.post("{{ url_for('NODE-server-group.rename') }}", { id: id, name: value })
                 .done(function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
-                        treeApi.setLabel(item, { label: value });
+                        tree.setLabel(item, { label: value });
                     }
                 }
             )

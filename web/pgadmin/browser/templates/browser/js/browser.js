@@ -1,3 +1,7 @@
+// Page globals
+var editor
+var tree
+
 // Store the main browser layout
 function storeLayout(pane, $pane, paneState, paneOptions) {
     state = layout.readState();
@@ -79,7 +83,7 @@ $(document).ready(function(){
     })
 
     // Syntax highlight the SQL Pane
-    var editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
+    editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
         lineNumbers: true,
         mode: "text/x-sql",
         readOnly: true,
@@ -91,26 +95,22 @@ $(document).ready(function(){
             url: '{{ url_for('browser.get_nodes') }}'
         },
     });
-    var treeApi = $('#tree').aciTree('api');
+    tree = $('#tree').aciTree('api');
 
     // Build the treeview context menu
     $('#tree').contextMenu({
         selector: '.aciTreeLine',
         build: function(element) {
-            var item = treeApi.itemFrom(element);
+            var item = tree.itemFrom(element);
             var menu = {
             };
-
-             menu['rename'] = {
-                name: 'Rename server group',
-                callback: function() { rename_server_group(item); }
+            {% if context_items is defined %}
+            {% for context_item in context_items %}
+            menu['{{ context_item.name }}'] = {
+                name: '{{ context_item.label }}',
+                callback: function() { {{ context_item.onclick }} }
             };
-                       
-            menu['delete'] = {
-                name: 'Delete server group',
-                callback: function() { delete_server_group(item); }
-            };
-
+            {% endfor %}{% endif %}
             return {
                 autoHide: true,
                 items: menu,

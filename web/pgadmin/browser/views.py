@@ -82,7 +82,7 @@ def index():
         # Get the help menu items
         if 'hooks' in dir(module) and 'get_help_menu_items' in dir(module.hooks):
             help_items.extend(module.hooks.get_help_menu_items())
-        
+                    
         # Get any stylesheets
         if 'hooks' in dir(module) and 'get_stylesheets' in dir(module.hooks):
             stylesheets += module.hooks.get_stylesheets()
@@ -113,13 +113,26 @@ def browser_js():
     modules_and_nodes = modules + nodes
     
     # Load the core browser code first
+    
+    # Get the context menu items
+    context_items = [ ]
+    modules_and_nodes = modules + nodes
+    
+    for module in modules_and_nodes:
+        if 'hooks' in dir(module) and 'get_context_menu_items' in dir(module.hooks):
+            context_items.extend(module.hooks.get_context_menu_items())
+
+    context_items = sorted(context_items, key=lambda k: k['priority'])
+    
     layout_settings = { }
     layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
     layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
     layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
     layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default="false")
     
-    snippets += render_template('browser/js/browser.js', layout_settings=layout_settings)
+    snippets += render_template('browser/js/browser.js', 
+                                layout_settings=layout_settings,
+                                context_items=context_items)
     
     # Add module and node specific code
     for module in modules_and_nodes:
@@ -148,6 +161,7 @@ def browser_css():
                 mimetype="text/css")
     
     return resp
+
 
 @blueprint.route("/root-nodes.json")
 @login_required

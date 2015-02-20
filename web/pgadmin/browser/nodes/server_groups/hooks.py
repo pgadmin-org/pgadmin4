@@ -24,16 +24,27 @@ def get_nodes():
     value = value[:-1]
     
     return value
+
     
 def get_file_menu_items():
     """Return a (set) of dicts of file menu items, with name, priority and URL."""
     return [
             {'name': 'Add a server group...', 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'}
            ]
+
+
+def get_context_menu_items():
+    """Return a (set) of dicts of content menu items with name, text, priority and JS"""
+    return [
+            {'name': 'delete', 'label': 'Delete server group', 'priority': 100, 'onclick': 'delete_server_group(item);'},
+            {'name': 'rename', 'label': 'Rename server group...', 'priority': 200, 'onclick': 'rename_server_group(item);'}
+           ]
+    
     
 def get_script_snippets():
     """Return the script snippets needed to handle treeview node operations."""
     return render_template('server_groups/server_groups.js')
+
 
 def get_css_snippets():
     """Return the CSS needed to display the treeview node image."""
