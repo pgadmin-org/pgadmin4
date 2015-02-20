@@ -96,13 +96,6 @@ def index():
     tools_items = sorted(tools_items, key=lambda k: k['priority'])
     help_items = sorted(help_items, key=lambda k: k['priority'])
     
-    # Get the layout settings
-    layout_settings = { }
-    layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
-    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
-    layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
-    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default="false")
-    
     return render_template(MODULE_NAME + '/index.html', 
                            username=current_user.email, 
                            file_items=file_items, 
@@ -110,8 +103,7 @@ def index():
                            tools_items=tools_items, 
                            help_items=help_items,
                            stylesheets = stylesheets,
-                           scripts = scripts,
-                           layout_settings = layout_settings)
+                           scripts = scripts)
 
 @blueprint.route("/browser.js")
 @login_required
@@ -120,10 +112,20 @@ def browser_js():
     snippets = ''
     modules_and_nodes = modules + nodes
     
+    # Load the core browser code first
+    layout_settings = { }
+    layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
+    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
+    layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
+    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default="false")
+    
+    snippets += render_template('browser/js/browser.js', layout_settings=layout_settings)
+    
+    # Add module and node specific code
     for module in modules_and_nodes:
         if 'hooks' in dir(module) and 'get_script_snippets' in dir(module.hooks):
             snippets += module.hooks.get_script_snippets()
-            
+    
     resp = Response(response=snippets,
                 status=200,
                 mimetype="application/javascript")
