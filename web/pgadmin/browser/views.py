@@ -42,6 +42,7 @@ def index():
     file_items = [ ]
     edit_items = [ ]
     tools_items = [ ]
+    management_items = [ ]
     help_items = [ ]
     stylesheets = [ ]
     scripts = [ ]
@@ -78,7 +79,11 @@ def index():
         # Get the tools menu items
         if 'hooks' in dir(module) and 'get_tools_menu_items' in dir(module.hooks):
             tools_items.extend(module.hooks.get_tools_menu_items())
-    
+
+        # Get the management menu items
+        if 'hooks' in dir(module) and 'get_management_menu_items' in dir(module.hooks):
+            management_items.extend(module.hooks.get_management_menu_items())
+                
         # Get the help menu items
         if 'hooks' in dir(module) and 'get_help_menu_items' in dir(module.hooks):
             help_items.extend(module.hooks.get_help_menu_items())
@@ -94,6 +99,7 @@ def index():
     file_items = sorted(file_items, key=lambda k: k['priority'])
     edit_items = sorted(edit_items, key=lambda k: k['priority'])
     tools_items = sorted(tools_items, key=lambda k: k['priority'])
+    management_items = sorted(management_items, key=lambda k: k['priority'])
     help_items = sorted(help_items, key=lambda k: k['priority'])
     
     return render_template(MODULE_NAME + '/index.html', 
@@ -101,6 +107,7 @@ def index():
                            file_items=file_items, 
                            edit_items=edit_items, 
                            tools_items=tools_items, 
+                           management_items=management_items,
                            help_items=help_items,
                            stylesheets = stylesheets,
                            scripts = scripts)
