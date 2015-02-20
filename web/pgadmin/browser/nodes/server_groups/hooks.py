@@ -27,14 +27,16 @@ def get_nodes():
 
     
 def get_file_menu_items():
-    """Return a (set) of dicts of file menu items, with name, priority and URL."""
+    """Return a (set) of dicts of file menu items, with name, label, priority and URL."""
     return [
-            {'name': 'Add a server group...', 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'}
+            {'name': 'mnu_add_server_group', 'label': 'Add a server group...', 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'},
+            {'name': 'mnu_delete_server_group', 'label': 'Delete server group', 'priority': 20, 'url': '#', 'onclick': 'delete_server_group()'},
+            {'name': 'mnu_rename_server_group', 'label': 'Rename server group...', 'priority': 30, 'url': '#', 'onclick': 'rename_server_group()'}
            ]
 
 
 def get_context_menu_items():
-    """Return a (set) of dicts of content menu items with name, text, priority and JS"""
+    """Return a (set) of dicts of content menu items with name, label, priority and JS"""
     return [
             {'name': 'delete', 'label': 'Delete server group', 'priority': 100, 'onclick': 'delete_server_group(item);'},
             {'name': 'rename', 'label': 'Rename server group...', 'priority': 200, 'onclick': 'rename_server_group(item);'}

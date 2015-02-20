@@ -117,5 +117,12 @@ $(document).ready(function(){
                 callback: null
             };
         }
+    }).on('acitree', function(event, api, item, eventName, options) {
+        switch (eventName) {
+            case 'selected':
+                alertify.alert(tree.getLabel(item));
+                
+                break;
+        }
     });
 });
