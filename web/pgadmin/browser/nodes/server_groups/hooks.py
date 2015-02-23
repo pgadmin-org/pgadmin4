@@ -27,7 +27,8 @@ def get_nodes():
 
     
 def get_file_menu_items():
-    """Return a (set) of dicts of file menu items, with name, label, priority and URL."""
+    """Return a (set) of dicts of file menu items, with name, priority, URL, 
+    target and onclick code."""
     return [
             {'name': 'mnu_add_server_group', 'label': 'Add a server group...', 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'},
             {'name': 'mnu_delete_server_group', 'label': 'Delete server group', 'priority': 20, 'url': '#', 'onclick': 'delete_server_group()'},

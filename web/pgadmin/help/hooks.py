@@ -7,21 +7,17 @@
 #
 ##########################################################################
 
-"""Browser integration functions for the About module."""
+"""Browser integration functions for the Help module."""
 
-from flask import render_template, url_for
+from flask import url_for
 
 import config
 
 def get_help_menu_items():
     """Return a (set) of dicts of help menu items, with name, priority, URL, 
     target and onclick code."""
-    return [{'name': 'mnu_about',
-             'label': 'About %s' % (config.APP_NAME), 
-             'priority': 999, 
-             'url': "#", 
-             'onclick': "about_show()"}]
-
-def get_scripts():
-    """Return a list of script URLs to include in the rendered page header"""
-    return [ url_for('about.script') ]
+    return [{'name': 'mnu_contents',
+             'label': 'Contents', 
+             'priority': 1, 
+             'target': '_new',
+             'url': url_for('help.static', filename='index.html') }]

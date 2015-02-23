@@ -31,6 +31,9 @@ APP_SUFFIX = 'dev'
 # Copyright string for display in the app
 APP_COPYRIGHT = 'Copyright 2014 - 2015, The pgAdmin Development Team'
 
+# Path to the online help. 
+HELP_PATH = '../../../docs/en_US/_build/html/'
+
 # DO NOT CHANGE!
 # The application version string, constructed from the components
 APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)

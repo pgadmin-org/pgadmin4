@@ -12,7 +12,8 @@
 from flask import render_template, url_for
 
 def get_file_menu_items():
-    """Return a (set) of dicts of file menu items, with name, label, priority and URL."""
+    """Return a (set) of dicts of file menu items, with name, priority, URL, 
+    target and onclick code."""
     return [
             {'name': 'mnu_generate_test_html', 'label': 'Generated Test HTML', 'priority': 100, 'url': url_for('test.generated')},
             {'name': 'mnu_test_alert', 'label': 'Test Alert', 'priority': 200, 'url': '#', 'onclick': 'test_alert()'},
