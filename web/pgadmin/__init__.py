@@ -80,8 +80,6 @@ def create_app(app_name=config.APP_NAME):
     def get_locale():
         """Get the best language for the user."""
         language = request.accept_languages.best_match(config.LANGUAGES.keys())
-        app.logger.info('Using language: %s', language)
-        
         return language 
 
     ##########################################################################
