@@ -15,6 +15,7 @@ NODE_PATH = '/browser/' + NODE_NAME
 
 import traceback
 from flask import Blueprint, Response, current_app, request
+from flask.ext.babel import gettext
 from flask.ext.security import current_user, login_required
 
 from utils.ajax import make_json_response
@@ -44,7 +45,7 @@ def add():
 
     else:
         success = 0
-        errormsg = "No server group name was specified"
+        errormsg = gettext('No server group name was specified')
             
     if success == 1:
         data['id'] = servergroup.id
@@ -69,7 +70,7 @@ def delete():
         
         if servergroup is None:
             success = 0
-            errormsg = 'The specified server group could not be found.'
+            errormsg = gettext('The specified server group could not be found.')
         else:
             try:
                 db.session.delete(servergroup)
@@ -80,7 +81,7 @@ def delete():
 
     else:
         success = 0
-        errormsg = "No server group  was specified."
+        errormsg = gettext('No server group  was specified.')
             
     return make_json_response(success=success, 
                               errormsg=errormsg, 
@@ -100,7 +101,7 @@ def rename():
         
         if servergroup is None:
             success = 0
-            errormsg = 'The specified server group could not be found.'
+            errormsg = gettext('The specified server group could not be found.')
         else:
             try:
                 servergroup.name = request.form['name']
@@ -111,9 +112,10 @@ def rename():
 
     else:
         success = 0
-        errormsg = "No server group was specified."
+        errormsg = gettext('No server group was specified.')
             
     return make_json_response(success=success, 
                               errormsg=errormsg, 
                               info=traceback.format_exc(), 
                               result=request.form)
+    

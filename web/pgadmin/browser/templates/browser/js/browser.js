@@ -35,25 +35,25 @@ $(document).ready(function(){
             center__maskContents:           true,
             center__onresize:               "storeLayout",
             south__maskContents:            true,
-            south__size:		        {{ layout_settings.sql_size }},
+            south__size:		    {{ layout_settings.sql_size }},
             south__initClosed:              {{ layout_settings.sql_closed }},
-            south__spacing_closed:	        22,
+            south__spacing_closed:	    22,
             south__togglerLength_closed:    140,
             south__togglerAlign_closed:     "right",
-            south__togglerContent_closed:   'SQL Pane',
-            south__togglerTip_closed:       "Open & Pin SQL Pane",
-            south__sliderTip:	        "Slide Open SQL Pane",
+            south__togglerContent_closed:   "{{ _('SQL Pane') }}",
+            south__togglerTip_closed:       "{{ _('Open & Pin SQL Pane') }}",
+            south__sliderTip:	            "{{ _('Slide Open SQL Pane') }}",
             south__slideTrigger_open:       "mouseover",
         }],
         west__maskContents:             true,
-        west__size:		            {{ layout_settings.browser_size }},
+        west__size:		        {{ layout_settings.browser_size }},
         west__initClosed:               {{ layout_settings.browser_closed }},
-        west__spacing_closed:	    22,
+        west__spacing_closed:	        22,
         west__togglerLength_closed:     140,
         west__togglerAlign_closed:      "top",
-        west__togglerContent_closed:    'B<br />r<br />o<br />w<br />s<br />e<br />r',
-        west__togglerTip_closed:        "Open & Pin Browser",
-        west__sliderTip:	            "Slide Open Browser",
+        west__togglerContent_closed:    "{{ _('B<br />r<br />o<br />w<br />s<br />e<br />r') }}",
+        west__togglerTip_closed:        "{{ _('Open & Pin Browser') }}",
+        west__sliderTip:	        "{{ _('Slide Open Browser') }}",
         west__slideTrigger_open:        "mouseover",
     };
 
@@ -126,3 +126,43 @@ $(document).ready(function(){
         }
     });
 });
+
+function report_error(message, info) {
+
+    text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
+  <div class="panel panel-default">\
+    <div class="panel-heading" role="tab" id="headingOne">\
+      <h4 class="panel-title">\
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">\
+          {{ _('Error message') }}\
+        </a>\
+      </h4>\
+    </div>\
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
+      <div class="panel-body" style="overflow: scroll;">' + message + '</div>\
+    </div>\
+  </div>'
+  
+    if (info != '') {
+        text += '<div class="panel panel-default">\
+    <div class="panel-heading" role="tab" id="headingTwo">\
+      <h4 class="panel-title">\
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">\
+          {{ _('Additional info') }}\
+        </a>\
+      </h4>\
+    </div>\
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\
+      <div class="panel-body" style="overflow: scroll;">' + info + '</div>\
+    </div>\
+  </div>\
+</div>'
+    }
+    
+    text += '</div>'
+    
+    alertify.alert(
+        '{{ _('An error has occurred') }}',
+        text
+    )   
+}

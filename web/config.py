@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
@@ -33,6 +35,12 @@ APP_COPYRIGHT = 'Copyright 2014 - 2015, The pgAdmin Development Team'
 
 # Path to the online help. 
 HELP_PATH = '../../../docs/en_US/_build/html/'
+
+# Languages we support in the UI
+LANGUAGES = {
+    'en': 'English',
+    'fr': 'Français'
+}
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components

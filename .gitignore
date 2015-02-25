@@ -3,6 +3,7 @@
 *.pyo
 *.o
 *.psp
+_build
 build-*
 .DS_Store
 runtime/.qmake.cache

@@ -1,8 +1,8 @@
 // Add a server group
 function add_server_group() {
     var alert = alertify.prompt(
-        'Add a server group',
-        'Enter a name for the new server group', 
+        '{{ _('Add a server group') }}',
+        '{{ _('Enter a name for the new server group') }}', 
         '', 
         function(evt, value) { 
             $.post("{{ url_for('NODE-server-group.add') }}", { name: value })
@@ -34,8 +34,8 @@ function add_server_group() {
 // Delete a server group
 function delete_server_group(item) {
     alertify.confirm(
-        'Delete server group?',
-        'Are you sure you wish to delete the server group "{0}"?'.replace('{0}', tree.getLabel(item)),
+        '{{ _('Delete server group?') }}',
+        '{{ _('Are you sure you wish to delete the server group "{0}"?') }}'.replace('{0}', tree.getLabel(item)),
         function() {
             var id = tree.getId(item)
             $.post("{{ url_for('NODE-server-group.delete') }}", { id: id })
@@ -62,8 +62,8 @@ function delete_server_group(item) {
 // Rename a server group
 function rename_server_group(item) {
     alertify.prompt(
-        'Rename server group',
-        'Enter a new name for the server group', 
+        '{{ _('Rename server group') }}',
+        '{{ _('Enter a new name for the server group') }}', 
         tree.getLabel(item), 
         function(evt, value) {
             var id = tree.getId(item)

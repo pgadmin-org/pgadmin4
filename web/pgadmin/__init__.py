@@ -10,7 +10,8 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 
-from flask import Flask, abort
+from flask import Flask, abort, request
+from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
 from flask_security.utils import login_user
@@ -65,6 +66,23 @@ def create_app(app_name=config.APP_NAME):
     app.logger.info('################################################################################')
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('################################################################################')
+
+    ##########################################################################
+    # Setup i18n
+    ##########################################################################
+    
+    # Initialise i18n
+    babel = Babel(app)
+    
+    app.logger.debug('Available translations: %s' % babel.list_translations())
+
+    @babel.localeselector
+    def get_locale():
+        """Get the best language for the user."""
+        language = request.accept_languages.best_match(config.LANGUAGES.keys())
+        app.logger.info('Using language: %s', language)
+        
+        return language 
 
     ##########################################################################
     # Setup authentication

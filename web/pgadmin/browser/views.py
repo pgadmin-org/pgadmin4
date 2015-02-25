@@ -59,7 +59,6 @@ def index():
     # Add browser scripts
     scripts.append(url_for('static', filename='js/codemirror/codemirror.js'))
     scripts.append(url_for('static', filename='js/codemirror/mode/sql.js'))
-    scripts.append(url_for('browser.static', filename='js/utils.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciPlugin.min.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.dom.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.min.js'))

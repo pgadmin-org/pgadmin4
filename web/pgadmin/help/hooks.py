@@ -10,6 +10,7 @@
 """Browser integration functions for the Help module."""
 
 from flask import url_for
+from flask.ext.babel import gettext
 
 import config
 
@@ -17,7 +18,7 @@ def get_help_menu_items():
     """Return a (set) of dicts of help menu items, with name, priority, URL, 
     target and onclick code."""
     return [{'name': 'mnu_contents',
-             'label': 'Contents', 
+             'label': gettext('Contents'), 
              'priority': 1, 
              'target': '_new',
              'url': url_for('help.static', filename='index.html') }]

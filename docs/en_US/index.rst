@@ -75,6 +75,7 @@ learn how pgAdmin works, and how to develop improvements and new features.
    coding-standards
    code-overview
    submitting-patches
+   translations
 
 *******
 Website

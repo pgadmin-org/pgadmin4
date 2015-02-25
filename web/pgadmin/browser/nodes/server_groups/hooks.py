@@ -10,6 +10,7 @@
 """Integration hooks for server groups."""
 
 from flask import render_template, url_for
+from flask.ext.babel import gettext
 from flask.ext.security import current_user
 
 from pgadmin.settings.settings_model import db, ServerGroup
@@ -30,17 +31,17 @@ def get_file_menu_items():
     """Return a (set) of dicts of file menu items, with name, priority, URL, 
     target and onclick code."""
     return [
-            {'name': 'mnu_add_server_group', 'label': 'Add a server group...', 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'},
-            {'name': 'mnu_delete_server_group', 'label': 'Delete server group', 'priority': 20, 'url': '#', 'onclick': 'delete_server_group()'},
-            {'name': 'mnu_rename_server_group', 'label': 'Rename server group...', 'priority': 30, 'url': '#', 'onclick': 'rename_server_group()'}
+            {'name': 'mnu_add_server_group', 'label': gettext('Add a server group...'), 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'},
+            {'name': 'mnu_delete_server_group', 'label': gettext('Delete server group'), 'priority': 20, 'url': '#', 'onclick': 'delete_server_group()'},
+            {'name': 'mnu_rename_server_group', 'label': gettext('Rename server group...'), 'priority': 30, 'url': '#', 'onclick': 'rename_server_group()'}
            ]
 
 
 def get_context_menu_items():
     """Return a (set) of dicts of content menu items with name, label, priority and JS"""
     return [
-            {'name': 'delete', 'label': 'Delete server group', 'priority': 100, 'onclick': 'delete_server_group(item);'},
-            {'name': 'rename', 'label': 'Rename server group...', 'priority': 200, 'onclick': 'rename_server_group(item);'}
+            {'name': 'delete', 'label': gettext('Delete server group'), 'priority': 100, 'onclick': 'delete_server_group(item);'},
+            {'name': 'rename', 'label': gettext('Rename server group...'), 'priority': 200, 'onclick': 'rename_server_group(item);'}
            ]
     
     

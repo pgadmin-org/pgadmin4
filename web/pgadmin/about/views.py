@@ -11,6 +11,7 @@
 MODULE_NAME = 'about'
 
 from flask import Blueprint, Response, current_app, render_template, __version__
+from flask.ext.babel import gettext
 from flask.ext.security import current_user, login_required
 
 import sys
@@ -31,9 +32,9 @@ def index():
     info['python_version'] = sys.version
     info['flask_version'] = __version__
     if config.SERVER_MODE == True:
-        info['app_mode'] = 'Server'
+        info['app_mode'] = gettext('Server')
     else:
-        info['app_mode'] = 'Desktop'
+        info['app_mode'] = gettext('Desktop')
     info['current_user'] = current_user.email
     
     return render_template(MODULE_NAME + '/index.html', info=info)
