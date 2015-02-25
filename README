@@ -11,8 +11,8 @@ Architecture
 ------------
 
 pgAdmin 4 is being written as a web application in Python, using jQuery and 
-Backbone for the client side processing and UI. On the server side, CherryPy is
-being considered.
+Bootstrap for the client side processing and UI. On the server side, Flask is
+being utilised.
 
 Although developed using web technologies, we intend for pgAdmin 4 to be usable
 either on a web server using a browser, or standalone on a workstation. The
