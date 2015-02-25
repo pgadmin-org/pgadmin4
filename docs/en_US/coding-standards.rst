@@ -156,8 +156,9 @@ Python
 
 Python is used for the backend web server. All code must be compatible with 
 Python 2.7 and should include PyDoc comments whilst following the official
-Python coding standards. An example function along with the file header is 
-shown below::
+Python coding standards defined in 
+`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_. An example function along 
+with the required file header is shown below::
 
     ##########################################################################
     #
@@ -181,7 +182,9 @@ shown below::
         
         value = ''
         for group in groups:
-            value += '{"id":%d,"label":"%s","icon":"icon-server-group","inode":true},' % (group.id, group.name)
+            value += '{"id":%d,"label":"%s","icon":"icon-server-group","inode":true},' \
+                     % (group.id, group.name)
+             
         value = value[:-1]
         
         return value
