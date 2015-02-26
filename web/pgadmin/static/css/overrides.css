@@ -1,5 +1,11 @@
 /* Overrides/fixes for pgAdmin specific styling */
 
+/* Ensure simple forms don't hit the top of the screen */
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
 /* Use the full width of the screen */
 .container {
     width: 100% !important;
@@ -18,6 +24,18 @@
 .alertify .ajs-content {
     padding-left: 0 !important;
     padding-right: 0 !important;
+}
+
+.alertify .ajs-commands button.ajs-maximize {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAK0lEQVQY02P8//8/AzGABUoTUs3IwkAkIEshIw41/8k2kfoK/xOjkJGQiQBkfAYjQxwwQgAAAABJRU5ErkJggg==) !important;
+}
+
+.alertify.ajs-modeless.ajs-pinnable .ajs-commands button.ajs-pin {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAArrAAAK6wGCiw1aAAAANElEQVQY02P8//8/AxJA4UABIwMDAwMLLgl0TdgUYgWDROF/HD7/z8DAwMiCxbdwSdq6EQDM+gkiVH1IsgAAAABJRU5ErkJggg==) !important;
+}
+
+.alertify .ajs-commands button.ajs-close {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAVElEQVQY05WQuQ0AMQgEB8lN0H9vdhnj4B7ZJwfcJkjsImBCpaIGMMYQIDNjNbe+Su9d1bsee5yM0+AbXMPfkHrdWNKv1ZVn2oJiw5OZ8eABiCrwCW8QwRIof5qAAAAAAElFTkSuQmCC) !important;
 }
 
 /* iFrames should have no border */
