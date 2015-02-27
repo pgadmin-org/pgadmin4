@@ -51,6 +51,8 @@ def index():
         
     # Add browser stylesheets
     stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
+    stylesheets.append(url_for('static', filename='css/wcDocker/style.css'))
+    stylesheets.append(url_for('static', filename='css/wcDocker/theme.css'))
     stylesheets.append(url_for('browser.static', filename='css/browser.css'))
     stylesheets.append(url_for('browser.static', filename='css/aciTree/css/aciTree.css'))
     stylesheets.append(url_for('browser.static', filename='css/jQuery-contextMenu/jQuery.contextMenu.css'))
@@ -59,6 +61,14 @@ def index():
     # Add browser scripts
     scripts.append(url_for('static', filename='js/codemirror/codemirror.js'))
     scripts.append(url_for('static', filename='js/codemirror/mode/sql.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/docker.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/splitter.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/frame.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/panel.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/layout.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/ghost.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/tabframe.js'))
+    scripts.append(url_for('static', filename='js/wcDocker/iframe.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciPlugin.min.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.dom.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.min.js'))
@@ -130,14 +140,10 @@ def browser_js():
 
     context_items = sorted(context_items, key=lambda k: k['priority'])
     
-    layout_settings = { }
-    layout_settings['sql_size'] = get_setting('Browser/SQLPane/Size', default=250)
-    layout_settings['sql_closed'] = get_setting('Browser/SQLPane/Closed', default="false")
-    layout_settings['browser_size'] = get_setting('Browser/BrowserPane/Size', default=250)
-    layout_settings['browser_closed'] = get_setting('Browser/BrowserPane/Closed', default="false")
+    layout = get_setting('Browser/Layout', default='')
     
     snippets += render_template('browser/js/browser.js', 
-                                layout_settings=layout_settings,
+                                layout=layout,
                                 context_items=context_items)
     
     # Add module and node specific code

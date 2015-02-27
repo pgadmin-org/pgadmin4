@@ -15,11 +15,9 @@
         <meta name="dcterms.dateCopyrighted" content="2014 - 2015">
 
         <!-- Base template stylesheets -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-layout/layout-default.css') }}" />
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />{% endif %}
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.min.css') }}" />{% endif %}
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.min.css') }}" />{% endif %}
-        {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui/jquery-ui.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui/jquery-ui.min.css') }}" />{% endif %}
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
         {% if stylesheets is defined %}
@@ -34,9 +32,6 @@
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/bootstrap.js') }}">{% else %}<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">{% endif %}</script>
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.js') }}">{% else %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.min.js') }}">{% endif %}</script>
         <script src="{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults.js') }}"></script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-ui/jquery-ui.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-ui/jquery-ui.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-layout/jquery.layout.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-layout/jquery.layout.min.js') }}">{% endif %}</script>
-        <script src="{{ url_for('static', filename='js/jquery-layout/plugins/jquery.layout.state.js') }}"></script>
         {% if scripts is defined %}
         <!-- View specified scripts -->
         {% for script in scripts %}
