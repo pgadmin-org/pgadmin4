@@ -123,7 +123,7 @@ loaded modules, but must use the defined hook points and fail gracefully in the
 event that a particular module is not present.
 
 Nodes
-=====
+*****
 
 Nodes are very similar to modules, but implement individual nodes on the browser
 treeview. To be recognised as a module, a Python package must be created. This 
