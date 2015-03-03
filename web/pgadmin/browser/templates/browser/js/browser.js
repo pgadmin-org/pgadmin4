@@ -15,7 +15,7 @@ $(window).bind('unload', function() {
 });
 
 // Build a regular dock panel
-function buildPanel(docker, name, width, height, showTitle, isCloseable, isPrivate, content) {
+function buildPanel(docker, name, title, width, height, showTitle, isCloseable, isPrivate, content) {
     docker.registerPanelType(name, {
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
@@ -23,6 +23,8 @@ function buildPanel(docker, name, width, height, showTitle, isCloseable, isPriva
             
             if (showTitle == false) 
                 myPanel.title(false);
+            else
+                myPanel.title(title);
 
             myPanel.closeable(isCloseable);
 
@@ -32,7 +34,7 @@ function buildPanel(docker, name, width, height, showTitle, isCloseable, isPriva
 }
 
 // Build an iFrame dock panel
-function buildIFramePanel(docker, name, width, height, showTitle, isCloseable, isPrivate, url) {
+function buildIFramePanel(docker, name, title, width, height, showTitle, isCloseable, isPrivate, url) {
     docker.registerPanelType(name, {
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
@@ -40,6 +42,8 @@ function buildIFramePanel(docker, name, width, height, showTitle, isCloseable, i
             
             if (showTitle == false) 
                 myPanel.title(false);
+            else
+                myPanel.title(title);
                 
             myPanel.closeable(isCloseable);
 
@@ -82,27 +86,27 @@ WITH ( \n\
 ALTER TABLE tickets_detail \n\
   OWNER TO helpdesk;\n';
   
-        buildPanel(docker, 'SQL', 500, 200, false, false, true, 
+        buildPanel(docker, 'sql', '{{ _('SQL') }}', 500, 200, false, false, true, 
                   '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>')
-        buildPanel(docker, 'Browser', 300, 600, false, false, true, 
+        buildPanel(docker, 'browser', '{{ _('Browser') }}', 300, 600, false, false, true, 
                   '<div id="tree" class="aciTree">')
-        buildIFramePanel(docker, 'Dashboard', 500, 600, true, false, true, 
+        buildIFramePanel(docker, 'dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true, 
                   'http://www.pgadmin.org/')
-        buildPanel(docker, 'Properties', 500, 600, true, false, true, 
+        buildPanel(docker, 'properties', '{{ _('Properties') }}', 500, 600, true, false, true, 
                   '<p>Properties pane</p>')
-        buildPanel(docker, 'Statistics', 500, 600, true, false, true, 
+        buildPanel(docker, 'statistics', '{{ _('Statistics') }}', 500, 600, true, false, true, 
                   '<p>Statistics pane</p>')
-        buildPanel(docker, 'Dependencies', 500, 600, true, false, true, 
+        buildPanel(docker, 'dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true, 
                   '<p>Depedencies pane</p>')
-        buildPanel(docker, 'Dependents', 500, 600, true, false, true, 
+        buildPanel(docker, 'dependents', '{{ _('Dependents') }}', 500, 600, true, false, true, 
                   '<p>Dependents pane</p>')
         
         // Some useful panels
-        buildIFramePanel(docker, 'Online Help', 500, 600, true, true, false, 
+        buildIFramePanel(docker, 'online_help', '{{ _('Online Help') }}', 500, 600, true, true, false, 
                          '{{ url_for('help.static', filename='index.html') }}')
-        buildIFramePanel(docker, 'pgAdmin Website', 500, 600, true, true, false, 
+        buildIFramePanel(docker, 'pgadmin_website', '{{ _('pgAdmin Website') }}', 500, 600, true, true, false, 
                          'http://www.pgadmin.org/')
-        buildIFramePanel(docker, 'PostgreSQL Website', 500, 600, true, true, false, 
+        buildIFramePanel(docker, 'postgresql_website', '{{ _('PostgreSQL Website') }}', 500, 600, true, true, false, 
                          'http://www.postgresql.org/')
 
         var layout = '{{ layout }}';
@@ -111,13 +115,13 @@ ALTER TABLE tickets_detail \n\
         if (layout != '') {
             docker.restore(layout)
         } else {
-            var dashboardPanel = docker.addPanel('Dashboard', wcDocker.DOCK_TOP, propertiesPanel);
-            var propertiesPanel = docker.addPanel('Properties', wcDocker.DOCK_STACKED, dashboardPanel);
-            var statisticsPanel = docker.addPanel('Statistics', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependenciesPanel = docker.addPanel('Dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependentsPanel = docker.addPanel('Dependents', wcDocker.DOCK_STACKED, dashboardPanel);
-            var sqlPanel = docker.addPanel('SQL', wcDocker.DOCK_BOTTOM, sqlPanel);
-            var browserPanel = docker.addPanel('Browser', wcDocker.DOCK_LEFT, browserPanel);
+            var dashboardPanel = docker.addPanel('dashboard', wcDocker.DOCK_TOP, propertiesPanel);
+            var propertiesPanel = docker.addPanel('properties', wcDocker.DOCK_STACKED, dashboardPanel);
+            var statisticsPanel = docker.addPanel('statistics', wcDocker.DOCK_STACKED, dashboardPanel);
+            var dependenciesPanel = docker.addPanel('dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
+            var dependentsPanel = docker.addPanel('dependents', wcDocker.DOCK_STACKED, dashboardPanel);
+            var sqlPanel = docker.addPanel('sql', wcDocker.DOCK_BOTTOM, sqlPanel);
+            var browserPanel = docker.addPanel('browser', wcDocker.DOCK_LEFT, browserPanel);
         }
     }
     

@@ -606,7 +606,7 @@ wcPanel.prototype = {
     var data = {};
     data.type = 'wcPanel';
     data.panelType = this._type;
-    data.title = this._title;
+    // data.title = this._title;
     // data.minSize = {
     //   x: this._minSize.x,
     //   y: this._minSize.y,
@@ -629,7 +629,7 @@ wcPanel.prototype = {
 
   // Restores a previously saved configuration.
   __restore: function(data, docker) {
-    this._title = data.title;
+    // this._title = data.title;
     // this._minSize.x = data.minSize.x;
     // this._minSize.y = data.minSize.y;
     // this._maxSize.x = data.maxSize.x;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-25 16:30+0000\n"
+"POT-Creation-Date: 2015-03-03 10:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,24 +80,28 @@ msgstr ""
 msgid "No server group was specified."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/body.html:11
-msgid "Dashboard"
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:4
+msgid "Add a server group"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/body.html:12
-msgid "Properties"
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:5
+msgid "Enter a name for the new server group"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/body.html:13
-msgid "Statistics"
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:37
+msgid "Delete server group?"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/body.html:14
-msgid "Dependencies"
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:38
+msgid "Are you sure you wish to delete the server group \"{0}\"?"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/body.html:15
-msgid "Dependents"
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:65
+msgid "Rename server group"
+msgstr ""
+
+#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:66
+msgid "Enter a new name for the server group"
 msgstr ""
 
 #: pgadmin/browser/templates/browser/index.html:8
@@ -131,6 +135,58 @@ msgstr ""
 
 #: pgadmin/browser/templates/browser/index.html:63
 msgid "Logout"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:89
+msgid "SQL"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:91
+msgid "Browser"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:93
+msgid "Dashboard"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:95
+msgid "Properties"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:97
+msgid "Statistics"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:99
+msgid "Dependencies"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:101
+msgid "Dependents"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:105
+msgid "Online Help"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:107
+msgid "pgAdmin Website"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:109
+msgid "PostgreSQL Website"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:173
+msgid "Error message"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:187
+msgid "Additional info"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:201
+msgid "An error has occurred"
 msgstr ""
 
 #: pgadmin/help/hooks.py:21
@@ -169,10 +225,6 @@ msgstr ""
 #: pgadmin/templates/security/login_user.html:12
 #, python-format
 msgid "Forgotten your <a href=\"%(url)s\">password</a>?"
-msgstr ""
-
-#: pgadmin/templates/security/messages.html:6
-msgid "Close"
 msgstr ""
 
 #: pgadmin/templates/security/reset_password.html:2
