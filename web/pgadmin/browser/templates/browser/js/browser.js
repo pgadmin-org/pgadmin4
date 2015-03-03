@@ -84,42 +84,47 @@ WITH ( \n\
 ALTER TABLE tickets_detail \n\
   OWNER TO helpdesk;\n';
   
-        buildPanel(docker, 'sql', '{{ _('SQL') }}', 500, 200, false, false, true, 
+        buildPanel(docker, 'pnl_sql', '{{ _('SQL') }}', 500, 200, false, false, true, 
                   '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>')
-        buildPanel(docker, 'browser', '{{ _('Browser') }}', 300, 600, false, false, true, 
+        buildPanel(docker, 'pnl_browser', '{{ _('Browser') }}', 300, 600, false, false, true, 
                   '<div id="tree" class="aciTree">')
-        buildIFramePanel(docker, 'dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true, 
+        buildIFramePanel(docker, 'pnl_dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true, 
                   'http://www.pgadmin.org/')
-        buildPanel(docker, 'properties', '{{ _('Properties') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_properties', '{{ _('Properties') }}', 500, 600, true, false, true, 
                   '<p>Properties pane</p>')
-        buildPanel(docker, 'statistics', '{{ _('Statistics') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_statistics', '{{ _('Statistics') }}', 500, 600, true, false, true, 
                   '<p>Statistics pane</p>')
-        buildPanel(docker, 'dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true, 
                   '<p>Depedencies pane</p>')
-        buildPanel(docker, 'dependents', '{{ _('Dependents') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_dependents', '{{ _('Dependents') }}', 500, 600, true, false, true, 
                   '<p>Dependents pane</p>')
         
-        // Some useful panels
-        buildIFramePanel(docker, 'online_help', '{{ _('Online Help') }}', 500, 600, true, true, false, 
-                         '{{ url_for('help.static', filename='index.html') }}')
-        buildIFramePanel(docker, 'pgadmin_website', '{{ _('pgAdmin Website') }}', 500, 600, true, true, false, 
-                         'http://www.pgadmin.org/')
-        buildIFramePanel(docker, 'postgresql_website', '{{ _('PostgreSQL Website') }}', 500, 600, true, true, false, 
-                         'http://www.postgresql.org/')
-
+        // Add hooked-in panels
+        {% if panel_items is defined and panel_items|count > 0 %}{% for panel_item in panel_items %}{% if panel_item.isIframe %}
+        buildIFramePanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}', 
+                                  {{ panel_item.width }}, {{ panel_item.height }}, 
+                                  {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }}, 
+                                  {{ panel_item.isPrivate|lower }}, '{{ panel_item.content }}')
+        {% else %}
+        buildPanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}', 
+                            {{ panel_item.width }}, {{ panel_item.height }}, 
+                            {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }}, 
+                            {{ panel_item.isPrivate|lower }}, '{{ panel_item.content }}')                         
+        {% endif %}{% endfor %}{% endif %}
+        
         var layout = '{{ layout }}';
         
         // Restore the layout if there is one
         if (layout != '') {
             docker.restore(layout)
         } else {
-            var dashboardPanel = docker.addPanel('dashboard', wcDocker.DOCK_TOP, propertiesPanel);
-            var propertiesPanel = docker.addPanel('properties', wcDocker.DOCK_STACKED, dashboardPanel);
-            var statisticsPanel = docker.addPanel('statistics', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependenciesPanel = docker.addPanel('dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependentsPanel = docker.addPanel('dependents', wcDocker.DOCK_STACKED, dashboardPanel);
-            var sqlPanel = docker.addPanel('sql', wcDocker.DOCK_BOTTOM, sqlPanel);
-            var browserPanel = docker.addPanel('browser', wcDocker.DOCK_LEFT, browserPanel);
+            var dashboardPanel = docker.addPanel('pnl_dashboard', wcDocker.DOCK_TOP, propertiesPanel);
+            var propertiesPanel = docker.addPanel('pnl_properties', wcDocker.DOCK_STACKED, dashboardPanel);
+            var statisticsPanel = docker.addPanel('pnl_statistics', wcDocker.DOCK_STACKED, dashboardPanel);
+            var dependenciesPanel = docker.addPanel('pnl_dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
+            var dependentsPanel = docker.addPanel('pnl_dependents', wcDocker.DOCK_STACKED, dashboardPanel);
+            var sqlPanel = docker.addPanel('pnl_sql', wcDocker.DOCK_BOTTOM, sqlPanel);
+            var browserPanel = docker.addPanel('pnl_browser', wcDocker.DOCK_LEFT, browserPanel);
         }
     }
     

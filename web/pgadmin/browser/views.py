@@ -107,13 +107,13 @@ def index():
         # Get any scripts
         if 'hooks' in dir(module) and 'get_scripts' in dir(module.hooks):
             scripts += module.hooks.get_scripts()
-
+            
     file_items = sorted(file_items, key=lambda k: k['priority'])
     edit_items = sorted(edit_items, key=lambda k: k['priority'])
     tools_items = sorted(tools_items, key=lambda k: k['priority'])
     management_items = sorted(management_items, key=lambda k: k['priority'])
     help_items = sorted(help_items, key=lambda k: k['priority'])
-    
+
     return render_template(MODULE_NAME + '/index.html', 
                            username=current_user.email, 
                            file_items=file_items, 
@@ -135,19 +135,28 @@ def browser_js():
     
     # Get the context menu items
     context_items = [ ]
+    panel_items = [ ]
+        
     modules_and_nodes = modules + nodes
     
     for module in modules_and_nodes:
+        # Get any context menu items
         if 'hooks' in dir(module) and 'get_context_menu_items' in dir(module.hooks):
             context_items.extend(module.hooks.get_context_menu_items())
+            
+        # Get any panels
+        if 'hooks' in dir(module) and 'get_panels' in dir(module.hooks):
+            panel_items += module.hooks.get_panels()
 
     context_items = sorted(context_items, key=lambda k: k['priority'])
+    panel_items = sorted(panel_items, key=lambda k: k['priority'])
     
     layout = get_setting('Browser/Layout', default='')
     
     snippets += render_template('browser/js/browser.js', 
-                                layout=layout,
-                                context_items=context_items)
+                                layout = layout,
+                                context_items = context_items,
+                                panel_items = panel_items)
     
     # Add module and node specific code
     for module in modules_and_nodes:
