@@ -89,13 +89,13 @@ ALTER TABLE tickets_detail \n\
         buildIFramePanel(docker, 'Dashboard', 500, 600, true, false, true, 
                   'http://www.pgadmin.org/')
         buildPanel(docker, 'Properties', 500, 600, true, false, true, 
-                  '<p>Dashboard pane</p>')
+                  '<p>Properties pane</p>')
         buildPanel(docker, 'Statistics', 500, 600, true, false, true, 
-                  '<p>Dashboard pane</p>')
+                  '<p>Statistics pane</p>')
         buildPanel(docker, 'Dependencies', 500, 600, true, false, true, 
-                  '<p>Dashboard pane</p>')
+                  '<p>Depedencies pane</p>')
         buildPanel(docker, 'Dependents', 500, 600, true, false, true, 
-                  '<p>Dashboard pane</p>')
+                  '<p>Dependents pane</p>')
         
         // Some useful panels
         buildIFramePanel(docker, 'Online Help', 500, 600, true, true, false, 
