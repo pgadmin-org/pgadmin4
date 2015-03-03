@@ -51,7 +51,12 @@ def index():
         
     # Add browser stylesheets
     stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
-    stylesheets.append(url_for('static', filename='css/wcDocker/style.css'))
+    
+    if config.DEBUG:
+        stylesheets.append(url_for('static', filename='css/wcDocker/wcDocker.css'))
+    else:
+        stylesheets.append(url_for('static', filename='css/wcDocker/wcDocker.min.css'))
+        
     stylesheets.append(url_for('static', filename='css/wcDocker/theme.css'))
     stylesheets.append(url_for('browser.static', filename='css/browser.css'))
     stylesheets.append(url_for('browser.static', filename='css/aciTree/css/aciTree.css'))
@@ -61,14 +66,12 @@ def index():
     # Add browser scripts
     scripts.append(url_for('static', filename='js/codemirror/codemirror.js'))
     scripts.append(url_for('static', filename='js/codemirror/mode/sql.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/docker.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/splitter.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/frame.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/panel.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/layout.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/ghost.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/tabframe.js'))
-    scripts.append(url_for('static', filename='js/wcDocker/iframe.js'))
+    
+    if config.DEBUG:
+        scripts.append(url_for('static', filename='js/wcDocker/wcDocker.js'))
+    else:
+        scripts.append(url_for('static', filename='js/wcDocker/wcDocker.min.js'))
+
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciPlugin.min.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.dom.js'))
     scripts.append(url_for('browser.static', filename='js/aciTree/jquery.aciTree.min.js'))

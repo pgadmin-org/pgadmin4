@@ -17,14 +17,13 @@ $(window).bind('unload', function() {
 // Build a regular dock panel
 function buildPanel(docker, name, title, width, height, showTitle, isCloseable, isPrivate, content) {
     docker.registerPanelType(name, {
+        title: title,
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
             myPanel.initSize(width, height);
             
             if (showTitle == false) 
                 myPanel.title(false);
-            else
-                myPanel.title(title);
 
             myPanel.closeable(isCloseable);
 
@@ -36,15 +35,14 @@ function buildPanel(docker, name, title, width, height, showTitle, isCloseable, 
 // Build an iFrame dock panel
 function buildIFramePanel(docker, name, title, width, height, showTitle, isCloseable, isPrivate, url) {
     docker.registerPanelType(name, {
+        title: title,
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
             myPanel.initSize(width, height);
             
             if (showTitle == false) 
                 myPanel.title(false);
-            else
-                myPanel.title(title);
-                
+
             myPanel.closeable(isCloseable);
 
             var $frameArea = $('<div style="width:100%;height:100%;position:relative;">');
