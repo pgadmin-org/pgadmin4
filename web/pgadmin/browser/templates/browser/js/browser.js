@@ -2,6 +2,13 @@
 var docker
 var editor
 var tree
+var dashboardPanel
+var propertiesPanel
+var statisticsPanel
+var dependenciesPanel
+var dependentsPanel
+var sqlPanel
+var browserPanel
 
 // Store the main browser layout
 $(window).bind('unload', function() { 
@@ -52,6 +59,17 @@ function buildIFramePanel(docker, name, title, width, height, showTitle, isClose
             iFrame.openURL(url);
         }
     });
+}
+
+// Build the default layout
+function buildDefaultLayout() {
+    dashboardPanel = docker.addPanel('pnl_dashboard', wcDocker.DOCK_TOP, propertiesPanel);
+    propertiesPanel = docker.addPanel('pnl_properties', wcDocker.DOCK_STACKED, dashboardPanel);
+    statisticsPanel = docker.addPanel('pnl_statistics', wcDocker.DOCK_STACKED, dashboardPanel);
+    dependenciesPanel = docker.addPanel('pnl_dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
+    dependentsPanel = docker.addPanel('pnl_dependents', wcDocker.DOCK_STACKED, dashboardPanel);
+    sqlPanel = docker.addPanel('pnl_sql', wcDocker.DOCK_BOTTOM, sqlPanel);
+    browserPanel = docker.addPanel('pnl_browser', wcDocker.DOCK_LEFT, browserPanel);
 }
 
 // Setup the browser
@@ -114,17 +132,17 @@ ALTER TABLE tickets_detail \n\
         
         var layout = '{{ layout }}';
         
-        // Restore the layout if there is one
+        // Try to restore the layout if there is one
         if (layout != '') {
-            docker.restore(layout)
+            try {
+                docker.restore(layout)
+            }
+            catch(err) {
+                docker.clear()
+                buildDefaultLayout()
+            }
         } else {
-            var dashboardPanel = docker.addPanel('pnl_dashboard', wcDocker.DOCK_TOP, propertiesPanel);
-            var propertiesPanel = docker.addPanel('pnl_properties', wcDocker.DOCK_STACKED, dashboardPanel);
-            var statisticsPanel = docker.addPanel('pnl_statistics', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependenciesPanel = docker.addPanel('pnl_dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
-            var dependentsPanel = docker.addPanel('pnl_dependents', wcDocker.DOCK_STACKED, dashboardPanel);
-            var sqlPanel = docker.addPanel('pnl_sql', wcDocker.DOCK_BOTTOM, sqlPanel);
-            var browserPanel = docker.addPanel('pnl_browser', wcDocker.DOCK_LEFT, browserPanel);
+            buildDefaultLayout()
         }
     }
     
