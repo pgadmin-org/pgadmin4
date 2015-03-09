@@ -51,7 +51,12 @@ def index():
         
     # Add browser stylesheets
     stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
-    stylesheets.append(url_for('static', filename='css/wcDocker/wcDockerSkeleton.css'))
+
+    if config.DEBUG:
+        stylesheets.append(url_for('static', filename='css/wcDocker/wcDockerSkeleton.css'))
+    else:
+        stylesheets.append(url_for('static', filename='css/wcDocker/wcDockerSkeleton.min.css'))
+
     stylesheets.append(url_for('static', filename='css/wcDocker/theme.css'))
     stylesheets.append(url_for('browser.static', filename='css/browser.css'))
     stylesheets.append(url_for('browser.static', filename='css/aciTree/css/aciTree.css'))
