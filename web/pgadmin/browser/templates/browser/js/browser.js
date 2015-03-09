@@ -53,8 +53,8 @@ function buildIFramePanel(docker, name, title, width, height, showTitle, isClose
             myPanel.closeable(isCloseable);
 
             var $frameArea = $('<div style="width:100%;height:100%;position:relative;">');
-            myPanel.layout().addItem($frameArea);
-            
+            myPanel.layout().addItem($frameArea).parent().css('height', '100%');
+
             var iFrame = new wcIFrame($frameArea, myPanel);
             iFrame.openURL(url);
         }
