@@ -19,7 +19,7 @@ from flask_mail import Mail
 from htmlmin.minify import html_minify
 from settings.settings_model import db, Role, User
 
-import inspect, imp, logging, os
+import inspect, imp, logging, os, sys
 
 # Configuration settings
 import config
@@ -66,7 +66,8 @@ def create_app(app_name=config.APP_NAME):
     app.logger.info('################################################################################')
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('################################################################################')
-
+    app.logger.debug("Python syspath: %s", sys.path)
+    
     ##########################################################################
     # Setup i18n
     ##########################################################################
@@ -117,6 +118,9 @@ def create_app(app_name=config.APP_NAME):
                 app.logger.info('Skipping blacklisted module: %s' % f)
                 continue
 
+            # Construct the "real" module name
+            f = 'pgadmin.' + f
+            
             # Looks like a module, so import it, and register the blueprint if present
             # We rely on the ordering of syspath to ensure we actually get the right
             # module here. Note that we also try to load the 'hooks' module for

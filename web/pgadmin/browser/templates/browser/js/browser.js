@@ -170,10 +170,12 @@ ALTER TABLE tickets_detail \n\
             };
             {% if context_items is defined %}
             {% for context_item in context_items %}
-            menu['{{ context_item.name }}'] = {
-                name: '{{ context_item.label }}',
-                callback: function() { {{ context_item.onclick }} }
-            };
+            if (tree.itemData(item)._type == '{{ context_item.type }}') {
+                menu['{{ context_item.name }}'] = {
+                    name: '{{ context_item.label }}',
+                    callback: function() { {{ context_item.onclick }} }
+                };
+            }
             {% endfor %}{% endif %}
             return {
                 autoHide: true,
@@ -183,6 +185,7 @@ ALTER TABLE tickets_detail \n\
         }
     });
 });
+
 
 function report_error(message, info) {
 

@@ -7,5 +7,6 @@
 #
 ##########################################################################
 
-# Define the global node list
-nodes = [ ]
+# Define the node lists
+all_nodes = [ ]
+sub_nodes = [ ]

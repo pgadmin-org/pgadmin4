@@ -16,9 +16,11 @@ from flask.ext.security import login_required
 from flask.ext.login import current_user
 from inspect import getmoduleinfo, getmembers
 
-from . import nodes
+from . import sub_nodes
+from pgadmin.browser import all_nodes
 from pgadmin import modules
 from pgadmin.settings import get_setting
+
 
 import config
 
@@ -47,7 +49,7 @@ def index():
     stylesheets = [ ]
     scripts = [ ]
 
-    modules_and_nodes = modules + nodes
+    modules_and_nodes = modules + all_nodes
         
     # Add browser stylesheets
     stylesheets.append(url_for('static', filename='css/codemirror/codemirror.css'))
@@ -129,15 +131,13 @@ def index():
 def browser_js():
     """Render and return JS snippets from the nodes and modules."""
     snippets = ''
-    modules_and_nodes = modules + nodes
+    modules_and_nodes = modules + all_nodes
     
     # Load the core browser code first
     
     # Get the context menu items
     context_items = [ ]
     panel_items = [ ]
-        
-    modules_and_nodes = modules + nodes
     
     for module in modules_and_nodes:
         # Get any context menu items
@@ -174,7 +174,7 @@ def browser_js():
 def browser_css():
     """Render and return CSS snippets from the nodes and modules."""
     snippets = ''
-    modules_and_nodes = modules + nodes
+    modules_and_nodes = modules + all_nodes
     
     for module in modules_and_nodes:
         if 'hooks' in dir(module) and 'get_css_snippets' in dir(module.hooks):
@@ -187,13 +187,13 @@ def browser_css():
     return resp
 
 
-@blueprint.route("/root-nodes.json")
+@blueprint.route("/nodes/")
 @login_required
 def get_nodes():
-    """Build a list of treeview nodes from the child modules."""
+    """Build a list of treeview nodes from the child nodes."""
     value = '['
     
-    for node in nodes:
+    for node in sub_nodes:
         if 'hooks' in dir(node) and 'get_nodes' in dir(node.hooks):
             value += node.hooks.get_nodes() + ','
         

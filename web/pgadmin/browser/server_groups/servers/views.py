@@ -7,37 +7,33 @@
 #
 ##########################################################################
 
-"""Defines views for management of server groups"""
+"""Defines views for management of servers"""
 
-NODE_NAME = 'server-group'
-
-NODE_PATH = '/browser/' + NODE_NAME
-
-import traceback
 from flask import Blueprint, Response, current_app, request
 from flask.ext.babel import gettext
 from flask.ext.security import current_user, login_required
 
-from utils.ajax import make_json_response
+from . import NODE_TYPE, NODE_PATH
+from pgadmin.utils.ajax import make_json_response
 from pgadmin.settings.settings_model import db, ServerGroup
 import config
 
 # Initialise the module
-blueprint = Blueprint("NODE-" + NODE_NAME, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix=NODE_PATH)
+blueprint = Blueprint("NODE-" + NODE_TYPE, __name__, static_folder='static',  static_url_path='', template_folder='templates', url_prefix=NODE_PATH)
 
 @blueprint.route('/add/', methods=['POST'])
 @login_required
 def add():
-    """Add a server group node to the settings database"""
+    """Add a server node to the settings database"""
     success = 1
     errormsg = ''
     data = { }
     
     if request.form['name'] != '':
-        servergroup = ServerGroup(user_id=current_user.id, name=request.form['name'])
+        server = Server(user_id=current_user.id, name=request.form['name'])
 
         try:
-            db.session.add(servergroup)
+            db.session.add(server)
             db.session.commit()
         except Exception as e:
             success = 0
@@ -45,11 +41,11 @@ def add():
 
     else:
         success = 0
-        errormsg = gettext('No server group name was specified')
+        errormsg = gettext('No server name was specified')
             
     if success == 1:
-        data['id'] = servergroup.id
-        data['name'] = servergroup.name
+        data['id'] = server.id
+        data['name'] = server.name
         
     return make_json_response(success=success, 
                               errormsg=errormsg, 
@@ -60,20 +56,20 @@ def add():
 @blueprint.route('/delete/', methods=['POST'])
 @login_required
 def delete():
-    """Delete a server group node in the settings database"""
+    """Delete a server node in the settings database"""
     success = 1
     errormsg = ''
 
     if request.form['id'] != '':
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        servergroup = Server.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
         
-        if servergroup is None:
+        if server is None:
             success = 0
-            errormsg = gettext('The specified server group could not be found.')
+            errormsg = gettext('The specified server could not be found.')
         else:
             try:
-                db.session.delete(servergroup)
+                db.session.delete(server)
                 db.session.commit()
             except Exception as e:
                 success = 0
@@ -81,7 +77,7 @@ def delete():
 
     else:
         success = 0
-        errormsg = gettext('No server group  was specified.')
+        errormsg = gettext('No server was specified.')
             
     return make_json_response(success=success, 
                               errormsg=errormsg, 
@@ -91,20 +87,20 @@ def delete():
 @blueprint.route('/rename/', methods=['POST'])
 @login_required
 def rename():
-    """Rename a server group node in the settings database"""
+    """Rename a server node in the settings database"""
     success = 1
     errormsg = ''
 
     if request.form['id'] != '':
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        servergroup = Server.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
         
-        if servergroup is None:
+        if server is None:
             success = 0
-            errormsg = gettext('The specified server group could not be found.')
+            errormsg = gettext('The specified server could not be found.')
         else:
             try:
-                servergroup.name = request.form['name']
+                server.name = request.form['name']
                 db.session.commit()
             except Exception as e:
                 success = 0
@@ -112,7 +108,7 @@ def rename():
 
     else:
         success = 0
-        errormsg = gettext('No server group was specified.')
+        errormsg = gettext('No server was specified.')
             
     return make_json_response(success=success, 
                               errormsg=errormsg, 

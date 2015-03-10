@@ -15,7 +15,7 @@ from flask import Blueprint, Response, abort, request, render_template
 from flask.ext.security import login_required
 
 import config
-from utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response
 from . import get_setting, store_setting
 
 # Initialise the module

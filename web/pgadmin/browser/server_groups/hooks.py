@@ -13,15 +13,23 @@ from flask import render_template, url_for
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
 
+from pgadmin.browser.utils import register_modules
 from pgadmin.settings.settings_model import db, ServerGroup
 
+from pgadmin.browser import all_nodes
+from . import NODE_TYPE, sub_nodes
+
+def register_submodules(app):
+    """Register any child node blueprints"""
+    register_modules(app, __file__, all_nodes, sub_nodes, 'pgadmin.browser.server_groups')
+    
 def get_nodes():
     """Return a JSON document listing the server groups for the user"""
     groups = ServerGroup.query.filter_by(user_id=current_user.id)
     
     value = ''
     for group in groups:
-        value += '{"id":%d,"label":"%s","icon":"icon-server-group","inode":true},' % (group.id, group.name)
+        value += '{"id":"%s/%d","label":"%s","icon":"icon-%s","inode":true,"_type":"%s"},' % (NODE_TYPE, group.id, group.name, NODE_TYPE, NODE_TYPE)
     value = value[:-1]
     
     return value
@@ -38,10 +46,10 @@ def get_file_menu_items():
 
 
 def get_context_menu_items():
-    """Return a (set) of dicts of content menu items with name, label, priority and JS"""
+    """Return a (set) of dicts of content menu items with name, node type, label, priority and JS"""
     return [
-            {'name': 'delete', 'label': gettext('Delete server group'), 'priority': 100, 'onclick': 'delete_server_group(item);'},
-            {'name': 'rename', 'label': gettext('Rename server group...'), 'priority': 200, 'onclick': 'rename_server_group(item);'}
+            {'name': 'delete_server_group', 'type': NODE_TYPE, 'label': gettext('Delete server group'), 'priority': 10, 'onclick': 'delete_server_group(item);'},
+            {'name': 'rename_server_group', 'type': NODE_TYPE, 'label': gettext('Rename server group...'), 'priority': 20, 'onclick': 'rename_server_group(item);'}
            ]
     
     
@@ -54,7 +62,7 @@ def get_css_snippets():
     """Return the CSS needed to display the treeview node image."""
     css = ".icon-server-group {\n"
     css += " background: url('%s') 0 0 no-repeat !important;\n" % \
-            url_for('NODE-server-group.static', filename='img/server-group.png')
-    css += "{"
+            url_for('NODE-%s.static' % NODE_TYPE, filename='img/server-group.png')
+    css += "}\n"
     
     return css

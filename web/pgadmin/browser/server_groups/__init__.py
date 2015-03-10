@@ -7,9 +7,9 @@
 #
 ##########################################################################
 
-"""Base class for Object Nodes on the browser treeview"""
+# Node meta data
+NODE_TYPE = 'server-group'
+NODE_PATH = '/browser/nodes/' + NODE_TYPE
 
-def get_name():
-    """Returns the object's name"""
-    return ""
-    
+# Define the child node list
+sub_nodes = [ ]

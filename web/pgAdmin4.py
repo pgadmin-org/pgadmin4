@@ -15,7 +15,9 @@ import os, sys
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+root = os.path.dirname(os.path.realpath(__file__))
+if sys.path[0] != root:
+    sys.path.insert(0, root)
 
 import config
 from pgadmin import create_app
@@ -47,7 +49,6 @@ if not os.path.isfile(config.SQLITE_PATH):
 
 # Create the app!
 app = create_app()
-app.logger.debug("Python syspath: %s", sys.path)
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the 
