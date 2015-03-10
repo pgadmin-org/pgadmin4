@@ -65,10 +65,10 @@ function buildIFramePanel(docker, name, title, width, height, showTitle, isClose
 function buildDefaultLayout() {
     dashboardPanel = docker.addPanel('pnl_dashboard', wcDocker.DOCK_TOP, propertiesPanel);
     propertiesPanel = docker.addPanel('pnl_properties', wcDocker.DOCK_STACKED, dashboardPanel);
+    sqlPanel = docker.addPanel('pnl_sql', wcDocker.DOCK_STACKED, dashboardPanel);
     statisticsPanel = docker.addPanel('pnl_statistics', wcDocker.DOCK_STACKED, dashboardPanel);
     dependenciesPanel = docker.addPanel('pnl_dependencies', wcDocker.DOCK_STACKED, dashboardPanel);
     dependentsPanel = docker.addPanel('pnl_dependents', wcDocker.DOCK_STACKED, dashboardPanel);
-    sqlPanel = docker.addPanel('pnl_sql', wcDocker.DOCK_BOTTOM, sqlPanel);
     browserPanel = docker.addPanel('pnl_browser', wcDocker.DOCK_LEFT, browserPanel);
 }
 
@@ -78,7 +78,7 @@ $(document).ready(function(){
     docker = new wcDocker('.dockerContainer');
     if (docker) {
 
-    demoSql = '-- DROP TABLE tickets_detail; \n\
+        demoSql = '-- DROP TABLE tickets_detail; \n\
  \n\
 CREATE TABLE tickets_detail \n\
 ( \n\
@@ -102,14 +102,14 @@ WITH ( \n\
 ALTER TABLE tickets_detail \n\
   OWNER TO helpdesk;\n';
   
-        buildPanel(docker, 'pnl_sql', '{{ _('SQL') }}', 500, 200, false, false, true, 
-                  '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>')
         buildPanel(docker, 'pnl_browser', '{{ _('Browser') }}', 300, 600, false, false, true, 
                   '<div id="tree" class="aciTree">')
         buildIFramePanel(docker, 'pnl_dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true, 
                   'http://www.pgadmin.org/')
         buildPanel(docker, 'pnl_properties', '{{ _('Properties') }}', 500, 600, true, false, true, 
                   '<p>Properties pane</p>')
+        buildPanel(docker, 'pnl_sql', '{{ _('SQL') }}', 500, 600, true, false, true, 
+                  '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>')
         buildPanel(docker, 'pnl_statistics', '{{ _('Statistics') }}', 500, 600, true, false, true, 
                   '<p>Statistics pane</p>')
         buildPanel(docker, 'pnl_dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true, 
