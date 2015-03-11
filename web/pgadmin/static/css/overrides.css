@@ -63,3 +63,8 @@ iframe {
     height: 8em;
     overflow: scroll;
 }
+
+/* Prevent tree items wrapping */
+.aciTree .aciTreeItem {
+    white-space: nowrap !important;
+}
