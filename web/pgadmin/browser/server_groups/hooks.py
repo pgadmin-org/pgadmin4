@@ -35,20 +35,28 @@ def get_nodes():
     return value
 
     
-def get_file_menu_items():
-    """Return a (set) of dicts of file menu items, with name, priority, URL, 
-    target and onclick code."""
+def get_standard_menu_items():
+    """Return a (set) of dicts of standard menu items (create/drop/rename), with 
+    object type, action and the function name (no parens) to call on click."""
     return [
-            {'name': 'mnu_add_server_group', 'label': gettext('Add a server group...'), 'priority': 10, 'url': '#', 'onclick': 'add_server_group()'},
-            {'name': 'mnu_delete_server_group', 'label': gettext('Delete server group'), 'priority': 20, 'url': '#', 'onclick': 'delete_server_group()'},
-            {'name': 'mnu_rename_server_group', 'label': gettext('Rename server group...'), 'priority': 30, 'url': '#', 'onclick': 'rename_server_group()'}
+            {'type': 'server-group', 'action': 'drop', 'priority': 10, 'function': 'drop_server_group'},
+            {'type': 'server-group', 'action': 'rename', 'priority': 20, 'function': 'rename_server_group'}
            ]
 
 
+def get_create_menu_items():
+    """Return a (set) of dicts of create menu items, with a Javascript array of 
+    object types on which the option should appear, name, label and the function 
+    name (no parens) to call on click."""
+    return [
+            {'type': "['server-group']", 'name': 'create_server_group', 'label': gettext('Server Group...'), 'priority': 10, 'function': 'create_server_group'}
+           ]
+    
+    
 def get_context_menu_items():
     """Return a (set) of dicts of content menu items with name, node type, label, priority and JS"""
     return [
-            {'name': 'delete_server_group', 'type': NODE_TYPE, 'label': gettext('Delete server group'), 'priority': 10, 'onclick': 'delete_server_group(item);'},
+            {'name': 'delete_server_group', 'type': NODE_TYPE, 'label': gettext('Delete server group'), 'priority': 10, 'onclick': 'drop_server_group(item);'},
             {'name': 'rename_server_group', 'type': NODE_TYPE, 'label': gettext('Rename server group...'), 'priority': 20, 'onclick': 'rename_server_group(item);'}
            ]
     

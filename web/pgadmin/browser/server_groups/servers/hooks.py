@@ -28,20 +28,28 @@ def get_nodes(server_group):
     return value
 
     
-def get_file_menu_items():
-    """Return a (set) of dicts of file menu items, with name, priority, URL, 
-    target and onclick code."""
+def get_standard_menu_items():
+    """Return a (set) of dicts of standard menu items (create/drop/rename), with 
+    object type, action, priority and the function to call on click."""
     return [
-            {'name': 'mnu_add_server', 'label': gettext('Add a server...'), 'priority': 50, 'url': '#', 'onclick': 'add_server()'},
-            {'name': 'mnu_delete_server', 'label': gettext('Delete server'), 'priority': 60, 'url': '#', 'onclick': 'delete_server()'},
-            {'name': 'mnu_rename_server', 'label': gettext('Rename server...'), 'priority': 70, 'url': '#', 'onclick': 'rename_server()'}
+            {'type': 'server', 'action': 'drop', 'priority': 50, 'function': 'drop_server'},
+            {'type': 'server', 'action': 'rename', 'priority': 60, 'function': 'rename_server'}
+           ]
+    
+
+def get_create_menu_items():
+    """Return a (set) of dicts of create menu items, with a Javascript array of 
+    object types on which the option should appear, name, label, priority and 
+    the function name (no parens) to call on click."""
+    return [
+            {'type': "['server-group', 'server']", 'name': 'create_server', 'label': gettext('Server...'), 'priority': 50, 'function': 'create_server'}
            ]
 
 
 def get_context_menu_items():
     """Return a (set) of dicts of content menu items with name, node type, label, priority and JS"""
     return [
-            {'name': 'delete_server', 'type': NODE_TYPE, 'label': gettext('Delete server'), 'priority': 50, 'onclick': 'delete_server(item);'},
+            {'name': 'delete_server', 'type': NODE_TYPE, 'label': gettext('Delete server'), 'priority': 50, 'onclick': 'drop_server(item);'},
             {'name': 'rename_server', 'type': NODE_TYPE, 'label': gettext('Rename server...'), 'priority': 60, 'onclick': 'rename_server(item);'}
            ]
     

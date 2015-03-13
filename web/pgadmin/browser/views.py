@@ -136,10 +136,20 @@ def browser_js():
     # Load the core browser code first
     
     # Get the context menu items
+    standard_items = [ ]
+    create_items = [ ]
     context_items = [ ]
     panel_items = [ ]
     
     for module in modules_and_nodes:
+        # Get any standard menu items
+        if 'hooks' in dir(module) and 'get_standard_menu_items' in dir(module.hooks):
+            standard_items.extend(module.hooks.get_standard_menu_items())
+
+        # Get any create menu items
+        if 'hooks' in dir(module) and 'get_create_menu_items' in dir(module.hooks):
+            create_items.extend(module.hooks.get_create_menu_items())
+            
         # Get any context menu items
         if 'hooks' in dir(module) and 'get_context_menu_items' in dir(module.hooks):
             context_items.extend(module.hooks.get_context_menu_items())
@@ -148,6 +158,8 @@ def browser_js():
         if 'hooks' in dir(module) and 'get_panels' in dir(module.hooks):
             panel_items += module.hooks.get_panels()
 
+    standard_items = sorted(standard_items, key=lambda k: k['priority'])
+    create_items = sorted(create_items, key=lambda k: k['priority'])
     context_items = sorted(context_items, key=lambda k: k['priority'])
     panel_items = sorted(panel_items, key=lambda k: k['priority'])
     
@@ -155,6 +167,8 @@ def browser_js():
     
     snippets += render_template('browser/js/browser.js', 
                                 layout = layout,
+                                standard_items = standard_items,
+                                create_items = create_items,
                                 context_items = context_items,
                                 panel_items = panel_items)
     

@@ -10,6 +10,7 @@
 """Browser integration functions for the About module."""
 
 from flask import render_template, url_for
+from flask.ext.babel import gettext
 
 import config
 
@@ -17,7 +18,7 @@ def get_help_menu_items():
     """Return a (set) of dicts of help menu items, with name, priority, URL, 
     target and onclick code."""
     return [{'name': 'mnu_about',
-             'label': 'About %s' % (config.APP_NAME), 
+             'label': gettext('About %(appname)s', appname=config.APP_NAME), 
              'priority': 999, 
              'url': "#", 
              'onclick': "about_show()"}]

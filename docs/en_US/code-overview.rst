@@ -146,6 +146,16 @@ The hook points currently defined for nodes are:
     
     def get_context_menu_items():
         """Return a (set) of dicts of content menu items with name, label, priority and JS"""
+
+    def get_create_menu_items():
+        """Return a (set) of dicts of create menu items, with a Javascript array of 
+        object types on which the option should appear, name, label. priority and
+        the function name (no parens) to call on click."""
+    
+    def get_standard_menu_items():
+        """Return a (set) of dicts of standard menu items (drop/rename), with 
+        object type, action, priority and the function name (no parens) to call 
+        on click."""
     
     def get_script_snippets():
         """Return the script snippets needed to handle treeview node operations."""

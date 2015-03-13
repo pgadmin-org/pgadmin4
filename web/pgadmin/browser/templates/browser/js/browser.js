@@ -72,6 +72,142 @@ function buildDefaultLayout() {
     browserPanel = docker.addPanel('pnl_browser', wcDocker.DOCK_LEFT, browserPanel);
 }
 
+function report_error(message, info) {
+
+    text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
+  <div class="panel panel-default">\
+    <div class="panel-heading" role="tab" id="headingOne">\
+      <h4 class="panel-title">\
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">\
+          {{ _('Error message') }}\
+        </a>\
+      </h4>\
+    </div>\
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
+      <div class="panel-body" style="overflow: scroll;">' + message + '</div>\
+    </div>\
+  </div>'
+  
+    if (info != null && info != '') {
+        text += '<div class="panel panel-default">\
+    <div class="panel-heading" role="tab" id="headingTwo">\
+      <h4 class="panel-title">\
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">\
+          {{ _('Additional info') }}\
+        </a>\
+      </h4>\
+    </div>\
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\
+      <div class="panel-body" style="overflow: scroll;">' + info + '</div>\
+    </div>\
+  </div>\
+</div>'
+    }
+    
+    text += '</div>'
+    
+    alertify.alert(
+        '{{ _('An error has occurred') }}',
+        text
+    )
+}
+
+
+// Enable/disable menu options
+function enable_disable_menus() {
+    
+    // Disable everything first
+    $("#mnu_create").html('<li class="menu-item disabled"><a href="#">{{ _('No object selected') }}</a></li>\n');
+    $("#mnu_drop_object").addClass("mnu-disabled"); 
+    $("#mnu_rename_object").addClass("mnu-disabled"); 
+    node_type = get_selected_node_type()
+    
+    // List the possible standard items, their types and actions
+    var handlers = [{% if standard_items is defined %}{% for standard_item in standard_items %}
+        "{{ standard_item.type }}:{{ standard_item.action }}",{% endfor %}{% endif %} 
+    ]
+    
+    // Check if we have a matching action for the object type in the list, and
+    // if so, enable the menu item
+    if ($.inArray(node_type + ":drop", handlers) >= 0)
+        $("#mnu_drop_object").removeClass("mnu-disabled"); 
+        
+    if ($.inArray(node_type + ":rename", handlers) >= 0)
+        $("#mnu_rename_object").removeClass("mnu-disabled");
+        
+    // List the possibe create items
+    var creators = [{% if create_items is defined %}{% for create_item in create_items %}
+        [{{ create_item.type }}, "{{ create_item.name }}", "{{ create_item.label }}", "{{ create_item.function }}"],{% endfor %}{% endif %} 
+    ]
+    
+    // Loop through the list of creators and add links for any that apply to this
+    // node type to the Create menu's UL element
+    items = ''
+    
+    for (i = 0; i < creators.length; ++i) {
+        if ($.inArray(node_type, creators[i][0]) >= 0) {
+            items = items + '<li class="menu-item"><a href="#" onclick="' + creators[i][3] + '()">' + creators[i][2] + '</a></li>\n'
+        }
+    }
+    if (items != '')
+        $("#mnu_create").html(items);
+}
+
+// Get the selected treeview item type, or nowt
+function get_selected_node_type() {
+    item = tree.selected()
+    if (!item || item.length != 1)
+        return "";
+        
+    return tree.itemData(tree.selected())._type;
+}
+    
+// Create a new object of the type currently selected
+function create_object() {
+    node_type = get_selected_node_type()
+    if (node_type == "")
+        return;
+    
+    switch(node_type) {
+    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'create' %}
+        case '{{ standard_item.type }}':
+             {{ standard_item.function }}()
+             break;
+    {% endif %}{% endfor %}{% endif %} 
+    }
+}
+
+// Drop the selected object
+function drop_object() {
+    node_type = get_selected_node_type()
+    if (node_type == "")
+        return;
+    
+    switch(node_type) {
+    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'drop' %}
+        case '{{ standard_item.type }}':
+             {{ standard_item.function }}(tree.selected())
+             break;
+    {% endif %}{% endfor %}{% endif %} 
+    }
+}
+
+// Rename the selected object
+function rename_object() {
+    node_type = get_selected_node_type()
+    if (node_type == "")
+        return;
+    
+    switch(node_type) {
+    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'rename' %}
+        case '{{ standard_item.type }}':
+             {{ standard_item.function }}(tree.selected())
+             break;
+    {% endif %}{% endfor %}{% endif %} 
+    }
+}
+
+
 // Setup the browser
 $(document).ready(function(){
 
@@ -166,15 +302,23 @@ ALTER TABLE tickets_detail \n\
         selector: '.aciTreeLine',
         build: function(element) {
             var item = tree.itemFrom(element);
-            var menu = {
-            };
+            var menu = { };
+            var createMenu = { };
+
+            {% if create_items is defined %}
+            {% for create_item in create_items %}
+            if ($.inArray(tree.itemData(item)._type, {{ create_item.type }}) >= 0) {
+                createMenu['{{ create_item.name }}'] = { name: '{{ create_item.label }}', callback: function() { {{ create_item.function }}() }};
+            }
+            {% endfor %}{% endif %}
+            
+            menu["create"] = { "name": "Create" }            
+            menu["create"]["items"] = createMenu
+            
             {% if context_items is defined %}
             {% for context_item in context_items %}
             if (tree.itemData(item)._type == '{{ context_item.type }}') {
-                menu['{{ context_item.name }}'] = {
-                    name: '{{ context_item.label }}',
-                    callback: function() { {{ context_item.onclick }} }
-                };
+                menu['{{ context_item.name }}'] = { name: '{{ context_item.label }}', callback: function() { {{ context_item.onclick }} }};
             }
             {% endfor %}{% endif %}
             return {
@@ -184,45 +328,19 @@ ALTER TABLE tickets_detail \n\
             };
         }
     });
+    
+    // Treeview event handler
+    $('#tree').on('acitree', function(event, api, item, eventName, options){
+        switch (eventName){
+            case "selected":
+                enable_disable_menus()
+                break;
+        }
+    });
+
+    
+    // Setup the menus
+    enable_disable_menus()
 });
 
 
-function report_error(message, info) {
-
-    text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
-  <div class="panel panel-default">\
-    <div class="panel-heading" role="tab" id="headingOne">\
-      <h4 class="panel-title">\
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">\
-          {{ _('Error message') }}\
-        </a>\
-      </h4>\
-    </div>\
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
-      <div class="panel-body" style="overflow: scroll;">' + message + '</div>\
-    </div>\
-  </div>'
-  
-    if (info != '') {
-        text += '<div class="panel panel-default">\
-    <div class="panel-heading" role="tab" id="headingTwo">\
-      <h4 class="panel-title">\
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">\
-          {{ _('Additional info') }}\
-        </a>\
-      </h4>\
-    </div>\
-    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\
-      <div class="panel-body" style="overflow: scroll;">' + info + '</div>\
-    </div>\
-  </div>\
-</div>'
-    }
-    
-    text += '</div>'
-    
-    alertify.alert(
-        '{{ _('An error has occurred') }}',
-        text
-    )   
-}

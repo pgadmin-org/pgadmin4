@@ -1,7 +1,7 @@
 // Add a server
-function add_server() {
+function create_server() {
     var alert = alertify.prompt(
-        '{{ _('Add a server') }}',
+        '{{ _('Create a server') }}',
         '{{ _('Enter a name for the new server') }}', 
         '', 
         function(evt, value) { 
@@ -32,12 +32,12 @@ function add_server() {
 }
 
 // Delete a server
-function delete_server(item) {
+function drop_server(item) {
     alertify.confirm(
-        '{{ _('Delete server?') }}',
-        '{{ _('Are you sure you wish to delete the server "{0}"?') }}'.replace('{0}', tree.getLabel(item)),
+        '{{ _('Drop server?') }}',
+        '{{ _('Are you sure you wish to drop the server "{0}"?') }}'.replace('{0}', tree.getLabel(item)),
         function() {
-            var id = tree.getId(item)
+            var id = tree.getId(item).split('/').pop()
             $.post("{{ url_for('NODE-server.delete') }}", { id: id })
                 .done(function(data) {
                     if (data.success == 0) {
@@ -66,7 +66,7 @@ function rename_server(item) {
         '{{ _('Enter a new name for the server') }}', 
         tree.getLabel(item), 
         function(evt, value) {
-            var id = tree.getId(item)
+            var id = tree.getId(item).split('/').pop()
             $.post("{{ url_for('NODE-server.rename') }}", { id: id, name: value })
                 .done(function(data) {
                     if (data.success == 0) {

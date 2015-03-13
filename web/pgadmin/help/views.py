@@ -11,10 +11,6 @@
 MODULE_NAME = 'help'
 
 from flask import Blueprint
-from flaskext.gravatar import Gravatar
-from flask.ext.security import login_required
-from flask.ext.login import current_user
-from inspect import getmoduleinfo, getmembers
 
 import config
 

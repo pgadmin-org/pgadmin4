@@ -144,6 +144,7 @@
 
 .wcMenuList, .context-menu-list {
   border: 1px solid #dddddd;
+  z-index: 999 !important;
 }
 
 .wcMenuItem, .context-menu-item {
@@ -200,4 +201,8 @@
 
 .wcLayout, .wcLayout tr, .wcLayout td {
     vertical-align: top;
+}
+
+.context-menu-submenu:after {
+  content: '>' !important;
 }
