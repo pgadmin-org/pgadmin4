@@ -1,21 +1,21 @@
 // Page globals
-var docker
-var editor
-var tree
-var dashboardPanel
-var propertiesPanel
-var statisticsPanel
-var dependenciesPanel
-var dependentsPanel
-var sqlPanel
-var browserPanel
+var docker;
+var editor;
+var tree;
+var dashboardPanel;
+var propertiesPanel;
+var statisticsPanel;
+var dependenciesPanel;
+var dependentsPanel;
+var sqlPanel;
+var browserPanel;
 
 // Store the main browser layout
-$(window).bind('unload', function() { 
+$(window).bind('unload', function() {
     state = docker.save();
-    settings = { setting: "Browser/Layout", 
+    settings = { setting: "Browser/Layout",
                  value: state }
-    
+
     $.post("{{ url_for('settings.store') }}", settings);
 
     return true
@@ -28,8 +28,8 @@ function buildPanel(docker, name, title, width, height, showTitle, isCloseable, 
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
             myPanel.initSize(width, height);
-            
-            if (showTitle == false) 
+
+            if (showTitle == false)
                 myPanel.title(false);
 
             myPanel.closeable(isCloseable);
@@ -46,8 +46,8 @@ function buildIFramePanel(docker, name, title, width, height, showTitle, isClose
         isPrivate: isPrivate,
         onCreate: function(myPanel) {
             myPanel.initSize(width, height);
-            
-            if (showTitle == false) 
+
+            if (showTitle == false)
                 myPanel.title(false);
 
             myPanel.closeable(isCloseable);
@@ -87,7 +87,7 @@ function report_error(message, info) {
       <div class="panel-body" style="overflow: scroll;">' + message + '</div>\
     </div>\
   </div>'
-  
+
     if (info != null && info != '') {
         text += '<div class="panel panel-default">\
     <div class="panel-heading" role="tab" id="headingTwo">\
@@ -103,9 +103,9 @@ function report_error(message, info) {
   </div>\
 </div>'
     }
-    
+
     text += '</div>'
-    
+
     alertify.alert(
         '{{ _('An error has occurred') }}',
         text
@@ -115,35 +115,35 @@ function report_error(message, info) {
 
 // Enable/disable menu options
 function enable_disable_menus() {
-    
+
     // Disable everything first
     $("#mnu_create").html('<li class="menu-item disabled"><a href="#">{{ _('No object selected') }}</a></li>\n');
-    $("#mnu_drop_object").addClass("mnu-disabled"); 
-    $("#mnu_rename_object").addClass("mnu-disabled"); 
+    $("#mnu_drop_object").addClass("mnu-disabled");
+    $("#mnu_rename_object").addClass("mnu-disabled");
     node_type = get_selected_node_type()
-    
+
     // List the possible standard items, their types and actions
-    var handlers = [{% if standard_items is defined %}{% for standard_item in standard_items %}
-        "{{ standard_item.type }}:{{ standard_item.action }}",{% endfor %}{% endif %} 
+    var handlers = [{% for standard_item in menu_items.standard_items %}
+        "{{ standard_item.type }}:{{ standard_item.action }}",{% endfor %}
     ]
-    
+
     // Check if we have a matching action for the object type in the list, and
     // if so, enable the menu item
     if ($.inArray(node_type + ":drop", handlers) >= 0)
-        $("#mnu_drop_object").removeClass("mnu-disabled"); 
-        
+        $("#mnu_drop_object").removeClass("mnu-disabled");
+
     if ($.inArray(node_type + ":rename", handlers) >= 0)
         $("#mnu_rename_object").removeClass("mnu-disabled");
-        
+
     // List the possibe create items
-    var creators = [{% if create_items is defined %}{% for create_item in create_items %}
-        [{{ create_item.type }}, "{{ create_item.name }}", "{{ create_item.label }}", "{{ create_item.function }}"],{% endfor %}{% endif %} 
+    var creators = [{% for create_item in menu_items.create_items %}
+        [{{ create_item.types | tojson }}, "{{ create_item.name }}", "{{ create_item.label }}", "{{ create_item.function }}"],{% endfor %}
     ]
-    
+
     // Loop through the list of creators and add links for any that apply to this
     // node type to the Create menu's UL element
     items = ''
-    
+
     for (i = 0; i < creators.length; ++i) {
         if ($.inArray(node_type, creators[i][0]) >= 0) {
             items = items + '<li class="menu-item"><a href="#" onclick="' + creators[i][3] + '()">' + creators[i][2] + '</a></li>\n'
@@ -158,22 +158,22 @@ function get_selected_node_type() {
     item = tree.selected()
     if (!item || item.length != 1)
         return "";
-        
+
     return tree.itemData(tree.selected())._type;
 }
-    
+
 // Create a new object of the type currently selected
 function create_object() {
     node_type = get_selected_node_type()
     if (node_type == "")
         return;
-    
+
     switch(node_type) {
-    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'create' %}
+    {% for standard_item in menu_items.standard_items %}{% if standard_item.action == 'create' %}
         case '{{ standard_item.type }}':
              {{ standard_item.function }}()
              break;
-    {% endif %}{% endfor %}{% endif %} 
+    {% endif %}{% endfor %}
     }
 }
 
@@ -182,13 +182,13 @@ function drop_object() {
     node_type = get_selected_node_type()
     if (node_type == "")
         return;
-    
+
     switch(node_type) {
-    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'drop' %}
+    {% for standard_item in menu_items.standard_items %}{% if standard_item.action == 'drop' %}
         case '{{ standard_item.type }}':
              {{ standard_item.function }}(tree.selected())
              break;
-    {% endif %}{% endfor %}{% endif %} 
+    {% endif %}{% endfor %}
     }
 }
 
@@ -197,13 +197,13 @@ function rename_object() {
     node_type = get_selected_node_type()
     if (node_type == "")
         return;
-    
+
     switch(node_type) {
-    {% if standard_items is defined %}{% for standard_item in standard_items %}{% if standard_item.action == 'rename' %}
+    {% for standard_item in menu_items.standard_items %}{% if standard_item.action == 'rename' %}
         case '{{ standard_item.type }}':
              {{ standard_item.function }}(tree.selected())
              break;
-    {% endif %}{% endfor %}{% endif %} 
+    {% endif %}{% endfor %}
     }
 }
 
@@ -237,37 +237,37 @@ WITH ( \n\
 ); \n\
 ALTER TABLE tickets_detail \n\
   OWNER TO helpdesk;\n';
-  
-        buildPanel(docker, 'pnl_browser', '{{ _('Browser') }}', 300, 600, false, false, true, 
+
+        buildPanel(docker, 'pnl_browser', '{{ _('Browser') }}', 300, 600, false, false, true,
                   '<div id="tree" class="aciTree">')
-        buildIFramePanel(docker, 'pnl_dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true, 
+        buildIFramePanel(docker, 'pnl_dashboard', '{{ _('Dashboard') }}', 500, 600, true, false, true,
                   'http://www.pgadmin.org/')
-        buildPanel(docker, 'pnl_properties', '{{ _('Properties') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_properties', '{{ _('Properties') }}', 500, 600, true, false, true,
                   '<p>Properties pane</p>')
-        buildPanel(docker, 'pnl_sql', '{{ _('SQL') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_sql', '{{ _('SQL') }}', 500, 600, true, false, true,
                   '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>')
-        buildPanel(docker, 'pnl_statistics', '{{ _('Statistics') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_statistics', '{{ _('Statistics') }}', 500, 600, true, false, true,
                   '<p>Statistics pane</p>')
-        buildPanel(docker, 'pnl_dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_dependencies', '{{ _('Dependencies') }}', 500, 600, true, false, true,
                   '<p>Depedencies pane</p>')
-        buildPanel(docker, 'pnl_dependents', '{{ _('Dependents') }}', 500, 600, true, false, true, 
+        buildPanel(docker, 'pnl_dependents', '{{ _('Dependents') }}', 500, 600, true, false, true,
                   '<p>Dependents pane</p>')
-        
+
         // Add hooked-in panels
-        {% if panel_items is defined and panel_items|count > 0 %}{% for panel_item in panel_items %}{% if panel_item.isIframe %}
-        buildIFramePanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}', 
-                                  {{ panel_item.width }}, {{ panel_item.height }}, 
-                                  {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }}, 
+        {% for panel_item in menu_items.panel_items %}{% if panel_item.isIframe %}
+        buildIFramePanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}',
+                                  {{ panel_item.width }}, {{ panel_item.height }},
+                                  {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }},
                                   {{ panel_item.isPrivate|lower }}, '{{ panel_item.content }}')
         {% else %}
-        buildPanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}', 
-                            {{ panel_item.width }}, {{ panel_item.height }}, 
-                            {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }}, 
-                            {{ panel_item.isPrivate|lower }}, '{{ panel_item.content }}')                         
-        {% endif %}{% endfor %}{% endif %}
-        
+        buildPanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}',
+                            {{ panel_item.width }}, {{ panel_item.height }},
+                            {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }},
+                            {{ panel_item.isPrivate|lower }}, '{{ panel_item.content }}')
+        {% endif %}{% endfor %}
+
         var layout = '{{ layout }}';
-        
+
         // Try to restore the layout if there is one
         if (layout != '') {
             try {
@@ -281,7 +281,7 @@ ALTER TABLE tickets_detail \n\
             buildDefaultLayout()
         }
     }
-    
+
     // Syntax highlight the SQL Pane
     editor = CodeMirror.fromTextArea(document.getElementById("sql-textarea"), {
         lineNumbers: true,
@@ -298,7 +298,7 @@ ALTER TABLE tickets_detail \n\
                     return $.parseJSON(payload).data;
                 }
             }
-        },
+        }
     });
     tree = $('#tree').aciTree('api');
 
@@ -310,22 +310,20 @@ ALTER TABLE tickets_detail \n\
             var menu = { };
             var createMenu = { };
 
-            {% if create_items is defined %}
-            {% for create_item in create_items %}
-            if ($.inArray(tree.itemData(item)._type, {{ create_item.type }}) >= 0) {
+            {% for create_item in menu_items.create_items %}
+            if ($.inArray(tree.itemData(item)._type, {{ create_item.types | tojson }}) >= 0) {
                 createMenu['{{ create_item.name }}'] = { name: '{{ create_item.label }}', callback: function() { {{ create_item.function }}() }};
             }
-            {% endfor %}{% endif %}
-            
-            menu["create"] = { "name": "Create" }            
+            {% endfor %}
+
+            menu["create"] = { "name": "Create" }
             menu["create"]["items"] = createMenu
-            
-            {% if context_items is defined %}
-            {% for context_item in context_items %}
+
+            {% for context_item in menu_items.context_items %}
             if (tree.itemData(item)._type == '{{ context_item.type }}') {
                 menu['{{ context_item.name }}'] = { name: '{{ context_item.label }}', callback: function() { {{ context_item.onclick }} }};
             }
-            {% endfor %}{% endif %}
+            {% endfor %}
             return {
                 autoHide: true,
                 items: menu,
@@ -333,7 +331,7 @@ ALTER TABLE tickets_detail \n\
             };
         }
     });
-    
+
     // Treeview event handler
     $('#tree').on('acitree', function(event, api, item, eventName, options){
         switch (eventName){
@@ -343,9 +341,11 @@ ALTER TABLE tickets_detail \n\
         }
     });
 
-    
+
     // Setup the menus
     enable_disable_menus()
 });
 
-
+{% for snippet in jssnippets %}
+    {{ snippet }}
+{% endfor %}

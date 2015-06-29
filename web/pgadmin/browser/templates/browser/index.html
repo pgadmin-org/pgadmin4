@@ -56,7 +56,7 @@
             <li><a id="{{ management_item.name }}" href="{{ management_item.url }}"{% if management_item.target %} target="{{ management_item.target }}"{% endif %}{% if management_item.onclick %} onclick="{{ management_item.onclick|safe }}"{% endif %}>{{ management_item.label }}</a></li>{% endfor %}
           </ul>
         </li>{% endif %}
-        
+
         {% if help_items is defined and help_items|count > 0 %}<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Help') }} <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">{% for help_item in help_items %}

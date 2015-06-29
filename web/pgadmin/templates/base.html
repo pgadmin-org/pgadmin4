@@ -20,23 +20,21 @@
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.min.css') }}" />{% endif %}
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
-        {% if stylesheets is defined %}
         <!-- View specified stylesheets -->
-        {% for stylesheet in stylesheets %}
-        <link rel="stylesheet" href="{{ stylesheet }}">{% endfor %}
-        {% endif %}
-        
+        {% for stylesheet in current_blueprint.stylesheets %}
+        <link rel="stylesheet" href="{{ stylesheet }}">
+        {% endfor %}
         <!-- Base template scripts -->
         <script src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}">{% endif %}</script>
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/bootstrap.js') }}">{% else %}<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">{% endif %}</script>
         {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.js') }}">{% else %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.min.js') }}">{% endif %}</script>
         <script src="{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults.js') }}"></script>
-        {% if scripts is defined %}
         <!-- View specified scripts -->
-        {% for script in scripts %}
-        <script src="{{ script }}"></script>{% endfor %}
-        {% endif %}
+
+        {% for script in current_blueprint.javascripts %}
+        <script src="{{ script }}"></script>
+        {% endfor %}
     </head>
     <body>
         <!--[if lt IE 7]>

@@ -10,27 +10,50 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 
-from flask import Flask, abort, request
+from flask import Flask, abort, request, current_app
 from flask.ext.babel import Babel
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
+from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import login_user
 from flask_mail import Mail
 from htmlmin.minify import html_minify
 from settings.settings_model import db, Role, User
-
-import inspect, imp, logging, os, sys
+from importlib import import_module
+from werkzeug.local import LocalProxy
+from pgadmin.utils import PgAdminModule
+from werkzeug.utils import find_modules
+import sys
+import logging
 
 # Configuration settings
 import config
 
-# Global module list
-modules = [ ]
+
+class PgAdmin(Flask):
+
+    def find_submodules(self, basemodule):
+        for module_name in find_modules(basemodule, True):
+            if module_name in self.config['MODULE_BLACKLIST']:
+                self.logger.info('Skipping blacklisted module: %s' %
+                                module_name)
+                continue
+            self.logger.info('Examining potential module: %s' % module_name)
+            module = import_module(module_name)
+            for key, value in module.__dict__.items():
+                if isinstance(value, PgAdminModule):
+                    yield value
+
+
+def _find_blueprint():
+    if request.blueprint:
+        return current_app.blueprints[request.blueprint]
+
+current_blueprint = LocalProxy(_find_blueprint)
+
 
 def create_app(app_name=config.APP_NAME):
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
-    app = Flask(__name__, static_url_path='/static')
+    app = PgAdmin(__name__, static_url_path='/static')
     app.config.from_object(config)
 
     ##########################################################################
@@ -42,7 +65,7 @@ def create_app(app_name=config.APP_NAME):
     app.logger.setLevel(logging.DEBUG)
     app.logger.handlers = []
 
-    # We also need to update the handler on the webserver in order to see request. 
+    # We also need to update the handler on the webserver in order to see request.
     # Setting the level prevents werkzeug from setting up it's own stream handler
     # thus ensuring all the logging goes through the pgAdmin logger.
     logger = logging.getLogger('werkzeug')
@@ -67,82 +90,48 @@ def create_app(app_name=config.APP_NAME):
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('################################################################################')
     app.logger.debug("Python syspath: %s", sys.path)
-    
+
     ##########################################################################
     # Setup i18n
     ##########################################################################
-    
+
     # Initialise i18n
     babel = Babel(app)
-    
+
     app.logger.debug('Available translations: %s' % babel.list_translations())
 
     @babel.localeselector
     def get_locale():
         """Get the best language for the user."""
         language = request.accept_languages.best_match(config.LANGUAGES.keys())
-        return language 
+        return language
 
     ##########################################################################
     # Setup authentication
     ##########################################################################
-   
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
 
     # Only enable password related functionality in server mode.
-    if config.SERVER_MODE == True:
+    if config.SERVER_MODE is True:
         # TODO: Figure out how to disable /logout and /login
         app.config['SECURITY_RECOVERABLE'] = True
         app.config['SECURITY_CHANGEABLE'] = True
 
     # Create database connection object and mailer
     db.init_app(app)
-    mail = Mail(app)
+    Mail(app)
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
+    Security(app, user_datastore)
 
     ##########################################################################
     # Load plugin modules
     ##########################################################################
-
-    path = os.path.dirname(os.path.realpath(__file__))
-    files = os.listdir(path)
-
-    for f in files:
-        d = os.path.join(path, f)
-        if os.path.isdir(d) and os.path.isfile(os.path.join(d, '__init__.py')):
-
-            if f in config.MODULE_BLACKLIST:
-                app.logger.info('Skipping blacklisted module: %s' % f)
-                continue
-
-            # Construct the "real" module name
-            f = 'pgadmin.' + f
-            
-            # Looks like a module, so import it, and register the blueprint if present
-            # We rely on the ordering of syspath to ensure we actually get the right
-            # module here. Note that we also try to load the 'hooks' module for
-            # the browser integration hooks and other similar functions.
-            app.logger.info('Examining potential module: %s' % d)
-            module = __import__(f, globals(), locals(), ['hooks', 'views'], -1)
-
-            # Add the module to the global module list
-            modules.append(module)
-            
-            # Register the blueprint if present
-            if 'views' in dir(module) and 'blueprint' in dir(module.views):
-                app.logger.info('Registering blueprint module: %s' % f)
-                app.register_blueprint(module.views.blueprint)
-                app.logger.debug('   - root_path:       %s' % module.views.blueprint.root_path)
-                app.logger.debug('   - static_folder:   %s' % module.views.blueprint.static_folder)
-                app.logger.debug('   - template_folder: %s' % module.views.blueprint.template_folder)
-                
-            # Register any sub-modules
-            if 'hooks' in dir(module) and 'register_submodules' in dir(module.hooks):
-                app.logger.info('Registering sub-modules in %s' % f)
-                module.hooks.register_submodules(app)
+    for module in app.find_submodules('pgadmin'):
+        app.logger.info('Registering blueprint module: %s' % module)
+        app.register_blueprint(module)
 
     ##########################################################################
     # Handle the desktop login
@@ -151,7 +140,7 @@ def create_app(app_name=config.APP_NAME):
     @app.before_request
     def before_request():
         """Login the default user if running in desktop mode"""
-        if config.SERVER_MODE == False:
+        if config.SERVER_MODE is False:
             user = user_datastore.get_user(config.DESKTOP_USER)
 
             # Throw an error if we failed to find the desktop user, to give
@@ -165,7 +154,7 @@ def create_app(app_name=config.APP_NAME):
 
     ##########################################################################
     # Minify output
-    ##########################################################################    
+    ##########################################################################
     @app.after_request
     def response_minify(response):
         """Minify html response to decrease traffic"""
@@ -177,10 +166,16 @@ def create_app(app_name=config.APP_NAME):
 
         return response
 
+    @app.context_processor
+    def inject_blueprint():
+        """Inject a reference to the current blueprint, if any."""
+        return {
+            'current_blueprint': current_blueprint,
+            'menu_items': getattr(current_blueprint, "menu_items", {})}
+
     ##########################################################################
     # All done!
     ##########################################################################
 
     app.logger.debug('URL map: %s' % app.url_map)
     return app
-

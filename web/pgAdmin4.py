@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""This is the main application entry point for pgAdmin 4. If running on 
+"""This is the main application entry point for pgAdmin 4. If running on
 a webserver, this will provide the WSGI interface, otherwise, we're going
 to start a web server."""
 
@@ -50,8 +50,11 @@ if not os.path.isfile(config.SQLITE_PATH):
 # Create the app!
 app = create_app()
 
+#if config.DEBUG:
+#    app.debug = True
+
 # Start the web server. The port number should have already been set by the
-# runtime if we're running in desktop mode, otherwise we'll just use the 
+# runtime if we're running in desktop mode, otherwise we'll just use the
 # Flask default.
 if 'PGADMIN_PORT' in globals():
     app.logger.debug('PGADMIN_PORT set in the runtime environment to %s', PGADMIN_PORT)
@@ -64,4 +67,3 @@ try:
     app.run(port=server_port)
 except IOError:
     app.logger.error("Error starting the app server: %s", sys.exc_info())
-
