@@ -254,7 +254,7 @@ ALTER TABLE tickets_detail \n\
                   '<p>Dependents pane</p>')
 
         // Add hooked-in panels
-        {% for panel_item in menu_items.panel_items %}{% if panel_item.isIframe %}
+        {% for panel_item in current_app.panels %}{% if panel_item.isIframe %}
         buildIFramePanel(docker, '{{ panel_item.name }}', '{{ panel_item.title }}',
                                   {{ panel_item.width }}, {{ panel_item.height }},
                                   {{ panel_item.showTitle|lower }}, {{ panel_item.isCloseable|lower }},

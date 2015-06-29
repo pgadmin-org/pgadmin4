@@ -55,6 +55,13 @@ class PgAdminModule(Blueprint):
         """
         return defaultdict(list)
 
+    def get_panels(self):
+        """
+        Returns:
+            list: a list of panel objects to add
+        """
+        return []
+
     @property
     def stylesheets(self):
         stylesheets = self.get_own_stylesheets()

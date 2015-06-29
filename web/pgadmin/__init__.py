@@ -9,7 +9,7 @@
 
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
-
+from collections import defaultdict
 from flask import Flask, abort, request, current_app
 from flask.ext.babel import Babel
 from flask.ext.security import Security, SQLAlchemyUserDatastore
@@ -42,6 +42,32 @@ class PgAdmin(Flask):
                 if isinstance(value, PgAdminModule):
                     yield value
 
+    @property
+    def submodules(self):
+        for blueprint in self.blueprints.values():
+            if isinstance(blueprint, PgAdminModule):
+                yield blueprint
+
+    @property
+    def stylesheets(self):
+        stylesheets = []
+        for module in self.submodules:
+            stylesheets.extend(getattr(module, "stylesheets", []))
+        return stylesheets
+
+    @property
+    def javascripts(self):
+        stylesheets = []
+        for module in self.submodules:
+            stylesheets.extend(getattr(module, "javascripts", []))
+        return stylesheets
+
+    @property
+    def panels(self):
+        panels = []
+        for module in self.submodules:
+            panels.extend(module.get_panels())
+        return panels
 
 def _find_blueprint():
     if request.blueprint:
@@ -169,9 +195,13 @@ def create_app(app_name=config.APP_NAME):
     @app.context_processor
     def inject_blueprint():
         """Inject a reference to the current blueprint, if any."""
+        menu_items = defaultdict(list)
+        for blueprint in app.submodules:
+            menu_items.update(getattr(blueprint, "menu_items", {}))
         return {
+            'current_app': current_app,
             'current_blueprint': current_blueprint,
-            'menu_items': getattr(current_blueprint, "menu_items", {})}
+            'menu_items': menu_items }
 
     ##########################################################################
     # All done!

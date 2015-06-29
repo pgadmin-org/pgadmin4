@@ -21,7 +21,7 @@
         {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
         <!-- View specified stylesheets -->
-        {% for stylesheet in current_blueprint.stylesheets %}
+        {% for stylesheet in current_app.stylesheets %}
         <link rel="stylesheet" href="{{ stylesheet }}">
         {% endfor %}
         <!-- Base template scripts -->
@@ -32,7 +32,7 @@
         <script src="{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults.js') }}"></script>
         <!-- View specified scripts -->
 
-        {% for script in current_blueprint.javascripts %}
+        {% for script in current_app.javascripts %}
         <script src="{{ script }}"></script>
         {% endfor %}
     </head>
