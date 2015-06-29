@@ -21,24 +21,22 @@ MODULE_NAME = 'browser'
 class BrowserModule(PgAdminModule):
 
 
-
     def get_own_stylesheets(self):
         stylesheets = []
         # Add browser stylesheets
         for (endpoint, filename) in [
             ('static', 'css/codemirror/codemirror.css'),
-            ('static', 'css/wcDocker/theme.css'),
             ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css'),
-            ('browser.static', 'css/browser.css'),
-            ('browser.static', 'css/aciTree/css/aciTree.css')
+            ('static', 'css/wcDocker/wcDockerSkeleton.css' if \
+                    current_app.debug else \
+                       'css/wcDocker/wcDockerSkeleton.min.css'),
+            ('static', 'css/wcDocker/theme.css'),
+            ('browser.static', 'css/aciTree/css/aciTree.css'),
             ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         stylesheets.append(url_for('browser.browser_css'))
-        if current_app.debug:
-            stylesheets.append(url_for('static', filename='css/wcDocker/wcDockerSkeleton.css'))
-        else:
-            stylesheets.append(url_for('static', filename='css/wcDocker/wcDockerSkeleton.min.css'))
         return stylesheets
+
 
     def get_own_javascripts(self):
         scripts = []
@@ -74,7 +72,7 @@ class BrowserPluginModule(PgAdminModule):
 
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
-        kwargs.setdefault("static_url_path", '')
+        kwargs.setdefault("static_url_path", 'static')
         super(BrowserPluginModule, self).__init__("NODE-%s" % self.node_type,
                                             import_name,
                                             **kwargs)
@@ -95,8 +93,8 @@ class BrowserPluginModule(PgAdminModule):
         Returns a snippet of css to include in the page
         """
         # TODO: move those methods to BrowserModule subclass ?
-        return render_template("browser/css/node.css",
-                               node_type=self.node_type)
+        return [render_template("browser/css/node.css",
+                               node_type=self.node_type)]
 
     @abstractmethod
     def get_nodes(self):
@@ -137,11 +135,12 @@ def browser_js():
     snippets = []
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
-    return make_response(render_template(
-        'browser/js/browser.js',
-        layout=layout,
-        jssnippets=snippets),
-        200, {'Content-Type': 'application/x-javascript'})
+    return make_response(
+            render_template(
+                'browser/js/browser.js',
+                layout=layout,
+                jssnippets=snippets),
+            200, {'Content-Type': 'application/x-javascript'})
 
 @blueprint.route("/browser.css")
 @login_required
@@ -150,9 +149,9 @@ def browser_css():
     snippets = []
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.csssnippets)
-    return make_response(render_template('browser/css/browser.css',
-                           snippets=snippets),
-                         200, {'Content-Type': 'text/css'})
+    return make_response(
+            render_template('browser/css/browser.css', snippets=snippets),
+            200, {'Content-Type': 'text/css'})
 
 
 @blueprint.route("/nodes/")

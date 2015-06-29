@@ -9,45 +9,173 @@
 
 """Browser helper utilities"""
 
-import os, sys
-import config
+from flask import request
+from flask.views import View, MethodViewType, with_metaclass
 
-def register_modules(app, file, all_nodes, sub_nodes, prefix):
-    """Register any child node blueprints for the specified file"""
-    path = os.path.dirname(os.path.realpath(file))
-    files = os.listdir(path)
 
-    for f in files:
-        d = os.path.join(path, f)
-        if os.path.isdir(d) and os.path.isfile(os.path.join(d, '__init__.py')):
+def generate_browser_node(node_id, label, icon, inode, node_type):
+    return {
+            "id": "%s/%s" % (node_type, node_id),
+            "label": label,
+            "icon": icon,
+            "inode": inode,
+            "_type": node_type,
+            "refid": node_id
+    }
 
-            if f in config.NODE_BLACKLIST:
-                app.logger.info('Skipping blacklisted node: %s' % f)
-                continue
 
-            # Construct the 'real' module name
-            if prefix != '':
-                f = prefix + '.' + f
-                
-            # Looks like a node, so import it, and register the blueprint if present
-            # We rely on the ordering of syspath to ensure we actually get the right
-            # module here. 
-            app.logger.info('Examining potential node: %s' % d)
-            node = __import__(f, globals(), locals(), ['hooks', 'views'], -1)
+class NodeView(with_metaclass(MethodViewType, View)):
+    """
+    A PostgreSQL Object has so many operaions/functions apart from CRUD
+    (Create, Read, Update, Delete):
+    i.e.
+    - Reversed Engineered SQL
+    - Modified Query for parameter while editing object attributes
+      i.e. ALTER TABLE ...
+    - Statistics of the objects
+    - List of dependents
+    - List of dependencies
+    - Listing of the children object types for the certain node
+      It will used by the browser tree to get the children nodes
 
-            # Add the node to the node lists
-            all_nodes.append(node)
-            sub_nodes.append(node)
-            
-            # Register the blueprint if present
-            if 'views' in dir(node) and 'blueprint' in dir(node.views):
-                app.logger.info('Registering blueprint node: %s' % f)
-                app.register_blueprint(node.views.blueprint)
-                app.logger.debug('   - root_path:       %s' % node.views.blueprint.root_path)
-                app.logger.debug('   - static_folder:   %s' % node.views.blueprint.static_folder)
-                app.logger.debug('   - template_folder: %s' % node.views.blueprint.template_folder)
-                
-            # Register any sub-modules
-            if 'hooks' in dir(node) and 'register_submodules' in dir(node.hooks):
-                app.logger.info('Registering sub-modules in %s' % f)
-                node.hooks.register_submodules(app)
+    This class can be inherited to achieve the diffrent routes for each of the
+    object types/collections.
+
+    OPERATION      |              URL       | Method
+    ---------------+------------------------+--------
+    List           | /obj/[Parent URL]/     | GET
+    Properties     | /obj/[Parent URL]/id   | GET
+    Create         | /obj/[Parent URL]/     | POST
+    Delete         | /obj/[Parent URL]/id   | DELETE
+    Update         | /obj/[Parent URL]/id   | PUT
+
+    SQL (Reversed  | /sql/[Parent URL]/id   | GET
+    Engineering)   |
+    SQL (Modified  | /sql/[Parent URL]/id   | POST
+    Properties)    |
+
+    Statistics     | /stats/[Parent URL]/id | GET
+    Dependencies   | /deps/[Parent URL]/id  | GET
+    Dependents     | /deps/[Parent URL]/id  | POST
+
+    Children Nodes | /nodes/[Parent URL]/id | GET
+
+    NOTE:
+    Parent URL can be seen as the path to identify the particular node.
+
+    i.e.
+    In order to identify the TABLE object, we need server -> database -> schema
+    information.
+    """
+    operations = {
+        'obj': [
+            {'get': 'properties', 'delete': 'delete', 'put': 'update'},
+            {'get': 'list', 'post': 'create'}
+        ],
+        'nodes': [{'get': 'nodes'}, {}],
+        'sql': [{'get': 'sql', 'post': 'modified_sql'}, {}],
+        'stats': [{'get': 'statistics'}, {}],
+        'deps': [{'get': 'dependencies', 'post': 'dependents'}, {}]
+    }
+
+
+    @classmethod
+    def generate_ops(cls):
+        cmds = []
+        for op in cls.operations:
+            idx=0
+            for ops in cls.operations[op]:
+                meths = []
+                for meth in ops:
+                    meths.append(meth.upper())
+                if len(meths) > 0:
+                    cmds.append({'cmd': op, 'req':idx==0, 'methods': meths})
+                idx+=1
+
+        return cmds
+
+
+    # Inherited class needs to modify these parameters
+    node_type = None
+    # This must be an array object with attributes (type and id)
+    parent_ids = []
+    # This must be an array object with attributes (type and id)
+    ids = []
+
+
+    @classmethod
+    def get_node_urls(cls):
+        assert cls.node_type is not None, "Please set the node_type for this class (%r)" % cls
+        common_url = '/'
+        for p in cls.parent_ids:
+            common_url += '<' + p['type'] + ":" + p['id'] + '>/'
+
+        id_url = common_url
+        idx = 0
+        for p in cls.ids:
+            id_url += '/<' if idx == 1 else '<' + p['type'] + ":" + p['id'] + '>'
+            idx += 1
+
+        return id_url, common_url
+
+
+    def __init__(self, cmd):
+        self.cmd = cmd;
+
+
+    # Check the existance of all the required arguments from parent_ids
+    # and return combination of has parent arguments, and has id arguments
+    def check_args(self, *args, **kwargs):
+        has_id = has_args = True
+        for p in self.parent_ids:
+            if p['id'] not in kwargs:
+                has_args = False
+                break
+
+        for p in self.ids:
+            if p['id'] not in kwargs:
+                has_id = False
+                break
+
+        return has_args, has_id and has_args
+
+
+    def dispatch_request(self, *args, **kwargs):
+        meth = request.method.lower()
+        if meth == 'head':
+            meth = 'get'
+
+        assert self.cmd in NodeView.operations, \
+                "Unimplemented Command (%s) for Node View" % self.cmd
+        has_args, has_id = self.check_args(*args, **kwargs)
+
+        assert (has_id and meth in NodeView.operations[self.cmd][0]) \
+                or (not has_id and meth in NodeView.operations[self.cmd][1]), \
+                "Unimplemented method (%s) for command (%s), which %s an id" \
+                % (meth, self.cmd, 'requires' if has_id else 'does not require')
+
+        meth = NodeView.operations[self.cmd][0][meth] if has_id else \
+                NodeView.operations[self.cmd][1][meth]
+
+        method = getattr(self, meth, None)
+
+        assert method is not None, \
+                "Unimplemented method (%s) for this url (%u)" % \
+                (meth, request.path)
+
+        return method(*args, **kwargs)
+
+
+    @classmethod
+    def register_node_view(cls, blueprint):
+        id_url, url = cls.get_node_urls()
+
+        commands = cls.generate_ops()
+
+        for c in commands:
+            blueprint.add_url_rule(
+                    '/%s%s' % (c['cmd'], id_url if c['req'] else url),
+                    view_func=cls.as_view(
+                        '%s%s' % (c['cmd'], '_id' if c['req'] else ''),
+                        cmd=c['cmd']),
+                    methods=c['methods'])

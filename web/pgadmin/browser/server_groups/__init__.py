@@ -18,8 +18,8 @@ from pgadmin.utils.ajax import make_json_response
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.settings.settings_model import db, ServerGroup
+from pgadmin.browser.utils import generate_browser_node
 import config
-
 
 
 class ServerGroupModule(BrowserPluginModule):
@@ -65,18 +65,20 @@ class ServerGroupModule(BrowserPluginModule):
         # TODO: Move this JSON generation to a Server method
         # this code is duplicated somewhere else
         for group in groups:
-            yield {
-                "id": "%s/%d" % (self.node_type, group.id),
-                "label": group.name,
-                "icon": "icon-%s" % self.node_type,
-                "inode": True,
-                "_type": self.node_type
-            }
+            yield generate_browser_node(
+                    "%d" % (group.id),
+                    group.name,
+                    "icon-%s" % self.node_type,
+                    True,
+                    self.node_type)
 
     @property
     def node_type(self):
         return self.NODE_TYPE
 
+    @property
+    def node_path(self):
+        return '/browser/' + self.node_type
 
 
 class ServerGroupMenuItem(MenuItem):
@@ -99,109 +101,142 @@ class ServerGroupPluginModule(BrowserPluginModule):
         pass
 
 
-# Initialise the module
+    @property
+    def node_path(self):
+        return '/browser/' + self.node_type
+
+
 blueprint = ServerGroupModule( __name__, static_url_path='')
 
-@blueprint.route("/<server_group>")
-@login_required
-def get_nodes(server_group):
-    """Build a list of treeview nodes from the child nodes."""
-    nodes = []
-    for module in current_blueprint.submodules:
-        nodes.extend(module.get_nodes(server_group=server_group))
-    return make_json_response(data=nodes)
+# Initialise the module
+from pgadmin.browser.utils import NodeView
 
 
-@blueprint.route('/add/', methods=['POST'])
-@login_required
-def add():
-    """Add a server group node to the settings database"""
-    success = 1
-    errormsg = ''
-    data = { }
+class ServerGroupView(NodeView):
 
-    if request.form['name'] != '':
-        servergroup = ServerGroup(user_id=current_user.id, name=request.form['name'])
+    node_type = ServerGroupModule.NODE_TYPE
+    parent_ids = []
+    ids = [{'type':'int', 'id':'gid'}]
 
-        try:
-            db.session.add(servergroup)
-            db.session.commit()
-        except Exception as e:
-            success = 0
-            errormsg = e.message
 
-    else:
-        success = 0
-        errormsg = gettext('No server group name was specified')
+    def list(self):
+        res = []
+        for g in blueprint.get_nodes():
+            res.append(g)
+        return make_json_response(result=res)
 
-    if success == 1:
-        data['id'] = servergroup.id
-        data['name'] = servergroup.name
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form,
-                              data=data)
+    def delete(self, gid):
+        """Delete a server group node in the settings database"""
 
-@blueprint.route('/delete/', methods=['POST'])
-@login_required
-def delete():
-    """Delete a server group node in the settings database"""
-    success = 1
-    errormsg = ''
-
-    if request.form['id'] != '':
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        servergroup = ServerGroup.query.filter_by(
+                user_id=current_user.id,
+                id=gid)
 
         if servergroup is None:
-            success = 0
-            errormsg = gettext('The specified server group could not be found.')
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext('The specified server group could not be found.'))
         else:
             try:
                 db.session.delete(servergroup)
                 db.session.commit()
             except Exception as e:
-                success = 0
-                errormsg = e.message
+                return make_json_response(success=0, errormsg=e.message)
 
-    else:
-        success = 0
-        errormsg = gettext('No server group  was specified.')
+        return make_json_response(result=request.form)
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form)
 
-@blueprint.route('/rename/', methods=['POST'])
-@login_required
-def rename():
-    """Rename a server group node in the settings database"""
-    success = 1
-    errormsg = ''
+    def update(self, gid):
+        """Update the server-group properties"""
 
-    if request.form['id'] != '':
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        servergroup = ServerGroup.query.filter_by(
+                user_id=current_user.id,
+                id=gid).first()
 
         if servergroup is None:
-            success = 0
-            errormsg = gettext('The specified server group could not be found.')
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext('The specified server group could not be found.'))
         else:
             try:
-                servergroup.name = request.form['name']
+                if 'name' in request.form:
+                    servergroup.name = request.form['name']
                 db.session.commit()
             except Exception as e:
-                success = 0
-                errormsg = e.message
+                return make_json_response(success=0, errormsg=e.message)
 
-    else:
-        success = 0
-        errormsg = gettext('No server group was specified.')
+        return make_json_response(result=request.form)
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form)
+
+    def properties(self, gid):
+        """Update the server-group properties"""
+
+        # There can be only one record at most
+        sg = ServerGroup.query.filter_by(
+                user_id=current_user.id,
+                id=gid).first()
+        data = {}
+
+        if sg is None:
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext('The specified server group could not be found.'))
+        else:
+            return make_json_response(data={'id': sg.id, 'name': sg.name})
+
+
+    def create(self):
+        data = []
+        if request.form['name'] != '':
+            servergroup = ServerGroup(
+                    user_id=current_user.id,
+                    name=request.form['name'])
+            try:
+                db.session.add(servergroup)
+                db.session.commit()
+
+                data['id'] = servergroup.id
+                data['name'] = servergroup.name
+            except Exception as e:
+                return make_json_response(success=0, errormsg=e.message)
+
+        else:
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext('No server group name was specified'))
+
+        return make_json_response(data=data)
+
+
+    def nodes(self, gid):
+        """Build a list of treeview nodes from the child nodes."""
+        nodes = []
+        for module in blueprint.submodules:
+            nodes.extend(module.get_nodes(server_group=gid))
+        return make_json_response(data=nodes)
+
+
+    def sql(self, gid):
+        return make_json_response(data='')
+
+
+    def modified_sql(self, gid):
+        return make_json_response(data='')
+
+
+    def statistics(self, gid):
+        return make_json_response(data='')
+
+
+    def dependencies(self, gid):
+        return make_json_response(data='')
+
+
+    def dependents(self, gid):
+        return make_json_response(data='')
+
+
+ServerGroupView.register_node_view(blueprint)

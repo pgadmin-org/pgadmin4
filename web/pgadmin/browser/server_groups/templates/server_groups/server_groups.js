@@ -5,7 +5,7 @@ function create_server_group() {
         '{{ _('Enter a name for the new server group') }}', 
         '', 
         function(evt, value) { 
-            $.post("{{ url_for('NODE-server-group.add') }}", { name: value })
+            $.post("{{ url_for('browser.index') }}server-group/obj/", { name: value })
                 .done(function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
@@ -37,9 +37,11 @@ function drop_server_group(item) {
         '{{ _('Delete server group?') }}',
         '{{ _('Are you sure you wish to delete the server group "{0}"?') }}'.replace('{0}', tree.getLabel(item)),
         function() {
-            var id = tree.getId(item).split('/').pop()
-            $.post("{{ url_for('NODE-server-group.delete') }}", { id: id })
-                .done(function(data) {
+            var d = tree.itemData(item);
+            $.ajax({
+                url:"{{ url_for('browser.index') }}" + d._type + "/obj/" + d.refid,
+                type:'DELETE',
+                success: function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
@@ -53,7 +55,7 @@ function drop_server_group(item) {
                         }
                     }
                 }
-            )
+            })
         },
         null
     )
@@ -66,16 +68,19 @@ function rename_server_group(item) {
         '{{ _('Enter a new name for the server group') }}', 
         tree.getLabel(item), 
         function(evt, value) {
-            var id = tree.getId(item).split('/').pop()
-            $.post("{{ url_for('NODE-server-group.rename') }}", { id: id, name: value })
-                .done(function(data) {
+            var d = tree.itemData(item);
+            $.ajax({
+                url:"{{ url_for('browser.index') }}" + d._type + "/obj/" + d.refid,
+                type:'PUT',
+                params: { name: value },
+                success: function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
                         tree.setLabel(item, { label: value });
                     }
                 }
-            )
+            })
         },
         null
     )

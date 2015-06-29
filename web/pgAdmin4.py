@@ -50,8 +50,8 @@ if not os.path.isfile(config.SQLITE_PATH):
 # Create the app!
 app = create_app()
 
-#if config.DEBUG:
-#    app.debug = True
+if config.DEBUG:
+    app.debug = True
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the

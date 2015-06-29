@@ -9,9 +9,10 @@
 from flask import render_template, request
 from pgadmin.browser.server_groups import ServerGroupPluginModule
 from flask.ext.security import login_required, current_user
-from pgadmin.settings.settings_model import db, Server
+from pgadmin.settings.settings_model import db, Server, ServerGroup
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.ajax import make_json_response
+from pgadmin.browser.utils import generate_browser_node, NodeView
 import traceback
 from flask.ext.babel import gettext
 
@@ -30,13 +31,13 @@ class ServerModule(ServerGroupPluginModule):
 
         # TODO: Move this JSON generation to a Server method
         for server in servers:
-            yield {
-                "id": "%s/%d" % (NODE_TYPE, server.id),
-                "label": server.name,
-                "icon": "icon-%s" % NODE_TYPE,
-                "inode": True,
-                "_type": NODE_TYPE
-            }
+            yield generate_browser_node(
+                    "%d" % server.id,
+                    server.name,
+                    "icon-%s" % self.NODE_TYPE,
+                    True,
+                    self.NODE_TYPE
+                    )
 
     def get_own_menuitems(self):
         return {
@@ -49,13 +50,13 @@ class ServerModule(ServerGroupPluginModule):
                                name="create_server",
                                label=gettext('Server...'),
                                priority=50,
-                               function='create_server')
+                               function='create_server(item)')
             ],
             'context_items': [
                 ServerMenuItem(name='delete_server',
                                label=gettext('Delete server'),
                                priority=50,
-                               onclick='drop_server'),
+                               onclick='drop_server(item)'),
                 ServerMenuItem(name='rename_server',
                                label=gettext('Rename server...'),
                                priority=60,
@@ -75,98 +76,224 @@ class ServerMenuItem(MenuItem):
         kwargs.setdefault("type", ServerModule.NODE_TYPE)
         super(ServerMenuItem, self).__init__(**kwargs)
 
+
 blueprint = ServerModule(__name__)
 
-@blueprint.route('/add/', methods=['POST'])
-@login_required
-def add():
-    """Add a server node to the settings database"""
-    success = 1
-    errormsg = ''
-    data = {}
 
-    success = False
-    errormsg = ''
-    if request.form['name'] != '':
-        server = Server(user_id=current_user.id, name=request.form['name'])
-        try:
-            db.session.add(server)
-            db.session.commit()
-            success = True
-        except Exception as e:
-            errormsg = e.message
-    else:
-        errormsg = gettext('No server name was specified')
+class ServerNode(NodeView):
 
-    if success:
-        data['id'] = server.id
-        data['name'] = server.name
+    node_type = ServerModule.NODE_TYPE
+    parent_ids = [{'type':'int', 'id':'gid'}]
+    ids = [{'type':'int', 'id':'sid'}]
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form,
-                              data=data)
 
-@blueprint.route('/delete/', methods=['POST'])
-@login_required
-def delete():
-    """Delete a server node in the settings database"""
-    success = 1
-    errormsg = ''
+    def list(self, gid):
+        res = []
+        """Return a JSON document listing the server groups for the user"""
+        servers = Server.query.filter_by(user_id=current_user.id,
+                servergroup_id=gid)
 
-    if request.form['id'] != '':
-        # There can be only one record at most
-        servergroup = Server.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+        for server in servers:
+            res.append(
+                    generate_browser_node(
+                        "%d/%d" % (gid, server.id),
+                        server.name,
+                        "icon-%s" % NODE_TYPE,
+                        True,
+                        NODE_TYPE
+                        )
+                    )
+        return make_json_response(result=res)
 
+
+    def delete(self, gid, sid):
+        """Delete a server node in the settings database"""
+        server = Server.query.filter_by(user_id=current_user.id, id=sid)
+
+        # TODO:: A server, which is connected, can not be deleted
         if server is None:
-            success = 0
-            errormsg = gettext('The specified server could not be found.')
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'The specified server could not be found.\n'
+                        'Does the user have permission to access the '
+                        'server?'
+                        )
+                    )
         else:
             try:
                 db.session.delete(server)
                 db.session.commit()
             except Exception as e:
-                success = 0
-                errormsg = e.message
+                return make_json_response(
+                        success=0,
+                        errormsg=e.message)
 
-    else:
-        success = 0
-        errormsg = gettext('No server was specified.')
+        return make_json_response(success=success,
+                errormsg=errormsg,
+                info=traceback.format_exc())
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form)
 
-@blueprint.route('/rename/', methods=['POST'])
-@login_required
-def rename():
-    """Rename a server node in the settings database"""
-    success = 1
-    errormsg = ''
-
-    if request.form['id'] != '':
-        # There can be only one record at most
-        servergroup = Server.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
+    def update(self, gid, sid):
+        """Update the server settings"""
+        server = Server.query.filter_by(user_id=current_user.id, id=sid).first()
 
         if server is None:
-            success = 0
-            errormsg = gettext('The specified server could not be found.')
-        else:
-            try:
-                server.name = request.form['name']
-                db.session.commit()
-            except Exception as e:
-                success = 0
-                errormsg = e.message
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext("Couldn't find the given server.")
+                    )
 
-    else:
-        success = 0
-        errormsg = gettext('No server was specified.')
+        # TODO::
+        #   Not all parameters can be modified, while the server is connected
+        possible_args = {
+                'name': 'name',
+                'host': 'host',
+                'port': 'port',
+                'db': 'maintenance_db',
+                'username': 'username',
+                'sslmode': 'sslmode',
+                'gid': 'servergroup_id'
+                }
 
-    return make_json_response(success=success,
-                              errormsg=errormsg,
-                              info=traceback.format_exc(),
-                              result=request.form)
+        idx = 0
+        for arg in possible_args:
+            if arg in request.form:
+                server[possible_args[arg]] = request.form[arg]
+                idx += 1
 
+        if idx == 0:
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext('No parameters were chagned!')
+                    )
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            return make_json_response(
+                    success=0,
+                    errormsg=e.message
+                    )
+
+        return make_json_response(
+                success=1,
+                data={
+                    'id': server.id,
+                    'gid': server.servergroup_id
+                    }
+                )
+
+
+    def properties(self, gid, sid):
+        """Return list of attributes of a server"""
+        server = Server.query.filter_by(
+                user_id=current_user.id,
+                id=sid).first()
+
+        if server is None:
+            return make_json_response(
+                    success=0,
+                    errormsg=gettext("Couldn't find the given server")
+                    )
+
+        sg = ServerGroup.query.filter_by(
+                user_id=current_user.id,
+                id=server.servergroup_id
+                ).first()
+
+        return make_json_response(
+                success=1,
+                data={
+                    'id':server.id,
+                    'name':server.name,
+                    'host':server.host,
+                    'port':server.port,
+                    'db':server.maintenance_db,
+                    'username':server.username,
+                    'gid':server.servergroup_id,
+                    'group-name':sg.name
+                    }
+                )
+
+
+    def create(self, gid):
+        """Add a server node to the settings database"""
+        required_args = [
+                'name',
+                'host',
+                'port',
+                'db',
+                'username',
+                'sslmode'
+                ]
+
+        for arg in required_args:
+            if arg not in request.form:
+                return make_json_response(
+                        success=0,
+                        errormsg=gettext(
+                            "Couldn't find the required parameter (%s)." % arg
+                            )
+                        )
+
+        server = Server(
+                user_id=current_user.id,
+                servergroup_id=gid,
+                name=request.form['name'],
+                host=request.form['host'],
+                port=request.form['port'],
+                maintenance_db=request.form['db'],
+                username=request.form['username'],
+                sslmode=request.form['username']
+                )
+
+        try:
+            db.session.add(server)
+            db.session.commit()
+        except Exception as e:
+            return make_json_response(
+                    success=0,
+                    errormsg=e.message
+                    )
+
+        return make_json_response(success=1,
+                data={
+                    'id': server.id,
+                    'name': server.name,
+                    'gid': gid
+                    })
+
+
+    def nodes(self, gid, sid):
+        """Build a list of treeview nodes from the child nodes."""
+        nodes = []
+        # TODO::
+        # We can have nodes for the server object, only when
+        # the server is connected at the moment.
+        for module in blueprint.submodules:
+            nodes.extend(module.get_nodes(server=sid))
+        return make_json_response(data=nodes)
+
+
+    def sql(self, gid, sid):
+        return make_json_response(data='')
+
+
+    def modified_sql(self, gid, sid):
+        return make_json_response(data='')
+
+
+    def statistics(self, gid, sid):
+        return make_json_response(data='')
+
+
+    def dependencies(self, gid, sid):
+        return make_json_response(data='')
+
+
+    def dependents(self, gid, sid):
+        return make_json_response(data='')
+
+
+ServerNode.register_node_view(blueprint)

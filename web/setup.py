@@ -66,6 +66,19 @@ def do_setup():
         server_group = ServerGroup(user_id=user.id, name="Servers")
         db.session.merge(server_group)
 
+        # TODO:: Remove this server later
+        #        It is here to demo the server listing is workig in
+        #        browser tree.
+        server_group = ServerGroup.query.filter_by(name='Servers').first()
+
+        server = Server(
+                user_id=user.id, servergroup_id=server_group.id,
+                name='PostgreSQL 9.3', host='localhost', port=3930,
+                maintenance_db='postgres', username='asheshvashi',
+                ssl_mode='prefer'
+                )
+        db.session.merge(server)
+
         # Set the schema version
         version = Version(name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION)
         db.session.merge(version)

@@ -65,6 +65,7 @@ class ServerGroup(db.Model):
     __tablename__ = 'servergroup'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
 
@@ -73,11 +74,28 @@ class Server(db.Model):
     """Define a registered Postgres server"""
     __tablename__ = 'server'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    servergroup_id = db.Column(db.Integer, db.ForeignKey('servergroup.id'), nullable=False)
+    user_id = db.Column(
+            db.Integer,
+            db.ForeignKey('user.id'),
+            nullable=False
+            )
+    servergroup_id = db.Column(
+            db.Integer,
+            db.ForeignKey('servergroup.id'),
+            nullable=False
+            )
+
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=False)
-    port = db.Column(db.Integer(), db.CheckConstraint('port >= 1024 AND port <= 65534'), nullable=False)
+    port = db.Column(
+            db.Integer(),
+            db.CheckConstraint('port >= 1024 AND port <= 65534'),
+            nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
-    ssl_mode = db.Column(db.String(16), nullable=False)
+    ssl_mode = db.Column(
+        db.String(16),
+        db.CheckConstraint(
+            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
+        ),
+        nullable=False)

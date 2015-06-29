@@ -15,25 +15,25 @@
         <meta name="dcterms.dateCopyrighted" content="2014 - 2015">
 
         <!-- Base template stylesheets -->
-        {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />{% endif %}
-        {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.min.css') }}" />{% endif %}
-        {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css') }}" />{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.min.css') }}" />{% endif %}
-        {% if config.DEBUG %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">{% endif %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css' if config.DEBUG else 'css/bootstrap.min.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.css' if config.DEBUG else 'css/alertifyjs/alertify.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'css/alertifyjs/themes/bootstrap.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css' if config.DEBUG else 'css/bootstrap-theme.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
         <!-- View specified stylesheets -->
         {% for stylesheet in current_app.stylesheets %}
-        <link rel="stylesheet" href="{{ stylesheet }}">
+        <link type="text/css" rel="stylesheet" href="{{ stylesheet }}">
         {% endfor %}
         <!-- Base template scripts -->
-        <script src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.js') }}">{% else %}<script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/bootstrap.js') }}">{% else %}<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">{% endif %}</script>
-        {% if config.DEBUG %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.js') }}">{% else %}<script src="{{ url_for('static', filename='js/alertifyjs/alertify.min.js') }}">{% endif %}</script>
-        <script src="{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.11.2.js' if config.DEBUG else 'js/jquery-1.11.2.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js' if config.DEBUG else 'js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/alertifyjs/alertify.js' if config.DEBUG else 'js/alertifyjs/alertify.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults.js') }}"></script>
         <!-- View specified scripts -->
 
         {% for script in current_app.javascripts %}
-        <script src="{{ script }}"></script>
+        <script type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
     </head>
     <body>

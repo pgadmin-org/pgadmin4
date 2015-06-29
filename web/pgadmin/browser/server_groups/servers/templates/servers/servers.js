@@ -1,11 +1,18 @@
 // Add a server
-function create_server() {
+function create_server(item) {
     var alert = alertify.prompt(
         '{{ _('Create a server') }}',
         '{{ _('Enter a name for the new server') }}', 
         '', 
         function(evt, value) { 
-            $.post("{{ url_for('NODE-server.add') }}", { name: value })
+            var d = tree.itemData(item);
+            if (d._type != 'server-group') {
+                d = tree.itemData(tree.parent(item));
+            }
+            $.post(
+                "{{ url_for('browser.index') }}server/obj/" + d.refid + '/',
+                { name: value }
+                )
                 .done(function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
@@ -38,8 +45,10 @@ function drop_server(item) {
         '{{ _('Are you sure you wish to drop the server "{0}"?') }}'.replace('{0}', tree.getLabel(item)),
         function() {
             var id = tree.getId(item).split('/').pop()
-            $.post("{{ url_for('NODE-server.delete') }}", { id: id })
-                .done(function(data) {
+            $.ajax({
+                url:"{{ url_for('browser.index') }}" + d._type + "/obj/" + d.refid,
+                type:'DELETE',
+                success: function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
@@ -53,7 +62,7 @@ function drop_server(item) {
                         }
                     }
                 }
-            )
+            })
         },
         null
     )
@@ -66,16 +75,19 @@ function rename_server(item) {
         '{{ _('Enter a new name for the server') }}', 
         tree.getLabel(item), 
         function(evt, value) {
-            var id = tree.getId(item).split('/').pop()
-            $.post("{{ url_for('NODE-server.rename') }}", { id: id, name: value })
-                .done(function(data) {
+            var d = tree.itemData(item);
+            $.ajax({
+                url:"{{ url_for('browser.index') }}" + d._type + "/obj/" + d.refid,
+                type:'PUT',
+                params: {name: value},
+                success: function(data) {
                     if (data.success == 0) {
                         report_error(data.errormsg, data.info);
                     } else {
                         tree.setLabel(item, { label: value });
                     }
                 }
-            )
+            })
         },
         null
     )

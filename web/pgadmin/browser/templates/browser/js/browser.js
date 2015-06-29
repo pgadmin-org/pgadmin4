@@ -298,6 +298,12 @@ ALTER TABLE tickets_detail \n\
                     return $.parseJSON(payload).data;
                 }
             }
+        },
+        ajaxHook: function(item, settings) {
+            if (item != null) {
+                var d = this.itemData(item);
+                settings.url = '{{ url_for('browser.index') }}' + d._type + '/nodes/' + d.refid
+            }
         }
     });
     tree = $('#tree').aciTree('api');
