@@ -26,24 +26,13 @@ blueprint = Blueprint("NODE-" + NODE_TYPE, __name__, static_folder='static',  st
 @login_required
 def get_nodes(server_group):
     """Build a list of treeview nodes from the child nodes."""
-    value = '['
-    
+    nodes = []
     for node in sub_nodes:
-        if 'hooks' in dir(node) and 'get_nodes' in dir(node.hooks):
-            value += node.hooks.get_nodes(server_group) + ','
-        
-    if value[-1:] == ',':
-        value = value[:-1]
-        
-    value += ']'
-    
-    resp = Response(response=value,
-                status=200,
-                mimetype="text/json")
-    
-    return resp
-    
-    
+        if hasattr(node, 'hooks') and hasattr(node.hooks, 'get_nodes'):
+            nodes.extend(node.hooks.get_nodes(server_group))
+    return make_json_response(data=nodes)
+
+
 @blueprint.route('/add/', methods=['POST'])
 @login_required
 def add():
@@ -51,7 +40,7 @@ def add():
     success = 1
     errormsg = ''
     data = { }
-    
+
     if request.form['name'] != '':
         servergroup = ServerGroup(user_id=current_user.id, name=request.form['name'])
 
@@ -65,15 +54,15 @@ def add():
     else:
         success = 0
         errormsg = gettext('No server group name was specified')
-            
+
     if success == 1:
         data['id'] = servergroup.id
         data['name'] = servergroup.name
-        
-    return make_json_response(success=success, 
-                              errormsg=errormsg, 
-                              info=traceback.format_exc(), 
-                              result=request.form, 
+
+    return make_json_response(success=success,
+                              errormsg=errormsg,
+                              info=traceback.format_exc(),
+                              result=request.form,
                               data=data)
 
 @blueprint.route('/delete/', methods=['POST'])
@@ -86,7 +75,7 @@ def delete():
     if request.form['id'] != '':
         # There can be only one record at most
         servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
-        
+
         if servergroup is None:
             success = 0
             errormsg = gettext('The specified server group could not be found.')
@@ -101,10 +90,10 @@ def delete():
     else:
         success = 0
         errormsg = gettext('No server group  was specified.')
-            
-    return make_json_response(success=success, 
-                              errormsg=errormsg, 
-                              info=traceback.format_exc(), 
+
+    return make_json_response(success=success,
+                              errormsg=errormsg,
+                              info=traceback.format_exc(),
                               result=request.form)
 
 @blueprint.route('/rename/', methods=['POST'])
@@ -117,7 +106,7 @@ def rename():
     if request.form['id'] != '':
         # There can be only one record at most
         servergroup = ServerGroup.query.filter_by(user_id=current_user.id, id=int(request.form['id'])).first()
-        
+
         if servergroup is None:
             success = 0
             errormsg = gettext('The specified server group could not be found.')
@@ -132,9 +121,9 @@ def rename():
     else:
         success = 0
         errormsg = gettext('No server group was specified.')
-            
-    return make_json_response(success=success, 
-                              errormsg=errormsg, 
-                              info=traceback.format_exc(), 
+
+    return make_json_response(success=success,
+                              errormsg=errormsg,
+                              info=traceback.format_exc(),
                               result=request.form)
-    
+

@@ -9,20 +9,13 @@
 
 """Utility functions for dealing with AJAX."""
 
-from flask import Response
+from flask import jsonify
 import json
 
-def make_json_response(success=1, errormsg='', info='', result={}, data={}):
+def make_json_response(success=True, **kwargs):
     """Create a HTML response document describing the results of a request and
     containing the data."""
-    doc = { }
-    doc['success'] = success
-    doc['errormsg'] = errormsg
-    doc['info'] = info
-    doc['result'] = result
-    doc['data'] = data
-
-    response = Response(response=json.dumps(doc),
-                        status=200,
-                        mimetype="text/json")
-    return response
+    response = kwargs.copy()
+    response.setdefault('result', {})
+    response.setdefault('data', {})
+    return jsonify(response)

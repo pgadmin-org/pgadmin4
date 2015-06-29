@@ -9,7 +9,7 @@
 
 """Defines the models for the configuration database.
 
-If any of the models are updated, you (yes, you, the developer) MUST do two 
+If any of the models are updated, you (yes, you, the developer) MUST do two
 things:
 
 1) Increment SETTINGS_SCHEMA_VERSION in config.py
@@ -28,12 +28,13 @@ roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
+
 class Version(db.Model):
     """Version numbers for reference/upgrade purposes"""
     __tablename__ = 'version'
     name = db.Column(db.String(32), primary_key=True)
     value = db.Column(db.Integer(), nullable=False)
-    
+
 class Role(db.Model, RoleMixin):
     """Define a security role"""
     __tablename__ = 'role'
@@ -51,7 +52,7 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
-    
+
 class Setting(db.Model):
     """Define a setting object"""
     __tablename__ = 'setting'
@@ -66,7 +67,7 @@ class ServerGroup(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
-    
+
 
 class Server(db.Model):
     """Define a registered Postgres server"""
@@ -80,5 +81,3 @@ class Server(db.Model):
     maintenance_db = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
     ssl_mode = db.Column(db.String(16), nullable=False)
-    
-    

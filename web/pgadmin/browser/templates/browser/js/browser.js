@@ -292,7 +292,12 @@ ALTER TABLE tickets_detail \n\
     // Initialise the treeview
     $('#tree').aciTree({
         ajax: {
-            url: '{{ url_for('browser.get_nodes') }}'
+            url: '{{ url_for('browser.get_nodes') }}',
+            converters: {
+                'text json': function(payload) {
+                    return $.parseJSON(payload).data;
+                }
+            }
         },
     });
     tree = $('#tree').aciTree('api');
