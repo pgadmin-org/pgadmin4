@@ -4,10 +4,16 @@ including Python modules installed via Pip which are listed in requirements.txt.
 Library           Version     Licence      URL
 =======           =======     =======      ===
 QT                4.6.2+      LGPL v2.1/3  http://www.qt.io/ 
-Bootstrap         3.3.1       MIT          http://getbootstrap.com/
+Bootstrap         3.3.4       MIT          http://getbootstrap.com/
 jQuery            1.11.1      MIT          http://jquery.com/
 Modernizr         2.6.2       MIT/BSD      http://modernizr.com/
 AlertifyJS        1.1.0       MIT          http://alertifyjs.com/
 CodeMirror        4.12        MIT          http://codemirror.net/       
 aciTree           4.5.0-rc.7  MIT/GPL      http://acoderinsights.ro/en/aciTree-tree-view-with-jQuery
 wcDocker          1cd2466afb  MIT          https://github.com/WebCabin/wcDocker
+Require.js        2.1.18      BSD/MIT      http://requirejs.org/
+Underscore.js     1.8.3       MIT          http://underscorejs.org/
+Underscore.string 387ab72d49  MIT          http://epeli.github.io/underscore.string/
+Backform.js       6270ec07e2  MIT          https://github.com/AmiliaApp/backform
+font-Awesome      4.3         SIL OFL      http://fortawesome.github.io/Font-Awesome/
+font-mfizz        1.2         MIT          http://fizzed.com/oss/font-mfizz
