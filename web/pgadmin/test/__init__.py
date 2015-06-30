@@ -10,7 +10,7 @@
 """Browser integration functions for the Test module."""
 MODULE_NAME = 'test'
 from flask.ext.security import login_required
-from flask import render_template, url_for
+from flask import render_template, url_for, current_app
 from flask.ext.babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
@@ -27,32 +27,42 @@ class TestModule(PgAdminModule):
             MenuItem(name='mnu_test_alert',
                      label=gettext('Test Alert'),
                      priority=200,
-                     url='#',
-                     onclick='test_alert()'),
+                     module='pgAdmin.Test',
+                     callback='test_alert'),
             MenuItem(name='mnu_test_confirm',
                      label=gettext('Test Confirm'),
                      priority=300,
-                     url='#',
-                     onclick='test_confirm()'),
+                     module='pgAdmin.Test',
+                     callback='test_confirm'),
             MenuItem(name='mnu_test_dialog',
                      label=gettext('Test Dialog'),
                      priority=400,
-                     url='#',
-                     onclick='test_dialog()'),
+                     module='pgAdmin.Test',
+                     callback='test_dialog'),
             MenuItem(name='mnu_test_prompt',
                      label=gettext('Test Prompt'),
                      priority=500,
-                     url='#',
-                     onclick='test_prompt()'),
+                     module='pgAdmin.Test',
+                     callback='test_prompt'),
             MenuItem(name='mnu_test_notifier',
                      label=gettext('Test Notifier'),
                      priority=600,
-                     url='#',
-                     onclick='test_notifier()')
+                     module='pgAdmin.Test',
+                     callback='test_notifier'),
+            MenuItem(name='mnu_test_disabled',
+                label=gettext('Test Disabled'),
+                     priority=700,
+                     module='pgAdmin.Test',
+                     callback='test_notifier',
+                     enable=False)
         ]}
 
     def get_own_javascripts(self):
-        return [ url_for('test.static', filename='js/test.js') ]
+        return [{
+            'name': 'pgadmin.test',
+            'path': url_for('test.static', filename='js/test'),
+            'when': None
+            }]
 
 # Initialise the module
 blueprint = TestModule(MODULE_NAME, __name__)
@@ -66,5 +76,7 @@ Today is <b>%s</b>
 <br />
 <i>This is Flask-generated HTML.</i>
 <br /><br />
-<a href="http://www.pgadmin.org/">%s v%s</a>""" % (ctime(time()), config.APP_NAME, config.APP_VERSION)
+<a href="http://www.pgadmin.org/">%s v%s</a>""" % (ctime(time()),
+                                                   current_app.config['APP_NAME'],
+                                                   current_app.config['APP_VERSION'])
     return output

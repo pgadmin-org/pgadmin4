@@ -84,7 +84,6 @@ class Server(db.Model):
             db.ForeignKey('servergroup.id'),
             nullable=False
             )
-
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=False)
     port = db.Column(
@@ -94,8 +93,11 @@ class Server(db.Model):
     maintenance_db = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
     ssl_mode = db.Column(
-        db.String(16),
-        db.CheckConstraint(
-            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
-        ),
-        nullable=False)
+            db.String(16),
+            db.CheckConstraint(
+                "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
+                ),
+            nullable=False)
+    comment = db.Column(
+            db.String(1024),
+            nullable=True)

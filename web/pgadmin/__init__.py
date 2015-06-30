@@ -69,6 +69,18 @@ class PgAdmin(Flask):
             panels.extend(module.get_panels())
         return panels
 
+    @property
+    def menu_items(self):
+        from operator import attrgetter
+
+        menu_items = defaultdict(list)
+        for module in self.submodules:
+            for key, value in module.menu_items.items():
+                menu_items[key].extend(value)
+        menu_items = {key: sorted(values, key=attrgetter('priority'))
+                      for key, values in menu_items.items()}
+        return menu_items
+
 def _find_blueprint():
     if request.blueprint:
         return current_app.blueprints[request.blueprint]
@@ -195,13 +207,9 @@ def create_app(app_name=config.APP_NAME):
     @app.context_processor
     def inject_blueprint():
         """Inject a reference to the current blueprint, if any."""
-        menu_items = defaultdict(list)
-        for blueprint in app.submodules:
-            menu_items.update(getattr(blueprint, "menu_items", {}))
         return {
             'current_app': current_app,
-            'current_blueprint': current_blueprint,
-            'menu_items': menu_items }
+            'current_blueprint': current_blueprint }
 
     ##########################################################################
     # All done!

@@ -26,19 +26,19 @@ class HelpModule(PgAdminModule):
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
                      priority=100,
-                     target='_new',
+                     target='blank',
                      url=url_for('help.static', filename='index.html')),
 
             MenuItem(name='mnu_pgadmin_website',
                      label= gettext('pgAdmin Website'),
                      priority= 200,
-                     target= '_new',
+                     target= 'blank',
                      url= 'http://www.pgadmin.org/' ),
 
             MenuItem(name= 'mnu_postgresql_website',
                      label= gettext('PostgreSQL Website'),
                      priority= 300,
-                     target= '_new',
+                     target= 'blank',
                      url= 'http://www.postgresql.org/' )]}
 
     def get_panels(self):

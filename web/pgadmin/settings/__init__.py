@@ -104,5 +104,3 @@ def get(setting=None, default=None):
                               errormsg=errormsg,
                               info=traceback.format_exc(),
                               result=request.form)
-
-

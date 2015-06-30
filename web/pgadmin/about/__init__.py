@@ -20,21 +20,27 @@ import sys
 
 import config
 
-class AboutModule(PgAdminModule):
 
+class AboutModule(PgAdminModule):
     def get_own_menuitems(self):
         return {
             'help_items': [
                 MenuItem(name='mnu_about',
                          priority=999,
-                         url='#',
-                         onclick='about_show()',
-                         label=gettext('About %(appname)s', appname=config.APP_NAME))
+                         module="pgAdmin.About",
+                         callback='about_show',
+                         icon='fa fa-info-circle',
+                         label=gettext('About %(appname)s',
+                                       appname=config.APP_NAME))
             ]
         }
 
     def get_own_javascripts(self):
-        return [url_for('about.script')]
+        return [{
+            'name': 'pgadmin.about',
+            'path': url_for('about.index') + 'about',
+            'when': None
+        }]
 
 
 blueprint = AboutModule(MODULE_NAME, __name__,
@@ -47,10 +53,10 @@ blueprint = AboutModule(MODULE_NAME, __name__,
 @login_required
 def index():
     """Render the about box."""
-    info = { }
+    info = {}
     info['python_version'] = sys.version
     info['flask_version'] = __version__
-    if config.SERVER_MODE == True:
+    if config.SERVER_MODE is True:
         info['app_mode'] = gettext('Server')
     else:
         info['app_mode'] = gettext('Desktop')
@@ -58,10 +64,11 @@ def index():
 
     return render_template(MODULE_NAME + '/index.html', info=info)
 
+
 @blueprint.route("/about.js")
 @login_required
 def script():
-    """Render the required Javascript"""
+    """render the required javascript"""
     return Response(response=render_template("about/about.js"),
                     status=200,
                     mimetype="application/javascript")

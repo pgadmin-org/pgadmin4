@@ -9,19 +9,24 @@
 
 """Browser helper utilities"""
 
-from flask import request
+import flask
 from flask.views import View, MethodViewType, with_metaclass
+from pgadmin.utils.ajax import make_json_response
+import gettext
 
 
-def generate_browser_node(node_id, label, icon, inode, node_type):
-    return {
-            "id": "%s/%s" % (node_type, node_id),
-            "label": label,
-            "icon": icon,
-            "inode": inode,
-            "_type": node_type,
-            "refid": node_id
+def generate_browser_node(node_id, parent_id, label, icon, inode, node_type):
+    obj = {
+        "id": "%s/%s" % (node_type, node_id),
+        "label": label,
+        "icon": icon,
+        "inode": inode,
+        "_type": node_type,
+        "_id": node_id,
+        "refid": parent_id,
+        "module": 'pgadmin.node.%s' % node_type
     }
+    return obj
 
 
 class NodeView(with_metaclass(MethodViewType, View)):
@@ -67,33 +72,31 @@ class NodeView(with_metaclass(MethodViewType, View)):
     In order to identify the TABLE object, we need server -> database -> schema
     information.
     """
-    operations = {
+    operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'nodes'}, {}],
-        'sql': [{'get': 'sql', 'post': 'modified_sql'}, {}],
-        'stats': [{'get': 'statistics'}, {}],
-        'deps': [{'get': 'dependencies', 'post': 'dependents'}, {}]
-    }
-
+        'nodes': [{'get': 'nodes'}],
+        'sql': [{'get': 'sql', 'post': 'modified_sql'}],
+        'stats': [{'get': 'statistics'}],
+        'deps': [{'get': 'dependencies', 'post': 'dependents'}]
+    })
 
     @classmethod
     def generate_ops(cls):
         cmds = []
         for op in cls.operations:
-            idx=0
+            idx = 0
             for ops in cls.operations[op]:
                 meths = []
                 for meth in ops:
                     meths.append(meth.upper())
                 if len(meths) > 0:
-                    cmds.append({'cmd': op, 'req':idx==0, 'methods': meths})
-                idx+=1
+                    cmds.append({'cmd': op, 'req': idx == 0, 'methods': meths})
+                idx += 1
 
         return cmds
-
 
     # Inherited class needs to modify these parameters
     node_type = None
@@ -102,30 +105,28 @@ class NodeView(with_metaclass(MethodViewType, View)):
     # This must be an array object with attributes (type and id)
     ids = []
 
-
     @classmethod
     def get_node_urls(cls):
-        assert cls.node_type is not None, "Please set the node_type for this class (%r)" % cls
+        assert cls.node_type is not None, \
+            "Please set the node_type for this class ({0})".format(
+                str(cls.__class__.__name__))
         common_url = '/'
         for p in cls.parent_ids:
-            common_url += '<' + p['type'] + ":" + p['id'] + '>/'
+            common_url += '<{0}:{1}>/'.format(str(p['type']), str(p['id']))
 
-        id_url = common_url
-        idx = 0
+        id_url = None
         for p in cls.ids:
-            id_url += '/<' if idx == 1 else '<' + p['type'] + ":" + p['id'] + '>'
-            idx += 1
+            id_url = '{0}<{1}:{2}>'.format(common_url if not id_url else id_url,
+                                           p['type'], p['id'])
 
         return id_url, common_url
 
-
-    def __init__(self, cmd):
-        self.cmd = cmd;
-
+    def __init__(self, **kwargs):
+        self.cmd = kwargs['cmd']
 
     # Check the existance of all the required arguments from parent_ids
     # and return combination of has parent arguments, and has id arguments
-    def check_args(self, *args, **kwargs):
+    def check_args(self, **kwargs):
         has_id = has_args = True
         for p in self.parent_ids:
             if p['id'] not in kwargs:
@@ -139,32 +140,42 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
         return has_args, has_id and has_args
 
-
     def dispatch_request(self, *args, **kwargs):
-        meth = request.method.lower()
+        meth = flask.request.method.lower()
         if meth == 'head':
             meth = 'get'
 
-        assert self.cmd in NodeView.operations, \
-                "Unimplemented Command (%s) for Node View" % self.cmd
-        has_args, has_id = self.check_args(*args, **kwargs)
+        assert self.cmd in self.operations, \
+            "Unimplemented Command ({0}) for {1}".format(
+                self.cmd,
+                str(self.__class__.__name__))
+        has_args, has_id = self.check_args(**kwargs)
 
-        assert (has_id and meth in NodeView.operations[self.cmd][0]) \
-                or (not has_id and meth in NodeView.operations[self.cmd][1]), \
-                "Unimplemented method (%s) for command (%s), which %s an id" \
-                % (meth, self.cmd, 'requires' if has_id else 'does not require')
+        assert ((has_id and len(self.operations[self.cmd]) >= 0 and meth in
+                 self.operations[self.cmd][0]) or (
+            not has_id and len(
+                self.operations[self.cmd]) > 0 and meth in
+            self.operations[self.cmd][1])), \
+            "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
+                meth, self.cmd,
+                'requires' if has_id else 'does not require')
 
-        meth = NodeView.operations[self.cmd][0][meth] if has_id else \
-                NodeView.operations[self.cmd][1][meth]
+        meth = self.operations[self.cmd][0][meth] if has_id else \
+            self.operations[self.cmd][1][meth]
 
         method = getattr(self, meth, None)
 
-        assert method is not None, \
-                "Unimplemented method (%s) for this url (%u)" % \
-                (meth, request.path)
+        if method is None:
+            return make_json_response(
+                status=406,
+                success=0,
+                errormsg=gettext.gettext(
+                    "Unimplemented method ({0}) for this url ({1})".format(
+                        meth, flask.request.path)
+                )
+            )
 
         return method(*args, **kwargs)
-
 
     @classmethod
     def register_node_view(cls, blueprint):
@@ -174,8 +185,8 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
         for c in commands:
             blueprint.add_url_rule(
-                    '/%s%s' % (c['cmd'], id_url if c['req'] else url),
-                    view_func=cls.as_view(
-                        '%s%s' % (c['cmd'], '_id' if c['req'] else ''),
-                        cmd=c['cmd']),
-                    methods=c['methods'])
+                '/{0}{1}'.format(c['cmd'], id_url if c['req'] else url),
+                view_func=cls.as_view(
+                    '%s%s' % (c['cmd'], '_id' if c['req'] else ''),
+                    cmd=c['cmd']),
+                methods=c['methods'])

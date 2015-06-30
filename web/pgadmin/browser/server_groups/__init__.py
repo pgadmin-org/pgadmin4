@@ -10,75 +10,45 @@
 
 from abc import ABCMeta, abstractmethod
 import traceback
-from flask import Blueprint, Response, current_app, request, render_template
+import json
+from flask import request, render_template, make_response, jsonify
 from flask.ext.babel import gettext
 from flask.ext.security import current_user, login_required
 from pgadmin import current_blueprint
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, \
+    make_response as ajax_response
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.settings.settings_model import db, ServerGroup
-from pgadmin.browser.utils import generate_browser_node
-import config
 
 
 class ServerGroupModule(BrowserPluginModule):
 
     NODE_TYPE = "server-group"
 
-    def get_own_menuitems(self):
-        return {
-            'standard_items': [
-                ServerGroupMenuItem(action="drop", priority=10, function="drop_server_group"),
-                ServerGroupMenuItem(action="rename", priority=10, function="rename_server_group")
-            ],
-            'create_items': [
-                ServerGroupMenuItem(name="create_server_group",
-                                    label=gettext('Server Group...'),
-                                    priority=10,
-                                    function="create_server_group",
-                                    types=[self.node_type])
-            ],
-            'context_items': [
-                ServerGroupMenuItem(name="delete_server_group",
-                                    label=gettext('Delete server group'),
-                                    priority=10,
-                                    onclick='drop_server_group(item);'),
-                ServerGroupMenuItem(name="rename_server_group",
-                                    label=gettext('Rename server group...'),
-                                    priority=10,
-                                    onclick='rename_server_group(item);')
-            ]
-        }
-
-
-    @property
-    def jssnippets(self):
-        snippets = [render_template("server_groups/server_groups.js")]
-        for module in self.submodules:
-            snippets.extend(module.jssnippets)
-        return snippets
-
-    def get_nodes(self, **kwargs):
+    def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""
         groups = ServerGroup.query.filter_by(user_id=current_user.id)
-        # TODO: Move this JSON generation to a Server method
-        # this code is duplicated somewhere else
         for group in groups:
-            yield generate_browser_node(
+            group = self.generate_browser_node(
                     "%d" % (group.id),
+                    None,
                     group.name,
                     "icon-%s" % self.node_type,
-                    True,
-                    self.node_type)
+                    True)
+            yield group
 
     @property
     def node_type(self):
         return self.NODE_TYPE
 
     @property
+    def script_load(self):
+        return None
+
+    @property
     def node_path(self):
-        return '/browser/' + self.node_type
+        return BrowserPluginModule.browser_url_prefix + self.node_type
 
 
 class ServerGroupMenuItem(MenuItem):
@@ -97,16 +67,24 @@ class ServerGroupPluginModule(BrowserPluginModule):
 
 
     @abstractmethod
-    def get_nodes(self, servergroup):
+    def get_nodes(self, *arg, **kwargs):
         pass
 
 
     @property
     def node_path(self):
-        return '/browser/' + self.node_type
+        return BrowserPluginModule.browser_url_prefix + self.node_type
 
 
 blueprint = ServerGroupModule( __name__, static_url_path='')
+
+@blueprint.route('/module.js')
+@login_required
+def module():
+    return make_response(
+        render_template("server_groups/server_groups.js"),
+        200, {'Content-Type': 'application/x-javascript'})
+
 
 # Initialise the module
 from pgadmin.browser.utils import NodeView
@@ -136,14 +114,16 @@ class ServerGroupView(NodeView):
 
         if servergroup is None:
             return make_json_response(
+                    status=417,
                     success=0,
                     errormsg=gettext('The specified server group could not be found.'))
         else:
             try:
-                db.session.delete(servergroup)
+                for sg in servergroup:
+                    db.session.delete(sg)
                 db.session.commit()
             except Exception as e:
-                return make_json_response(success=0, errormsg=e.message)
+                return make_json_response(status=410, success=0, errormsg=e.message)
 
         return make_json_response(result=request.form)
 
@@ -156,17 +136,20 @@ class ServerGroupView(NodeView):
                 user_id=current_user.id,
                 id=gid).first()
 
+        data = request.form if request.form else json.loads(request.data)
+
         if servergroup is None:
             return make_json_response(
+                    status=417,
                     success=0,
                     errormsg=gettext('The specified server group could not be found.'))
         else:
             try:
-                if 'name' in request.form:
-                    servergroup.name = request.form['name']
+                if u'name' in data:
+                    servergroup.name = data[u'name']
                 db.session.commit()
             except Exception as e:
-                return make_json_response(success=0, errormsg=e.message)
+                return make_json_response(status=410, success=0, errormsg=e.message)
 
         return make_json_response(result=request.form)
 
@@ -182,33 +165,46 @@ class ServerGroupView(NodeView):
 
         if sg is None:
             return make_json_response(
+                    status=417,
                     success=0,
                     errormsg=gettext('The specified server group could not be found.'))
         else:
-            return make_json_response(data={'id': sg.id, 'name': sg.name})
+            return ajax_response(response={'id': sg.id, 'name': sg.name},
+                    status=200)
 
 
     def create(self):
-        data = []
-        if request.form['name'] != '':
-            servergroup = ServerGroup(
-                    user_id=current_user.id,
-                    name=request.form['name'])
+        data = request.form if request.form else json.loads(request.data)
+
+        if data[u'name'] != '':
             try:
-                db.session.add(servergroup)
+                sg = ServerGroup(
+                    user_id=current_user.id,
+                    name=data[u'name'])
+                db.session.add(sg)
                 db.session.commit()
 
-                data['id'] = servergroup.id
-                data['name'] = servergroup.name
+                data[u'id'] = sg.id
+                data[u'name'] = sg.name
+
+                return jsonify(node=blueprint.generate_browser_node(
+                    "%d" % (sg.id),
+                    None,
+                    sg.name,
+                    "icon-%s" % self.node_type,
+                    True))
             except Exception as e:
-                return make_json_response(success=0, errormsg=e.message)
+                print 'except'
+                return make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=e.message)
 
         else:
             return make_json_response(
+                    status=417,
                     success=0,
                     errormsg=gettext('No server group name was specified'))
-
-        return make_json_response(data=data)
 
 
     def nodes(self, gid):
@@ -220,23 +216,23 @@ class ServerGroupView(NodeView):
 
 
     def sql(self, gid):
-        return make_json_response(data='')
+        return make_json_response(status=422)
 
 
     def modified_sql(self, gid):
-        return make_json_response(data='')
+        return make_json_response(status=422)
 
 
     def statistics(self, gid):
-        return make_json_response(data='')
+        return make_json_response(status=422)
 
 
     def dependencies(self, gid):
-        return make_json_response(data='')
+        return make_json_response(status=422)
 
 
     def dependents(self, gid):
-        return make_json_response(data='')
+        return make_json_response(status=422)
 
 
 ServerGroupView.register_node_view(blueprint)

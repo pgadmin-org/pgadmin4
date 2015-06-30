@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 {% block title %}{{ config.APP_NAME }}{% endblock %}
+{% block init_script %}
+try {
+  require(
+    ['pgadmin', 'pgadmin.browser'],
+    function(pgAdmin, pgBrowser) {
+      pgBrowser.init();
+    },
+    function() {
+      /* TODO:: Show proper error dialog */
+      console.log(arguments);
+    });
+} catch (err) {
+  /* Show proper error dialog */
+  console.log(err);
+}
+{% endblock %}
 {% block body %}
 <nav class="navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
@@ -10,49 +26,59 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">{{ config.APP_NAME }}</a>
-   </div>
+      <a class="navbar-brand" href="#">
+        <i class="app-icon {{ config.APP_ICON }}"></i>
+        <span>&nbsp;{{ config.APP_NAME }}</span>
+      </a>
+    </div>
 
     <div class="collapse navbar-collapse" id="navbar-menu">
 
       <ul class="nav navbar-nav">
 
-        <li class="dropdown">
+        <li id="mnu_file" class="dropdown hide">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('File') }} <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li id="mnu_create_dropdown" class="menu-item dropdown dropdown-submenu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Create</a>
-              <ul id="mnu_create" class="dropdown-menu">
+          <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
+        </li>
+        <li id="mnu_edit" class="dropdown hide">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Edit') }} <span class="caret"></span></a>
+          <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
+        </li>
+        <li id="mnu_obj" class="dropdown hide">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Object') }} <span class="caret"></span></a>
+          <ul id="mnu_dropdown_obj" class="dropdown-menu navbar-inverse" role="menu">
+            <li id="mnu_create_dropdown_obj" class="menu-item dropdown dropdown-submenu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-magic"></i>
+                <span>&nbsp;&nbsp;{{ _('Create') }}</span>
+              </a>
+              <ul id="mnu_create_obj" class="dropdown-menu navbar-inverse">
                 <li class="menu-item">
                   <a href="#">Link 1</a>
                 </li>
               </ul>
             </li>
-            <li><a id="mnu_drop_object" href="#" onclick="drop_object()">{{ _('Drop object') }}</a></li>
-            <li><a id="mnu_rename_object" href="#" onclick="rename_object()">{{ _('Rename object') }}</a></li>
-            <li class="divider"></li>
-            {% for file_item in menu_items.file_items %}
-            <li><a id="{{ file_item.name }}" href="{{ file_item.url }}"{% if file_item.target %} target="{{ file_item.target }}"{% endif %}{% if file_item.onclick %} onclick="{{ file_item.onclick|safe }}"{% endif %}>{{ file_item.label }}</a></li>{% endfor %}
+            <hr/>
           </ul>
         </li>
-        {% for key in ('Edit', 'Tools', 'Management', 'Help') %}
-          {% if menu_items['%s_items' % key.lower()] %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-            role="button" aria-expanded="false">{{ _(key) }} <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              {% for item in menu_items['%s_items' % key.lower()] %}
-              <li><a id="{{ item.name }}" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}"{% endif %}{% if item.onclick %} onclick="{{ item.onclick|safe }}"{% endif %}>{{ item.label }}</a></li>
-              {% endfor %}
-            </ul>
-        </li>{%endif%}
-        {% endfor %}
+        <li id="mnu_management" class="dropdown hide">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Management') }} <span class="caret"></span></a>
+          <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
+        </li>
+        <li id="mnu_tools" class="dropdown hide">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Tools') }} <span class="caret"></span></a>
+          <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
+        </li>
+        <li id="mnu_help" class="dropdown hide">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ _('Help') }} <span class="caret"></span></a>
+          <ul class="dropdown-menu navbar-inverse" role="menu"></ul>
+        </li>
       </ul>
       {% if config.SERVER_MODE %}
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><img src="{{ username | gravatar }}" width="18" height="18" alt="Gravatar image for {{ username }}"> {{ username }} <span class="caret"></span></a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu navbar-inverse">
             <li><a href="{{ url_for('security.change_password') }}">{{ _('Change Password') }}</a></li>
             <li class="divider"></li>
             <li><a href="{{ url_for('security.logout') }}">{{ _('Logout') }}</a></li>
@@ -65,7 +91,7 @@
   </div>
 </nav>
 
-<div class="dockerContainer" style="position:absolute;left:0px;right:0px;top:50px;bottom:0px;"></div>
+<div id="dockerContainer" style="position:absolute;left:0px;right:0px;top:50px;bottom:0px;"></div>
 
 {% include 'browser/messages.html' %}
 

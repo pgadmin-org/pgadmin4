@@ -1,8 +1,16 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2015, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 from flask import Blueprint
 from collections import defaultdict
 from operator import attrgetter
 import sys
-
 
 
 class PgAdminModule(Blueprint):

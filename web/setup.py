@@ -1,4 +1,4 @@
-##########################################################################
+#########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
@@ -28,9 +28,9 @@ db.init_app(app)
 
 def do_setup():
     """Create a new settings database from scratch"""
-    if config.SERVER_MODE == False:
+    if config.SERVER_MODE is False:
         print "NOTE: Configuring authentication for DESKTOP mode."
-        email = config.DESKTOP_USER 
+        email = config.DESKTOP_USER
         p1 = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
 
     else:
@@ -60,44 +60,32 @@ def do_setup():
         user_datastore.create_role(name='Administrators', description='pgAdmin Administrators Role')
         user_datastore.create_user(email=email, password=password)
         user_datastore.add_role_to_user(email, 'Administrators')
-        
+
         # Get the user's ID and create the default server group
         user = User.query.filter_by(email=email).first()
         server_group = ServerGroup(user_id=user.id, name="Servers")
         db.session.merge(server_group)
 
-        # TODO:: Remove this server later
-        #        It is here to demo the server listing is workig in
-        #        browser tree.
-        server_group = ServerGroup.query.filter_by(name='Servers').first()
-
-        server = Server(
-                user_id=user.id, servergroup_id=server_group.id,
-                name='PostgreSQL 9.3', host='localhost', port=3930,
-                maintenance_db='postgres', username='asheshvashi',
-                ssl_mode='prefer'
-                )
-        db.session.merge(server)
-
         # Set the schema version
         version = Version(name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION)
         db.session.merge(version)
-        
+
         db.session.commit()
 
     # Done!
     print ""
     print "The configuration database has been created at %s" % config.SQLITE_PATH
-    
+
+
 def do_upgrade():
     """Upgrade an existing settings database"""
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(app, user_datastore)
-    
+
     with app.app_context():
         version = Version.query.filter_by(name='ConfigDB').first()
-        
+
         # Pre-flight checks
         if int(version.value) > int(config.SETTINGS_SCHEMA_VERSION):
             print "The database schema version is %d, whilst the version required by the software is %d.\nExiting..." \
@@ -106,29 +94,31 @@ def do_upgrade():
         elif int(version.value) == int(config.SETTINGS_SCHEMA_VERSION):
             print "The database schema version is %d as required.\nExiting..." % (version.value)
             sys.exit(1)
-            
+
         print "NOTE: Upgrading database schema from version %d to %d." % (version.value, config.SETTINGS_SCHEMA_VERSION)
-        
+
         #######################################################################
         # Run whatever is required to update the database schema to the current
         # version. Always use "< REQUIRED_VERSION" as the test for readability
         #######################################################################
-        
+
         # Changes introduced in schema version 2
         if int(version.value) < 2:
             # Create the 'server' table
             db.metadata.create_all(db.engine, tables=[Server.__table__])
-            
+        elif int(version.value) < 3:
+            db.engine.execute('ALTER TABLE server ADD COLUMN comment TEXT(1024)');
+
         # Finally, update the schema version
         version.value = config.SETTINGS_SCHEMA_VERSION
         db.session.merge(version)
-        
+
         db.session.commit()
-            
+
     # Done!
     print ""
     print "The configuration database %s has been upgraded to version %d" % (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
-    
+
 ###############################################################################
 # Do stuff!
 ###############################################################################
@@ -149,6 +139,6 @@ if not os.path.isfile(local_config):
 if os.path.isfile(config.SQLITE_PATH):
     print "The configuration database %s already exists.\nEntering upgrade mode...\n" % config.SQLITE_PATH
     do_upgrade()
-else:    
+else:
     print "The configuration database %s does not exist.\nEntering initial setup mode...\n" % config.SQLITE_PATH
     do_setup()

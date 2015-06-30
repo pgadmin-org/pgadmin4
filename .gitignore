@@ -14,3 +14,4 @@ runtime/pgAdmin4.app/
 runtime/pgAdmin4.pro.user*
 runtime/ui_BrowserWindow.h
 web/config_local.py
+web/pgadmin4.log
