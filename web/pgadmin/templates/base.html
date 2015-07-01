@@ -54,16 +54,16 @@
                 paths: {
                     pgadmin: "{{ url_for('static', filename='js/pgadmin') }}",
                     modernizr: "{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min') }}",
-                    jquery: "{{ url_for('static', filename='js/' + 'jquery-1.11.2' if config.DEBUG else 'jquery-1.11.2.min') }}",
-                    underscore: "{{ url_for('static', filename='js/' + 'underscore' if config.DEBUG else 'underscore.min') }}",
-                    "underscore.string": "{{ url_for('static', filename='js/' + 'underscore.string' if config.DEBUG else 'underscore.string.min') }}",
-                    bootstrap: "{{ url_for('static', filename='js/' + 'bootstrap' if config.DEBUG else 'bootstrap.min') }}",
-                    alertifyjs: "{{ url_for('static', filename='js/alertifyjs/' + 'alertify' if config.DEBUG else 'alertify.min') }}",
+                    jquery: "{{ url_for('static', filename='js/' + ('jquery-1.11.2' if config.DEBUG else 'jquery-1.11.2.min')) }}",
+                    underscore: "{{ url_for('static', filename='js/' + ('underscore' if config.DEBUG else 'underscore-min')) }}",
+                    "underscore.string": "{{ url_for('static', filename='js/' + ('underscore.string' if config.DEBUG else 'underscore.string.min')) }}",
+                    bootstrap: "{{ url_for('static', filename='js/' + ('bootstrap' if config.DEBUG else 'bootstrap.min')) }}",
+                    alertifyjs: "{{ url_for('static', filename='js/alertifyjs/' + ('alertify' if config.DEBUG else 'alertify.min')) }}",
                     'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults') }}",
-                    backbone: "{{ url_for('static', filename='js/' + 'backbone' if config.DEBUG else 'backbone.min') }}",
-                    "bootstrap.datepicker": "{{ url_for('static', filename='js/' + 'bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min') }}",
-                    backform: "{{ url_for('static', filename='js/' + 'backform') }}",
-                    'pgadmin.backform': "{{ url_for('static', filename='js/' + 'backform.pgadmin') }}"{% for script in current_app.javascripts %},
+                    backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
+                    "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
+                    backform: "{{ url_for('static', filename='js/backform') }}",
+                    'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
                 }
             });
