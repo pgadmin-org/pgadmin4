@@ -39,6 +39,7 @@
     helpClassName: "help-block",
     errorClassName: "has-error",
     helpMessageClassName: "help-block",
+    hiddenClassname: "hidden",
 
     // Bootstrap 2.3 adapter
     bootstrap2: function() {
@@ -183,18 +184,36 @@
   });
 
   // Field model and collection
-  // A field maps a model attriute to a control for rendering and capturing user input
+  //
+  //   A field maps a model attriute to a control for rendering and capturing
+  //   user input.
   var Field = Backform.Field = Backbone.Model.extend({
     defaults: {
-      name: "", // Name of the model attribute; accepts "." nested path (e.g. x.y.z)
+      // Name of the model attribute
+      // - It accepts "." nested path (e.g. x.y.z)
+      name: "",
+      // Placeholder for the input
       placeholder: "",
+      // Disable the input control
+      // (Optional - true/false/function returning boolean)
+      // (Default Value: false)
       disabled: false,
+      // Visible
+      // (Optional - true/false/function returning boolean)
+      // (Default Value: true)
+      visible: true,
+      // Value Required (validation)
+      // (Optional - true/false/function returning boolean)
+      // (Default Value: true)
       required: false,
-      value: undefined, // Optional. Default value when model is empty.
-      control: undefined, // Control name or class
+      // Default value for the field
+      // (Optional)
+      value: undefined,
+      // Control or class name for the control representing this field
+      control: undefined,
       formatter: undefined
     },
-    initialize: function() {
+    initialize: function(attributes, options) {
       var control = Backform.resolveNameToClass(this.get("control"), "Control");
       this.set({control: control}, {silent: true});
     }
@@ -206,18 +225,22 @@
 
   // Base Control class
   var Control = Backform.Control = Backbone.View.extend({
-    defaults: {}, // Additional field defaults
+    // Additional field defaults
+    defaults: {},
     className: function() {
       return Backform.groupClassName;
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <span class="<%=Backform.controlClassName%> uneditable-input"><%=value%></span>',
+      '  <span class="<%=Backform.controlClassName%> uneditable-input">',
+      '    <%=value%>',
+      '  </span>',
       '</div>'
     ].join("\n")),
     initialize: function(options) {
-      this.field = options.field; // Back-reference to the field
+      // Back-reference to the field
+      this.field = options.field;
 
       var formatter = Backform.resolveNameToClass(this.field.get("formatter") || this.formatter, "Formatter");
       if (!_.isFunction(formatter.fromRaw) && !_.isFunction(formatter.toRaw)) {
@@ -228,7 +251,10 @@
       var attrArr = this.field.get('name').split('.');
       var name = attrArr.shift();
 
+      // Listen to the field in the model for any change
       this.listenTo(this.model, "change:" + name, this.render);
+
+      // Listen for the field in the error model for any change
       if (this.model.errorModel instanceof Backbone.Model)
         this.listenTo(this.model.errorModel, "change:" + name, this.updateInvalid);
     },
@@ -276,10 +302,27 @@
             value: this.formatter.fromRaw(rawValue, this.model),
             attributes: attributes,
             formatter: this.formatter
-          });
+          }),
+          evalF = function(f, m) {
+            return (_.isFunction(f) ? !!f(m) : !!f);
+          };
+
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(data.disabled, this.model),
+        visible:  evalF(data.visible, this.model),
+        required: evalF(data.required, this.model)
+      });
+
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassname);
+
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassname);
 
       this.$el.html(this.template(data)).addClass(field.name);
       this.updateInvalid();
+
       return this;
     },
     clearInvalid: function() {

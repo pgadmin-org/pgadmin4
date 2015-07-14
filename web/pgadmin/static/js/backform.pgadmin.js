@@ -41,23 +41,22 @@
     setGroupContentClassName: "fieldset-content col-xs-12"
     });
 
-  _.extend(Backform.Field.prototype, {
-    defaults: {
-      name: "", // Name of the model attribute; accepts "." nested path (e.g. x.y.z)
-      placeholder: "",
-      disabled: false,
-      required: false,
-      value: undefined, // Optional. Default value when model is empty.
-      control: undefined, // Control name or class
-      formatter: undefined,
-      fields: undefined,
-    },
-    initialize: function() {
-      var control = Backform.resolveNameToClass(this.get("control"), "Control");
-      this.set({control: control}, {silent: true});
-    }
-  });
+  // Override the Backform.Control to allow to track changes in dependencies,
+  // and rerender the View element
+  var BackformControlInit = Backform.Control.prototype.initialize;
+  Backform.Control.prototype.initialize = function() {
+    BackformControlInit.apply(this, arguments);
 
+    // Listen to the dependent fields in the model for any change
+    var deps = this.field.get('deps');
+    var that = this;
+    if (deps && _.isArray(deps))
+      _.each(deps, function(d) {
+        attrArr = d.split('.');
+        name = attrArr.shift();
+        that.listenTo(that.model, "change:" + name, that.render);
+    });
+  };
 
   // Backform Dialog view (in bootstrap tabbular form)
   // A collection of field models.
@@ -72,7 +71,7 @@
       var s = opts.schema;
       if (s && _.isArray(s)) {
         this.schema = _.each(s, function(o) {
-          if (!(o.fields instanceof Backbone.Collection))
+          if (o.fields && !(o.fields instanceof Backbone.Collection))
             o.fields = new Backform.Fields(o.fields);
           o.cId = o.cId || _.uniqueId('pgC_');
           o.hId = o.hId || _.uniqueId('pgH_');

@@ -46,7 +46,7 @@ OWNER TO helpdesk;\n';
 
     if (this.isVisible()) {
       var obj = pgAdmin.Browser,
-          i   = obj.tree.selected(),
+          i   = obj.tree ? obj.tree.selected() : undefined,
           d   = i && i.length == 1 ? obj.tree.itemData(i) : undefined;
 
       if (d && obj.Nodes[d._type].callbacks['selected'] &&
