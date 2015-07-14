@@ -101,7 +101,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         name: 'show_obj_properties', node: this.type, module: this,
         applies: ['object', 'context'], callback: 'show_obj_properties',
         priority: 3, label: '{{ _("Properties...") }}',
-        data: {'action': 'properties'}, icon: 'fa fa-th-list'
+        data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
       }]);
     },
     ///////
@@ -333,8 +333,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           l = S('{{ _("Create - %%s") }}').sprintf(
               [this.label]).value();
           p = pgBrowser.docker.addPanel('node_props',
-              wcDocker.DOCK_FLOAT, undefined,
-              {w: '500', h: '400'});
+              wcDocker.DOCK_FLOAT, undefined, {
+                  w: (screen.width < 700 ?
+                      screen.width * 0.95 : screen.width * 0.5),
+                  h: (screen.height < 500 ?
+                    screen.height * 0.95 : screen.height * 0.5),
+                  x: (screen.width < 700 ? '2%' : '25%'),
+                  y: (screen.height < 500 ? '2%' : '25%')
+                });
           setTimeout(function() {
             o.showProperties(i, d, p, args.action);
           }, 10);
@@ -350,7 +356,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             if (mode) {
               var msg = '{{ _('Are you sure wish to stop editing the properties of the %%s - "%%s"?') }}';
               if (args.action == 'edit') {
-                msg = '{{ _('Are you sure wish to reset the current changes, and reopen the panel for %%s = "%%s"?') }}';
+                msg = '{{ _('Are you sure wish to reset the current changes, and reopen the panel for %%s - "%%s"?') }}';
               }
 
               Alertify.confirm(
@@ -369,8 +375,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             }
           } else {
             p = pgBrowser.docker.addPanel('node_props',
-                wcDocker.DOCK_FLOAT, undefined,
-                {w: '500', h: '400'});
+                wcDocker.DOCK_FLOAT, undefined, {
+                  w: (screen.width < 700 ?
+                      screen.width * 0.95 : screen.width * 0.5),
+                  h: (screen.height < 500 ?
+                    screen.height * 0.95 : screen.height * 0.5),
+                  x: (screen.width < 700 ? '2%' : '25%'),
+                  y: (screen.height < 500 ? '2%' : '25%')
+                });
             pgBrowser.Node.panels = pgBrowser.Node.panels || {};
             pgBrowser.Node.panels[d.id] = p;
 
@@ -510,9 +522,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
         content = $('<div></div>')
-          .addClass('has-pg-prop-btn-group pg-prop-content col-xs-12'),
+          .addClass('pg-prop-content col-xs-12'),
         // Template function to create the button-group
-        createButtons = function(buttons) {
+        createButtons = function(buttons, extraClasses) {
           // arguments must be non-zero length array of type
           // object, which contains following attributes:
           // label, type, extraClasses, register
@@ -521,15 +533,18 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             // div area.
             var btnGroup =
               $('<div></div>').addClass(
-                  'pg-prop-btn-group col-xs-12'
+                  'pg-prop-btn-group'
                   ).appendTo(j),
-            // Template used for creating a button
-            tmpl = _.template([
+              // Template used for creating a button
+              tmpl = _.template([
                 '<button type="<%= type %>" ',
                 'class="btn <%=extraClasses.join(\' \')%>">',
                 '<i class="<%= icon %>"></i>&nbsp;',
                 '<%-label%></button>'
                 ].join(' '));
+            if (extraClasses) {
+              btnGroup.addClass(extraClasses);
+            }
             _.each(buttons, function(btn) {
               // Create the actual button, and append to
               // the group div
@@ -550,6 +565,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         },
         // Callback to show object properties
         properties = function() {
+
+          if (!content.hasClass('has-pg-prop-btn-group'))
+            content.addClass('has-pg-prop-btn-group');
+
           // We need to release any existing view, before
           // creating new view.
           if (view) {
@@ -570,18 +589,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             j.data('obj-view', view);
             // Create proper buttons
             var buttons = [];
-            if (action) {
-              buttons.push({
-                label: '{{ _("Close") }}', type: 'close',
-                extraClasses: ['btn-danger'],
-                icon: 'fa fa-lg fa-close',
-                register: function(btn) {
-                  btn.click(function() {
-                    closePanel();
-                  });
-                }
-              });
-            }
             buttons.push({
               label: '{{ _("Edit") }}', type: 'edit',
               extraClasses: ['btn-primary'],
@@ -592,7 +599,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 });
               }
             });
-            createButtons(buttons);
+            createButtons(buttons, 'pg-prop-btn-group-above');
           }
           j.append(content);
         },
@@ -620,6 +627,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);
+
             // Create proper buttons
             createButtons([{
               label: '{{ _("Save") }}', type: 'save',
@@ -673,10 +681,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   setTimeout(function() { editFunc.call(); }, 0);
                 });
               }
-            }]);
+            }], 'pg-prop-btn-group-below');
           };
-          // Show contents after buttons
-          j.append(content);
+
+          // Add some space, so that - button group does not override the
+          // space
+          content.addClass('pg-prop-has-btn-group-below');
+
+          // Show contents before buttons
+          j.prepend(content);
         },
         closePanel = function() {
           // Closing this panel
@@ -686,7 +699,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // Update the item lable (if lable is modified.)
           tree.setLabel(item, {label: view.model.get("name")});
           panel.$container.removeAttr('action-mode');
-          setTimeout(function() { properties(); }, 0);
+          setTimeout(function() { closePanel(); }, 0);
         },
         saveNewNode = function() {
           /* TODO:: Create new tree node for this */
@@ -766,7 +779,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             }]);
           }, 0);
         },
-        onCancelFunc = properties,
+        onCancelFunc = closePanel,
         onSaveFunc = updateTreeItem,
         onEdit = editFunc;
 

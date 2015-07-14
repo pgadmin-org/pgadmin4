@@ -25,11 +25,6 @@ function($, _, pgAdmin, pgBrowser, alertify) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 3, label: '{{ _('Server...') }}',
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
-        }, {
-          name: 'edit_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'edit', priority: 4, label: '{{ _('Edit...') }}',
-          data: {action: 'edit'}, icon: 'fa fa-pencil-square-o'
         },{
           name: 'drop_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'delete_obj',

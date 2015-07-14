@@ -19,11 +19,6 @@ function($, _, pgAdmin, Backbone) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: '{{ _('Server Group...') }}',
           data: {'action': 'create'}, icon: 'wcTabIcon icon-server-group'
-        },{
-          name: 'edit_server_group', node: 'server-group', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          priority: 3, label: '{{ _('Edit...') }}', data: {'action': 'edit'},
-          icon: 'fa fa-pencil-square-o'
         }, {
           name: 'drop_server_group', node: 'server-group', module: this,
           applies: ['object', 'context'], callback: 'delete_obj',

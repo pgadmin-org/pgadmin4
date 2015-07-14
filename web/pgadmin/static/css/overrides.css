@@ -141,6 +141,10 @@ iframe {
     color: #009DCF;
 }
 
+.navbar-inverse .navbar-brand:hover {
+    color: #009DCF;
+}
+
 .dropdown-menu > hr {
     margin-top: 0;
     margin-bottom: 0;
@@ -338,15 +342,19 @@ iframe {
     border: 2px solid #A9A9A9;
     left: 0px;
     right: 0px;
+}
+
+.pg-prop-btn-group-above {
     top: 0px;
-    padding: 0px 7px;
+}
+
+.pg-prop-btn-group-below {
+    bottom: 0px;
 }
 
 .pg-prop-btn-group button {
-    margin-right: 5px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    margin-left: 5px;
+    padding: 0.2em 0.3em;
+    margin: 0.1em 0.3em;
 }
 
 .pg-prop-btn-group button:not(:first-child):not(:last-child) {
@@ -354,22 +362,20 @@ iframe {
 }
 
 .pg-prop-content {
-    margin: 0 auto;
-    width: 100%;
     position: absolute;
     overflow: auto;
     top: 0em;
     bottom: 0px;
-    margin-top: 1em;
-    padding-right: 0;
-    padding-left: 0;
+    padding: 0.5em 0px;
+}
+
+.pg-prop-has-btn-group-below {
+    margin-bottom: 2.1em;
 }
 
 .has-pg-prop-btn-group {
-    top: 2.5em;
+    top: 2.1em;
 }
-
-
 
 .pg-prop-content > div {
     margin-top: 5px;
