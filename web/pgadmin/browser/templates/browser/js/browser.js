@@ -243,7 +243,7 @@ OWNER TO helpdesk;\n';
                   function(v, k) {
                     // Remove disabled class in any case first.
                     e = j.find('#' + k).closest('.menu-item').removeClass('disabled');
-                    if (v.disabled(obj)) {
+                    if (v.disabled(d)) {
                       // Make this menu disabled
                       e.addClass('disabled');
                     }
@@ -260,9 +260,9 @@ OWNER TO helpdesk;\n';
               function(o) { return o.priority; }),
             function(m) {
               if (m.category && m.category == 'create') {
-                create_items.push(m.generate());
+                create_items.push(m.generate(d));
               } else {
-                obj_mnu.append(m.generate());
+                obj_mnu.append(m.generate(d));
               }
             });
         // Create menus goes seperately
@@ -389,25 +389,27 @@ OWNER TO helpdesk;\n';
           _.each(
             _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
-                if (m.category == 'create')
+                if (m.category == 'create' && !m.disabled(d))
                   createMenu[m.module.type + '_' + m.callback] = { name: m.label };
               });
 
-          menu["create"] = { "name": "{{ _('Create') }}" }
-          menu["create"]["items"] = createMenu
+          if (createMenu.length) {
+            menu["create"] = { "name": "{{ _('Create') }}" };
+            menu["create"]["items"] = createMenu;
+          }
 
-            _.each(
-                _.sortBy(menus, function(m) { return m.priority; }),
-                function(m) {
-                  if (m.category != 'create')
-                    menu[m.module.type + '_' + m.callback] = { name: m.label };
-                });
+          _.each(
+              _.sortBy(menus, function(m) { return m.priority; }),
+              function(m) {
+                if (m.category != 'create' && !m.disabled(d))
+                  menu[m.module.type + '_' + m.callback] = { name: m.label };
+              });
 
-          return {
+          return menu.length ? {
             autoHide: true,
             items: menu,
             callback: cb
-          };
+          } : undefined;
         }
       });
 
