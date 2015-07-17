@@ -393,7 +393,7 @@ OWNER TO helpdesk;\n';
                   createMenu[m.module.type + '_' + m.callback] = { name: m.label };
               });
 
-          if (createMenu.length) {
+          if (_.size(createMenu)) {
             menu["create"] = { "name": "{{ _('Create') }}" };
             menu["create"]["items"] = createMenu;
           }
@@ -405,11 +405,11 @@ OWNER TO helpdesk;\n';
                   menu[m.module.type + '_' + m.callback] = { name: m.label };
               });
 
-          return menu.length ? {
+          return _.size(menu) ? {
             autoHide: true,
             items: menu,
             callback: cb
-          } : undefined;
+          } : {};
         }
       });
 
