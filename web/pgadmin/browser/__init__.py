@@ -27,10 +27,9 @@ class BrowserModule(PgAdminModule):
         for (endpoint, filename) in [
             ('static', 'css/codemirror/codemirror.css'),
             ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css'),
-            ('static', 'css/wcDocker/wcDockerSkeleton.css' if \
+            ('static', 'css/wcDocker/wcDocker.css' if \
                     current_app.debug else \
-                       'css/wcDocker/wcDockerSkeleton.min.css'),
-            ('static', 'css/wcDocker/theme.css'),
+                       'css/wcDocker/wcDocker.min.css'),
             ('browser.static', 'css/browser.css'),
             ('browser.static', 'css/aciTree/css/aciTree.css')
             ]:

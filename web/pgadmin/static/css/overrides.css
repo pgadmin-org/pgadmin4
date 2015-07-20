@@ -15,7 +15,9 @@ body {
 .container {
     width: 100% !important;
 }
-    
+
+.pg-panel-content { position:absolute;top:0px;left:0px;right:0px;bottom:0px; }
+
 /* Restyle the Alertify dialogs */
 .alertify .ajs-dialog {
     border: 0px solid rgba(0,0,0,.2);

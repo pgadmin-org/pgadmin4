@@ -32,7 +32,12 @@ function(_, pgAdmin) {
             else
               myPanel.title(title || that.title);
             myPanel.closeable(that.isCloseable == true);
-            myPanel.layout().addItem(that.content, 0, 0).parent().css('height', '100%');
+            myPanel.layout().addItem(
+              $('<div>', {
+                'class': 'pg-panel-content'
+              })
+              .append($(that.content))
+            );
             that.panel = myPanel;
             if (that.events && _.isObject(that.events)) {
               _.each(that.events, function(v, k) {

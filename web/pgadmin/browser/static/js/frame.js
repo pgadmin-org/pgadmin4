@@ -33,8 +33,8 @@ function(_, pgAdmin) {
             myPanle.title(false);
           myPanel.closeable(that.isCloseable == true);
 
-          var $frameArea = $('<div style="width:100%;height:100%;position:relative;">');
-          myPanel.layout().addItem($frameArea).parent().css('height', '100%');
+          var $frameArea = $('<div style="width:100%;height:100%;position:relative;display:table">');
+          myPanel.layout().addItem($frameArea);
           that.panel = myPanel;
           that.frame = new wcIFrame($frameArea, myPanel);
 

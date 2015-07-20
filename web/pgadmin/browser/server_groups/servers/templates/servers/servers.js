@@ -6,7 +6,7 @@ function($, _, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server-group',
       type: 'server',
-      label: '{{ _('Server...') }}',
+      label: '{{ _('Server') }}',
       Init: function() {
 
         /* Avoid multiple registration of same menus */

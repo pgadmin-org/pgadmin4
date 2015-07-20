@@ -42,7 +42,7 @@ ALTER TABLE tickets_detail \n\
 OWNER TO helpdesk;\n';
 
   var panelEvents = {};
-  panelEvents[wcDocker.EVENT_VISIBILITY_CHANGED] = function() {
+  panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
 
     if (this.isVisible()) {
       var obj = pgAdmin.Browser,
@@ -58,6 +58,13 @@ OWNER TO helpdesk;\n';
     }
   };
 
+  var sqlPanelEvents = {};
+  sqlPanelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
+    /* Update the SQL editor to show the latest value all the time */
+    if (this.isVisible()) {
+        pgAdmin.Browser.editor.setValue($('#sql-textarea').val());
+    }
+  };
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
@@ -80,7 +87,7 @@ OWNER TO helpdesk;\n';
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
         title: '{{ _('Browser') }}',
-        showTitle: false,
+        showTitle: true,
         isCloseable: false,
         isPrivate: true,
         content: '<div id="tree" class="aciTree"></div>'
@@ -113,8 +120,8 @@ OWNER TO helpdesk;\n';
         isCloseable: false,
         isPrivate: true,
         // TODO:: Revove demoSql later
-        content: '<textarea id="sql-textarea" name="sql-textarea">' + demoSql + '</textarea>',
-        events: panelEvents
+        content: '<textarea id="sql-textarea" name="sql-textarea"></textarea>',
+        events: sqlPanelEvents
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
@@ -156,7 +163,7 @@ OWNER TO helpdesk;\n';
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        url: 'about:blank' /* TODO:: Change it with http://www.pgadmin.org later */
+        url: 'http://www.pgadmin.org'
       })/* Add hooked-in frames by extensions */{% for panel_item in current_app.panels %}{% if panel_item.isIframe %},
       '{{ panel_item.name }}' : new pgAdmin.Browser.Frame({
         name: '{{ panel_item.name }}',
@@ -197,19 +204,19 @@ OWNER TO helpdesk;\n';
     },
     // Build the default layout
     buildDefaultLayout: function() {
-      this.docker.addPanel('dashboard', wcDocker.DOCK_RIGHT);
-      this.docker.addPanel('properties', wcDocker.DOCK_STACKED,
-      this.frames['dashboard'].panel);
-      this.docker.addPanel('sql', wcDocker.DOCK_STACKED,
-      this.frames['dashboard'].panel);
-      this.docker.addPanel('statistics', wcDocker.DOCK_STACKED,
-      this.frames['dashboard'].panel);
-      this.docker.addPanel('dependencies', wcDocker.DOCK_STACKED,
-      this.frames['dashboard'].panel);
-      this.docker.addPanel('dependents', wcDocker.DOCK_STACKED,
-      this.frames['dashboard'].panel);
-      this.docker.addPanel('browser', wcDocker.DOCK_LEFT,
-      this.frames['dashboard'].panel);
+      var browserPanel = this.docker.addPanel('browser', wcDocker.DOCK.LEFT);
+      var dashboardPanel = this.docker.addPanel(
+              'dashboard', wcDocker.DOCK.RIGHT, browserPanel);
+      this.docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
+          tabOrientation: wcDocker.TAB.TOP
+      });
+      this.docker.addPanel('sql', wcDocker.DOCK.STACKED, dashboardPanel);
+      this.docker.addPanel(
+              'statistics', wcDocker.DOCK.STACKED, dashboardPanel);
+      this.docker.addPanel(
+              'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
+      this.docker.addPanel(
+              'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
     },
     // Enable/disable menu options
     enable_disable_menus: function(item) {
@@ -291,7 +298,10 @@ OWNER TO helpdesk;\n';
       // Initialize the Docker
       obj.docker = new wcDocker(
         '#dockerContainer', {
-        allowContextMenu: false
+        allowContextMenu: false,
+        allowCollapse: false,
+        themePath: '../static/css/wcDocker/Themes',
+        theme: 'pgadmin'
       });
       if (obj.docker) {
         // Initialize all the panels
@@ -306,18 +316,24 @@ OWNER TO helpdesk;\n';
         // Stored layout in database from the previous session
         var layout = '{{ layout }}';
 
+        obj.docker.startLoading('{{ _('Loading...') }}');
+
         // Try to restore the layout if there is one
         if (layout != '') {
           try {
             obj.docker.restore(layout)
           }
           catch(err) {
-            obj.docker.clear()
-              obj.buildDefaultLayout()
+            obj.docker.clear();
+            obj.buildDefaultLayout()
           }
         } else {
           obj.buildDefaultLayout()
         }
+
+        obj.docker.on(wcDocker.EVENT.LOADED, function() {
+            obj.docker.finishLoading(500);
+        });
       }
 
       // Syntax highlight the SQL Pane
@@ -325,8 +341,9 @@ OWNER TO helpdesk;\n';
           document.getElementById("sql-textarea"), {
             lineNumbers: true,
             mode: "text/x-sql",
-            readOnly: true,
+            readOnly: true
           });
+      $('#sql-textarea').val(demoSql);
 
       // Initialise the treeview
       $('#tree').aciTree({

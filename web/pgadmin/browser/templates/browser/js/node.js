@@ -278,7 +278,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           i = args.item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined
           o = this,
-          l = o.title(d);
+          l = o.label + ' - ' + o.title(d);
 
         // Make sure - the properties dialog type registered
         pgBrowser.Node.register_node_panel();
@@ -333,7 +333,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           l = S('{{ _("Create - %%s") }}').sprintf(
               [this.label]).value();
           p = pgBrowser.docker.addPanel('node_props',
-              wcDocker.DOCK_FLOAT, undefined, {
+              wcDocker.DOCK.FLOAT, undefined, {
                   w: (screen.width < 700 ?
                       screen.width * 0.95 : screen.width * 0.5),
                   h: (screen.height < 500 ?
@@ -375,7 +375,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             }
           } else {
             p = pgBrowser.docker.addPanel('node_props',
-                wcDocker.DOCK_FLOAT, undefined, {
+                wcDocker.DOCK.FLOAT, undefined, {
                   w: (screen.width < 700 ?
                       screen.width * 0.95 : screen.width * 0.5),
                   h: (screen.height < 500 ?
