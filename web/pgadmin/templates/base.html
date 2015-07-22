@@ -21,13 +21,14 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.css' if config.DEBUG else 'css/bootstrap-theme.min.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
 
         <!-- View specified stylesheets -->
         {% for stylesheet in current_app.stylesheets %}
         <link type="text/css" rel="stylesheet" href="{{ stylesheet }}">
         {% endfor %}
+
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
 
         <!-- Base template scripts -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/require.js' if config.DEBUG else 'js/require.min.js') }}"></script>

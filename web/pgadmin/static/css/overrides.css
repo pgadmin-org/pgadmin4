@@ -400,11 +400,11 @@ iframe {
 }
 
 .icon-server-connected {
-    background: url('/browser/server/static/img/server.png') no-repeat 30% 30% green !important;
+    background-image: url('/browser/server/static/img/server.png') !important;
     border-radius: 10px
 }
 
 .icon-server-not-connected {
-    background: url('/browser/server/static/img/server.png') no-repeat 30% 30% red !important;
+    background-image: url('/browser/server/static/img/serverbad.png') !important;
     border-radius: 10px
 }
