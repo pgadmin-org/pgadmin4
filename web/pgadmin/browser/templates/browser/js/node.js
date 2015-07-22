@@ -165,9 +165,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   typeof newModel[f.show] == "function" ?
                   newModel[f.show] : undefined,
                 // This can be disabled in some cases (if not hidden)
-                disable: f.disable && newModel[f.disable] &&
-                  typeof newModel[f.disable] == "function" ?
-                  newModel[f.disable] : undefined,
+                disabled: (type == 'properties' ? true : (
+                    f.disabled && newModel[f.disabled] &&
+                    typeof newModel[f.disabled] == "function" ?
+                    newModel[f.disabled] : undefined)),
                 options: f.options
               });
             }

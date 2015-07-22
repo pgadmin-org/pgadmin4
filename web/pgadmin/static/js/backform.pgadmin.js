@@ -57,6 +57,14 @@
         that.listenTo(that.model, "change:" + name, that.render);
     });
   };
+  Backform.Control.prototype.template = _.template([
+    '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+    '<div class="<%=Backform.controlsClassName%>">',
+    '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
+    '    <%=value%>',
+    '  </span>',
+    '</div>'
+  ].join("\n"));
 
   // Backform Dialog view (in bootstrap tabbular form)
   // A collection of field models.
