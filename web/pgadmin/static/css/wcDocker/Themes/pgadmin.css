@@ -19,19 +19,19 @@
 }
 
 .wcFrameTitle {
-  height: 50px;
   font-size: 12px;
   font-weight: bold;
-  padding-top: 3px;
   padding-left: 3px;
   vertical-align: middle;
-  background-color: #e6e6e6;
   text-align: left;
-  border-bottom: 1px;
+  border-bottom: 1px none;
+  height: 100%;
+  padding-top: 10px;
+  background-color: #A8A8A8;
 }
 
 .wcFrameCenter {
-  top: 40px;
+  top: 35px;
 }
 
 .wcFrameButton {
@@ -69,10 +69,24 @@
 }
 
 .wcFrameEdge {
-  position: absolute;
-  z-index: 2;
-  border: 3px solid #dddddd;
-  background-color: #cccccc;
+  border-width: 3px;
+  border-style: groove;
+  border-color: #dddddd;
+  background-color: #999999;
+}
+
+.wcFrameEdgeH {
+  height: 6px;
+}
+
+.wcFrameEdgeV {
+  width: 6px;
+}
+
+.wcFrameCornerNW,
+.wcFrameCornerNE {
+  height: 6px;
+  width: 6px;
 }
 
 .wcSplitterBar {
@@ -118,8 +132,16 @@
   font-weight: normal;
 }
 
-.wcPanelTabActive:hover {
-  background-color: #ffffff;
+.wcFloating .wcPanelTabActive {
+  background-color: #8A8A8A;
+  margin-top: -2px;
+  font-weight: bold;
+  color: white;
+}
+
+.wcFloating .wcPanelTabActive:hover {
+  background-color: #AAAAAA;
+  color: black;
 }
 
 .wcGhost {
@@ -205,7 +227,7 @@
 }
 
 .wcLayout, .wcLayout tr, .wcLayout td {
-    vertical-align: top;
+  vertical-align: top;
 }
 
 .context-menu-submenu:after {
@@ -213,16 +235,22 @@
 }
 
 .wcTabIcon {
-    display: inline-block;
-    text-align: center;
-    padding-left: 1.25em;
-    margin-top: -5px;
+  display: inline-block;
+  text-align: center;
+  padding-left: 20px;
+  margin-top: -5px;
 }
 
 .wcFrameTitleBar {
-    background-color: #E2E2E2
+  background-color: #E2E2E2;
+  height: 35px;
 }
 
 .wcFloating .wcFrameTitleBar {
-    background-color: #2C76B4;
+  border-bottom: 2px solid darkgray;
+  background-color: #8A8A8A;
+}
+
+.wcFloating .wcFrameTitleBar:hover {
+  background-color: #AAAAAA;
 }

@@ -353,11 +353,15 @@ iframe {
 
 .pg-prop-btn-group-below {
     bottom: 0px;
+    border-color: #A9A9A9;
+    border-width: 2px 1px 0px;
+    border-style: inset;
+    border-left-style: solid
 }
 
 .pg-prop-btn-group button {
-    padding: 0.2em 0.3em;
-    margin: 0.1em 0.3em;
+    padding: 5px;
+    margin: 2px 5px;
 }
 
 .pg-prop-btn-group button:not(:first-child):not(:last-child) {
@@ -367,20 +371,20 @@ iframe {
 .pg-prop-content {
     position: absolute;
     overflow: auto;
-    top: 0em;
-    bottom: 0px;
-    padding-bottom: 0.5em;
+    top: 3px;
+    bottom: 0;
+    padding-bottom: 7px;
     padding-top: 0;
     padding-right: 0;
     padding-left: 0;
 }
 
 .pg-prop-has-btn-group-below {
-    margin-bottom: 2.1em;
+    margin-bottom: 33px;
 }
 
 .has-pg-prop-btn-group {
-    top: 2.55em;
+    top: 43px;
 }
 
 .pg-prop-content > div {
