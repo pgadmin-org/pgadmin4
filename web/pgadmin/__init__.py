@@ -16,12 +16,13 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import login_user
 from flask_mail import Mail
 from htmlmin.minify import html_minify
-from settings.settings_model import db, Role, User
+from settings.settings_model import db, Role, User, Version
 from importlib import import_module
 from werkzeug.local import LocalProxy
 from pgadmin.utils import PgAdminModule
 from werkzeug.utils import find_modules
 import sys
+import os
 import logging
 
 # Configuration settings
@@ -162,7 +163,21 @@ def create_app(app_name=config.APP_NAME):
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    Security(app, user_datastore)
+    security = Security(app, user_datastore)
+
+    # Upgrade the schema (if required)
+    with app.app_context():
+        version = Version.query.filter_by(name='ConfigDB').first()
+
+        # Pre-flight checks
+        if int(version.value) < int(config.SETTINGS_SCHEMA_VERSION):
+            app.logger.info(
+                    """Upgrading the database schema from version {0} to {1}.""".format(
+                        version.value, config.SETTINGS_SCHEMA_VERSION
+                        )
+                    )
+            from setup import do_upgrade
+            do_upgrade(app, user_datastore, security, version)
 
     ##########################################################################
     # Load plugin modules
