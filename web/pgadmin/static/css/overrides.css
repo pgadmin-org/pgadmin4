@@ -287,6 +287,7 @@ iframe {
     text-align: left;
     cursor: pointer;
     margin-bottom: 1px;
+    background-color: #2C76B4;
 }
 
 .obj_properties .badge .caret {
@@ -368,7 +369,10 @@ iframe {
     overflow: auto;
     top: 0em;
     bottom: 0px;
-    padding: 0.5em 0px;
+    padding-bottom: 0.5em;
+    padding-top: 0;
+    padding-right: 0;
+    padding-left: 0;
 }
 
 .pg-prop-has-btn-group-below {
@@ -376,7 +380,7 @@ iframe {
 }
 
 .has-pg-prop-btn-group {
-    top: 2.1em;
+    top: 2.55em;
 }
 
 .pg-prop-content > div {

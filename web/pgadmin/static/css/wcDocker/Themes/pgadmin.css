@@ -18,19 +18,20 @@
   background-color: #dddddd;
 }
 
-.wcFrameTitleBar {
-  height: 38px;
-  background-color: #555;
-}
-
 .wcFrameTitle {
+  height: 50px;
   font-size: 12px;
   font-weight: bold;
-  text-align: left;
   padding-top: 3px;
   padding-left: 3px;
   vertical-align: middle;
   background-color: #e6e6e6;
+  text-align: left;
+  border-bottom: 1px;
+}
+
+.wcFrameCenter {
+  top: 40px;
 }
 
 .wcFrameButton {
@@ -53,10 +54,6 @@
 .wcFrameButton:active {
   border: 2px solid #dddddd;
   background-color: #dddddd;
-}
-
-.wcFrameCenter {
-  top: 40px;
 }
 
 .wcFrameButtonToggled, .wcFrameButtonToggled:hover {
@@ -220,4 +217,12 @@
     text-align: center;
     padding-left: 1.25em;
     margin-top: -5px;
+}
+
+.wcFrameTitleBar {
+    background-color: #E2E2E2
+}
+
+.wcFloating .wcFrameTitleBar {
+    background-color: #2C76B4;
 }

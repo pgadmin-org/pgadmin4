@@ -87,7 +87,7 @@ OWNER TO helpdesk;\n';
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
         title: '{{ _('Browser') }}',
-        showTitle: true,
+        showTitle: false,
         isCloseable: false,
         isPrivate: true,
         content: '<div id="tree" class="aciTree"></div>'
