@@ -244,7 +244,7 @@ iframe {
 
 .pgadmin-control-group {
     margin: 0px;
-    padding: 1px 0px;
+    padding: 2px 0px;
 }
 
 .fieldset-content .pgadmin-control-group:nth-child(even): {
@@ -273,13 +273,14 @@ iframe {
 }
 
 .obj_properties fieldset > .fieldset-content {
-    border-radius: 8px;
-    padding: 12px 8px;
-    margin: 0px;
-    border-color: darkolivegreen;
-    border-width: 1.5px;
-    border-style: double;
-    background-color: #F2F2F2;
+    border-radius: 10px;
+    padding: 5px 10px;
+    width: 99.8%;
+    margin: 0 0.1%;
+    border-color: #92AFC8;
+    border-width: 3px;
+    border-style: ridge;
+    background-color: ##D7D8DD;
 }
 
 .obj_properties .badge {
@@ -407,4 +408,14 @@ iframe {
 .icon-server-not-connected {
     background-image: url('/browser/server/static/img/serverbad.png') !important;
     border-radius: 10px
+}
+
+.form-control {
+    color: #333333;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+    color: #666666;
 }
