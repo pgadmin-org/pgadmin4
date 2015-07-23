@@ -1,3 +1,8 @@
+/**
+ * alertifyjs 1.4.1 http://alertifyjs.com
+ * AlertifyJS is a javascript framework for developing pretty browser dialogs and notifications.
+ * Copyright 2015 Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com)
+ * Licensed under MIT <http://opensource.org/licenses/mit-license.php>*/
 .alertify .ajs-dimmer {
   position: fixed;
   z-index: 1981;
@@ -27,6 +32,7 @@
   max-width: 500px;
   padding: 24px 24px 0 24px;
   outline: 0;
+  background-color: #fff;
 }
 .alertify .ajs-dialog.ajs-capture:before {
   content: '';
@@ -73,6 +79,7 @@
   margin: -24px;
   margin-bottom: 0;
   padding: 16px 24px;
+  background-color: #fff;
 }
 .alertify .ajs-body {
   min-height: 56px;
@@ -85,6 +92,7 @@
   margin-left: -24px;
   margin-right: -24px;
   min-height: 43px;
+  background-color: #fff;
 }
 .alertify .ajs-footer .ajs-buttons.ajs-primary {
   text-align: right;
@@ -296,12 +304,9 @@
 .alertify .ajs-modal {
   -webkit-transform: translate3d(0, 0, 0);
           transform: translate3d(0, 0, 0);
-  -webkit-transition-property: opacity, visibility;
-          transition-property: opacity, visibility;
-  -webkit-transition-timing-function: linear;
-          transition-timing-function: linear;
-  -webkit-transition-duration: 250ms;
-          transition-duration: 250ms;
+  transition-property: opacity, visibility;
+  transition-timing-function: linear;
+  transition-duration: 250ms;
 }
 .alertify.ajs-hidden .ajs-dimmer,
 .alertify.ajs-hidden .ajs-modal {
@@ -427,8 +432,7 @@
   60%,
   80%,
   100% {
-    -webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-            transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
   }
   0% {
     opacity: 0;
@@ -465,8 +469,7 @@
   60%,
   80%,
   100% {
-    -webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-            transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
   }
   0% {
     opacity: 0;
@@ -614,15 +617,13 @@
   0% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
             transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
     opacity: 0;
   }
   40% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
             transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
   }
   60% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
@@ -642,15 +643,13 @@
   0% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
             transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
     opacity: 0;
   }
   40% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
             transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
   }
   60% {
     -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
@@ -702,15 +701,13 @@
   0% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
             transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
     opacity: 0;
   }
   40% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
             transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
   }
   60% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
@@ -730,15 +727,13 @@
   0% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
             transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
     opacity: 0;
   }
   40% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
             transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
-    -webkit-transition-timing-function: ease-in;
-            transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
   }
   60% {
     -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
@@ -833,20 +828,27 @@
   padding: 0;
   opacity: 0;
   margin: 0;
-  -webkit-transition-duration: 250ms;
-          transition-duration: 250ms;
-  -webkit-transition-timing-function: linear;
-          transition-timing-function: linear;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  transition-duration: 250ms;
+  transition-timing-function: linear;
 }
 .alertify-notifier .ajs-message.ajs-visible {
-  -webkit-transition-duration: 500ms;
-          transition-duration: 500ms;
-  -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   opacity: 1;
   max-height: 100%;
   padding: 15px;
   margin-top: 10px;
+}
+.alertify-notifier .ajs-message.ajs-success {
+  background: rgba(91, 189, 114, 0.95);
+}
+.alertify-notifier .ajs-message.ajs-error {
+  background: rgba(217, 92, 92, 0.95);
+}
+.alertify-notifier .ajs-message.ajs-warning {
+  background: rgba(252, 248, 215, 0.95);
 }
 .alertify-notifier.ajs-top {
   top: 10px;
