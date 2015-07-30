@@ -66,14 +66,6 @@ class ServerMenuItem(MenuItem):
 blueprint = ServerModule(__name__)
 
 
-@blueprint.route('/module.js')
-@login_required
-def module():
-    return make_response(
-        render_template("servers/servers.js"),
-        200, {'Content-Type': 'application/x-javascript'})
-
-
 class ServerNode(NodeView):
     node_type = ServerModule.NODE_TYPE
     parent_ids = [{'type': 'int', 'id': 'gid'}]
@@ -87,6 +79,7 @@ class ServerNode(NodeView):
         'sql': [{'get': 'sql', 'post': 'modified_sql'}],
         'stats': [{'get': 'statistics'}],
         'deps': [{'get': 'dependencies', 'post': 'dependents'}],
+        'module.js': [{}, {}, {'get': 'module_js'}],
         'connect': [{'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'}]
     })
 
@@ -299,6 +292,16 @@ class ServerNode(NodeView):
 
     def dependents(self, gid, sid):
         return make_json_response(data='')
+
+    def module_js(self, **kwargs):
+        """
+        This property defines (if javascript) exists for this node.
+        Override this property for your own logic.
+        """
+        return make_response(
+                render_template("servers/servers.js"),
+                200, {'Content-Type': 'application/x-javascript'}
+                )
 
 
 ServerNode.register_node_view(blueprint)

@@ -519,6 +519,7 @@ OWNER TO helpdesk;\n';
     },
     // load the module right now
     load_module: function(name, path, c) {
+      var obj = this;
       require([name],function(m) {
         try {
           // initialze the module (if 'init' function present).

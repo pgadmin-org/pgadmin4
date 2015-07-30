@@ -80,7 +80,8 @@ class NodeView(with_metaclass(MethodViewType, View)):
         'nodes': [{'get': 'nodes'}],
         'sql': [{'get': 'sql', 'post': 'modified_sql'}],
         'stats': [{'get': 'statistics'}],
-        'deps': [{'get': 'dependencies', 'post': 'dependents'}]
+        'deps': [{'get': 'dependencies', 'post': 'dependents'}],
+        'module.js': [{}, {}, {'get': 'module_js'}]
     })
 
     @classmethod
@@ -93,7 +94,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 for meth in ops:
                     meths.append(meth.upper())
                 if len(meths) > 0:
-                    cmds.append({'cmd': op, 'req': idx == 0, 'methods': meths})
+                    cmds.append({'cmd': op, 'req': idx == 0, 'with_id': idx != 2, 'methods': meths})
                 idx += 1
 
         return cmds
@@ -146,22 +147,29 @@ class NodeView(with_metaclass(MethodViewType, View)):
             meth = 'get'
 
         assert self.cmd in self.operations, \
-            "Unimplemented Command ({0}) for {1}".format(
-                self.cmd,
-                str(self.__class__.__name__))
+                "Unimplemented Command ({0}) for {1}".format(
+                        self.cmd,
+                        str(self.__class__.__name__)
+                        )
+
         has_args, has_id = self.check_args(**kwargs)
 
-        assert ((has_id and len(self.operations[self.cmd]) >= 0 and meth in
-                 self.operations[self.cmd][0]) or (
-            not has_id and len(
-                self.operations[self.cmd]) > 0 and meth in
-            self.operations[self.cmd][1])), \
-            "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
-                meth, self.cmd,
-                'requires' if has_id else 'does not require')
+        assert self.cmd in self.operations and \
+                (has_id and len(self.operations[self.cmd]) > 0 and \
+                meth in self.operations[self.cmd][0]) or \
+                (not has_id and len(self.operations[self.cmd]) > 1 and \
+                meth in self.operations[self.cmd][1]) or \
+                (len(self.operations[self.cmd]) > 2 and \
+                meth in self.operations[self.cmd][2]), \
+                "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
+                        meth, self.cmd,
+                        'requires' if has_id else 'does not require'
+                        )
 
         meth = self.operations[self.cmd][0][meth] if has_id else \
-            self.operations[self.cmd][1][meth]
+                self.operations[self.cmd][1][meth] if has_args and \
+                meth in self.operations[self.cmd][1] else \
+                self.operations[self.cmd][2][meth]
 
         method = getattr(self, meth, None)
 
@@ -184,9 +192,36 @@ class NodeView(with_metaclass(MethodViewType, View)):
         commands = cls.generate_ops()
 
         for c in commands:
-            blueprint.add_url_rule(
-                '/{0}{1}'.format(c['cmd'], id_url if c['req'] else url),
-                view_func=cls.as_view(
-                    '%s%s' % (c['cmd'], '_id' if c['req'] else ''),
-                    cmd=c['cmd']),
-                methods=c['methods'])
+            if c['with_id']:
+                blueprint.add_url_rule(
+                        '/{0}{1}'.format(
+                            c['cmd'], id_url if c['req'] else url
+                            ),
+                        view_func=cls.as_view(
+                            '{0}{1}'.format(
+                                c['cmd'], '_id' if c['req'] else ''
+                                ),
+                            cmd=c['cmd']
+                            ),
+                        methods=c['methods']
+                        )
+            else:
+                blueprint.add_url_rule(
+                        '/{0}'.format(c['cmd']),
+                        view_func=cls.as_view(
+                            '{0}'.format(c['cmd']), cmd=c['cmd']
+                            ),
+                        methods=c['methods']
+                        )
+
+    def module_js(self, **kwargs):
+        """
+        This property defines (if javascript) exists for this node.
+        Override this property for your own logic.
+        """
+        return flask.make_response(
+                flask.render_template(
+                    "{0}/{1}.js".format(self.node_type)
+                    ),
+                200, {'Content-Type': 'application/x-javascript'}
+                )
