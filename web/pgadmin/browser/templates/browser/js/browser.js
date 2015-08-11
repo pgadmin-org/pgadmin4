@@ -147,9 +147,9 @@ OWNER TO helpdesk;\n';
         title: '{{ panel_item.title }}',
         width: {{ panel_item.width }},
         height: {{ panel_item.height }},
-        showTitle: (Boolean('{{ panel_item.showTitle|lower }}') == true),
-        isCloseable: (Boolean('{{ panel_item.isCloseable|lower }}') == true),
-        isPrivate: (Boolean('{{ panel_item.isPrivate|lower }}') == true),
+        showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
+        isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
+        isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
         content: '{{ panel_item.content }}'{% if panel_item.events is not none %},
         events: {{ panel_item.events }} {% endif %}
       }){% endif %}{% endfor %}
@@ -170,9 +170,9 @@ OWNER TO helpdesk;\n';
         title: '{{ panel_item.title }}',
         width: {{ panel_item.width }},
         height: {{ panel_item.height }},
-        showTitle: (Boolean('{{ panel_item.showTitle|lower }}') == true),
-        isCloseable: (Boolean('{{ panel_item.isCloseable|lower }}') == true),
-        isPrivate: (Boolean('{{ panel_item.isPrivate|lower }}') == true),
+        showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
+        isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
+        isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
         url: '{{ panel_item.content }}'
      }){% endif %}{% endfor %}
     },
@@ -298,7 +298,7 @@ OWNER TO helpdesk;\n';
       // Initialize the Docker
       obj.docker = new wcDocker(
         '#dockerContainer', {
-        allowContextMenu: false,
+        allowContextMenu: true,
         allowCollapse: false,
         themePath: '../static/css/wcDocker/Themes',
         theme: 'pgadmin'
@@ -566,10 +566,10 @@ OWNER TO helpdesk;\n';
                 name: m.name, label: m.label, module: m.module,
                 category: m.category, callback: m.callback,
                 priority: m.priority, data: m.data, url: m.url,
-                icon: m.icon, enable: (m.enable == '' ? true :
-                  (_.isString(m.enable) &&
+                target: m.target, icon: m.icon,
+                enable: (m.enable == '' ? true : (_.isString(m.enable) &&
                    m.enable.toLowerCase() == 'false') ?
-                  false : m.enable)
+                  false : !!m.enable)
               });
             }
           } else  {

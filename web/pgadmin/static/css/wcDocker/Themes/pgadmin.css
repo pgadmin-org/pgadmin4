@@ -37,8 +37,8 @@
 .wcFrameButton {
   width: 20px;
   height: 20px;
-  border: 2px solid #eeeeee;
-  background-color: #eeeeee;
+  border: 2px solid #8A0D0D;
+  background-color: #A56D6D;
   font-size: 12px;
 }
 
@@ -47,13 +47,11 @@
 }
 
 .wcFrameButton:hover {
-  border: 2px solid #cccccc;
-  background-color: #cccccc;
+  border: 2px solid #CCCCCC;
 }
 
 .wcFrameButton:active {
-  border: 2px solid #dddddd;
-  background-color: #dddddd;
+  border: 2px solid #DDDDDD;
 }
 
 .wcFrameButtonToggled, .wcFrameButtonToggled:hover {
@@ -133,7 +131,7 @@
 }
 
 .wcFloating .wcPanelTabActive {
-  background-color: #8A8A8A;
+  background-color: rgb(33, 81, 128);
   margin-top: -2px;
   font-weight: bold;
   color: white;
@@ -248,9 +246,15 @@
 
 .wcFloating .wcFrameTitleBar {
   border-bottom: 2px solid darkgray;
-  background-color: #8A8A8A;
+  background-color: rgb(33, 81, 128);
 }
 
 .wcFloating .wcFrameTitleBar:hover {
   background-color: #AAAAAA;
+}
+
+.wcFrameButtonBar {
+  top: 7px;
+  right: 5px;
+  color: white;
 }

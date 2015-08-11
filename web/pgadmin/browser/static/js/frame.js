@@ -5,7 +5,7 @@ function(_, pgAdmin) {
   pgAdmin.Browser = pgAdmin.Browser || {};
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
-      'name', 'title', 'width', 'height', 'showTitle', 'isClosable',
+      'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
       'isPrivate', 'url'];
     _.extend(this, _.pick(options, defaults));
   }
@@ -31,7 +31,7 @@ function(_, pgAdmin) {
           myPanel.initSize(that.width, that.height);
           if (myPanel.showTitle == false)
             myPanle.title(false);
-          myPanel.closeable(that.isCloseable == true);
+          myPanel.closeable(!!that.isCloseable);
 
           var $frameArea = $('<div style="width:100%;height:100%;position:relative;display:table">');
           myPanel.layout().addItem($frameArea);

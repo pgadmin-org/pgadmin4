@@ -244,8 +244,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       p = new pgBrowser.Panel({
           name: 'node_props',
           showTitle: true,
-          isCloseable: false,
-          isPrivate: false,
+          isCloseable: true,
+          isPrivate: true,
           content: '<div class="obj_properties">No object selected!</div>'
         });
       p.load(pgBrowser.docker);
@@ -623,7 +623,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // Make sure the HTML element is empty.
           j.empty();
           // Create a view to edit/create the properties in fieldsets
-          view = that.getView(action, content, data, 'fieldset');
+          view = that.getView(action, content, data, 'dialog');
 
           if (view) {
             // Save it to release it later

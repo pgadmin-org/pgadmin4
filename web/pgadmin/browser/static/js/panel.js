@@ -31,7 +31,7 @@ function(_, pgAdmin) {
               myPanel.title(false);
             else
               myPanel.title(title || that.title);
-            myPanel.closeable(that.isCloseable == true);
+            myPanel.closeable(!!that.isCloseable);
             myPanel.layout().addItem(
               $('<div>', {
                 'class': 'pg-panel-content'

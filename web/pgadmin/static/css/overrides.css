@@ -188,11 +188,27 @@ iframe {
 }
 
 .obj_properties .backform-tab {
-    width: 100%;
+    position: absolute;
+    margin: 0px 0px 80px;
+    padding: 0px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.obj_properties .backform-tab > .nav-tabs {
+    background-color: #DADADA;
+}
+
+.obj_properties .backform-tab > .tab-content {
+    padding: 0px;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .backform-tab .tab-pane {
-    padding: 1em;
+    padding: 7px;
 }
 
 .form-group fieldset .caret {
