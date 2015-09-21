@@ -569,7 +569,7 @@ OWNER TO helpdesk;\n';
                 target: m.target, icon: m.icon,
                 enable: (m.enable == '' ? true : (_.isString(m.enable) &&
                    m.enable.toLowerCase() == 'false') ?
-                  false : !!m.enable)
+                  false : m.enable)
               });
             }
           } else  {
