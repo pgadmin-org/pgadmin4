@@ -54,6 +54,7 @@ def do_setup(app):
         db.create_all()
         user_datastore.create_role(name='Administrators', description='pgAdmin Administrators Role')
         user_datastore.create_user(email=email, password=password)
+        db.session.flush()
         user_datastore.add_role_to_user(email, 'Administrators')
 
         # Get the user's ID and create the default server group
