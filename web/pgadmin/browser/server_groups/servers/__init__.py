@@ -7,17 +7,21 @@
 #
 ##########################################################################
 import json
-from flask import render_template, request, make_response, jsonify
+from abc import ABCMeta, abstractmethod, abstractproperty
+from flask import render_template, request, make_response, jsonify, current_app
 from flask.ext.security import login_required, current_user
-from pgadmin.settings.settings_model import db, Server, ServerGroup
+from pgadmin.settings.settings_model import db, Server, ServerGroup, User
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response
-from pgadmin.browser.utils import NodeView, generate_browser_node
+    make_response as ajax_response, internal_server_error, success_return, \
+    unauthorized, bad_request, precondition_required, forbidden
+from pgadmin.browser.utils import NodeView
 import traceback
 from flask.ext.babel import gettext
-
 import pgadmin.browser.server_groups as sg
+from pgadmin.utils.crypto import encrypt, decrypt
+from pgadmin.browser import BrowserPluginModule
+from config import PG_DEFAULT_DRIVER
 
 
 class ServerModule(sg.ServerGroupPluginModule):
@@ -35,26 +39,47 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         return sg.ServerGroupModule.NODE_TYPE
 
-    def get_nodes(self, server_group):
+    def get_nodes(self, gid):
         """Return a JSON document listing the server groups for the user"""
         servers = Server.query.filter_by(user_id=current_user.id,
-                                         servergroup_id=server_group)
+                                         servergroup_id=gid)
 
-        # TODO: Move this JSON generation to a Server method
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+
         for server in servers:
-            node = generate_browser_node(
-                "%d" % (server.id),
-                "%d" % server_group,
-                server.name,
-                "icon-%s-not-connected" % self.NODE_TYPE,
-                True,
-                self.NODE_TYPE)
+            manager = driver.connection_manager(server.id)
+            conn = manager.connection()
+            module = getattr(manager, "module", None)
+            connected = conn.connected()
 
-            yield node
+            yield self.generate_browser_node(
+                    "%d" % (server.id),
+                    "%d" % gid,
+                    server.name,
+                    "icon-server-not-connected" if not connected else
+                    "icon-{0}".format(module.NODE_TYPE),
+                    True,
+                    self.NODE_TYPE,
+                    connected=connected,
+                    server_type=module.type if module is not None else "PG"
+                    )
 
     @property
     def jssnippets(self):
         return []
+
+    @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page
+        """
+        snippets = [render_template("css/servers.css")]
+
+        for submodule in self.submodules:
+            snippets.extend(submodule.csssnippets)
+
+        return snippets
 
 
 class ServerMenuItem(MenuItem):
@@ -66,8 +91,83 @@ class ServerMenuItem(MenuItem):
 blueprint = ServerModule(__name__)
 
 
+class ServerTypeModule(BrowserPluginModule):
+    """
+    Base class for different server types.
+    """
+
+    __metaclass__ = ABCMeta
+
+    @abstractproperty
+    def type(self):
+        pass
+
+    @abstractproperty
+    def description(self):
+        pass
+
+    @abstractproperty
+    def priority(self):
+        pass
+
+    def get_nodes(self, manager=None, sid=None):
+        assert(sid is not None)
+
+        nodes = []
+
+        for module in self.submodules:
+            if isinstance(module, PGChildModule):
+                if manager and module.BackendSupported(manager):
+                    nodes.extend(module.get_nodes(sid=sid, manager=manager))
+            else:
+                nodes.extend(module.get_nodes(sid=sid))
+
+        return nodes
+
+    @abstractmethod
+    def instanceOf(self, version):
+        pass
+
+    def __str__(self):
+        return "Type: {0},Description:{1}".format(self.type, self.description)
+
+    @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page
+        """
+        snippets = [
+                    render_template(
+                        "css/node.css",
+                        node_type=self.node_type
+                        )
+                    ]
+
+        for submodule in self.submodules:
+            snippets.extend(submodule.csssnippets)
+
+        return snippets
+
+    def get_own_javascripts(self):
+        scripts = []
+
+        for module in self.submodules:
+            scripts.extend(module.get_own_javascripts())
+
+        return scripts
+
+    @property
+    def script_load(self):
+        """
+        Load the module script for all server types, when a server node is
+        initialized.
+        """
+        return ServerTypeModule.NODE_TYPE
+
+
 class ServerNode(NodeView):
     node_type = ServerModule.NODE_TYPE
+
     parent_ids = [{'type': 'int', 'id': 'gid'}]
     ids = [{'type': 'int', 'id': 'sid'}]
     operations = dict({
@@ -80,7 +180,9 @@ class ServerNode(NodeView):
         'stats': [{'get': 'statistics'}],
         'deps': [{'get': 'dependencies', 'post': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
-        'connect': [{'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'}]
+        'connect': [{
+            'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
+            }]
     })
 
     def list(self, gid):
@@ -89,20 +191,32 @@ class ServerNode(NodeView):
         servers = Server.query.filter_by(user_id=current_user.id,
                                          servergroup_id=gid)
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+
         for server in servers:
+            manager = driver.connection_manager(server.id)
+            conn = manager.connection()
+            module = getattr(manager, "module", None)
+
+            connected = conn.connected()
             res.append(
-                generate_browser_node(
-                    "%s" % server.id,
-                    "%s" % gid,
+                self.blueprint.generate_browser_node(
+                    "%d" % (server.id),
+                    "%d" % gid,
                     server.name,
-                    "icon-%s-not-connected" % ServerModule.NODE_TYPE,
+                    "icon-server-not-connected" if not connected else
+                    "icon-{0}".format(module.NODE_TYPE),
                     True,
-                    ServerModule.NODE_TYPE)
-            )
+                    self.node_type,
+                    connected=connected,
+                    server_type=module.type if module is not None else 'PG'
+                    )
+                )
         return make_json_response(result=res)
 
     def delete(self, gid, sid):
-        """Delete a server node in the settings database"""
+        """Delete a server node in the settings database."""
         servers = Server.query.filter_by(user_id=current_user.id, id=sid)
 
         # TODO:: A server, which is connected, can not be deleted
@@ -130,7 +244,8 @@ class ServerNode(NodeView):
 
     def update(self, gid, sid):
         """Update the server settings"""
-        server = Server.query.filter_by(user_id=current_user.id, id=sid).first()
+        server = Server.query.filter_by(
+                    user_id=current_user.id, id=sid).first()
 
         if server is None:
             return make_json_response(
@@ -138,9 +253,8 @@ class ServerNode(NodeView):
                 errormsg=gettext("Couldn't find the given server.")
             )
 
-        # TODO::
-        #   Not all parameters can be modified, while the server is connected
-        possible_args = {
+        # Not all parameters can be modified, while the server is connected
+        config_param_map = {
             'name': 'name',
             'host': 'host',
             'port': 'port',
@@ -148,21 +262,49 @@ class ServerNode(NodeView):
             'username': 'username',
             'sslmode': 'sslmode',
             'gid': 'servergroup_id',
-            'comment': 'comment'
+            'comment': 'comment',
+            'role': 'role'
+            }
+
+        disp_lbl = {
+            'name': gettext('name'),
+            'host': gettext('Host name/address'),
+            'port': gettext('Port'),
+            'db': gettext('Maintenance database'),
+            'username': gettext('Username'),
+            'sslmode': gettext('SSL Mode'),
+            'comment': gettext('Comments'),
+            'role': gettext('Role')
         }
 
         idx = 0
         data = request.form if request.form else json.loads(request.data)
 
-        for arg in possible_args:
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+        not_allowed = {}
+
+        if conn.connected():
+            for arg in {
+                    'host', 'port', 'db', 'username', 'sslmode', 'role'
+                    }:
+                if arg in data:
+                    return forbidden(
+                            errormsg=gettext(
+                                "'{0}' is not allowed to modify, when server is connected."
+                                ).format(disp_lbl[arg])
+                            )
+
+        for arg in config_param_map:
             if arg in data:
-                setattr(server, possible_args[arg], data[arg])
+                setattr(server, config_param_map[arg], data[arg])
                 idx += 1
 
         if idx == 0:
             return make_json_response(
                 success=0,
-                errormsg=gettext('No parameters were chagned!')
+                errormsg=gettext('No parameters were changed!')
             )
 
         try:
@@ -173,11 +315,14 @@ class ServerNode(NodeView):
                 errormsg=e.message
             )
 
+        manager.update(server)
+
         return make_json_response(
             success=1,
             data={
                 'id': server.id,
-                'gid': server.servergroup_id
+                'gid': server.servergroup_id,
+                'icon': 'icon-server-not-connected'
             }
         )
 
@@ -198,6 +343,14 @@ class ServerNode(NodeView):
             id=server.servergroup_id
         ).first()
 
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+        connected = conn.connected()
+        module = getattr(manager, 'module', None)
+
         return ajax_response(
             response={
                 'id': server.id,
@@ -209,9 +362,10 @@ class ServerNode(NodeView):
                 'gid': server.servergroup_id,
                 'group-name': sg.name,
                 'comment': server.comment,
-                # TODO:: Make sure - we do have correct values here
-                'connected': True,
-                'version': 'PostgreSQL 9.3 (linux-x64)'
+                'role': server.role,
+                'connected': connected,
+                'version': manager.ver,
+                'server_type': module.type if module is not None else 'PG'
             }
         )
 
@@ -223,7 +377,8 @@ class ServerNode(NodeView):
             u'port',
             u'db',
             u'username',
-            u'sslmode'
+            u'sslmode',
+            u'role'
         ]
 
         data = request.form if request.form else json.loads(request.data)
@@ -247,19 +402,25 @@ class ServerNode(NodeView):
                 port=data[u'port'],
                 maintenance_db=data[u'db'],
                 username=data[u'username'],
-                ssl_mode=data['sslmode'],
-                comment=data['comment'] if 'comment' in data else None
+                ssl_mode=data[u'sslmode'],
+                comment=data[u'comment'] if u'comment' in data else None,
+                role=data[u'role'] if u'role' in data else None
             )
             db.session.add(server)
             db.session.commit()
 
-            return jsonify(node=generate_browser_node(
-                '%s' % server.id,
-                '%s' % gid,
-                '%s' % server.name,
-                "icon-{0}-not-connected".format(ServerModule.NODE_TYPE),
-                True,
-                ServerModule.NODE_TYPE))
+            return jsonify(
+                    node=self.blueprint.generate_browser_node(
+                        "%d" % (server.id),
+                        "%d" % gid,
+                        server.name,
+                        "icon-server-not-connected",
+                        True,
+                        self.node_type,
+                        connected=False,
+                        server_type='PG'  # Default server type
+                        )
+                    )
 
         except Exception as e:
             return make_json_response(
@@ -270,12 +431,27 @@ class ServerNode(NodeView):
 
     def nodes(self, gid, sid):
         """Build a list of treeview nodes from the child nodes."""
+        from pgadmin.utils.driver import get_driver
+
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        if not conn.connected():
+            return precondition_required(
+                    gettext(
+                        "Please make a connection to the server first!"
+                        )
+                    )
+
         nodes = []
-        # TODO::
-        # We can have nodes for the server object, only when
-        # the server is connected at the moment.
-        for module in blueprint.submodules:
-            nodes.extend(module.get_nodes(server=sid))
+
+        # We will rely on individual server type modules to generate nodes for
+        # them selves.
+        module = getattr(manager, 'module', None)
+
+        if module:
+            nodes.extend(module.get_nodes(sid=sid, manager=manager))
+
         return make_json_response(data=nodes)
 
     def sql(self, gid, sid):
@@ -299,9 +475,180 @@ class ServerNode(NodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template("servers/servers.js"),
+                render_template(
+                    "servers/servers.js",
+                    server_types=sorted(
+                        [
+                            m for m in self.blueprint.submodules
+                            if isinstance(m, ServerTypeModule)
+                            ],
+                        key=lambda x: x.priority
+                        ),
+                    _=gettext
+                    ),
                 200, {'Content-Type': 'application/x-javascript'}
                 )
+
+    def connect_status(self, gid, sid):
+        """Check and return the connection status."""
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.get_connection()
+
+        return make_json_response(data={'connected': conn.connected()})
+
+    def connect(self, gid, sid):
+        """
+        Connect the Server and return the connection object.
+        Verification Process before Connection:
+            Verify requested server.
+
+            Check the server password is already been stored in the
+            database or not.
+            If Yes, connect the server and return connection.
+            If No, Raise HTTP error and ask for the password.
+
+            In case of 'Save Password' request from user, excrypted Pasword
+            will be stored in the respected server database and
+            establish the connection OR just connect the server and do not
+            store the password.
+        """
+        current_app.logger.info(
+                'Connection Request for server#{0}'.format(sid)
+                )
+
+        # Fetch Server Details
+        server = Server.query.filter_by(id=sid).first()
+        if server is None:
+            return bad_request(gettext("Server Not Found."))
+
+        # Fetch User Details.
+        user = User.query.filter_by(id=current_user.id).first()
+        if user is None:
+            return unauthorized(gettext("Unauthorized Request."))
+
+        data = request.form if request.form else json.loads(request.data) if \
+            request.data else {}
+
+        password = None
+        save_password = False
+
+        if 'password' not in data:
+            if server.password is None:
+                # Return the password template in case password is not
+                # provided, or password has not been saved earlier.
+                return make_json_response(
+                        success=0,
+                        status=428,
+                        result=render_template(
+                            'servers/password.html',
+                            server_label=server.name,
+                            username=server.username,
+                            _=gettext
+                            )
+                        )
+        else:
+            password = data['password'] if 'password' in data else None
+            save_password = \
+                data['save_password'] if password and \
+                'save_password' in data else False
+
+        # Encrypt the password before saving with user's login password key.
+        try:
+            password = encrypt(password, user.password) \
+                    if password is not None else server.password
+        except Exception as e:
+            return internal_server_error(errormsg=e.message)
+
+        # Connect the Server
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        try:
+            status, errmsg = conn.connect(
+                    password=password,
+                    modules=[
+                        m for m in self.blueprint.submodules
+                        if isinstance(m, ServerTypeModule)
+                        ]
+                    )
+        except Exception as e:
+            # TODO::
+            # Ask the password again (if existing password couldn't be
+            # descrypted)
+            return internal_server_error(errormsg=e.message)
+
+        if not status:
+            current_app.logger.error(
+                "Could not connected to server(#{0}) - '{1}'.\nError: {2}".format(
+                  server.id, server.name, errmsg
+                  )
+                )
+
+            return make_json_response(
+                        success=0,
+                        status=401,
+                        result=render_template(
+                            'servers/password.html',
+                            server_label=server.name,
+                            username=server.username,
+                            errmsg=errmsg,
+                            _=gettext
+                            )
+                        )
+        else:
+            if save_password:
+                try:
+                    # Save the encrypted password using the user's login
+                    # password key.
+                    setattr(server, 'password', password)
+                    db.session.commit()
+                except Exception as e:
+                    # Release Connection
+                    manager.release(database=server.maintenance_db)
+                    conn = None
+
+                    return internal_server_error(errormsg=e.message)
+
+            current_app.logger.info('Connection Established for server: \
+                %s - %s' % (server.id, server.name))
+
+            return make_json_response(
+                        success=1,
+                        info=gettext("Server Connected."),
+                        data={
+                            'icon': 'icon-{0}'.format(
+                                manager.module.NODE_TYPE
+                                ),
+                            'connected': True
+                            }
+                        )
+
+    def disconnect(self, gid, sid):
+        """Disconnect the Server."""
+
+        server = Server.query.filter_by(id=sid).first()
+        if server is None:
+            return bad_request(gettext("Server Not Found."))
+
+        # Release Connection
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+        status = manager.release()
+
+        if not status:
+            return unauthorized(gettext("Server Could Not Disconnect."))
+        else:
+            return make_json_response(
+                    success=1,
+                    info=gettext("Server Disconnected."),
+                    data={
+                        'icon': 'icon-server-not-connected',
+                        'connected': False
+                        }
+                    )
 
 
 ServerNode.register_node_view(blueprint)

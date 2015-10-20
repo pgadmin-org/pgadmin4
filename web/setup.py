@@ -10,34 +10,47 @@
 """Perform the initial setup of the application, by creating the auth
 and settings database."""
 
+import os
+import sys
+import getpass
+import random
+import string
+
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
-from pgadmin.settings.settings_model import db, Role, User, Server, ServerGroup, Version
-
-import getpass, os, random, sys, string
+from pgadmin.settings.settings_model import db, Role, User, Server, \
+    ServerGroup, Version
 
 # Configuration settings
 import config
 
+
 def do_setup(app):
+
     """Create a new settings database from scratch"""
     if config.SERVER_MODE is False:
         print("NOTE: Configuring authentication for DESKTOP mode.")
         email = config.DESKTOP_USER
-        p1 = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
+        p1 = ''.join([
+                    random.choice(string.ascii_letters + string.digits)
+                    for n in xrange(32)
+                    ])
 
     else:
         print("NOTE: Configuring authentication for SERVER mode.\n")
 
         # Prompt the user for their default username and password.
-        print("Enter the email address and password to use for the initial pgAdmin user account:\n")
+        print("""
+Enter the email address and password to use for the initial pgAdmin user \
+account:\n""")
         email = ''
         while email == '':
             email = raw_input("Email address: ")
 
-        pprompt = lambda: (getpass.getpass(), getpass.getpass('Retype password: '))
+        def pprompt():
+            return getpass.getpass(), getpass.getpass('Retype password:')
 
         p1, p2 = pprompt()
         while p1 != p2:
@@ -52,7 +65,10 @@ def do_setup(app):
         password = encrypt_password(p1)
 
         db.create_all()
-        user_datastore.create_role(name='Administrators', description='pgAdmin Administrators Role')
+        user_datastore.create_role(
+                name='Administrators',
+                description='pgAdmin Administrators Role'
+                )
         user_datastore.create_user(email=email, password=password)
         db.session.flush()
         user_datastore.add_role_to_user(email, 'Administrators')
@@ -63,14 +79,20 @@ def do_setup(app):
         db.session.merge(server_group)
 
         # Set the schema version
-        version = Version(name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION)
+        version = Version(
+                name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION
+                )
         db.session.merge(version)
 
         db.session.commit()
 
     # Done!
     print("")
-    print("The configuration database has been created at %s" % config.SQLITE_PATH)
+    print(
+            "The configuration database has been created at {0}".format(
+                config.SQLITE_PATH
+                )
+            )
 
 
 def do_upgrade(app, datastore, security, version):
@@ -80,12 +102,80 @@ def do_upgrade(app, datastore, security, version):
     # version.
     #######################################################################
 
-    # Changes introduced in schema version 2
-    if int(version.value) < 2:
-        # Create the 'server' table
-        db.metadata.create_all(db.engine, tables=[Server.__table__])
-    elif int(version.value) < 3:
-        db.engine.execute('ALTER TABLE server ADD COLUMN comment TEXT(1024)');
+    with app.app_context():
+        version = Version.query.filter_by(name='ConfigDB').first()
+
+        # Pre-flight checks
+        if int(version.value) > int(config.SETTINGS_SCHEMA_VERSION):
+            print("""
+The database schema version is {0}, whilst the version required by the \
+software is {1}.
+Exiting...""".format(version.value, config.SETTINGS_SCHEMA_VERSION))
+            sys.exit(1)
+        elif int(version.value) == int(config.SETTINGS_SCHEMA_VERSION):
+            print("""
+The database schema version is {0} as required.
+Exiting...""".format(version.value))
+            sys.exit(1)
+
+        app.logger.info(
+            "NOTE: Upgrading database schema from version %d to %d." %
+            (version.value, config.SETTINGS_SCHEMA_VERSION)
+            )
+
+        #######################################################################
+        # Run whatever is required to update the database schema to the current
+        # version. Always use "< REQUIRED_VERSION" as the test for readability
+        #######################################################################
+
+        # Changes introduced in schema version 2
+        if int(version.value) < 2:
+            # Create the 'server' table
+            db.metadata.create_all(db.engine, tables=[Server.__table__])
+        if int(version.value) < 3:
+            db.engine.execute(
+                'ALTER TABLE server ADD COLUMN comment TEXT(1024)'
+                )
+        if int(version.value) < 4:
+            db.engine.execute(
+                'ALTER TABLE server ADD COLUMN password TEXT(64)'
+                )
+        if int(version.value) < 5:
+            db.engine.execute('ALTER TABLE server ADD COLUMN role text(64)')
+        if int(version.value) == 6:
+            db.engine.execute("ALTER TABLE server RENAME TO server_old")
+            db.engine.execute("""
+CREATE TABLE server (
+    id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    servergroup_id INTEGER NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    host VARCHAR(128) NOT NULL,
+    port INTEGER NOT NULL CHECK (port >= 1024 AND port <= 65534),
+    maintenance_db VARCHAR(64) NOT NULL,
+    username VARCHAR(64) NOT NULL,
+    ssl_mode VARCHAR(16) NOT NULL CHECK (
+        ssl_mode IN (
+            'allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full'
+            )),
+    comment VARCHAR(1024), password TEXT(64), role text(64),
+    PRIMARY KEY (id),
+    FOREIGN KEY(user_id) REFERENCES user (id),
+    FOREIGN KEY(servergroup_id) REFERENCES servergroup (id)
+)""")
+            db.engine.execute("""
+INSERT INTO server (
+    id, user_id, servergroup_id, name, host, port, maintenance_db, username,
+    ssl_mode, comment, password, role
+) SELECT
+    id, user_id, servergroup_id, name, host, port, maintenance_db, username,
+    ssl_mode, comment, password, role
+FROM server_old""")
+            db.engine.execute("DROP TABLE server_old")
+
+        # Finally, update the schema version
+        version.value = config.SETTINGS_SCHEMA_VERSION
+        db.session.merge(version)
 
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
@@ -94,8 +184,10 @@ def do_upgrade(app, datastore, security, version):
     db.session.commit()
 
     # Done!
-    print("")
-    print("The configuration database %s has been upgraded to version %d" % (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION))
+    app.logger.info(
+        "The configuration database %s has been upgraded to version %d" %
+        (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
+        )
 
 ###############################################################################
 # Do stuff!
@@ -103,24 +195,31 @@ def do_upgrade(app, datastore, security, version):
 if __name__ == '__main__':
     app = Flask(__name__)
     app.config.from_object(config)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
+    app.config['SQLALCHEMY_DATABASE_URI'] = \
+        'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
     db.init_app(app)
 
     print("pgAdmin 4 - Application Initialisation")
     print("======================================\n")
 
-    local_config = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config_local.py')
+    local_config = os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'config_local.py'
+                    )
     if not os.path.isfile(local_config):
-        print("The configuration file %s does not exist.\n" % local_config)
-        print("Before running this application, ensure that config_local.py has been created")
-        print("and sets values for SECRET_KEY, SECURITY_PASSWORD_SALT and CSRF_SESSION_KEY")
-        print("at bare minimum. See config.py for more information and a complete list of")
-        print("settings. Exiting...")
+        print("""
+ The configuration file - {0} does not exist.
+ Before running this application, ensure that config_local.py has been created
+ and sets values for SECRET_KEY, SECURITY_PASSWORD_SALT and CSRF_SESSION_KEY
+ at bare minimum. See config.py for more information and a complete list of
+ settings. Exiting...""".format(local_config))
         sys.exit(1)
 
     # Check if the database exists. If it does, tell the user and exit.
     if os.path.isfile(config.SQLITE_PATH):
-        print("The configuration database %s already exists.\nEntering upgrade mode...\n" % config.SQLITE_PATH)
+        print("""
+The configuration database %s already exists.
+Entering upgrade mode...""".format(config.SQLITE_PATH))
 
         # Setup Flask-Security
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -132,15 +231,23 @@ if __name__ == '__main__':
 
             # Pre-flight checks
             if int(version.value) > int(config.SETTINGS_SCHEMA_VERSION):
-                print("The database schema version is %d, whilst the version required by the software is %d.\nExiting..."
-                      % (version.value, config.SETTINGS_SCHEMA_VERSION))
+                print("""
+The database schema version is %d, whilst the version required by the \
+software is %d.
+Exiting...""".format(version.value, config.SETTINGS_SCHEMA_VERSION))
                 sys.exit(1)
             elif int(version.value) == int(config.SETTINGS_SCHEMA_VERSION):
-                print("The database schema version is %d as required.\nExiting..." % (version.value))
+                print("""
+The database schema version is %d as required.
+Exiting...""".format(version.value))
                 sys.exit(1)
 
-            print("NOTE: Upgrading database schema from version %d to %d." % (version.value, config.SETTINGS_SCHEMA_VERSION))
+            print("NOTE: Upgrading database schema from version %d to %d." % (
+                version.value, config.SETTINGS_SCHEMA_VERSION
+                ))
             do_upgrade(app, user_datastore, security, version)
     else:
-        print("The configuration database %s does not exist.\nEntering initial setup mode...\n" % config.SQLITE_PATH)
+        print("""
+The configuration database - {0} does not exist.
+Entering initial setup mode...""".format(config.SQLITE_PATH))
         do_setup(app)

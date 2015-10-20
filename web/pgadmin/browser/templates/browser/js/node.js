@@ -1,6 +1,7 @@
 define(
     ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser.menu',
-     'backbone', 'alertify', 'backform', 'pgadmin.backform', 'wcdocker'],
+     'backbone', 'alertify', 'backform', 'pgadmin.backform', 'wcdocker',
+     'pgadmin.alertifyjs'],
 function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -54,7 +55,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       'numeric': 'uneditable-input',
       'date': 'date',
       'boolean': 'bool-text',
-      'options': 'uneditable-input',
+      'options': Backform.ReadonlyOptionControl,
       'multiline': 'textarea'
     },
     'edit': {
@@ -102,6 +103,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         applies: ['object', 'context'], callback: 'show_obj_properties',
         priority: 3, label: '{{ _("Properties...") }}',
         data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
+      }, {
+        name: 'refresh', node: this.type, module: this,
+        applies: ['object', 'context'], callback: 'refresh_node',
+        priority: 2, label: '{{ _("Refresh...") }}',
+        icon: 'fa fa-refresh'
       }]);
     },
     ///////
@@ -161,9 +167,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 name: f.id, label: f.label,
                 control: controlType[type][f.type],
                 // Do we need to show this control in this mode?
-                show: f.show && newModel[f.show] &&
+                visible: f.show && newModel[f.show] &&
                   typeof newModel[f.show] == "function" ?
-                  newModel[f.show] : undefined,
+                  newModel[f.show] : f.show,
                 // This can be disabled in some cases (if not hidden)
                 disabled: (type == 'properties' ? true : (
                     f.disabled && newModel[f.disabled] &&
@@ -217,8 +223,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   }
                 }
               })
-              .error(function() {
-                // TODO:: Handle the error message properly.
+              .error(function(m, jqxhr) {
+                // TODO:: We may not want to continue from here
+                console.log(arguments);
+                Alertify.pgNotifier(
+                  "error", jqxhr,
+                  S(
+                    "{{ _("Error fetching the properties - %%s!") }}"
+                    ).sprintf(jqxhr.statusText).value()
+                  );
               });
           } else {
             // Yay - render the view now!
@@ -440,6 +453,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       t.select(n);
                     }
                   }
+                  return true;
                 },
                 error: function(jqx) {
                   var msg = jqx.responseText;
@@ -462,9 +476,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       },
       // Callback called - when a node is selected in browser tree.
       selected: function(o) {
-        // Show (One of these, whose panel is open)
+        // Show the information about the selected node in the below panels,
+        // which are visible at this time:
         // + Properties
-        // + Query
+        // + Query (if applicable, otherwise empty)
         // + Dependents
         // + Dependencies
         // + Statistics
@@ -482,32 +497,39 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             // is active).
             this.showProperties(o.item, o.data,
                 pgBrowser.panels['properties'].panel);
-          } else if ('sql' in br.panels &&
+          }
+          if ('sql' in br.panels &&
               br.panels['sql'] &&
               br.panels['sql'].panel &&
               br.panels['sql'].panel.isVisible()) {
-            // Show reverse engineered query for this object (when
-            // the 'sql' tab is active.)
-          } else if ('statistics' in br.panels &&
+            // TODO:: Show reverse engineered query for this object (when 'sql'
+            // tab is active.)
+          }
+          if ('statistics' in br.panels &&
               br.panels['statistics'] &&
               br.panels['statistics'].panel &&
               br.panels['statistics'].panel.isVisible()) {
-            // Show statistics for this object (when the
-            // 'statistics' tab is active.)
-          } else if ('dependencies' in br.panels &&
+            // TODO:: Show statistics for this object (when the 'statistics'
+            // tab is active.)
+          }
+          if ('dependencies' in br.panels &&
               br.panels['dependencies'] &&
               br.panels['dependencies'].panel &&
               br.panels['dependencies'].panel.isVisible()) {
-            // Show dependencies for this object (when the
+            // TODO:: Show dependencies for this object (when the
             // 'dependencies' tab is active.)
-          } else if ('dependents' in br.panels &&
+          }
+          if ('dependents' in br.panels &&
               br.panels['dependents'] &&
               br.panels['dependents'].panel &&
               br.panels['dependents'].panel.isVisible()) {
-            // Show dependents for this object (when the
-            // 'dependents' tab is active.)
+            // TODO:: Show dependents for this object (when the 'dependents'
+            // tab is active.)
           }
         }
+      },
+      refresh_node: function(args) {
+        this.callbacks.selected();
       }
     },
     /**********************************************************************
@@ -644,19 +666,17 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
                   if (c && !_.isEmpty(c)) {
                     m.save({} ,{
-                      attrs: (m.isNew() ?
-                          m.attributes :
-                          m.changedAttributes()),
+                      attrs: m.attributes,
                       success: function() {
                         onSaveFunc.call();
                       },
-                      error: function() {
-                        /* Reset the changed attributes on failure */
-                        m.changed = c;
-
-                        /* TODO:: Alert for the user on error */
-                        console.log('ERROR:');
-                        console.log(arguments);
+                      error: function(m, jqxhr) {
+                        Alertify.pgNotifier(
+                          "error", jqxhr,
+                          S(
+                            "{{ _("Error during saving properties - %%s!") }}"
+                            ).sprintf(jqxhr.statusText).value()
+                          );
                       }
                     });
                   }
@@ -707,14 +727,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           if (view.model.tnode) {
             var d = _.extend({}, view.model.tnode),
               func = function(i) {
-                /* Register this panel for this node */
-                pgBrowser.Node.panels =
-                  pgBrowser.Node.panels || {};
-                pgBrowser.Node.panels[d.id] = panel;
-                panel.title(that.title(d));
                 setTimeout(function() {
-                  that.showProperties(i, d, panel,
-                    'properties');
+                  closePanel();
                 }, 0);
                 tree.setVisible(i);
                 tree.select(i);
@@ -818,7 +832,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'depends': 'deps',
-          'statistics': 'stats'
+          'statistics': 'stats', 'collections': 'nodes'
         };
 
       if (d._type == this.type) {
@@ -854,6 +868,106 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         return res;
       }
     })
+  });
+
+  pgBrowser.Collection = _.extend(_.clone(pgAdmin.Browser.Node), {
+    ///////
+    // Initialization function
+    // Generally - used to register the menus for this type of node.
+    //
+    // Also, look at pgAdmin.Browser.add_menus(...) function.
+    //
+    // Collection will not have 'Properties' menu.
+    //
+    // NOTE: Override this for each node for initialization purpose
+    Init: function() {
+      if (this.node_initialized)
+        return;
+      this.node_initialized = true;
+
+      pgAdmin.Browser.add_menus([{
+        name: 'refresh', node: this.type, module: this,
+        applies: ['object', 'context'], callback: 'refresh_collection',
+        priority: 2, label: '{{ _("Refresh...") }}',
+        icon: 'fa fa-refresh'
+      }]);
+    },
+    callbacks: {
+      refresh_collection: function() {
+        // TODO:: Refresh the collection node
+        console.log(arguments);
+      },
+      selected: function(o) {
+        // Show (Node information on these panels, which one is visible.)
+        // + Properties (list down the children nodes in pages)
+        // + Query (Remove existing SQL)
+        // + Dependents (Remove dependents)
+        // + Dependencies (Remove dependencies)
+        // + Statistics (TODO:: Check the current implementation in pgAdmin 3)
+
+        // Update the menu items
+        pgAdmin.Browser.enable_disable_menus.apply(o.browser, [o.item]);
+
+        if (o && o.data && o.browser) {
+          var br = o.browser;
+          if ('properties' in br.panels &&
+              br.panels['properties'] &&
+              br.panels['properties'].panel &&
+              br.panels['properties'].panel.isVisible()) {
+            // Show object properties (only when the 'properties' tab
+            // is active).
+            this.showProperties(o.item, o.data,
+                pgBrowser.panels['properties'].panel);
+          }
+          if ('sql' in br.panels &&
+              br.panels['sql'] &&
+              br.panels['sql'].panel &&
+              br.panels['sql'].panel.isVisible()) {
+            // TODO::
+            // Remove the information from the sql pane
+          }
+          if ('statistics' in br.panels &&
+              br.panels['statistics'] &&
+              br.panels['statistics'].panel &&
+              br.panels['statistics'].panel.isVisible()) {
+            // TODO::
+            // Remove information from the statistics pane
+          }
+          if ('dependencies' in br.panels &&
+              br.panels['dependencies'] &&
+              br.panels['dependencies'].panel &&
+              br.panels['dependencies'].panel.isVisible()) {
+            // TODO::
+            // Remove information from the dependencies pane
+          }
+          if ('dependents' in br.panels &&
+              br.panels['dependents'] &&
+              br.panels['dependents'].panel &&
+              br.panels['dependents'].panel.isVisible()) {
+            // TODO::
+            // Remove information from the dependents pane
+          }
+        }
+      }
+    },
+    /**********************************************************************
+     * A hook (not a callback) to show object properties in given HTML
+     * element.
+     *
+     * This has been used for the showing, editing properties of the node.
+     * This has also been used for creating a node.
+     **/
+    showProperties: function(item, data, panel) {
+      var that = this,
+        tree = pgAdmin.Browser.tree,
+        j = panel.$container.find('.obj_properties').first(),
+        view = j.data('obj-view'),
+        content = $('<div></div>')
+          .addClass('pg-prop-content col-xs-12');
+
+      // TODO:: Show list of children in paging mode
+      return;
+    }
   });
 
   return pgAdmin.Browser.Node;

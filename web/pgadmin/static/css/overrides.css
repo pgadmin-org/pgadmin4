@@ -416,16 +416,6 @@ iframe {
     -o-text-overow: ellipsis;
 }
 
-.icon-server-connected {
-    background-image: url('/browser/server/static/img/server.png') !important;
-    border-radius: 10px
-}
-
-.icon-server-not-connected {
-    background-image: url('/browser/server/static/img/serverbad.png') !important;
-    border-radius: 10px
-}
-
 .form-control {
     color: #333333;
 }
@@ -434,4 +424,27 @@ iframe {
 .form-control[readonly],
 fieldset[disabled] .form-control {
     color: #666666;
+}
+
+.highlight {
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #F7F7F9;
+    border: 1px solid #E1E1E8;
+    border-radius: 3px;
+}
+
+.highlight.has-error {
+    border-color: #A94442;
+}
+
+.icon-fa::before {
+    font: normal normal normal 14px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+    display: inline-block;
+    margin-left: -18px;
+    margin-right: 9px;
 }

@@ -62,13 +62,13 @@ def index():
         info['app_mode'] = gettext('Desktop')
     info['current_user'] = current_user.email
 
-    return render_template(MODULE_NAME + '/index.html', info=info)
+    return render_template(MODULE_NAME + '/index.html', info=info, _=gettext)
 
 
 @blueprint.route("/about.js")
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("about/about.js"),
+    return Response(response=render_template("about/about.js", _=gettext),
                     status=200,
                     mimetype="application/javascript")

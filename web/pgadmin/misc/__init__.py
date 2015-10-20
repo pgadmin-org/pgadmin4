@@ -8,9 +8,13 @@
 ##########################################################################
 
 """A blueprint module providing utility functions for the application."""
-MODULE_NAME = 'misc'
 
+import datetime
+from flask import session, current_app
 from pgadmin.utils import PgAdminModule
+import pgadmin.utils.driver as driver
+
+MODULE_NAME = 'misc'
 
 # Initialise the module
 blueprint = PgAdminModule(MODULE_NAME, __name__,
@@ -19,7 +23,11 @@ blueprint = PgAdminModule(MODULE_NAME, __name__,
 ##########################################################################
 # A special URL used to "ping" the server
 ##########################################################################
-@blueprint.route("/ping")
+
+
+@blueprint.route("/ping", methods=('get', 'post'))
 def ping():
     """Generate a "PING" response to indicate that the server is alive."""
+    driver.ping()
+
     return "PING"

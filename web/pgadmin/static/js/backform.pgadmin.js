@@ -66,6 +66,25 @@
     '</div>'
   ].join("\n"));
 
+  var ReadonlyOptionControl = Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '<% for (var i=0; i < options.length; i++) { %>',
+      ' <% var option = options[i]; %>',
+			' <% if (option.value === rawValue) { %>',
+      ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled><%-option.label%></span>',
+      ' <% } %>',
+      '<% } %>',
+      '</div>'
+    ].join("\n")),
+    events: {},
+    getValueFromDOM: function() {
+      return this.formatter.toRaw(this.$el.find("span").text(), this.model);
+    }
+  });
+
+
   // Backform Dialog view (in bootstrap tabbular form)
   // A collection of field models.
   var Dialog = Backform.Dialog = Backform.Form.extend({

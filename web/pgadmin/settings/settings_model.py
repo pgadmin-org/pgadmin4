@@ -14,8 +14,8 @@ things:
 
 1) Increment SETTINGS_SCHEMA_VERSION in config.py
 
-2) Modify setup.py to ensure that the appropriate changes are made to the config
-   database to upgrade it to the new version.
+2) Modify setup.py to ensure that the appropriate changes are made to the
+   config database to upgrade it to the new version.
 """
 
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -24,9 +24,11 @@ from flask.ext.security import UserMixin, RoleMixin
 db = SQLAlchemy()
 
 # Define models
-roles_users = db.Table('roles_users',
-        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+roles_users = db.Table(
+                'roles_users',
+                db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+                db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+                )
 
 
 class Version(db.Model):
@@ -35,12 +37,14 @@ class Version(db.Model):
     name = db.Column(db.String(32), primary_key=True)
     value = db.Column(db.Integer(), nullable=False)
 
+
 class Role(db.Model, RoleMixin):
     """Define a security role"""
     __tablename__ = 'role'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     description = db.Column(db.String(256), nullable=False)
+
 
 class User(db.Model, UserMixin):
     """Define a user object"""
@@ -53,12 +57,14 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
+
 class Setting(db.Model):
     """Define a setting object"""
     __tablename__ = 'setting'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     setting = db.Column(db.String(256), primary_key=True)
     value = db.Column(db.String(1024))
+
 
 class ServerGroup(db.Model):
     """Define a server group for the treeview"""
@@ -92,6 +98,8 @@ class Server(db.Model):
             nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=True)
+    role = db.Column(db.String(64), nullable=True)
     ssl_mode = db.Column(
             db.String(16),
             db.CheckConstraint(

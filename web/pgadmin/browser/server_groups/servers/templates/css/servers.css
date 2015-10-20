@@ -1,0 +1,17 @@
+.icon-server {
+  background-image: url('{{ url_for('NODE-server.static', filename='img/server.png') }}') !important;
+  border-radius: 10px
+}
+
+.icon-server-not-connected {
+  background-image: url('{{ url_for('NODE-server.static', filename='img/serverbad.png') }}') !important;
+  border-radius: 10px
+}
+
+.icon-server-connecting {
+  background-image: url('{{ url_for('browser.static', filename='css/aciTree/image/load-node.gif')}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

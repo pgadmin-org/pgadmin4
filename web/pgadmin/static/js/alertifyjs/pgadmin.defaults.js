@@ -5,4 +5,118 @@ function(alertify) {
   alertify.defaults.theme.ok = "btn btn-primary";
   alertify.defaults.theme.cancel = "btn btn-danger";
   alertify.defaults.theme.input = "form-control";
+
+  alertify.pgIframeDialog || alertify.dialog('pgIframeDialog', function() {
+    var iframe;
+    return {
+        // dialog constructor function, this will be called when the user calls
+        // alertify.pgIframeDialog(message)
+        main:function(message){
+            //set the videoId setting and return current instance for chaining.
+            return this.set({
+                'pg_msg': message
+            });
+        },
+        // we only want to override two options (padding and overflow).
+        setup: function(){
+            return {
+                options:{
+                    //disable both padding and overflow control.
+                    padding : !1,
+                    overflow: !1,
+                }
+            };
+        },
+        // This will be called once the DOM is ready and will never be invoked
+        // again. Here we create the iframe to embed the video.
+        build:function() {
+            // create the iframe element
+            iframe = document.createElement('iframe');
+
+            iframe.src = "";
+            iframe.frameBorder = "no";
+            iframe.width = "100%";
+            iframe.height = "100%";
+
+            // add it to the dialog
+            this.elements.content.appendChild(iframe);
+
+            //give the dialog initial height (half the screen height).
+            this.elements.body.style.minHeight = screen.height * .5 + 'px';
+        },
+        // dialog custom settings
+        settings:{
+            pg_msg: undefined
+        },
+        // listen and respond to changes in dialog settings.
+        settingUpdated: function(key, oldValue, newValue){
+            switch(key){
+               case 'pg_msg':
+                  var doc = iframe.contentWindow || iframe.contentDocument;
+                  if (doc.document) {
+                    doc = doc.document;
+                  }
+
+                  doc.open();
+                  doc.write(newValue);
+                  doc.close();
+
+                  break;
+            }
+        },
+        // listen to internal dialog events.
+        hooks: {
+            // triggered when a dialog option gets update.
+            // warning! this will not be triggered for settings updates.
+            onupdate: function(option,oldValue, newValue){
+                switch(option){
+                    case 'resizable':
+                        if(newValue){
+                            this.elements.content.removeAttribute('style');
+                            iframe && iframe.removeAttribute('style');
+                        }else{
+                            this.elements.content.style.minHeight = 'inherit';
+                            iframe && (iframe.style.minHeight = 'inherit');
+                        }
+                    break;
+                }
+            }
+        }
+    };
+  });
+
+  alertify.pgNotifier = function(type, xhr, promptmsg, onJSONResult) {
+      var msg = xhr.responseText,
+          contentType = xhr.getResponseHeader('Content-Type');
+
+      if (xhr.status == 0) {
+        msg = window.pgAdmin.Browser.messages.server_lost;
+      }
+
+      if (contentType) {
+        try {
+          if (contentType.indexOf('text/json') == 0) {
+            resp = $.parseJSON(msg);
+
+            if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+                onJSONResult && typeof(onJSONResult) == 'function') {
+              return onJSONResult(resp.result);
+            }
+            msg = resp.result || resp.errormsg || "Unknown error";
+          }
+        } catch (exc) {
+        }
+
+        if (contentType.indexOf('text/html') == 0) {
+          alertify.notify(
+              S(
+                window.pgAdmin.Browser.messages.click_for_detailed_msg
+               ).sprintf(promptmsg).value(), type, 0, function() {
+                alertify.pgIframeDialog().show().set({ frameless: false }).set('pg_msg', msg);
+              });
+          return;
+        }
+      }
+      alertify.alert().show().set('message', msg).set('title', promptmsg);
+  };
 });

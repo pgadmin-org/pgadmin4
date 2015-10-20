@@ -9,24 +9,105 @@
 
 """Browser helper utilities"""
 
+from abc import ABCMeta, abstractmethod, abstractproperty
+from collections import OrderedDict
 import flask
 from flask.views import View, MethodViewType, with_metaclass
+from flask.ext.babel import gettext
+
+from config import PG_DEFAULT_DRIVER
+from pgadmin.browser import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
-import gettext
 
 
-def generate_browser_node(node_id, parent_id, label, icon, inode, node_type):
-    obj = {
-        "id": "%s/%s" % (node_type, node_id),
-        "label": label,
-        "icon": icon,
-        "inode": inode,
-        "_type": node_type,
-        "_id": node_id,
-        "refid": parent_id,
-        "module": 'pgadmin.node.%s' % node_type
-    }
-    return obj
+class NodeAttr(object):
+    """
+    """
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def validate(self, mode, value):
+        pass
+
+    @abstractmethod
+    def schema(self):
+        pass
+
+
+class PGChildModule(object):
+    """
+    class PGChildModule(ServerChildModule)
+
+    This is a base class for children/grand-children of PostgreSQL, and
+    all Postgres Plus version (i.e. Postgres Plus Advanced Server, Green Plum,
+    etc).
+
+    Method:
+    ------
+    * BackendSupported(manager)
+    - Return True when it supports certain version.
+      Uses the psycopg2 server connection manager as input for checking the
+      compatibility of the current module.
+
+    * AddAttr(attr)
+    - This adds the attribute supported for specific version only. It takes
+      NodeAttr as input, and update max_ver, min_ver variables for this module.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.min_ver = 1000000000
+        self.max_ver = 0
+        self.attributes = {}
+
+        super(PGChildModule, self).__init__(*args, **kwargs)
+
+    def BackendSupported(self, mangaer):
+        sversion = getattr(mangaer, 'sversion', None)
+
+        if (sversion is None or not isinstance(sversion, int)):
+            return False
+
+        if (self.min_ver is None and self.max_ver is None):
+            return True
+
+        assert(self.max_ver is None or isinstance(self.max_ver, int))
+        assert(self.min_ver is None or isinstance(self.min_ver, int))
+
+        if self.min_ver is None or self.min_ver <= sversion:
+            if self.max_ver is None or self.max_ver >= sversion:
+                return True
+
+        return False
+
+    @abstractmethod
+    def get_nodes(self, sid=None, **kwargs):
+        pass
+
+    def AddAttr(self, attr):
+        assert(isinstance(attr, PGNodeAttr))
+
+        name = getattr(attr, 'name', None)
+        assert(name is not None and isinstance(name, str))
+        assert(name not in self.attributes)
+        # TODO:: Check for naming convention
+
+        min_ver = getattr(attr, 'min_ver', None)
+        assert(min_ver is None or isinstance(min_ver, int))
+
+        max_ver = getattr(attr, 'max_ver', None)
+        assert(max_ver is None or isinstance(max_ver, int))
+
+        self.attributes[name] = attr
+
+        if max_ver is None:
+            self.max_ver = None
+        elif self.max_var is not None and self.max_ver < max_ver:
+            self.max_ver < max_ver
+
+        if min_ver is None:
+            self.min_ver = None
+        elif self.min_ver is not None and self.min_ver > min_ver:
+            self.min_ver = min_ver
 
 
 class NodeView(with_metaclass(MethodViewType, View)):
@@ -94,7 +175,10 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 for meth in ops:
                     meths.append(meth.upper())
                 if len(meths) > 0:
-                    cmds.append({'cmd': op, 'req': idx == 0, 'with_id': idx != 2, 'methods': meths})
+                    cmds.append({
+                        'cmd': op, 'req': (idx == 0),
+                        'with_id': (idx != 2), 'methods': meths
+                        })
                 idx += 1
 
         return cmds
@@ -148,28 +232,28 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
         assert self.cmd in self.operations, \
                 "Unimplemented Command ({0}) for {1}".format(
-                        self.cmd,
-                        str(self.__class__.__name__)
-                        )
+                    self.cmd,
+                    str(self.__class__.__name__)
+                    )
 
         has_args, has_id = self.check_args(**kwargs)
 
-        assert self.cmd in self.operations and \
-                (has_id and len(self.operations[self.cmd]) > 0 and \
-                meth in self.operations[self.cmd][0]) or \
-                (not has_id and len(self.operations[self.cmd]) > 1 and \
-                meth in self.operations[self.cmd][1]) or \
-                (len(self.operations[self.cmd]) > 2 and \
-                meth in self.operations[self.cmd][2]), \
+        assert (self.cmd in self.operations and
+                (has_id and len(self.operations[self.cmd]) > 0 and
+                    meth in self.operations[self.cmd][0]) or
+                (not has_id and len(self.operations[self.cmd]) > 1 and
+                    meth in self.operations[self.cmd][1]) or
+                (len(self.operations[self.cmd]) > 2 and
+                    meth in self.operations[self.cmd][2])), \
                 "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
-                        meth, self.cmd,
-                        'requires' if has_id else 'does not require'
-                        )
+                    meth, self.cmd,
+                    'requires' if has_id else 'does not require'
+                    )
 
         meth = self.operations[self.cmd][0][meth] if has_id else \
-                self.operations[self.cmd][1][meth] if has_args and \
-                meth in self.operations[self.cmd][1] else \
-                self.operations[self.cmd][2][meth]
+            self.operations[self.cmd][1][meth] if has_args and \
+            meth in self.operations[self.cmd][1] else \
+            self.operations[self.cmd][2][meth]
 
         method = getattr(self, meth, None)
 
@@ -177,7 +261,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
             return make_json_response(
                 status=406,
                 success=0,
-                errormsg=gettext.gettext(
+                errormsg=gettext(
                     "Unimplemented method ({0}) for this url ({1})".format(
                         meth, flask.request.path)
                 )
@@ -187,6 +271,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
     @classmethod
     def register_node_view(cls, blueprint):
+        cls.blueprint = blueprint
         id_url, url = cls.get_node_urls()
 
         commands = cls.generate_ops()
@@ -221,7 +306,36 @@ class NodeView(with_metaclass(MethodViewType, View)):
         """
         return flask.make_response(
                 flask.render_template(
-                    "{0}/{1}.js".format(self.node_type)
+                    "{0}/{0}.js".format(self.node_type)
                     ),
                 200, {'Content-Type': 'application/x-javascript'}
                 )
+
+    def nodes(self, *args, **kwargs):
+        """Build a list of treeview nodes from the child nodes."""
+        nodes = []
+
+        for module in self.blueprint.submodules:
+            nodes.extend(module.get_nodes(*args, **kwargs))
+
+        return make_json_response(data=nodes)
+
+
+class PGChildNodeView(NodeView):
+
+    def nodes(self, sid=None, **kwargs):
+        """Build a list of treeview nodes from the child nodes."""
+
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+        nodes = []
+        for module in self.blueprint.submodules:
+            if isinstance(module, ServerChildModule):
+                if sid is not None and manager is not None and \
+                        module.BackendSupported(manager):
+                    nodes.extend(module.get_nodes(*args, **kwargs))
+            else:
+                nodes.extend(module.get_nodes(*args, **kwargs))
+
+        return make_json_response(data=nodes)

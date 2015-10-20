@@ -19,7 +19,7 @@ from htmlmin.minify import html_minify
 from settings.settings_model import db, Role, User, Version
 from importlib import import_module
 from werkzeug.local import LocalProxy
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, driver
 from werkzeug.utils import find_modules
 import sys
 import os
@@ -34,8 +34,9 @@ class PgAdmin(Flask):
     def find_submodules(self, basemodule):
         for module_name in find_modules(basemodule, True):
             if module_name in self.config['MODULE_BLACKLIST']:
-                self.logger.info('Skipping blacklisted module: %s' %
-                                module_name)
+                self.logger.info(
+                        'Skipping blacklisted module: %s' % module_name
+                        )
                 continue
             self.logger.info('Examining potential module: %s' % module_name)
             module = import_module(module_name)
@@ -82,6 +83,7 @@ class PgAdmin(Flask):
                       for key, values in menu_items.items()}
         return menu_items
 
+
 def _find_blueprint():
     if request.blueprint:
         return current_app.blueprints[request.blueprint]
@@ -104,9 +106,10 @@ def create_app(app_name=config.APP_NAME):
     app.logger.setLevel(logging.DEBUG)
     app.logger.handlers = []
 
-    # We also need to update the handler on the webserver in order to see request.
-    # Setting the level prevents werkzeug from setting up it's own stream handler
-    # thus ensuring all the logging goes through the pgAdmin logger.
+    # We also need to update the handler on the webserver in order to see
+    # request. Setting the level prevents werkzeug from setting up it's own
+    # stream handler thus ensuring all the logging goes through the pgAdmin
+    # logger.
     logger = logging.getLogger('werkzeug')
     logger.setLevel(logging.INFO)
 
@@ -125,9 +128,9 @@ def create_app(app_name=config.APP_NAME):
     logger.addHandler(ch)
 
     # Log the startup
-    app.logger.info('################################################################################')
+    app.logger.info('########################################################')
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
-    app.logger.info('################################################################################')
+    app.logger.info('########################################################')
     app.logger.debug("Python syspath: %s", sys.path)
 
     ##########################################################################
@@ -149,7 +152,9 @@ def create_app(app_name=config.APP_NAME):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}'.format(
+            config.SQLITE_PATH.replace('\\', '/')
+            )
 
     # Only enable password related functionality in server mode.
     if config.SERVER_MODE is True:
@@ -200,7 +205,10 @@ def create_app(app_name=config.APP_NAME):
             # the sysadmin a hint. We'll continue to try to login anyway as
             # that'll through a nice 500 error for us.
             if user is None:
-                app.logger.error('The desktop user %s was not found in the configuration database.' % config.DESKTOP_USER)
+                app.logger.error(
+                        'The desktop user %s was not found in the configuration database.'
+                        % config.DESKTOP_USER
+                        )
                 abort(401)
 
             login_user(user)
@@ -224,11 +232,15 @@ def create_app(app_name=config.APP_NAME):
         """Inject a reference to the current blueprint, if any."""
         return {
             'current_app': current_app,
-            'current_blueprint': current_blueprint }
+            'current_blueprint': current_blueprint
+            }
+
+    # Load all available serve drivers
+    driver.init_app(app)
 
     ##########################################################################
     # All done!
     ##########################################################################
-
     app.logger.debug('URL map: %s' % app.url_map)
+
     return app

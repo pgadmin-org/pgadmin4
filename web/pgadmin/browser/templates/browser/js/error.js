@@ -15,7 +15,7 @@ function(_, alertify, pgAdmin) {
         </h4>\
         </div>\
         <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
-        <div class="panel-body" style="overflow: scroll;">' + message + '</div>\
+        <div class="panel-body" style="overflow: auto;">' + unescape(message) + '</div>\
         </div>\
         </div>';
 
@@ -28,7 +28,7 @@ function(_, alertify, pgAdmin) {
           </h4>\
           </div>\
           <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\
-          <div class="panel-body" style="overflow: scroll;">' + unescape(info) + '</div>\
+          <div class="panel-body" style="overflow: auto;">' + unescape(info) + '</div>\
           </div>\
           </div>\
           </div>'

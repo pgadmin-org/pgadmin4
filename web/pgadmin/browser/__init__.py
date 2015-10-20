@@ -14,36 +14,38 @@ from pgadmin.settings import get_setting
 from flask import current_app, render_template, url_for, make_response
 from flask.ext.security import login_required
 from flask.ext.login import current_user
+from flask.ext.babel import gettext
 from flaskext.gravatar import Gravatar
 
 MODULE_NAME = 'browser'
 
-class BrowserModule(PgAdminModule):
 
+class BrowserModule(PgAdminModule):
 
     def get_own_stylesheets(self):
         stylesheets = []
         # Add browser stylesheets
         for (endpoint, filename) in [
-            ('static', 'css/codemirror/codemirror.css'),
-            ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css'),
-            ('static', 'css/wcDocker/wcDocker.css' if \
-                    current_app.debug else \
-                       'css/wcDocker/wcDocker.min.css'),
-            ('browser.static', 'css/browser.css'),
-            ('browser.static', 'css/aciTree/css/aciTree.css')
-            ]:
+                ('static', 'css/codemirror/codemirror.css'),
+                ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css'),
+                ('static', 'css/wcDocker/wcDocker.css' if current_app.debug
+                    else 'css/wcDocker/wcDocker.min.css'),
+                ('browser.static', 'css/browser.css'),
+                ('browser.static', 'css/aciTree/css/aciTree.css')
+                ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         stylesheets.append(url_for('browser.browser_css'))
         return stylesheets
-
 
     def get_own_javascripts(self):
         scripts = list()
         scripts.append({
             'name': 'alertify',
-            'path': url_for('static', filename='js/alertifyjs/alertify' if current_app.debug \
-                    else 'js/alertifyjs/alertify.min'),
+            'path': url_for(
+                        'static',
+                        filename='js/alertifyjs/alertify' if current_app.debug
+                        else 'js/alertifyjs/alertify.min'
+                        ),
             'exports': 'alertify',
             'preloaded': True
             })
@@ -62,8 +64,10 @@ class BrowserModule(PgAdminModule):
             })
         scripts.append({
             'name': 'jqueryui.position',
-            'path': url_for('static',
-                filename='js/jQuery-contextMenu/jquery.ui.position'),
+            'path': url_for(
+                        'static',
+                        filename='js/jQuery-contextMenu/jquery.ui.position'
+                        ),
             'deps': ['jquery'],
             'exports': 'jQuery.ui.position',
             'preloaded': True
@@ -71,35 +75,42 @@ class BrowserModule(PgAdminModule):
             })
         scripts.append({
             'name': 'jquery.contextmenu',
-            'path': url_for('static',
-                filename='js/jQuery-contextMenu/jquery.contextMenu'),
+            'path': url_for(
+                            'static',
+                            filename='js/jQuery-contextMenu/jquery.contextMenu'
+                            ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
             'preloaded': True
             })
         scripts.append({
             'name': 'jquery.aciplugin',
-            'path': url_for('browser.static',
-                filename='js/aciTree/jquery.aciPlugin.min'),
+            'path': url_for(
+                        'browser.static',
+                        filename='js/aciTree/jquery.aciPlugin.min'
+                        ),
             'deps': ['jquery'],
             'exports': 'aciPluginClass',
             'preloaded': True
             })
         scripts.append({
             'name': 'jquery.acitree',
-            'path': url_for('browser.static',
-                filename='js/aciTree/jquery.aciTree' \
-                        if current_app.debug else \
-                        'js/aciTree/jquery.aciTree.min'),
+            'path': url_for(
+                        'browser.static',
+                        filename='js/aciTree/jquery.aciTree' if
+                        current_app.debug else 'js/aciTree/jquery.aciTree.min'
+                        ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciTree',
             'preloaded': True
             })
         scripts.append({
             'name': 'wcdocker',
-            'path': url_for('static',
-                filename='js/wcDocker/wcDocker' if current_app.debug else \
-                        'js/wcDocker/wcDocker.min'),
+            'path': url_for(
+                        'static',
+                        filename='js/wcDocker/wcDocker' if current_app.debug
+                        else 'js/wcDocker/wcDocker.min'
+                        ),
             'deps': ['jquery.contextmenu'],
             'exports': '',
             'preloaded': True
@@ -109,8 +120,11 @@ class BrowserModule(PgAdminModule):
                 ['pgadmin.browser',       'js/browser'],
                 ['pgadmin.browser.error', 'js/error'],
                 ['pgadmin.browser.node',  'js/node']]:
-            scripts.append({ 'name': name,
-                'path': url_for('browser.index') + script, 'preloaded': True })
+            scripts.append({
+                'name': name,
+                'path': url_for('browser.index') + script,
+                'preloaded': True
+                })
 
         for name, end in [
                 ['pgadmin.browser.menu', 'js/menu'],
@@ -128,6 +142,7 @@ class BrowserModule(PgAdminModule):
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
+
 class BrowserPluginModule(PgAdminModule):
     """
     Base class for browser submodules.
@@ -139,20 +154,18 @@ class BrowserPluginModule(PgAdminModule):
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
         kwargs.setdefault("static_url_path", '/static')
-        super(BrowserPluginModule, self).__init__("NODE-%s" % self.node_type,
+        super(BrowserPluginModule, self).__init__(
+                                            "NODE-%s" % self.node_type,
                                             import_name,
-                                            **kwargs)
-
+                                            **kwargs
+                                            )
 
     @property
-    @abstractmethod
     def jssnippets(self):
         """
         Returns a snippet of javascript to include in the page
         """
-        # TODO: move those methods to BrowserModule subclass ?
         return []
-
 
     def get_own_javascripts(self):
         scripts = []
@@ -168,17 +181,21 @@ class BrowserPluginModule(PgAdminModule):
 
         return scripts
 
-
-    def generate_browser_node(self, node_id, parent_id, label, icon, inode):
+    def generate_browser_node(
+            self, node_id, parent_id, label, icon, inode, node_type, **kwargs
+            ):
         obj = {
-            "id": "%s/%s" % (self.node_type, node_id),
-            "label": label,
-            "icon": icon,
-            "inode": inode,
-            "_type": self.node_type,
-            "_id": node_id,
-            "refid": parent_id
-            }
+                "id": "%s/%s" % (node_type, node_id),
+                "label": label,
+                "icon": icon,
+                "inode": inode,
+                "_type": node_type,
+                "_id": node_id,
+                "refid": parent_id,
+                "module": 'pgadmin.node.%s' % node_type
+                }
+        for key in kwargs:
+            obj.setdefault(key, kwargs[key])
         return obj
 
 
@@ -187,14 +204,17 @@ class BrowserPluginModule(PgAdminModule):
         """
         Returns a snippet of css to include in the page
         """
-        snippets = [render_template("browser/css/node.css",
-                               node_type=self.node_type)]
+        snippets = [
+                    render_template(
+                        "browser/css/node.css",
+                        node_type=self.node_type,
+                        _=gettext
+                        )]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
 
         return snippets
-
 
     @abstractmethod
     def get_nodes(self):
@@ -223,8 +243,7 @@ class BrowserPluginModule(PgAdminModule):
 
     @property
     def node_path(self):
-        return url_for('browser.index') + 'nodes/' + self.node_type
-
+        return self.browser_url_prefix + self.node_type
 
     @property
     def javascripts(self):
@@ -243,8 +262,12 @@ def index():
                         force_default=False,
                         use_ssl=False,
                         base_url=None)
-    return render_template(MODULE_NAME + "/index.html",
-                           username=current_user.email)
+    return render_template(
+            MODULE_NAME + "/index.html",
+            username=current_user.email,
+            _=gettext
+            )
+
 
 @blueprint.route("/js/browser.js")
 @login_required
@@ -257,21 +280,25 @@ def browser_js():
             render_template(
                 'browser/js/browser.js',
                 layout=layout,
-                jssnippets=snippets),
+                jssnippets=snippets,
+                _=gettext
+                ),
             200, {'Content-Type': 'application/x-javascript'})
+
 
 @blueprint.route("/js/error.js")
 @login_required
 def error_js():
     return make_response(
-            render_template('browser/js/error.js'),
+            render_template('browser/js/error.js', _=gettext),
             200, {'Content-Type': 'application/x-javascript'})
+
 
 @blueprint.route("/js/node.js")
 @login_required
 def node_js():
     return make_response(
-            render_template('browser/js/node.js'),
+            render_template('browser/js/node.js', _=gettext),
             200, {'Content-Type': 'application/x-javascript'})
 
 
@@ -283,7 +310,9 @@ def browser_css():
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
     return make_response(
-            render_template('browser/css/browser.css', snippets=snippets),
+            render_template(
+                'browser/css/browser.css', snippets=snippets, _=gettext
+                ),
             200, {'Content-Type': 'text/css'})
 
 

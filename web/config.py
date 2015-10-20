@@ -7,7 +7,7 @@
 # Copyright (C) 2013 - 2015, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# config.py - Core application configuration settings 
+# config.py - Core application configuration settings
 #
 ##########################################################################
 
@@ -34,7 +34,7 @@ APP_SUFFIX = 'dev'
 # Copyright string for display in the app
 APP_COPYRIGHT = 'Copyright 2014 - 2015, The pgAdmin Development Team'
 
-# Path to the online help. 
+# Path to the online help.
 HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
@@ -49,11 +49,11 @@ APP_VERSION = '%s.%s.%s-%s' % (APP_MAJOR, APP_MINOR, APP_REVISION, APP_SUFFIX)
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
 # List of modules to skip when dynamically loading
-MODULE_BLACKLIST = [ 'test' ]
+MODULE_BLACKLIST = ['test']
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
 # List of treeview browser nodes to skip when dynamically loading
-NODE_BLACKLIST = [ ]
+NODE_BLACKLIST = []
 
 ##########################################################################
 # Log settings
@@ -63,19 +63,19 @@ NODE_BLACKLIST = [ ]
 DEBUG = False
 
 # Application log level - one of:
-#   CRITICAL	50
-#   ERROR	40
-#   WARNING	30
-#   SQL		25
-#   INFO	20
-#   DEBUG       10
-#   NOTSET	0
+#   CRITICAL 50
+#   ERROR    40
+#   WARNING  30
+#   SQL      25
+#   INFO     20
+#   DEBUG    10
+#   NOTSET    0
 CONSOLE_LOG_LEVEL = WARNING
 FILE_LOG_LEVEL = INFO
 
-# Log format. 
-CONSOLE_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
-FILE_LOG_FORMAT='%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+# Log format.
+CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
 LOG_FILE = 'pgadmin4.log'
@@ -83,6 +83,8 @@ LOG_FILE = 'pgadmin4.log'
 ##########################################################################
 # Server settings
 ##########################################################################
+
+PG_DEFAULT_DRIVER = 'psycopg2'
 
 # The server mode determines whether or not we're running on a web server
 # requiring user authentication, or desktop mode which uses an automatic
@@ -102,11 +104,11 @@ DEFAULT_SERVER_PORT = 5050
 # Enable CSRF protection?
 CSRF_ENABLED = True
 
-# Secret key for signing CSRF data. Override this in config_local.py if 
+# Secret key for signing CSRF data. Override this in config_local.py if
 # running on a web server
 CSRF_SESSION_KEY = 'SuperSecret1'
 
-# Secret key for signing cookies. Override this in config_local.py if 
+# Secret key for signing cookies. Override this in config_local.py if
 # running on a web server
 SECRET_KEY = 'SuperSecret2'
 
@@ -118,7 +120,7 @@ SECURITY_PASSWORD_SALT = 'SuperSecret3'
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 
 # Should HTML be minified on the fly when not in debug mode?
-MINIFY_HTML = True;
+MINIFY_HTML = True
 
 ##########################################################################
 # User account and settings storage
@@ -126,12 +128,15 @@ MINIFY_HTML = True;
 
 # The schema version number for the configuration database
 # DO NOT CHANGE UNLESS YOU ARE A PGADMIN DEVELOPER!!
-SETTINGS_SCHEMA_VERSION = 3
+SETTINGS_SCHEMA_VERSION = 7
 
 # The default path to the SQLite database used to store user accounts and
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
-SQLITE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pgadmin4.db')
+SQLITE_PATH = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'pgadmin4.db'
+        )
 
 ##########################################################################
 # Mail server settings
@@ -150,9 +155,12 @@ MAIL_PASSWORD = 'SuperSecret'
 ##########################################################################
 
 # These settings define the content of password reset emails
-SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for %s" % APP_NAME
-SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE = "Your %s password has been reset" % APP_NAME
-SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = "Your password for %s has been changed" % APP_NAME
+SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for %s" \
+        % APP_NAME
+SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE = "Your %s password has been reset" \
+        % APP_NAME
+SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
+        "Your password for %s has been changed" % APP_NAME
 
 ##########################################################################
 # Local config settings

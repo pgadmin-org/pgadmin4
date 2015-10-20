@@ -29,7 +29,7 @@ function($, _, pgAdmin, Backbone) {
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           id: undefined,
-          name: undefined
+          name: null
         },
         schema: [
           {id: 'id', label: 'ID', type: 'int', group: null, mode: ['properties']},

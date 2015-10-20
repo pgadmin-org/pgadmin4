@@ -119,7 +119,6 @@ OWNER TO helpdesk;\n';
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        // TODO:: Revove demoSql later
         content: '<textarea id="sql-textarea" name="sql-textarea"></textarea>',
         events: sqlPanelEvents
       }),
@@ -163,7 +162,7 @@ OWNER TO helpdesk;\n';
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        url: 'http://www.pgadmin.org'
+        url: 'about:blank' // http://www.pgadmin.org'
       })/* Add hooked-in frames by extensions */{% for panel_item in current_app.panels %}{% if panel_item.isIframe %},
       '{{ panel_item.name }}' : new pgAdmin.Browser.Frame({
         name: '{{ panel_item.name }}',
@@ -280,7 +279,6 @@ OWNER TO helpdesk;\n';
           });
         }
       }
-
     },
     init: function() {
       var obj=this;
@@ -343,6 +341,7 @@ OWNER TO helpdesk;\n';
             mode: "text/x-sql",
             readOnly: true
           });
+      // TODO:: Revove demoSql later
       $('#sql-textarea').val(demoSql);
 
       // Initialise the treeview
@@ -378,7 +377,7 @@ OWNER TO helpdesk;\n';
             var o = undefined;
 
             _.each(menus, function(m) {
-              if (name == (m.module.type + '_' + m.callback)) {
+              if (name == (m.module.type + '_' + m.name)) {
                 o = m;
               }
             });
@@ -406,20 +405,22 @@ OWNER TO helpdesk;\n';
           _.each(
             _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
-                if (m.category == 'create' && !m.disabled(d))
-                  createMenu[m.module.type + '_' + m.callback] = { name: m.label };
+                if (m.category == 'create' && !m.disabled(d)) {
+                  createMenu[m.module.type + '_' + m.name] = { name: m.label, icon: m.module.type };
+                }
               });
 
           if (_.size(createMenu)) {
-            menu["create"] = { "name": "{{ _('Create') }}" };
+            menu["create"] = { name: "{{ _('Create') }}", icon: 'fa fa-magic' };
             menu["create"]["items"] = createMenu;
           }
 
           _.each(
               _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
-                if (m.category != 'create' && !m.disabled(d))
-                  menu[m.module.type + '_' + m.callback] = { name: m.label };
+                if (m.category != 'create' && !m.disabled(d)) {
+                  menu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon };
+                }
               });
 
           return _.size(menu) ? {
@@ -516,6 +517,16 @@ OWNER TO helpdesk;\n';
         }
       };
       geneate_menus();
+
+      // Ping the server every 5 minutes
+      setInterval(function() {
+        $.ajax({
+          url: '{{ url_for('misc.ping') }}',
+          type:'POST',
+          success: function() {},
+          error: function() {}
+          });
+        }, 300000);
     },
     // load the module right now
     load_module: function(name, path, c) {
@@ -532,7 +543,6 @@ OWNER TO helpdesk;\n';
         if (c)
         c.loaded += 1;
       }, function() {
-        /* TODO:: Show proper error */
         obj.report_error(
           '{{ _('Error loading script - ') }}' + path);
       });
@@ -557,7 +567,7 @@ OWNER TO helpdesk;\n';
             }
 
             if (_.has(menus, m.name)) {
-              console.log(m.name +
+              console && console.log && console.log(m.name +
                 ' has been ignored!\nIt is already exist in the ' +
                 a +
                 ' list of menus!');
@@ -605,6 +615,10 @@ OWNER TO helpdesk;\n';
             navbar.children('#mnu_obj').removeClass('hide');
           });
        obj.enable_disable_menus();
+    },
+    messages: {
+      'server_lost': '{{ _('Connection to the server has been lost!') }}',
+      'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}'
     }
   });
 

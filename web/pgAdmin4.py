@@ -41,9 +41,11 @@ if config.SERVER_MODE is True:
 
 # Check if the database exists. If it does not, tell the user and exit.
 if not os.path.isfile(config.SQLITE_PATH):
-    print "The configuration database %s does not exist.\n" % config.SQLITE_PATH
+    print "The configuration database %s does not exist.\n" \
+            % config.SQLITE_PATH
     print "Please run 'python %s' to create it.\nExiting..." % os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'setup.py')
+            os.path.dirname(os.path.realpath(__file__)), 'setup.py'
+            )
     sys.exit(1)
 
 ##########################################################################
@@ -55,6 +57,8 @@ app = create_app()
 
 if config.DEBUG:
     app.debug = True
+else:
+    app.debug = False
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the
@@ -70,6 +74,6 @@ else:
     server_port = config.DEFAULT_SERVER_PORT
 
 try:
-    app.run(port=server_port)
+    app.run(port=server_port, use_reloader=(config.SERVER_MODE and app.debug))
 except IOError:
     app.logger.error("Error starting the app server: %s", sys.exc_info())
