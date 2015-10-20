@@ -74,6 +74,7 @@ learn how pgAdmin works, and how to develop improvements and new features.
    
    coding-standards
    code-overview
+   code-snippet
    submitting-patches
    translations
 

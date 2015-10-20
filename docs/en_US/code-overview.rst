@@ -9,8 +9,8 @@ a web application, which is written in C++ using the QT framework.
 Runtime
 -------
 
-The runtime is essentially a Python webserver and browser in a box. Found in the 
-**/runtime** directory in the source tree, it is a relatively simple QT 
+The runtime is essentially a Python webserver and browser in a box. Found in the
+**/runtime** directory in the source tree, it is a relatively simple QT
 application that is most easily modified using the **QT Creator** application.
 
 Web Application
@@ -27,23 +27,23 @@ Configuration
 The core application configuration is found in **config.py**. This file includes
 all configurable settings for the application, along with descriptions of their
 use. It is essential that various settings are configured prior to deployent on
-a web server; these can be overriden in **config_local.py** to avoid modifying 
+a web server; these can be overriden in **config_local.py** to avoid modifying
 the main configuration file.
 
 User Settings
 *************
 
 When running in desktop mode, pgAdmin has a single, default user account that is
-used for the desktop user. When running in server mode, there may be unlimited 
+used for the desktop user. When running in server mode, there may be unlimited
 users who are required to login prior to using the application. pgAdmin utilised
-the **Flask-Security** module to manage application security and users, and 
+the **Flask-Security** module to manage application security and users, and
 provides options for self-service password reset and password changes etc.
 
 Whether in desktop or server mode, each user's settings are stored in a SQLite
-database which is also used to store the user accounts. This is initially 
+database which is also used to store the user accounts. This is initially
 created using the **setup.py** script which will create the database file and
-schema within it, and add the first user account (with administrative 
-privileges) and a default server group for them. A **settings** table is also 
+schema within it, and add the first user account (with administrative
+privileges) and a default server group for them. A **settings** table is also
 used to store user configuration settings in a key-value fashion. Although not
 required, setting keys (or names) are typically formatted using forward slashes
 to artificially namespace values, much like the pgAdmin 3 settings files on Linux
@@ -56,67 +56,131 @@ particularly with regard to desktop vs. server mode.
 pgAdmin Core
 ************
 
-The heart of pgAdmin is the **pgadmin** package. This contains the globally 
+The heart of pgAdmin is the **pgadmin** package. This contains the globally
 available HTML templates used by the Jinja engine, as well as any global static
 files such as images, Javascript and CSS files that are used in multiple modules.
 
 The work of the package is handled in it's constructor, **__init__.py**. This
-is responsible for setting up logging and authentication, dynamically loading 
+is responsible for setting up logging and authentication, dynamically loading
 other modules, and a few other tasks.
 
 Modules
 *******
 
-Units of functionality are added to pgAdmin through the addition of modules. Theses
-are Python packages that implement Flask Blueprints, and provide various hook 
-points for other modules to utilise (primarily the default module - the browser).
+Units of functionality are added to pgAdmin through the addition of modules.
+Theses are Python object instance of classes, inherits the
+PgAdminModule class (a Flask Blueprint implementation), found in
+**web/pgadmin/utils.py**. It provide various hook points for other modules
+to utilise (primarily the default module - the browser).
 
 To be recognised as a module, a Python package must be created. This must:
 
 1) Be placed within the **web/pgadmin/** directory, and
-2) Contain a Python module called **views**, and
-3) Contain within the views module, a **blueprint** variable representing the 
-   Flask Blueprint
-   
+2) Implements pgadmin.utils.PgAdminModule class
+3) An instance variable (generally - named **blueprint**) representing that
+   particular class in that package.
+
 Each module may define a **template** and **static** directory for the Blueprint
 that it implements. To avoid name collisions, templates should be stored under
 a directory within the specified template directory, named after the module itself.
-For example, the **browser** module stores it's templates in 
+For example, the **browser** module stores it's templates in
 **web/pgadmin/browser/templates/browser/**. This does not apply to static files
 which may omit the second module name.
 
-In addition to defining the Blueprint, the **views** module is typically 
-responsible for defining all the views that will be rendered in response to 
-client requests. These must include appropriate route and security decorators.
+In addition to defining the Blueprint, the **views** module is typically
+responsible for defining all the views that will be rendered in response to
+client requests, we must provide a REST API url(s) for these views. These must
+include appropriate route and security decorators. Take a look at the NodeView
+class, which uses the same approach as Flask's MethodView, it can be found in
+**web/pgadmin/browser/utils.py**. This specific class is used by browser nodes
+for creating REST API url(s) for different operation on them. i.e. list, create,
+update, delete, fetch children, get
+statistics/reversed SQL/dependencies/dependents list for that node, etc. We can
+use the same class for other purpose too. You just need to inherit that class,
+and overload the member variables operations, parent_ids, ids, node_type, and
+then register it as node view with PgAdminModule instance.
 
-Most pgAdmin modules will also implement a **hooks** Python module. This is 
-responsible for providing hook points to integrate the module into the rest of 
-the application - for example, a hook might tell the caller what CSS files need 
-to be included on the rendered page, or what menu options to include and what
-they should do. Hook points need not exist if they are not required. It is the 
-responsiblity of the caller to ensure they are present before attempting to 
-utilise them.
+Most pgAdmin modules will also implement the **hooks** provided by the
+PgAdminModule class. This is responsible for providing hook points to integrate
+the module into the rest of the application - for example, a hook might tell
+the caller what CSS files need to be included on the rendered page, or what menu
+options to include and what they should do. Hook points need not exist if they
+are not required. It is the responsiblity of the caller to ensure they are
+present before attempting to utilise them.
 
 Hooks currently implemented are:
 
 .. code-block:: python
 
-    def register_submodules(app):
-        """Register any child module or node blueprints"""
-    
-    def get_file_menu_items():
-    def get_edit_menu_items():
-    def get_tools_menu_items():
-    def get_management_menu_items():
-    def get_help_menu_items():
-        """Return a (set) of dicts of menu items, with name, priority, URL, target and onclick code."""
-    
-    def get_scripts():
-        """Return a list of script URLs to include in the rendered page header"""
+    class MyModule(PgAdminModule):
+        """
+        This is class implements the pgadmin.utils.PgAdminModule, and
+        implements the hooks
+        """
 
-    def get_stylesheets():
-        """Return a list of stylesheet URLs to include in the rendered page header"""    
-    
+        ...
+
+        def get_own_stylesheets(self):
+            """
+            Returns:
+                list: the stylesheets used by this module, not including any
+                      stylesheet needed by the submodules.
+            """
+            return [url_for('static', 'css/mymodule.css')]
+
+        def get_own_javascripts(self):
+            """
+            Returns:
+                list of dict:
+                - contains the name (representation for this javascript
+                  module), path (url for it without .js suffix), deps (array of
+                  dependents), exports window object by the javascript module,
+                  and when (would you like to load this javascript), etc
+                  information for this module, not including any script needed
+                  by submodules.
+            """
+            return [
+                {
+                    'name': 'pgadmin.extension.mymodule',
+                    'path': url_for('static', filename='js/mymodule'),
+                    'exports': None,
+                    'when': 'server'
+                    }
+                ]
+
+        def get_own_menuitems(self):
+            """
+            Returns:
+                dict: the menuitems for this module, not including
+                      any needed from the submodules.
+            """
+            return {
+                'help_items': [
+                    MenuItem(
+                        name='mnu_mymodule_help',
+                        priority=999,
+                        # We need to create javascript, which registers itself
+                        # as module
+                        module="pgAdmin.MyModule",
+                        callback='about_show',
+                        icon='fa fa-info-circle',
+                        label=gettext('About MyModule'
+                        )
+                    ]
+                }
+        def get_panels(self):
+            """
+            Returns:
+                list: a list of panel objects to add implemented in javascript
+                      module
+            """
+            return []
+        ...
+
+
+
+    blueprint = MyModule('mymodule', __name__, static_url_path='/static')
+
 pgAdmin Modules may include any additional Python modules that are required to
 fulfill their purpose, as required. They may also reference other dynamically
 loaded modules, but must use the defined hook points and fail gracefully in the
@@ -125,40 +189,24 @@ event that a particular module is not present.
 Nodes
 *****
 
-Nodes are very similar to modules, but implement individual nodes on the browser
-treeview. To be recognised as a module, a Python package must be created. This 
-must:
+Nodes are very similar to modules, it represents an individual node or,
+collection object on the browser treeview. To recognised as a node module, a
+Python package (along with javascript modules) must be created. This must:
 
 1) Be placed within the **web/pgadmin/browser/** directory, and
-2) Contain a Python module called **views**, and
-3) Contain within the views module, a **blueprint** variable representing the 
-   Flask Blueprint
-   
-The hook points currently defined for nodes are:
+2) Implements the BrowserPluginModule, and registers the node view, which
+   exposes required the REST APIs
+3) An instance of the class object
 
-.. code-block:: python
+Front End
+*********
 
-    def register_submodules(app):
-        """Register any child node blueprints"""
-
-    def get_file_menu_items():
-        """Return a (set) of dicts of menu items, with name, priority, URL, target and onclick code."""
-    
-    def get_context_menu_items():
-        """Return a (set) of dicts of content menu items with name, label, priority and JS"""
-
-    def get_create_menu_items():
-        """Return a (set) of dicts of create menu items, with a Javascript array of 
-        object types on which the option should appear, name, label. priority and
-        the function name (no parens) to call on click."""
-    
-    def get_standard_menu_items():
-        """Return a (set) of dicts of standard menu items (drop/rename), with 
-        object type, action, priority and the function name (no parens) to call 
-        on click."""
-    
-    def get_script_snippets():
-        """Return the script snippets needed to handle treeview node operations."""
-        
-    def get_css_snippets():
-        """Return the CSS needed to display the treeview node image."""
+pgAdmin uses javascript extensively for the front-end implementation. It uses
+require.js to allow the lazy loading (or, say load only when required),
+bootstrap for UI look and feel, Backbone for data manipulation of a node,
+Backform for generating properties/create dialog for selected node. We have
+divided each module in small chunks as much as possible. Not all javascript
+modules are required to be loaded (i.e. loading a javascript module for
+database will make sense only when a server node is loaded competely.) Please
+look at the the javascript files node.js, browser.js, menu.js, panel.js, etc for
+better understanding of the code.
