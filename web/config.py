@@ -84,8 +84,6 @@ LOG_FILE = 'pgadmin4.log'
 # Server settings
 ##########################################################################
 
-PG_DEFAULT_DRIVER = 'psycopg2'
-
 # The server mode determines whether or not we're running on a web server
 # requiring user authentication, or desktop mode which uses an automatic
 # default login.
@@ -121,6 +119,18 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 
 # Should HTML be minified on the fly when not in debug mode?
 MINIFY_HTML = True
+
+
+##########################################################################
+# Server Connection Driver Settings
+##########################################################################
+
+# The default driver used for making connection with PostgreSQL
+PG_DEFAULT_DRIVER = 'psycopg2'
+
+# Maximum allowed idle time in minutes before which releasing the connection
+# for the particular session. (in minutes)
+MAX_SESSION_IDLE_TIME = 60
 
 ##########################################################################
 # User account and settings storage
