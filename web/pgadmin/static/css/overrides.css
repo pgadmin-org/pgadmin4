@@ -382,7 +382,7 @@ iframe {
 }
 
 .pg-prop-btn-group button:not(:first-child):not(:last-child) {
-    margin: 0px;
+    margin-left: 0px;
 }
 
 .pg-prop-content {
@@ -448,3 +448,116 @@ fieldset[disabled] .form-control {
     margin-left: -18px;
     margin-right: 9px;
 }
+
+
+/* Sub-Node */
+
+.table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border-bottom-width: 1px;
+}
+
+.subnode > table.backgrid{
+	width: 99%;
+	margin: 0.1% 0.49%;
+	padding: 0;
+}
+
+.backgrid thead th{
+    background-color: #2c76b4;
+}
+
+.backgrid th, .backgrid td {
+	line-height: 18px;
+	font-size: 12px;
+}
+
+.backgrid td {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.backgrid thead th a {
+    color: #ffffff;
+}
+
+.backgrid > th.object {
+    width: 30px;
+}
+
+.edit-cell, .delete-cell {
+    text-align:center !important;
+    width:25px;
+}
+
+.backgrid td.renderable:not(.editable):not(.delete-cell) {
+   background-color: #eee;
+}
+
+.subnode-header {
+    background-color:#2c76b4;
+    height:35px;
+    color:#FFFFFF;
+    border-radius:5px 5px 0px 0px;
+    padding-top:3px;
+}
+
+.subnode-header > button.add {
+    float:right;
+    margin-right:15px;
+}
+
+.subnode {
+    margin-top:5px;
+    padding-top:0px;
+    border-left:1px solid #dadada;
+    border-bottom:1px solid #ddd;
+    border-right:1px solid #ddd;
+}
+
+.subnode-dialog {
+    bottom: 0;
+    left: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    right: 0;
+    height:auto;
+    margin-left: 23px;
+    background-color: #dadada;
+    margin-top: 0px;
+    border: 1px solid #a9a9a9;
+}
+.subnode-body {
+    height:auto;
+    overflow:inherit;
+
+}
+.subnode-footer {
+    height:38px;;
+    margin: 0px, 15px;
+    min-height:40px;
+    vertical-align: bottom;
+}
+
+.sub-node-form {
+    height:auto;
+	padding: 1px;
+}
+
+.sub-node-form > .nav-tabs {
+    background-color: #DADADA;
+}
+
+.sub-node-form > ul.tab-content{
+    background-color: #FFFFFF;
+    padding-left: 15px;
+    left: 1px;
+}
+
+table.backgrid tr.new {
+    background-color: rgba(82, 168, 236, 0.1) !important;
+    box-sizing: border-box;
+    outline: 1px solid rgba(82, 168, 236, 0.8);
+    outline-offset: -1px;
+  }

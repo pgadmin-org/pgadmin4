@@ -46,38 +46,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     return child;
   };
 
-  // Defines - which control needs to be instantiated in different modes.
-  // i.e. Node properties, create, edit, etc.
-  var controlType = {
-    'properties': {
-      'int': 'uneditable-input',
-      'text': 'uneditable-input',
-      'numeric': 'uneditable-input',
-      'date': 'date',
-      'boolean': 'bool-text',
-      'options': Backform.ReadonlyOptionControl,
-      'multiline': 'textarea'
-    },
-    'edit': {
-      'int': 'input',
-      'text': 'input',
-      'numeric': 'input',
-      'date': 'date',
-      'boolean': 'boolean',
-      'options': 'select',
-      'multiline': 'textarea'
-    },
-    'create': {
-      'int': 'input',
-      'text': 'input',
-      'numeric': 'input',
-      'date': 'date',
-      'boolean': 'boolean',
-      'options': 'select',
-      'multiline': 'textarea'
-    }
-  };
-
   _.extend(pgAdmin.Browser.Node, {
     // Node type
     type: undefined,
@@ -115,9 +83,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     //
     // Used to generate view for the particular node properties, edit,
     // creation.
-    getView: function(type, el, node, formType, callback) {
+    getView: function(type, el, node, formType, callback, data) {
 
-      if (!this.type || this.type == '' || !type in controlType)
+      if (!this.type || this.type == '')
         // We have no information, how to generate view for this type.
         return null;
 
@@ -131,62 +99,25 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // node.
           return null;
 
-        var opts = {};
+        var attrs = {};
 
         // In order to get the object data from the server, we must set
         // object-id in the model (except in the create mode).
         if (type !== 'create') {
-          opts[this.model.idAttribute || 'id'] = node._id;
+          attrs[this.model.idAttribute || 'id'] = node._id;
         }
 
         // We know - which data model to be used for this object.
-        var newModel = new (this.model.extend({urlRoot: urlBase}))(opts);
+        var newModel = new (this.model.extend({urlRoot: urlBase}))(attrs, {
+              onChangeData: data,
+              onChangeCallback: callback
+            }),
+            groups = Backform.generateViewSchema(newModel, type);
 
         // 'schema' has the information about how to generate the form.
-        if (newModel.schema && _.isArray(newModel.schema)) {
-          var groups = {};
-
-          _.each(newModel.schema, function(f) {
-            // Do we understand - what control, we're creating
-            // here?
-            if (f && f.mode && _.isObject(f.mode) &&
-              _.indexOf(f.mode, type) != -1 &&
-              type in controlType) {
-              // Each field is kept in specified group, or in
-              // 'General' category.
-              var group = f.group || '{{ _("General") }}';
-
-              // Generate the empty group list (if not exists)
-              if (!groups[group]) {
-                groups[group] = [];
-              }
-
-              // Temporarily store in dictionaly format for
-              // utilizing it later.
-              groups[group].push({
-                name: f.id, label: f.label,
-                control: controlType[type][f.type],
-                // Do we need to show this control in this mode?
-                visible: f.show && newModel[f.show] &&
-                  typeof newModel[f.show] == "function" ?
-                  newModel[f.show] : f.show,
-                // This can be disabled in some cases (if not hidden)
-                disabled: (type == 'properties' ? true : (
-                    f.disabled && newModel[f.disabled] &&
-                    typeof newModel[f.disabled] == "function" ?
-                    newModel[f.disabled] : undefined)),
-                options: f.options
-              });
-            }
-          });
-
-          // Do we have fields to genreate controls, which we
-          // understand?
-          if (_.isEmpty(groups)) {
-            return null;
-          }
-
+        if (groups) {
           var fields = [];
+
           // This will contain the actual view
           var view;
 
@@ -214,34 +145,24 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             // This is definetely not in create mode
             newModel.fetch()
               .success(function(res, msg, xhr) {
-                if (res) {
-                  // We got the latest attributes of the
-                  // object. Render the view now.
-                  view.render();
-                  if (typeof(callback) != "undefined") {
-                    callback(view);
-                  }
-                }
+                // We got the latest attributes of the
+                // object. Render the view now.
+                view.render();
               })
-              .error(function(m, jqxhr) {
+              .error(function(jqxhr, error, message) {
                 // TODO:: We may not want to continue from here
-                console.log(arguments);
                 Alertify.pgNotifier(
-                  "error", jqxhr,
+                  error, jqxhr,
                   S(
                     "{{ _("Error fetching the properties - %%s!") }}"
-                    ).sprintf(jqxhr.statusText).value()
+                    ).sprintf(message).value()
                   );
               });
           } else {
             // Yay - render the view now!
             view.render();
-            if (typeof(callback) != "undefined") {
-              callback(view);
-            }
           }
         }
-
         return view;
       }
 
@@ -475,7 +396,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             null).show()
       },
       // Callback called - when a node is selected in browser tree.
-      selected: function(o) {
+      selected: function(item) {
         // Show the information about the selected node in the below panels,
         // which are visible at this time:
         // + Properties
@@ -483,53 +404,54 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         // + Dependents
         // + Dependencies
         // + Statistics
+        var b = pgBrowser,
+            t = b.tree,
+            d = t.itemData(item);
 
         // Update the menu items
-        pgAdmin.Browser.enable_disable_menus.apply(o.browser, [o.item]);
+        pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
 
-        if (o && o.data && o.browser) {
-          var br = o.browser;
-          if ('properties' in br.panels &&
-              br.panels['properties'] &&
-              br.panels['properties'].panel &&
-              br.panels['properties'].panel.isVisible()) {
+        if (d && b) {
+          if ('properties' in b.panels &&
+              b.panels['properties'] &&
+              b.panels['properties'].panel &&
+              b.panels['properties'].panel.isVisible()) {
             // Show object properties (only when the 'properties' tab
             // is active).
-            this.showProperties(o.item, o.data,
-                pgBrowser.panels['properties'].panel);
+            this.showProperties(item, d, b.panels['properties'].panel);
           }
-          if ('sql' in br.panels &&
-              br.panels['sql'] &&
-              br.panels['sql'].panel &&
-              br.panels['sql'].panel.isVisible()) {
+          if ('sql' in b.panels &&
+              b.panels['sql'] &&
+              b.panels['sql'].panel &&
+              b.panels['sql'].panel.isVisible()) {
             // TODO:: Show reverse engineered query for this object (when 'sql'
             // tab is active.)
           }
-          if ('statistics' in br.panels &&
-              br.panels['statistics'] &&
-              br.panels['statistics'].panel &&
-              br.panels['statistics'].panel.isVisible()) {
+          if ('statistics' in b.panels &&
+              b.panels['statistics'] &&
+              b.panels['statistics'].panel &&
+              b.panels['statistics'].panel.isVisible()) {
             // TODO:: Show statistics for this object (when the 'statistics'
             // tab is active.)
           }
-          if ('dependencies' in br.panels &&
-              br.panels['dependencies'] &&
-              br.panels['dependencies'].panel &&
-              br.panels['dependencies'].panel.isVisible()) {
+          if ('dependencies' in b.panels &&
+              b.panels['dependencies'] &&
+              b.panels['dependencies'].panel &&
+              b.panels['dependencies'].panel.isVisible()) {
             // TODO:: Show dependencies for this object (when the
             // 'dependencies' tab is active.)
           }
-          if ('dependents' in br.panels &&
-              br.panels['dependents'] &&
-              br.panels['dependents'].panel &&
-              br.panels['dependents'].panel.isVisible()) {
+          if ('dependents' in b.panels &&
+              b.panels['dependents'] &&
+              b.panels['dependents'].panel &&
+              b.panels['dependents'].panel.isVisible()) {
             // TODO:: Show dependents for this object (when the 'dependents'
             // tab is active.)
           }
         }
       },
-      refresh_node: function(args) {
-        this.callbacks.selected();
+      refresh_node: function(item) {
+        this.callbacks.selected(undefined, item);
       }
     },
     /**********************************************************************
@@ -544,7 +466,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
-        content = $('<div></div>')
+        content = $('<div tabindex="1"></div>')
           .addClass('pg-prop-content col-xs-12'),
         // Template function to create the button-group
         createButtons = function(buttons, extraClasses) {
@@ -644,9 +566,27 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
           // Make sure the HTML element is empty.
           j.empty();
-          // Create a view to edit/create the properties in fieldsets
-          view = that.getView(action, content, data, 'dialog');
 
+          var modelChanged = function(m, o) {
+            var btnGroup = o.find('.pg-prop-btn-group'),
+                btnSave = btnGroup.find('button[type="save"]'),
+                btnReset = btnGroup.find('button[type="reset"]');
+
+            if (m.sessChanged()) {
+              btnSave.prop('disabled', false);
+              btnSave.removeAttr('disabled');
+              btnReset.prop('disabled', false);
+              btnReset.removeAttr('disabled');
+            } else {
+              btnSave.prop('disabled', true);
+              btnSave.attr('disabled', 'disabled');
+              btnReset.prop('disabled', true);
+              btnReset.attr('disabled', 'disabled');
+            }
+          };
+
+          // Create a view to edit/create the properties in fieldsets
+          view = that.getView(action, content, data, 'dialog', modelChanged, j);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);
@@ -659,14 +599,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               register: function(btn) {
                 // Save the changes
                 btn.click(function() {
-
                   var m = view.model,
-                    c = m.isNew() ? m.attributes :
-                      m.changedAttributes();
+                    d = m.toJSON(true);
 
-                  if (c && !_.isEmpty(c)) {
-                    m.save({} ,{
-                      attrs: m.attributes,
+                  if (d && !_.isEmpty(d)) {
+                    m.save({}, {
+                      attrs: d,
+                      validate: false,
                       success: function() {
                         onSaveFunc.call();
                       },
@@ -858,14 +797,70 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         return args[arg];
       });
     },
+    Collection: Backbone.Collection.extend({
+    }),
     // Base class for Node Model
     Model: Backbone.Model.extend({
       parse: function(res) {
+        var self = this;
         if ('node' in res && res['node']) {
-          this.tnode = _.extend({}, res.node);
+          self.tnode = _.extend({}, res.node);
           delete res.node;
         }
+        if (self.schema && _.isArray(self.schema)) {
+          _.each(self.schema, function(s) {
+            if (s.id in res) {
+              var o;
+              switch(s.type) {
+                case 'collection':
+                  o = self.get(s.id)
+                  o.reset(res[s.id], [{silent: true}]);
+                  res[s.id] = o;
+                  break;
+                case 'model':
+                  o = self.get(s.id);
+                  o.set(res[s.id], [{silent: true}]);
+                  res[s.id] = o;
+                  break;
+                default:
+                  break;
+              }
+            }
+          });
+        }
         return res;
+      },
+      initialize: function(attributes, options) {
+        var self = this;
+
+        if (this.schema && _.isArray(this.schema)) {
+          _.each(this.schema, function(s) {
+            var obj = null;
+            switch(s.type) {
+              case 'collection':
+                if (_.isString(s.model) &&
+                    s.model in pgBrowser.Nodes) {
+                  var node = pgBrowser.Nodes[s.model];
+                  obj = new (node.Collection)(null, {model: node.model});
+                } else {
+                  obj = new (pgBrowser.Node.Collection)(null, {model: s.model});
+                }
+                break;
+              case 'model':
+                if (_.isString(s.model) &&
+                    s.model in pgBrowser.Nodes[s.model]) {
+                  obj = new (pgBrowser.Nodes[s.model].Model)(null);
+                } else {
+                  obj = new (s.model)(null);
+                }
+                break;
+              default:
+                return;
+            }
+            obj.name = s.id;
+            self.set(s.id, obj, {silent: true});
+          });
+        }
       }
     })
   });

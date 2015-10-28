@@ -10,10 +10,11 @@
 
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone', 'backform'], function(_, $, Backbone, Backform) {
+    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'pgadmin.backgrid'],
+     function(_, $, Backbone, Backform, Backgrid) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform);
+      return factory(root, _, $, Backbone, Backform, Backgrid);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -21,14 +22,16 @@
     var _ = require('underscore') || root._,
       $ = root.jQuery || root.$ || root.Zepto || root.ender,
       Backbone = require('backbone') || root.Backbone,
-      Backform = require('backform') || root.Backform;
-    factory(root, _, $, Backbone, Backform);
+      Backform = require('backform') || root.Backform,
+      Backgrid = require('backgrid') || root.Backgrid;
+      pgAdminBackgrid = require('pgadmin.backgrid');
+    factory(root, _, $, Backbone, Backform, Backgrid);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
+    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid);
   }
-}(this, function(root, _, $, Backbone, Backform) {
+}(this, function(root, _, $, Backbone, Backform, Backgrid) {
 
   // HTML markup global class names. More can be added by individual controls
   // using _.extend. Look at RadioControl as an example.
@@ -40,6 +43,51 @@
     tabClassName: "backform-tab col-xs-12",
     setGroupContentClassName: "fieldset-content col-xs-12"
     });
+
+  var controlMapper = Backform.controlMapper = {
+    'int': ['uneditable-input', 'input', 'integer'],
+    'text': ['uneditable-input', 'input', 'string'],
+    'numeric': ['uneditable-input', 'input', 'number'],
+    'date': 'datepicker',
+    'boolean': 'boolean',
+    'options': ['readonly-option', 'select', Backgrid.Extension.PGSelectCell],
+    'multiline': ['textarea', 'textarea', 'string'],
+    'collection': ['sub-node-collection', 'sub-node-collection', 'string']
+  };
+
+  var getMappedControl = Backform.getMappedControl = function(type, mode) {
+    if (type in Backform.controlMapper) {
+      var m = Backform.controlMapper[type];
+
+      if (!_.isArray(m)) {
+        return m;
+      }
+
+      var idx = 1, len = _.size(m);
+
+      switch (mode) {
+        case 'properties':
+          idx = 0;
+          break;
+        case 'edit':
+        case 'create':
+        case 'control':
+          idx = 1;
+          break;
+        case 'cell':
+          idx = 2;
+          break;
+        default:
+          idx = 0;
+          break;
+      }
+
+      return m[idx > len ? 0 : idx];
+    }
+    alert ("Developer: did you forget to put/implement the control type - '" + type + "' in mapper");
+    return null;
+  }
+
 
   // Override the Backform.Control to allow to track changes in dependencies,
   // and rerender the View element
@@ -72,7 +120,7 @@
       '<div class="<%=Backform.controlsClassName%>">',
       '<% for (var i=0; i < options.length; i++) { %>',
       ' <% var option = options[i]; %>',
-			' <% if (option.value === rawValue) { %>',
+      ' <% if (option.value === rawValue) { %>',
       ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled><%-option.label%></span>',
       ' <% } %>',
       '<% } %>',
@@ -213,6 +261,197 @@
     },
     events: {}
   });
+
+  var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+           }),
+          evalF = function(f, m) {
+            return (_.isFunction(f) ? !!f(m) : !!f);
+          };
+
+      // Evaluate the disabled, visible, required, canAdd, cannEdit & canDelete option
+      _.extend(data, {
+        disabled: evalF(data.disabled, this.model),
+        visible:  evalF(data.visible, this.model),
+        required: evalF(data.required, this.model),
+        canAdd: evalF(data.canAdd, this.model),
+        canEdit: evalF(data.canEdit, this.model),
+        canDelete: evalF(data.canDelete, this.model)
+      });
+      // Show Backgrid Control
+      grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+
+      this.$el.html(grid).addClass(field.name);
+      this.updateInvalid();
+
+      return this;
+    },
+    showGridControl: function(data) {
+      var gridHeader = ["<div class='subnode-header'>",
+          "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
+          "  <button class='btn-sm btn-default add'>Add</buttton>",
+          "</div>"].join("\n");
+        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode' >").append(gridHeader);
+
+      var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
+          columns = [],
+          gridColumns = [],
+          groups = Backform.generateViewSchema(subnode, this.field.get('mode')),
+          schema = [];
+
+      // Prepare columns for backgrid
+      _.each(groups, function(fields, key) {
+        _.each(fields, function(f) {
+          if (!f.control && !f.cell) {
+            return;
+          }
+          f.cel_priority = _.indexOf(data.columns, f.name);
+          if (f.cel_priority != -1) {
+            columns.push(f);
+          }
+        });
+        schema.push({label: key, fields: fields});
+      });
+
+      // Set visibility of Add button
+      if (data.disabled || data.canAdd == false) {
+        $(gridBody).find("button.add").remove();
+      }
+
+      // Insert Delete Cell into Grid
+      if (data.disabled == false && data.canDelete) {
+          columns.unshift({
+            name: "pg-backform-delete", label: "",
+            cell: Backgrid.Extension.DeleteCell,
+            editable: false, priority: -1
+          });
+      }
+
+      // Insert Edit Cell into Grid
+      if (data.disabled == false && data.canEdit) {
+          var editCell = Backgrid.Extension.ObjectCell.extend({
+            schema: schema
+          });
+
+          columns.unshift({
+            name: "pg-backform-edit", label: "", cell : editCell,
+            priority: -2
+          });
+      }
+
+      var collections = this.model.get(data.name);
+
+      // Initialize a new Grid instance
+      var grid = new Backgrid.Grid({
+          columns: _.sortBy(columns, function(c) { return c.cell_priority; }),
+          collection: collections,
+          className: "backgrid table-bordered"
+      });
+
+      // Render subNode grid
+      subNodeGrid = grid.render().$el;
+
+      // Combine Edit and Delete Cell
+      if (data.canDelete && data.canEdit) {
+        $(subNodeGrid).find("th.pg-backform-delete").remove();
+        $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
+      }
+
+      $dialog =  gridBody.append(subNodeGrid);
+
+      // Add button callback
+      $dialog.find('button.add').click(function(e) {
+        e.preventDefault();
+        grid.insertRow({});
+        newRow = $(grid.body.rows[collections.length - 1].$el);
+        newRow.attr("class", "new").click(function(e) {
+          $(this).attr("class", "");
+        });
+        return false;
+      });
+
+      return $dialog;
+    }
+  });
+
+  ///////
+  // Generate a schema (as group members) based on the model's schema
+  //
+  // It will be used by the grid, properties, and dialog view generation
+  // functions.
+  var generateViewSchema = Backform.generateViewSchema = function(Model, mode) {
+    var proto = (Model && Model.prototype) || Model,
+        schema = (proto && proto.schema),
+        groups, pgBrowser = window.pgAdmin.Browser;
+
+    // 'schema' has the information about how to generate the form.
+    if (schema && _.isArray(schema)) {
+      var evalASFunc = evalASFunc = function(prop) {
+        return ((prop && proto[prop] &&
+              typeof proto[prop] == "function") ? proto[prop] : prop);
+      };
+      groups =  {};
+
+      _.each(schema, function(s) {
+        // Do we understand - what control, we're creating
+        // here?
+        if (!s.mode || (s && s.mode && _.isObject(s.mode) &&
+          _.indexOf(s.mode, mode) != -1)) {
+          // Each field is kept in specified group, or in
+          // 'General' category.
+          var group = s.group || pgBrowser.messages.general_cateogty,
+              control = Backform.getMappedControl(s.type, mode),
+              cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
+
+          if (control == null) {
+            return;
+          }
+
+          // Generate the empty group list (if not exists)
+          groups[group] = (groups[group] || []);
+
+          var o = _.extend(_.clone(s), {
+            name: s.id,
+            // Do we need to show this control in this mode?
+            visible: evalASFunc(s.show),
+            // This can be disabled in some cases (if not hidden)
+            disabled: (mode == 'properties' ? true : evalASFunc(s.disabled)),
+            subnode: (_.isString(s.model) && s.model in pgBrowser.Nodes) ?
+                pgBrowser.Nodes[s.model].model : s.model,
+            canAdd: (mode == 'properties' ? false : evalASFunc(s.canAdd)),
+            canEdit: (mode == 'properties' ? false : evalASFunc(s.canEdit)),
+            canDelete: (mode == 'properties' ? false : evalASFunc(s.canDelete)),
+            mode: mode,
+            control: control,
+            cell: cell
+          });
+          delete o.id;
+
+          // Temporarily store in dictionaly format for
+          // utilizing it later.
+          groups[group].push(o);
+        }
+      });
+
+      // Do we have fields to genreate controls, which we
+      // understand?
+      if (_.isEmpty(groups)) {
+        return null;
+      }
+    }
+    return groups;
+  }
 
   return Backform;
 }));

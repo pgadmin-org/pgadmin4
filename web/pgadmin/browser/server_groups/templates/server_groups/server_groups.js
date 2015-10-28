@@ -32,8 +32,13 @@ function($, _, pgAdmin, Backbone) {
           name: null
         },
         schema: [
-          {id: 'id', label: 'ID', type: 'int', group: null, mode: ['properties']},
-          {id: 'name', label:'Name', type: 'text', group: null, mode: ['properties', 'edit', 'create']}
+          {
+            id: 'id', label: 'ID', type: 'int', group: null,
+            mode: ['properties']
+          },{
+            id: 'name', label:'Name', type: 'text', group: null,
+            mode: ['properties', 'edit', 'create']
+          }
         ],
         validate: function(attrs, options) {
           if (!this.isNew() && 'id' in this.changed) {

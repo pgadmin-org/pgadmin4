@@ -52,8 +52,7 @@ OWNER TO helpdesk;\n';
       if (d && obj.Nodes[d._type].callbacks['selected'] &&
           _.isFunction(obj.Nodes[d._type].callbacks['selected'])) {
         return obj.Nodes[d._type].callbacks['selected'].apply(
-            obj.Nodes[d._type],
-            [{ data: d, browser: obj, item: i }]);
+            obj.Nodes[d._type], [i]);
       }
     }
   };
@@ -442,10 +441,8 @@ OWNER TO helpdesk;\n';
             typeof obj.Nodes[d._type].callbacks[eventName] ==
             'function') {
             return obj.Nodes[d._type].callbacks[eventName].apply(
-              obj.Nodes[d._type], [{
-                data: d, browser: obj, item: item,
-            eventName: eventName, options: options
-              }]);
+              obj.Nodes[d._type], [item, eventName, options]
+              );
           }
         }
         switch (eventName) {
@@ -618,7 +615,8 @@ OWNER TO helpdesk;\n';
     },
     messages: {
       'server_lost': '{{ _('Connection to the server has been lost!') }}',
-      'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}'
+      'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}',
+      'general_cateogty': '{{ _('General') }}'
     }
   });
 

@@ -22,6 +22,7 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
 
         <!-- View specified stylesheets -->
         {% for stylesheet in current_app.stylesheets %}
@@ -44,9 +45,19 @@
                     "bootstrap": {
                         "deps": ['jquery'],
                     },
+                    "backgrid": {
+                        "deps": ['backform'],
+                        "exports": 'Backgrid',
+                    },
                     "bootstrap.datepicker": {
                         "deps": ['jquery', 'bootstrap'],
                         "exports": 'jQuery.fn.datepicker'
+                    },
+                    "pgadmin.backgrid": {
+                        "deps": ["backgrid", "bootstrap.datepicker"],
+                    },
+                    "pgadmin.backform": {
+                        "deps": ['backform', "pgadmin.backgrid"],
                     }{% for script in current_app.javascripts %}{% if 'deps' in script or 'exports' in script %},
                     '{{ script.name }}': {
                     {% if 'deps' in script %}"deps": [ {% set comma = False %}{% for dep in script['deps'] %} {% if comma %},{% else %}{% set comma = True %}{% endif %} '{{ dep }}'{% endfor %}],{% endif %}
@@ -65,6 +76,8 @@
                     backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
                     "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
                     backform: "{{ url_for('static', filename='js/backform') }}",
+                    backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",
+                    "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
                 }
