@@ -418,7 +418,8 @@ class ServerManager(object):
     def connection(self, database=None, conn_id=None, auto_reconnect=True):
 
         my_id = ('CONN:' + str(conn_id)) if conn_id is not None else \
-                ('DB:' + str(database))
+                ('DB:' + (str(database) if database is not None else \
+					self.db))
 
         self.pinged = datetime.now()
 
@@ -507,7 +508,7 @@ class Driver(BaseDriver):
             managers = self.managers[session['_id']]
 
         managers['pinged'] = datetime.datetime.now()
-        if sid not in managers:
+        if str(sid) not in managers:
             from pgadmin.settings.settings_model import Server
             s = Server.query.filter_by(id=sid).first()
 
@@ -560,16 +561,16 @@ class Driver(BaseDriver):
               connection, and it stops working on disconnection.
 
         """
-        manager = connection_manager(sid)
+        manager = self.connection_manager(sid)
 
-        return manager.connection(database, conn_id, connect, **kwargs)
+        return manager.connection(database, conn_id, auto_reconnect)
 
     def release_connection(self, sid, database=None, conn_id=None):
         """
         Release the connection for the given connection-id/database in this
         session.
         """
-        return connection_manager(sid).release(database, conn_id)
+        return self.connection_manager(sid).release(database, conn_id)
 
     def gc(self):
         """
@@ -577,13 +578,10 @@ class Driver(BaseDriver):
         server for more than config.MAX_SESSION_IDLE_TIME.
         """
         import datetime
-        from config import MAX_SESSION_IDLE_TIME
-
-        assert(MAX_SESSION_IDLE_TIME is not None and
-                isinstance(MAX_SESSION_IDLE_TIME, int))
+        import config
 
         # Mininum session idle is 20 minutes
-        max_idle_time = max(MAX_SESSION_IDLE_TIME, 20)
+        max_idle_time = max(config.MAX_SESSION_IDLE_TIME or 60, 20)
         session_idle_timeout = datetime.timedelta(minutes=max_idle_time)
 
         curr_time = datetime.datetime.now()

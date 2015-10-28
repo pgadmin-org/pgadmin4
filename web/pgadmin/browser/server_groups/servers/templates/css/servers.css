@@ -1,6 +1,10 @@
 .icon-server {
   background-image: url('{{ url_for('NODE-server.static', filename='img/server.png') }}') !important;
-  border-radius: 10px
+  border-radius: 10px;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
 }
 
 .icon-server-not-connected {

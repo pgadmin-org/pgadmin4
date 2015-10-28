@@ -1,6 +1,6 @@
 require(
-    ['alertify'],
-function(alertify) {
+    ['alertify', 'underscore.string'],
+function(alertify, S) {
   alertify.defaults.transition = "zoom";
   alertify.defaults.theme.ok = "btn btn-primary";
   alertify.defaults.theme.cancel = "btn btn-danger";

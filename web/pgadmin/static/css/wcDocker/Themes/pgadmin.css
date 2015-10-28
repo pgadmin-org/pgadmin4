@@ -203,22 +203,22 @@
   background-color: #A44;
 }
 
-.wcButtonHover, .wcButton:hover, button:hover {
+.wcButtonHover, .wcButton:hover {
   border: 1px outset #B66;
   background-color: #B66;
 }
 
-.wcButtonActive, .wcButton:active, button:active {
+.wcButtonActive, .wcButton:active {
   border: 1px inset #B66;
   background-color: #B66;
 }
 
-.wcButtonActive.wcButtonHover, .wcButton:hover.wcButtonActive, .wcButton:active.wcButtonHover, .wcButton:active:hover, button:active:hover {
+.wcButtonActive.wcButtonHover, .wcButton:hover.wcButtonActive, .wcButton:active.wcButtonHover, .wcButton:active:hover {
   border: 1px inset #C88;
   background-color: #C88;
 }
 
-.wcButtonDisabled, .wcButton.disabled, button:disabled {
+.wcButtonDisabled, .wcButton.disabled {
   border: 1px outset #933 !important;
   background-color: #933 !important;
   color: #533 !important;

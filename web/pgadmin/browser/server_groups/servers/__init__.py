@@ -493,7 +493,7 @@ class ServerNode(NodeView):
         """Check and return the connection status."""
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        conn = manager.get_connection()
+        conn = manager.connection()
 
         return make_json_response(data={'connected': conn.connected()})
 
