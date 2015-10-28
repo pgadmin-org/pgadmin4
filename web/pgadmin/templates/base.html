@@ -77,6 +77,7 @@
                     "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
                     backform: "{{ url_for('static', filename='js/backform') }}",
                     backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",
+                    "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}

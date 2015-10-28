@@ -1,7 +1,7 @@
 define(
     ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser.menu',
      'backbone', 'alertify', 'backform', 'pgadmin.backform', 'wcdocker',
-     'pgadmin.alertifyjs'],
+     'pgadmin.alertifyjs', 'backbone.undo'],
 function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -147,7 +147,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               .success(function(res, msg, xhr) {
                 // We got the latest attributes of the
                 // object. Render the view now.
+                newModel.startNewSession();
                 view.render();
+                $(el).focus();
               })
               .error(function(jqxhr, error, message) {
                 // TODO:: We may not want to continue from here
@@ -160,7 +162,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               });
           } else {
             // Yay - render the view now!
+            newModel.startNewSession();
             view.render();
+            $(el).focus();
           }
         }
         return view;
@@ -650,6 +654,32 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
           // Show contents before buttons
           j.prepend(content);
+
+          // Register the Ctrl/Meta+Z -> for Undo operation
+          // and Ctrl+Shift+Z/Ctrl+Y -> Redo operation in the edit/create
+          // dialog.
+          content.on('keydown', function(e) {
+            switch (e.keyCode) {
+              case 90:
+                if ((e['ctrlKey'] || e['metaKey'])) {
+                  if (e['shiftKey']) {
+                    view && view.model && view.model.redo();
+                  } else {
+                    view && view.model && view.model.undo();
+                  }
+                  e.preventDefault();
+                  break;
+                }
+                break;
+              case 89:
+                if ((e['ctrlKey'] || e['metaKey']) && !e['shiftKey']) {
+                  view && view.model && view.model.redo();
+                  e.preventDefault();
+                }
+                break;
+            }
+          });
+          content.focus();
         },
         closePanel = function() {
           // Closing this panel
@@ -798,6 +828,173 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       });
     },
     Collection: Backbone.Collection.extend({
+      // Model collection
+      initialize: function(attributes, options) {
+        var self = this;
+
+        options = options || {};
+        self.sessAttrs = {
+          'changed': [],
+          'added': [],
+          'deleted': []
+        };
+        self.handler = options.handler;
+        self.trackChanges = false;
+
+        self.undoMgr = new Backbone.UndoManager({
+          register: self, track: true
+        });
+
+        if (self.handler && self.handler.undoMgr) {
+          self.handler.undoMgr.merge(self.undoMgr);
+        }
+
+
+        self.on('add', self.onModelAdd);
+        self.on('remove', self.onModelRemove);
+        self.on('change', self.onModelChange);
+      },
+      startNewSession: function() {
+        var self = this;
+
+        self.trackChanges = true;
+        self.sessAttrs = {
+          'changed': [],
+          'added': [],
+          'deleted': []
+        };
+
+        self.undoMgr.clear();
+
+        _.each(self.models, function(m) {
+          if ('startNewSession' in m && _.isFunction(m.startNewSession)) {
+            m.startNewSession();
+          }
+        });
+      },
+      onChange: function() {
+        var self = this;
+
+        if (self.handler && 'onChange' in self.handler &&
+            _.isFunction(self.handler.onChange)) {
+          return self.handler.onChange();
+        }
+        return true;
+      },
+      sessChanged: function() {
+        return (
+            this.sessAttrs['changed'].length > 0 ||
+            this.sessAttrs['added'].length > 0 ||
+            this.sessAttrs['deleted'].length > 0
+            );
+      },
+      toJSON: function(session) {
+        var self = this,
+            onlyChanged = (typeof(session) != "undefined" &&
+                  session == true);
+
+        if (!onlyChanged) {
+          return Backbone.Collection.prototype.toJSON.call(self);
+        } else {
+          var res = {};
+
+          res['added'] = [];
+          _.each(this.sessAttrs['added'], function(o) {
+            res['added'].push(o.toJSON());
+          });
+          if (res['added'].length == 0) {
+            delete res['added'];
+          }
+          res['changed'] = [];
+          _.each(self.sessAttrs['changed'], function(o) {
+            res['changed'].push(o.toJSON(true));
+          });
+          if (res['changed'].length == 0) {
+            delete res['changed'];
+          }
+          res['deleted'] = [];
+          _.each(self.sessAttrs['deleted'], function(o) {
+            res['deleted'].push(o.toJSON(false, true));
+          });
+          if (res['deleted'].length == 0) {
+            delete res['deleted'];
+          }
+
+          return (_.size(res) == 0 ? null : res);
+        }
+      },
+      onModelAdd: function(obj) {
+
+        if (!this.trackChanges)
+          return true;
+
+        var self = this, idx = _.indexOf(self.sessAttrs['deleted'], obj);
+
+        // Hmm.. - it was originally deleted from this collection, we should
+        // remove it from the 'deleted' list.
+        if (idx >= 0) {
+          self.sessAttrs['deleted'].splice(idx, 1);
+
+          // It has been changed originally!
+          if ((!'sessChanged' in obj) || obj.sessChanged()) {
+            self.sessAttrs['changed'].push(obj);
+          }
+          return self.onChange();
+        }
+        self.sessAttrs['added'].push(obj);
+        return self.onChange();
+      },
+      onModelRemove: function(obj) {
+
+        if (!this.trackChanges)
+          return true;
+
+        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj);
+
+        // Hmm - it was newly added, we can safely remove it.
+        if (idx >= 0) {
+          self.sessAttrs['added'].splice(idx, 1);
+          return self.onChange();
+        }
+        // Hmm - it was changed in this session, we should remove it from the
+        // changed models.
+        idx = _.indexOf(self.sessAttrs['changed'], obj);
+        if (idx >= 0) {
+          self.sessAttrs['changed'].splice(idx, 1);
+        }
+        self.sessAttrs['deleted'].push(obj);
+        return self.onChange();
+      },
+      onModelChange: function(obj) {
+
+        if (!this.trackChanges || obj instanceof pgBrowser.Node.Model)
+          return true;
+
+        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj);
+
+        // It was newly added model, we don't need to add into the changed
+        // list.
+        if (idx >= 0) {
+          return true;
+        }
+        idx = _.indexOf(self.sessAttrs['changed'], obj);
+        if (!'sessChanged' in obj) {
+          if (idx > 0) {
+            return true;
+          }
+          self.sessAttrs['changed'].push(obj);
+          return self.onChange();
+        }
+        if (idx > 0) {
+          if (!obj.sessChanged()) {
+            self.sessAttrs['changed'].splice(idx, 1);
+            return self.onChange();
+          }
+          return true;
+        }
+        self.sessAttrs['changed'].push(obj);
+        return self.onChange();
+      }
     }),
     // Base class for Node Model
     Model: Backbone.Model.extend({
@@ -833,6 +1030,36 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       initialize: function(attributes, options) {
         var self = this;
 
+        options = options || {};
+        self.sessAttrs = {};
+        self.origSessAttrs = {};
+        self.objects = [];
+        self.handler = (options.handler ||
+            (self.collection && self.collection.handler));
+        self.trackChanges = false;
+
+        /*
+         * A object in pgBrowser.Node.Collection does not require a separate
+         * Undo manager.
+         */
+        if (self.collection && self.collection.undoMgr) {
+          self.undoMgr = self.collection.undoMgr;
+        } else {
+          self.undoMgr = new Backbone.UndoManager({
+            register: self, track: true
+          });
+
+          /*
+           * Merged Undo stack should be kept at main handler
+           */
+          if (self.handler && self.handler.undoMgr) {
+            self.handler.undoMgr.merge(self.undoMgr);
+          }
+        }
+
+        self.onChangeData = options.onChangeData;
+        self.onChangeCallback = options.onChangeCallback;
+
         if (this.schema && _.isArray(this.schema)) {
           _.each(this.schema, function(s) {
             var obj = null;
@@ -841,26 +1068,160 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 if (_.isString(s.model) &&
                     s.model in pgBrowser.Nodes) {
                   var node = pgBrowser.Nodes[s.model];
-                  obj = new (node.Collection)(null, {model: node.model});
+                  obj = new (node.Collection)(null, {
+                    model: node.model,
+                    handler: self.handler || self
+                  });
                 } else {
-                  obj = new (pgBrowser.Node.Collection)(null, {model: s.model});
+                  obj = new (pgBrowser.Node.Collection)(null, {
+                    model: s.model,
+                    handler: self.handler || self
+                  });
                 }
                 break;
               case 'model':
                 if (_.isString(s.model) &&
                     s.model in pgBrowser.Nodes[s.model]) {
-                  obj = new (pgBrowser.Nodes[s.model].Model)(null);
+                  obj = new (pgBrowser.Nodes[s.model].Model)(
+                      null, {handler: self.handler || self}
+                      );
                 } else {
-                  obj = new (s.model)(null);
+                  obj = new (s.model)(null, {handler: self.handler || self});
                 }
                 break;
               default:
                 return;
             }
             obj.name = s.id;
+            self.objects.push(s.id);
             self.set(s.id, obj, {silent: true});
           });
         }
+      },
+      onChange: function() {
+        var self = this;
+
+        if (self.handler && 'onChange' in self.handler &&
+            _.isFunction(self.handler.onChange)) {
+          return self.handler.onChange();
+        }
+        if (self.onChangeCallback && _.isFunction(self.onChangeCallback)) {
+          return self.onChangeCallback(self, self.onChangeData);
+        }
+        return true;
+      },
+      sessChanged: function() {
+        var self = this;
+
+        return (_.size(self.sessAttrs) > 0 ||
+            _.some(self.objects, function(o) {
+              return self.get(o).sessChanged();
+            }));
+      },
+      set: function(key, val, options) {
+        var res = Backbone.Model.prototype.set.call(this, key, val, options);
+
+        if (key != null && res && this.trackChanges) {
+          var attrs;
+          var self = this, unChanged = [], handler = self.handler || self;
+
+          attrChanged = function(v, k) {
+            if (k in self.objects) {
+              return;
+            }
+            if (self.origSessAttrs[k] == v) {
+              delete self.sessAttrs[k];
+            } else {
+              self.sessAttrs[k] = v;
+            }
+          };
+
+          // Handle both `"key", value` and `{key: value}` -style arguments.
+          if (typeof key === 'object') {
+            _.each(key, attrChanged);
+          } else {
+            attrChanged(val, key);
+          }
+
+          handler.onChange();
+          return true;
+        }
+        return res;
+      },
+      toJSON: function(session, idOnly) {
+        var self = this, res, isNew = self.isNew();
+
+        session = (typeof(session) != "undefined" && session == true && isNew == false);
+        idOnly = (typeof(idOnly) != "undefined" && idOnly == true);
+
+        if (!session && !idOnly) {
+          res = Backbone.Model.prototype.toJSON.call(this, arguments);
+        } else {
+          res = {};
+          res[self.idAttribute || '_id'] = self.get(self.idAttribute || '_id');
+
+          if (idOnly) {
+            return res;
+          }
+          res = _.extend(res, self.sessAttrs);
+        }
+
+        _.each(self.objects, function(o) {
+          res[o] = (self.get(o)).toJSON(session);
+        });
+        return res;
+      },
+      startNewSession: function() {
+        var self = this;
+
+        self.trackChanges = true;
+        self.sessAttrs = {};
+        self.origSessAttrs = _.clone(this.attributes);
+        self.undoMgr.clear();
+        self.handler = (self.handler ||
+            (self.collection && self.collection.handler));
+
+        var res = false;
+
+        _.each(self.objects, function(o) {
+          var obj = self.get(o);
+
+          delete self.origSessAttrs[o];
+
+          if ('startNewSession' in obj && _.isFunction(obj.startNewSession)) {
+            obj.startNewSession();
+          } else {
+            self.undoMgr.register(obj);
+          }
+        });
+
+        if (!self.handler) {
+          self.onChange();
+        }
+      },
+      canUndo: function() {
+        if (this.undoMgr) {
+          return this.undoMgr.isAvailable('undo');
+        }
+        return false;
+      },
+      canRedo: function() {
+        if (this.undoMgr) {
+          return this.undoMgr.isAvailable('redo');
+        }
+        return false;
+      },
+      undo: function() {
+        if (this.undoMgr) {
+          return this.undoMgr.undo(true);
+        }
+        return false;
+      },
+      redo: function() {
+        if (this.undoMgr) {
+          return this.undoMgr.redo(true);
+        }
+        return false;
       }
     })
   });
