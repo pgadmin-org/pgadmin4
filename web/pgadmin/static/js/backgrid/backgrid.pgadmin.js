@@ -24,12 +24,8 @@
 } (this, function(root, _, $, Backbone, Backform, Alertify) {
   var ObjectCellEditor = Backgrid.Extension.ObjectCellEditor = Backgrid.CellEditor.extend({
     modalTemplate: _.template([
-      '<div class="subnode-dialog">',
+      '<div class="subnode-dialog" tabindex="1">',
       '    <div class="subnode-body"></div>',
-      '    <div class="subnode-footer">',
-      '        <button style ="float:right;margin-right:15px;margin-top: 4px;" class="cancel btn btn-danger" type="cancel">Cancel</button>',
-      '        <button style ="float:right;margin-right:10px;margin-top: 4px;" class="save btn btn-primary" type="save">Save</button>',
-      '    </div>',
       '</div>'
     ].join("\n")),
     stringTemplate: _.template([
@@ -40,11 +36,9 @@
       '  </div>',
       '</div>'
     ].join("\n")),
-
     extendWithOptions: function(options) {
       _.extend(this, options);
     },
-
     render: function () {
       return this;
     },
@@ -59,11 +53,6 @@
       if (!_.isArray(this.schema)) throw new TypeError("schema must be an array");
 
       // Create a Backbone model from our object if it does not exist
-      if (!this.origModel) {
-        this.origModel = this.model;
-        this.model = this.origModel.clone();
-      }
-
       var $dialog = this.createDialog(columns_length);
 
       // Add the Bootstrap form
@@ -72,36 +61,25 @@
 
       // Call Backform to prepare dialog
       back_el = $dialog.find('form.form-dialog');
-      Backform.tabClassName = "sub-node-form col-sm-12";
 
-      objectView = new Backform.Dialog({
+      this.objectView = new Backform.Dialog({
         el: back_el, model: this.model, schema: this.schema,
+        tabPanelClassName: function() {
+          return 'sub-node-form col-sm-12';
+        }
       });
 
-      objectView.render();
+      this.objectView.render();
 
       return this;
     },
     createDialog: function(noofcol) {
-      var editor1 = this,
-          $dialog = this.$dialog = $(this.modalTemplate({title: ""})),
+      var $dialog = this.$dialog = $(this.modalTemplate({title: ""})),
           tr = $("<tr>"),
+          noofcol = noofcol || 1,
           td = $("<td>", {class: 'editable sortable renderable', style: 'height: auto', colspan: noofcol+2}).appendTo(tr);
 
-      noofcol = noofcol || 1;
-      // Handle close and save events
-      $dialog.find('button.cancel').click(function(e) {
-        e.preventDefault();
-        editor1.cancel();
-        tr.remove();
-        return false;
-      });
-      $dialog.find('button.save').click(function(e) {
-        e.preventDefault();
-        editor1.save();
-        tr.remove();
-        return false;
-      });
+      this.tr = tr;
 
       // Show the Bootstrap modal dialog
       td.append($dialog.css('display', 'block'));
@@ -109,38 +87,21 @@
 
       return $dialog;
     },
-    save: function(options) {
-      options || (options = {});
-      var model = this.origModel,
-          column = this.column,
-          objectModel = this.model,
-          $form = this.$dialog.find('form');
-
+    save: function() {
       // Retrieve values from the form, and store inside the object model
-      var changes = {};
-      _.each(this.schema, function(field) {
-        inputType = (field.control == 'datepicker' ? 'input' : field.control);
-        val = $form.find(inputType + '[name='+field.name+']').first().val()
-        val = (field.cell == 'integer') ? parseInt(val) :
-              (field.cell == 'number') ? parseFloat(val) : val
+      this.model.trigger("backgrid:edited", this.model, this.column, new Backgrid.Command({keyCode:13}));
+      if (this.tr) {
+        this.tr.remove();
+      }
 
-        changes[field.name] = val;
-      });
-
-      objectModel.set(changes);
-      model.set(changes, options);
-
-      model.trigger("backgrid:edited", model, column, new Backgrid.Command({keyCode:13}));
-
-      return this;
-    },
-    cancel: function() {
-      this.origModel.trigger("backgrid:edited", this.origModel, this.column, new Backgrid.Command({keyCode:27}));
       return this;
     },
     remove: function() {
       this.$dialog.modal("hide").remove();
       Backgrid.CellEditor.prototype.remove.apply(this, arguments);
+      if (this.tr) {
+        this.tr.remove();
+      }
       return this;
     }
   });
@@ -177,7 +138,7 @@
       });
 
       editorOptions['el'] = $(this.el);
-      editorOptions['columns_length'] = this.column.collection.length
+      editorOptions['columns_length'] = this.column.collection.length;
 
       this.listenTo(this.model, "backgrid:edit", function (model, column, cell, editor) {
         if (column.get("name") == this.column.get("name"))
@@ -185,16 +146,45 @@
       });
     },
     enterEditMode: function () {
-      var $content = this.$el.html();
       Backgrid.Cell.prototype.enterEditMode.apply(this, arguments);
+      /* Make sure - we listen to the click event */
+      this.delegateEvents();
       var editable = Backgrid.callByNeed(this.column.editable(), this.column, this.model);
-      if (editable) this.$el.html("<i class='fa fa-minus-square-o'></i>");
+      if (editable) {
+        this.$el.html(
+          "<i class='fa fa-pencil-square subnode-edit-in-process'></i>"
+          );
+        this.model.trigger(
+          "pg-sub-node:opened", this.model, this
+          );
+      }
     },
     render: function(){
         this.$el.empty();
         this.$el.html("<i class='fa fa-pencil-square-o'></i>");
         this.delegateEvents();
         return this;
+    },
+    exitEditMode: function() {
+      var index = $(this.currentEditor.objectView.el)
+        .find('.nav-tabs > .active > a[data-toggle="tab"]').first()
+        .data('tabIndex');
+      Backgrid.Cell.prototype.exitEditMode.apply(this, arguments);
+      this.model.trigger(
+          "pg-sub-node:closed", this, index
+          );
+    },
+    events: {
+      'click': function(e) {
+        if (this.$el.find('i').first().hasClass('subnode-edit-in-process')) {
+          // Need to redundantly undelegate events for Firefox
+          this.undelegateEvents();
+          this.currentEditor.save();
+        } else {
+          this.enterEditMode.call(this, []);
+        }
+        e.preventDefault();
+      }
     }
   });
 

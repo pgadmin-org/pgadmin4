@@ -658,7 +658,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // Register the Ctrl/Meta+Z -> for Undo operation
           // and Ctrl+Shift+Z/Ctrl+Y -> Redo operation in the edit/create
           // dialog.
-          content.on('keydown', function(e) {
+          content.closest('.wcFrame').attr('tabindex', "1").on('keydown', function(e) {
             switch (e.keyCode) {
               case 90:
                 if ((e['ctrlKey'] || e['metaKey'])) {
@@ -849,6 +849,79 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           self.handler.undoMgr.merge(self.undoMgr);
         }
 
+        self.undoMgr.addUndoType("pg-sub-node:opened", {
+          "on": function (model, cell) {
+            return {
+              "object": cell,
+              "before": null,
+              "after": null
+            }
+          },
+          "undo": function (cell, before, after, opts) {
+            if (cell && cell.exitEditMode &&
+                _.isFunction(cell.exitEditMode)) {
+              cell.exitEditMode();
+            }
+          },
+          "redo": function (cell, before, after, opts) {
+            if (cell && cell.enterEditMode &&
+                _.isFunction(cell.enterEditMode)) {
+              cell.enterEditMode();
+            }
+          }
+        });
+        self.undoMgr.addUndoType("pg-sub-node:closed", {
+          "on": function (cell, index) {
+            return {
+              "object": cell,
+              "before": null,
+              "after": null,
+              "options": index
+            }
+          },
+          "undo": function (cell, before, after, opts) {
+            if (cell && cell.enterEditMode &&
+                _.isFunction(cell.enterEditMode)) {
+              cell.enterEditMode();
+              cell.currentEditor.objectView.$el
+              .find('.nav-tabs').first()
+              .find('a[data-tab-index="' + opts + '"]').tab('show');
+            }
+          },
+          "redo": function (cell, before, after, opts) {
+            if (cell && cell.exitEditMode &&
+                _.isFunction(cell.exitEditMode)) {
+              cell.exitEditMode();
+            }
+          }
+        });
+        self.undoMgr.addUndoType("pg-property-tab-changed", {
+          "ignore": false,
+          'mgr': self.undoMgr,
+          "on": function (tabs) {
+            if (!this.ignore && !this.mgr.stack.isCurrentlyUndoRedoing) {
+              return {
+                "object": tabs,
+                "before": null,
+                "after": null,
+                "options": this
+              }
+            }
+            this.igonre = false;
+          },
+          "undo": function (obj, before, after, opts) {
+            if (obj.hidden) {
+              opts.ignore = true;
+              $(obj.hidden).tab('show');
+            }
+          },
+          "redo": function (obj, before, after, opts) {
+            if (obj.shown) {
+              opts.ignore = true;
+              $(obj.shown).tab('show');
+            }
+          }
+        });
 
         self.on('add', self.onModelAdd);
         self.on('remove', self.onModelRemove);

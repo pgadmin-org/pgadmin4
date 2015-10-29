@@ -142,6 +142,9 @@
     className: function() {
       return 'col-sm-12 col-md-12 col-lg-12 col-xs-12';
     },
+    tabPanelClassName: function() {
+      return Backform.tabClassName;
+    },
     initialize: function(opts) {
       var s = opts.schema;
       if (s && _.isArray(s)) {
@@ -152,6 +155,9 @@
           o.hId = o.hId || _.uniqueId('pgH_');
           o.disabled = o.disabled || false;
         });
+        if (opts.tabPanelClassName && _.isFunction(opts.tabPanelClassName)) {
+          this.tabPanelClassName = opts.tabPanelClassName;
+        }
       }
       this.model.errorModel = opts.errorModel || this.model.errorModel || new Backbone.Model();
       this.controls = [];
@@ -159,7 +165,7 @@
     template: {
       'header': _.template([
         '<li role="presentation" <%=disabled ? "disabled" : ""%>>',
-        ' <a data-toggle="tab" href="#<%=cId%>"',
+        ' <a data-toggle="tab" data-tab-index="<%=tabIndex%>" href="#<%=cId%>"',
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>'].join(" ")),
       'panel': _.template(
@@ -173,12 +179,14 @@
         .first().attr('id'),
         m = this.model,
         controls = this.controls,
-        tmpls = this.template;
+        tmpls = this.template,
+        self = this,
+        idx=0;
 
       this.$el
           .empty()
           .attr('role', 'tabpanel')
-          .attr('class', Backform.tabClassName);
+          .attr('class', this.tabPanelClassName());
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
         .appendTo(this.$el);
@@ -186,7 +194,7 @@
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
-        var el = $((tmpls['panel'])(o))
+        var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx++})))
               .appendTo(tabContent)
               .removeClass('collapse').addClass('collapse'),
             h = $((tmpls['header'])(o)).appendTo(tabHead);
@@ -198,6 +206,14 @@
           });
           el.append(cntr.render().$el);
           controls.push(cntr);
+        });
+        tabHead.find('a[data-toggle="tab"]').on('hidden.bs.tab', function() {
+          self.hidden_tab = this;
+        });
+        tabHead.find('a[data-toggle="tab"]').on('shown.bs.tab', function() {
+          self.shown_tab = this;
+          self.curr_tab_index = $(this).data('tabIndex');
+          m.trigger('pg-property-tab-changed', {'shown': self.shown_tab, 'hidden': self.hidden_tab});
         });
       });
 
@@ -302,7 +318,7 @@
           "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add'>Add</buttton>",
           "</div>"].join("\n");
-        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode' >").append(gridHeader);
+        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           columns = [],
