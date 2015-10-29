@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
 
     // This is a hack. Wait a second and then check to see if the server thread
     // is still running. If it's not, we probably had a startup error
-    sleep(1);
+    QThread::sleep(1);
 
     // Any errors?
     if (server->isFinished() || server->getError().length() > 0)
@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
-        sleep(1);
+        QThread::sleep(1);
     }
 
     // Create & show the main window
