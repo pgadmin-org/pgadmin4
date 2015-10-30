@@ -139,6 +139,7 @@
 
       editorOptions['el'] = $(this.el);
       editorOptions['columns_length'] = this.column.collection.length;
+      editorOptions['el'].attr('tabindex' , 1);
 
       this.listenTo(this.model, "backgrid:edit", function (model, column, cell, editor) {
         if (column.get("name") == this.column.get("name"))
@@ -163,6 +164,8 @@
         this.$el.empty();
         this.$el.html("<i class='fa fa-pencil-square-o'></i>");
         this.delegateEvents();
+        if (this.grabFocus)
+          this.$el.focus();
         return this;
     },
     exitEditMode: function() {
@@ -173,6 +176,7 @@
       this.model.trigger(
           "pg-sub-node:closed", this, index
           );
+      this.grabFocus = true;
     },
     events: {
       'click': function(e) {

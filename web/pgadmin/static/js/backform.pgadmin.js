@@ -181,12 +181,13 @@
         controls = this.controls,
         tmpls = this.template,
         self = this,
-        idx=0;
+        idx=1;
 
       this.$el
           .empty()
           .attr('role', 'tabpanel')
           .attr('class', this.tabPanelClassName());
+      m.panelEl = this.$el;
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
         .appendTo(this.$el);
@@ -208,12 +209,15 @@
           controls.push(cntr);
         });
         tabHead.find('a[data-toggle="tab"]').on('hidden.bs.tab', function() {
-          self.hidden_tab = this;
+          self.hidden_tab = $(this).data('tabIndex');
         });
         tabHead.find('a[data-toggle="tab"]').on('shown.bs.tab', function() {
-          self.shown_tab = this;
-          self.curr_tab_index = $(this).data('tabIndex');
-          m.trigger('pg-property-tab-changed', {'shown': self.shown_tab, 'hidden': self.hidden_tab});
+          self.shown_tab = $(this).data('tabIndex');
+          m.trigger('pg-property-tab-changed', {
+            'collection': m.collection, 'model': m,
+            'index': _.indexOf(m.collection.models, m),
+            'shown': self.shown_tab, 'hidden': self.hidden_tab
+          });
         });
       });
 

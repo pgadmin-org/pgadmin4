@@ -52,7 +52,7 @@ OWNER TO helpdesk;\n';
       if (d && obj.Nodes[d._type].callbacks['selected'] &&
           _.isFunction(obj.Nodes[d._type].callbacks['selected'])) {
         return obj.Nodes[d._type].callbacks['selected'].apply(
-            obj.Nodes[d._type], [i]);
+            obj.Nodes[d._type], [i, d, obj]);
       }
     }
   };
@@ -441,7 +441,7 @@ OWNER TO helpdesk;\n';
             typeof obj.Nodes[d._type].callbacks[eventName] ==
             'function') {
             return obj.Nodes[d._type].callbacks[eventName].apply(
-              obj.Nodes[d._type], [item, eventName, options]
+              obj.Nodes[d._type], [item, d, obj, options, eventName]
               );
           }
         }
@@ -475,6 +475,7 @@ OWNER TO helpdesk;\n';
             }
             break;
         }
+        return true;
       });
 
       // There are some scripts which needed to be loaded immediately,

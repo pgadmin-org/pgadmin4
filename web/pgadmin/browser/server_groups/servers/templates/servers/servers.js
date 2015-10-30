@@ -112,16 +112,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return false;
         },
         /* Connect the server (if not connected), before opening this node */
-        beforeopen: function(o) {
-          var data = o.data;
-
+        beforeopen: function(item, data, browser) {
           if(!data || data._type != 'server') {
             return false;
           }
 
-          o.browser.tree.addIcon(o.item, {icon: data.icon});
+          browser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected) {
-            connect_to_server(this, data, o.browser.tree, o.item);
+            connect_to_server(this, data, browser.tree, item);
             return false;
           }
           return true;

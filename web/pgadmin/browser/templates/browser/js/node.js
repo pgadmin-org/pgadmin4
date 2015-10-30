@@ -400,7 +400,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             null).show()
       },
       // Callback called - when a node is selected in browser tree.
-      selected: function(item) {
+      selected: function(item, data, browser) {
         // Show the information about the selected node in the below panels,
         // which are visible at this time:
         // + Properties
@@ -408,9 +408,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         // + Dependents
         // + Dependencies
         // + Statistics
-        var b = pgBrowser,
+        var b = browser || pgBrowser,
             t = b.tree,
-            d = t.itemData(item);
+            d = data || t.itemData(item);
 
         // Update the menu items
         pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
@@ -847,6 +847,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         if (self.handler && self.handler.undoMgr) {
           self.handler.undoMgr.merge(self.undoMgr);
+          self.handler.ignoreTabChange = 0;
         }
 
         self.undoMgr.addUndoType("pg-sub-node:opened", {
@@ -871,21 +872,28 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
         });
         self.undoMgr.addUndoType("pg-sub-node:closed", {
+          "handler": (self.handler || self),
           "on": function (cell, index) {
             return {
-              "object": cell,
+              "object": {'cell': cell, 'index': index},
               "before": null,
               "after": null,
-              "options": index
+              "options": this.handler
             }
           },
-          "undo": function (cell, before, after, opts) {
-            if (cell && cell.enterEditMode &&
-                _.isFunction(cell.enterEditMode)) {
-              cell.enterEditMode();
-              cell.currentEditor.objectView.$el
-              .find('.nav-tabs').first()
-              .find('a[data-tab-index="' + opts + '"]').tab('show');
+          "undo": function (obj, before, after, opts) {
+            if (obj.cell && obj.cell.enterEditMode &&
+                _.isFunction(obj.cell.enterEditMode)) {
+              obj.cell.enterEditMode();
+              var tabs = obj.cell.currentEditor.objectView.$el
+              .find('.nav-tabs').first();
+              var tab = tabs.find('a[data-tab-index="' + obj.index + '"]');
+              if (tab.length) {
+                opts.ignoreTabChange++;
+                tab.tab('show');
+                tabs.find('li').removeClass('active');
+                tab.parent().addClass('active');
+              }
             }
           },
           "redo": function (cell, before, after, opts) {
@@ -895,30 +903,58 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             }
           }
         });
+        (self.handler || self).ignoreTabChange = 0;
         self.undoMgr.addUndoType("pg-property-tab-changed", {
-          "ignore": false,
           'mgr': self.undoMgr,
-          "on": function (tabs) {
-            if (!this.ignore && !this.mgr.stack.isCurrentlyUndoRedoing) {
+          'handler': (self.handler || self),
+          "on": function (obj) {
+            if (!this.handler.ignoreTabChange &&
+                !this.mgr.stack.isCurrentlyUndoRedoing) {
               return {
-                "object": tabs,
+                "object": obj,
                 "before": null,
                 "after": null,
-                "options": this
+                "options": this.handler
               }
             }
-            this.igonre = false;
+            this.handler.ignoreTabChange--;
           },
           "undo": function (obj, before, after, opts) {
             if (obj.hidden) {
-              opts.ignore = true;
-              $(obj.hidden).tab('show');
+              var m = obj.model;
+              if (obj.collection) {
+                m = obj.collection.models[obj.index];
+              }
+              var panelEl = m && m.panelEl;
+              if (panelEl) {
+                var tabs = panelEl.find('.nav-tabs').first(),
+                    tab = tabs.find('a[data-tab-index="' + obj.hidden + '"]');
+                if (tab.length) {
+                  opts.ignoreTabChange++;
+                  tab.tab('show');
+                  tabs.find('li').removeClass('active');
+                  tab.parent().addClass('active');
+                }
+              }
             }
           },
           "redo": function (obj, before, after, opts) {
             if (obj.shown) {
-              opts.ignore = true;
-              $(obj.shown).tab('show');
+              var m = obj.model;
+              if (obj.collection) {
+                m = obj.collection.models[obj.index];
+              }
+              var panelEl = m && m.panelEl;
+              if (panelEl) {
+                var tabs = panelEl.find('.nav-tabs').first(),
+                    tab = tabs.find('a[data-tab-index="' + obj.shown + '"]');
+                if (tab.length) {
+                  opts.ignoreTabChange++;
+                  tab.tab('show');
+                  tabs.find('li').removeClass('active');
+                  tab.parent().addClass('active');
+                }
+              }
             }
           }
         });
