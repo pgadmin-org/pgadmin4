@@ -447,6 +447,7 @@
             visible: evalASFunc(s.show),
             // This can be disabled in some cases (if not hidden)
             disabled: (mode == 'properties' ? true : evalASFunc(s.disabled)),
+            editable: (mode == 'properties' ? false : evalASFunc(s.disabled)),
             subnode: (_.isString(s.model) && s.model in pgBrowser.Nodes) ?
                 pgBrowser.Nodes[s.model].model : s.model,
             canAdd: (mode == 'properties' ? false : evalASFunc(s.canAdd)),
