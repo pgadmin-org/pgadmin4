@@ -149,7 +149,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 // object. Render the view now.
                 newModel.startNewSession();
                 view.render();
-                $(el).focus();
+                if (type != 'properties') {
+                  $(el).focus();
+                }
               })
               .error(function(jqxhr, error, message) {
                 // TODO:: We may not want to continue from here

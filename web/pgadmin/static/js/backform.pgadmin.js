@@ -33,6 +33,20 @@
   }
 }(this, function(root, _, $, Backbone, Backform, Backgrid) {
 
+  var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
+
+  pgAdmin.editableCell = function(m) {
+    if (this.attributes && this.attributes.disabled) {
+      if(_.isFunction(this.attributes.disabled)) {
+        return !(this.attributes.disabled.apply(this, [m]));
+      }
+      if (_.isBoolean(this.attributes.disabled)) {
+        return !this.attributes.disabled;
+      }
+    }
+    return true;
+  };
+
   // HTML markup global class names. More can be added by individual controls
   // using _.extend. Look at RadioControl as an example.
   _.extend(Backform, {
@@ -421,7 +435,7 @@
         return ((prop && proto[prop] &&
               typeof proto[prop] == "function") ? proto[prop] : prop);
       };
-      groups =  {};
+      groups = {};
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
@@ -447,7 +461,7 @@
             visible: evalASFunc(s.show),
             // This can be disabled in some cases (if not hidden)
             disabled: (mode == 'properties' ? true : evalASFunc(s.disabled)),
-            editable: (mode == 'properties' ? false : evalASFunc(s.disabled)),
+            editable: (mode == 'properties' ? false : pgAdmin.editableCell),
             subnode: (_.isString(s.model) && s.model in pgBrowser.Nodes) ?
                 pgBrowser.Nodes[s.model].model : s.model,
             canAdd: (mode == 'properties' ? false : evalASFunc(s.canAdd)),
