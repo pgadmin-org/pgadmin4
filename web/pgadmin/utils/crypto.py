@@ -12,7 +12,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 import base64
 
-padding_string = '}'
+padding_string = b'}'
 
 
 def encrypt(plaintext, key):

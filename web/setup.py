@@ -47,7 +47,7 @@ Enter the email address and password to use for the initial pgAdmin user \
 account:\n""")
         email = ''
         while email == '':
-            email = raw_input("Email address: ")
+            email = input("Email address: ")
 
         def pprompt():
             return getpass.getpass(), getpass.getpass('Retype password:')

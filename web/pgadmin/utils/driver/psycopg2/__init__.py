@@ -111,9 +111,12 @@ class Connection(BaseConnection):
                     )
 
         except psycopg2.Error as e:
-            msg = e.pgerror if e.pgerror else e.message \
-                if e.message else e.diag.message_detail \
-                if e.diag.message_detail else str(e)
+            if e.pgerror:
+                msg = e.pgerror
+            elif e.diag.message_detail:
+                msg = e.diag.message_detail
+            else:
+                msg = str(e)
 
             return False, msg
 

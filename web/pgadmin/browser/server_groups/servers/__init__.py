@@ -22,7 +22,7 @@ import pgadmin.browser.server_groups as sg
 from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.browser import BrowserPluginModule
 from config import PG_DEFAULT_DRIVER
-
+import six
 
 class ServerModule(sg.ServerGroupPluginModule):
     NODE_TYPE = "server"
@@ -90,13 +90,12 @@ class ServerMenuItem(MenuItem):
 
 blueprint = ServerModule(__name__)
 
-
+@six.add_metaclass(ABCMeta)
 class ServerTypeModule(BrowserPluginModule):
     """
     Base class for different server types.
     """
 
-    __metaclass__ = ABCMeta
 
     @abstractproperty
     def type(self):
@@ -381,7 +380,7 @@ class ServerNode(NodeView):
             u'role'
         ]
 
-        data = request.form if request.form else json.loads(request.data)
+        data = request.form if request.form else json.loads(request.data.decode())
 
         for arg in required_args:
             if arg not in data:
@@ -577,7 +576,10 @@ class ServerNode(NodeView):
             # TODO::
             # Ask the password again (if existing password couldn't be
             # descrypted)
-            return internal_server_error(errormsg=e.message)
+            if e.message:
+                return internal_server_error(errormsg=e.message)
+            else:
+                return internal_server_error(errormsg=str(e)) 
 
         if not status:
             current_app.logger.error(

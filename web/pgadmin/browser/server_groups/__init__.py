@@ -21,7 +21,7 @@ from pgadmin.browser import BrowserPluginModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.settings.settings_model import db, ServerGroup
 from pgadmin.browser.utils import NodeView
-
+import six
 
 class ServerGroupModule(BrowserPluginModule):
 
@@ -55,13 +55,12 @@ class ServerGroupMenuItem(MenuItem):
         kwargs.setdefault("type", ServerGroupModule.NODE_TYPE)
         super(ServerGroupMenuItem, self).__init__(**kwargs)
 
-
+@six.add_metaclass(ABCMeta)
 class ServerGroupPluginModule(BrowserPluginModule):
     """
     Base class for server group plugins.
     """
 
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def get_nodes(self, *arg, **kwargs):
@@ -119,7 +118,7 @@ class ServerGroupView(NodeView):
                 user_id=current_user.id,
                 id=gid).first()
 
-        data = request.form if request.form else json.loads(request.data)
+        data = request.form if request.form else json.loads(request.data.decode())
 
         if servergroup is None:
             return make_json_response(
@@ -165,8 +164,7 @@ class ServerGroupView(NodeView):
                     )
 
     def create(self):
-        data = request.form if request.form else json.loads(request.data)
-
+        data = request.form if request.form else json.loads(request.data.decode())
         if data[u'name'] != '':
             try:
                 sg = ServerGroup(
@@ -177,7 +175,7 @@ class ServerGroupView(NodeView):
 
                 data[u'id'] = sg.id
                 data[u'name'] = sg.name
-
+                
                 return jsonify(
                         node=self.blueprint.generate_browser_node(
                             "%d" % (sg.id),

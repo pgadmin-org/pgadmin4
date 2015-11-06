@@ -16,9 +16,9 @@ from flask.ext.security import login_required
 from flask.ext.login import current_user
 from flask.ext.babel import gettext
 from flaskext.gravatar import Gravatar
+import six
 
 MODULE_NAME = 'browser'
-
 
 class BrowserModule(PgAdminModule):
 
@@ -136,20 +136,18 @@ class BrowserModule(PgAdminModule):
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
-
         return scripts
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
-
+@six.add_metaclass(ABCMeta)
 class BrowserPluginModule(PgAdminModule):
     """
     Base class for browser submodules.
     """
 
     browser_url_prefix = blueprint.url_prefix + '/'
-    __metaclass__ = ABCMeta
 
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
@@ -178,7 +176,6 @@ class BrowserPluginModule(PgAdminModule):
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
-
         return scripts
 
     def generate_browser_node(
@@ -213,7 +210,6 @@ class BrowserPluginModule(PgAdminModule):
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
-
         return snippets
 
     @abstractmethod

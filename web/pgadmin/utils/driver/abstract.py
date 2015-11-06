@@ -9,8 +9,9 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
 from flask import session
 from .registry import DriverRegistry
+import six
 
-
+@six.add_metaclass(DriverRegistry)
 class BaseDriver(object):
     """
     class BaseDriver(object):
@@ -40,7 +41,6 @@ class BaseDriver(object):
       session, which has not been pinged from more than the idle timeout
       configuration.
     """
-    __metaclass__ = DriverRegistry
 
     @abstractproperty
     def Version(cls):
@@ -58,7 +58,7 @@ class BaseDriver(object):
     def gc(self):
         pass
 
-
+@six.add_metaclass(ABCMeta)
 class BaseConnection(object):
     """
     class BaseConnection(object)
@@ -113,7 +113,6 @@ class BaseConnection(object):
             connection object for better memory management, and connection pool
             management.
     """
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def connect(self, **kwargs):

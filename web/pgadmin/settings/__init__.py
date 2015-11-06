@@ -13,7 +13,7 @@ from flask import current_app
 from flask.ext.login import current_user
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from settings_model import db, Setting
+from .settings_model import db, Setting
 import traceback
 from flask import Blueprint, Response, abort, request, render_template
 from flask.ext.security import login_required

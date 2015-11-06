@@ -14,16 +14,16 @@ from collections import OrderedDict
 import flask
 from flask.views import View, MethodViewType, with_metaclass
 from flask.ext.babel import gettext
+import six
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 
-
+@six.add_metaclass(ABCMeta)
 class NodeAttr(object):
     """
     """
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def validate(self, mode, value):

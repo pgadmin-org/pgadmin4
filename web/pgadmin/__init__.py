@@ -16,7 +16,7 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import login_user
 from flask_mail import Mail
 from htmlmin.minify import html_minify
-from settings.settings_model import db, Role, User, Version
+from pgadmin.settings.settings_model import db, Role, User, Version
 from importlib import import_module
 from werkzeug.local import LocalProxy
 from pgadmin.utils import PgAdminModule, driver
@@ -40,9 +40,9 @@ class PgAdmin(Flask):
                 continue
             self.logger.info('Examining potential module: %s' % module_name)
             module = import_module(module_name)
-            for key, value in module.__dict__.items():
-                if isinstance(value, PgAdminModule):
-                    yield value
+            for key in list(module.__dict__.keys()):
+                if isinstance(module.__dict__[key], PgAdminModule):
+                    yield module.__dict__[key]
 
     @property
     def submodules(self):
