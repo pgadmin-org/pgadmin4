@@ -238,8 +238,13 @@ class ServerNode(NodeView):
                     success=0,
                     errormsg=e.message)
 
+        try:
+            info = traceback.format_exc()
+        except Exception as e:
+            info = str(e)
+
         return make_json_response(success=1,
-                                  info=traceback.format_exc())
+                                  info=info)
 
     def update(self, gid, sid):
         """Update the server settings"""

@@ -75,9 +75,15 @@ def store(setting=None, value=None):
         success = 0
         errormsg = e.message
 
+    try:
+        info = traceback.format_exc()
+    except Exception as e:
+        info = str(e)
+
+
     return make_json_response(success=success,
                               errormsg=errormsg,
-                              info=traceback.format_exc(),
+                              info=info,
                               result=request.form)
 
 @blueprint.route("/get", methods=['POST'])
@@ -100,7 +106,12 @@ def get(setting=None, default=None):
         success = 0
         errormsg = e.message
 
+    try:
+        info = traceback.format_exc()
+    except Exception as e:
+        info = str(e)
+
     return make_json_response(success=success,
                               errormsg=errormsg,
-                              info=traceback.format_exc(),
+                              info=info,
                               result=request.form)
