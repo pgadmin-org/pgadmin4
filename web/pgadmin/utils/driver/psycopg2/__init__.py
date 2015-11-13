@@ -98,6 +98,9 @@ class Connection(BaseConnection):
                 return unauthorized(gettext("Unauthorized Request."))
 
             password = decrypt(encpass, user.password)
+            # password is in bytes, for python3 we need it in string
+            if isinstance(password, bytes):
+                password = password.decode()
 
         try:
             import os
