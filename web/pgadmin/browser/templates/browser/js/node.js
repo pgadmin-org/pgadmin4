@@ -457,7 +457,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
       },
       refresh_node: function(item) {
-        this.callbacks.selected(undefined, item);
+        this.callbacks.selected.apply(this, null, item);
       }
     },
     /**********************************************************************
