@@ -162,6 +162,19 @@ SET bytea_output=escape;
 
                 return False, res
 
+            status, res = self.execute_dict("""
+SELECT
+    db.oid as did, db.datname, db.datallowconn, pg_encoding_to_char(db.encoding) AS serverencoding,
+    has_database_privilege(db.oid, 'CREATE') as cancreate
+FROM
+    pg_database db
+WHERE db.datname = current_database()""")
+
+            if status:
+                mgr.db_info = dict()
+                f_row = res['rows'][0]
+                mgr.db_info[f_row['did']] = f_row
+
         if 'password' in kwargs:
             mgr.password = kwargs['password']
 
@@ -393,6 +406,7 @@ class ServerManager(object):
         self.role = server.role
         self.ssl_mode = server.ssl_mode
         self.pinged = datetime.now()
+        self.db_info = dict()
 
         for con in self.connections:
             self.connections[con]._release()
@@ -421,11 +435,44 @@ class ServerManager(object):
             return int(int(self.sversion / 100) / 100)
         raise Exception("Information is not available!")
 
-    def connection(self, database=None, conn_id=None, auto_reconnect=True):
+    def connection(self, database=None, conn_id=None, auto_reconnect=True, did=None):
+        msg_active_conn = gettext(
+            "Server has no active connection, please connect it first!"
+            )
+
+        if database is None:
+            if did is None:
+                database = self.db
+            elif did in self.db_info:
+                database = self.db_info[did]['datname']
+            else:
+                maintenance_db_id = 'DB:' + self.db
+                if maintenance_db_id in self.connections:
+                    conn = self.connections[maintenance_db_id]
+                    if conn.connected():
+                        status, res = conn.execute_dict("""
+SELECT
+    db.oid as did, db.datname, db.datallowconn, pg_encoding_to_char(db.encoding) AS serverencoding,
+    has_database_privilege(db.oid, 'CREATE') as cancreate
+FROM
+    pg_database db
+WHERE db.oid = {0}""".format(did))
+
+                        if status and len(res['rows']) > 0:
+                            for row in res['rows']:
+                                db_info[did] = row
+                                database = db_info[did]['datname']
+
+                        if did not in db_info:
+                            return False, gettext(
+                                "Coudn't find the database!"
+                                )
+
+        if database is None:
+            raise Exception(msg_active_conn)
 
         my_id = ('CONN:' + str(conn_id)) if conn_id is not None else \
-                ('DB:' + (str(database) if database is not None else \
-					self.db))
+                ('DB:' + str(database))
 
         self.pinged = datetime.now()
 
