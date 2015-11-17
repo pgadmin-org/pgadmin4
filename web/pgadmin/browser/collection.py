@@ -111,7 +111,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
 
-        print "snipp==",snippets
         return snippets
 
     @property
