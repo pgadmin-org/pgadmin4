@@ -63,7 +63,6 @@ class PGChildModule(object):
 
     def BackendSupported(self, mangaer):
         sversion = getattr(mangaer, 'sversion', None)
-
         if (sversion is None or not isinstance(sversion, int)):
             return False
 
@@ -180,7 +179,6 @@ class NodeView(with_metaclass(MethodViewType, View)):
                         'with_id': (idx != 2), 'methods': meths
                         })
                 idx += 1
-
         return cmds
 
     # Inherited class needs to modify these parameters
@@ -321,9 +319,9 @@ class NodeView(with_metaclass(MethodViewType, View)):
         return make_json_response(data=nodes)
 
 
-class PGChildNodeView(NodeView):
+class PGChildNodeView(object):
 
-    def nodes(self, sid=None, **kwargs):
+    def nodes(self, sid, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
 
         from pgadmin.utils.driver import get_driver
@@ -334,8 +332,8 @@ class PGChildNodeView(NodeView):
             if isinstance(module, ServerChildModule):
                 if sid is not None and manager is not None and \
                         module.BackendSupported(manager):
-                    nodes.extend(module.get_nodes(*args, **kwargs))
+                    nodes.extend(module.get_nodes(sid=sid, **kwargs))
             else:
-                nodes.extend(module.get_nodes(*args, **kwargs))
+                nodes.extend(module.get_nodes(sid=sid, **kwargs))
 
         return make_json_response(data=nodes)

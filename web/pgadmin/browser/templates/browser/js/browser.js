@@ -356,7 +356,9 @@ OWNER TO helpdesk;\n';
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
-            settings.url = '{{ url_for('browser.index') }}' + d._type + '/nodes/' + (d.refid ? d.refid + '/' : '') + d._id
+                n = obj.Nodes[d._type];
+            if (n)
+              settings.url = n.generate_url('nodes', d, true);
           }
         }
       });
@@ -549,7 +551,6 @@ OWNER TO helpdesk;\n';
     add_menus: function(menus) {
       var pgMenu = this.menus;
       var MenuItem = pgAdmin.Browser.MenuItem;
-
       _.each(menus, function(m) {
         _.each(m.applies, function(a) {
           /* We do support menu type only from this list */

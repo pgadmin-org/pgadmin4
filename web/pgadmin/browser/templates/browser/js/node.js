@@ -803,9 +803,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'depends': 'deps',
-          'statistics': 'stats', 'collections': 'nodes'
+          'statistics': 'stats', 'nodes': 'nodes'
         };
-
       if (d._type == this.type) {
         ref = '';
         if (d.refid)
@@ -964,6 +963,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.on('add', self.onModelAdd);
         self.on('remove', self.onModelRemove);
         self.on('change', self.onModelChange);
+
+        return self;
       },
       startNewSession: function() {
         var self = this;
@@ -1171,8 +1172,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.onChangeData = options.onChangeData;
         self.onChangeCallback = options.onChangeCallback;
 
-        if (this.schema && _.isArray(this.schema)) {
-          _.each(this.schema, function(s) {
+        if (self.schema && _.isArray(self.schema)) {
+          _.each(self.schema, function(s) {
             var obj = null;
             switch(s.type) {
               case 'collection':
@@ -1208,6 +1209,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             self.set(s.id, obj, {silent: true});
           });
         }
+
+        return self;
       },
       onChange: function() {
         var self = this;
@@ -1335,106 +1338,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         return false;
       }
     })
-  });
-
-  pgBrowser.Collection = _.extend(_.clone(pgAdmin.Browser.Node), {
-    ///////
-    // Initialization function
-    // Generally - used to register the menus for this type of node.
-    //
-    // Also, look at pgAdmin.Browser.add_menus(...) function.
-    //
-    // Collection will not have 'Properties' menu.
-    //
-    // NOTE: Override this for each node for initialization purpose
-    Init: function() {
-      if (this.node_initialized)
-        return;
-      this.node_initialized = true;
-
-      pgAdmin.Browser.add_menus([{
-        name: 'refresh', node: this.type, module: this,
-        applies: ['object', 'context'], callback: 'refresh_collection',
-        priority: 2, label: '{{ _("Refresh...") }}',
-        icon: 'fa fa-refresh'
-      }]);
-    },
-    callbacks: {
-      refresh_collection: function() {
-        // TODO:: Refresh the collection node
-        console.log(arguments);
-      },
-      selected: function(o) {
-        // Show (Node information on these panels, which one is visible.)
-        // + Properties (list down the children nodes in pages)
-        // + Query (Remove existing SQL)
-        // + Dependents (Remove dependents)
-        // + Dependencies (Remove dependencies)
-        // + Statistics (TODO:: Check the current implementation in pgAdmin 3)
-
-        // Update the menu items
-        pgAdmin.Browser.enable_disable_menus.apply(o.browser, [o.item]);
-
-        if (o && o.data && o.browser) {
-          var br = o.browser;
-          if ('properties' in br.panels &&
-              br.panels['properties'] &&
-              br.panels['properties'].panel &&
-              br.panels['properties'].panel.isVisible()) {
-            // Show object properties (only when the 'properties' tab
-            // is active).
-            this.showProperties(o.item, o.data,
-                pgBrowser.panels['properties'].panel);
-          }
-          if ('sql' in br.panels &&
-              br.panels['sql'] &&
-              br.panels['sql'].panel &&
-              br.panels['sql'].panel.isVisible()) {
-            // TODO::
-            // Remove the information from the sql pane
-          }
-          if ('statistics' in br.panels &&
-              br.panels['statistics'] &&
-              br.panels['statistics'].panel &&
-              br.panels['statistics'].panel.isVisible()) {
-            // TODO::
-            // Remove information from the statistics pane
-          }
-          if ('dependencies' in br.panels &&
-              br.panels['dependencies'] &&
-              br.panels['dependencies'].panel &&
-              br.panels['dependencies'].panel.isVisible()) {
-            // TODO::
-            // Remove information from the dependencies pane
-          }
-          if ('dependents' in br.panels &&
-              br.panels['dependents'] &&
-              br.panels['dependents'].panel &&
-              br.panels['dependents'].panel.isVisible()) {
-            // TODO::
-            // Remove information from the dependents pane
-          }
-        }
-      }
-    },
-    /**********************************************************************
-     * A hook (not a callback) to show object properties in given HTML
-     * element.
-     *
-     * This has been used for the showing, editing properties of the node.
-     * This has also been used for creating a node.
-     **/
-    showProperties: function(item, data, panel) {
-      var that = this,
-        tree = pgAdmin.Browser.tree,
-        j = panel.$container.find('.obj_properties').first(),
-        view = j.data('obj-view'),
-        content = $('<div></div>')
-          .addClass('pg-prop-content col-xs-12');
-
-      // TODO:: Show list of children in paging mode
-      return;
-    }
   });
 
   return pgAdmin.Browser.Node;

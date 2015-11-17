@@ -1,0 +1,7 @@
+.icon-coll-{{node_type}} {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/coll-%s.png' % node_type )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

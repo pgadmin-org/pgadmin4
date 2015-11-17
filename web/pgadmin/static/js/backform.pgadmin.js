@@ -296,6 +296,33 @@
     events: {}
   });
 
+  var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel = function(m, type, cols) {
+    var groups = Backform.generateViewSchema(m, type),
+        schema = [],
+        columns = [],
+        addAll = _.isUndefined(cols) || _.isNull(cols);
+
+    // Prepare columns for backgrid
+    _.each(groups, function(fields, key) {
+      _.each(fields, function(f) {
+        if (!f.control && !f.cell) {
+          return;
+        }
+        f.cell_priority = _.indexOf(cols, f.name);
+        if (addAll || f.cell_priority != -1) {
+          columns.push(f);
+        }
+      });
+      schema.push({label: key, fields: fields});
+    });
+    return {
+      'columns': _.sortBy(columns, function(c) {
+        return c.cell_priority;
+      }),
+      'schema': schema
+    };
+  }
+
   var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
@@ -339,24 +366,9 @@
         gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
-          columns = [],
-          gridColumns = [],
-          groups = Backform.generateViewSchema(subnode, this.field.get('mode')),
-          schema = [];
-
-      // Prepare columns for backgrid
-      _.each(groups, function(fields, key) {
-        _.each(fields, function(f) {
-          if (!f.control && !f.cell) {
-            return;
-          }
-          f.cel_priority = _.indexOf(data.columns, f.name);
-          if (f.cel_priority != -1) {
-            columns.push(f);
-          }
-        });
-        schema.push({label: key, fields: fields});
-      });
+          gridSchema = Backform.generateGridColumnsFromModel(
+            subnode,  this.field.get('mode'), data.columns
+            );
 
       // Set visibility of Add button
       if (data.disabled || data.canAdd == false) {
@@ -365,30 +377,29 @@
 
       // Insert Delete Cell into Grid
       if (data.disabled == false && data.canDelete) {
-          columns.unshift({
+          gridSchema.columns.unshift({
             name: "pg-backform-delete", label: "",
             cell: Backgrid.Extension.DeleteCell,
-            editable: false, priority: -1
+            editable: false, cell_priority: -1
           });
       }
 
       // Insert Edit Cell into Grid
       if (data.disabled == false && data.canEdit) {
           var editCell = Backgrid.Extension.ObjectCell.extend({
-            schema: schema
+            schema: gridSchema.schema
           });
 
-          columns.unshift({
+          gridSchema.columns.unshift({
             name: "pg-backform-edit", label: "", cell : editCell,
-            priority: -2
+            cell_priority: -2
           });
       }
 
       var collections = this.model.get(data.name);
-
       // Initialize a new Grid instance
       var grid = new Backgrid.Grid({
-          columns: _.sortBy(columns, function(c) { return c.cell_priority; }),
+          columns: gridSchema.columns,
           collection: collections,
           className: "backgrid table-bordered"
       });

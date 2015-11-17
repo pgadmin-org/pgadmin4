@@ -119,7 +119,8 @@ class BrowserModule(PgAdminModule):
         for name, script in [
                 ['pgadmin.browser',       'js/browser'],
                 ['pgadmin.browser.error', 'js/error'],
-                ['pgadmin.browser.node',  'js/node']]:
+                ['pgadmin.browser.node',  'js/node'],
+                ['pgadmin.browser.collection', 'js/collection']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
@@ -295,6 +296,13 @@ def error_js():
 def node_js():
     return make_response(
             render_template('browser/js/node.js', _=gettext),
+            200, {'Content-Type': 'application/x-javascript'})
+
+@blueprint.route("/js/collection.js")
+@login_required
+def collection_js():
+    return make_response(
+            render_template('browser/js/collection.js', _=gettext),
             200, {'Content-Type': 'application/x-javascript'})
 
 

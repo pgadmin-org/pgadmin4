@@ -584,7 +584,7 @@ class ServerNode(NodeView):
             if e.message:
                 return internal_server_error(errormsg=e.message)
             else:
-                return internal_server_error(errormsg=str(e)) 
+                return internal_server_error(errormsg=str(e))
 
         if not status:
             current_app.logger.error(
