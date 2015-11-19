@@ -46,7 +46,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     return child;
   };
 
-  _.extend(pgAdmin.Browser.Node, {
+  _.extend(pgAdmin.Browser.Node, Backbone.Events, {
     // Node type
     type: undefined,
     // Label

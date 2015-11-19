@@ -95,6 +95,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                       delete pgBrowser.serverInfo[d._id]
                     }
+                    obj.trigger('server-disconnected', obj, i, d);
                   }
                 },
                 error: function(xhr, status, error) {
@@ -235,7 +236,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           _.extend(data, res.data);
 
           alertify.success(res.info);
-          setTimeout(function() { tree.select(item); tree.open(item); }, 10);
+          obj.trigger('server-connected', obj, item, data);
+
+          setTimeout(function() {
+            tree.select(item);
+            tree.open(item);
+          }, 10);
+                    
         }
       };
 

@@ -1,6 +1,6 @@
 define(
-  ['jquery', 'alertify', 'pgadmin'],
-  function($, alertify, pgAdmin) {
+  ['jquery', 'alertify', 'pgadmin', 'pgadmin.node.server'],
+  function($, alertify, pgAdmin, pgServer) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     pgAdmin.Test = {
@@ -68,6 +68,13 @@ define(
             'This is another test dialog from Alertify!', 'This is dialog 2');
       }
     };
+
+    pgServer.on(
+      'server-connected', function() {
+        console.log(arguments);
+        console.log('Yay - we connected the server!');
+      },
+      {'a': 'test'});
 
     return pgAdmin.Test;
 });
