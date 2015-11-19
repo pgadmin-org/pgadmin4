@@ -33,7 +33,6 @@ class ServerGroupModule(BrowserPluginModule):
         for group in groups:
             yield self.generate_browser_node(
                     "%d" % (group.id),
-                    None,
                     group.name,
                     "icon-%s" % self.node_type,
                     True,
@@ -179,7 +178,6 @@ class ServerGroupView(NodeView):
                 return jsonify(
                         node=self.blueprint.generate_browser_node(
                             "%d" % (sg.id),
-                            None,
                             sg.name,
                             "icon-%s" % self.node_type,
                             True,

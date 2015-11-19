@@ -33,6 +33,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         icon: 'fa fa-refresh'
       }]);
     },
+    hasId: false,
     showProperties: function(item, data, panel) {
       var that = this,
         j = panel.$container.find('.obj_properties').first(),
@@ -41,13 +42,14 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           .addClass('pg-prop-content col-xs-12'),
         node = pgBrowser.Nodes[that.node],
         // This will be the URL, used for object manipulation.
-        urlBase = this.generate_url('properties', data),
+        urlBase = this.generate_url(item, 'properties', data),
         collections = new (node.Collection.extend({
           url: urlBase,
           model: node.model
         }))(),
+        info = this.getTreeNodeHierarchy.apply(this, [item]),
         gridSchema = Backform.generateGridColumnsFromModel(
-            node.model, 'prorperties', that.columns
+            info, node.model, 'prorperties', that.columns
           ),
         // Initialize a new Grid instance
         grid = new Backgrid.Grid({
@@ -86,28 +88,36 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       // Fetch Data
       collections.fetch({reset: true});
     },
-    generate_url: function(type, d) {
+    generate_url: function(item, type, d) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
-        ref = S('/%s/').sprintf(d._id).value(),
         /*
          * Using list, and collections functions of a node to get the nodes
          * under the collection, and properties of the collection respectively.
          */
         opURL = {
           'nodes': 'obj', 'properties': 'coll'
-        };
-      if (d._type == this.type) {
-        if (d.refid)
-          ref = S('/%s/').sprintf(d.refid).value();
-      }
+        },
+        ref = '', self = this;
 
-      var TYPE = d.module.split(".");
-      var args = {'TYPE': TYPE[TYPE.length-1], 'REDIRECT': '', 'REF': ref};
-      if (type in opURL) {
-        args.REDIRECT = opURL[type];
-      } else {
-        args.REDIRECT = type;
-      }
+      _.each(
+        _.sortBy(
+          _.values(
+           _.pick(
+            this.getTreeNodeHierarchy(item), function(v, k, o) {
+              return (k != self.type);
+            })
+           ),
+          function(o) { return o.priority; }
+          ),
+        function(o) {
+          ref = S('%s/%s').sprintf(ref, o.id).value();
+        });
+
+      var args = {
+        'TYPE': self.type,
+        'REDIRECT': (type in opURL ? opURL[type] : type),
+        'REF': S('%s/').sprintf(ref).value()
+      };
 
       return url.replace(/{(\w+)}/g, function(match, arg) {
         return args[arg];

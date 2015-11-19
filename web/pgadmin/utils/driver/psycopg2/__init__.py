@@ -155,7 +155,7 @@ SET bytea_output=escape;
 
             if status:
                 mgr.ver = res
-                mgr.sversion = int(pg_conn.server_version)
+                mgr.sversion = pg_conn.server_version
             else:
                 self.conn.close()
                 self.conn = None
@@ -178,13 +178,10 @@ WHERE db.datname = current_database()""")
         if 'password' in kwargs:
             mgr.password = kwargs['password']
 
-        if 'modules' in kwargs and isinstance(kwargs['modules'], list):
-            for m in sorted(
-                    kwargs['modules'], key=lambda module: module.priority
-                    ):
-                if m.instanceOf(mgr.ver):
-                    mgr.server_type = m.type
-                    mgr.module = m
+        if 'server_types' in kwargs and isinstance(kwargs['server_types'], list):
+            for st in kwargs['server_types']:
+                if st.instanceOf(mgr.ver):
+                    mgr.server_type = st.stype
                     break
 
         return True, None
@@ -380,9 +377,6 @@ class ServerManager(object):
     And, acts as connection manager for that particular session.
     """
     def __init__(self, server):
-        self.module = None
-        self.ver = None
-        self.sversion = None
         self.connections = dict()
 
         self.update(server)
@@ -394,10 +388,10 @@ class ServerManager(object):
         self.module = None
         self.ver = None
         self.sversion = None
+        self.server_type = None
         self.password = None
 
         self.sid = server.id
-        self.stype = None
         self.host = server.host
         self.port = server.port
         self.db = server.maintenance_db

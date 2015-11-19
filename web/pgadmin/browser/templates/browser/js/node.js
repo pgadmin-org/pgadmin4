@@ -54,6 +54,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     title: function(d) {
       return d ? d.label : '';
     },
+    hasId: true,
     ///////
     // Initialization function
     // Generally - used to register the menus for this type of node.
@@ -83,7 +84,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     //
     // Used to generate view for the particular node properties, edit,
     // creation.
-    getView: function(type, el, node, formType, callback, data) {
+    getView: function(item, type, el, node, formType, callback, data) {
 
       if (!this.type || this.type == '')
         // We have no information, how to generate view for this type.
@@ -92,7 +93,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       if (this.model) {
         // This will be the URL, used for object manipulation.
         // i.e. Create, Update in these cases
-        var urlBase = this.generate_url(type, node);
+        var urlBase = this.generate_url(item, type, node, false);
 
         if (!urlBase)
           // Ashamed of myself, I don't know how to manipulate this
@@ -112,7 +113,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               onChangeData: data,
               onChangeCallback: callback
             }),
-            groups = Backform.generateViewSchema(newModel, type);
+            info = this.getTreeNodeHierarchy.apply(this, [item]),
+            groups = Backform.generateViewSchema(info, newModel, type);
 
         // 'schema' has the information about how to generate the form.
         if (groups) {
@@ -366,7 +368,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             .sprintf(obj.label, d.label).value(),
             function() {
               $.ajax({
-                url: obj.generate_url('drop', d, true),
+                url: obj.generate_url(i, 'drop', d, true),
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 0) {
@@ -534,7 +536,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // Make sure the HTML element is empty.
           j.empty();
           // Create a view to show the properties in fieldsets
-          view = that.getView('properties', content, data, 'fieldset');
+          view = that.getView(item, 'properties', content, data, 'fieldset');
           if (view) {
             // Save it for release it later
             j.data('obj-view', view);
@@ -592,7 +594,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           };
 
           // Create a view to edit/create the properties in fieldsets
-          view = that.getView(action, content, data, 'dialog', modelChanged, j);
+          view = that.getView(item, action, content, data, 'dialog', modelChanged, j);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);
@@ -797,32 +799,38 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
      * Supports url generation for create, drop, edit, properties, sql,
      * depends, statistics
      */
-    generate_url: function(type, d, with_id) {
+    generate_url: function(item, type, d, with_id) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
-        ref = S('/%s/').sprintf(d._id).value(),
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'depends': 'deps',
           'statistics': 'stats', 'nodes': 'nodes'
-        };
-      if (d._type == this.type) {
-        ref = '';
-        if (d.refid)
-          ref = S('/%s').sprintf(d.refid).value();
-        if (with_id)
-          ref = S('%s/%s').sprintf(ref, d._id).value();
-      }
+        },
+        ref = '', self = this;
 
-      var args = { 'TYPE': this.type, 'REDIRECT': '', 'REF': ref };
+      _.each(
+        _.sortBy(
+          _.values(
+           _.pick(
+            this.getTreeNodeHierarchy(item), function(v, k, o) {
+              return (k != self.type);
+            })
+           ),
+          function(o) { return o.priority; }
+          ),
+        function(o) {
+          ref = S('%s/%s').sprintf(ref, o.id).value();
+        });
 
-      if (type in opURL) {
-        args.REDIRECT = opURL[type];
-        if (type == 'create' && !this.parent_type) {
-          args.REF = '/';
-        }
-      } else {
-        args.REDIRECT = type;
-      }
+      ref = S('%s/%s').sprintf(
+          ref, with_id && d._type == self.type ? d._id : ''
+          ).value();
+
+      var args = {
+        'TYPE': self.type,
+        'REDIRECT': (type in opURL ? opURL[type] : type),
+        'REF': ref
+      };
 
       return url.replace(/{(\w+)}/g, function(match, arg) {
         return args[arg];
@@ -1337,7 +1345,25 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
         return false;
       }
-    })
+    }),
+    getTreeNodeHierarchy: function(i) {
+      var idx = 0,
+          res = {},
+          t = pgBrowser.tree;
+      do {
+        d = t.itemData(i);
+        if (d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId) {
+          res[d._type] = {
+            'id': d._id,
+            'priority': idx
+          };
+          idx += 1;
+        }
+        i = t.hasParent(i) ? t.parent(i) : null;
+      } while (i);
+
+      return res;
+    }
   });
 
   return pgAdmin.Browser.Node;

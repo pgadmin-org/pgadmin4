@@ -69,7 +69,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           var input = args || {};
           obj = this,
           t = pgBrowser.tree,
-          i = input.item || t.selected(),
+          i = 'item' in input ? input.item : t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
@@ -80,17 +80,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             S('{{ _('Are you sure you want to disconnect the server - %%s ?') }}').sprintf(d.label).value(),
             function(evt) {
               $.ajax({
-                url: obj.generate_url('connect', d, true),
+                url: obj.generate_url(i, 'connect', d, true),
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 1) {
                     alertify.success("{{ _('" + res.info + "') }}");
+                    d = t.itemData(i);
                     t.removeIcon(i);
                     d.connected = false;
                     d.icon = 'icon-server-not-connected';
                     t.addIcon(i, {icon: d.icon});
                     t.unload(i);
                     t.setInode(i);
+                    if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                      delete pgBrowser.serverInfo[d._id]
+                    }
                   }
                 },
                 error: function(xhr, status, error) {
@@ -112,17 +116,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return false;
         },
         /* Connect the server (if not connected), before opening this node */
-        beforeopen: function(item, data, browser) {
+        beforeopen: function(item, data) {
           if(!data || data._type != 'server') {
             return false;
           }
 
-          browser.tree.addIcon(item, {icon: data.icon});
+          pgBrowser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected) {
-            connect_to_server(this, data, browser.tree, item);
+            connect_to_server(this, data, pgBrowser.tree, item);
             return false;
           }
           return true;
+        },
+        opened: function(item, data) {
+          pgBrowser.serverInfo = pgBrowser.serverInfo || {};
+          pgBrowser.serverInfo[data._id] = _.extend({}, data);
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({
@@ -218,18 +226,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         tree.setInode(item);
 
         if (res && res.data) {
-          if(typeof res.data.connected == 'boolean') {
-            data.connected = res.data.connected;
-          }
+
           if (typeof res.data.icon == 'string') {
             tree.removeIcon(item);
             data.icon = res.data.icon;
             tree.addIcon(item, {icon: data.icon});
           }
+          _.extend(data, res.data);
 
           alertify.success(res.info);
-          setTimeout(function() {tree.select(item);}, 10);
-          setTimeout(function() {tree.open(item);}, 100);
+          setTimeout(function() { tree.select(item); tree.open(item); }, 10);
         }
       };
 
@@ -273,7 +279,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
               if (closeEvent.button.text == "{{ _('OK') }}") {
 
-                var _url = _model.generate_url('connect', _sdata, true);
+                var _url = _model.generate_url(_item, 'connect', _sdata, true);
 
                 _tree.setLeaf(_item);
                 _tree.removeIcon(_item);
@@ -309,7 +315,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         '{{ _('Connect to server') }}',
         '{{ _('Do you want to connect the server?') }}',
         function(evt) {
-          url = obj.generate_url("connect", data, true);
+          url = obj.generate_url(item, "connect", data, true);
           $.post(url)
           .done(
             function(res) {

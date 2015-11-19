@@ -358,7 +358,7 @@ OWNER TO helpdesk;\n';
             var d = this.itemData(item);
                 n = obj.Nodes[d._type];
             if (n)
-              settings.url = n.generate_url('nodes', d, true);
+              settings.url = n.generate_url(item, 'nodes', d, true);
           }
         }
       });

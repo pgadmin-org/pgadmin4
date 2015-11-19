@@ -13,7 +13,7 @@ from flask import url_for, render_template
 from flask.ext.babel import gettext
 from pgadmin.browser.utils import PgAdminModule, PGChildModule
 from pgadmin.browser import BrowserPluginModule
-from pgadmin.browser.utils import NodeView, PGChildNodeView
+from pgadmin.browser.utils import NodeView, PGChildNode, PGChildNodeView
 
 @six.add_metaclass(ABCMeta)
 class CollectionNodeModule(PgAdminModule, PGChildModule):
@@ -53,7 +53,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         return scripts
 
     def generate_browser_node(
-            self, node_id, parents, label, icon, **kwargs
+            self, node_id, label, icon, **kwargs
             ):
         obj = {
                 "id": "%s/%s" % (self.node_type, node_id),
@@ -62,14 +62,13 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
                 "inode": self.node_inode,
                 "_type": self.node_type,
                 "_id": node_id,
-                "refid": parents,
                 "module": 'pgadmin.node.%s' % self.node_type
                 }
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
         return obj
 
-    def generate_browser_collection_node(self, sid, parents, **kwargs):
+    def generate_browser_collection_node(self, sid, **kwargs):
         obj = {
                 "id": "coll-%s/%d" % (self.node_type, sid),
                 "label": self.collection_label,
@@ -77,7 +76,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
                 "inode": True,
                 "_type": 'coll-%s' % (self.node_type),
                 "_id": sid,
-                "refid": parents,
                 "module": 'pgadmin.node.%s' % self.node_type
                 }
 
@@ -173,7 +171,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         return []
 
 
-class CollectionNodeView(NodeView, PGChildNodeView):
+class CollectionNodeView(NodeView, PGChildNode):
     """
     A PostgreSQL Collection node has specific functions needs to address
     i.e.

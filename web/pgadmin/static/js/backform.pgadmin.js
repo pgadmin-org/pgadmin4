@@ -229,7 +229,7 @@
           self.shown_tab = $(this).data('tabIndex');
           m.trigger('pg-property-tab-changed', {
             'collection': m.collection, 'model': m,
-            'index': _.indexOf(m.collection.models, m),
+            'index': m.collection && m.collection.models ? _.indexOf(m.collection.models, m) : 0,
             'shown': self.shown_tab, 'hidden': self.hidden_tab
           });
         });
@@ -296,32 +296,33 @@
     events: {}
   });
 
-  var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel = function(m, type, cols) {
-    var groups = Backform.generateViewSchema(m, type),
-        schema = [],
-        columns = [],
-        addAll = _.isUndefined(cols) || _.isNull(cols);
+  var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel =
+    function(node_info, m, type, cols) {
+      var groups = Backform.generateViewSchema(node_info, m, type),
+      schema = [],
+      columns = [],
+      addAll = _.isUndefined(cols) || _.isNull(cols);
 
-    // Prepare columns for backgrid
-    _.each(groups, function(fields, key) {
-      _.each(fields, function(f) {
-        if (!f.control && !f.cell) {
-          return;
-        }
-        f.cell_priority = _.indexOf(cols, f.name);
-        if (addAll || f.cell_priority != -1) {
-          columns.push(f);
-        }
+      // Prepare columns for backgrid
+      _.each(groups, function(fields, key) {
+        _.each(fields, function(f) {
+          if (!f.control && !f.cell) {
+            return;
+          }
+          f.cell_priority = _.indexOf(cols, f.name);
+          if (addAll || f.cell_priority != -1) {
+            columns.push(f);
+          }
+        });
+        schema.push({label: key, fields: fields});
       });
-      schema.push({label: key, fields: fields});
-    });
-    return {
-      'columns': _.sortBy(columns, function(c) {
-        return c.cell_priority;
-      }),
-      'schema': schema
+      return {
+        'columns': _.sortBy(columns, function(c) {
+          return c.cell_priority;
+        }),
+        'schema': schema
+      };
     };
-  }
 
   var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
     render: function() {
@@ -367,7 +368,7 @@
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
-            subnode,  this.field.get('mode'), data.columns
+            data.node_info, subnode, this.field.get('mode'), data.columns
             );
 
       // Set visibility of Add button
@@ -435,7 +436,7 @@
   //
   // It will be used by the grid, properties, and dialog view generation
   // functions.
-  var generateViewSchema = Backform.generateViewSchema = function(Model, mode) {
+  var generateViewSchema = Backform.generateViewSchema = function(node_info, Model, mode) {
     var proto = (Model && Model.prototype) || Model,
         schema = (proto && proto.schema),
         groups, pgBrowser = window.pgAdmin.Browser;
@@ -446,7 +447,9 @@
         return ((prop && proto[prop] &&
               typeof proto[prop] == "function") ? proto[prop] : prop);
       };
-      groups = {};
+      groups = {},
+      server_info = node_info && ('server' in node_info) &&
+        pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server.id];
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
@@ -465,22 +468,30 @@
 
           // Generate the empty group list (if not exists)
           groups[group] = (groups[group] || []);
+          var disabled = ((mode == 'properties') ||
+               (server_info &&
+                (s.server_type && _.indexOf(server_info.type in s.server_type) == -1) ||
+                (s.min_version && s.min_version < server_info.version) ||
+                (s.max_version && s.max_version > server_info.version)
+               ));
 
           var o = _.extend(_.clone(s), {
             name: s.id,
             // Do we need to show this control in this mode?
             visible: evalASFunc(s.show),
             // This can be disabled in some cases (if not hidden)
-            disabled: (mode == 'properties' ? true : evalASFunc(s.disabled)),
-            editable: (mode == 'properties' ? false : pgAdmin.editableCell),
-            subnode: (_.isString(s.model) && s.model in pgBrowser.Nodes) ?
-                pgBrowser.Nodes[s.model].model : s.model,
-            canAdd: (mode == 'properties' ? false : evalASFunc(s.canAdd)),
-            canEdit: (mode == 'properties' ? false : evalASFunc(s.canEdit)),
-            canDelete: (mode == 'properties' ? false : evalASFunc(s.canDelete)),
+
+            disabled: (disabled ? true : evalASFunc(s.disabled)),
+            editable: (disabled  ? false : pgAdmin.editableCell),
+            subnode: ((_.isString(s.model) && s.model in pgBrowser.Nodes) ?
+                pgBrowser.Nodes[s.model].model : s.model),
+            canAdd: (disabled ? false : evalASFunc(s.canAdd)),
+            canEdit: (disabled ? false : evalASFunc(s.canEdit)),
+            canDelete: (disabled ? false : evalASFunc(s.canDelete)),
             mode: mode,
             control: control,
-            cell: cell
+            cell: cell,
+            node_info: node_info,
           });
           delete o.id;
 

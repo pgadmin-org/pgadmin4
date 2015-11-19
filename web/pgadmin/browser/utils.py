@@ -34,9 +34,9 @@ class NodeAttr(object):
         pass
 
 
-class PGChildModule(object):
+class PGChildModule:
     """
-    class PGChildModule(ServerChildModule)
+    class PGChildModule
 
     This is a base class for children/grand-children of PostgreSQL, and
     all Postgres Plus version (i.e. Postgres Plus Advanced Server, Green Plum,
@@ -71,10 +71,12 @@ class PGChildModule(object):
 
         assert(self.max_ver is None or isinstance(self.max_ver, int))
         assert(self.min_ver is None or isinstance(self.min_ver, int))
+        assert(self.server_type is None or isinstance(self.server_type, list))
 
-        if self.min_ver is None or self.min_ver <= sversion:
-            if self.max_ver is None or self.max_ver >= sversion:
-                return True
+        if self.server_type is None or manager.server_type in self.server_type:
+            if self.min_ver is None or self.min_ver <= sversion:
+                if self.max_ver is None or self.max_ver >= sversion:
+                    return True
 
         return False
 
@@ -319,17 +321,32 @@ class NodeView(with_metaclass(MethodViewType, View)):
         return make_json_response(data=nodes)
 
 
-class PGChildNodeView(object):
+class PGChildNode(object):
 
     def nodes(self, sid, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
 
         from pgadmin.utils.driver import get_driver
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                sid=sid
+                )
+
+        did = None
+        if 'did' in kwargs:
+            did = kwargs['did']
+
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return precondition_required(
+                    gettext(
+                        "Please make a connection to the server first!"
+                        )
+                    )
 
         nodes = []
         for module in self.blueprint.submodules:
-            if isinstance(module, ServerChildModule):
+            if isinstance(module, PGChildModule):
                 if sid is not None and manager is not None and \
                         module.BackendSupported(manager):
                     nodes.extend(module.get_nodes(sid=sid, **kwargs))
@@ -337,3 +354,8 @@ class PGChildNodeView(object):
                 nodes.extend(module.get_nodes(sid=sid, **kwargs))
 
         return make_json_response(data=nodes)
+
+
+class PGChildNodeView(NodeView, PGChildNode):
+
+    pass

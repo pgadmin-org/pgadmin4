@@ -1,0 +1,7 @@
+.icon-{{ server_type }} {
+  background-image: url('{{ url_for('NODE-server.static', filename='img/%s.png' % server_type)}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

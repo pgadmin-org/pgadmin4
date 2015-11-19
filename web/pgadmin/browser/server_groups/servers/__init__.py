@@ -15,7 +15,7 @@ from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, success_return, \
     unauthorized, bad_request, precondition_required, forbidden
-from pgadmin.browser.utils import NodeView
+from pgadmin.browser.utils import PGChildNodeView
 import traceback
 from flask.ext.babel import gettext
 import pgadmin.browser.server_groups as sg
@@ -23,6 +23,7 @@ from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.browser import BrowserPluginModule
 from config import PG_DEFAULT_DRIVER
 import six
+from pgadmin.browser.server_groups.servers.types import ServerType
 
 class ServerModule(sg.ServerGroupPluginModule):
     NODE_TYPE = "server"
@@ -50,19 +51,18 @@ class ServerModule(sg.ServerGroupPluginModule):
         for server in servers:
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
-            module = getattr(manager, "module", None)
             connected = conn.connected()
 
             yield self.generate_browser_node(
                     "%d" % (server.id),
-                    "%d" % gid,
                     server.name,
                     "icon-server-not-connected" if not connected else
-                    "icon-{0}".format(module.NODE_TYPE),
+                    "icon-{0}".format(manager.server_type),
                     True,
                     self.NODE_TYPE,
                     connected=connected,
-                    server_type=module.type if module is not None else "PG"
+                    server_type=manager.server_type if connected else "pg",
+                    server_version=manager.sversion if connected else 0
                     )
 
     @property
@@ -79,6 +79,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
 
+        for st in ServerType.types():
+            snippets.extend(st.csssnippets)
+
         return snippets
 
 
@@ -90,81 +93,7 @@ class ServerMenuItem(MenuItem):
 
 blueprint = ServerModule(__name__)
 
-@six.add_metaclass(ABCMeta)
-class ServerTypeModule(BrowserPluginModule):
-    """
-    Base class for different server types.
-    """
-
-
-    @abstractproperty
-    def type(self):
-        pass
-
-    @abstractproperty
-    def description(self):
-        pass
-
-    @abstractproperty
-    def priority(self):
-        pass
-
-    def get_nodes(self, manager=None, sid=None):
-        assert(sid is not None)
-
-        nodes = []
-
-        for module in self.submodules:
-            if isinstance(module, PGChildModule):
-                if manager and module.BackendSupported(manager):
-                    nodes.extend(module.get_nodes(sid=sid, manager=manager))
-            else:
-                nodes.extend(module.get_nodes(sid=sid))
-
-        return nodes
-
-    @abstractmethod
-    def instanceOf(self, version):
-        pass
-
-    def __str__(self):
-        return "Type: {0},Description:{1}".format(self.type, self.description)
-
-    @property
-    def csssnippets(self):
-        """
-        Returns a snippet of css to include in the page
-        """
-        snippets = [
-                    render_template(
-                        "css/node.css",
-                        node_type=self.node_type
-                        )
-                    ]
-
-        for submodule in self.submodules:
-            snippets.extend(submodule.csssnippets)
-
-        return snippets
-
-    def get_own_javascripts(self):
-        scripts = []
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
-
-    @property
-    def script_load(self):
-        """
-        Load the module script for all server types, when a server node is
-        initialized.
-        """
-        return ServerTypeModule.NODE_TYPE
-
-
-class ServerNode(NodeView):
+class ServerNode(PGChildNodeView):
     node_type = ServerModule.NODE_TYPE
 
     parent_ids = [{'type': 'int', 'id': 'gid'}]
@@ -196,20 +125,19 @@ class ServerNode(NodeView):
         for server in servers:
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
-            module = getattr(manager, "module", None)
-
             connected = conn.connected()
+
             res.append(
                 self.blueprint.generate_browser_node(
                     "%d" % (server.id),
-                    "%d" % gid,
                     server.name,
                     "icon-server-not-connected" if not connected else
-                    "icon-{0}".format(module.NODE_TYPE),
+                    "icon-{0}".format(manager.server_type),
                     True,
                     self.node_type,
                     connected=connected,
-                    server_type=module.type if module is not None else 'PG'
+                    server_type=manager.server_type if connected else 'PG',
+                    version=manager.sversion
                     )
                 )
         return make_json_response(result=res)
@@ -353,7 +281,6 @@ class ServerNode(NodeView):
         manager = driver.connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
-        module = getattr(manager, 'module', None)
 
         return ajax_response(
             response={
@@ -368,8 +295,8 @@ class ServerNode(NodeView):
                 'comment': server.comment,
                 'role': server.role,
                 'connected': connected,
-                'version': manager.ver,
-                'server_type': module.type if module is not None else 'PG'
+                'version': manager.sversion,
+                'server_type': manager.server_type if connected else 'PG'
             }
         )
 
@@ -416,7 +343,6 @@ class ServerNode(NodeView):
             return jsonify(
                     node=self.blueprint.generate_browser_node(
                         "%d" % (server.id),
-                        "%d" % gid,
                         server.name,
                         "icon-server-not-connected",
                         True,
@@ -432,31 +358,6 @@ class ServerNode(NodeView):
                 success=0,
                 errormsg=e.message
             )
-
-    def nodes(self, gid, sid):
-        """Build a list of treeview nodes from the child nodes."""
-        from pgadmin.utils.driver import get_driver
-
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        conn = manager.connection()
-
-        if not conn.connected():
-            return precondition_required(
-                    gettext(
-                        "Please make a connection to the server first!"
-                        )
-                    )
-
-        nodes = []
-
-        # We will rely on individual server type modules to generate nodes for
-        # them selves.
-        module = getattr(manager, 'module', None)
-
-        if module:
-            nodes.extend(module.get_nodes(sid=sid, manager=manager))
-
-        return make_json_response(data=nodes)
 
     def sql(self, gid, sid):
         return make_json_response(data='')
@@ -481,13 +382,7 @@ class ServerNode(NodeView):
         return make_response(
                 render_template(
                     "servers/servers.js",
-                    server_types=sorted(
-                        [
-                            m for m in self.blueprint.submodules
-                            if isinstance(m, ServerTypeModule)
-                            ],
-                        key=lambda x: x.priority
-                        ),
+                    server_types=ServerType.types(),
                     _=gettext
                     ),
                 200, {'Content-Type': 'application/x-javascript'}
@@ -572,10 +467,7 @@ class ServerNode(NodeView):
         try:
             status, errmsg = conn.connect(
                     password=password,
-                    modules=[
-                        m for m in self.blueprint.submodules
-                        if isinstance(m, ServerTypeModule)
-                        ]
+                    server_types=ServerType.types()
                     )
         except Exception as e:
             # TODO::
@@ -626,9 +518,11 @@ class ServerNode(NodeView):
                         info=gettext("Server Connected."),
                         data={
                             'icon': 'icon-{0}'.format(
-                                manager.module.NODE_TYPE
+                                manager.server_type
                                 ),
-                            'connected': True
+                            'connected': True,
+                            'type': manager.server_type,
+                            'version': manager.sversion
                             }
                         )
 
