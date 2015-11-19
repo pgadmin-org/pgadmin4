@@ -460,13 +460,13 @@ WHERE db.oid = {0}""".format(did))
 
                         if status and len(res['rows']) > 0:
                             for row in res['rows']:
-                                db_info[did] = row
-                                database = db_info[did]['datname']
+                                self.db_info[did] = row
+                                database = self.db_info[did]['datname']
 
-                        if did not in db_info:
-                            return False, gettext(
+                        if did not in self.db_info:
+                            raise Exception(gettext(
                                 "Coudn't find the database!"
-                                )
+                                ))
 
         if database is None:
             raise Exception(msg_active_conn)
