@@ -25,8 +25,8 @@ class ServerType:
 
     def __init__(self, server_type, description, priority):
         self.stype = server_type
-        self.description = description
-        self.priority = priority
+        self.desc = description
+        self.spriority = priority
 
         assert(server_type not in ServerType.registry)
         ServerType.registry[server_type] = self
@@ -37,15 +37,15 @@ class ServerType:
 
     @property
     def description(self):
-        return self.description
+        return self.desc
 
     @property
     def priority(self):
-        return self.priority
+        return self.spriority
 
     def __str__(self):
         return "Type: {0}, Description:{1}, Priority: {2}".format(
-                self.stype, self.description, self.priority
+                self.stype, self.desc, self.spriority
                 )
 
     def instanceOf(self, version):
