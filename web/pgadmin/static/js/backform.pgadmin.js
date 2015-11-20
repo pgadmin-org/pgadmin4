@@ -470,7 +470,7 @@
           groups[group] = (groups[group] || []);
           var disabled = ((mode == 'properties') ||
                (server_info &&
-                (s.server_type && _.indexOf(server_info.type in s.server_type) == -1) ||
+                (s.server_type && !(server_info.type in s.server_type)) ||
                 (s.min_version && s.min_version < server_info.version) ||
                 (s.max_version && s.max_version > server_info.version)
                ));

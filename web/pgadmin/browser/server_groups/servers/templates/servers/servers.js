@@ -189,8 +189,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'server_type', label: '{{ _('Server Type') }}', type: 'options',
           mode: ['properties'], show: 'isConnected',
-          'options': [{% set cnt = 1 %}{% for server_type in server_types %}{% if cnt != 1 %},{% endif %}
-            {label: '{{ server_type.description }}', value: '{{ server_type.type}}'}{% set cnt = cnt + 1 %}{% endfor %}
+          'options': [{% for st in server_types %}
+            {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
+            {label: '{{ _('Unknown') }}', value: ''}
           ]
         }],
         validate: function(attrs, options) {
