@@ -62,7 +62,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                     self.NODE_TYPE,
                     connected=connected,
                     server_type=manager.server_type if connected else "pg",
-                    server_version=manager.sversion if connected else 0
+                    version=manager.version
                     )
 
     @property
@@ -137,7 +137,7 @@ class ServerNode(PGChildNodeView):
                     self.node_type,
                     connected=connected,
                     server_type=manager.server_type if connected else 'PG',
-                    version=manager.sversion
+                    version=manager.version
                     )
                 )
         return make_json_response(result=res)
@@ -295,7 +295,7 @@ class ServerNode(PGChildNodeView):
                 'comment': server.comment,
                 'role': server.role,
                 'connected': connected,
-                'version': manager.sversion,
+                'version': manager.ver,
                 'server_type': manager.server_type if connected else 'PG'
             }
         )
@@ -522,7 +522,7 @@ class ServerNode(PGChildNodeView):
                                 ),
                             'connected': True,
                             'type': manager.server_type,
-                            'version': manager.sversion
+                            'version': manager.version
                             }
                         )
 

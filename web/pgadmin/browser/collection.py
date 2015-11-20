@@ -13,7 +13,7 @@ from flask import url_for, render_template
 from flask.ext.babel import gettext
 from pgadmin.browser.utils import PgAdminModule, PGChildModule
 from pgadmin.browser import BrowserPluginModule
-from pgadmin.browser.utils import NodeView, PGChildNode, PGChildNodeView
+from pgadmin.browser.utils import PGChildNodeView
 
 @six.add_metaclass(ABCMeta)
 class CollectionNodeModule(PgAdminModule, PGChildModule):
@@ -86,7 +86,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
 
     @property
     def node_type(self):
-        return '%s-%s' % (self.SERVER_TYPE, self.NODE_TYPE)
+        return '%s' % (self.NODE_TYPE)
 
     @property
     def csssnippets(self):
@@ -171,7 +171,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         return []
 
 
-class CollectionNodeView(NodeView, PGChildNode):
+class CollectionNodeView(PGChildNodeView):
     """
     A PostgreSQL Collection node has specific functions needs to address
     i.e.

@@ -479,7 +479,15 @@ WHERE db.oid = {0}""".format(did))
 
             return self.connections[my_id]
 
-    def release(self, database=None, conn_id=None):
+    def release(self, database=None, conn_id=None, did=None):
+        if did is not None:
+            if did in self.db_info and 'datname' in self.db_info[did]:
+                database = self.db_info[did]['datname']
+                if database is None:
+                    return False
+            else:
+                return False
+
 
         my_id = ('CONN:' + str(conn_id)) if conn_id is not None else \
                 ('DB:' + str(database)) if database is not None else None
@@ -500,7 +508,6 @@ WHERE db.oid = {0}""".format(did))
         self.password = None
 
         return True
-
 
 class Driver(BaseDriver):
     """

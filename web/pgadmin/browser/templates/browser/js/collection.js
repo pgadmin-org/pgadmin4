@@ -86,7 +86,15 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       j.append(content);
 
       // Fetch Data
-      collections.fetch({reset: true});
+      collections.fetch({reset: true})
+      .error(function(jqxhr, error, message) {
+          Alertify.pgNotifier(
+            error, jqxhr,
+            S(
+              "{{ _("Error fetching the properties - %%s!") }}"
+              ).sprintf(message).value()
+            );
+        });
     },
     generate_url: function(item, type, d) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
@@ -114,7 +122,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         });
 
       var args = {
-        'TYPE': self.type,
+        'TYPE': self.node,
         'REDIRECT': (type in opURL ? opURL[type] : type),
         'REF': S('%s/').sprintf(ref).value()
       };
