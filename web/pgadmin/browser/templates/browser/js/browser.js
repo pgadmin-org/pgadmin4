@@ -358,7 +358,7 @@ OWNER TO helpdesk;\n';
             var d = this.itemData(item);
                 n = obj.Nodes[d._type];
             if (n)
-              settings.url = n.generate_url(item, 'nodes', d, true);
+              settings.url = n.generate_url(item, 'children', d, true);
           }
         }
       });
@@ -621,6 +621,20 @@ OWNER TO helpdesk;\n';
       'general_cateogty': '{{ _('General') }}'
     }
   });
+
+  window.onbeforeunload = function(ev) {
+    var e = ev || window.event;
+
+    var msg = '{{ _('Do you really want to leave the page?') }}';
+
+    // For IE and Firefox prior to version 4
+    if (e) {
+      e.returnValue = msg;
+    }
+
+    // For Safari
+    return msg;
+  };
 
   return pgAdmin.Browser;
 });

@@ -803,8 +803,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
-          'properties': 'obj', 'depends': 'deps',
-          'statistics': 'stats', 'nodes': 'nodes'
+          'properties': 'obj', 'statistics': 'stats'
         },
         ref = '', self = this;
 
@@ -1357,7 +1356,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             'id': d._id,
             'priority': idx
           };
-          idx += 1;
+          idx -= 1;
         }
         i = t.hasParent(i) ? t.parent(i) : null;
       } while (i);

@@ -128,24 +128,27 @@ class NodeView(with_metaclass(MethodViewType, View)):
     This class can be inherited to achieve the diffrent routes for each of the
     object types/collections.
 
-    OPERATION      |              URL       | Method
-    ---------------+------------------------+--------
-    List           | /obj/[Parent URL]/     | GET
-    Properties     | /obj/[Parent URL]/id   | GET
-    Create         | /obj/[Parent URL]/     | POST
-    Delete         | /obj/[Parent URL]/id   | DELETE
-    Update         | /obj/[Parent URL]/id   | PUT
+       OPERATION   |             URL             | HTTP Method |    Method
+    ---------------+-----------------------------+-------------+--------------
+    List           | /obj/[Parent URL]/          | GET         | list
+    Properties     | /obj/[Parent URL]/id        | GET         | properties
+    Create         | /obj/[Parent URL]/          | POST        | create
+    Delete         | /obj/[Parent URL]/id        | DELETE      | delete
+    Update         | /obj/[Parent URL]/id        | PUT         | update
 
-    SQL (Reversed  | /sql/[Parent URL]/id   | GET
+    SQL (Reversed  | /sql/[Parent URL]/id        | GET         | sql
     Engineering)   |
-    SQL (Modified  | /sql/[Parent URL]/id   | POST
+    SQL (Modified  | /msql/[Parent URL]/id       | GET         | modified_sql
     Properties)    |
 
-    Statistics     | /stats/[Parent URL]/id | GET
-    Dependencies   | /deps/[Parent URL]/id  | GET
-    Dependents     | /deps/[Parent URL]/id  | POST
+    Statistics     | /stats/[Parent URL]/id      | GET         | statistics
+    Dependencies   | /dependency/[Parent URL]/id | GET         | dependencies
+    Dependents     | /dependent/[Parent URL]/id  | GET         | dependents
 
-    Children Nodes | /nodes/[Parent URL]/id | GET
+    Nodes          | /nodes/[Parent URL]/        | GET         | nodes
+    Current Node   | /nodes/[Parent URL]/id      | GET         | node
+
+    Children       | /children/[Parent URL]/id   | GET         | children
 
     NOTE:
     Parent URL can be seen as the path to identify the particular node.
@@ -159,10 +162,13 @@ class NodeView(with_metaclass(MethodViewType, View)):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'nodes'}],
-        'sql': [{'get': 'sql', 'post': 'modified_sql'}],
+        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'sql': [{'get': 'sql'}],
+        'msql': [{'get': 'modified_sql'}],
         'stats': [{'get': 'statistics'}],
-        'deps': [{'get': 'dependencies', 'post': 'dependents'}],
+        'dependency': [{'get': 'dependencies'}],
+        'dependent': [{'get': 'dependents'}],
+        'children': [{'get': 'children'}],
         'module.js': [{}, {}, {'get': 'module_js'}]
     })
 
@@ -311,19 +317,19 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 200, {'Content-Type': 'application/x-javascript'}
                 )
 
-    def nodes(self, *args, **kwargs):
+    def children(self, *args, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
-        nodes = []
+        children = []
 
         for module in self.blueprint.submodules:
-            nodes.extend(module.get_nodes(*args, **kwargs))
+            children.extend(module.get_nodes(*args, **kwargs))
 
-        return make_json_response(data=nodes)
+        return make_json_response(data=children)
 
 
 class PGChildNode(object):
 
-    def nodes(self, sid, **kwargs):
+    def children(self, sid, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
 
         from pgadmin.utils.driver import get_driver

@@ -77,9 +77,16 @@ class ServerGroupView(NodeView):
 
     def list(self):
         res = []
-        for g in blueprint.get_nodes():
-            res.append(g)
-        return make_json_response(result=res)
+
+        for sg in ServerGroup.query.filter_by(
+                user_id=current_user.id
+                ):
+            res.append({
+                'id': sg.id,
+                'name': sg.name
+                })
+
+        return ajax_response(response=res, status=200)
 
     def delete(self, gid):
         """Delete a server group node in the settings database"""
@@ -220,6 +227,32 @@ class ServerGroupView(NodeView):
                 render_template("server_groups/server_groups.js"),
                 200, {'Content-Type': 'application/x-javascript'}
                 )
+
+    def nodes(self, gid=None):
+        """Return a JSON document listing the server groups for the user"""
+        nodes = []
+
+        if gid is None:
+            groups = ServerGroup.query.filter_by(user_id=current_user.id)
+        else:
+            groups = ServerGroup.query.filter_by(user_id=current_user.id,
+                    id=gid).first()
+
+        for group in groups:
+            nodes.append(
+                    self.generate_browser_node(
+                        "%d" % (group.id),
+                        group.name,
+                        "icon-%s" % self.node_type,
+                        True,
+                        self.node_type
+                        )
+                    )
+
+        return make_json_response(data=nodes)
+
+    def node(self, gid):
+        return self.nodes(gid)
 
 
 ServerGroupView.register_node_view(blueprint)

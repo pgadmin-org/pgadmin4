@@ -103,7 +103,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
          * under the collection, and properties of the collection respectively.
          */
         opURL = {
-          'nodes': 'obj', 'properties': 'coll'
+          'properties': 'obj', 'children': 'nodes'
         },
         ref = '', self = this;
 

@@ -169,37 +169,3 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     @property
     def javascripts(self):
         return []
-
-
-class CollectionNodeView(PGChildNodeView):
-    """
-    A PostgreSQL Collection node has specific functions needs to address
-    i.e.
-    - List the nodes
-    - Get the list of nodes objects (model)
-
-    This class can be inherited to achieve the diffrent routes for each of the
-    object types/collections.
-
-    OPERATION      |              URL       | Method
-    ---------------+------------------------+--------
-    List           | /coll/[Parent URL]/    | GET
-    Children Nodes | /node/[Parent URL]/    | GET
-
-    NOTE:
-    Parent URL can be seen as the path to identify the particular node.
-    """
-    operations = dict({
-    })
-    operations = dict({
-        'obj': [
-            {'get': 'properties', 'delete': 'delete', 'put': 'update'},
-            {'get': 'list', 'post': 'create'}
-        ],
-        'nodes': [{'get': 'nodes'}],
-        'sql': [{'get': 'sql', 'post': 'modified_sql'}],
-        'stats': [{'get': 'statistics'}],
-        'deps': [{'get': 'dependencies', 'post': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
-        'coll': [{}, {'get': 'collections'}]
-    })

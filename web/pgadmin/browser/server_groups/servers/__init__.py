@@ -103,19 +103,25 @@ class ServerNode(PGChildNodeView):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'nodes'}],
-        'sql': [{'get': 'sql', 'post': 'modified_sql'}],
+        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'sql': [{'get': 'sql'}],
+        'msql': [{'get': 'modified_sql'}],
         'stats': [{'get': 'statistics'}],
-        'deps': [{'get': 'dependencies', 'post': 'dependents'}],
+        'dependency': [{'get': 'dependencies'}],
+        'dependent': [{'get': 'dependents'}],
+        'children': [{'get': 'children'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
             }]
     })
 
-    def list(self, gid):
+    def nodes(self, gid):
         res = []
-        """Return a JSON document listing the server groups for the user"""
+        """
+        Return a JSON document listing the servers under this server group
+        for the user.
+        """
         servers = Server.query.filter_by(user_id=current_user.id,
                                          servergroup_id=gid)
 
@@ -136,11 +142,48 @@ class ServerNode(PGChildNodeView):
                     True,
                     self.node_type,
                     connected=connected,
-                    server_type=manager.server_type if connected else 'PG',
+                    server_type=manager.server_type if connected else 'pg',
                     version=manager.version
                     )
                 )
         return make_json_response(result=res)
+
+    def node(self, gid, sid):
+        """Return a JSON document listing the server groups for the user"""
+        server = Server.query.filter_by(user_id=current_user.id,
+                                         servergroup_id=gid,
+                                         id=sid).first()
+
+        if server is None:
+            return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        gettext(
+                            "Couldn't find the server with id# %s!"
+                            ).format(sid)
+                    )
+                )
+
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
+
+        conn = manager.connection()
+        connected = conn.connected()
+
+        return make_json_response(
+                result=self.blueprint.generate_browser_node(
+                    "%d" % (server.id),
+                    server.name,
+                    "icon-server-not-connected" if not connected else
+                    "icon-{0}".format(manager.server_type),
+                    True,
+                    self.node_type,
+                    connected=connected,
+                    server_type=manager.server_type if connected else 'pg',
+                    version=manager.version
+                    )
+                )
 
     def delete(self, gid, sid):
         """Delete a server node in the settings database."""
@@ -258,6 +301,47 @@ class ServerNode(PGChildNodeView):
             }
         )
 
+    def list(self, gid):
+        """
+        Return list of attributes of all servers.
+        """
+        servers = Server.query.filter_by(
+                user_id=current_user.id,
+                servergroup_id=gid)
+        sg = ServerGroup.query.filter_by(
+                user_id=current_user.id,
+                id=gid
+                ).first()
+        res = []
+
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+
+        for server in servers:
+            manager = driver.connection_manager(server.id)
+            conn = manager.connection()
+            connected = conn.connected()
+
+            res.append({
+                'id': server.id,
+                'name': server.name,
+                'host': server.host,
+                'port': server.port,
+                'db': server.maintenance_db,
+                'username': server.username,
+                'gid': server.servergroup_id,
+                'group-name': sg.name,
+                'comment': server.comment,
+                'role': server.role,
+                'connected': connected,
+                'version': manager.ver,
+                'server_type': manager.server_type if connected else 'pg'
+                })
+
+        return ajax_response(
+                response=res
+        )
+
     def properties(self, gid, sid):
         """Return list of attributes of a server"""
         server = Server.query.filter_by(
@@ -296,7 +380,7 @@ class ServerNode(PGChildNodeView):
                 'role': server.role,
                 'connected': connected,
                 'version': manager.ver,
-                'server_type': manager.server_type if connected else 'PG'
+                'server_type': manager.server_type if connected else 'pg'
             }
         )
 
@@ -348,7 +432,7 @@ class ServerNode(PGChildNodeView):
                         True,
                         self.node_type,
                         connected=False,
-                        server_type='PG'  # Default server type
+                        server_type='pg'  # Default server type
                         )
                     )
 
