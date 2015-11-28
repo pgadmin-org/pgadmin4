@@ -4,7 +4,7 @@ define(
         'jquery.contextmenu', 'jquery.acitree', 'pgadmin.alertifyjs',
         'pgadmin.browser.menu', 'pgadmin.browser.panel', 'jquery.aciplugin',
         'pgadmin.browser.error', 'pgadmin.browser.frame',
-        'pgadmin.browser.node'
+        'pgadmin.browser.node', 'pgadmin.browser.collection'
        ],
 function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
