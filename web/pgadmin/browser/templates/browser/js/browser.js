@@ -407,7 +407,7 @@ OWNER TO helpdesk;\n';
             _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
                 if (m.category == 'create' && !m.disabled(d)) {
-                  createMenu[m.module.type + '_' + m.name] = { name: m.label, icon: m.module.type };
+                  createMenu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon || m.module.type };
                 }
               });
 

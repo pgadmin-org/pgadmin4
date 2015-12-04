@@ -16,3 +16,5 @@ runtime/ui_BrowserWindow.h
 runtime/.qmake.stash
 web/config_local.py
 pgadmin4.log
+*.swp
+*.swo

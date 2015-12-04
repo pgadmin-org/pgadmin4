@@ -92,3 +92,11 @@ def success_return(message=''):
                 success=1,
                 info=message
     )
+
+def gone(errormsg=''):
+    """Create a response with HTTP status code 410 - GONE."""
+    return make_json_response(
+                status=410,
+                success=0,
+                errormsg=errormsg
+    )

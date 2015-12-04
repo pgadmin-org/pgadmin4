@@ -312,7 +312,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
         """
         return flask.make_response(
                 flask.render_template(
-                    "{0}/{0}.js".format(self.node_type)
+                    "{0}/js/{0}.js".format(self.node_type)
                     ),
                 200, {'Content-Type': 'application/x-javascript'}
                 )
