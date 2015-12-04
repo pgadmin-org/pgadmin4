@@ -26,6 +26,10 @@ from pgadmin.settings.settings_model import db, Role, User, Server, \
 # Configuration settings
 import config
 
+# If script is running under python2 then change the behaviour of functions
+if hasattr(__builtins__, 'raw_input'):
+    input = raw_input
+    range = xrange
 
 def do_setup(app):
 
@@ -35,7 +39,7 @@ def do_setup(app):
         email = config.DESKTOP_USER
         p1 = ''.join([
                     random.choice(string.ascii_letters + string.digits)
-                    for n in xrange(32)
+                    for n in range(32)
                     ])
 
     else:
