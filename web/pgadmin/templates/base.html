@@ -22,6 +22,7 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
 
         <!-- View specified stylesheets -->
@@ -49,12 +50,16 @@
                         "deps": ['backform'],
                         "exports": 'Backgrid',
                     },
+                    "bootstrap.switch": {
+                        "deps": ['jquery', 'bootstrap'],
+                        "exports": 'jQuery.fn.bootstrapSwitch'
+                    },
                     "bootstrap.datepicker": {
                         "deps": ['jquery', 'bootstrap'],
                         "exports": 'jQuery.fn.datepicker'
                     },
                     "pgadmin.backgrid": {
-                        "deps": ["backgrid", "bootstrap.datepicker"],
+                        "deps": ["backgrid", "bootstrap.datepicker","bootstrap.switch"],
                     },
                     "pgadmin.backform": {
                         "deps": ['backform', "pgadmin.backgrid"],
@@ -75,6 +80,7 @@
                     'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults') }}",
                     backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
                     "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
+                    "bootstrap.switch": "{{ url_for('static', filename='js/' + ('bootstrap-switch' if config.DEBUG else 'bootstrap-switch.min')) }}",
                     backform: "{{ url_for('static', filename='js/backform') }}",
                     backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",
                     "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",

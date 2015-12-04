@@ -28,7 +28,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       this.node_initialized = true;
       pgAdmin.Browser.add_menus([{
         name: 'refresh', node: this.type, module: this,
-        applies: ['object', 'context'], callback: 'refresh_node',
+        applies: ['object', 'context'], callback: 'refresh',
         priority: 1, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);

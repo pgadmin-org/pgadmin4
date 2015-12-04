@@ -66,7 +66,8 @@
     'boolean': 'boolean',
     'options': ['readonly-option', 'select', Backgrid.Extension.PGSelectCell],
     'multiline': ['textarea', 'textarea', 'string'],
-    'collection': ['sub-node-collection', 'sub-node-collection', 'string']
+    'collection': ['sub-node-collection', 'sub-node-collection', 'string'],
+    'switch' : 'switch'
   };
 
   var getMappedControl = Backform.getMappedControl = function(type, mode) {
@@ -172,6 +173,57 @@
     }
   });
 
+  // Requires the Bootstrap Switch to work.
+  var SwitchControl = Backform.SwitchControl = Backform.InputControl.extend({
+    defaults: {
+      type: "checkbox",
+      label: "",
+      options: {},
+      extraClasses: [],
+      onText: 'True',
+      offText: 'False',
+      onColor: 'success',
+      offColor: 'default',
+      size: 'small'
+    },
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '  <div class="checkbox">',
+      '    <label>',
+      '      <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    </label>',
+      '  </div>',
+      '</div>'
+    ].join("\n")),
+    getValueFromDOM: function() {
+      return this.formatter.toRaw(
+          this.$el.find(".input").data('switch-get'),
+          this.model
+          );
+    },
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path);
+
+      Backform.InputControl.prototype.render.apply(this, arguments);
+
+      //Check & set additional properties
+      this.$el.find("input").bootstrapSwitch({
+        'onText': field.onText,
+        'offText': field.offText,
+        'onColor': field.onColor,
+        'offColor': field.offColor,
+        'size': field.size,
+        'state': rawValue
+      });
+      return this;
+    }
+  });
 
   // Backform Dialog view (in bootstrap tabbular form)
   // A collection of field models.
@@ -327,7 +379,14 @@
       var groups = Backform.generateViewSchema(node_info, m, type),
       schema = [],
       columns = [],
+      tblCols = [],
       addAll = _.isUndefined(cols) || _.isNull(cols);
+
+      // Create another array if cols is of type object & store its keys in that array,
+      // If cols is object then chances that we have custom width class attached with in.
+      if(_.isObject(cols)) {
+        tblCols = Object.keys(cols);
+      }
 
       // Prepare columns for backgrid
       _.each(groups, function(fields, key) {
@@ -335,7 +394,24 @@
           if (!f.control && !f.cell) {
             return;
           }
-          f.cell_priority = _.indexOf(cols, f.name);
+
+          // Check custom property in cols & if it is present then attach it to current cell
+          if (tblCols.length > 0 && _.isString(cols[f.name])) {
+              f.headerCell = Backgrid.Extension.CustomHeaderCell;
+              f.cellHeaderClasses = cols[f.name];
+              f.cell_priority = _.indexOf(tblCols, f.name);
+          } else if(tblCols.length > 0) {
+              f.cell_priority = _.indexOf(tblCols, f.name);
+          } else {
+              f.cell_priority = _.indexOf(cols, f.name);
+          }
+          // We can also provide custom header cell class in schema itself,
+          // But we will give priority to extraClass attached in cols
+          // If headerCell property is already set by cols then skip extraClass property from schema
+          if (!(f.headerCell) && f.cellHeaderClasses) {
+            f.headerCell = Backgrid.Extension.CustomHeaderCell;
+          }
+
           if (addAll || f.cell_priority != -1) {
             columns.push(f);
           }

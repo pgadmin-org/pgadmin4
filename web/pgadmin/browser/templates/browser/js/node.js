@@ -74,7 +74,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
       }, {
         name: 'refresh', node: this.type, module: this,
-        applies: ['object', 'context'], callback: 'refresh_node',
+        applies: ['object', 'context'], callback: 'refresh',
         priority: 2, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);
@@ -458,8 +458,18 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
         }
       },
-      refresh_node: function(item) {
-        this.callbacks.selected.apply(this, null, item);
+      refresh: function(i) {
+        var self = this,
+            t = pgBrowser.tree,
+            d = t.itemData(i);
+
+        t.unload(i);
+        t.setInode((d && d.inode) || false);
+        t.deselect(i);
+
+        setTimeout(function() {
+          t.select(i);
+        }, 10);
       }
     },
     /**********************************************************************

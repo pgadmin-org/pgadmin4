@@ -20,3 +20,4 @@ font-Awesome      4.3         SIL OFL      http://fortawesome.github.io/Font-Awe
 font-mfizz        1.2         MIT          http://fizzed.com/oss/font-mfizz
 backgrid.js       0.3.5       MIT          http://backgridjs.com/
 backbone.undo     0.2         MIT          http://backbone.undojs.com/
+bootstrap-switch  3.3.2       MIT          http://www.bootstrap-switch.org/

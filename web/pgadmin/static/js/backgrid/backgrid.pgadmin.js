@@ -223,6 +223,17 @@
       }
   });
 
+  var CustomHeaderCell = Backgrid.Extension.CustomHeaderCell = Backgrid.HeaderCell.extend({
+     initialize: function () {
+        // Here, we will add custom classes to header cell
+        Backgrid.HeaderCell.prototype.initialize.apply(this, arguments);
+        var getClassName = this.column.get('cellHeaderClasses');
+        if (getClassName) {
+            this.$el.addClass(getClassName);
+        }
+    }
+  });
+
   return Backgrid;
 
 }));

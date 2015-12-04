@@ -90,8 +90,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     d.connected = false;
                     d.icon = 'icon-server-not-connected';
                     t.addIcon(i, {icon: d.icon});
-                    t.unload(i);
-                    t.setInode(i);
+                    obj.callbacks.refresh.apply(obj, [i]);
                     if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                       delete pgBrowser.serverInfo[d._id]
                     }
@@ -152,13 +151,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'name', label:'{{ _('Name') }}', type: 'text', group: null,
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'connected', label:'{{ _('Connected') }}', type: 'text', group: null,
-          mode: ['properties']
+          id: 'connected', label:'{{ _('Connected') }}', type: 'switch', group: null,
+          mode: ['properties'], 'options': {
+            'onText':   'True',
+            'offText':  'False',
+            'onColor':  'success',
+            'offColor': 'default',
+            'size': 'normal'
+          }
         },{
           id: 'version', label:'{{ _('Version') }}', type: 'text', group: null,
           mode: ['properties'], show: 'isConnected'
         },{
-          id: 'comment', label:'{{ _('Comments:') }}', type: 'multiline', group: null,
+          id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create'], disabled: 'notEditMode'
         },{
           id: 'host', label:'{{ _('Host Name/Address') }}', type: 'text', group: "Connection",

@@ -561,3 +561,21 @@ table.backgrid tr.new {
     outline: 1px solid rgba(82, 168, 236, 0.8);
     outline-offset: -1px;
   }
+
+/* Remove default left padding from checkbox for bootstrap-switch */
+.checkbox {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.checkbox label {
+    padding-left: 0px !important;
+}
+
+.bootstrap-switch > .bootstrap-switch-container > input {
+	height: 0px;
+	width: 0px;
+	margin: 0px;
+	padding: 0px;
+    border: 0px solid black;
+}
