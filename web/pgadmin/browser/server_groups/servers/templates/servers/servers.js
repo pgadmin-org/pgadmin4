@@ -194,13 +194,25 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             {label: '{{ _('Unknown') }}', value: ''}
           ]
         }],
-        validate: function(attrs, options) {
-          if (!this.isNew() && 'id' in this.changed) {
-            return '{{ _('Id can not be changed!') }}';
+        validate: function() {
+          var err = {},
+              errmsg;
+
+          if (!this.isNew() && 'id' in this.sessAttrs) {
+            var msg = '{{ _('Id can not be changed!') }}';
+            err['id'] = msg;
+            errmsg = msg;
           }
-          if (String(this.name).replace(/^\s+|\s+$/g, '') == '') {
-            return '{{ _('Name can be empty!') }}';
+          if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
+            err['name'] = '{{ _('Name can be empty!') }}';
+            errmsg = errmsg || msg;
           }
+          this.errorModel.set(err);
+
+          if (_.size(err)) {
+            return err;
+          }
+
           return null;
         },
         isConnected: function(model) {

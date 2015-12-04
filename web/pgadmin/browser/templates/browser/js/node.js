@@ -580,7 +580,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 btnSave = btnGroup.find('button[type="save"]'),
                 btnReset = btnGroup.find('button[type="reset"]');
 
-            if (m.sessChanged()) {
+            if (m.sessValid() && m.sessChanged()) {
               btnSave.prop('disabled', false);
               btnSave.removeAttr('disabled');
               btnReset.prop('disabled', false);
@@ -978,6 +978,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         self.trackChanges = true;
         self.sessAttrs = {
+          'valid': true,
           'changed': [],
           'added': [],
           'deleted': []
@@ -1006,6 +1007,26 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             this.sessAttrs['added'].length > 0 ||
             this.sessAttrs['deleted'].length > 0
             );
+      },
+      sessValid: function() {
+        _.each(this.sessAttrs['added'], function(o) {
+          if ('sessValid' in o && _.isFunction(o.sessValid) &&
+             (!o.sessValid.apply(o) ||
+              ('validate' in o && _.isFunction(o.validate) &&
+               _.isString(o.validate.apply(o))))) {
+            return false;
+          }
+          return true;
+        });
+        _.each(self.sessAttrs['changed'], function(o) {
+          if ('sessValid' in o && _.isFunction(o.sessValid) &&
+             (!o.sessValid.apply(o) ||
+              ('validate' in o && _.isFunction(o.validate) &&
+               _.isString(o.validate.apply(o))))) {
+            return false;
+          }
+        });
+        return true;
       },
       toJSON: function(session) {
         var self = this,
@@ -1061,6 +1082,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           return self.onChange();
         }
         self.sessAttrs['added'].push(obj);
+
         return self.onChange();
       },
       onModelRemove: function(obj) {
@@ -1238,6 +1260,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             _.some(self.objects, function(o) {
               return self.get(o).sessChanged();
             }));
+      },
+      sessValid: function() {
+        var self = this;
+        if ('validate' in self && _.isFunction(self.validate) &&
+            _.isString(self.validate.apply(self))) {
+          return false;
+        }
+        return true;
       },
       set: function(key, val, options) {
         var res = Backbone.Model.prototype.set.call(this, key, val, options);
