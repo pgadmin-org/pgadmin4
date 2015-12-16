@@ -434,19 +434,8 @@ OWNER TO helpdesk;\n';
 
       // Treeview event handler
       $('#tree').on('acitree', function(event, api, item, eventName, options) {
-        var d = null;
-        if (item) {
-          d = obj.tree.itemData(item);
-          if (d && obj.Nodes[d._type] &&
-            _.isObject(obj.Nodes[d._type].callbacks) &&
-            eventName in obj.Nodes[d._type].callbacks &&
-            typeof obj.Nodes[d._type].callbacks[eventName] ==
-            'function') {
-            return obj.Nodes[d._type].callbacks[eventName].apply(
-              obj.Nodes[d._type], [item, d, obj, options, eventName]
-              );
-          }
-        }
+        var d = item ? obj.tree.itemData(item) : null;
+
         switch (eventName) {
           // When a node is added in the browser tree, we need to
           // load the registered scripts
@@ -476,6 +465,29 @@ OWNER TO helpdesk;\n';
               }
             }
             break;
+        }
+
+        if (d && obj.Nodes[d._type]) {
+          var node = obj.Nodes[d._type];
+
+          /* If the node specific callback returns false, we will also return
+           * false for further processing.
+           */
+          if (_.isObject(node.callbacks) &&
+              eventName in node.callbacks &&
+              typeof node.callbacks[eventName] == 'function' &&
+              !node.callbacks[eventName].apply(
+                  node, [item, d, obj, options, eventName])) {
+            return false;
+          }
+          /* Raise tree events for the nodes */
+          try {
+            node.trigger(
+                'browser-node.' + eventName, node, item, d
+                );
+          } catch (e) {
+            console.log(e);
+          }
         }
         return true;
       });

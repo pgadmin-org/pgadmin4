@@ -1,6 +1,6 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'pgadmin.node.server'],
-  function($, alertify, pgAdmin, pgServer) {
+  ['jquery', 'alertify', 'pgadmin', 'pgadmin.node.server', 'pgadmin.node.server-group'],
+  function($, alertify, pgAdmin, pgServer, ServerGroup) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     pgAdmin.Test = {
@@ -75,6 +75,10 @@ define(
         console.log('Yay - we connected the server!');
       },
       {'a': 'test'});
+
+    ServerGroup.on('browser-node.loaded', function() {
+      console.log('I know that the server-group has been expanded!');
+    }, pgAdmin.Test);
 
     return pgAdmin.Test;
 });
