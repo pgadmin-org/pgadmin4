@@ -570,12 +570,14 @@
 
           // Generate the empty group list (if not exists)
           groups[group] = (groups[group] || []);
-          var disabled = ((mode == 'properties') ||
-               (server_info &&
-                (s.server_type && !(server_info.type in s.server_type)) ||
-                (s.min_version && server_info.version < s.min_version) ||
-                (s.max_version && server_info.version > s.max_version)
-               ));
+          var ver_in_limit = (_.isUndefined(server_info) ? true :
+                ((_.isUndefined(s.server_type) ? true :
+                  (server_info.type in s.server_type)) &&
+                (_.isUndefined(s.min_version) ? true :
+                 (server_info.version >= s.min_version)) &&
+                (_.isUndefined(s.max_version) ? true :
+                 (server_info.version <= s.max_version)))),
+              disabled = ((mode == 'properties') || !ver_in_limit);
 
           var o = _.extend(_.clone(s), {
             name: s.id,
@@ -594,6 +596,9 @@
             control: control,
             cell: cell,
             node_info: node_info,
+            visible: (mode == 'properties'?
+              (ver_in_limit ?
+               (s.version || true) : false) : s.version || true)
           });
           delete o.id;
 
