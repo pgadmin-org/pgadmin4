@@ -18,6 +18,7 @@ from flask.ext.security import current_user
 from ..abstract import BaseDriver, BaseConnection
 from pgadmin.settings.settings_model import Server, User
 from pgadmin.utils.crypto import encrypt, decrypt
+import random
 
 
 _ = gettext
@@ -120,6 +121,14 @@ class Connection(BaseConnection):
                 msg = e.diag.message_detail
             else:
                 msg = str(e)
+            current_app.logger.info("""
+Failed to connect to the database server(#{server_id}) for connection ({conn_id}) with error message as below:
+{msg}""".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        msg=msg
+                        )
+                    )
 
             return False, msg
 
@@ -144,7 +153,15 @@ SET bytea_output=escape;
             if not status:
                 self.conn.close()
                 self.conn = None
-
+                current_app.logger.error("""
+Connect to the database server (#{server_id}) for connection ({conn_id}), but - failed to setup the role with error message as below:
+{msg}
+""".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        msg=res
+                        )
+                    )
                 return False, \
                     _("Failed to setup the role with error message:\n{0}").format(
                             res
@@ -159,7 +176,15 @@ SET bytea_output=escape;
             else:
                 self.conn.close()
                 self.conn = None
-
+                current_app.logger.error("""
+Failed to fetch the version information on the established connection to the database server (#{server_id}) for '{conn_id}' with below error message:
+{msg}
+""".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        msg=res
+                        )
+                    )
                 return False, res
 
             status, res = self.execute_dict("""
@@ -196,17 +221,27 @@ WHERE db.datname = current_database()""")
             status = False
             errmsg = ""
 
+            current_app.logger.warning("""
+Connection te database server (#{server_id}) for the connection - '{conn_id}' has been lost.
+""".format(
+                    server_id=self.manager.sid,
+                    conn_id=self.conn_id
+                    )
+                )
+
             if self.auto_reconnect:
                 status, errmsg = self.connect()
-                errmsg = gettext(
-                    """
-Attempt to reconnect it failed with the below error:
-{0}
-""").format(errmsg)
+
+                if not status:
+                    errmsg = gettext(
+                            """
+Attempt to reconnect has failed with the below error:
+{0}""".format(errmsg)
+                        )
 
             if not status:
                 msg = gettext("Connection was lost!\n{0}").format(errmsg)
-                current_app.logger.error(msg)
+                current_app.logger.error(errmsg)
 
                 return False, msg
 
@@ -222,17 +257,24 @@ server#{1}:{2}:
             self.conn = None
 
             if self.auto_reconnect:
-                status, errmsg = self.connect()
+                current_app.logger.debug("""
+Attempting to reconnet to the database server (#{server_id}) for the connection - '{conn_id}'.
+""".format(
+                    server_id=self.manager.sid,
+                    conn_id=self.conn_id
+                    )
+                )
+                status, cur = self.connect()
                 if not status:
                     msg = gettext(
                         """
 Connection for server#{0} with database "{1}" was lost.
 Attempt to reconnect it failed with the below error:
 {2}"""
-                        ).format(self.driver.server_id, self.database, errmsg)
+                        ).format(self.driver.server_id, self.database, cur)
                     current_app.logger.error(msg)
 
-                    return False, errmsg
+                    return False, cur
             else:
                 return False, errmsg
 
@@ -245,12 +287,30 @@ Attempt to reconnect it failed with the below error:
 
         if not status:
             return False, str(cur)
+        query_id = random.randint(1, 9999999)
 
+        current_app.logger.log(25,
+                "Execute (scalar) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                    server_id=self.manager.sid,
+                    conn_id=self.conn_id,
+                    query=query,
+                    query_id=query_id
+                    )
+                )
         try:
             cur.execute(query, params)
         except psycopg2.Error as pe:
             cur.close()
-            return False, str(pe)
+            errmsg = str(pe)
+            current_app.logger.error(
+                    "Failed to execute query (execute_scalar) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        query=query,
+                        errmsg=errmsg
+                        )
+                    )
+            return False, errmsg
 
         if cur.rowcount > 0:
             res = cur.fetchone()
@@ -265,11 +325,29 @@ Attempt to reconnect it failed with the below error:
         if not status:
             return False, str(cur)
 
+        query_id = random.randint(1, 9999999)
+        current_app.logger.log(25,
+                "Execute (2darray) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                    server_id=self.manager.sid,
+                    conn_id=self.conn_id,
+                    query=query,
+                    query_id=query_id
+                    )
+                )
         try:
             cur.execute(query, params)
         except psycopg2.Error as pe:
             cur.close()
-            return False, str(pe)
+            errmsg = str(pe)
+            current_app.logger.error(
+                    "Failed to execute query (execute_2darray) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        query=query,
+                        errmsg=errmsg
+                        )
+                    )
+            return False, errmsg
 
         import copy
         # Get Resultset Column Name, Type and size
@@ -286,12 +364,29 @@ Attempt to reconnect it failed with the below error:
 
         if not status:
             return False, str(cur)
-
+        query_id = random.randint(1, 9999999)
+        current_app.logger.log(25,
+                "Execute (dict) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                    server_id=self.manager.sid,
+                    conn_id=self.conn_id,
+                    query=query,
+                    query_id=query_id
+                    )
+                )
         try:
             cur.execute(query, params)
         except psycopg2.Error as pe:
             cur.close()
-            return False, str(pe)
+            errmsg = str(pe)
+            current_app.logger.error(
+                    "Failed to execute query (execute_dict) for the server #{server_id}- {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                        server_id=self.manager.sid,
+                        conn_id=self.conn_id,
+                        query_id=query_id,
+                        errmsg=errmsg
+                        )
+                    )
+            return False, errmsg
 
         import copy
         # Get Resultset Column Name, Type and size
