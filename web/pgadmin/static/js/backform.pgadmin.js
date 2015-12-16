@@ -35,16 +35,15 @@
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
 
-  pgAdmin.editableCell = function(m) {
+  pgAdmin.editableCell = function() {
     if (this.attributes && this.attributes.disabled) {
       if(_.isFunction(this.attributes.disabled)) {
-        return !(this.attributes.disabled.apply(this, [m]));
+        return !(this.attributes.disabled.apply(this, [arguments]));
       }
       if (_.isBoolean(this.attributes.disabled)) {
         return !this.attributes.disabled;
       }
     }
-    return true;
   };
 
   // HTML markup global class names. More can be added by individual controls
@@ -176,7 +175,6 @@
   // Requires the Bootstrap Switch to work.
   var SwitchControl = Backform.SwitchControl = Backform.InputControl.extend({
     defaults: {
-      type: "checkbox",
       label: "",
       options: {},
       extraClasses: [],
@@ -191,17 +189,18 @@
       '<div class="<%=Backform.controlsClassName%>">',
       '  <div class="checkbox">',
       '    <label>',
-      '      <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    </label>',
       '  </div>',
       '</div>'
     ].join("\n")),
     getValueFromDOM: function() {
       return this.formatter.toRaw(
-          this.$el.find(".input").data('switch-get'),
+          this.$input.prop('checked'),
           this.model
           );
     },
+    events: {'switchChange.bootstrapSwitch': 'onChange'},
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -211,9 +210,10 @@
           rawValue = this.keyPathAccessor(attributes[name], path);
 
       Backform.InputControl.prototype.render.apply(this, arguments);
+      this.$input = this.$el.find("input[type=checkbox]").first();
 
       //Check & set additional properties
-      this.$el.find("input").bootstrapSwitch({
+      this.$input.bootstrapSwitch({
         'onText': field.onText,
         'offText': field.offText,
         'onColor': field.onColor,
@@ -561,7 +561,7 @@
           // Each field is kept in specified group, or in
           // 'General' category.
           var group = s.group || pgBrowser.messages.general_cateogty,
-              control = Backform.getMappedControl(s.type, mode),
+              control = s.control || Backform.getMappedControl(s.type, mode),
               cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
 
           if (control == null) {
@@ -573,8 +573,8 @@
           var disabled = ((mode == 'properties') ||
                (server_info &&
                 (s.server_type && !(server_info.type in s.server_type)) ||
-                (s.min_version && s.min_version < server_info.version) ||
-                (s.max_version && s.max_version > server_info.version)
+                (s.min_version && server_info.version < s.min_version) ||
+                (s.max_version && server_info.version > s.max_version)
                ));
 
           var o = _.extend(_.clone(s), {
@@ -584,7 +584,7 @@
             // This can be disabled in some cases (if not hidden)
 
             disabled: (disabled ? true : evalASFunc(s.disabled)),
-            editable: (disabled  ? false : pgAdmin.editableCell),
+            editable: (disabled ? false : (_.isUndefined(s.editable) ? pgAdmin.editableCell : !!(s.editable))),
             subnode: ((_.isString(s.model) && s.model in pgBrowser.Nodes) ?
                 pgBrowser.Nodes[s.model].model : s.model),
             canAdd: (disabled ? false : evalASFunc(s.canAdd)),
