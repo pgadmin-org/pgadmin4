@@ -1,7 +1,7 @@
 define(
     ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser.menu',
      'backbone', 'alertify', 'backform', 'pgadmin.backform', 'wcdocker',
-     'pgadmin.alertifyjs', 'backbone.undo'],
+     'pgadmin.alertifyjs'],
 function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -105,7 +105,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         // In order to get the object data from the server, we must set
         // object-id in the model (except in the create mode).
         if (type !== 'create') {
-          attrs[this.model.idAttribute || 'id'] = node._id;
+          attrs[this.model.idAttribute || this.model.prototype.idAttribute ||
+            'id'] = node._id;
         }
 
         // We know - which data model to be used for this object.
@@ -668,32 +669,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
           // Show contents before buttons
           j.prepend(content);
-
-          // Register the Ctrl/Meta+Z -> for Undo operation
-          // and Ctrl+Shift+Z/Ctrl+Y -> Redo operation in the edit/create
-          // dialog.
-          content.closest('.wcFrame').attr('tabindex', "1").on('keydown', function(e) {
-            switch (e.keyCode) {
-              case 90:
-                if ((e['ctrlKey'] || e['metaKey'])) {
-                  if (e['shiftKey']) {
-                    view && view.model && view.model.redo();
-                  } else {
-                    view && view.model && view.model.undo();
-                  }
-                  e.preventDefault();
-                  break;
-                }
-                break;
-              case 89:
-                if ((e['ctrlKey'] || e['metaKey']) && !e['shiftKey']) {
-                  view && view.model && view.model.redo();
-                  e.preventDefault();
-                }
-                break;
-            }
-          });
-          content.focus();
         },
         closePanel = function() {
           // Closing this panel
@@ -857,126 +832,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           'deleted': []
         };
         self.handler = options.handler;
-        self.trackChanges = false;
-
-        self.undoMgr = new Backbone.UndoManager({
-          register: self, track: true
-        });
-
-        if (self.handler && self.handler.undoMgr) {
-          self.handler.undoMgr.merge(self.undoMgr);
-          self.handler.ignoreTabChange = 0;
-        }
-
-        self.undoMgr.addUndoType("pg-sub-node:opened", {
-          "on": function (model, cell) {
-            return {
-              "object": cell,
-              "before": null,
-              "after": null
-            }
-          },
-          "undo": function (cell, before, after, opts) {
-            if (cell && cell.exitEditMode &&
-                _.isFunction(cell.exitEditMode)) {
-              cell.exitEditMode();
-            }
-          },
-          "redo": function (cell, before, after, opts) {
-            if (cell && cell.enterEditMode &&
-                _.isFunction(cell.enterEditMode)) {
-              cell.enterEditMode();
-            }
-          }
-        });
-        self.undoMgr.addUndoType("pg-sub-node:closed", {
-          "handler": (self.handler || self),
-          "on": function (cell, index) {
-            return {
-              "object": {'cell': cell, 'index': index},
-              "before": null,
-              "after": null,
-              "options": this.handler
-            }
-          },
-          "undo": function (obj, before, after, opts) {
-            if (obj.cell && obj.cell.enterEditMode &&
-                _.isFunction(obj.cell.enterEditMode)) {
-              obj.cell.enterEditMode();
-              var tabs = obj.cell.currentEditor.objectView.$el
-              .find('.nav-tabs').first();
-              var tab = tabs.find('a[data-tab-index="' + obj.index + '"]');
-              if (tab.length) {
-                opts.ignoreTabChange++;
-                tab.tab('show');
-                tabs.find('li').removeClass('active');
-                tab.parent().addClass('active');
-              }
-            }
-          },
-          "redo": function (cell, before, after, opts) {
-            if (cell && cell.exitEditMode &&
-                _.isFunction(cell.exitEditMode)) {
-              cell.exitEditMode();
-            }
-          }
-        });
-        (self.handler || self).ignoreTabChange = 0;
-        self.undoMgr.addUndoType("pg-property-tab-changed", {
-          'mgr': self.undoMgr,
-          'handler': (self.handler || self),
-          "on": function (obj) {
-            if (!this.handler.ignoreTabChange &&
-                !this.mgr.stack.isCurrentlyUndoRedoing) {
-              return {
-                "object": obj,
-                "before": null,
-                "after": null,
-                "options": this.handler
-              }
-            }
-            this.handler.ignoreTabChange--;
-          },
-          "undo": function (obj, before, after, opts) {
-            if (obj.hidden) {
-              var m = obj.model;
-              if (obj.collection) {
-                m = obj.collection.models[obj.index];
-              }
-              var panelEl = m && m.panelEl;
-              if (panelEl) {
-                var tabs = panelEl.find('.nav-tabs').first(),
-                    tab = tabs.find('a[data-tab-index="' + obj.hidden + '"]');
-                if (tab.length) {
-                  opts.ignoreTabChange++;
-                  tab.tab('show');
-                  tabs.find('li').removeClass('active');
-                  tab.parent().addClass('active');
-                }
-              }
-            }
-          },
-          "redo": function (obj, before, after, opts) {
-            if (obj.shown) {
-              var m = obj.model;
-              if (obj.collection) {
-                m = obj.collection.models[obj.index];
-              }
-              var panelEl = m && m.panelEl;
-              if (panelEl) {
-                var tabs = panelEl.find('.nav-tabs').first(),
-                    tab = tabs.find('a[data-tab-index="' + obj.shown + '"]');
-                if (tab.length) {
-                  opts.ignoreTabChange++;
-                  tab.tab('show');
-                  tabs.find('li').removeClass('active');
-                  tab.parent().addClass('active');
-                }
-              }
-            }
-          }
-        });
-
+        self.trackChanges = !!(self.handler && self.handler.trackChanges);
         self.on('add', self.onModelAdd);
         self.on('remove', self.onModelRemove);
         self.on('change', self.onModelChange);
@@ -993,8 +849,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           'added': [],
           'deleted': []
         };
-
-        self.undoMgr.clear();
 
         _.each(self.models, function(m) {
           if ('startNewSession' in m && _.isFunction(m.startNewSession)) {
@@ -1157,22 +1011,57 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
         if (self.schema && _.isArray(self.schema)) {
           _.each(self.schema, function(s) {
-            if (s.id in res) {
-              var o;
-              switch(s.type) {
-                case 'collection':
-                  o = self.get(s.id)
-                  o.reset(res[s.id], [{silent: true}]);
-                  res[s.id] = o;
-                  break;
-                case 'model':
-                  o = self.get(s.id);
-                  o.set(res[s.id], [{silent: true}]);
-                  res[s.id] = o;
-                  break;
-                default:
-                  break;
-              }
+            var obj, val;
+            switch(s.type) {
+              case 'collection':
+                obj = self.get(s.name);
+                val = res[s.name];
+                if (_.isArray(val) || _.isObject(val)) {
+                  if (!obj || obj instanceof Backbone.Collection) {
+                    obj = new (pgBrowser.Node.Collection)(val, {
+                      model: ((_.isString(s.model) &&
+                               s.model in pgBrowser.Nodes) ?
+                              pgBrowser.Nodes[s.model].model : s.model),
+                        handler: self.handler || self,
+                      parse: true,
+                      silent: true
+                      });
+                    self.set(s.name, obj, {silent: true, parse: true});
+                  } else {
+                    obj.reset(s.name, val, {silent: true, parse: true});
+                  }
+                }
+                else {
+                  if (obj)
+                    delete obj;
+                  obj = null;
+                }
+                self.set(s.name, obj, {silent: true});
+                break;
+              case 'model':
+                obj = self.get(s.name);
+                val = res[s.name];
+                if (_.isArray(val) || _.isObject(val)) {
+                  if (!_.isObject(obj)) {
+                    if (_.isString(s.model) &&
+                        s.model in pgBrowser.Nodes[s.model]) {
+                      obj = new (pgBrowser.Nodes[s.model].Model)(
+                          null, {handler: self.handler || self}
+                          );
+                    } else {
+                      obj = new (s.model)(null, {handler: self.handler || self});
+                    }
+                  }
+                  obj.set(self.get(s.name), {parse: true, silent: true});
+                } else {
+                  if (obj)
+                    delete obj;
+                  obj = null;
+                }
+                self.set(s.name, obj, {silent: true});
+                break;
+              default:
+                break;
             }
           });
         }
@@ -1181,33 +1070,17 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       initialize: function(attributes, options) {
         var self = this;
 
-        options = options || {};
+        if (_.isUndefined(options) || _.isNull(options)) {
+          options = attributes || {};
+          attributes = null;
+        }
+
         self.sessAttrs = {};
         self.origSessAttrs = {};
         self.objects = [];
         self.handler = (options.handler ||
             (self.collection && self.collection.handler));
         self.trackChanges = false;
-
-        /*
-         * A object in pgBrowser.Node.Collection does not require a separate
-         * Undo manager.
-         */
-        if (self.collection && self.collection.undoMgr) {
-          self.undoMgr = self.collection.undoMgr;
-        } else {
-          self.undoMgr = new Backbone.UndoManager({
-            register: self, track: true
-          });
-
-          /*
-           * Merged Undo stack should be kept at main handler
-           */
-          if (self.handler && self.handler.undoMgr) {
-            self.handler.undoMgr.merge(self.undoMgr);
-          }
-        }
-
         self.onChangeData = options.onChangeData;
         self.onChangeCallback = options.onChangeCallback;
 
@@ -1338,7 +1211,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.trackChanges = true;
         self.sessAttrs = {};
         self.origSessAttrs = _.clone(this.attributes);
-        self.undoMgr.clear();
         self.handler = (self.handler ||
             (self.collection && self.collection.handler));
 
@@ -1351,38 +1223,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
           if ('startNewSession' in obj && _.isFunction(obj.startNewSession)) {
             obj.startNewSession();
-          } else {
-            self.undoMgr.register(obj);
           }
         });
 
         if (!self.handler) {
           self.onChange();
         }
-      },
-      canUndo: function() {
-        if (this.undoMgr) {
-          return this.undoMgr.isAvailable('undo');
-        }
-        return false;
-      },
-      canRedo: function() {
-        if (this.undoMgr) {
-          return this.undoMgr.isAvailable('redo');
-        }
-        return false;
-      },
-      undo: function() {
-        if (this.undoMgr) {
-          return this.undoMgr.undo(true);
-        }
-        return false;
-      },
-      redo: function() {
-        if (this.undoMgr) {
-          return this.undoMgr.redo(true);
-        }
-        return false;
       }
     }),
     getTreeNodeHierarchy: function(i) {
