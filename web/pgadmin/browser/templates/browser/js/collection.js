@@ -43,7 +43,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         node = pgBrowser.Nodes[that.node],
         // This will be the URL, used for object manipulation.
         urlBase = this.generate_url(item, 'properties', data),
-        collections = new (node.Collection.extend({
+        collection = new (node.Collection.extend({
           url: urlBase,
           model: node.model
         }))(),
@@ -54,7 +54,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         // Initialize a new Grid instance
         grid = new Backgrid.Grid({
           columns: gridSchema.columns,
-          collection: collections,
+          collection: collection,
           className: "backgrid table-bordered"
         }),
         gridView = {
@@ -86,7 +86,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       j.append(content);
 
       // Fetch Data
-      collections.fetch({reset: true})
+      collection.fetch({reset: true})
       .error(function(jqxhr, error, message) {
           Alertify.pgNotifier(
             error, jqxhr,
@@ -99,7 +99,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
     generate_url: function(item, type, d) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
         /*
-         * Using list, and collections functions of a node to get the nodes
+         * Using list, and collection functions of a node to get the nodes
          * under the collection, and properties of the collection respectively.
          */
         opURL = {

@@ -520,7 +520,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               var b = $(tmpl(btn));
               btnGroup.append(b);
               // Register is a callback to set callback
-              // for certain operatio for this button.
+              // for certain operation for this button.
               btn.register(b);
             });
             return btnGroup;
@@ -1014,10 +1014,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             var obj, val;
             switch(s.type) {
               case 'collection':
-                obj = self.get(s.name);
-                val = res[s.name];
+                obj = self.get(s.id);
+                val = res[s.id];
                 if (_.isArray(val) || _.isObject(val)) {
-                  if (!obj || obj instanceof Backbone.Collection) {
+                  if (!obj || !(obj instanceof Backbone.Collection)) {
                     obj = new (pgBrowser.Node.Collection)(val, {
                       model: ((_.isString(s.model) &&
                                s.model in pgBrowser.Nodes) ?
@@ -1026,9 +1026,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       parse: true,
                       silent: true
                       });
-                    self.set(s.name, obj, {silent: true, parse: true});
+                    self.set(s.id, obj, {silent: true, parse: true});
                   } else {
-                    obj.reset(s.name, val, {silent: true, parse: true});
+                    obj.reset(val, {silent: true, parse: true});
                   }
                 }
                 else {
@@ -1036,11 +1036,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                     delete obj;
                   obj = null;
                 }
-                self.set(s.name, obj, {silent: true});
+                self.set(s.id, obj, {silent: true});
+                res[s.id] = obj;
                 break;
               case 'model':
-                obj = self.get(s.name);
-                val = res[s.name];
+                obj = self.get(s.id);
+                val = res[s.id];
                 if (_.isArray(val) || _.isObject(val)) {
                   if (!_.isObject(obj)) {
                     if (_.isString(s.model) &&
@@ -1052,13 +1053,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       obj = new (s.model)(null, {handler: self.handler || self});
                     }
                   }
-                  obj.set(self.get(s.name), {parse: true, silent: true});
+                  obj.set(self.get(s.id), {parse: true, silent: true});
                 } else {
                   if (obj)
                     delete obj;
                   obj = null;
                 }
-                self.set(s.name, obj, {silent: true});
+                self.set(s.id, obj, {silent: true});
+                res[s.id] = obj;
                 break;
               default:
                 break;
@@ -1126,6 +1128,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       },
       onChange: function() {
         var self = this;
+
+        if (self.validate && _.isFunction(self.validate)) {
+            if (!self.validate()) {
+                return false;
+            }
+        }
 
         if (self.handler && 'onChange' in self.handler &&
             _.isFunction(self.handler.onChange)) {
@@ -1201,7 +1209,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
 
         _.each(self.objects, function(o) {
-          res[o] = (self.get(o)).toJSON(session);
+          var obj = self.get(o);
+          if (session || obj)
+            res[o] = (obj && obj.toJSON(session));
         });
         return res;
       },
