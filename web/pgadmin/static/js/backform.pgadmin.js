@@ -38,7 +38,7 @@
   pgAdmin.editableCell = function() {
     if (this.attributes && this.attributes.disabled) {
       if(_.isFunction(this.attributes.disabled)) {
-        return !(this.attributes.disabled.apply(this, [arguments]));
+        return !(this.attributes.disabled.apply(this, arguments));
       }
       if (_.isBoolean(this.attributes.disabled)) {
         return !this.attributes.disabled;
@@ -66,6 +66,7 @@
     'options': ['readonly-option', 'select', Backgrid.Extension.PGSelectCell],
     'multiline': ['textarea', 'textarea', 'string'],
     'collection': ['sub-node-collection', 'sub-node-collection', 'string'],
+    'uniqueColCollection': ['unique-col-collection', 'unique-col-collection', 'string'],
     'switch' : 'switch'
   };
 
@@ -127,6 +128,32 @@
     '  </span>',
     '</div>'
   ].join("\n"));
+
+  Backform.Control.prototype.clearInvalid = function() {
+    this.$el.removeClass(Backform.errorClassName);
+    this.$el.find(".pgadmin-control-error-message").remove();
+    return this;
+  };
+  Backform.Control.prototype.updateInvalid = function() {
+    var self = this;
+    var errorModel = this.model.errorModel;
+    if (!(errorModel instanceof Backbone.Model)) return this;
+
+    this.clearInvalid();
+
+    this.$el.find(':input').not('button').each(function(ix, el) {
+      var attrArr = $(el).attr('name').split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
+
+      if (_.isEmpty(error)) return;
+
+      self.$el.addClass(Backform.errorClassName).append(
+        $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+      );
+    });
+  };
 
   Backform.Control.prototype.clearInvalid = function() {
     this.$el.removeClass(Backform.errorClassName);
@@ -379,13 +406,78 @@
       var groups = Backform.generateViewSchema(node_info, m, type),
       schema = [],
       columns = [],
-      tblCols = [],
-      addAll = _.isUndefined(cols) || _.isNull(cols);
+      func,
+      idx = 0;
 
       // Create another array if cols is of type object & store its keys in that array,
       // If cols is object then chances that we have custom width class attached with in.
-      if(_.isObject(cols)) {
-        tblCols = Object.keys(cols);
+      if (_.isNull(cols) || _.isUndefined(cols)) {
+        func = function(f) {
+          f.cell_priority = idx;
+          idx = idx + 1;
+
+          // We can also provide custom header cell class in schema itself,
+          // But we will give priority to extraClass attached in cols
+          // If headerCell property is already set by cols then skip extraClass property from schema
+          if (!(f.headerCell) && f.cellHeaderClasses) {
+            f.headerCell = Backgrid.Extension.CustomHeaderCell;
+          }
+        };
+      } else if (_.isArray(cols)) {
+        func = function(f) {
+          f.cell_priority = _.indexOf(cols, f.name);
+
+          // We can also provide custom header cell class in schema itself,
+          // But we will give priority to extraClass attached in cols
+          // If headerCell property is already set by cols then skip extraClass property from schema
+          if ((!f.headerCell) && f.cellHeaderClasses) {
+            f.headerCell = Backgrid.Extension.CustomHeaderCell;
+          }
+        };
+      } else if(_.isObject(cols)) {
+        var tblCols = Object.keys(cols);
+        func = function(f) {
+          var val = (f.name in cols) && cols[f.name];
+
+          if (_.isNull(val) || _.isUndefined(val)) {
+            f.cell_priority = -1;
+            return;
+          }
+          if (_.isObject(val)) {
+            if ('index' in val) {
+              f.cell_priority = val['index'];
+              idx = (idx > val['index']) ? idx + 1 : val['index'];
+            } else {
+              var i = _.indexOf(tblCols, f.name);
+              f.cell_priority = idx = ((i > idx) ? i : idx);
+              idx = idx + 1;
+            }
+
+            // We can also provide custom header cell class in schema itself,
+            // But we will give priority to extraClass attached in cols
+            // If headerCell property is already set by cols then skip extraClass property from schema
+            if (!f.headerCell) {
+              if (f.cellHeaderClasses) {
+                f.headerCell = Backgrid.Extension.CustomHeaderCell;
+              }
+              if ('class' in val && _.isString(val['class'])) {
+                f.headerCell = Backgrid.Extension.CustomHeaderCell;
+                f.cellHeaderClasses = (f.cellHeaderClasses || '') + ' ' + val['class'];
+              }
+            }
+          }
+          if (_.isString(val)) {
+            var i = _.indexOf(tblCols, f.name);
+
+            f.cell_priority = idx = ((i > idx) ? i : idx);
+            idx = idx + 1;
+
+            if (!f.headerCell) {
+              f.headerCell = Backgrid.Extension.CustomHeaderCell;
+            }
+            f.cellHeaderClasses = (f.cellHeaderClasses || '') + ' ' + val;
+          }
+        };
       }
 
       // Prepare columns for backgrid
@@ -394,25 +486,9 @@
           if (!f.control && !f.cell) {
             return;
           }
-
           // Check custom property in cols & if it is present then attach it to current cell
-          if (tblCols.length > 0 && _.isString(cols[f.name])) {
-              f.headerCell = Backgrid.Extension.CustomHeaderCell;
-              f.cellHeaderClasses = cols[f.name];
-              f.cell_priority = _.indexOf(tblCols, f.name);
-          } else if(tblCols.length > 0) {
-              f.cell_priority = _.indexOf(tblCols, f.name);
-          } else {
-              f.cell_priority = _.indexOf(cols, f.name);
-          }
-          // We can also provide custom header cell class in schema itself,
-          // But we will give priority to extraClass attached in cols
-          // If headerCell property is already set by cols then skip extraClass property from schema
-          if (!(f.headerCell) && f.cellHeaderClasses) {
-            f.headerCell = Backgrid.Extension.CustomHeaderCell;
-          }
-
-          if (addAll || f.cell_priority != -1) {
+          func(f);
+          if (f.cell_priority != -1) {
             columns.push(f);
           }
         });
@@ -425,6 +501,191 @@
         'schema': schema
       };
     };
+
+  var UniqueColCollectionControl = Backform.UniqueColCollectionControl = Backform.Control.extend({
+    initialize: function() {
+        Backform.Control.prototype.initialize.apply(this, arguments);
+
+        var uniqueCol = this.field.get('uniqueCol') || [];
+
+        var columns = this.field.get('columns')
+        // Check if unique columns provided are also in model attributes.
+        if (uniqueCol.length > _.intersection(columns, uniqueCol).length){
+            errorMsg = "Developer: Unique column/s [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
+            alert (errorMsg);
+            return null;
+        }
+
+        var collection = this.model.get(this.field.get('name')),
+            self = this;
+        if (!collection) {
+          collection = new (pgAdmin.Browser.Node.Collection)(null, {
+            model: self.field.get('model'),
+            silent: true,
+            handler: self.model.handler || self.model
+          });
+          self.model.set(self.field.get('name'), collection, {silent: true});
+        }
+        self.listenTo(collection, "add", self.collectionChanged);
+        self.listenTo(collection, "change", self.collectionChanged);
+    },
+    collectionChanged: function(newModel, coll, op) {
+        var uniqueCol = this.field.get('uniqueCol') || [],
+            uniqueChangedAttr = [],
+            changedAttr = newModel.changedAttributes();
+        // Check if changed model attributes are also in unique columns. And then only check for uniqueness.
+        if (changedAttr) {
+            _.each(uniqueCol, function(col) {
+                if ( _.has(changedAttr,col))
+                {
+                   uniqueChangedAttr.push(col);
+                }
+            });
+            if(uniqueChangedAttr.length == 0) {
+                return;
+            }
+        } else {
+            return;
+        }
+
+        var collection = this.model.get(this.field.get('name'));
+        this.stopListening(collection, "change", this.collectionChanged);
+        // Check if changed attribute's value of new/updated model also exist for another model in collection.
+        // If duplicate value exists then set the attribute's value of new/updated model to it's previous values.
+        collection.each(function(model) {
+            if (newModel != model) {
+                var duplicateAttrValues = []
+                _.each(uniqueCol, function(attr) {
+                    attrValue = newModel.get(attr);
+                    if (!_.isUndefined(attrValue) && attrValue == model.get(attr)) {
+                        duplicateAttrValues.push(attrValue)
+                    }
+                });
+                if (duplicateAttrValues.length == uniqueCol.length){
+                     newModel.set(uniqueChangedAttr[0], newModel.previous(uniqueChangedAttr[0]), {silent: true});
+                     // TODO- Need to add notification in status bar for unique column.
+                }
+            }
+        });
+        this.listenTo(collection, "change", this.collectionChanged);
+    },
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+           }),
+          evalF = function(f, m) {
+            return (_.isFunction(f) ? !!f(m) : !!f);
+          };
+
+      // Evaluate the disabled, visible, required, canAdd, & canDelete option
+      _.extend(data, {
+        disabled: evalF(data.disabled, this.model),
+        visible:  evalF(data.visible, this.model),
+        required: evalF(data.required, this.model),
+        canAdd: evalF(data.canAdd, this.model),
+        canDelete: evalF(data.canDelete, this.model)
+      });
+      // Show Backgrid Control
+      grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+
+      this.$el.html(grid).addClass(field.name);
+      this.updateInvalid();
+
+      return this;
+    },
+    showGridControl: function(data) {
+      var gridHeader = ["<div class='subnode-header'>",
+          "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
+          "  <button class='btn-sm btn-default add'>Add</buttton>",
+          "</div>"].join("\n"),
+        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
+
+      var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
+          gridSchema = Backform.generateGridColumnsFromModel(
+            data.node_info, subnode, this.field.get('mode'), data.columns
+            ),
+          self = this;
+
+      // Set visibility of Add button
+      if (data.disabled || data.canAdd == false) {
+        $(gridBody).find("button.add").remove();
+      }
+
+      // Insert Delete Cell into Grid
+      if (data.disabled == false && data.canDelete) {
+          gridSchema.columns.unshift({
+            name: "pg-backform-delete", label: "",
+            cell: Backgrid.Extension.DeleteCell,
+            editable: false, cell_priority: -1
+          });
+      }
+
+      var collection = this.model.get(data.name);
+      // Initialize a new Grid instance
+      var grid = new Backgrid.Grid({
+          columns: gridSchema.columns,
+          collection: collection,
+          className: "backgrid table-bordered"
+      });
+
+      // Render subNode grid
+      subNodeGrid = grid.render().$el;
+
+      // Combine Edit and Delete Cell
+      if (data.canDelete && data.canEdit) {
+        $(subNodeGrid).find("th.pg-backform-delete").remove();
+      }
+
+      $dialog =  gridBody.append(subNodeGrid);
+
+      // Add button callback
+      if (!(data.disabled || data.canAdd == false)) {
+        $dialog.find('button.add').first().click(function(e) {
+            e.preventDefault();
+            var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
+
+            // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
+            // There should be only one empty row.
+            if (!allowMultipleEmptyRows && collection){
+                var isEmpty = false;
+                collection.each(function(model){
+                    var modelValues = [];
+                    _.each(model.attributes, function(val, key){
+                        modelValues.push(val);
+                    })
+                    if(!_.some(modelValues, _.identity)){
+                        isEmpty = true;
+                    }
+                });
+                if(isEmpty){
+                    return false;
+                }
+            }
+
+            $(grid.body.$el.find($("tr.new"))).removeClass("new")
+            var m = new (data.model)(null, {silent: true});
+            collection.add(m);
+
+            var idx = collection.indexOf(m);
+            newRow = grid.body.rows[idx].$el;
+            newRow.addClass("new");
+            return false;
+        });
+      }
+
+      return $dialog;
+    }
+
+  });
 
   var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
     render: function() {
@@ -460,6 +721,24 @@
       this.updateInvalid();
 
       return this;
+    },
+    updateInvalid: function() {
+      var self = this;
+      var errorModel = this.model.errorModel;
+      if (!(errorModel instanceof Backbone.Model)) return this;
+
+      this.clearInvalid();
+
+      var attrArr = self.field.get('name').split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        error = self.keyPathAccessor(errorModel.toJSON(), path);
+
+      if (_.isEmpty(error)) return;
+
+      self.$el.addClass(Backform.errorClassName).append(
+        $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+        );
     },
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
@@ -499,11 +778,11 @@
           });
       }
 
-      var collections = this.model.get(data.name);
+      var collection = this.model.get(data.name);
       // Initialize a new Grid instance
       var grid = new Backgrid.Grid({
           columns: gridSchema.columns,
-          collection: collections,
+          collection: collection,
           className: "backgrid table-bordered"
       });
 
@@ -522,7 +801,7 @@
       $dialog.find('button.add').click(function(e) {
         e.preventDefault();
         grid.insertRow({});
-        newRow = $(grid.body.rows[collections.length - 1].$el);
+        newRow = $(grid.body.rows[collection.length - 1].$el);
         newRow.attr("class", "new").click(function(e) {
           $(this).attr("class", "");
         });

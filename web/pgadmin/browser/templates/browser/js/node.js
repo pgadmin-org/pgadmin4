@@ -1231,7 +1231,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
           delete self.origSessAttrs[o];
 
-          if ('startNewSession' in obj && _.isFunction(obj.startNewSession)) {
+          if (obj && 'startNewSession' in obj && _.isFunction(obj.startNewSession)) {
             obj.startNewSession();
           }
         });
