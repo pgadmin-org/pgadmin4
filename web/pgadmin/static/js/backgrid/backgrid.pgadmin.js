@@ -472,13 +472,68 @@ var PrivilegeCellEditor = Backgrid.Extension.PrivilegeCellEditor = Backgrid.Cell
   });
 
   var CustomHeaderCell = Backgrid.Extension.CustomHeaderCell = Backgrid.HeaderCell.extend({
-     initialize: function () {
-        // Here, we will add custom classes to header cell
-        Backgrid.HeaderCell.prototype.initialize.apply(this, arguments);
-        var getClassName = this.column.get('cellHeaderClasses');
-        if (getClassName) {
-            this.$el.addClass(getClassName);
-        }
+    initialize: function () {
+      // Here, we will add custom classes to header cell
+      Backgrid.HeaderCell.prototype.initialize.apply(this, arguments);
+      var getClassName = this.column.get('cellHeaderClasses');
+      if (getClassName) {
+        this.$el.addClass(getClassName);
+      }
+    }
+  });
+
+  /**
+    SwitchCell renders a Bootstrap Switch in backgrid cell
+  */
+  var SwitchCell = Backgrid.Extension.SwitchCell = Backgrid.BooleanCell.extend({
+    defaults: {
+      options: _.defaults({
+        onText: 'True',
+        offText: 'False',
+        onColor: 'success',
+        offColor: 'default',
+        size: 'mini'
+        }, $.fn.bootstrapSwitch.defaults)
+    },
+    className: 'switch-cell',
+    events: {
+      'switchChange.bootstrapSwitch': 'onChange'
+    },
+    onChange: function () {
+      var model = this.model,
+          column = this.column,
+          val = this.formatter.toRaw(this.$input.prop('checked'), model);
+
+      // on bootstrap change we also need to change model's value
+      model.set(column.get("name"), val);
+    },
+    render: function () {
+      var col = _.defaults(this.column.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = col.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          model = this.model, column = this.column,
+          rawValue = this.formatter.fromRaw(model.get(column.get("name")), model),
+          editable = Backgrid.callByNeed(col.editable, column, model);
+
+      this.$el.empty();
+      this.$el.append(
+        $("<input>", {
+          tabIndex: -1,
+          type: "checkbox"
+          }).prop('checked', rawValue).prop('disabled', !editable));
+      this.$input = this.$el.find('input[type=checkbox]').first();
+
+      // Override BooleanCell checkbox with Bootstrapswitch
+      this.$input.bootstrapSwitch(
+        _.defaults(
+          {'state': rawValue, 'disabled': !editable}, col.options, this.defaults.options
+          ));
+
+      this.delegateEvents();
+
+      return this;
     }
   });
 

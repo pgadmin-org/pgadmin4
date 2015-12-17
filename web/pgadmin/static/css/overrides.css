@@ -457,9 +457,9 @@ fieldset[disabled] .form-control {
 }
 
 .subnode > table.backgrid{
-	width: 99%;
-	margin: 0.1% 0.49%;
-	padding: 0;
+    width: 99%;
+    margin: 0.1% 0.49%;
+    padding: 0;
 }
 
 .backgrid thead th{
@@ -467,15 +467,15 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid th, .backgrid td {
-	line-height: 18px;
-	font-size: 12px;
+    line-height: 18px;
+    font-size: 12px;
 }
 
 .backgrid td {
-	padding-top: 0px;
-	padding-bottom: 0px;
-	padding-left: 2px;
-	padding-right: 2px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .backgrid thead th a {
@@ -542,7 +542,7 @@ fieldset[disabled] .form-control {
 
 .sub-node-form {
     height:auto;
-	padding: 1px;
+    padding: 1px;
 }
 
 .sub-node-form > .nav-tabs {
@@ -573,9 +573,13 @@ table.backgrid tr.new {
 }
 
 .bootstrap-switch > .bootstrap-switch-container > input {
-	height: 0px;
-	width: 0px;
-	margin: 0px;
-	padding: 0px;
+    height: 0px;
+    width: 0px;
+    margin: 0px;
+    padding: 0px;
     border: 0px solid black;
+}
+
+.switch-cell {
+    height: 0px; width: 0px;
 }
