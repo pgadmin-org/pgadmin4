@@ -203,13 +203,14 @@
   var SwitchControl = Backform.SwitchControl = Backform.InputControl.extend({
     defaults: {
       label: "",
-      options: {},
-      extraClasses: [],
-      onText: 'True',
-      offText: 'False',
-      onColor: 'success',
-      offColor: 'default',
-      size: 'small'
+      options: {
+        onText: 'True',
+        offText: 'False',
+        onColor: 'success',
+        offColor: 'default',
+        size: 'small'
+      },
+      extraClasses: []
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -229,7 +230,7 @@
     },
     events: {'switchChange.bootstrapSwitch': 'onChange'},
     render: function() {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
+      var field = _.defaults(this.field.toJSON(), this.defaults, {options: $.fn.bootstrapSwitch.defaults}),
           attributes = this.model.toJSON(),
           attrArr = field.name.split('.'),
           name = attrArr.shift(),
@@ -240,14 +241,10 @@
       this.$input = this.$el.find("input[type=checkbox]").first();
 
       //Check & set additional properties
-      this.$input.bootstrapSwitch({
-        'onText': field.onText,
-        'offText': field.offText,
-        'onColor': field.onColor,
-        'offColor': field.offColor,
-        'size': field.size,
-        'state': rawValue
-      });
+      this.$input.bootstrapSwitch(
+          _.extend(field.options, {'state': rawValue})
+          );
+
       return this;
     }
   });
