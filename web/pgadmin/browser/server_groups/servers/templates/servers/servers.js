@@ -145,26 +145,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           role: null
         },
         schema: [{
-          id: 'id', label: '{{ _('ID') }}', type: 'int', group: null,
-          mode: ['properties']
+          id: 'id', label: '{{ _('ID') }}', type: 'int', mode: ['properties']
         },{
-          id: 'name', label:'{{ _('Name') }}', type: 'text', group: null,
+          id: 'name', label:'{{ _('Name') }}', type: 'text',
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'connected', label:'{{ _('Connected') }}', type: 'switch', group: null,
+          id: 'connected', label:'{{ _('Connected') }}', type: 'switch',
           mode: ['properties'], 'options': {
-            'onText':   'True',
-            'offText':  'False',
-            'onColor':  'success',
-            'offColor': 'default',
-            'size': 'normal'
+            'onText':   'True', 'offText':  'False', 'onColor':  'success',
+            'offColor': 'danger', 'size': 'small'
           }
         },{
           id: 'version', label:'{{ _('Version') }}', type: 'text', group: null,
           mode: ['properties'], show: 'isConnected'
         },{
           id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
-          mode: ['properties', 'edit', 'create'], disabled: 'notEditMode'
+          mode: ['properties', 'edit', 'create']
         },{
           id: 'host', label:'{{ _('Host Name/Address') }}', type: 'text', group: "Connection",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
@@ -215,7 +211,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           this.errorModel.set(err);
 
           if (_.size(err)) {
-            return err;
+            return errmsg;
           }
 
           return null;
