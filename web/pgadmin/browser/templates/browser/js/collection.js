@@ -49,7 +49,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         }))(),
         info = this.getTreeNodeHierarchy.apply(this, [item]),
         gridSchema = Backform.generateGridColumnsFromModel(
-            info, node.model, 'prorperties', that.columns
+            info, node.model, 'properties', that.columns
           ),
         // Initialize a new Grid instance
         grid = new Backgrid.Grid({
