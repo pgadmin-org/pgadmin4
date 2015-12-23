@@ -8,7 +8,8 @@
 ##########################################################################
 import json
 from abc import ABCMeta, abstractmethod, abstractproperty
-from flask import render_template, request, make_response, jsonify, current_app
+from flask import render_template, request, make_response, jsonify, \
+        current_app, url_for
 from flask.ext.security import login_required, current_user
 from pgadmin.settings.settings_model import db, Server, ServerGroup, User
 from pgadmin.utils.menu import MenuItem
@@ -83,6 +84,25 @@ class ServerModule(sg.ServerGroupPluginModule):
             snippets.extend(st.csssnippets)
 
         return snippets
+
+    def get_own_javascripts(self):
+        scripts = []
+
+        scripts.extend([{
+            'name': 'pgadmin.node.server',
+            'path': url_for('browser.index') + '%s/module' % self.node_type,
+            'when': self.script_load
+            },
+            {
+            'name': 'pgadmin.browser.server.privilege',
+            'path': url_for('browser.index') + 'server/static/js/privilege',
+            'when': self.node_type
+            }])
+
+        for module in self.submodules:
+            scripts.extend(module.get_own_javascripts())
+
+        return scripts
 
 
 class ServerMenuItem(MenuItem):
@@ -606,7 +626,8 @@ class ServerNode(PGChildNodeView):
                                 ),
                             'connected': True,
                             'type': manager.server_type,
-                            'version': manager.version
+                            'version': manager.version,
+                            'db': manager.db
                             }
                         )
 

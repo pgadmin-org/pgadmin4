@@ -57,6 +57,7 @@ class PGChildModule:
     def __init__(self, *args, **kwargs):
         self.min_ver = 1000000000
         self.max_ver = 0
+        self.server_type = None
         self.attributes = {}
 
         super(PGChildModule, self).__init__(*args, **kwargs)

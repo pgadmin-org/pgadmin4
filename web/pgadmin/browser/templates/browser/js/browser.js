@@ -443,25 +443,44 @@ OWNER TO helpdesk;\n';
             if (d) {
               /* Loading all the scripts registered to be loaded on this node */
               if (obj.scripts && obj.scripts[d._type]) {
-                _.each(obj.scripts[d._type], function(s) {
-                  if (!s.loaded) {
-                    require([s.name], function(m) {
-                      s.loaded = true;
-                      // Call the initialize (if present)
-                      if (m && m.init && typeof m.init == 'function') {
-                        try {
-                          m.init();
-                        } catch (err) {
-                          obj.report_error(
-                            '{{ _('Error Initializing script - ') }}' + s.path, err);
+                var scripts = _.extend({}, obj.scripts[d._type]);
+
+                /*
+                 * We can remove it from the Browser.scripts object as
+                 * these're about to be loaded.
+                 *
+                 * This will make sure that - we do check for the script for
+                 * loading only once.
+                 *
+                 */
+                delete obj.scripts[d._type];
+
+                setTimeout(function() {
+                  _.each(scripts, function(s) {
+                    if (!s.loaded) {
+                      require([s.name], function(m) {
+                        s.loaded = true;
+                        // Call the initialize (if present)
+                        if (m && m.init && typeof m.init == 'function') {
+                          try {
+                            m.init();
+                          } catch (err) {
+                            console.log("Error running module Init script for '" + s.path + "'");
+                            console.log(err);
+
+                            obj.report_error(
+                              '{{ _('Error Initializing script - ') }}' + s.path, err);
+                          }
                         }
-                      }
-                    }, function() {
-                      obj.report_error(
-                        '{{ _('Error loading script - ') }}' + s.path);
-                    });
-                  }
-                });
+                      }, function() {
+                        console.log("Error loading script - " + s.path);
+                        console.log(arguments);
+                        obj.report_error(
+                          '{{ _('Error loading script - ') }}' + s.path);
+                      }).bind(s);
+                    }
+                  });
+                }, 1);
               }
             }
             break;

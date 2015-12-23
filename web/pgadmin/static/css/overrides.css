@@ -492,7 +492,11 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid td.renderable:not(.editable):not(.delete-cell) {
-   background-color: #eee;
+    background-color: #F1F1F1;
+}
+
+.backgrid tr.header td.renderable:not(.editable):not(.delete-cell) {
+    background-color: #AAA;
 }
 
 .subnode-header {
@@ -582,4 +586,12 @@ table.backgrid tr.new {
 
 .switch-cell {
     height: 0px; width: 0px;
+}
+
+.width_percent_40 {
+	width: 40%;
+}
+
+.width_percent_60 {
+	width: 60%;
 }

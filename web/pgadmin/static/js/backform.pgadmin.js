@@ -36,7 +36,8 @@
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
 
   pgAdmin.editableCell = function() {
-    if (this.attributes && this.attributes.disabled) {
+    if (this.attributes && !_.isUndefined(this.attributes.disabled) &&
+        !_.isNull(this.attributes.disabled)) {
       if(_.isFunction(this.attributes.disabled)) {
         return !(this.attributes.disabled.apply(this, arguments));
       }
@@ -503,14 +504,19 @@
     initialize: function() {
         Backform.Control.prototype.initialize.apply(this, arguments);
 
-        var uniqueCol = this.field.get('uniqueCol') || [];
+        var uniqueCol = this.field.get('uniqueCol') || [],
+            m = this.field.get('model'),
+            schema = m.prototype.schema || m.__super__.schema,
+            columns = [];
 
-        var columns = this.field.get('columns')
+        _.each(schema, function(s) {
+          columns.push(s.id);
+        });
+
         // Check if unique columns provided are also in model attributes.
         if (uniqueCol.length > _.intersection(columns, uniqueCol).length){
             errorMsg = "Developer: Unique column/s [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
             alert (errorMsg);
-            return null;
         }
 
         var collection = this.model.get(this.field.get('name')),
@@ -747,7 +753,8 @@
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
             data.node_info, subnode, this.field.get('mode'), data.columns
-            );
+            ), self = this,
+          pgBrowser = window.pgAdmin.Browser;
 
       // Set visibility of Add button
       if (data.disabled || data.canAdd == false) {
@@ -775,7 +782,17 @@
           });
       }
 
-      var collection = this.model.get(data.name);
+      var collection = self.model.get(data.name);
+
+      if (!collection) {
+        collection = new (pgBrowser.Node.Collection)(null, {
+          handler: self.model.handler || self,
+          model: data.model,
+          silent: true
+        });
+        self.model.set(data.name, collection, {silent: true});
+      }
+
       // Initialize a new Grid instance
       var grid = new Backgrid.Grid({
           columns: gridSchema.columns,

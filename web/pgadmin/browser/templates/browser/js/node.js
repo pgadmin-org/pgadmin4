@@ -1005,7 +1005,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     Model: Backbone.Model.extend({
       parse: function(res) {
         var self = this;
-        if ('node' in res && res['node']) {
+        if (res && _.isObject(res) && 'node' in res && res['node']) {
           self.tnode = _.extend({}, res.node);
           delete res.node;
         }
@@ -1042,24 +1042,25 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               case 'model':
                 obj = self.get(s.id);
                 val = res[s.id];
-                if (_.isArray(val) || _.isObject(val)) {
-                  if (!_.isObject(obj)) {
+                if (!_.isUndefined(val) && !_.isNull(val)) {
+                  if (!obj || !(obj instanceof Backbone.Model)) {
                     if (_.isString(s.model) &&
                         s.model in pgBrowser.Nodes[s.model]) {
                       obj = new (pgBrowser.Nodes[s.model].Model)(
-                          null, {handler: self.handler || self}
+                          obj, {silent: true, handler: self.handler || self}
                           );
                     } else {
-                      obj = new (s.model)(null, {handler: self.handler || self});
+                      obj = new (s.model)(obj, {
+                        silent: true, handler: self.handler || self
+                      });
                     }
                   }
-                  obj.set(self.get(s.id), {parse: true, silent: true});
+                  obj.set(val, {parse: true, silent: true});
                 } else {
                   if (obj)
                     delete obj;
                   obj = null;
                 }
-                self.set(s.id, obj, {silent: true});
                 res[s.id] = obj;
                 break;
               default:
@@ -1071,6 +1072,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       },
       initialize: function(attributes, options) {
         var self = this;
+
+        Backbone.Model.prototype.initialize.apply(self, arguments);
 
         if (_.isUndefined(options) || _.isNull(options)) {
           options = attributes || {};
@@ -1088,31 +1091,35 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         if (self.schema && _.isArray(self.schema)) {
           _.each(self.schema, function(s) {
-            var obj = null;
+            var obj = self.get(s.id);
             switch(s.type) {
               case 'collection':
-                if (_.isString(s.model) &&
+                if (!obj || !(obj instanceof pgBrowser.Node.Collection)) {
+                  if (_.isString(s.model) &&
                     s.model in pgBrowser.Nodes) {
-                  var node = pgBrowser.Nodes[s.model];
-                  obj = new (node.Collection)(null, {
-                    model: node.model,
-                    handler: self.handler || self
-                  });
-                } else {
-                  obj = new (pgBrowser.Node.Collection)(null, {
-                    model: s.model,
-                    handler: self.handler || self
-                  });
+                    var node = pgBrowser.Nodes[s.model];
+                    obj = new (node.Collection)(obj, {
+                      model: node.model,
+                        handler: self.handler || self
+                    });
+                  } else {
+                    obj = new (pgBrowser.Node.Collection)(obj, {
+                      model: s.model,
+                      handler: self.handler || self
+                    });
+                  }
                 }
                 break;
               case 'model':
-                if (_.isString(s.model) &&
-                    s.model in pgBrowser.Nodes[s.model]) {
-                  obj = new (pgBrowser.Nodes[s.model].Model)(
-                      null, {handler: self.handler || self}
-                      );
-                } else {
-                  obj = new (s.model)(null, {handler: self.handler || self});
+                if (!obj || !(obj instanceof Backbone.Model)) {
+                  if (_.isString(s.model) &&
+                      s.model in pgBrowser.Nodes[s.model]) {
+                    obj = new (pgBrowser.Nodes[s.model].Model)(
+                        obj, {handler: self.handler || self}
+                        );
+                  } else {
+                    obj = new (s.model)(obj, {handler: self.handler || self});
+                  }
                 }
                 break;
               default:
@@ -1148,8 +1155,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         var self = this;
 
         return (_.size(self.sessAttrs) > 0 ||
-            _.some(self.objects, function(o) {
-              return self.get(o).sessChanged();
+            _.some(self.objects, function(k) {
+              var obj = self.get(k);
+              if (!(_.isNull(obj) || _.isUndefined(obj))) {
+                return obj.sessChanged();
+              }
+              return false;
             }));
       },
       sessValid: function() {
@@ -1208,11 +1219,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           res = _.extend(res, self.sessAttrs);
         }
 
-        _.each(self.objects, function(o) {
-          var obj = self.get(o);
-          if (session || obj)
-            res[o] = (obj && obj.toJSON(session));
-        });
+        _.each(self.objects, function(k) {
+          var obj = self.get(k);
+          res[k] = (obj && obj.toJSON(session));
+          });
         return res;
       },
       startNewSession: function() {
@@ -1228,6 +1238,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         _.each(self.objects, function(o) {
           var obj = self.get(o);
+
+          if (_.isUndefined(obj) || _.isNull(obj)) {
+            return;
+          }
 
           delete self.origSessAttrs[o];
 
