@@ -784,7 +784,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
      * Supports url generation for create, drop, edit, properties, sql,
      * depends, statistics
      */
-    generate_url: function(item, type, d, with_id) {
+    generate_url: function(item, type, d, with_id, info) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
@@ -796,14 +796,16 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         _.sortBy(
           _.values(
            _.pick(
-            this.getTreeNodeHierarchy(item), function(v, k, o) {
+            ((_.isUndefined(item) || _.isNull(item)) ? info || {} :
+              this.getTreeNodeHierarchy(item)),
+            function(v, k, o) {
               return (k != self.type);
             })
            ),
           function(o) { return o.priority; }
           ),
         function(o) {
-          ref = S('%s/%s').sprintf(ref, o.id).value();
+          ref = S('%s/%s').sprintf(ref, encodeURI(o._id)).value();
         });
 
       ref = S('%s/%s').sprintf(
@@ -1262,16 +1264,26 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       do {
         d = t.itemData(i);
         if (d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId) {
-          res[d._type] = {
-            'id': d._id,
+          res[d._type] = _.extend({}, d, {
             'priority': idx
-          };
+          });
           idx -= 1;
         }
         i = t.hasParent(i) ? t.parent(i) : null;
       } while (i);
 
       return res;
+    },
+    cache: function(url, data) {
+      var cached = this.cached = this.cached || {};
+
+      if (_.isUndefined(data)) {
+        return cached[url];
+      }
+
+      cached[url] = {data: data, at: Date()};
+
+      return data;
     }
   });
 

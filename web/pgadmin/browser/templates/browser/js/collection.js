@@ -118,7 +118,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           function(o) { return o.priority; }
           ),
         function(o) {
-          ref = S('%s/%s').sprintf(ref, o.id).value();
+          ref = S('%s/%s').sprintf(ref, encodeURI(o._id)).value();
         });
 
       var args = {
