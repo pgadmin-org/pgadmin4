@@ -62,7 +62,7 @@ class PGChildModule:
 
         super(PGChildModule, self).__init__(*args, **kwargs)
 
-    def BackendSupported(self, mangaer):
+    def BackendSupported(self, mangaer, **kwargs):
         sversion = getattr(mangaer, 'sversion', None)
         if (sversion is None or not isinstance(sversion, int)):
             return False
@@ -328,14 +328,19 @@ class NodeView(with_metaclass(MethodViewType, View)):
         return make_json_response(data=children)
 
 
-class PGChildNode(object):
+class PGChildNodeView(NodeView):
 
-    def children(self, sid, **kwargs):
+    def children(self, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
+
+        if 'sid' not in kwargs:
+            return precondition_required(
+                gettext('Required properties are missing!')
+            )
 
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid=sid
+                sid=kwargs['sid']
                 )
 
         did = None
@@ -347,22 +352,17 @@ class PGChildNode(object):
         if not conn.connected():
             return precondition_required(
                     gettext(
-                        "Please make a connection to the server first!"
+                        "Connection has been lost with the server!"
                         )
                     )
 
         nodes = []
         for module in self.blueprint.submodules:
             if isinstance(module, PGChildModule):
-                if sid is not None and manager is not None and \
-                        module.BackendSupported(manager):
-                    nodes.extend(module.get_nodes(sid=sid, **kwargs))
+                if manager is not None and \
+                        module.BackendSupported(manager, **kwargs):
+                    nodes.extend(module.get_nodes(**kwargs))
             else:
-                nodes.extend(module.get_nodes(sid=sid, **kwargs))
+                nodes.extend(module.get_nodes(**kwargs))
 
         return make_json_response(data=nodes)
-
-
-class PGChildNodeView(NodeView, PGChildNode):
-
-    pass
