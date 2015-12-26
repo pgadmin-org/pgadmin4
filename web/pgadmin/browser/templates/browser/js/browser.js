@@ -649,7 +649,9 @@ OWNER TO helpdesk;\n';
     messages: {
       'server_lost': '{{ _('Connection to the server has been lost!') }}',
       'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}',
-      'general_cateogty': '{{ _('General') }}'
+      'general_cateogty': '{{ _('General') }}',
+      'SQL_TAB': '{{ _('SQL') }}',
+      'SQL_NO_CHANGE': '\n -- ' + '{{ _('Nothing changed') }}'
     }
   });
 

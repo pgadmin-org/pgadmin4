@@ -10,11 +10,11 @@
 
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'pgadmin.backgrid'],
-     function(_, $, Backbone, Backform, Backgrid) {
+    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror.sql'],
+     function(_, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Backgrid);
+      return factory(root, _, $, Backbone, Backform, Backgrid, CodeMirror);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -24,14 +24,15 @@
       Backbone = require('backbone') || root.Backbone,
       Backform = require('backform') || root.Backform,
       Backgrid = require('backgrid') || root.Backgrid;
+      CodeMirror = require('codemirror') || root.CodeMirror;
       pgAdminBackgrid = require('pgadmin.backgrid');
-    factory(root, _, $, Backbone, Backform, Backgrid);
+    factory(root, _, $, Backbone, Backform, Backgrid, CodeMirror);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid);
+    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
   }
-}(this, function(root, _, $, Backbone, Backform, Backgrid) {
+}(this, function(root, _, $, Backbone, Backform, Backgrid, CodeMirror) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
 
@@ -312,7 +313,7 @@
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
-        var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx++})))
+        var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx})))
               .appendTo(tabContent)
               .removeClass('collapse').addClass('collapse'),
             h = $((tmpls['header'])(o)).appendTo(tabHead);
@@ -320,22 +321,27 @@
         o.fields.each(function(f) {
           var cntr = new (f.get("control")) ({
             field: f,
-            model: m
+            model: m,
+            dialog: self,
+            tabIndex: idx
           });
           el.append(cntr.render().$el);
           controls.push(cntr);
         });
-        tabHead.find('a[data-toggle="tab"]').on('hidden.bs.tab', function() {
-          self.hidden_tab = $(this).data('tabIndex');
-        });
-        tabHead.find('a[data-toggle="tab"]').on('shown.bs.tab', function() {
-          self.shown_tab = $(this).data('tabIndex');
-          m.trigger('pg-property-tab-changed', {
-            'collection': m.collection, 'model': m,
-            'index': m.collection && m.collection.models ? _.indexOf(m.collection.models, m) : 0,
-            'shown': self.shown_tab, 'hidden': self.hidden_tab
-          });
-        });
+        idx++;
+        tabHead.find('a[data-toggle="tab"]').off(
+          'shown.bs.tab'
+        ).off('hidden.bs.tab').on(
+          'hidden.bs.tab', function() {
+            self.hidden_tab = $(this).data('tabIndex');
+            }).on('shown.bs.tab', function() {
+              var that = this;
+              self.shown_tab = $(that).data('tabIndex');
+              m.trigger('pg-property-tab-changed', {
+                'model': m, 'shown': self.shown_tab, 'hidden': self.hidden_tab,
+                'tab': that
+              });
+            });
       });
 
       var makeActive = tabHead.find('[id="' + c + '"]').first();
@@ -826,12 +832,111 @@
     }
   });
 
+  /*
+   * SQL Tab Control for showing the modified SQL for the node with the
+   * property 'hasSQL' is set to true.
+   *
+   * When the user clicks on the SQL tab, we will send the modified data to the
+   * server and fetch the SQL for it.
+   */
+  var SqlTabControl = Backform.SqlTabControl = Backform.Control.extend({
+    defaults: {
+      label: "",
+      controlsClassName: "pgadmin-controls col-sm-12",
+      extraClasses: [],
+      helpMessage: null
+    },
+    template: _.template([
+      '<div class="<%=controlsClassName%>">',
+      '  <textarea class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>><%-value%></textarea>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>'
+    ].join("\n")),
+    /*
+     * Initialize the SQL Tab control properly
+     */
+    initialize: function(o) {
+      Backform.Control.prototype.initialize.apply(this, arguments);
+
+      // Save the required information for using it later.
+      this.dialog = o.dialog;
+      this.tabIndex = o.tabIndex;
+
+      /*
+       * We will listen to the tab change event to check, if the SQL tab has
+       * been clicked or, not.
+       */
+      this.model.on('pg-property-tab-changed', this.onTabChange, this);
+    },
+    getValueFromDOM: function() {
+        return this.formatter.toRaw(this.$el.find("textarea").val(), this.model);
+    },
+    render: function() {
+      // Use the Backform Control's render function
+      Backform.Control.prototype.render.apply(this, arguments);
+
+      var sqlTab = CodeMirror.fromTextArea(
+        (this.$el.find("textarea")[0]), {
+        lineNumbers: true,
+        mode: "text/x-sql",
+        readOnly: true
+      });
+      this.sqlTab = sqlTab;
+      return this;
+    },
+    onTabChange: function() {
+
+      // Fetch the information only if the SQL tab is visible at the moment.
+      if (this.dialog && this.dialog.shown_tab == this.tabIndex) {
+
+        // We will send request to sever only if something is changed in model
+        if(_.size(this.model.sessAttrs)) {
+
+          var self = this,
+            node = self.field.get('schema_node'),
+            msql_url = node.generate_url.apply(
+                node, [
+                  null, 'msql', this.field.get('node_data'), true,
+                  this.field.get('node_info')
+                ]);
+
+
+          // Fetching the modified SQL
+          self.model.trigger('pgadmin-view:msql:fetching', self.method, node);
+
+          $.ajax({
+            url: msql_url,
+            type: 'GET',
+            cache: false,
+            data: self.model.toJSON(true)
+          }).done(function(res) {
+            self.sqlTab.clearHistory();
+            self.sqlTab.setValue(res.data);
+          }).fail(function() {
+            self.model.trigger('pgadmin-view:msql:error', self.method, node, arguments);
+          }).always(function() {
+            self.model.trigger('pgadmin-view:msql:fetched', self.method, node, arguments);
+          });
+        } else {
+          this.sqlTab.clearHistory();
+          this.sqlTab.setValue(window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
+        }
+      }
+    },
+    remove: function() {
+      this.model.off('pg-property-tab-changed', this.onTabChange, this);
+      Backform.Control.__super__.remove.apply(this, arguments);
+    }
+});
+
   ///////
   // Generate a schema (as group members) based on the model's schema
   //
   // It will be used by the grid, properties, and dialog view generation
   // functions.
-  var generateViewSchema = Backform.generateViewSchema = function(node_info, Model, mode) {
+  var generateViewSchema = Backform.generateViewSchema = function(node_info, Model, mode, node, treeData) {
     var proto = (Model && Model.prototype) || Model,
         schema = (proto && proto.schema),
         groups, pgBrowser = window.pgAdmin.Browser;
@@ -870,7 +975,9 @@
                  (server_info.version >= s.min_version)) &&
                 (_.isUndefined(s.max_version) ? true :
                  (server_info.version <= s.max_version)))),
-              disabled = ((mode == 'properties') || !ver_in_limit);
+              disabled = ((mode == 'properties') || !ver_in_limit),
+              schema_node = (s.node && _.isString(s.node) &&
+                  s.node in pgBrowser.Nodes &&  pgBrowser.Nodes[s.node]) || node;
 
           var o = _.extend(_.clone(s), {
             name: s.id,
@@ -889,6 +996,7 @@
             control: control,
             cell: cell,
             node_info: node_info,
+            schema_node: schema_node,
             visible: (mode == 'properties'?
               (ver_in_limit ?
                (s.version || true) : false) : s.version || true)
@@ -906,6 +1014,19 @@
       if (_.isEmpty(groups)) {
         return null;
       }
+      if (node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
+        groups[pgBrowser.messages.SQL_TAB] = [{
+            name: 'sql',
+            visible: true,
+            disabled: false,
+            type: 'text',
+            control: 'sql-tab',
+            node_info: node_info,
+            schema_node: node,
+            node_data: treeData
+        }];
+      }
+
     }
     return groups;
   }

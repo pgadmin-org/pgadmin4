@@ -115,7 +115,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               onChangeCallback: callback
             }),
             info = this.getTreeNodeHierarchy.apply(this, [item]),
-            groups = Backform.generateViewSchema(info, newModel, type);
+            groups = Backform.generateViewSchema(info, newModel, type, this, node);
 
         // 'schema' has the information about how to generate the form.
         if (groups) {
