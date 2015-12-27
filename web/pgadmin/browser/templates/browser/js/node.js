@@ -799,7 +799,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             ((_.isUndefined(item) || _.isNull(item)) ? info || {} :
               this.getTreeNodeHierarchy(item)),
             function(v, k, o) {
-              return (k != self.type);
+              // If you want to make sure, it generates the correct url path,
+              // please define 'parents' properties for this node, which will
+              // be an list of name of the parents, and grand parents type.
+              return (k != self.type ||
+                (self.parents && _.isArray(self.parents) && k in self.parents));
             })
            ),
           function(o) { return o.priority; }

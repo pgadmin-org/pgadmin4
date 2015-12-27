@@ -41,3 +41,7 @@
     width: 100%; 
     height: 100%;
 }
+
+.pgadmin-node-select option {
+  padding-left: 20px;
+}

@@ -135,6 +135,12 @@ class BrowserModule(PgAdminModule):
                 'name': name, 'path': url_for('browser.static', filename=end),
                 'preloaded': True})
 
+        scripts.append({
+            'name': 'pgadmin.browser.node.ui',
+            'path': url_for('browser.static', filename='js/node.ui'),
+            'when': 'server-group'
+            })
+
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
         return scripts

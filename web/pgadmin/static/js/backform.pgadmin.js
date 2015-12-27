@@ -130,33 +130,6 @@
     '  </span>',
     '</div>'
   ].join("\n"));
-
-  Backform.Control.prototype.clearInvalid = function() {
-    this.$el.removeClass(Backform.errorClassName);
-    this.$el.find(".pgadmin-control-error-message").remove();
-    return this;
-  };
-  Backform.Control.prototype.updateInvalid = function() {
-    var self = this;
-    var errorModel = this.model.errorModel;
-    if (!(errorModel instanceof Backbone.Model)) return this;
-
-    this.clearInvalid();
-
-    this.$el.find(':input').not('button').each(function(ix, el) {
-      var attrArr = $(el).attr('name').split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
-
-      if (_.isEmpty(error)) return;
-
-      self.$el.addClass(Backform.errorClassName).append(
-        $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
-      );
-    });
-  };
-
   Backform.Control.prototype.clearInvalid = function() {
     this.$el.removeClass(Backform.errorClassName);
     this.$el.find(".pgadmin-control-error-message").remove();

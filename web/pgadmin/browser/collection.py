@@ -96,8 +96,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         snippets = [
                 render_template(
                     "browser/css/collection.css",
-                    node_type=self.node_type,
-                    _=gettext
+                    node_type=self.node_type
                     ),
                 render_template(
                     "browser/css/node.css",

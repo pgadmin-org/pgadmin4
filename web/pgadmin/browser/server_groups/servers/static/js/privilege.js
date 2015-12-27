@@ -103,7 +103,7 @@
       var privs = {};
       _.each(this.privileges, function(p) {
         privs[p] = {
-          'privilige_type': p, 'privilege': false, 'with_grant': false
+          'privilege_type': p, 'privilege': false, 'with_grant': false
         }
       });
 
@@ -376,7 +376,7 @@
   });
 
   /*
-   * This will help us transform the privilieges value in proper format to be
+   * This will help us transform the privileges value in proper format to be
    * displayed in the cell.
    */
   var PrivilegeCellFormatter = Backgrid.Extension.PrivilegeCellFormatter =
