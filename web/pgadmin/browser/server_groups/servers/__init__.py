@@ -104,6 +104,19 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         return scripts
 
+    def register(self, app, options, first_registration=False):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        if first_registration:
+            from pgadmin.utils.driver import get_driver
+            driver = get_driver(PG_DEFAULT_DRIVER, app)
+            app.jinja_env.filters['qtLiteral'] = driver.qtLiteral
+            app.jinja_env.filters['qtIdent'] = driver.qtIdent
+            app.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
+
+        super(ServerModule, self).register(app, options, first_registration)
 
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):

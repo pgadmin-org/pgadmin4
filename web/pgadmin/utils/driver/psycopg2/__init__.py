@@ -10,6 +10,7 @@ from datetime import datetime
 
 import psycopg2
 import psycopg2.extras
+from psycopg2.extensions import adapt
 
 from flask import g, current_app, session
 from flask.ext.babel import gettext
@@ -19,6 +20,8 @@ from ..abstract import BaseDriver, BaseConnection
 from pgadmin.settings.settings_model import Server, User
 from pgadmin.utils.crypto import encrypt, decrypt
 import random
+
+from .keywords import ScanKeyword
 
 
 _ = gettext
@@ -746,3 +749,118 @@ class Driver(BaseDriver):
                 for mgr in [m for m in sess_mgr if isinstance(m,
                         ServerManager)]:
                     mgr.release()
+
+    @staticmethod
+    def qtLiteral(value):
+        return adapt(value).getquoted()
+
+    @staticmethod
+    def ScanKeywordExtraLookup(key):
+        # UNRESERVED_KEYWORD      0
+        # COL_NAME_KEYWORD        1
+        # TYPE_FUNC_NAME_KEYWORD  2
+        # RESERVED_KEYWORD        3
+        extraKeywords = {
+            'connect': 3,
+            'convert': 3,
+            'distributed': 0,
+            'exec': 3,
+            'log': 0,
+            'long': 3,
+            'minus': 3,
+            'nocache': 3,
+            'number': 3,
+            'package': 3,
+            'pls_integer': 3,
+            'raw': 3,
+            'return': 3,
+            'smalldatetime': 3,
+            'smallfloat': 3,
+            'smallmoney': 3,
+            'sysdate': 3,
+            'systimestap': 3,
+            'tinyint': 3,
+            'tinytext': 3,
+            'varchar2': 3
+            };
+
+        return (key in extraKeywords and extraKeywords[key]) or ScanKeyword(key)
+
+    @staticmethod
+    def needsQuoting(key, forTypes):
+
+            value = key.decode()
+            valNoArray = value.decode()
+
+            # check if the string is number or not
+            if (isinstance(value, int)):
+                return True;
+            # certain types should not be quoted even though it contains a space. Evilness.
+            elif forTypes and value[-2:] == u"[]":
+                valNoArray = value[:-2]
+
+            if forTypes and valNoArray.lower() in [
+                u"bit varying"
+                u"\"char\"",
+                u"character varying",
+                u"double precision"
+                u"timestamp without time zone"
+                u"timestamp with time zone"
+                u"time without time zone"
+                u"time with time zone"
+                u"\"trigger\""
+                u"\"unknown\""
+                ]:
+                return False
+
+            if u'0' <= valNoArray[0] <= u'9':
+                return True
+
+            for c in valNoArray:
+                if not (u'a' <= c <= u'z') and c != u'_':
+                    return True
+
+            # check string is keywaord or not
+            category = Driver.ScanKeywordExtraLookup(value)
+
+            if category is None:
+                return False
+
+            # UNRESERVED_KEYWORD
+            if category == 0:
+                return False
+
+            # COL_NAME_KEYWORD
+            if forTypes and category == 3:
+                return False
+
+            return True
+
+    @staticmethod
+    def qtTypeIdent(value):
+
+        if (len(value) == 0):
+            return value
+
+        result = value;
+
+        if (Driver.needsQuoting(result, True)):
+            result.replace("\"", "\"\"")
+            return "\"" + result + "\""
+        else:
+            return result
+
+    @staticmethod
+    def qtIdent(value):
+
+        if (len(value) == 0):
+            return value
+
+        result = value;
+
+        if (Driver.needsQuoting(result, False)):
+            result.replace("\"", "\"\"")
+            return "\"" + result + "\""
+        else:
+            return result;
+
