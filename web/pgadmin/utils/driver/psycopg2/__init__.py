@@ -356,11 +356,14 @@ Attempt to reconnect it failed with the below error:
 
         import copy
         # Get Resultset Column Name, Type and size
-        columns = [copy.deepcopy(desc.__dict__) for desc in cur.description]
+        columns = cur.description and [
+                copy.deepcopy(desc.__dict__) for desc in cur.description
+                ] or []
 
         rows = []
-        for row in cur:
-            rows.append(row)
+        if cur.rowcount > 0:
+            for row in cur:
+                rows.append(row)
 
         return True, {'columns': columns, 'rows': rows}
 
@@ -395,11 +398,14 @@ Attempt to reconnect it failed with the below error:
 
         import copy
         # Get Resultset Column Name, Type and size
-        columns = [copy.deepcopy(desc.__dict__) for desc in cur.description]
+        columns = cur.description and [
+                copy.deepcopy(desc.__dict__) for desc in cur.description
+                ] or []
 
         rows = []
-        for row in cur:
-            rows.append(dict(row))
+        if cur.rowcount > 0:
+            for row in cur:
+                rows.append(dict(row))
 
         return True, {'columns': columns, 'rows': rows}
 
