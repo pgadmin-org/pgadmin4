@@ -283,7 +283,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           //
           // You know - we're working with RDBMS, relation is everything
           // for us.
-          if (self.parent_type && !isParent(d._type)) {
+          if (self.parent_type && !isParent(d)) {
             // In browser tree, I can be under any node, But - that
             // does not mean, it is my parent.
             //
@@ -297,7 +297,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               i = t.parent(i);
               pd = t.itemData(i);
 
-              if (isParent(pd._type)) {
+              if (isParent(pd)) {
                 // Assign the data, this is my actual parent.
                 d = pd;
                 break;
@@ -310,7 +310,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // The only node - which I know - who does not have parent
           // node, is the Server Group (and, comes directly under root
           // node - which has no parent.)
-          if (!d || (this.parent_type != null && !isParent(d._type))) {
+          if (!d || (this.parent_type != null && !isParent(d))) {
             // It should never come here.
             // If it is here, that means - we do have some bug in code.
             return;
