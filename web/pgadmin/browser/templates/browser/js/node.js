@@ -118,9 +118,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             info = this.getTreeNodeHierarchy.apply(this, [item]),
             groups = Backform.generateViewSchema(info, newModel, type, this, node);
 
-        if (type == 'create' || type == 'edit'){
-          newModel.on('on-status', function(e){
-            that.statusBar.html(e.msg);
+        if (type == 'create' || type == 'edit') {
+          newModel.on('on-status', function(e) {
+            if(!_.isUndefined(that.statusBar)) {
+              that.statusBar.html(e.msg);
+            }
+          }).on('on-status-clear', function(e) {
+            if(!_.isUndefined(that.statusBar)) {
+              that.statusBar.empty();
+            }
           });
         }
         // 'schema' has the information about how to generate the form.
