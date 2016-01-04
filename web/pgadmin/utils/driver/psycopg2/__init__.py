@@ -797,52 +797,56 @@ class Driver(BaseDriver):
     @staticmethod
     def needsQuoting(key, forTypes):
 
+        # Python 3 does not require the decoding of value
+        if hasattr(str, 'decode'):
             value = key.decode()
-            valNoArray = value.decode()
+        else:
+            value = key
+        valNoArray = value
 
-            # check if the string is number or not
-            if (isinstance(value, int)):
-                return True;
-            # certain types should not be quoted even though it contains a space. Evilness.
-            elif forTypes and value[-2:] == u"[]":
-                valNoArray = value[:-2]
+        # check if the string is number or not
+        if (isinstance(value, int)):
+            return True;
+        # certain types should not be quoted even though it contains a space. Evilness.
+        elif forTypes and value[-2:] == u"[]":
+            valNoArray = value[:-2]
 
-            if forTypes and valNoArray.lower() in [
-                u"bit varying"
-                u"\"char\"",
-                u"character varying",
-                u"double precision"
-                u"timestamp without time zone"
-                u"timestamp with time zone"
-                u"time without time zone"
-                u"time with time zone"
-                u"\"trigger\""
-                u"\"unknown\""
-                ]:
-                return False
+        if forTypes and valNoArray.lower() in [
+            u"bit varying"
+            u"\"char\"",
+            u"character varying",
+            u"double precision"
+            u"timestamp without time zone"
+            u"timestamp with time zone"
+            u"time without time zone"
+            u"time with time zone"
+            u"\"trigger\""
+            u"\"unknown\""
+            ]:
+            return False
 
-            if u'0' <= valNoArray[0] <= u'9':
+        if u'0' <= valNoArray[0] <= u'9':
+            return True
+
+        for c in valNoArray:
+            if not (u'a' <= c <= u'z') and c != u'_':
                 return True
 
-            for c in valNoArray:
-                if not (u'a' <= c <= u'z') and c != u'_':
-                    return True
+        # check string is keywaord or not
+        category = Driver.ScanKeywordExtraLookup(value)
 
-            # check string is keywaord or not
-            category = Driver.ScanKeywordExtraLookup(value)
+        if category is None:
+            return False
 
-            if category is None:
-                return False
+        # UNRESERVED_KEYWORD
+        if category == 0:
+            return False
 
-            # UNRESERVED_KEYWORD
-            if category == 0:
-                return False
+        # COL_NAME_KEYWORD
+        if forTypes and category == 3:
+            return False
 
-            # COL_NAME_KEYWORD
-            if forTypes and category == 3:
-                return False
-
-            return True
+        return True
 
     @staticmethod
     def qtTypeIdent(conn, *args):
