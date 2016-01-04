@@ -81,8 +81,9 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           // It will allow us to generate different data based on the
           // dependencies.
           self.field.set('options', transform.bind(self, data));
+        } else {
+          self.field.set('options', data);
         }
-        self.field.set('options', data);
       }
     }
   });
