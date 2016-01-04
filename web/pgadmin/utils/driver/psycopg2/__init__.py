@@ -99,7 +99,7 @@ class Connection(BaseConnection):
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return unauthorized(gettext("Unauthorized Request."))
+                return False, gettext("Unauthorized Request.")
 
             password = decrypt(encpass, user.password)
             # password is in bytes, for python3 we need it in string
@@ -430,7 +430,7 @@ Attempt to reconnect it failed with the below error:
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return unauthorized(gettext("Unauthorized Request."))
+                return False, gettext("Unauthorized Request.")
 
             password = decrypt(password, user.password)
 
