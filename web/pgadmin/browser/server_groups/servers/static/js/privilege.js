@@ -222,6 +222,10 @@
           }));
 
       self.$el.find('input[type=checkbox]').first().focus();
+      // Since blur event does not bubble we need to explicitly call parent's blur event.
+      $(self.$el.find('input[type=checkbox]')).on('blur',function() {
+        self.$el.blur();
+      });
       self.delegateEvents();
 
       return this;
@@ -368,10 +372,34 @@
 
     lostFocus: function(ev) {
       /*
-       * We lost the focuse, it's time for us to exit the editor.
+       * We lost the focus, it's time for us to exit the editor.
        */
-      var m = this.model;
-      m.trigger('backgrid:edited', m, this.column, new Backgrid.Command(ev));
+      var self = this,
+      /*
+       * Function to determine whether one dom element is descendant of another
+       * dom element.
+       */
+      isDescendant = function (parent, child) {
+         var node = child.parentNode;
+         while (node != null) {
+             if (node == parent) {
+                 return true;
+             }
+             node = node.parentNode;
+         }
+         return false;
+      }
+      /*
+       * Between leaving the old element focus and entering the new element focus the
+       * active element is the document/body itself so add timeout to get the proper
+       * focused active element.
+       */
+      setTimeout(function() {
+        if (self.$el[0] != document.activeElement && !isDescendant(self.$el[0], document.activeElement)){
+          var m = self.model;
+          m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
+        }},10);
+      return;
     }
   });
 
@@ -407,7 +435,7 @@
       if (rawData instanceof Backbone.Collection) {
         rawData.each(function(m) {
           if (m.get('privilege')) {
-            res += self.notation[m.get('privilege_type')];
+            res += m.get('privilege_type');
             if (m.get('with_grant')) {
               res += '*';
             }
