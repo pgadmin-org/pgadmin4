@@ -67,6 +67,9 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             }
           });
           m.trigger('pgadmin-view:fetched', m, self.field);
+        } else {
+          // To fetch only options from cache, we do not need time from 'at' attribute but only options
+          data = data.data;
         }
 
         /*
