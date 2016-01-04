@@ -157,6 +157,47 @@
   };
 
   /*
+   * Overriding the render function of the control to allow us to eval the
+   * values properly.
+   */
+  Backform.Control.prototype.render = function() {
+  render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+          }),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
+
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(data.disabled, data, this.model),
+        visible:  evalF(data.visible, data, this.model),
+        required: evalF(data.required, data, this.model)
+      });
+
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassname);
+
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassname);
+
+      this.$el.html(this.template(data)).addClass(field.name);
+      this.updateInvalid();
+
+      return this;
+    };
+
+  /*
    * Overriding the render function of the select control to allow us to use
    * options as function, which should return array in the format of
    * (label, value) pair.
