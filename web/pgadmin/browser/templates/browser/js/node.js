@@ -798,13 +798,48 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
             if (that.parent_type) {
               if (tree.wasLoad(item)) {
-                tree.append(item, {
-                  itemData: d,
-                  success: function(i, o) {
-                    func(o.items.eq(0));
+                var first = tree.first(item, false),
+                    data = first && first.length && tree.itemData(first);
+
+                // We found the same type of object here, we can append it
+                // here.
+                if (data && data._type == that.type) {
+                  tree.append(item, {
+                    itemData: d,
+                    success: function(i, o) {
+                      func(o.items.eq(0));
+                    }
+                  });
+                } else {
+                  var children = tree.children(item, false, false);
+
+                  if (children) {
+                    var check = true;
+                    _.each(children, function(child) {
+                      if (!check)
+                        return;
+                      var j = $(child);
+                      data = tree.itemData(j);
+
+                      if (data && data._type && data._type in pgBrowser.Nodes) {
+                        node = pgBrowser.Nodes[data._type];
+
+                        if (node && node.node && node.node == that.type) {
+                          check = false;
+                          if (tree.wasLoad(j)) {
+                            tree.append(j, {
+                              itemData: d,
+                              success: function(i, o) {
+                                func(o.items.eq(0));
+                              }
+                            });
+                          }
+                        }
+                      }
+                    });
                   }
-                });
-              } else {
+                }
+
                 /* When no children found, it was loaded.
                  * It sets the item to non-inode.
                  */
