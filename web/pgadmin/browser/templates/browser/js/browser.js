@@ -248,7 +248,7 @@ OWNER TO helpdesk;\n';
                   function(v, k) {
                     // Remove disabled class in any case first.
                     e = j.find('#' + k).closest('.menu-item').removeClass('disabled');
-                    if (v.disabled(d)) {
+                    if (v.disabled(d, item)) {
                       // Make this menu disabled
                       e.addClass('disabled');
                     }
@@ -265,9 +265,9 @@ OWNER TO helpdesk;\n';
               function(o) { return o.priority; }),
             function(m) {
               if (m.category && m.category == 'create') {
-                create_items.push(m.generate(d));
+                create_items.push(m.generate(d, item));
               } else {
-                obj_mnu.append(m.generate(d));
+                obj_mnu.append(m.generate(d, item));
               }
             });
         // Create menus goes seperately
@@ -393,8 +393,7 @@ OWNER TO helpdesk;\n';
               }
 
               if (cb) {
-                var args = {item: item};
-                cb.apply(o.module, [_.extend(args, o.data)]);
+                cb.apply(o.module, [o.data, item]);
               } else {
                 pgAdmin.Browser.report_error(
                     S('Developer Warning: Callback - "%s" not found!').
@@ -406,7 +405,7 @@ OWNER TO helpdesk;\n';
           _.each(
             _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
-                if (m.category == 'create' && !m.disabled(d)) {
+                if (m.category == 'create' && !m.disabled(d, item)) {
                   createMenu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon || m.module.type };
                 }
               });
@@ -419,7 +418,7 @@ OWNER TO helpdesk;\n';
           _.each(
               _.sortBy(menus, function(m) { return m.priority; }),
               function(m) {
-                if (m.category != 'create' && !m.disabled(d)) {
+                if (m.category != 'create' && !m.disabled(d, item)) {
                   menu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon };
                 }
               });

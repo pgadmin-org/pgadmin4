@@ -18,7 +18,7 @@ function(_, pgAdmin, $) {
   };
 
   _.extend(pgAdmin.Browser.MenuItem.prototype, {
-    generate: function(node) {
+    generate: function(node, item) {
       var url = $('<a></a>', {
           'id': this.name,
           'href': this.url,
@@ -35,17 +35,17 @@ function(_, pgAdmin, $) {
       url.append($('<span></span>').text('  ' + this.label));
 
       return $('<li/>')
-        .addClass('menu-item' + (this.disabled(node) ? ' disabled' : ''))
+        .addClass('menu-item' + (this.disabled(node, item) ? ' disabled' : ''))
         .append(url);
     },
-    disabled: function(node) {
+    disabled: function(node, item) {
       if (this.enable == undefined)
           return false;
 
       if (_.isBoolean(this.enable)) return !this.enable;
-      if (_.isFunction(this.enable)) return !this.enable.apply(this.module, [node, this.data]);
+      if (_.isFunction(this.enable)) return !this.enable.apply(this.module, [node, item, this.data]);
       if (this.module && _.isBoolean(this.module[this.enable])) return !this.module[this.enable];
-      if (this.module && _.isFunction(this.module[this.enable])) return !(this.module[this.enable]).apply(this.module, [node, this.data]);
+      if (this.module && _.isFunction(this.module[this.enable])) return !(this.module[this.enable]).apply(this.module, [node, item, this.data]);
 
       return false;
     }
