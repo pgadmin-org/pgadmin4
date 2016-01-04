@@ -20,7 +20,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       Backform.SelectControl.extend({
     defaults: _.extend(Backform.SelectControl.prototype.defaults, {
       url: undefined,
-      transform: undefined
+      transform: undefined,
+      url_with_id: false
     }),
     initialize: function() {
       /*
@@ -42,7 +43,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             full_url = node.generate_url.apply(
               node, [
                 null, url, this.field.get('node_data'),
-                false, this.field.get('node_info')
+                this.field.get('url_with_id') || false, this.field.get('node_info')
               ]),
             /*
              * We needs to check, if we have already cached data for this url.
@@ -111,19 +112,26 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       first_empty: true,
       empty_value: '-- None --',
       url: 'nodes',
+      filter: undefined,
       transform: function(rows) {
         var self = this,
             node = self.field.get('schema_node'),
-            res = [];
+            res = [],
+            filter = self.field.get('filter') || function() { return true; };
 
         _.each(rows, function(r) {
-          res.push({
-            'value': r._id,
-            'node': _.isFunction(node['node_image']) ? (node['node_image']).apply(node, [r, self.model]) : node.type,
-            'label': (_.isFunction(node['node_label']) ?
-              (node['node_label']).apply(node, [r, self.model]) :
-              r.label)
-          });
+          if (filter(r)) {
+            var l = (_.isFunction(node['node_label']) ?
+                  (node['node_label']).apply(node, [r, self.model, self]) :
+                  r.label),
+                image: (_.isFunction(node['node_image']) ?
+                  (node['node_image']).apply(node, [r, self.model, self]) : node.type);
+            res.push({
+              'value': r._id,
+              'node': image,
+              'label': l
+            });
+          }
         });
 
         return res;
@@ -137,17 +145,22 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       transform: function(rows) {
         var self = this,
             node = self.field.get('schema_node'),
-            res = [];
+            res = [],
+            filter = self.field.get('filter') || function() { return true; };
 
         _.each(rows, function(r) {
-          var l = _.isFunction(node['node_label']) ?
-            (node['node_label']).apply(node, [r, self.model]) :
-            r.label;
-          res.push({
-            'value': l,
-            'node': _.isFunction(node['node_image']) ? (node['node_image']).apply(node, [r, self.model]) : node.type,
-            'label': l
-          });
+          if (filter(r)) {
+            var l = (_.isFunction(node['node_label']) ?
+                  (node['node_label']).apply(node, [r, self.model, self]) :
+                  r.label),
+                image: (_.isFunction(node['node_image']) ?
+                  (node['node_image']).apply(node, [r, self.model, self]) : node.type);
+            res.push({
+              'value': l,
+              'node': image,
+              'label': l
+            });
+          }
         });
 
         return res;
