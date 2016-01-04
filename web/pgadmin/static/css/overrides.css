@@ -189,7 +189,7 @@ iframe {
 
 .obj_properties .backform-tab {
     position: absolute;
-    margin: 0px 0px 80px;
+    margin: 0px 0px 110px;
     padding: 0px;
     top: 0px;
     bottom: 0px;
@@ -356,7 +356,6 @@ iframe {
 }
 
 .pg-prop-btn-group {
-    position: absolute;
     text-align: right;
     background-color: #D2D2D2;
     border: 2px solid #A9A9A9;
@@ -364,12 +363,7 @@ iframe {
     right: 0px;
 }
 
-.pg-prop-btn-group-above {
-    top: 0px;
-}
-
 .pg-prop-btn-group-below {
-    bottom: 0px;
     border-color: #A9A9A9;
     border-width: 2px 1px 0px;
     border-style: inset;
@@ -594,4 +588,26 @@ table.backgrid tr.new {
 
 .width_percent_60 {
 	width: 60%;
+}
+
+.pg-prop-status-bar {
+    left: 0px;
+    right: 0px;
+    background-color: #d2d2d2;
+    color: #b92c28;
+	padding: 5px;
+}
+
+.pg-prop-header {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top :0;
+}
+
+.pg-prop-footer{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom :0;
 }

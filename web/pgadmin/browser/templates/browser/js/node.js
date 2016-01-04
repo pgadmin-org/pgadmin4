@@ -85,6 +85,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     // Used to generate view for the particular node properties, edit,
     // creation.
     getView: function(item, type, el, node, formType, callback, data) {
+      var that = this;
 
       if (!this.type || this.type == '')
         // We have no information, how to generate view for this type.
@@ -117,6 +118,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             info = this.getTreeNodeHierarchy.apply(this, [item]),
             groups = Backform.generateViewSchema(info, newModel, type, this, node);
 
+        if (type == 'create' || type == 'edit'){
+          newModel.on('on-status', function(e){
+            that.statusBar.html(e.msg);
+          });
+        }
         // 'schema' has the information about how to generate the form.
         if (groups) {
           var fields = [];
@@ -487,8 +493,22 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         view = j.data('obj-view'),
         content = $('<div tabindex="1"></div>')
           .addClass('pg-prop-content col-xs-12'),
+
+        // Template function to create the status bar
+        createStatusBar = function(location){
+            var statusBar = $('<div></div>').addClass(
+                      'pg-prop-status-bar'
+                      ).appendTo(j);
+            if (location == "header") {
+                statusBar.appendTo(that.header);
+            } else {
+                statusBar.prependTo(that.footer);
+            }
+            that.statusBar = statusBar;
+            return statusBar;
+        },
         // Template function to create the button-group
-        createButtons = function(buttons, extraClasses) {
+        createButtons = function(buttons, location, extraClasses) {
           // arguments must be non-zero length array of type
           // object, which contains following attributes:
           // label, type, extraClasses, register
@@ -498,7 +518,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             var btnGroup =
               $('<div></div>').addClass(
                   'pg-prop-btn-group'
-                  ).appendTo(j),
+                  ),
               // Template used for creating a button
               tmpl = _.template([
                 '<button type="<%= type %>" ',
@@ -506,6 +526,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 '<i class="<%= icon %>"></i>&nbsp;',
                 '<%-label%></button>'
                 ].join(' '));
+            if (location == "header"){
+                btnGroup.appendTo(that.header);
+            }else{
+                btnGroup.appendTo(that.footer);
+            }
             if (extraClasses) {
               btnGroup.addClass(extraClasses);
             }
@@ -546,12 +571,23 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
           // Make sure the HTML element is empty.
           j.empty();
+          that.header = $('<div></div>').addClass(
+                      'pg-prop-header'
+                      ).appendTo(j);
+          that.footer = $('<div></div>').addClass(
+                      'pg-prop-footer'
+                      ).appendTo(j);
           // Create a view to show the properties in fieldsets
           view = that.getView(item, 'properties', content, data, 'fieldset');
           if (view) {
             // Save it for release it later
             j.data('obj-view', view);
+
+            // Create status bar
+            createStatusBar('footer');
+
             // Create proper buttons
+
             var buttons = [];
             buttons.push({
               label: '{{ _("Edit") }}', type: 'edit',
@@ -563,7 +599,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 });
               }
             });
-            createButtons(buttons, 'pg-prop-btn-group-above');
+            createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
         },
@@ -585,6 +621,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
           // Make sure the HTML element is empty.
           j.empty();
+
+          that.header = $('<div></div>').addClass(
+                      'pg-prop-header'
+                      ).appendTo(j)
+          that.footer = $('<div></div>').addClass(
+                      'pg-prop-footer'
+                      ).appendTo(j);
 
           var modelChanged = function(m, o) {
             var btnGroup = o.find('.pg-prop-btn-group'),
@@ -620,7 +663,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 btn.click(function() {
                   var m = view.model,
                     d = m.toJSON(true);
-
                   if (d && !_.isEmpty(d)) {
                     m.save({}, {
                       attrs: d,
@@ -660,8 +702,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   setTimeout(function() { editFunc.call(); }, 0);
                 });
               }
-            }], 'pg-prop-btn-group-below');
+            }],'footer' ,'pg-prop-btn-group-below');
           };
+
+          // Create status bar.
+          createStatusBar('footer');
 
           // Add some space, so that - button group does not override the
           // space
@@ -930,7 +975,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             delete res['deleted'];
           }
 
-          return (_.size(res) == 0 ? null : res);
+          return (_.size(res) == 0 ? null : JSON.stringify(res));
         }
       },
       onModelAdd: function(obj) {
@@ -1227,7 +1272,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         _.each(self.objects, function(k) {
           var obj = self.get(k);
-          res[k] = (obj && obj.toJSON(session));
+          res[k] = (obj && JSON.stringify(obj.toJSON(session)));
           });
         return res;
       },
