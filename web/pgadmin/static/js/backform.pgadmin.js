@@ -977,7 +977,9 @@
             url: msql_url,
             type: 'GET',
             cache: false,
-            data: self.model.toJSON(true)
+            data: self.model.toJSON(true),
+            dataType: "json",
+            contentType: "application/json"
           }).done(function(res) {
             self.sqlTab.clearHistory();
             self.sqlTab.setValue(res.data);
