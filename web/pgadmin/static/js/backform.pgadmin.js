@@ -156,6 +156,57 @@
     });
   };
 
+  /*
+   * Overriding the render function of the select control to allow us to use
+   * options as function, which should return array in the format of
+   * (label, value) pair.
+   */
+  Backform.SelectControl.prototype.render = function() {
+    var field = _.defaults(this.field.toJSON(), this.defaults),
+      attributes = this.model.toJSON(),
+      attrArr = field.name.split('.'),
+      name = attrArr.shift(),
+      path = attrArr.join('.'),
+      rawValue = this.keyPathAccessor(attributes[name], path),
+      data = _.extend(field, {
+        rawValue: rawValue,
+        value: this.formatter.fromRaw(rawValue, this.model),
+        attributes: attributes,
+        formatter: this.formatter
+      }),
+      evalF = function(f, m) {
+        return (_.isFunction(f) ? !!f(m) : !!f);
+      };
+
+    // Evaluate the disabled, visible, and required option
+    _.extend(data, {
+      disabled: evalF(data.disabled, this.model),
+      visible:  evalF(data.visible, this.model),
+      required: evalF(data.required, this.model)
+    });
+    // Evaluation the options
+    if (_.isFunction(data.options)) {
+      try {
+        data.options = data.options.apply(this)
+      } catch(e) {
+        // Do nothing
+        data = []
+        this.model.trigger('pgadmin-view:transform:error', m, self.field, e);
+      }
+    }
+
+    // Clean up first
+    this.$el.removeClass(Backform.hiddenClassname);
+
+    if (!data.visible)
+      this.$el.addClass(Backform.hiddenClassname);
+
+    this.$el.html(this.template(data)).addClass(field.name);
+    this.updateInvalid();
+
+    return this;
+  };
+
   var ReadonlyOptionControl = Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',

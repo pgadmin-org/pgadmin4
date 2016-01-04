@@ -77,13 +77,10 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
          */
         transform = this.field.get('transform') || self.defaults.transform;
         if (transform && _.isFunction(transform)) {
-          try {
-            data = transform.apply(self, [data]);
-          } catch(e) {
-            // Do nothing
-            data = []
-            m.trigger('pgadmin-view:transform:error', m, self.field, e);
-          }
+          // We will transform the data later, when rendering.
+          // It will allow us to generate different data based on the
+          // dependencies.
+          self.field.set('options', transform.bind(self, data));
         }
         self.field.set('options', data);
       }
