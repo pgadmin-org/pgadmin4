@@ -193,7 +193,7 @@ Failed to fetch the version information on the established connection to the dat
             status, res = self.execute_dict("""
 SELECT
     db.oid as did, db.datname, db.datallowconn, pg_encoding_to_char(db.encoding) AS serverencoding,
-    has_database_privilege(db.oid, 'CREATE') as cancreate
+    has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
 FROM
     pg_database db
 WHERE db.datname = current_database()""")
@@ -310,7 +310,8 @@ Attempt to reconnect it failed with the below error:
                         server_id=self.manager.sid,
                         conn_id=self.conn_id,
                         query=query,
-                        errmsg=errmsg
+                        errmsg=errmsg,
+                        query_id=query_id
                         )
                     )
             return False, errmsg
@@ -347,7 +348,8 @@ Attempt to reconnect it failed with the below error:
                         server_id=self.manager.sid,
                         conn_id=self.conn_id,
                         query=query,
-                        errmsg=errmsg
+                        errmsg=errmsg,
+                        query_id=query_id
                         )
                     )
             return False, errmsg
