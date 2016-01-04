@@ -63,21 +63,42 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     //
     // NOTE: Override this for each node for initialization purpose
     Init: function() {
-      if (this.node_initialized)
+      var self = this;
+      if (self.node_initialized)
         return;
-      this.node_initialized = true;
+      self.node_initialized = true;
 
       pgAdmin.Browser.add_menus([{
-        name: 'show_obj_properties', node: this.type, module: this,
+        name: 'show_obj_properties', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'show_obj_properties',
         priority: 3, label: '{{ _("Properties...") }}',
         data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
       }, {
-        name: 'refresh', node: this.type, module: this,
+        name: 'refresh', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'refresh',
         priority: 2, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);
+
+      if (self.canDrop) {
+        pgAdmin.Browser.add_menus([{
+          name: 'delete_object', node: self.type, module: self,
+          applies: ['object', 'context'], callback: 'delete_obj',
+          priority: 3, label: '{{ _("Delete/Drop") }}',
+          data: {'url': 'drop'}, icon: 'fa fa-trash',
+          enable: _.isFunction(self.canDrop) ? function() { return self.canDrop.apply(self, arguments); } : false
+        }]);
+        if (self.canDropCascade) {
+          pgAdmin.Browser.add_menus([{
+            name: 'delete_object_cascade', node: self.type, module: self,
+            applies: ['object', 'context'], callback: 'delete_obj',
+            priority: 3, label: '{{ _("Drop Cascade") }}',
+            data: {'url': 'delete'}, icon: 'fa fa-trash',
+            enable: (_.isFunction(self.canDropCascade) ?
+              function() { return self.canDropCascade.apply(self, arguments); } : true)
+          }]);
+        }
+      }
     },
     ///////
     // Generate a Backform view using the node's model type
@@ -210,9 +231,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
      *
      * Override this, when a node is not deletable.
      */
-    canDelete: function(i) {
-      return true;
-    },
+    canDrop: false,
+    /************************************************************************
+     * This function determines the given item and children are deletable or
+     * not.
+     *
+     * Override this, when a node is not deletable.
+     */
+    canDropCascade: false,
     // List of common callbacks - that can be used for different
     // operations!
     callbacks: {
@@ -372,56 +398,74 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         if (!d)
           return;
 
-        if (!pgBrowser.Nodes[d._type].canDelete(i)) {
-          Alertify.notify(
+        var msg, title;
+        if (input.url == 'delete') {
+
+          msg = S('{{ _('Are you sure you want to drop %%s "%%s" and all the objects that depend on it?"?') }}')
+            .sprintf(obj.label, d.label).value();
+          title = S('{{ _('Drop CASACDE %%s?') }}').sprintf(obj.label).value();
+
+          if (!pgBrowser.Nodes[d._type].canDropCascade(d, i)) {
+            Alertify.notify(
               S('The %s - "%s" can not be deleted!')
               .sprintf(obj.label, d.label).value(),
               'error',
               10
               );
-          return;
-        }
+            return;
+          }
+        } else {
+          msg = S('{{ _('Are you sure you wish to drop the %%s - "%%s"?') }}')
+            .sprintf(obj.label, d.label).value();
+          title = S('{{ _('Drop %%s?') }}').sprintf(obj.label).value();
 
-        Alertify.confirm(
-          S('{{ _('Drop %%s?') }}').sprintf(obj.label).value(),
-          S('{{ _('Are you sure you wish to drop the %%s - "%%s"?') }}')
-            .sprintf(obj.label, d.label).value(),
-            function() {
-              $.ajax({
-                url: obj.generate_url(i, 'drop', d, true),
-                type:'DELETE',
-                success: function(res) {
-                  if (res.success == 0) {
-                    pgBrowser.report_error(res.errormsg, res.info);
-                  } else {
-                    var n = t.next(i);
-                    if (!n || !n.length)
-                      n = t.prev(i);
-                    t.remove(i);
-                    if (n.length) {
-                      t.select(n);
-                    }
+          if (!pgBrowser.Nodes[d._type].canDropCascade(d, i)) {
+            Alertify.notify(
+              S('The %s - "%s" can not be deleted!')
+              .sprintf(obj.label, d.label).value(),
+              'error',
+              10
+              );
+            return;
+          }
+        }
+        Alertify.confirm(title, msg,
+          function() {
+            $.ajax({
+              url: obj.generate_url(i, input.url, d, true),
+              type:'DELETE',
+              success: function(res) {
+                if (res.success == 0) {
+                  pgBrowser.report_error(res.errormsg, res.info);
+                } else {
+                  var n = t.next(i);
+                  if (!n || !n.length)
+                    n = t.prev(i);
+                  t.remove(i);
+                  if (n.length) {
+                    t.select(n);
                   }
-                  return true;
-                },
-                error: function(jqx) {
-                  var msg = jqx.responseText;
-                  /* Error from the server */
-                  if (jqx.status == 410) {
-                    try {
-                      var data = $.parseJSON(
-                          jqx.responseText);
-                      msg = data.errormsg;
-                    } catch (e) {}
-                  }
-                  pgBrowser.report_error(
-                      S('{{ _('Error droping the %%s - "%%s"') }}')
-                        .sprintf(obj.label, d.label)
-                          .value(), msg);
                 }
-              });
-            },
-            null).show()
+                return true;
+              },
+              error: function(jqx) {
+                var msg = jqx.responseText;
+                /* Error from the server */
+                if (jqx.status == 410) {
+                  try {
+                    var data = $.parseJSON(
+                        jqx.responseText);
+                    msg = data.errormsg;
+                  } catch (e) {}
+                }
+                pgBrowser.report_error(
+                    S('{{ _('Error droping the %%s - "%%s"') }}')
+                      .sprintf(obj.label, d.label)
+                        .value(), msg);
+              }
+            });
+          },
+          null).show()
       },
       // Callback called - when a node is selected in browser tree.
       selected: function(item, data, browser) {
