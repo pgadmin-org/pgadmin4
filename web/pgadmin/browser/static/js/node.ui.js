@@ -124,7 +124,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             var l = (_.isFunction(node['node_label']) ?
                   (node['node_label']).apply(node, [r, self.model, self]) :
                   r.label),
-                image: (_.isFunction(node['node_image']) ?
+                image= (_.isFunction(node['node_image']) ?
                   (node['node_image']).apply(node, [r, self.model, self]) : node.type);
             res.push({
               'value': r._id,
@@ -153,7 +153,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             var l = (_.isFunction(node['node_label']) ?
                   (node['node_label']).apply(node, [r, self.model, self]) :
                   r.label),
-                image: (_.isFunction(node['node_image']) ?
+                image= (_.isFunction(node['node_image']) ?
                   (node['node_image']).apply(node, [r, self.model, self]) : node.type);
             res.push({
               'value': l,
