@@ -845,18 +845,25 @@ class Driver(BaseDriver):
             return True
 
     @staticmethod
-    def qtTypeIdent(value):
+    def qtTypeIdent(conn, *args):
+        # We're not using the conn object at the moment, but - we will modify the
+        # logic to use the server version specific keywords later.
+        res = None
+        value = None
 
-        if (len(value) == 0):
-            return value
+        for val in args:
+            if len(val) == 0:
+                continue
 
-        result = value;
+            value = val
 
-        if (Driver.needsQuoting(result, True)):
-            result.replace("\"", "\"\"")
-            return "\"" + result + "\""
-        else:
-            return result
+            if (Driver.needsQuoting(val, True)):
+                value.replace("\"", "\"\"")
+                value = "\"" + value + "\""
+
+            res = ((res and res + '.') or '') + value
+
+        return res
 
     @staticmethod
     def qtIdent(conn, *args):
