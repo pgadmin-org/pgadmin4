@@ -24,6 +24,7 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
 
         <!-- View specified stylesheets -->
         {% for stylesheet in current_app.stylesheets %}
@@ -54,15 +55,19 @@
                         "deps": ['jquery', 'bootstrap'],
                         "exports": 'jQuery.fn.bootstrapSwitch'
                     },
+                    "select2": {
+                        "deps": ['jquery'],
+                        "exports": 'jQuery.fn.select2'
+                    },
                     "bootstrap.datepicker": {
                         "deps": ['jquery', 'bootstrap'],
                         "exports": 'jQuery.fn.datepicker'
                     },
                     "pgadmin.backgrid": {
-                        "deps": ["backgrid", "bootstrap.datepicker","bootstrap.switch"],
+                        "deps": ["backgrid", "bootstrap.datepicker", "bootstrap.switch"],
                     },
                     "pgadmin.backform": {
-                        "deps": ['backform', "pgadmin.backgrid"],
+                        "deps": ['backform', "pgadmin.backgrid", "select2"],
                     }{% for script in current_app.javascripts %}{% if 'deps' in script or 'exports' in script %},
                     '{{ script.name }}': {
                     {% if 'deps' in script %}"deps": [ {% set comma = False %}{% for dep in script['deps'] %} {% if comma %},{% else %}{% set comma = True %}{% endif %} '{{ dep }}'{% endfor %}],{% endif %}
@@ -73,6 +78,7 @@
                     pgadmin: "{{ url_for('static', filename='js/pgadmin') }}",
                     modernizr: "{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min') }}",
                     jquery: "{{ url_for('static', filename='js/' + ('jquery-1.11.2' if config.DEBUG else 'jquery-1.11.2.min')) }}",
+                    select2: "{{ url_for('static', filename='js/select2/' + ('select2.full' if config.DEBUG else 'select2.min.full')) }}",
                     underscore: "{{ url_for('static', filename='js/' + ('underscore' if config.DEBUG else 'underscore-min')) }}",
                     "underscore.string": "{{ url_for('static', filename='js/' + ('underscore.string' if config.DEBUG else 'underscore.string.min')) }}",
                     bootstrap: "{{ url_for('static', filename='js/' + ('bootstrap' if config.DEBUG else 'bootstrap.min')) }}",
