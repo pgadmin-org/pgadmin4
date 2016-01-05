@@ -121,6 +121,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             res = [],
             filter = self.field.get('filter') || function() { return true; };
 
+        filter = filter.bind(self);
+
         _.each(rows, function(r) {
           if (filter(r)) {
             var l = (_.isFunction(node['node_label']) ?
@@ -150,6 +152,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             res = [],
             filter = self.field.get('filter') || function() { return true; };
 
+        filter = filter.bind(self);
+
         _.each(rows, function(r) {
           if (filter(r)) {
             var l = (_.isFunction(node['node_label']) ?
@@ -158,7 +162,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                 image= (_.isFunction(node['node_image']) ?
                   (node['node_image']).apply(node, [r, self.model, self]) : node.type);
             res.push({
-              'value': l,
+              'value': r.label,
               'node': image,
               'label': l
             });

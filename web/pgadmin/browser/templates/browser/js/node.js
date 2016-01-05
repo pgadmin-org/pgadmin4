@@ -1272,7 +1272,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.objects = [];
         self.handler = (options.handler ||
             (self.collection && self.collection.handler));
-        self.trackChanges = false;
+        self.trackChanges = (
+            self.handler && self.handler.trackChanges
+            ) || false;
         self.onChangeData = options.onChangeData;
         self.onChangeCallback = options.onChangeCallback;
 
@@ -1473,7 +1475,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 _.pick(
                   node_info,
                   function(v, k, o) {
-                    console.log(arguments);
                     return (v.priority <= min_priority);
                   })),
               function(o) { return o.priority; }),
