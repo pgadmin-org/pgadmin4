@@ -218,7 +218,7 @@
         formatter: this.formatter
       }),
       evalF = function(f, d, m) {
-        return (_.isFunction(f) ? !!f.apply(d, m) : !!f);
+        return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
       };
 
     // Evaluate the disabled, visible, and required option
