@@ -217,15 +217,15 @@
         attributes: attributes,
         formatter: this.formatter
       }),
-      evalF = function(f, m) {
-        return (_.isFunction(f) ? !!f(m) : !!f);
+      evalF = function(f, d, m) {
+        return (_.isFunction(f) ? !!f.apply(d, m) : !!f);
       };
 
     // Evaluate the disabled, visible, and required option
     _.extend(data, {
-      disabled: evalF(data.disabled, this.model),
-      visible:  evalF(data.visible, this.model),
-      required: evalF(data.required, this.model)
+      disabled: evalF(data.disabled, data, this.model),
+      visible:  evalF(data.visible, data, this.model),
+      required: evalF(data.required, data, this.model)
     });
     // Evaluation the options
     if (_.isFunction(data.options)) {
