@@ -650,7 +650,10 @@ OWNER TO helpdesk;\n';
       'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}',
       'general_cateogty': '{{ _('General') }}',
       'SQL_TAB': '{{ _('SQL') }}',
-      'SQL_NO_CHANGE': '\n -- ' + '{{ _('Nothing changed') }}'
+      'SQL_NO_CHANGE': '\n -- ' + '{{ _('Nothing changed') }}',
+      'MUST_BE_INT' : " {{ _("'%%s' must be an integer.") }}",
+      'MUST_GR_EQ' : " {{ _("'%%s' must be greater than or equals to %%d.") }}",
+      'MUST_LESS_EQ' : " {{ _("'%%s' must be less than or equals to %%d.") }}"
     }
   });
 

@@ -11,13 +11,14 @@
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
     define([
-      'underscore', 'jquery', 'backbone', 'backform', 'backgrid',
-      'codemirror', 'pgadmin.backgrid', 'codemirror.sql', 'select2'
+      'underscore', 'underscore.string', 'jquery', 'backbone', 'backform',
+      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror.sql',
+      'select2'
       ],
-     function(_, $, Backbone, Backform, Backgrid, CodeMirror) {
+     function(_, S, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Backgrid, CodeMirror);
+      return factory(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -29,13 +30,14 @@
       Backgrid = require('backgrid') || root.Backgrid;
       CodeMirror = require('codemirror') || root.CodeMirror;
       pgAdminBackgrid = require('pgadmin.backgrid');
-    factory(root, _, $, Backbone, Backform, Backgrid, CodeMirror);
+      S = require('underscore.string');
+    factory(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
+    factory(root, root._, root.s, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
   }
-}(this, function(root, _, $, Backbone, Backform, Backgrid, CodeMirror) {
+}(this, function(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
 
@@ -63,7 +65,7 @@
     });
 
   var controlMapper = Backform.controlMapper = {
-    'int': ['uneditable-input', 'input', 'integer'],
+    'int': ['uneditable-input', 'integer', 'integer'],
     'text': ['uneditable-input', 'input', 'string'],
     'numeric': ['uneditable-input', 'input', 'number'],
     'date': 'datepicker',
@@ -999,6 +1001,78 @@
       Backform.Control.__super__.remove.apply(this, arguments);
     }
 });
+
+/*
+ * Integer input Control functionality just like backgrid
+ */
+  var IntegerControl = Backform.IntegerControl = Backform.InputControl.extend({
+    defaults: {
+      type: "number",
+      label: "",
+      min: undefined,
+      max: undefined,
+      maxlength: 255,
+      extraClasses: [],
+      helpMessage: null
+    },
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      '  <input type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>'
+    ].join("\n")),
+    events: {
+      "change input": "checkInt",
+      "focus input": "clearInvalid"
+    },
+    checkInt: function(e) {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attrArr = this.field.get("name").split('.'),
+          name = attrArr.shift(),
+          value = this.getValueFromDOM(),
+          min_value = field.min,
+          max_value = field.max,
+          intPattern = new RegExp("^-?[0-9]*$"),
+          isMatched = intPattern.test(value);
+
+      // Below logic will validate input
+      if (!isMatched) {
+        this.model.errorModel.unset(name);
+        this.model.errorModel.set(
+            name,
+            S(pgAdmin.Browser.messages.MUST_BE_INT).sprintf(
+              field.label
+              ).value()
+            );
+      }
+
+      // Below will check if entered value is in-between min & max range
+      if (!_.isUndefined(min_value) && value < min_value) {
+        this.model.errorModel.unset(name);
+        this.model.errorModel.set(
+            name,
+            S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(
+              field.label,
+              min_value
+              ).value()
+            );
+      }
+
+      if (!_.isUndefined(max_value) && value > max_value) {
+        this.model.errorModel.unset(name);
+        this.model.errorModel.set(
+            name,
+            S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(
+              field.label,
+              max_value
+              ).value()
+            );
+      }
+    }
+  });
 
   ///////
   // Generate a schema (as group members) based on the model's schema
