@@ -4,7 +4,7 @@ function(_, alertify, pgAdmin) {
   pgAdmin.Browser = pgAdmin.Browser || {};
 
   _.extend(pgAdmin.Browser, {
-    report_error: function(message, info) {
+    report_error: function(title, message, info) {
       text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
            <div class="panel panel-default">\
            <div class="panel-heading" role="tab" id="headingOne">\
@@ -34,9 +34,9 @@ function(_, alertify, pgAdmin) {
           </div>'
       }
 
-      text += '</div>'
+      text += '</div>';
       alertify.alert(
-        "{{ _('An error has occurred') }}",
+        title,
         text
       )
     },

@@ -388,15 +388,21 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         p.focus();
       },
       // Delete the selected object
-      delete_obj: function(args) {
+      delete_obj: function(args, item) {
         var input = args || {};
           obj = this,
           t = pgBrowser.tree,
-          i = input.item || t.selected(),
+          i = input.item || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;
 
         if (!d)
           return;
+
+        /*
+         * Make sure - we're using the correct version of node
+         */
+        obj = pgBrowser.Nodes[d._type];
+        var objName = d.label;
 
         var msg, title;
         if (input.url == 'delete') {
@@ -405,27 +411,28 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             .sprintf(obj.label, d.label).value();
           title = S('{{ _('Drop CASACDE %%s?') }}').sprintf(obj.label).value();
 
-          if (!pgBrowser.Nodes[d._type].canDropCascade(d, i)) {
+          if (!(_.isFunction(obj.canDropCascade) ?
+                obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.notify(
-              S('The %s - "%s" can not be deleted!')
-              .sprintf(obj.label, d.label).value(),
-              'error',
-              10
-              );
+                S('The %s - "%s" can not be deleted!')
+                .sprintf(obj.label, d.label).value(),
+                'error',
+                10
+                );
             return;
           }
         } else {
-          msg = S('{{ _('Are you sure you wish to drop the %%s - "%%s"?') }}')
+          msg = S('{{ _('Are you sure you want to drop %%s "%%s"?') }}')
             .sprintf(obj.label, d.label).value();
           title = S('{{ _('Drop %%s?') }}').sprintf(obj.label).value();
 
-          if (!pgBrowser.Nodes[d._type].canDropCascade(d, i)) {
+          if (!(_.isFunction(obj.canDrop) ?
+                obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.notify(
-              S('The %s - "%s" can not be deleted!')
-              .sprintf(obj.label, d.label).value(),
-              'error',
-              10
-              );
+                S('The %s - "%s" can not be deleted!')
+                .sprintf(obj.label, d.label).value(),
+                'error', 10
+                );
             return;
           }
         }
@@ -451,16 +458,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               error: function(jqx) {
                 var msg = jqx.responseText;
                 /* Error from the server */
-                if (jqx.status == 410) {
+                if (jqx.status == 410 || jqx.status == 500) {
                   try {
-                    var data = $.parseJSON(
-                        jqx.responseText);
+                    var data = $.parseJSON(jqx.responseText);
                     msg = data.errormsg;
                   } catch (e) {}
                 }
                 pgBrowser.report_error(
-                    S('{{ _('Error droping the %%s - "%%s"') }}')
-                      .sprintf(obj.label, d.label)
+                    S('{{ _('Error dropping %%s: "%%s"') }}')
+                      .sprintf(obj.label, objName)
                         .value(), msg);
               }
             });
