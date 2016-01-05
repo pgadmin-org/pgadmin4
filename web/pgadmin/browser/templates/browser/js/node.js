@@ -796,9 +796,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 setTimeout(function() {
                   closePanel();
                 }, 0);
-                tree.setVisible(i);
-                tree.select(i);
-              };
+                if (i) {
+                  tree.select(i, {focus: true});
+                }
+              }, found = false;
 
             delete view.model.tnode;
 
@@ -816,13 +817,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       func(o.items.eq(0));
                     }
                   });
+                  return;
                 } else {
                   var children = tree.children(item, false, false);
 
                   if (children) {
-                    var check = true;
                     _.each(children, function(child) {
-                      if (!check)
+                      if (found)
                         return;
                       var j = $(child);
                       data = tree.itemData(j);
@@ -831,12 +832,44 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                         node = pgBrowser.Nodes[data._type];
 
                         if (node && node.node && node.node == that.type) {
-                          check = false;
+                          found = true;
                           if (tree.wasLoad(j)) {
                             tree.append(j, {
                               itemData: d,
                               success: function(i, o) {
                                 func(o.items.eq(0));
+                              }
+                            });
+                          } else {
+                            /*
+                             * This is not yet loaded, hence - we need to expand
+                             * it, and find the actual object.
+                             */
+                            if (!tree.isInode(j)) {
+                              tree.setInode(j);
+                            }
+                            tree.open(j, {
+                              success: function() {
+                                var children = tree.children(j, false, false),
+                                    stop = false;
+
+                                _.each(children, function(child) {
+
+                                  if (stop)
+                                    return;
+
+                                  var j = $(child),
+                                      data = tree.itemData(j);
+
+                                  if (d._id == data._id) {
+                                    stop = true;
+                                    func(j);
+                                  }
+                                });
+                                func(null);
+                              },
+                              fail: function() {
+                                console.log(arguments);
                               }
                             });
                           }
@@ -845,6 +878,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                     });
                   }
                 }
+                /*
+                 * We already added the node at required place, stop going
+                 * ahead.
+                 */
+                if (found)
+                  return;
 
                 /* When no children found, it was loaded.
                  * It sets the item to non-inode.
@@ -853,7 +892,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                     tree.setInode(item);
                 }
                 tree.open(item, {
-                  expand: true,
                   success: function() {
                     var s = tree.search(item, {
                       search: d.id,
