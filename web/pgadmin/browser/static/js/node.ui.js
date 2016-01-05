@@ -40,17 +40,19 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       // That means - we needs to fetch the options from that node.
       if (url) {
         var node = this.field.get('schema_node'),
+            node_info = this.field.get('node_info'),
             full_url = node.generate_url.apply(
               node, [
                 null, url, this.field.get('node_data'),
-                this.field.get('url_with_id') || false, this.field.get('node_info')
+                this.field.get('url_with_id') || false, node_info
               ]),
+            cache_level = this.field.get('cache_level'),
             /*
              * We needs to check, if we have already cached data for this url.
              * If yes - use that, and do not bother about fetching it again,
              * and use it.
              */
-            data = node.cache(full_url);
+            data = node.cache(url, node_info, cache_level);
         if (_.isUndefined(data) || _.isNull(data)) {
           m.trigger('pgadmin-view:fetching', m, self.field);
           $.ajax({
@@ -61,17 +63,17 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                * We will cache this data for short period of time for avoiding
                * same calls.
                */
-              data = node.cache(full_url, res.data);
+              data = node.cache(url, node_info, cache_level, res.data);
             },
             error: function() {
               m.trigger('pgadmin-view:fetch:error', m, self.field);
             }
           });
           m.trigger('pgadmin-view:fetched', m, self.field);
-        } else {
-          // To fetch only options from cache, we do not need time from 'at' attribute but only options
-          data = data.data;
         }
+        // To fetch only options from cache, we do not need time from 'at'
+        // attribute but only options.
+        data = data.data;
 
         /*
          * Transform the data

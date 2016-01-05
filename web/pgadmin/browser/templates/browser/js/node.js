@@ -1459,16 +1459,36 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
       return res;
     },
-    cache: function(url, data) {
-      var cached = this.cached = this.cached || {};
+    cache: function(url, node_info, level, data) {
+      var cached = this.cached = this.cached || {},
+          hash = url,
+          min_priority = (
+              node_info && node_info[level] && node_info[level].priority
+              ) || 0;
 
-      if (_.isUndefined(data)) {
-        return cached[url];
+      if (node_info) {
+        _.each(
+            _.sortBy(
+              _.values(
+                _.pick(
+                  node_info,
+                  function(v, k, o) {
+                    console.log(arguments);
+                    return (v.priority <= min_priority);
+                  })),
+              function(o) { return o.priority; }),
+            function(o) {
+              hash = S('%s/%s').sprintf(hash, encodeURI(o._id)).value();
+            });
       }
 
-      cached[url] = {data: data, at: Date()};
+      if (_.isUndefined(data)) {
+        return cached[hash];
+      }
 
-      return data;
+      var res = cached[hash] = {data: data, at: Date(), level: level};
+
+      return res;
     }
   });
 
