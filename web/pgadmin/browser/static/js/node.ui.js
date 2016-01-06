@@ -73,7 +73,9 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         }
         // To fetch only options from cache, we do not need time from 'at'
         // attribute but only options.
-        data = data.data;
+        //
+        // It is feasible that the data may not have been fetched.
+        data = (data && data.data) || [];
 
         /*
          * Transform the data

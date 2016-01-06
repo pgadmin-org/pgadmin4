@@ -967,10 +967,9 @@
             node = self.field.get('schema_node'),
             msql_url = node.generate_url.apply(
                 node, [
-                  null, 'msql', this.field.get('node_data'), true,
+                  null, 'msql', this.field.get('node_data'), !self.model.isNew(),
                   this.field.get('node_info')
                 ]);
-
 
           // Fetching the modified SQL
           self.model.trigger('pgadmin-view:msql:fetching', self.method, node);

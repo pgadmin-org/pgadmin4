@@ -1013,16 +1013,31 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         var self = this;
 
         options = options || {};
+        /*
+         * Session changes will be kept in this object.
+         */
         self.sessAttrs = {
           'changed': [],
           'added': [],
           'deleted': []
         };
         self.handler = options.handler;
-        self.trackChanges = !!(self.handler && self.handler.trackChanges);
+        self.trackChanges = false;
+
+        /*
+         * Listen to the model changes for the session changes.
+         */
         self.on('add', self.onModelAdd);
         self.on('remove', self.onModelRemove);
         self.on('change', self.onModelChange);
+
+        /*
+         * We need to start the session, if the handler is already in session
+         * tracking mode.
+         */
+        if (self.handler && self.handler.trackChanges) {
+          self.startNewSession();
+        }
 
         return self;
       },
@@ -1079,12 +1094,25 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         });
         return true;
       },
-      toJSON: function(session) {
+      /*
+       * We do support the changes through session tracking in general.
+       *
+       * In normal mode, we will use the general toJSON(..) function of
+       * Backbone.Colletion.
+       *
+       * In session mode, we will return session changes as:
+       * We will be returning the session changes as:
+       * {
+       *  'added': [JSON of each new model],
+       *  'delete': [JSON of each deleted model],
+       *  'changed': [JSON of each modified model with session changes]
+       * }
+       */
+      toJSON: function(session, level) {
         var self = this,
-            onlyChanged = (typeof(session) != "undefined" &&
-                  session == true);
+            session = (typeof(session) != "undefined" && session == true);
 
-        if (!onlyChanged) {
+        if (!session) {
           return Backbone.Collection.prototype.toJSON.call(self);
         } else {
           var res = {};
@@ -1098,20 +1126,20 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
           res['changed'] = [];
           _.each(self.sessAttrs['changed'], function(o) {
-            res['changed'].push(o.toJSON(true));
+            res['changed'].push(o.toJSON(true, (level || 0) + 1));
           });
           if (res['changed'].length == 0) {
             delete res['changed'];
           }
           res['deleted'] = [];
           _.each(self.sessAttrs['deleted'], function(o) {
-            res['deleted'].push(o.toJSON(false, true));
+            res['deleted'].push(o.toJSON());
           });
           if (res['deleted'].length == 0) {
             delete res['deleted'];
           }
 
-          return (_.size(res) == 0 ? null : JSON.stringify(res));
+          return (_.size(res) == 0 ? null : res);
         }
       },
       onModelAdd: function(obj) {
@@ -1159,7 +1187,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       },
       onModelChange: function(obj) {
 
-        if (!this.trackChanges || obj instanceof pgBrowser.Node.Model)
+        if (!this.trackChanges || !(obj instanceof pgBrowser.Node.Model))
           return true;
 
         var self = this, idx = _.indexOf(self.sessAttrs['added'], obj);
@@ -1272,9 +1300,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.objects = [];
         self.handler = (options.handler ||
             (self.collection && self.collection.handler));
-        self.trackChanges = (
-            self.handler && self.handler.trackChanges
-            ) || false;
+        self.trackChanges = false;
         self.onChangeData = options.onChangeData;
         self.onChangeCallback = options.onChangeCallback;
 
@@ -1318,6 +1344,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             self.objects.push(s.id);
             self.set(s.id, obj, {silent: true});
           });
+        }
+
+        if (self.handler && self.handler.trackChanges) {
+          self.startNewSession();
         }
 
         return self;
@@ -1390,28 +1420,55 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
         return res;
       },
-      toJSON: function(session, idOnly) {
+      /*
+       * We do support modified data only through session by tracking changes.
+       *
+       * In normal mode, we will use the toJSON function of Backbone.Model.
+       * In session mode, we will return all the modified data only. And, the
+       * objects (collection, and model) will be return as stringified JSON,
+       * only from the parent object.
+       */
+      toJSON: function(session, level) {
         var self = this, res, isNew = self.isNew();
 
-        session = (typeof(session) != "undefined" && session == true && isNew == false);
-        idOnly = (typeof(idOnly) != "undefined" && idOnly == true);
+        // We will run JSON.stringify(..) only from the main object, not for
+        // the JSON object within the objects.
+        level = level || 0;
 
-        if (!session && !idOnly) {
+        session = (typeof(session) != "undefined" && session == true && isNew == false);
+
+        if (!session) {
           res = Backbone.Model.prototype.toJSON.call(this, arguments);
         } else {
           res = {};
           res[self.idAttribute || '_id'] = self.get(self.idAttribute || '_id');
-
-          if (idOnly) {
-            return res;
-          }
           res = _.extend(res, self.sessAttrs);
         }
 
-        _.each(self.objects, function(k) {
-          var obj = self.get(k);
-          res[k] = (obj && JSON.stringify(obj.toJSON(session)));
-          });
+        /*
+         * We do have number objects (models, collections), which needs to be
+         * converted to JSON data manually.
+         */
+        _.each(
+            self.objects,
+            function(k) {
+              var obj = self.get(k);
+              /*
+               * For session changes, we only need the modified data to be
+               * transformed to JSON data.
+               */
+              if (session && obj && obj.sessChanged && obj.sessChanged()) {
+                res[k] = ((level== 0) ?
+                  // Convert the JSON data to string, which will allow us to
+                  // send the data to the server in GET HTTP method, and will
+                  // not be translated to wierd format.
+                  (obj && JSON.stringify(obj.toJSON(session, level + 1))) :
+                  (obj && obj.toJSON(session))
+                  );
+              } else if (!session) {
+                res[k] = (obj && obj.toJSON(session));
+              }
+            });
         return res;
       },
       startNewSession: function() {
