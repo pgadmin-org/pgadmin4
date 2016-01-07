@@ -829,7 +829,8 @@ class Driver(BaseDriver):
             return True
 
         for c in valNoArray:
-            if not (u'a' <= c <= u'z') and c != u'_':
+            if (not (u'a' <= c <= u'z') and c != u'_' and
+                    not (u'0' <= c <= u'9')):
                 return True
 
         # check string is keywaord or not

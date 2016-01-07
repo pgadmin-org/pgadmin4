@@ -1430,7 +1430,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
        * only from the parent object.
        */
       toJSON: function(session, level, method) {
-        var self = this, res;
+        var self = this, res, isNew = self.isNew();
 
         // We will run JSON.stringify(..) only from the main object, not for
         // the JSON object within the objects.
@@ -1438,7 +1438,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         session = (typeof(session) != "undefined" && session == true);
 
-        if (!session) {
+        if (!session || isNew) {
           res = Backbone.Model.prototype.toJSON.call(this, arguments);
         } else {
           res = {};
@@ -1460,11 +1460,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                */
               if (session) {
                 if (obj && obj.sessChanged && obj.sessChanged()) {
-                  res[k] = ((level== 0 && method == 'GET') ?
+                  res[k] = ((level== 0 && method && method == 'GET') ?
                     // Convert the JSON data to string, which will allow us to
                     // send the data to the server in GET HTTP method, and will
                     // not be translated to wierd format.
-                    (obj && JSON.stringify(obj.toJSON(session && !self.isNew(), level + 1))) :
+                    (obj && JSON.stringify(obj.toJSON(session && !isNew, level + 1))) :
                     (obj && obj.toJSON(session && !self.isNew(), level + 1))
                     );
                 }
