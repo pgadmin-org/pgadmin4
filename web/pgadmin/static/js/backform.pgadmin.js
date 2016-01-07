@@ -1034,11 +1034,13 @@
           value = this.getValueFromDOM(),
           min_value = field.min,
           max_value = field.max,
+          isValid = true,
           intPattern = new RegExp("^-?[0-9]*$"),
           isMatched = intPattern.test(value);
 
       // Below logic will validate input
       if (!isMatched) {
+        isValid = false;
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
@@ -1049,7 +1051,8 @@
       }
 
       // Below will check if entered value is in-between min & max range
-      if (!_.isUndefined(min_value) && value < min_value) {
+      if (isValid && (!_.isUndefined(min_value) && value < min_value)) {
+        isValid = false;
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
@@ -1060,7 +1063,8 @@
             );
       }
 
-      if (!_.isUndefined(max_value) && value > max_value) {
+      if (isValid && (!_.isUndefined(max_value) && value > max_value)) {
+        isValid = false;
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
@@ -1069,6 +1073,13 @@
               max_value
               ).value()
             );
+      }
+
+      // After validation we need to set that value into model (only if all falgs are true)
+      if (isValid) {
+        this.stopListening(this.model, "change:" + name, this.render);
+        this.model.set(name, value);
+        this.listenTo(this.model, "change:" + name, this.render);
       }
     }
   });
