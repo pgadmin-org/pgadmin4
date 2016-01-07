@@ -7,6 +7,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       parent_type: 'server-group',
       type: 'server',
       label: '{{ _('Server') }}',
+      canDrop: true,
       Init: function() {
 
         /* Avoid multiple registration of same menus */
@@ -25,11 +26,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 3, label: '{{ _('Server...') }}',
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
-        },{
-          name: 'drop_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'delete_obj',
-          category: 'drop', priority: 3, label: '{{ _('Drop Server...') }}',
-          icon: 'fa fa-trash', enable: 'is_not_connected'
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
@@ -166,7 +162,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'port', label:'{{ _('Port') }}', type: 'int', group: "Connection",
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65534
         },{
           id: 'db', label:'{{ _('Maintenance Database') }}', type: 'text', group: "Connection",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
