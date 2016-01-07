@@ -289,6 +289,83 @@
     }
   });
 
+
+  /*
+   *  Select2Cell for backgrid.
+   */
+  var Select2Cell = Backgrid.Extension.Select2Cell = Backgrid.Cell.extend({
+
+    className: "select2-cell",
+
+    events: {
+      "change": "onSave",
+      "select2:unselect": "onSave"
+    },
+    template: _.template(
+      '<option value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>',
+      null,
+      {variable: null}
+    ),
+    render: function () {
+      var col = _.defaults(this.column.toJSON(), this.defaults),
+          model = this.model, column = this.column,
+          editable = Backgrid.callByNeed(col.editable, column, model),
+          optionValues = this.column.get('optionValues');
+
+      this.$el.empty();
+
+      if (!_.isArray(optionValues)) throw new TypeError("optionValues must be an array");
+
+      /* Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work.
+       */
+      optionValues.unshift([null, null]);
+
+      var optionText = null,
+          optionValue = null,
+          model = this.model,
+          selectedValues = model.get(this.column.get("name"));
+
+      delete this.$select;
+
+      this.$select = $("<select>", {tabIndex: -1}),
+      this.$el.append(this.$select);
+
+      for (var i = 0; i < optionValues.length; i++) {
+        var optionValue = optionValues[i];
+
+        if (_.isArray(optionValue)) {
+          optionText  = optionValue[0];
+          optionValue = optionValue[1];
+
+          this.$select.append(
+            this.template({
+              text: optionText,
+              value: optionValue,
+              selected: _.indexOf(selectedValues, optionValue) > -1
+            }));
+        } else {
+          throw new TypeError("optionValues elements must be a name-value pair.");
+        }
+      }
+      // Initialize select2 control.
+      this.$select.select2(_.defaults(
+          {'disabled': !editable}, col.select2));
+
+      this.delegateEvents();
+
+      return this;
+    },
+
+    /**
+       Saves the value of the selected option to the model attribute.
+    */
+    onSave: function (e) {
+      var model = this.model;
+      var column = this.column;
+      model.set(column.get("name"), this.$select.val(),{silent:true});
+    }
+  });
   return Backgrid;
 
 }));
