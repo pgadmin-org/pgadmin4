@@ -760,7 +760,14 @@ class Driver(BaseDriver):
 
     @staticmethod
     def qtLiteral(value):
-        return adapt(value).getquoted()
+
+        res = adapt(value).getquoted()
+
+        # Returns in bytes, we need to convert it in string
+        if isinstance(res, bytes):
+            return res.decode()
+        else:
+            return res
 
     @staticmethod
     def ScanKeywordExtraLookup(key):
