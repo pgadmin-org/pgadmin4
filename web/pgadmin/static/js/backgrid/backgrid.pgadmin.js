@@ -310,7 +310,7 @@
       var col = _.defaults(this.column.toJSON(), this.defaults),
           model = this.model, column = this.column,
           editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = this.column.get('optionValues');
+          optionValues = this.optionValues;
 
       this.$el.empty();
 
