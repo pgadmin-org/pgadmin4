@@ -294,29 +294,29 @@
    *  Select2Cell for backgrid.
    */
   var Select2Cell = Backgrid.Extension.Select2Cell = Backgrid.Cell.extend({
-
     className: "select2-cell",
-
+    defaults: _.defaults({
+        select2: {}
+      }, Backgrid.Cell.prototype.defaults),
     events: {
       "change": "onSave",
       "select2:unselect": "onSave"
     },
     template: _.template(
-      '<option value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>',
-      null,
-      {variable: null}
+      '<option value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>'
     ),
     render: function () {
       var col = _.defaults(this.column.toJSON(), this.defaults),
           model = this.model, column = this.column,
           editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = this.optionValues;
+          optionValues = _.clone(this.optionValues || this.column.get('options'));
 
       this.$el.empty();
 
       if (!_.isArray(optionValues)) throw new TypeError("optionValues must be an array");
 
-      /* Add empty option as Select2 requires any empty '<option><option>' for
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work.
        */
       optionValues.unshift([null, null]);
@@ -328,8 +328,7 @@
 
       delete this.$select;
 
-      this.$select = $("<select>", {tabIndex: -1}),
-      this.$el.append(this.$select);
+      this.$select = $("<select>", {tabIndex: -1}).appendTo(this.$el);
 
       for (var i = 0; i < optionValues.length; i++) {
         var optionValue = optionValues[i];
@@ -349,8 +348,12 @@
         }
       }
       // Initialize select2 control.
-      this.$select.select2(_.defaults(
-          {'disabled': !editable}, col.select2));
+      this.$select.select2(
+          _.defaults(
+            {'disabled': !editable},
+            col.select2,
+            this.defatuls.select2
+            ));
 
       this.delegateEvents();
 
