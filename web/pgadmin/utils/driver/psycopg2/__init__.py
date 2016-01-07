@@ -877,6 +877,9 @@ class Driver(BaseDriver):
         value = None
 
         for val in args:
+            if type(val) == list:
+                return map(lambda w: Driver.qtIdent(conn, w), val)
+
             if len(val) == 0:
                 continue
 
