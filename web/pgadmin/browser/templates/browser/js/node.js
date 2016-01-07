@@ -725,7 +725,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 // Save the changes
                 btn.click(function() {
                   var m = view.model,
-                    d = m.toJSON(true, 0, 'POST');
+                    d = m.toJSON(true);
                   if (d && !_.isEmpty(d)) {
                     m.save({}, {
                       attrs: d,
@@ -1109,7 +1109,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
        *  'changed': [JSON of each modified model with session changes]
        * }
        */
-      toJSON: function(session, level) {
+      toJSON: function(session) {
         var self = this,
             session = (typeof(session) != "undefined" && session == true);
 
@@ -1127,7 +1127,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
           res['changed'] = [];
           _.each(self.sessAttrs['changed'], function(o) {
-            res['changed'].push(o.toJSON(true, (level || 0) + 1));
+            res['changed'].push(o.toJSON(true));
           });
           if (res['changed'].length == 0) {
             delete res['changed'];
@@ -1429,12 +1429,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
        * objects (collection, and model) will be return as stringified JSON,
        * only from the parent object.
        */
-      toJSON: function(session, level, method) {
+      toJSON: function(session, method) {
         var self = this, res, isNew = self.isNew();
-
-        // We will run JSON.stringify(..) only from the main object, not for
-        // the JSON object within the objects.
-        level = level || 0;
 
         session = (typeof(session) != "undefined" && session == true);
 
@@ -1459,14 +1455,19 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                * transformed to JSON data.
                */
               if (session) {
-                if (obj && obj.sessChanged && obj.sessChanged()) {
-                  res[k] = ((level== 0 && method && method == 'GET') ?
-                    // Convert the JSON data to string, which will allow us to
-                    // send the data to the server in GET HTTP method, and will
-                    // not be translated to wierd format.
-                    (obj && JSON.stringify(obj.toJSON(session && !isNew, level + 1))) :
-                    (obj && obj.toJSON(session && !self.isNew(), level + 1))
-                    );
+                res[k] = obj && obj.toJSON(
+                  !isNew && obj.sessChanged && obj.sessChanged()
+                  );
+                /*
+                 * We will run JSON.stringify(..) only from the main object,
+                 * not for the JSON object within the objects, that only when
+                 * HTTP method is 'GET'.
+                 *
+                 * We do stringify the object, so that - it will not be
+                 * translated to wierd format using jQuery.
+                 */
+                if (obj && method && method == 'GET') {
+                  res[k] = JSON.stringify(res[k]);
                 }
               } else {
                 res[k] = (obj && obj.toJSON());
