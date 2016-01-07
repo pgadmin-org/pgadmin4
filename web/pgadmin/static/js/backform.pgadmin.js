@@ -978,7 +978,7 @@
             url: msql_url,
             type: 'GET',
             cache: false,
-            data: self.model.toJSON(true),
+            data: self.model.toJSON(true, 0, 'GET'),
             dataType: "json",
             contentType: "application/json"
           }).done(function(res) {

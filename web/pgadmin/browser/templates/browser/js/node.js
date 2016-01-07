@@ -255,9 +255,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
        * currently selected tree item node.
        *
        **/
-      show_obj_properties: function(args) {
+      show_obj_properties: function(args, item) {
         var t = pgBrowser.tree,
-          i = args.item || t.selected(),
+          i = args.item || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined
           o = this,
           l = o.label + ' - ' + o.title(d);
@@ -725,11 +725,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                 // Save the changes
                 btn.click(function() {
                   var m = view.model,
-                    d = m.toJSON(true);
+                    d = m.toJSON(true, 0, 'POST');
                   if (d && !_.isEmpty(d)) {
                     m.save({}, {
                       attrs: d,
                       validate: false,
+                      cache: false,
                       success: function() {
                         onSaveFunc.call();
                       },
@@ -1428,14 +1429,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
        * objects (collection, and model) will be return as stringified JSON,
        * only from the parent object.
        */
-      toJSON: function(session, level) {
-        var self = this, res, isNew = self.isNew();
+      toJSON: function(session, level, method) {
+        var self = this, res;
 
         // We will run JSON.stringify(..) only from the main object, not for
         // the JSON object within the objects.
         level = level || 0;
 
-        session = (typeof(session) != "undefined" && session == true && isNew == false);
+        session = (typeof(session) != "undefined" && session == true);
 
         if (!session) {
           res = Backbone.Model.prototype.toJSON.call(this, arguments);
@@ -1457,16 +1458,18 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                * For session changes, we only need the modified data to be
                * transformed to JSON data.
                */
-              if (session && obj && obj.sessChanged && obj.sessChanged()) {
-                res[k] = ((level== 0) ?
-                  // Convert the JSON data to string, which will allow us to
-                  // send the data to the server in GET HTTP method, and will
-                  // not be translated to wierd format.
-                  (obj && JSON.stringify(obj.toJSON(session, level + 1))) :
-                  (obj && obj.toJSON(session))
-                  );
-              } else if (!session) {
-                res[k] = (obj && obj.toJSON(session));
+              if (session) {
+                if (obj && obj.sessChanged && obj.sessChanged()) {
+                  res[k] = ((level== 0 && method == 'GET') ?
+                    // Convert the JSON data to string, which will allow us to
+                    // send the data to the server in GET HTTP method, and will
+                    // not be translated to wierd format.
+                    (obj && JSON.stringify(obj.toJSON(session && !self.isNew(), level + 1))) :
+                    (obj && obj.toJSON(session && !self.isNew(), level + 1))
+                    );
+                }
+              } else {
+                res[k] = (obj && obj.toJSON());
               }
             });
         return res;
