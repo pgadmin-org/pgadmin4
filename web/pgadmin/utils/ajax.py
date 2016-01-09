@@ -11,7 +11,7 @@
 
 from flask import Response
 from flask.ext.babel import gettext as _
-import json
+import simplejson as json
 
 
 def make_json_response(success=1, errormsg='', info='', result=None,
