@@ -1274,5 +1274,21 @@
     return groups;
   };
 
+  /*
+   *  Backform Select2 control.
+   */
+  var Select2Control = Backform.Select2Control = Backform.SelectControl.extend({
+    render: function() {
+      Backform.SelectControl.prototype.render.apply(this, arguments);
+
+      var col = _.defaults(this.field.toJSON(), this.defaults)
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work and initialize select2 control.
+       */
+      this.$el.find("select").prepend($('<option></option>')).select2(col.select2);
+      return this;
+    }
+  });
   return Backform;
 }));
