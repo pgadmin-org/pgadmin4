@@ -81,7 +81,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                 null, url, this.field.get('node_data'),
                 this.field.get('url_with_id') || false, node_info
               ]),
-            cache_level = this.field.get('cache_level'),
+            cache_level = this.field.get('cache_level') || node.type,
             cache_node = this.field.get('cache_node');
 
         cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;

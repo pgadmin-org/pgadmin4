@@ -215,6 +215,7 @@
             id: 'name', label:'', type:'text',
             url: self.field.get('variable_opts') || 'vopts',
             control: Backform.NodeAjaxOptionsControl,
+            cache_level: 'server',
             select2: {
               allowClear: false, width: 'style'
             },
@@ -248,8 +249,8 @@
 
       if (self.hasDatabase) {
         headerSchema.push({
-          id: 'database', label:'', type: 'text',
-          control: Backform.NodeListByNameControl, node: 'database'
+          id: 'database', label:'', type: 'text', cache_level: 'server',
+          control: Backform.NodeListByNameControl, node: 'database',
         });
         headerDefaults['database'] = null;
         gridCols.push('database');
@@ -257,7 +258,7 @@
 
       if (self.hasRole) {
         headerSchema.push({
-          id: 'role', label:'', type: 'text',
+          id: 'role', label:'', type: 'text', cache_level: 'server',
           control: Backform.NodeListByNameControl, node: 'role'
         });
         headerDefaults['role'] = null;

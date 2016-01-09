@@ -972,20 +972,36 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'statistics': 'stats'
         },
-        ref = '', self = this;
+        ref = '', self = this,
+        priority = -Infinity;
+
+      info = (_.isUndefined(item) || _.isNull(item)) ?
+        info || {} : this.getTreeNodeHierarchy(item);
+
+      if (self.parent_type) {
+        if (_.isString(self.parent_type)) {
+          var p = info[self.parent_type];
+          if (p) {
+            priority = p.priority;
+          }
+        } else {
+          _.each(self.parent_type, function(o) {
+            var p = info[o];
+            if (p) {
+              if (priority < p.priority) {
+                priority = p.priority;
+              }
+            }
+          });
+        }
+      }
 
       _.each(
         _.sortBy(
           _.values(
-           _.pick(
-            ((_.isUndefined(item) || _.isNull(item)) ? info || {} :
-              this.getTreeNodeHierarchy(item)),
+           _.pick(info,
             function(v, k, o) {
-              // If you want to make sure, it generates the correct url path,
-              // please define 'parents' properties for this node, which will
-              // be an list of name of the parents, and grand parents type.
-              return (k != self.type ||
-                (self.parents && _.isArray(self.parents) && k in self.parents));
+              return (v.priority <= priority);
             })
            ),
           function(o) { return o.priority; }
@@ -1455,19 +1471,19 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                * transformed to JSON data.
                */
               if (session) {
-                res[k] = obj && obj.toJSON(
-                  !isNew && obj.sessChanged && obj.sessChanged()
-                  );
-                /*
-                 * We will run JSON.stringify(..) only from the main object,
-                 * not for the JSON object within the objects, that only when
-                 * HTTP method is 'GET'.
-                 *
-                 * We do stringify the object, so that - it will not be
-                 * translated to wierd format using jQuery.
-                 */
-                if (obj && method && method == 'GET') {
-                  res[k] = JSON.stringify(res[k]);
+                if ((obj.sessChanged && obj.sessChanged()) || isNew) {
+                  res[k] = obj && obj.toJSON(!isNew);
+                  /*
+                   * We will run JSON.stringify(..) only from the main object,
+                   * not for the JSON object within the objects, that only when
+                   * HTTP method is 'GET'.
+                   *
+                   * We do stringify the object, so that - it will not be
+                   * translated to wierd format using jQuery.
+                   */
+                  if (obj && method && method == 'GET') {
+                    res[k] = JSON.stringify(res[k]);
+                  }
                 }
               } else {
                 res[k] = (obj && obj.toJSON());

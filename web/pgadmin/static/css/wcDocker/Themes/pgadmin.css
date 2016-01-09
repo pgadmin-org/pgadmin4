@@ -191,11 +191,11 @@
 }
 
 .wcInput, input {
-  background-color: #A44;
+  background-color: transparent;
 }
 
 .wcSelect, select {
-  background-color: #A44;
+  background-color: transparent;
 }
 
 .wcButton, button {
