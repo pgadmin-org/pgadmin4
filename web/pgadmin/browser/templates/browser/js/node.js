@@ -1484,6 +1484,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   if (obj && method && method == 'GET') {
                     res[k] = JSON.stringify(res[k]);
                   }
+                } else {
+                  delete res[k];
                 }
               } else {
                 res[k] = (obj && obj.toJSON());

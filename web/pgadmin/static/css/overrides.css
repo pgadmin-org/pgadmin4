@@ -645,6 +645,10 @@ table.backgrid tr.new {
 	width: 100% !important;
 }
 
+.renderable > .select2-container {
+	width: 100% !important;
+}
+
 div.rolmembership {
 	border: 1.5px solid #faebd7;
 	margin-top: 15px;
