@@ -582,13 +582,27 @@ table.backgrid tr.new {
     height: 0px; width: 0px;
 }
 
-.width_percent_40 {
-	width: 40%;
-}
-
-.width_percent_60 {
-	width: 60%;
-}
+.width_percent_5 { width: 5%; }
+.width_percent_10 { width: 10%; }
+.width_percent_15 { width: 15%; }
+.width_percent_20 { width: 20%; }
+.width_percent_25 { width: 25%; }
+.width_percent_30 { width: 30%; }
+.width_percent_35 { width: 35%; }
+.width_percent_40 { width: 40%; }
+.width_percent_45 { width: 45%; }
+.width_percent_50 { width: 50%; }
+.width_percent_55 { width: 55%; }
+.width_percent_60 { width: 60%; }
+.width_percent_65 { width: 65%; }
+.width_percent_70 { width: 70%; }
+.width_percent_75 { width: 75%; }
+.width_percent_80 { width: 80%; }
+.width_percent_85 { width: 85%; }
+.width_percent_90 { width: 90%; }
+.width_percent_95 { width: 95%; }
+.width_percent_99 { width: 99%; }
+.width_percent_100 { width: 100%; }
 
 .pg-prop-status-bar {
     left: 0px;
@@ -610,4 +624,28 @@ table.backgrid tr.new {
     left: 0px;
     right: 0px;
     bottom :0;
+}
+.subnode-header-form {
+    background-color:#2c76b4;
+    color:#FFFFFF;
+    padding:3px 0 10px 0;
+	border-top: solid 1.5px white;
+}
+
+.subnode-header-form button.add {
+    float:right;
+    margin-right:15px;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+	background: transparent none repeat scroll 0% 0%;
+	border: medium none;
+	outline: 0px none;
+	box-shadow: none;
+	width: 100% !important;
+}
+
+div.rolmembership {
+	border: 1.5px solid #faebd7;
+	margin-top: 15px;
 }

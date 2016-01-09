@@ -4,6 +4,21 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var pgBrowser = pgAdmin.Browser;
 
+
+  // Store value in DOM as stringified JSON.
+  var StringOrJSONFormatter = function() {};
+  _.extend(StringOrJSONFormatter.prototype, {
+    fromRaw: function(rawData, model) {
+      return JSON.stringify(rawData);
+    },
+    toRaw: function(formattedData, model) {
+      if (typeof(formattedData) == 'string') {
+        return formattedData;
+      }
+      return JSON.parse(formattedData);
+    }
+  });
+
   /*
    * NodeAjaxOptionsControl
    *   This control will fetch the options required to render the select
@@ -21,8 +36,28 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     defaults: _.extend(Backform.SelectControl.prototype.defaults, {
       url: undefined,
       transform: undefined,
-      url_with_id: false
+      url_with_id: false,
+      first_empty: false,
+      select2: {
+        allowClear: true,
+        placeholder: 'Select from the list',
+        width: 'style'
+      }
     }),
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
+      '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value=<%-value%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+      '    <% if (first_empty) { %>',
+      '    <option value="" <%="" === rawValue ? "selected" : "" %>><%- empty_value %></option>',
+      '    <% } %>',
+      '    <% for (var i=0; i < options.length; i++) { %>',
+      '    <% var option = options[i]; %>',
+      '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
+      '    <% } %>',
+      '  </select>',
+      '</div>'].join("\n")),
+    formatter: StringOrJSONFormatter,
     initialize: function() {
       /*
        * Initialization from the original control.
@@ -47,14 +82,19 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                 this.field.get('url_with_id') || false, node_info
               ]),
             cache_level = this.field.get('cache_level'),
-            /*
-             * We needs to check, if we have already cached data for this url.
-             * If yes - use that, and do not bother about fetching it again,
-             * and use it.
-             */
-            data = node.cache(url, node_info, cache_level);
+            cache_node = this.field.get('cache_node');
+
+        cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+
+        /*
+         * We needs to check, if we have already cached data for this url.
+         * If yes - use that, and do not bother about fetching it again,
+         * and use it.
+         */
+        var data = cache_node.cache(url, node_info, cache_level);
+
         if (_.isUndefined(data) || _.isNull(data)) {
-          m.trigger('pgadmin-view:fetching', m, self.field);
+          m.trigger('pgadmin:view:fetching', m, self.field);
           $.ajax({
             async: false,
             url: full_url,
@@ -63,13 +103,13 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                * We will cache this data for short period of time for avoiding
                * same calls.
                */
-              data = node.cache(url, node_info, cache_level, res.data);
+              data = cache_node.cache(url, node_info, cache_level, res.data);
             },
             error: function() {
-              m.trigger('pgadmin-view:fetch:error', m, self.field);
+              m.trigger('pgadmin:view:fetch:error', m, self.field);
             }
           });
-          m.trigger('pgadmin-view:fetched', m, self.field);
+          m.trigger('pgadmin:view:fetched', m, self.field);
         }
         // To fetch only options from cache, we do not need time from 'at'
         // attribute but only options.
@@ -90,28 +130,45 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           self.field.set('options', data);
         }
       }
+    },
+    render: function() {
+      /*
+       * Let SelectControl render it, we will do our magic on the
+       * select control in it.
+       */
+      Backform.SelectControl.prototype.render.apply(this, arguments);
+
+      var d = this.field.toJSON(),
+          select2_opts = _.defaults({}, d.select2, this.defaults.select2);
+
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work and initialize select2 control.
+       */
+      this.$el.find("select").select2(select2_opts);
+
+      return this;
     }
   });
 
+  var formatNode = function(opt) {
+    if (!opt.id) {
+      return opt.text;
+    }
+
+    var optimage = $(opt.element).data('image');
+
+    if(!optimage){
+      return opt.text;
+    } else {
+      return $(
+          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
+          );
+    }
+  };
+
   var NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
     controlClassName: 'pgadmin-node-select form-control',
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      '  <select class="pgadmin-node-select form-control" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-      '    <% if (first_empty) { %>',
-      '    <option value="" <%="" === rawValue ? "selected=\'selected\'" : "" %>><%- empty_value %></option>',
-      '    <% } %>',
-      '    <% for (var i=0; i < options.length; i++) { %>',
-      '    <% var option = options[i]; %>',
-      '    <% if (!_.isUndefined(option.node)) { %>',
-      '    <option value="<%-formatter.fromRaw(option.value)%>" <%=option.value === rawValue ? "selected=\'selected\'" : "" %> node="<%=option.node%>"><%-option.label%></option>',
-      '    <% } else { %>',
-      '    <option value="<%-formatter.fromRaw(option.value)%>" <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
-      '    <% } %>',
-      '    <% } %>',
-      '  </select>',
-      '</div>'].join("\n")),
     defaults: _.extend(NodeAjaxOptionsControl.prototype.defaults, {
       first_empty: true,
       empty_value: '-- None --',
@@ -131,16 +188,27 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                   (node['node_label']).apply(node, [r, self.model, self]) :
                   r.label),
                 image= (_.isFunction(node['node_image']) ?
-                  (node['node_image']).apply(node, [r, self.model, self]) : node.type);
+                  (node['node_image']).apply(
+                    node, [r, self.model, self]
+                    ) :
+                  (node['node_image'] || ('icon-' + node.type)));
+
             res.push({
               'value': r._id,
-              'node': image,
+              'image': image,
               'label': l
             });
           }
         });
 
         return res;
+      },
+      select2: {
+        allowClear: true,
+        placeholder: 'Select from the list',
+        width: 'style',
+        templateResult: formatNode,
+        templateSelection: formatNode
       }
     })
   });
@@ -161,11 +229,14 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             var l = (_.isFunction(node['node_label']) ?
                   (node['node_label']).apply(node, [r, self.model, self]) :
                   r.label),
-                image= (_.isFunction(node['node_image']) ?
-                  (node['node_image']).apply(node, [r, self.model, self]) : node.type);
+                image = (_.isFunction(node['node_image']) ?
+                  (node['node_image']).apply(
+                    node, [r, self.model, self]
+                    ) :
+                  (node['node_image'] || ('icon-' + node.type)));
             res.push({
               'value': r.label,
-              'node': image,
+              'image': image,
               'label': l
             });
           }
@@ -176,5 +247,32 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     })
   });
 
-  return Backform.NodeListControl;
+  /*
+   * Global function to make visible  particular dom element in it's parent
+   * with given class.
+   */
+  $.fn.pgMakeVisible = function( cls ) {
+    return this.each(function() {
+      if (!this || !$(this.length))
+        return;
+      var top, p = $(this), hasScrollbar = function(j) {
+        if (j && j.length > 0) {
+          return j.get(0).scrollHeight > j.height();
+        }
+        return false;
+      };
+
+      while(p) {
+        top = p.get(0).offsetTop + p.height();
+        p = p.parent();
+        if (hasScrollbar(p)) {
+          p.scrollTop(top);
+        }
+        if (p.hasClass(cls)) //'backform-tab'
+          return;
+      }
+    });
+  };
+
+  return Backform;
 });

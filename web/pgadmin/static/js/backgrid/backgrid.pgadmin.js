@@ -352,7 +352,7 @@
           _.defaults(
             {'disabled': !editable},
             col.select2,
-            this.defatuls.select2
+            this.defaults.select2
             ));
 
       this.delegateEvents();

@@ -97,6 +97,11 @@ class ServerModule(sg.ServerGroupPluginModule):
             'name': 'pgadmin.browser.server.privilege',
             'path': url_for('browser.index') + 'server/static/js/privilege',
             'when': self.node_type
+            },
+            {
+            'name': 'pgadmin.browser.server.variable',
+            'path': url_for('browser.index') + 'server/static/js/variable',
+            'when': self.node_type
             }])
 
         for module in self.submodules:

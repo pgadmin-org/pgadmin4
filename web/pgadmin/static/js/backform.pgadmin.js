@@ -74,7 +74,8 @@
     'multiline': ['textarea', 'textarea', 'string'],
     'collection': ['sub-node-collection', 'sub-node-collection', 'string'],
     'uniqueColCollection': ['unique-col-collection', 'unique-col-collection', 'string'],
-    'switch' : 'switch'
+    'switch' : 'switch',
+    'select2': 'select2',
   };
 
   var getMappedControl = Backform.getMappedControl = function(type, mode) {
@@ -111,95 +112,131 @@
   }
 
 
+  var BackformControlInit = Backform.Control.prototype.initialize,
+      BackformControlRemove = Backform.Control.prototype.remove;
+
   // Override the Backform.Control to allow to track changes in dependencies,
   // and rerender the View element
-  var BackformControlInit = Backform.Control.prototype.initialize;
-  Backform.Control.prototype.initialize = function() {
-    BackformControlInit.apply(this, arguments);
+  _.extend(Backform.Control.prototype, {
 
-    // Listen to the dependent fields in the model for any change
-    var deps = this.field.get('deps');
-    var that = this;
-    if (deps && _.isArray(deps))
-      _.each(deps, function(d) {
-        attrArr = d.split('.');
-        name = attrArr.shift();
-        that.listenTo(that.model, "change:" + name, that.render);
-    });
-  };
-  Backform.Control.prototype.template = _.template([
-    '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-    '<div class="<%=Backform.controlsClassName%>">',
-    '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
-    '    <%=value%>',
-    '  </span>',
-    '</div>'
-  ].join("\n"));
-  Backform.Control.prototype.clearInvalid = function() {
-    this.$el.removeClass(Backform.errorClassName);
-    this.$el.find(".pgadmin-control-error-message").remove();
-    return this;
-  };
-  Backform.Control.prototype.updateInvalid = function() {
-    var self = this;
-    var errorModel = this.model.errorModel;
-    if (!(errorModel instanceof Backbone.Model)) return this;
+    initialize: function() {
+      BackformControlInit.apply(this, arguments);
 
-    this.clearInvalid();
+      // Listen to the dependent fields in the model for any change
+      var deps = this.field.get('deps');
+      var self = this;
 
-    this.$el.find(':input').not('button').each(function(ix, el) {
-      var attrArr = $(el).attr('name').split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
+      if (deps && _.isArray(deps)) {
+        _.each(deps, function(d) {
+          attrArr = d.split('.');
+          name = attrArr.shift();
+          self.listenTo(self.model, "change:" + name, self.render);
+        });
+      }
+    },
+
+    remove: function() {
+      // Listen to the dependent fields in the model for any change
+      var self = this,
+          deps = self.field.get('deps');
+
+      self.stopListening(self.model, "change:" + name, self.render);
+      self.stopListening(self.model.errorModel, "change:" + name, self.updateInvalid);
+
+      if (deps && _.isArray(deps)) {
+        _.each(deps, function(d) {
+
+          attrArr = d.split('.');
+          name = attrArr.shift();
+
+          self.stopListening(that.model, "change:" + name, self.render);
+        });
+      }
+
+      if (BackformControlRemove) {
+        BackformControlRemove.apply(self, arguments);
+      } else {
+        Backbone.View.prototype.remove.apply(self, arguments);
+      }
+    },
+
+    template: _.template([
+                  '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+                  '<div class="<%=Backform.controlsClassName%>">',
+                  '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
+                  '    <%=value%>',
+                  '  </span>',
+                  '</div>'
+                  ].join("\n")),
+
+    clearInvalid: function() {
+      this.$el.removeClass(Backform.errorClassName);
+      this.$el.find(".pgadmin-control-error-message").remove();
+      return this;
+    },
+
+    updateInvalid: function() {
+      var self = this,
+          errorModel = this.model.errorModel;
+
+      if (!(errorModel instanceof Backbone.Model)) return this;
+
+      this.clearInvalid();
+
+      this.$el.find(':input').not('button').each(function(ix, el) {
+        var attrArr = $(el).attr('name').split('.'),
+        name = attrArr.shift(),
+        path = attrArr.join('.'),
+        error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
 
       if (_.isEmpty(error)) return;
 
       self.$el.addClass(Backform.errorClassName).append(
         $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
-      );
-    });
-  };
+        );
+      });
+    },
 
-  /*
-   * Overriding the render function of the control to allow us to eval the
-   * values properly.
-   */
-  Backform.Control.prototype.render = function() {
-    var field = _.defaults(this.field.toJSON(), this.defaults),
-        attributes = this.model.toJSON(),
-        attrArr = field.name.split('.'),
-        name = attrArr.shift(),
-        path = attrArr.join('.'),
-        rawValue = this.keyPathAccessor(attributes[name], path),
-        data = _.extend(field, {
-          rawValue: rawValue,
-          value: this.formatter.fromRaw(rawValue, this.model),
-          attributes: attributes,
-          formatter: this.formatter
-        }),
-        evalF = function(f, d, m) {
-          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-        };
+    /*
+     * Overriding the render function of the control to allow us to eval the
+     * values properly.
+     */
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+          }),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
 
-    // Evaluate the disabled, visible, and required option
-    _.extend(data, {
-      disabled: evalF(data.disabled, data, this.model),
-      visible:  evalF(data.visible, data, this.model),
-      required: evalF(data.required, data, this.model)
-    });
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(data.disabled, data, this.model),
+        visible:  evalF(data.visible, data, this.model),
+        required: evalF(data.required, data, this.model)
+      });
 
-    // Clean up first
-    this.$el.removeClass(Backform.hiddenClassname);
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassname);
 
-    if (!data.visible)
-      this.$el.addClass(Backform.hiddenClassname);
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassname);
 
-    this.$el.html(this.template(data)).addClass(field.name);
-    this.updateInvalid();
+      this.$el.html(this.template(data)).addClass(field.name);
+      this.updateInvalid();
 
-    return this;
-  };
+      return this;
+    }
+  });
 
   /*
    * Overriding the render function of the select control to allow us to use
@@ -235,7 +272,7 @@
         data.options = data.options.apply(this)
       } catch(e) {
         // Do nothing
-        data = []
+        data.options = []
         this.model.trigger('pgadmin-view:transform:error', m, self.field, e);
       }
     }
@@ -582,70 +619,113 @@
         var uniqueCol = this.field.get('uniqueCol') || [],
             m = this.field.get('model'),
             schema = m.prototype.schema || m.__super__.schema,
-            columns = [];
+            columns = [],
+            self = this;
 
         _.each(schema, function(s) {
           columns.push(s.id);
         });
 
         // Check if unique columns provided are also in model attributes.
-        if (uniqueCol.length > _.intersection(columns, uniqueCol).length){
+        if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
             errorMsg = "Developer: Unique column/s [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
             alert (errorMsg);
         }
 
-        var collection = this.model.get(this.field.get('name')),
-            self = this;
+        var collection = self.collection = self.model.get(self.field.get('name'));
+
         if (!collection) {
-          collection = new (pgAdmin.Browser.Node.Collection)(null, {
-            model: self.field.get('model'),
-            silent: true,
-            handler: self.model.handler || self.model
-          });
+          collection = self.collection = new (pgAdmin.Browser.Node.Collection)(
+              null,
+              {
+                model: self.field.get('model'),
+                silent: true,
+                handler: self.model.handler || self.model
+              });
           self.model.set(self.field.get('name'), collection, {silent: true});
         }
+
         self.listenTo(collection, "add", self.collectionChanged);
         self.listenTo(collection, "change", self.collectionChanged);
     },
-    collectionChanged: function(newModel, coll, op) {
-        var uniqueCol = this.field.get('uniqueCol') || [],
-            uniqueChangedAttr = [],
-            changedAttr = newModel.changedAttributes();
-        // Check if changed model attributes are also in unique columns. And then only check for uniqueness.
-        if (changedAttr) {
-            _.each(uniqueCol, function(col) {
-                if ( _.has(changedAttr,col))
-                {
-                   uniqueChangedAttr.push(col);
-                }
-            });
-            if(uniqueChangedAttr.length == 0) {
-                return;
-            }
-        } else {
-            return;
-        }
+    remove: function() {
+      var self = this;
 
-        var collection = this.model.get(this.field.get('name'));
-        this.stopListening(collection, "change", this.collectionChanged);
-        // Check if changed attribute's value of new/updated model also exist for another model in collection.
-        // If duplicate value exists then set the attribute's value of new/updated model to it's previous values.
-        collection.each(function(model) {
-            if (newModel != model) {
-                var duplicateAttrValues = []
-                _.each(uniqueCol, function(attr) {
-                    attrValue = newModel.get(attr);
-                    if (!_.isUndefined(attrValue) && attrValue == model.get(attr)) {
-                        duplicateAttrValues.push(attrValue)
-                    }
-                });
-                if (duplicateAttrValues.length == uniqueCol.length){
-                     newModel.set(uniqueChangedAttr[0], newModel.previous(uniqueChangedAttr[0]), {silent: true});
-                     // TODO- Need to add notification in status bar for unique column.
-                }
+      self.stopListening(collection, "add", self.collectionChanged);
+      self.stopListening(collection, "change", self.collectionChanged);
+
+      Backform.Control.prototype.remove.apply(this, arguments);
+    },
+    collectionChanged: function(newModel, coll, op) {
+      var uniqueCol = this.field.get('uniqueCol') || [],
+          uniqueChangedAttr = [],
+          self = this;
+      // Check if changed model attributes are also in unique columns. And then only check for uniqueness.
+      if (newModel.attributes) {
+        _.each(uniqueCol, function(col) {
+            if (_.has(newModel.attributes,col))
+            {
+               uniqueChangedAttr.push(col);
             }
         });
-        this.listenTo(collection, "change", this.collectionChanged);
+        if(uniqueChangedAttr.length == 0) {
+            return;
+        }
+      } else {
+        return;
+      }
+
+      var collection = this.model.get(this.field.get('name'));
+      this.stopListening(collection, "change", this.collectionChanged);
+      // Check if changed attribute's value of new/updated model also exist for another model in collection.
+      // If duplicate value exists then set the attribute's value of new/updated model to its previous values.
+      var m = undefined,
+          oldModel = undefined;
+      collection.each(function(model) {
+        if (newModel != model) {
+          var duplicateAttrValues = []
+          _.each(uniqueCol, function(attr) {
+            attrValue = newModel.get(attr);
+            if (!_.isUndefined(attrValue) && attrValue == model.get(attr)) {
+              duplicateAttrValues.push(attrValue)
+            }
+          });
+          if (duplicateAttrValues.length == uniqueCol.length) {
+            m = newModel;
+            // Keep reference of model to make it visible in dialog.
+            oldModel = model;
+          }
+        }
+      });
+      if (m) {
+        if (op && op.add) {
+          // Remove duplicate model.
+          setTimeout(function() {
+            collection.remove(m);
+          }, 0);
+
+        } else {
+          /*
+           * Set model value to its previous value as its new value is
+           * conflicting with another model value.
+           */
+
+          m.set(uniqueChangedAttr[0], m.previous(uniqueChangedAttr[0]), {silent: true});
+        }
+        if (oldModel) {
+          var idx = collection.indexOf(oldModel);
+          if (idx > -1) {
+            var newRow = self.grid.body.rows[idx].$el;
+            newRow.addClass("new");
+            $(newRow).pgMakeVisible('backform-tab');
+            setTimeout(function() {
+              newRow.removeClass("new");
+              }, 3000);
+          }
+        }
+      }
+
+      this.listenTo(collection, "change", this.collectionChanged);
     },
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
@@ -673,7 +753,7 @@
         canDelete: evalF(data.canDelete, this.model)
       });
       // Show Backgrid Control
-      grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+      grid = this.showGridControl(data);
 
       this.$el.html(grid).addClass(field.name);
       this.updateInvalid();
@@ -686,6 +766,10 @@
           "  <button class='btn-sm btn-default add'>Add</buttton>",
           "</div>"].join("\n"),
         gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
+
+      if (!(data.subnode)) {
+        return '';
+      }
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
@@ -709,10 +793,10 @@
 
       var collection = this.model.get(data.name);
       // Initialize a new Grid instance
-      var grid = new Backgrid.Grid({
-          columns: gridSchema.columns,
-          collection: collection,
-          className: "backgrid table-bordered"
+      var grid = self.grid = new Backgrid.Grid({
+        columns: gridSchema.columns,
+        collection: collection,
+        className: "backgrid table-bordered"
       });
 
       // Render subNode grid
@@ -728,35 +812,38 @@
       // Add button callback
       if (!(data.disabled || data.canAdd == false)) {
         $dialog.find('button.add').first().click(function(e) {
-            e.preventDefault();
-            var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
+          e.preventDefault();
+          var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
 
-            // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
-            // There should be only one empty row.
-            if (!allowMultipleEmptyRows && collection){
-                var isEmpty = false;
-                collection.each(function(model){
-                    var modelValues = [];
-                    _.each(model.attributes, function(val, key){
-                        modelValues.push(val);
-                    })
-                    if(!_.some(modelValues, _.identity)){
-                        isEmpty = true;
-                    }
-                });
-                if(isEmpty){
-                    return false;
-                }
+          // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
+          // There should be only one empty row.
+          if (!allowMultipleEmptyRows && collection) {
+            var isEmpty = false;
+            collection.each(function(model) {
+              var modelValues = [];
+              _.each(model.attributes, function(val, key) {
+                modelValues.push(val);
+              })
+              if(!_.some(modelValues, _.identity)) {
+                isEmpty = true;
+              }
+            });
+            if(isEmpty) {
+              return false;
             }
+          }
 
-            $(grid.body.$el.find($("tr.new"))).removeClass("new")
-            var m = new (data.model)(null, {silent: true});
-            collection.add(m);
+          $(grid.body.$el.find($("tr.new"))).removeClass("new")
+          var m = new (data.model)(null, {silent: true});
+          collection.add(m);
 
-            var idx = collection.indexOf(m);
-            newRow = grid.body.rows[idx].$el;
-            newRow.addClass("new");
-            return false;
+          var idx = collection.indexOf(m),
+              newRow = grid.body.rows[idx].$el;
+
+          newRow.addClass("new");
+          $(newRow).pgMakeVisible('backform-tab');
+
+          return false;
         });
       }
 
@@ -869,7 +956,7 @@
       }
 
       // Initialize a new Grid instance
-      var grid = new Backgrid.Grid({
+      var grid = self.grid = new Backgrid.Grid({
           columns: gridSchema.columns,
           collection: collection,
           className: "backgrid table-bordered"
@@ -890,10 +977,11 @@
       $dialog.find('button.add').click(function(e) {
         e.preventDefault();
         grid.insertRow({});
-        newRow = $(grid.body.rows[collection.length - 1].$el);
+        var newRow = $(grid.body.rows[collection.length - 1].$el);
         newRow.attr("class", "new").click(function(e) {
           $(this).attr("class", "");
         });
+        $(newRow).pgMakeVisible('backform-tab');
         return false;
       });
 
@@ -1152,11 +1240,13 @@
             schema_node: schema_node,
             visible: (mode == 'properties'?
               (ver_in_limit ?
-               (s.version || true) : false) : s.version || true)
+               (s.version || true) : false) : s.version || true),
+            node: node,
+            node_data: treeData
           });
           delete o.id;
 
-          // Temporarily store in dictionaly format for
+          // Temporarily store in dictionary format for
           // utilizing it later.
           groups[group].push(o);
         }
@@ -1182,7 +1272,7 @@
 
     }
     return groups;
-  }
+  };
 
   return Backform;
 }));
