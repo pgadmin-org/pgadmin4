@@ -341,7 +341,8 @@
             this.template({
               text: optionText,
               value: optionValue,
-              selected: _.indexOf(selectedValues, optionValue) > -1
+              selected: (selectedValues == optionValue) ||
+                (_.indexOf(selectedValues, optionValue) > -1)
             }));
         } else {
           throw new TypeError("optionValues elements must be a name-value pair.");
