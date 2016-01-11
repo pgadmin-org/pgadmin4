@@ -190,7 +190,7 @@ Failed to fetch the version information on the established connection to the dat
                     )
                 return False, res
 
-            status, res = self.execute_dict("""
+        status, res = self.execute_dict("""
 SELECT
     db.oid as did, db.datname, db.datallowconn, pg_encoding_to_char(db.encoding) AS serverencoding,
     has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
@@ -198,12 +198,12 @@ FROM
     pg_database db
 WHERE db.datname = current_database()""")
 
-            if status:
-                mgr.db_info = dict()
-                f_row = res['rows'][0]
-                mgr.db_info[f_row['did']] = f_row.copy()
+        if status:
+            mgr.db_info = dict()
+            f_row = res['rows'][0]
+            mgr.db_info[f_row['did']] = f_row.copy()
 
-            status, res = self.execute_dict("""
+        status, res = self.execute_dict("""
 SELECT
     oid as id, rolname as name, rolsuper as is_superuser,
     rolcreaterole as can_create_role, rolcreatedb as can_create_db
@@ -212,10 +212,10 @@ FROM
 WHERE
     rolname = current_user""")
 
-            if status:
-                mgr.user_info = dict()
-                f_row = res['rows'][0]
-                mgr.user_info = f_row.copy()
+        if status:
+            mgr.user_info = dict()
+            f_row = res['rows'][0]
+            mgr.user_info = f_row.copy()
 
         if 'password' in kwargs:
             mgr.password = kwargs['password']
@@ -617,6 +617,12 @@ WHERE db.oid = {0}""".format(did))
                 self.connections[my_id]._release()
                 del self.connections[my_id]
 
+                if len(self.connections) == 0:
+                    self.ver = None
+                    self.sversion = None
+                    self.server_type = None
+                    self.password = None
+
                 return True
             else:
                 return False
@@ -625,6 +631,9 @@ WHERE db.oid = {0}""".format(did))
             self.connections[con]._release()
 
         self.connections = dict()
+        self.ver = None
+        self.sversion = None
+        self.server_type = None
         self.password = None
 
         return True
