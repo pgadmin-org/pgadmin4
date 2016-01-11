@@ -52,7 +52,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     // Label
     label: '',
     title: function(d) {
-      return d ? d.label : '';
+      return o.label + (d ? (' - ' + d.label) : '');
     },
     hasId: true,
     ///////
@@ -260,7 +260,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           i = args.item || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined
           o = this,
-          l = o.label + ' - ' + o.title(d);
+          l = o.title.apply(this, [d]);
 
         // Make sure - the properties dialog type registered
         pgBrowser.Node.register_node_panel();
@@ -785,7 +785,17 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         },
         updateTreeItem = function() {
           // Update the item lable (if lable is modified.)
-          tree.setLabel(item, {label: view.model.get("name")});
+          if (view.model.tnode) {
+            var itemData = tree.itemData(item),
+                icon = itemData.icon;
+
+            tree.removeIcon(item);
+            _.extend(itemData, {icon: icon}, view.model.tnode);
+            tree.setLabel(item, {label: itemData.label});
+            tree.addIcon(item, {icon: itemData.icon});
+          } else if (view.model.get('name')) {
+            tree.setLabel(item, {label: view.model.get("name")});
+          }
           panel.$container.removeAttr('action-mode');
           setTimeout(function() { closePanel(); }, 0);
         },
