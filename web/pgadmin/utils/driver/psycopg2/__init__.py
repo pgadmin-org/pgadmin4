@@ -201,7 +201,21 @@ WHERE db.datname = current_database()""")
             if status:
                 mgr.db_info = dict()
                 f_row = res['rows'][0]
-                mgr.db_info[f_row['did']] = f_row
+                mgr.db_info[f_row['did']] = f_row.copy()
+
+            status, res = self.execute_dict("""
+SELECT
+    oid as id, rolname as name, rolsuper as is_superuser,
+    rolcreaterole as can_create_role, rolcreatedb as can_create_db
+FROM
+    pg_catalog.pg_roles
+WHERE
+    rolname = current_user""")
+
+            if status:
+                mgr.user_info = dict()
+                f_row = res['rows'][0]
+                mgr.user_info = f_row.copy()
 
         if 'password' in kwargs:
             mgr.password = kwargs['password']
