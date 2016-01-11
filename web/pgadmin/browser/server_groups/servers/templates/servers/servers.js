@@ -113,6 +113,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         /* Connect the server (if not connected), before opening this node */
         beforeopen: function(item, data) {
+
           if(!data || data._type != 'server') {
             return false;
           }
@@ -120,13 +121,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           pgBrowser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected) {
             connect_to_server(this, data, pgBrowser.tree, item);
+
             return false;
           }
           return true;
         },
-        opened: function(item, data) {
+        added: function(item, data) {
+
           pgBrowser.serverInfo = pgBrowser.serverInfo || {};
           pgBrowser.serverInfo[data._id] = _.extend({}, data);
+
+          return true;
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({
@@ -244,6 +249,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             tree.addIcon(item, {icon: data.icon});
           }
           _.extend(data, res.data);
+
+          var serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
+          serverInfo[data._id] = _.extend({}, data);
 
           alertify.success(res.info);
           obj.trigger('server-connected', obj, item, data);
