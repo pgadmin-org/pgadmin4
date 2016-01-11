@@ -26,6 +26,23 @@ from config import PG_DEFAULT_DRIVER
 import six
 from pgadmin.browser.server_groups.servers.types import ServerType
 
+def has_any(data, keys):
+    """
+    Checks any one of the keys present in the data given
+    """
+    if data is None and type(data) != dict:
+        return False
+
+    if keys is None and type(keys) != list:
+        return False
+
+    for key in keys:
+        if key in data:
+            return True
+
+    return False
+
+
 class ServerModule(sg.ServerGroupPluginModule):
     NODE_TYPE = "server"
 
@@ -120,6 +137,7 @@ class ServerModule(sg.ServerGroupPluginModule):
             app.jinja_env.filters['qtLiteral'] = driver.qtLiteral
             app.jinja_env.filters['qtIdent'] = driver.qtIdent
             app.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
+            app.jinja_env.filters['hasAny'] = has_any
 
         super(ServerModule, self).register(app, options, first_registration)
 
