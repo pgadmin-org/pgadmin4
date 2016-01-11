@@ -765,7 +765,7 @@
           "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add'>Add</buttton>",
           "</div>"].join("\n"),
-        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
+        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode-body'></div>").append(gridHeader);
 
       if (!(data.subnode)) {
         return '';
@@ -848,8 +848,25 @@
       }
 
       return $dialog;
-    }
+    },
+    updateInvalid: function() {
+      var self = this,
+      errorModel = this.model.errorModel;
 
+      if (!(errorModel instanceof Backbone.Model)) return this;
+
+      this.clearInvalid();
+
+      this.$el.find('.subnode-body').each(function(ix, el) {
+        var error = self.keyPathAccessor(errorModel.toJSON(), this.field.get('name'));
+
+        if (_.isEmpty(error)) return;
+
+        self.$el.addClass(Backform.errorClassName).append(
+          $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+          );
+      });
+    }
   });
 
   var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
