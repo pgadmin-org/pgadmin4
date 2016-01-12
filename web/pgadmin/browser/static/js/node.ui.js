@@ -93,7 +93,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
          */
         var data = cache_node.cache(url, node_info, cache_level);
 
-        if (this.field.get('ver_in_limit') &&
+        if (this.field.get('version_compitible') &&
             (_.isUndefined(data) || _.isNull(data))) {
           m.trigger('pgadmin:view:fetching', m, self.field);
           $.ajax({

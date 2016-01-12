@@ -239,6 +239,16 @@
   });
 
   /*
+   * Override the input control events in order to reslove the issue related to
+   * not updating the value sometimes in the input control.
+   */
+  Backform.InputControl.prototype.events = {
+    "change input": "onChange",
+    "blur input": "onChange",
+    "focus input": "clearInvalid"
+  };
+
+  /*
    * Overriding the render function of the select control to allow us to use
    * options as function, which should return array in the format of
    * (label, value) pair.
@@ -774,7 +784,7 @@
       var gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label col-sm-4"><%-label%></label>',
-          '  <button class="btn-sm btn-default add" <%= canAdd ? "" : "disabled"%>><%-add_label%></buttton>',
+          '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
           '</div>'].join("\n")),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode-body"></div>').append(
             gridHeader(data)

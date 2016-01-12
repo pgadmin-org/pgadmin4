@@ -342,43 +342,43 @@
 
     generateHeader: function(data) {
       var header = [
-        "<div class='subnode-header-form'>",
-        " <div class='container-fluid'>",
-        "  <div class='row'>",
-        "   <div class='col-md-4'>",
-        "    <label class='control-label'><%-variable_label%></label>",
-        "   </div>",
-        "   <div class='col-md-4' header='name'></div>",
-        "   <div class='col-md-4'>",
-        "     <button class='btn-sm btn-default add' <%=canAdd ? \"\" : \"disabled\"%>><%-add_label%></buttton>",
-        "   </div>",
-        "  </div>"];
+        '<div class="subnode-header-form">',
+        ' <div class="container-fluid">',
+        '  <div class="row">',
+        '   <div class="col-md-4">',
+        '    <label class="control-label"><%-variable_label%></label>',
+        '   </div>',
+        '   <div class="col-md-4" header="name"></div>',
+        '   <div class="col-md-4">',
+        '     <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%-add_label%></buttton>',
+        '   </div>',
+        '  </div>'];
 
       if(this.hasDatabase) {
         header.push([
-          "  <div class='row'>",
-          "   <div class='col-md-4'>",
-          "    <label class='control-label'><%-database_label%></label>",
-          "   </div>",
-          "   <div class='col-md-4' header='database'></div>",
-          "  </div>"].join("\n")
+          '  <div class="row">',
+          '   <div class="col-md-4">',
+          '    <label class="control-label"><%-database_label%></label>',
+          '   </div>',
+          '   <div class="col-md-4" header="database"></div>',
+          '  </div>'].join("\n")
           );
       }
 
       if (this.hasRole) {
         header.push([
-          "  <div class='row'>",
-          "   <div class='col-md-4'>",
-          "    <label class='control-label'>>%-role_label%></label>",
-          "   </div>",
-          "   <div class='col-md-4' header='role'></div>",
-          "  </div>"].join("\n")
+          '  <div class="row">',
+          '   <div class="col-md-4">',
+          '    <label class="control-label"><%-role_label%></label>',
+          '   </div>',
+          '   <div class="col-md-4" header="role"></div>',
+          '  </div>'].join("\n")
           );
       }
 
       header.push([
-          " </div>",
-          "</div>"].join("\n"));
+          ' </div>',
+          '</div>'].join("\n"));
 
       // TODO:: Do the i18n
       _.extend(data, {
