@@ -91,7 +91,7 @@
       self.availVariables = opts.column.get('availVariables');
 
       var variable = (self.availVariables[name]),
-          cell = self.variableCellMapper[variable.vartype] || Backgrid.Cell;
+          cell = self.variableCellMapper[variable && variable.vartype] || Backgrid.Cell;
 
       /*
        * Set properties for dynamic cell.
@@ -102,7 +102,7 @@
 
       DynamicVariableCell.__super__.initialize.apply(self, arguments);
 
-      switch(variable.vartype) {
+      switch(variable && variable.vartype) {
         case "bool":
           // There are no specific properties for BooleanCell.
           break;
@@ -221,6 +221,7 @@
             },
             availVariables: self.availVariables,
             node: node, first_empty: false,
+            version_compitible: self.field.get('version_compitible'),
             transform: function(vars) {
               var self = this,
                   opts = self.field.get('availVariables');
@@ -251,6 +252,7 @@
         headerSchema.push({
           id: 'database', label:'', type: 'text', cache_level: 'server',
           control: Backform.NodeListByNameControl, node: 'database',
+          version_compitible: self.field.get('version_compitible')
         });
         headerDefaults['database'] = null;
         gridCols.push('database');
@@ -259,7 +261,8 @@
       if (self.hasRole) {
         headerSchema.push({
           id: 'role', label:'', type: 'text', cache_level: 'server',
-          control: Backform.NodeListByNameControl, node: 'role'
+          control: Backform.NodeListByNameControl, node: 'role',
+          version_compitible: self.field.get('version_compitible')
         });
         headerDefaults['role'] = null;
         gridCols.push('role');
@@ -296,14 +299,14 @@
     },
 
     /*
-     * Get the variable options for this control.
+     * Get the variable data for this node.
      */
     getVariables: function() {
       var self = this,
           url = this.field.get('url'),
           m = self.model;
 
-      if (url && !m.isNew()) {
+      if (this.field.get('version_compitible') && url && !m.isNew()) {
         var node = self.field.get('node'),
             node_data = self.field.get('node_data'),
             node_info = self.field.get('node_info'),
@@ -333,6 +336,7 @@
            */
           self.collection.startNewSession();
         }
+      } else {
       }
     },
 
@@ -342,11 +346,11 @@
         " <div class='container-fluid'>",
         "  <div class='row'>",
         "   <div class='col-md-4'>",
-        "    <label class='control-label'>Variable name</label>",
+        "    <label class='control-label'><%-variable_label%></label>",
         "   </div>",
         "   <div class='col-md-4' header='name'></div>",
         "   <div class='col-md-4'>",
-        "     <button class='btn-sm btn-default add'>Add</buttton>",
+        "     <button class='btn-sm btn-default add' <%=canAdd ? \"\" : \"disabled\"%>><%-add_label%></buttton>",
         "   </div>",
         "  </div>"];
 
@@ -354,7 +358,7 @@
         header.push([
           "  <div class='row'>",
           "   <div class='col-md-4'>",
-          "    <label class='control-label'>Database</label>",
+          "    <label class='control-label'><%-database_label%></label>",
           "   </div>",
           "   <div class='col-md-4' header='database'></div>",
           "  </div>"].join("\n")
@@ -365,7 +369,7 @@
         header.push([
           "  <div class='row'>",
           "   <div class='col-md-4'>",
-          "    <label class='control-label'>Role</label>",
+          "    <label class='control-label'>>%-role_label%></label>",
           "   </div>",
           "   <div class='col-md-4' header='role'></div>",
           "  </div>"].join("\n")
@@ -376,8 +380,17 @@
           " </div>",
           "</div>"].join("\n"));
 
+      // TODO:: Do the i18n
+      _.extend(data, {
+        variable_label: "Variable Name",
+        add_label: "ADD",
+        database_label: "Database",
+        role_label: "Role"
+      });
+
       var self = this,
-          $header = $(header.join("\n")),
+          headerTmpl = _.template(header.join("\n")),
+          $header = $(headerTmpl(data)),
           controls = this.controls;
 
       this.headerFields.each(function(field) {
@@ -393,8 +406,8 @@
         controls.push(control);
       });
 
-      // Set visibility of Add button
-      if (data.disabled || data.canAdd == false) {
+      // We should not show add but in properties mode
+      if (data.mode == 'properties') {
         $header.find("button.add").remove();
       }
 

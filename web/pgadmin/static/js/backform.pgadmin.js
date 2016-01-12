@@ -645,14 +645,18 @@
           self.model.set(self.field.get('name'), collection, {silent: true});
         }
 
-        self.listenTo(collection, "add", self.collectionChanged);
-        self.listenTo(collection, "change", self.collectionChanged);
+        if (this.field.get('version_compitible')) {
+          self.listenTo(collection, "add", self.collectionChanged);
+          self.listenTo(collection, "change", self.collectionChanged);
+        }
     },
     remove: function() {
       var self = this;
 
-      self.stopListening(collection, "add", self.collectionChanged);
-      self.stopListening(collection, "change", self.collectionChanged);
+      if (this.field.get('version_compitible')) {
+        self.stopListening(collection, "add", self.collectionChanged);
+        self.stopListening(collection, "change", self.collectionChanged);
+      }
 
       Backform.Control.prototype.remove.apply(this, arguments);
     },
@@ -746,12 +750,18 @@
 
       // Evaluate the disabled, visible, required, canAdd, & canDelete option
       _.extend(data, {
-        disabled: evalF(data.disabled, this.model),
-        visible:  evalF(data.visible, this.model),
-        required: evalF(data.required, this.model),
-        canAdd: evalF(data.canAdd, this.model),
-        canDelete: evalF(data.canDelete, this.model)
+        disabled: (field.version_compitible &&
+                   evalF.apply(this.field, [data.disabled, this.model])
+                   ),
+        visible:  evalF.apply(this.field, [data.visible, this.model]),
+        required: evalF.apply(this.field, [data.required, this.model]),
+        canAdd: (field.version_compitible &&
+          evalF.apply(this.field, [data.canAdd, this.model])
+          ),
+        canDelete: evalF.apply(this.field, [data.canDelete, this.model])
       });
+      _.extend(data, {add_label: "ADD"});
+
       // Show Backgrid Control
       grid = this.showGridControl(data);
 
@@ -761,11 +771,14 @@
       return this;
     },
     showGridControl: function(data) {
-      var gridHeader = ["<div class='subnode-header'>",
-          "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
-          "  <button class='btn-sm btn-default add'>Add</buttton>",
-          "</div>"].join("\n"),
-        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode-body'></div>").append(gridHeader);
+      var gridHeader = _.template([
+          '<div class="subnode-header">',
+          '  <label class="control-label col-sm-4"><%-label%></label>',
+          '  <button class="btn-sm btn-default add" <%= canAdd ? "" : "disabled"%>><%-add_label%></buttton>',
+          '</div>'].join("\n")),
+        gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode-body"></div>').append(
+            gridHeader(data)
+            );
 
       if (!(data.subnode)) {
         return '';
@@ -778,12 +791,12 @@
           self = this;
 
       // Set visibility of Add button
-      if (data.disabled || data.canAdd == false) {
+      if (data.mode == 'properties') {
         $(gridBody).find("button.add").remove();
       }
 
       // Insert Delete Cell into Grid
-      if (data.disabled == false && data.canDelete) {
+      if (!data.disabled && data.canDelete) {
           gridSchema.columns.unshift({
             name: "pg-backform-delete", label: "",
             cell: Backgrid.Extension.DeleteCell,
@@ -792,6 +805,7 @@
       }
 
       var collection = this.model.get(data.name);
+
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
         columns: gridSchema.columns,
@@ -858,7 +872,7 @@
       this.clearInvalid();
 
       this.$el.find('.subnode-body').each(function(ix, el) {
-        var error = self.keyPathAccessor(errorModel.toJSON(), this.field.get('name'));
+        var error = self.keyPathAccessor(errorModel.toJSON(), self.field.get('name'));
 
         if (_.isEmpty(error)) return;
 
@@ -1207,7 +1221,7 @@
       };
       groups = {},
       server_info = node_info && ('server' in node_info) &&
-        pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server.id];
+        pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id];
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
@@ -1259,7 +1273,8 @@
               (ver_in_limit ?
                (s.version || true) : false) : s.version || true),
             node: node,
-            node_data: treeData
+            node_data: treeData,
+            version_compitible: ver_in_limit
           });
           delete o.id;
 
