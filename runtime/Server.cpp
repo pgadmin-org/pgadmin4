@@ -37,8 +37,15 @@ Server::Server(quint16 port)
 
     if (python_path.length() > 0)
     {
+        // Split the path setting into individual entries
+        QStringList path_list = python_path.split(";", QString::SkipEmptyParts);
+
+        // Get the current path
         PyObject* sysPath = PySys_GetObject((char*)"path");
-        PyList_Append(sysPath, PyString_FromString(python_path.toUtf8().data()));
+
+        // Add new additional path elements
+        for (int i = 0; i < path_list.size(); ++i)
+            PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
     }
 }
 
