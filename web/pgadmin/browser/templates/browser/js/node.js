@@ -105,7 +105,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
     //
     // Used to generate view for the particular node properties, edit,
     // creation.
-    getView: function(item, type, el, node, formType, callback, data) {
+    getView: function(item, type, el, node, formType, callback, ctx) {
       var that = this;
 
       if (!this.type || this.type == '')
@@ -132,22 +132,58 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
 
         // We know - which data model to be used for this object.
-        var newModel = new (this.model.extend({urlRoot: urlBase}))(attrs, {
-              onChangeData: data,
-              onChangeCallback: callback
-            }),
+        var newModel = new (this.model.extend({urlRoot: urlBase}))(attrs, {}),
             info = this.getTreeNodeHierarchy.apply(this, [item]),
-            groups = Backform.generateViewSchema(info, newModel, type, this, node);
+            groups = Backform.generateViewSchema(
+                info, newModel, type, this, node
+                );
 
         if (type == 'create' || type == 'edit') {
-          newModel.on('on-status', function(e) {
+
+          if (callback && ctx) {
+              callback = callback.bind(ctx);
+          } else {
+            callback = function() {
+              console.log("Broke something!!! Why we don't have the callback or the context???");
+            };
+          }
+          newModel.on(
+              'pgadmin-session:set pgadmin-session:added pgadmin-session:changed pgadmin-session:removed',
+              function() {
+                if (newModel.invalidTimeout) {
+                  clearTimeout(newModel.invalidTimeout);
+                }
+                newModel.invalidTimeout = setTimeout(function() {
+                  var msg = newModel.validate();
+                  if (msg) {
+                    newModel.trigger('invalid', newModel, msg);
+                  } else {
+                    newModel.trigger('valid', newModel);
+                  }
+                }, 300);
+
+                return true;
+              })
+
+          newModel.on('invalid', function(newModel, message) {
+
             if(!_.isUndefined(that.statusBar)) {
-              that.statusBar.html(e.msg);
+              that.statusBar.html(message);
             }
-          }).on('on-status-clear', function(e) {
+            callback(true);
+
+            return true;
+          })
+
+          newModel.on('valid', function(e) {
+
             if(!_.isUndefined(that.statusBar)) {
               that.statusBar.empty();
             }
+
+            callback(false, newModel.sessChanged());
+
+            return true;
           });
         }
         // 'schema' has the information about how to generate the form.
@@ -692,26 +728,31 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       'pg-prop-footer'
                       ).appendTo(j);
 
-          var modelChanged = function(m, o) {
-            var btnGroup = o.find('.pg-prop-btn-group'),
+          var updateButtons = function(hasError, modified) {
+
+            var btnGroup = this.find('.pg-prop-btn-group'),
                 btnSave = btnGroup.find('button[type="save"]'),
                 btnReset = btnGroup.find('button[type="reset"]');
 
-            if (m.sessValid() && m.sessChanged()) {
-              btnSave.prop('disabled', false);
-              btnSave.removeAttr('disabled');
-              btnReset.prop('disabled', false);
-              btnReset.removeAttr('disabled');
-            } else {
+            if (hasError || !modified) {
               btnSave.prop('disabled', true);
               btnSave.attr('disabled', 'disabled');
+            } else {
+              btnSave.prop('disabled', false);
+              btnSave.removeAttr('disabled');
+            }
+
+            if (!modified) {
               btnReset.prop('disabled', true);
               btnReset.attr('disabled', 'disabled');
+            } else {
+              btnReset.prop('disabled', false);
+              btnReset.removeAttr('disabled');
             }
           };
 
           // Create a view to edit/create the properties in fieldsets
-          view = that.getView(item, action, content, data, 'dialog', modelChanged, j);
+          view = that.getView(item, action, content, data, 'dialog', updateButtons, j);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);
@@ -1085,15 +1126,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
         });
       },
-      onChange: function() {
-        var self = this;
-
-        if (self.handler && 'onChange' in self.handler &&
-            _.isFunction(self.handler.onChange)) {
-          return self.handler.onChange();
-        }
-        return true;
-      },
       sessChanged: function() {
         return (
             this.sessAttrs['changed'].length > 0 ||
@@ -1185,23 +1217,46 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           if ((!'sessChanged' in obj) || obj.sessChanged()) {
             self.sessAttrs['changed'].push(obj);
           }
-          return self.onChange();
+
+          (self || self.handler).trigger(
+              'pgadmin-session:added',
+              self,
+              (self || self.handler)
+              );
+
+          return true;
         }
         self.sessAttrs['added'].push(obj);
 
-        return self.onChange();
+        /*
+         * Session has been changed
+         */
+        (self || self.handler).trigger(
+            'pgadmin-session:added',
+            self,
+            (self || self.handler)
+            );
+
+        return true;
       },
       onModelRemove: function(obj) {
 
         if (!this.trackChanges)
           return true;
 
-        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj);
+        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj),
+            copy = _.clone(obj);
 
         // Hmm - it was newly added, we can safely remove it.
         if (idx >= 0) {
           self.sessAttrs['added'].splice(idx, 1);
-          return self.onChange();
+
+          (self || self.handler).trigger(
+              'pgadmin-session:removed',
+              self, copy, (self || self.handler)
+              );
+
+          return true;
         }
         // Hmm - it was changed in this session, we should remove it from the
         // changed models.
@@ -1210,7 +1265,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           self.sessAttrs['changed'].splice(idx, 1);
         }
         self.sessAttrs['deleted'].push(obj);
-        return self.onChange();
+
+        (self || self.handler).trigger(
+            'pgadmin-session:removed',
+            self, copy, (self || self.handler)
+            );
       },
       onModelChange: function(obj) {
 
@@ -1222,6 +1281,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         // It was newly added model, we don't need to add into the changed
         // list.
         if (idx >= 0) {
+          (self || self.handler).trigger(
+              'pgadmin-session:changed',
+              self, obj, (self || self.handler)
+              );
           return true;
         }
         idx = _.indexOf(self.sessAttrs['changed'], obj);
@@ -1230,17 +1293,35 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             return true;
           }
           self.sessAttrs['changed'].push(obj);
-          return self.onChange();
+
+          (self || self.handler).trigger(
+              'pgadmin-session:changed',
+              self, obj, (self || self.handler)
+              );
+
+          return true;
         }
         if (idx > 0) {
+
+          (self || self.handler).trigger(
+              'pgadmin-session:changed',
+              self, obj, (self || self.handler)
+              );
+
           if (!obj.sessChanged()) {
-            self.sessAttrs['changed'].splice(idx, 1);
-            return self.onChange();
+            return true;
           }
+
           return true;
         }
         self.sessAttrs['changed'].push(obj);
-        return self.onChange();
+
+        (self || self.handler).trigger(
+            'pgadmin-session:changed',
+            self, obj, (self || self.handler)
+            );
+
+        return true;
       }
     }),
     // Base class for Node Model
@@ -1328,8 +1409,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.handler = (options.handler ||
             (self.collection && self.collection.handler));
         self.trackChanges = false;
-        self.onChangeData = options.onChangeData;
-        self.onChangeCallback = options.onChangeCallback;
+        if (!self.handler) {
+          self.errorModel = new Backbone.Model();
+        }
 
         if (self.schema && _.isArray(self.schema)) {
           _.each(self.schema, function(s) {
@@ -1379,24 +1461,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
 
         return self;
       },
-      onChange: function() {
-        var self = this;
-
-        if (self.validate && _.isFunction(self.validate)) {
-            if (!self.validate()) {
-                return false;
-            }
-        }
-
-        if (self.handler && 'onChange' in self.handler &&
-            _.isFunction(self.handler.onChange)) {
-          return self.handler.onChange();
-        }
-        if (self.onChangeCallback && _.isFunction(self.onChangeCallback)) {
-          return self.onChangeCallback(self, self.onChangeData);
-        }
-        return true;
-      },
       sessChanged: function() {
         var self = this;
 
@@ -1442,7 +1506,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             attrChanged(val, key);
           }
 
-          handler.onChange();
+          (self || self.handler).trigger(
+              'pgadmin-session:set',
+              self, arguments, (self || self.handler)
+              );
+
           return true;
         }
         return res;
@@ -1528,9 +1596,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
         });
 
-        if (!self.handler) {
-          self.onChange();
-        }
+        (self || self.handler).trigger(
+            'pgadmin-session:start',
+            (self || self.handler));
       }
     }),
     getTreeNodeHierarchy: function(i) {
