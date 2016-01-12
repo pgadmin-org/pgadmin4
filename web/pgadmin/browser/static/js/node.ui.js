@@ -140,7 +140,20 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       Backform.SelectControl.prototype.render.apply(this, arguments);
 
       var d = this.field.toJSON(),
-          select2_opts = _.defaults({}, d.select2, this.defaults.select2);
+          select2_opts = _.defaults({}, d.select2, this.defaults.select2),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
+
+      /*
+       * If select2 options do not have any disabled property on this field
+       * and schema has disabled property then we need to apply it
+       */
+      if(!_.has(select2_opts, 'disabled') && (d && d.disabled)) {
+        _.extend(select2_opts, {
+          disabled: evalF(d.disabled, d, this.model)
+        });
+      }
 
       /*
        * Add empty option as Select2 requires any empty '<option><option>' for
