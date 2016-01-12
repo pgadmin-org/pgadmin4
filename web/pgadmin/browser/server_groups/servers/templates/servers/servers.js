@@ -201,13 +201,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               errmsg;
 
           if (!this.isNew() && 'id' in this.sessAttrs) {
-            var msg = '{{ _('Id can not be changed!') }}';
-            err['id'] = msg;
-            errmsg = msg;
+            err['id'] = '{{ _('Id can not be changed!') }}';;
+            errmsg = err['id'];
           }
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = '{{ _('Name can be empty!') }}';
-            errmsg = errmsg || msg;
+            errmsg = errmsg || err['name'];
           }
           this.errorModel.set(err);
 
