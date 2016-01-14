@@ -75,7 +75,14 @@ int main(int argc, char * argv[])
         QSettings settings;
         bool ok;
 
-        QString path = QInputDialog::getText(NULL, QWidget::tr("Python Path"), QWidget::tr("Set the Python search path:"), QLineEdit::Normal, settings.value("PythonPath").toString(), &ok);
+        QInputDialog *dlg = new QInputDialog();
+        dlg->setInputMode(QInputDialog::TextInput);
+        dlg->setWindowTitle(QWidget::tr("Python Path"));
+        dlg->setLabelText(QWidget::tr("Set the Python search path (separate entries with a semicolon):"));
+        dlg->setTextValue(settings.value("PythonPath").toString());
+        dlg->resize(600,100);
+        ok = dlg->exec();
+        QString path = dlg->textValue();
 
         if (ok)
             settings.setValue("PythonPath", path);
