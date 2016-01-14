@@ -60,6 +60,20 @@ individual features.
    debugger
    query-tool
 
+**********
+Deployment
+**********
+
+pgAdmin is primarily written as a web application and may be deployed as a 
+multi-user application on a web server. It also includes a simple runtime
+that may be used to host the program as a desktop application.
+
+.. toctree::
+   :maxdepth: 1
+   
+   desktop-deployment
+   server-deployment
+
 ***********
 Development
 ***********
