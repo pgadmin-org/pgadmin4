@@ -132,8 +132,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
 
         // We know - which data model to be used for this object.
-        var newModel = new (this.model.extend({urlRoot: urlBase}))(attrs, {}),
-            info = this.getTreeNodeHierarchy.apply(this, [item]),
+        var info = this.getTreeNodeHierarchy.apply(this, [item]),
+            newModel = new (this.model.extend({urlRoot: urlBase})) (
+                attrs, {node_info: info}
+                ),
             groups = Backform.generateViewSchema(
                 info, newModel, type, this, node
                 );
@@ -1551,6 +1553,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           (self.collection && self.collection.handler);
         self.trackChanges = false;
         self.errorModel = new Backbone.Model();
+        self.node_info = options.node_info;
 
         if (self.schema && _.isArray(self.schema)) {
           _.each(self.schema, function(s) {

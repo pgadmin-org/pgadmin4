@@ -75,7 +75,7 @@
     'collection': ['sub-node-collection', 'sub-node-collection', 'string'],
     'uniqueColCollection': ['unique-col-collection', 'unique-col-collection', 'string'],
     'switch' : 'switch',
-    'select2': 'select2',
+    'select2': 'select2'
   };
 
   var getMappedControl = Backform.getMappedControl = function(type, mode) {
@@ -651,6 +651,7 @@
                 model: self.field.get('model'),
                 silent: true,
                 handler: self.model.handler || self.model,
+                top: self.model.top || self.model,
                 attrName: self.field.get('name')
               });
           self.model.set(self.field.get('name'), collection, {silent: true});
@@ -725,7 +726,7 @@
            * conflicting with another model value.
            */
 
-          m.set(uniqueChangedAttr[0], m.previous(uniqueChangedAttr[0]), {silent: true});
+          m.set(uniqueChangedAttr[0], m.previous(uniqueChangedAttr[0]));
         }
         if (oldModel) {
           var idx = collection.indexOf(oldModel);
@@ -859,7 +860,11 @@
           }
 
           $(grid.body.$el.find($("tr.new"))).removeClass("new")
-          var m = new (data.model)(null, {silent: true});
+          var m = new (data.model) (null, {
+            silent: true,
+            handler: self.model.handler || self.model,
+            top: self.model.top || self.model
+          });
           collection.add(m);
 
           var idx = collection.indexOf(m),
@@ -1205,7 +1210,7 @@
             );
       }
 
-      // After validation we need to set that value into model (only if all falgs are true)
+      // After validation we need to set that value into model (only if all flags are true)
       if (isValid) {
         this.stopListening(this.model, "change:" + name, this.render);
         this.model.set(name, value);

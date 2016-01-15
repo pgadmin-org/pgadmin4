@@ -367,7 +367,7 @@
     onSave: function (e) {
       var model = this.model;
       var column = this.column;
-      model.set(column.get("name"), this.$select.val(),{silent:true});
+      model.set(column.get("name"), this.$select.val());
     }
   });
   return Backgrid;

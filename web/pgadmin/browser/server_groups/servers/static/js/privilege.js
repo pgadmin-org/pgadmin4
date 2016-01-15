@@ -5,7 +5,7 @@
      function(_, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Alertify, pgNode);
+      return factory(root, _, $, Backbone, Backform, Backgrid, Alertify, pgNode);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -14,15 +14,16 @@
       $ = root.jQuery || root.$ || root.Zepto || root.ender,
       Backbone = require('backbone') || root.Backbone,
       Backform = require('backform') || root.Backform;
+      Backgrid = require('backgrid') || root.Backgrid;
       Alertify = require('alertify') || root.Alertify;
       pgAdmin = require('pgadmin.browser.node') || root.pgAdmin.Browser.Node;
     factory(root, _, $, Backbone, Backform, Alertify, pgNode);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.pgAdmin.Browser.Node);
+    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.alertify, root.pgAdmin.Browser.Node);
   }
-} (this, function(root, _, $, Backbone, Backform, Alertify, pgNode) {
+} (this, function(root, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
 
   /**
    * Each Privilege, supporeted by an database object, will be represented
@@ -65,17 +66,40 @@
      * provide the type of privileges (it supports).
      */
     privileges:[],
-
     schema: [{
-      id: 'grantee', label:'Grantee', type:'text', group: null, cell: 'string',
-      disabled: false, cellHeaderClasses: 'width_percent_40'
-    }, {
+      id: 'grantee', label:'Grantee', type:'text', group: null,
+      editable: true, cellHeaderClasses: 'width_percent_40',
+      cell: 'node-list-by-name', node: 'role',
+      disabled : function(column, collection) {
+        if (column instanceof Backbone.Collection) {
+          // This has been called during generating the header cell
+          return false;
+        }
+        return !(this.node_info && this.node_info.server.user.name == column.get('grantor'));
+      },
+      transform: function(data) {
+        var res =
+          Backgrid.Extension.NodeListByNameCell.prototype.defaults.transform.apply(
+            this, arguments
+            );
+        res.unshift({label: 'public', value: 'public'});
+        return res;
+      }
+    },{
       id: 'privileges', label:'Privileges',
       type: 'collection', model: PrivilegeModel, group: null,
-      disabled: false, cell: 'privilege', control: 'text',
-      cellHeaderClasses: 'width_percent_40'
+      cell: 'privilege', control: 'text', cellHeaderClasses: 'width_percent_40',
+      disabled : function(column, collection) {
+        if (column instanceof Backbone.Collection) {
+          // This has been called during generating the header cell
+          return false;
+        }
+        return !(this.node_info && this.node_info.server.user.name == column.get('grantor') ||
+                this.attributes.node_info.server.user.name == column.get('grantor'));
+      }
     },{
-      id: 'grantor', label: 'Granter', type: 'text', disabled: true
+      id: 'grantor', label: 'Granter', type: 'text', disabled: true,
+      cell: 'node-list-by-name', node: 'role'
     }],
 
     /*
@@ -85,6 +109,14 @@
     initialize: function(attrs, opts) {
 
       pgNode.Model.prototype.initialize.apply(this, arguments);
+
+      if (_.isNull(attrs)) {
+        this.set(
+            'grantor',
+            opts && opts.top && opts.top.node_info && opts.top.node_info.server.user.name,
+            {silent: true}
+            );
+      }
 
       /*
        * Define the collection of the privilege supported by this model
@@ -437,7 +469,7 @@
       if (rawData instanceof Backbone.Collection) {
         rawData.each(function(m) {
           if (m.get('privilege')) {
-            res += m.get('privilege_type');
+            res += self.notation[m.get('privilege_type')];
             if (m.get('with_grant')) {
               res += '*';
             }
