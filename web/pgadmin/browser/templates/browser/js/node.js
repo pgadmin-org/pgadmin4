@@ -147,44 +147,30 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               console.log("Broke something!!! Why we don't have the callback or the context???");
             };
           }
-          newModel.on(
-              'pgadmin-session:set pgadmin-session:added pgadmin-session:changed pgadmin-session:removed',
-              function() {
-                if (newModel.invalidTimeout) {
-                  clearTimeout(newModel.invalidTimeout);
-                }
-                newModel.invalidTimeout = setTimeout(function() {
-                  var msg = newModel.validate();
-                  if (msg) {
-                    newModel.trigger('invalid', newModel, msg);
-                  } else {
-                    newModel.trigger('valid', newModel);
-                  }
-                }, 300);
 
-                return true;
-              })
-
-          newModel.on('invalid', function(newModel, message) {
+          var onSessionInvalid = function(msg) {
 
             if(!_.isUndefined(that.statusBar)) {
-              that.statusBar.html(message);
+              that.statusBar.html(msg);
             }
             callback(true);
 
             return true;
-          })
+          };
 
-          newModel.on('valid', function(e) {
+          var onSessionValidated =  function(sessHasChanged) {
 
             if(!_.isUndefined(that.statusBar)) {
               that.statusBar.empty();
             }
 
-            callback(false, newModel.sessChanged());
+            callback(false, sessHasChanged);
+          };
 
-            return true;
-          });
+          callback(false, false);
+
+          newModel.on('pgadmin-session:valid', onSessionValidated);
+          newModel.on('pgadmin-session:invalid', onSessionInvalid);
         }
         // 'schema' has the information about how to generate the form.
         if (groups) {
@@ -219,11 +205,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               .success(function(res, msg, xhr) {
                 // We got the latest attributes of the
                 // object. Render the view now.
-                newModel.startNewSession();
                 view.render();
                 if (type != 'properties') {
                   $(el).focus();
                 }
+                newModel.startNewSession();
               })
               .error(function(jqxhr, error, message) {
                 // TODO:: We may not want to continue from here
@@ -236,9 +222,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               });
           } else {
             // Yay - render the view now!
-            newModel.startNewSession();
-            view.render();
             $(el).focus();
+            view.render();
+            newModel.startNewSession();
           }
         }
         return view;
@@ -621,7 +607,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               // Template used for creating a button
               tmpl = _.template([
                 '<button type="<%= type %>" ',
-                'class="btn <%=extraClasses.join(\' \')%>">',
+                'class="btn <%=extraClasses.join(\' \')%>"',
+                '<% if (disabled) { %> disabled="disabled"<% } %> >',
                 '<i class="<%= icon %>"></i>&nbsp;',
                 '<%-label%></button>'
                 ].join(' '));
@@ -692,6 +679,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               label: '{{ _("Edit") }}', type: 'edit',
               extraClasses: ['btn-primary'],
               icon: 'fa fa-lg fa-pencil-square-o',
+              disabled: false,
               register: function(btn) {
                 btn.click(function() {
                   onEdit();
@@ -762,6 +750,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               label: '{{ _("Save") }}', type: 'save',
               extraClasses: ['btn-primary'],
               icon: 'fa fa-lg fa-save',
+              disabled: true,
               register: function(btn) {
                 // Save the changes
                 btn.click(function() {
@@ -791,6 +780,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               label: '{{ _('Cancel') }}', type: 'cancel',
               extraClasses: ['btn-danger'],
               icon: 'fa fa-lg fa-close',
+              disabled: false,
               register: function(btn) {
                 btn.click(function() {
                   // Removing the action-mode
@@ -802,6 +792,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
               label: '{{ _("Reset") }}', type: 'reset',
               extraClasses: ['btn-warning'],
               icon: 'fa fa-lg fa-recycle',
+              disabled: true,
               register: function(btn) {
                 btn.click(function() {
                   setTimeout(function() { editFunc.call(); }, 0);
@@ -1075,6 +1066,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         return args[arg];
       });
     },
+    // Base class for Node Data Collection
     Collection: Backbone.Collection.extend({
       // Model collection
       initialize: function(attributes, options) {
@@ -1087,8 +1079,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.sessAttrs = {
           'changed': [],
           'added': [],
-          'deleted': []
+          'deleted': [],
+          'invalid': []
         };
+        self.top = options.top || self;
+        self.attrName = options.attrName;
         self.handler = options.handler;
         self.trackChanges = false;
 
@@ -1112,17 +1107,93 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       startNewSession: function() {
         var self = this;
 
+        if (self.trackChanges) {
+          // We're stopping the existing session.
+          self.trigger('pgadmin-session:stop', self);
+
+          self.off('pgadmin-session:model:invalid', self.onModelInvalid);
+          self.off('pgadmin-session:model:valid', self.onModelValid);
+        }
+
         self.trackChanges = true;
         self.sessAttrs = {
-          'valid': true,
           'changed': [],
           'added': [],
-          'deleted': []
+          'deleted': [],
+          'invalid': []
         };
 
         _.each(self.models, function(m) {
           if ('startNewSession' in m && _.isFunction(m.startNewSession)) {
             m.startNewSession();
+          }
+          if ('validate' in m && typeof(m.validate) === 'function') {
+            var msg = m.validate();
+
+            if (msg) {
+              self.sessAttrs['invalid'].push(m);
+            }
+          }
+        });
+
+        // Let people know, I have started session hanlding
+        self.trigger('pgadmin-session:start', self);
+
+        self.on('pgadmin-session:model:invalid', self.onModelInvalid);
+        self.on('pgadmin-session:model:valid', self.onModelValid);
+      },
+      onModelInvalid: function(msg, m) {
+        var self = this;
+
+        if (self.trackChanges) {
+          // Do not add the existing invalid object
+          if (self.objFindInSession(m, 'invalid') == -1) {
+            self.sessAttrs['invalid'].push(m);
+
+            // Inform the parent that - I am an invalid object.
+            if (self.handler) {
+              (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
+            }
+          }
+        }
+
+        return true;
+      },
+      onModelValid: function(m) {
+        var self = this;
+
+        if (self.trackChanges) {
+          // Find the object the invalid list, if found remove it from the list
+          // and inform the parent that - I am a valid object now.
+          var idx = self.objFindInSession(m, 'invalid');
+          if (idx != -1) {
+            self.sessAttrs['invalid'].splice(m, 1);
+
+            // Inform the parent that - I am the valid object.
+            if (self.handler) {
+              (self.handler).trigger('pgadmin-session:model:valid', self);
+            } else {
+              self.trigger('pgadmin-session:valid', self.sessChanged(), self);
+            }
+          }
+        }
+
+        return true;
+      },
+      stopSession: function() {
+        var self = this;
+
+        self.trackChanges = false;
+        self.sessAttrs = {
+          'changed': [],
+          'added': [],
+          'deleted': [],
+          'invalid': []
+        };
+
+        _.each(self.models, function(m) {
+          if ('stopSession' in m && _.isFunction(m.stopSession)) {
+            m.stopSession();
           }
         });
       },
@@ -1132,26 +1203,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             this.sessAttrs['added'].length > 0 ||
             this.sessAttrs['deleted'].length > 0
             );
-      },
-      sessValid: function() {
-        _.each(this.sessAttrs['added'], function(o) {
-          if ('sessValid' in o && _.isFunction(o.sessValid) &&
-             (!o.sessValid.apply(o) ||
-              ('validate' in o && _.isFunction(o.validate) &&
-               _.isString(o.validate.apply(o))))) {
-            return false;
-          }
-          return true;
-        });
-        _.each(self.sessAttrs['changed'], function(o) {
-          if ('sessValid' in o && _.isFunction(o.sessValid) &&
-             (!o.sessValid.apply(o) ||
-              ('validate' in o && _.isFunction(o.validate) &&
-               _.isString(o.validate.apply(o))))) {
-            return false;
-          }
-        });
-        return true;
       },
       /*
        * We do support the changes through session tracking in general.
@@ -1201,12 +1252,35 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           return (_.size(res) == 0 ? null : res);
         }
       },
+      objFindInSession: function(m, type) {
+        var hasPrimaryKey = m.primary_key &&
+              typeof(m.primary_key) == 'function',
+            key = hasPrimaryKey ? m.primary_key() : m.cid,
+            comparator = hasPrimaryKey ? function(o) {
+              return (o.primary_key() === key);
+            } : function(o) {
+              return (o.cid === key);
+            };
+
+        return (_.findIndex(this.sessAttrs[type], comparator));
+      },
       onModelAdd: function(obj) {
 
         if (!this.trackChanges)
           return true;
 
-        var self = this, idx = _.indexOf(self.sessAttrs['deleted'], obj);
+        var self = this,
+            msg,
+            isAlreadyInvalid = (_.size(self.sessAttrs['invalid']) != 0),
+            idx = self.objFindInSession(obj, 'deleted');
+
+        if ('validate' in obj && typeof(obj.validate) === 'function') {
+          msg = obj.validate();
+
+          if (msg) {
+            self.sessAttrs['invalid'].push(obj);
+          }
+        }
 
         // Hmm.. - it was originally deleted from this collection, we should
         // remove it from the 'deleted' list.
@@ -1218,11 +1292,19 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             self.sessAttrs['changed'].push(obj);
           }
 
-          (self || self.handler).trigger(
-              'pgadmin-session:added',
-              self,
-              (self || self.handler)
-              );
+          (self.handler || self).trigger('pgadmin-session:added', self, obj);
+
+          /*
+           * If the collection was already invalid, we don't need to inform the
+           * parent, or raise the event for the invalid status.
+           */
+          if (!isAlreadyInvalid && !_.isUndefined(msg)) {
+            if (self.handler) {
+              self.handler.trigger('pgadmin-session:model:invalid', msg, self);
+            } else {
+              self.trigger('pgadmin-session:invalid', msg, self);
+            }
+          }
 
           return true;
         }
@@ -1231,11 +1313,19 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         /*
          * Session has been changed
          */
-        (self || self.handler).trigger(
-            'pgadmin-session:added',
-            self,
-            (self || self.handler)
-            );
+        (self.handler || self).trigger('pgadmin-session:added', self, obj);
+
+        /*
+         * If the collection was already invalid, we don't need to inform the
+         * parent, or raise the event for the invalid status.
+         */
+        if (!isAlreadyInvalid && !_.isUndefined(msg)) {
+          if (self.handler) {
+            self.handler.trigger('pgadmin-session:model:invalid', msg, self);
+          } else {
+            self.trigger('pgadmin-session:invalid', msg, self);
+          }
+        }
 
         return true;
       },
@@ -1244,88 +1334,119 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         if (!this.trackChanges)
           return true;
 
-        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj),
+        var self = this,
+            idx = self.objFindInSession(obj, 'added'),
             copy = _.clone(obj);
 
+        // We need to remove it from the invalid object list first.
+        if (idx >= 0) {
+          self.sessAttrs['invalid'].splice(idx, 1);
+        }
+
+        idx = self.objFindInSession(obj, 'added');
         // Hmm - it was newly added, we can safely remove it.
         if (idx >= 0) {
           self.sessAttrs['added'].splice(idx, 1);
 
-          (self || self.handler).trigger(
-              'pgadmin-session:removed',
-              self, copy, (self || self.handler)
-              );
+          (self.handler || self).trigger('pgadmin-session:removed', self, copy);
+
+          if (_.size(self.sessAttrs['invalid']) == 0) {
+            if (self.handler) {
+              self.handler.trigger('pgadmin-session:model:valid', self);
+            } else {
+              self.trigger('pgadmin-session:valid', self.sessChanged(), self);
+            }
+          }
 
           return true;
         }
+
         // Hmm - it was changed in this session, we should remove it from the
         // changed models.
-        idx = _.indexOf(self.sessAttrs['changed'], obj);
+        idx = self.objFindInSession(obj, 'changed');
+
         if (idx >= 0) {
           self.sessAttrs['changed'].splice(idx, 1);
+          (self.handler || self).trigger('pgadmin-session:removed', self, copy);
+        } else {
+          (self.handler || self).trigger('pgadmin-session:removed', self, copy);
         }
+
         self.sessAttrs['deleted'].push(obj);
 
-        (self || self.handler).trigger(
-            'pgadmin-session:removed',
-            self, copy, (self || self.handler)
-            );
+        /*
+         * This object has been remove, that means - we can safely say, it has been
+         * modified.
+         */
+        if (_.size(self.sessAttrs['invalid']) == 0) {
+          if (self.handler) {
+            self.handler.trigger('pgadmin-session:model:valid', self);
+          } else {
+            self.trigger('pgadmin-session:valid', true, self);
+          }
+        }
+
+        return true;
       },
       onModelChange: function(obj) {
 
         if (!this.trackChanges || !(obj instanceof pgBrowser.Node.Model))
           return true;
 
-        var self = this, idx = _.indexOf(self.sessAttrs['added'], obj);
+        var self = this,
+            idx = self.objFindInSession(obj, 'added');
 
         // It was newly added model, we don't need to add into the changed
         // list.
         if (idx >= 0) {
-          (self || self.handler).trigger(
-              'pgadmin-session:changed',
-              self, obj, (self || self.handler)
-              );
+          (self.handler || self).trigger('pgadmin-session:changed', self, obj);
+
           return true;
         }
-        idx = _.indexOf(self.sessAttrs['changed'], obj);
+
+        idx = self.objFindInSession(obj, 'changed');
+
         if (!'sessChanged' in obj) {
-          if (idx > 0) {
+          (self.handler || self).trigger('pgadmin-session:changed', self, obj);
+
+          if (idx >= 0) {
             return true;
           }
+
           self.sessAttrs['changed'].push(obj);
 
-          (self || self.handler).trigger(
-              'pgadmin-session:changed',
-              self, obj, (self || self.handler)
-              );
-
           return true;
         }
-        if (idx > 0) {
 
-          (self || self.handler).trigger(
-              'pgadmin-session:changed',
-              self, obj, (self || self.handler)
-              );
+        if (idx >= 0) {
+
 
           if (!obj.sessChanged()) {
+            // This object is no more updated, removing it from the changed
+            // models list.
+            self.sessAttrs['changed'].splice(idx, 1);
+
+            (self.handler || self).trigger('pgadmin-session:changed',self, obj);
             return true;
           }
 
+          (self.handler || self).trigger('pgadmin-session:changed',self, obj);
+
           return true;
         }
-        self.sessAttrs['changed'].push(obj);
 
-        (self || self.handler).trigger(
-            'pgadmin-session:changed',
-            self, obj, (self || self.handler)
-            );
+        self.sessAttrs['changed'].push(obj);
+        (self.handler || self).trigger('pgadmin-session:changed', self, obj);
 
         return true;
       }
     }),
-    // Base class for Node Model
+
+    // Base class for Node Data Model
     Model: Backbone.Model.extend({
+      /*
+       * Parsing the existing data
+       */
       parse: function(res) {
         var self = this;
         if (res && _.isObject(res) && 'node' in res && res['node']) {
@@ -1345,9 +1466,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                       model: ((_.isString(s.model) &&
                                s.model in pgBrowser.Nodes) ?
                               pgBrowser.Nodes[s.model].model : s.model),
-                        handler: self.handler || self,
+                      top: self.top || self,
+                      handler: self,
                       parse: true,
-                      silent: true
+                      silent: true,
+                      attrName: s.id
                       });
                     self.set(s.id, obj, {silent: true, parse: true});
                   } else {
@@ -1370,11 +1493,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                     if (_.isString(s.model) &&
                         s.model in pgBrowser.Nodes[s.model]) {
                       obj = new (pgBrowser.Nodes[s.model].Model)(
-                          obj, {silent: true, handler: self.handler || self}
+                          obj, {
+                            silent: true, top: self.top || self, handler: self,
+                            attrName: s.id
+                          }
                           );
                     } else {
                       obj = new (s.model)(obj, {
-                        silent: true, handler: self.handler || self
+                        silent: true, top: self.top || self, handler: self,
+                        attrName: s.id
                       });
                     }
                   }
@@ -1393,6 +1520,18 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         }
         return res;
       },
+      primary_key: function() {
+        if (this.keys && _.isArray(this.keys)) {
+          var res = {}, self = this;
+
+          _.each(self.keys, function(k) {
+            res[k] = self.attributes[k];
+          });
+
+          return JSON.stringify(res);
+        }
+        return this.cid;
+      },
       initialize: function(attributes, options) {
         var self = this;
 
@@ -1406,12 +1545,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         self.sessAttrs = {};
         self.origSessAttrs = {};
         self.objects = [];
-        self.handler = (options.handler ||
-            (self.collection && self.collection.handler));
+        self.attrName = options.attrName,
+        self.top = (options.top || self.collection && self.collection.top || self.collection || self);
+        self.handler = options.handler ||
+          (self.collection && self.collection.handler);
         self.trackChanges = false;
-        if (!self.handler) {
-          self.errorModel = new Backbone.Model();
-        }
+        self.errorModel = new Backbone.Model();
 
         if (self.schema && _.isArray(self.schema)) {
           _.each(self.schema, function(s) {
@@ -1424,12 +1563,16 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                     var node = pgBrowser.Nodes[s.model];
                     obj = new (node.Collection)(obj, {
                       model: node.model,
-                        handler: self.handler || self
+                      top: self.top || self,
+                      handler: self,
+                      attrName: s.id
                     });
                   } else {
                     obj = new (pgBrowser.Node.Collection)(obj, {
                       model: s.model,
-                      handler: self.handler || self
+                      top: self.top || self,
+                      handler: self,
+                      attrName: s.id
                     });
                   }
                 }
@@ -1439,10 +1582,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
                   if (_.isString(s.model) &&
                       s.model in pgBrowser.Nodes[s.model]) {
                     obj = new (pgBrowser.Nodes[s.model].Model)(
-                        obj, {handler: self.handler || self}
+                        obj, {
+                          top: self.top || self, handler: self, attrName: s.id
+                        }
                         );
                   } else {
-                    obj = new (s.model)(obj, {handler: self.handler || self});
+                    obj = new (s.model)(
+                        obj, {
+                          top: self.top || self, handler: self, attrName: s.id
+                        });
                   }
                 }
                 break;
@@ -1482,16 +1630,23 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
         return true;
       },
       set: function(key, val, options) {
+        var opts = _.isObject(key) ? val : options;
+
         var res = Backbone.Model.prototype.set.call(this, key, val, options);
 
-        if (key != null && res && this.trackChanges) {
-          var attrs;
-          var self = this, unChanged = [], handler = self.handler || self;
+        if ((opts&& opts.intenal) || !this.trackChanges) {
+          return true;
+        }
+
+        if (key != null && res) {
+          var attrs = {};
+          var self = this;
 
           attrChanged = function(v, k) {
             if (k in self.objects) {
               return;
             }
+            attrs[k] = v;
             if (self.origSessAttrs[k] == v) {
               delete self.sessAttrs[k];
             } else {
@@ -1506,12 +1661,38 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             attrChanged(val, key);
           }
 
-          (self || self.handler).trigger(
-              'pgadmin-session:set',
-              self, arguments, (self || self.handler)
-              );
+          self.trigger('pgadmin-session:set', self, attrs);
 
-          return true;
+          if ('validate' in self && typeof(self['validate']) === 'function') {
+
+            var msg = self.validate(_.keys(attrs));
+
+            /*
+             * If any parent present, we will need to inform the parent - that
+             * I have some issues/fixed the issue.
+             *
+             * If not parent found, we will raise the issue
+             */
+            if (msg != null) {
+              if (self.collection || self.handler) {
+                (self.collection || self.handler).trigger(
+                    'pgadmin-session:model:invalid', msg, self
+                    );
+              } else {
+                self.trigger('pgadmin-session:invalid', msg, self);
+              }
+            } else if (_.size(self.errorModel.attributes) == 0) {
+              if (self.collection || self.handler) {
+                (self.collection || self.handler).trigger(
+                    'pgadmin-session:model:valid', self
+                    );
+              } else {
+                self.trigger('pgadmin-session:valid', self.sessChanged(), self);
+              }
+            }
+          }
+
+          return res;
         }
         return res;
       },
@@ -1574,11 +1755,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
       startNewSession: function() {
         var self = this;
 
+        if (self.trackChanges) {
+          self.trigger('pgadmin-session:stop', self);
+          self.off('pgadmin-session:model:invalid', self.onChildInvalid);
+          self.off('pgadmin-session:model:valid', self.onChildValid);
+        }
+
         self.trackChanges = true;
         self.sessAttrs = {};
-        self.origSessAttrs = _.clone(this.attributes);
-        self.handler = (self.handler ||
-            (self.collection && self.collection.handler));
+        self.origSessAttrs = _.clone(self.attributes);
 
         var res = false;
 
@@ -1596,9 +1781,147 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           }
         });
 
-        (self || self.handler).trigger(
-            'pgadmin-session:start',
-            (self || self.handler));
+        // Let people know, I have started session hanlding
+        self.trigger('pgadmin-session:start', self);
+
+        // Let me listen to the my child invalid/valid messages
+        self.on('pgadmin-session:model:invalid', self.onChildInvalid);
+        self.on('pgadmin-session:model:valid', self.onChildValid);
+
+      },
+      onChildInvalid: function(msg, obj) {
+        var self = this;
+
+        if (self.trackChanges && obj) {
+          var objName = obj.attrName;
+
+          if (!objName) {
+            var hasPrimaryKey = obj.primary_key &&
+                  typeof(obj.primary_key) === 'function';
+                key = hasPrimaryKey ? obj.primary_key() : obj.cid,
+                comparator = hasPrimaryKey ?
+                  function(k) {
+                    var o = self.get('k');
+
+                    if (o && o.primary_key() === key) {
+                      objName = k;
+                      return true;
+                    }
+
+                    return false;
+                  } :
+                  function(k) {
+                    var o = self.get(k);
+
+                    if (o.cid === key) {
+                      objName = k;
+                      return true;
+                    }
+
+                    return false;
+                  };
+            _.findIndex(self.objects, comparator);
+          }
+
+          if (objName && !self.errorModel.has(objName)) {
+            /*
+             * We will trigger error information only once.
+             */
+            if (!_.size(self.errorModel.attributes)) {
+              if (self.handler) {
+                (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
+              } else  {
+                self.trigger('pgadmin-session:invalid', msg, self);
+              }
+            }
+            self.errorModel.set(objName, msg);
+          }
+        }
+
+        return this;
+      },
+      onChildValid: function(obj) {
+        var self = this;
+
+        if (self.trackChanges && obj) {
+          var objName = obj.attrName;
+
+          if (!objName) {
+              var hasPrimaryKey = (obj.primary_key &&
+                (typeof(obj.primary_key) === 'function'));
+              key = hasPrimaryKey ? obj.primary_key() : obj.cid,
+              comparator = hasPrimaryKey ?
+                function(k) {
+                  var o = self.get('k');
+
+                  if (o && o.primary_key() === key) {
+                    objName = k;
+                    return true;
+                  }
+
+                  return false;
+                } :
+                function(k) {
+                  var o = self.get('k');
+
+                  if (o && o.cid === key) {
+                    objName = k;
+                    return true;
+                  }
+
+                  return false;
+                };
+
+              _.findIndex(self.objects, comparator);
+          }
+
+          if (objName && self.errorModel.has(objName)) {
+
+            self.errorModel.unset(objName);
+
+            /*
+             * We will trigger validation information
+             */
+            if (_.size(self.errorModel.attributes) == 0) {
+              if (self.handler) {
+                (self.handler).trigger('pgadmin-session:model:valid', self);
+              } else  {
+                self.trigger(
+                    'pgadmin-session:valid', self.sessChanged(), self
+                    );
+              }
+            }
+          }
+        }
+      },
+      stopSession: function() {
+        var self = this;
+
+        if (self.trackChanges) {
+          self.off('pgadmin-session:model:invalid', self.onChildInvalid);
+          self.off('pgadmin-session:model:valid', self.onChildValid);
+        }
+
+        self.trackChanges = false;
+        self.sessAttrs = {};
+        self.origSessAttrs = {};
+
+        _.each(self.objects, function(o) {
+          var obj = self.get(o);
+
+          if (_.isUndefined(obj) || _.isNull(obj)) {
+            return;
+          }
+
+          self.origSessAttrs[o] = null;
+          delete self.origSessAttrs[o];
+
+          if (obj && 'stopSession' in obj && _.isFunction(obj.stopSession)) {
+            obj.stopSession();
+          }
+        });
+
+        self.trigger('pgadmin-session:stop');
       }
     }),
     getTreeNodeHierarchy: function(i) {
