@@ -158,7 +158,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
         },{
           id: 'version', label:'{{ _('Version') }}', type: 'text', group: null,
-          mode: ['properties'], show: 'isConnected'
+          mode: ['properties'], visible: 'isConnected'
         },{
           id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create']
@@ -190,7 +190,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           ]
         },{
           id: 'server_type', label: '{{ _('Server Type') }}', type: 'options',
-          mode: ['properties'], show: 'isConnected',
+          mode: ['properties'], visible: 'isConnected',
           'options': [{% for st in server_types %}
             {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
             {label: '{{ _('Unknown') }}', value: ''}

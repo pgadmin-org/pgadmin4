@@ -1269,8 +1269,6 @@
 
           var o = _.extend(_.clone(s), {
             name: s.id,
-            // Do we need to show this control in this mode?
-            visible: evalASFunc(s.show),
             // This can be disabled in some cases (if not hidden)
 
             disabled: (disabled ? true : evalASFunc(s.disabled)),
@@ -1285,9 +1283,8 @@
             cell: cell,
             node_info: node_info,
             schema_node: schema_node,
-            visible: (mode == 'properties'?
-              (ver_in_limit ?
-               (s.version || true) : false) : s.version || true),
+            // Do we need to show this control in this mode?
+            visible: evalASFunc(s.visible),
             node: node,
             node_data: treeData,
             version_compitible: ver_in_limit
