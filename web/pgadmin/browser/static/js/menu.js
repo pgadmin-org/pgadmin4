@@ -72,7 +72,7 @@ function(_, pgAdmin, $) {
     if (d.cb) {
       var cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
       if (cb) {
-        cb.apply(d.module, [d.data]);
+        cb.apply(d.module, [d.data, pgAdmin.Browser.tree.selected()]);
         ev.preventDefault()
       } else {
         pgAdmin.Browser.report_error('Developer Warning: Callback - "' + d.cb + '" not found!');
