@@ -38,10 +38,11 @@
   var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
     defaults: {
       name: undefined,
-      value: undefined,
+      value: '',
       role: undefined,
       database: undefined,
     },
+    keys: ['name', 'role', 'database'],
     schema: [
       {id: 'name', label:'Name', type:'text', editable: false, cellHeaderClasses: 'width_percent_30'},
       {
@@ -57,7 +58,7 @@
       // Remove not defined values from model values.
       // i.e.
       // role, database
-      if (_.isUndefined(d.database)) {
+      if (_.isUndefined(d.database) || _.isNull(d.database)) {
         delete d.database;
       }
 
@@ -66,6 +67,20 @@
       }
 
       return d;
+    },
+    validate: function() {
+      if (_.isUndefined(this.get('value')) ||
+          String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
+        var msg = 'Please enter some value!';
+
+        this.errorModel.set('value', msg);
+
+        return msg;
+      } else {
+        this.errorModel.unset('value');
+      }
+
+      return null;
     }
   });
 
@@ -306,7 +321,10 @@
           url = this.field.get('url'),
           m = self.model;
 
-      if (this.field.get('version_compitible') && url && !m.isNew()) {
+      if (!this.field.get('version_compitible'))
+        return;
+
+      if (url && !m.isNew()) {
         var node = self.field.get('node'),
             node_data = self.field.get('node_data'),
             node_info = self.field.get('node_info'),
@@ -314,9 +332,14 @@
               node, [
                 null, url, node_data, true, node_info
               ]),
-            data;
+            data,
+            isTracking = self.collection.trackChanges;
 
-        m.trigger('pgadmin:view:fetching', m, self.field);
+        if (isTracking) {
+          self.collection.stopSession();
+        }
+        m.trigger('pgadmin-view:fetching', m, self.field);
+
         $.ajax({
           async: false,
           url: full_url,
@@ -324,19 +347,20 @@
             data = res.data;
           },
           error: function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
+            m.trigger('pgadmin-view:fetch:error', m, self.field);
           }
         });
-        m.trigger('pgadmin:view:fetched', m, self.field);
+        m.trigger('pgadmin-view:fetched', m, self.field);
 
         if (data && _.isArray(data)) {
           self.collection.reset(data, {silent: true});
-          /*
-           * Make sure - new data will be taken care by the session management
-           */
+        }
+        /*
+         * Make sure - new data will be taken care by the session management
+         */
+        if (isTracking) {
           self.collection.startNewSession();
         }
-      } else {
       }
     },
 
@@ -417,11 +441,8 @@
     },
 
     events: _.extend(
-                {},
-                Backform.UniqueColCollectionControl.prototype.events,
-                {
-                  'click button.add': 'addVariable'
-                }
+                {}, Backform.UniqueColCollectionControl.prototype.events,
+                {'click button.add': 'addVariable'}
                 ),
 
     showGridControl: function(data) {
@@ -481,8 +502,10 @@
 
       var self = this,
           m = new (self.field.get('model'))(
-                self.headerData.toJSON(), {silent: true}
-                ),
+                self.headerData.toJSON(), {
+                  silent: true, top: self.collection.top,
+                  handler: self.collection
+                }),
           coll = self.model.get(self.field.get('name'));
 
       coll.add(m);

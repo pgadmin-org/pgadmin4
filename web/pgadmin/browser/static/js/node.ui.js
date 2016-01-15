@@ -69,7 +69,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
        */
       var self = this,
           url = self.field.get('url') || self.defaults.url,
-          m = self.model.handler || self.model;
+          m = self.model.top || self.model;
 
       // Hmm - we found the url option.
       // That means - we needs to fetch the options from that node.

@@ -59,6 +59,7 @@
       grantor: undefined,
       privileges: undefined
     },
+    keys: ['grantee', 'grantor'],
     /*
      * Each of the database object needs to extend this model, which should
      * provide the type of privileges (it supports).
@@ -67,7 +68,7 @@
 
     schema: [{
       id: 'grantee', label:'Grantee', type:'text', group: null, cell: 'string',
-      disabled: true, cellHeaderClasses: 'width_percent_40'
+      disabled: false, cellHeaderClasses: 'width_percent_40'
     }, {
       id: 'privileges', label:'Privileges',
       type: 'collection', model: PrivilegeModel, group: null,
@@ -93,7 +94,8 @@
         privileges = new (pgNode.Collection)(
             models, {
               model: PrivilegeModel,
-              handler: this.handler || this,
+              top: this.top || this,
+              handler: this,
               silent: true,
               parse: false
             });

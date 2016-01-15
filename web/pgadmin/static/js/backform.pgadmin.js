@@ -149,7 +149,7 @@
           attrArr = d.split('.');
           name = attrArr.shift();
 
-          self.stopListening(that.model, "change:" + name, self.render);
+          self.stopListening(self.model, "change:" + name, self.render);
         });
       }
 
@@ -451,11 +451,11 @@
           'hidden.bs.tab', function() {
             self.hidden_tab = $(this).data('tabIndex');
             }).on('shown.bs.tab', function() {
-              var that = this;
-              self.shown_tab = $(that).data('tabIndex');
+              var self = this;
+              self.shown_tab = $(self).data('tabIndex');
               m.trigger('pg-property-tab-changed', {
                 'model': m, 'shown': self.shown_tab, 'hidden': self.hidden_tab,
-                'tab': that
+                'tab': self
               });
             });
       });
@@ -650,7 +650,8 @@
               {
                 model: self.field.get('model'),
                 silent: true,
-                handler: self.model.handler || self.model
+                handler: self.model.handler || self.model,
+                attrName: self.field.get('name')
               });
           self.model.set(self.field.get('name'), collection, {silent: true});
         }
@@ -664,8 +665,8 @@
       var self = this;
 
       if (this.field.get('version_compitible')) {
-        self.stopListening(collection, "add", self.collectionChanged);
-        self.stopListening(collection, "change", self.collectionChanged);
+        self.stopListening(self.collection, "add", self.collectionChanged);
+        self.stopListening(self.collection, "change", self.collectionChanged);
       }
 
       Backform.Control.prototype.remove.apply(this, arguments);
@@ -1084,13 +1085,13 @@
       this.sqlTab = sqlTab;
       return this;
     },
-    onTabChange: function() {
+    onTabChange: function(obj) {
 
       // Fetch the information only if the SQL tab is visible at the moment.
-      if (this.dialog && this.dialog.shown_tab == this.tabIndex) {
+      if (this.dialog && obj.shown == this.tabIndex) {
 
         // We will send request to sever only if something is changed in model
-        if(_.size(this.model.sessAttrs)) {
+        if(this.model.sessChanged()) {
 
           var self = this,
             node = self.field.get('schema_node'),
