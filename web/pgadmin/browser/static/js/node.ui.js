@@ -4,7 +4,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var pgBrowser = pgAdmin.Browser;
 
-
   // Store value in DOM as stringified JSON.
   var StringOrJSONFormatter = function() {};
   _.extend(StringOrJSONFormatter.prototype, {
@@ -183,7 +182,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
     controlClassName: 'pgadmin-node-select form-control',
-    defaults: _.extend(NodeAjaxOptionsControl.prototype.defaults, {
+    defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
       first_empty: true,
       empty_value: '-- None --',
       url: 'nodes',
@@ -229,7 +228,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
 
   var NodeListByNameControl = Backform.NodeListByNameControl = NodeListByIdControl.extend({
-    defaults: _.extend(NodeListByIdControl.prototype.defaults, {
+    defaults: _.extend({}, NodeListByIdControl.prototype.defaults, {
       transform: function(rows) {
         var self = this,
             node = self.field.get('schema_node'),
@@ -287,6 +286,274 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       }
     });
   };
+
+
+  /*
+   * NodeAjaxOptionsCell
+   *   This cell will fetch the options required to render the select
+   *   cell, from the url specific to the pgAdmin.Browser node object.
+   *
+   *   In order to use this properly, schema require to set the 'url' property,
+   *   which exposes the data for this node.
+   *
+   *   In case the url is not providing the data in proper format, we can
+   *   specify the 'transform' function too, which will convert the fetched
+   *   data to proper 'label', 'value' format.
+   */
+  var NodeAjaxOptionsCell = Backgrid.Extension.NodeAjaxOptionsCell = Backgrid.Extension.Select2Cell.extend({
+    defaults: _.extend({}, Backgrid.Extension.Select2Cell.prototype.defaults, {
+      url: undefined,
+      transform: undefined,
+      url_with_id: false,
+      select2: {
+        allowClear: true,
+        placeholder: 'Select from the list',
+        width: 'style'
+      }
+    }),
+    template: _.template(
+      '<option <% if (image) { %> data-image=<%= image %> <% } %> value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>'
+    ),
+    initialize: function () {
+      Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
+
+      var col = _.defaults(this.column.toJSON(), this.defaults),
+          model = this.model, column = this.column,
+          editable = Backgrid.callByNeed(col.editable, column, model),
+          optionValues = _.clone(this.optionValues || this.column.get('options'));
+
+
+      var self = this,
+          url = self.column.get('url') || self.defaults.url,
+          m = self.model.handler || self.model;
+
+      // Hmm - we found the url option.
+      // That means - we needs to fetch the options from that node.
+      if (url) {
+        var node = this.column.get('schema_node'),
+            node_info = this.column.get('node_info'),
+            full_url = node.generate_url.apply(
+              node, [
+                null, url, this.column.get('node_data'),
+                this.column.get('url_with_id') || false, node_info
+              ]),
+            cache_level = this.column.get('cache_level') || node.type,
+            cache_node = this.column.get('cache_node');
+
+        cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+
+        /*
+         * We needs to check, if we have already cached data for this url.
+         * If yes - use that, and do not bother about fetching it again,
+         * and use it.
+         */
+        var data = cache_node.cache(url, node_info, cache_level);
+
+        if (this.column.get('version_compitible') &&
+            (_.isUndefined(data) || _.isNull(data))) {
+          m.trigger('pgadmin:view:fetching', m, self.column);
+          $.ajax({
+            async: false,
+            url: full_url,
+            success: function(res) {
+              /*
+               * We will cache this data for short period of time for avoiding
+               * same calls.
+               */
+              data = cache_node.cache(url, node_info, cache_level, res.data);
+            },
+            error: function() {
+              m.trigger('pgadmin:view:fetch:error', m, self.column);
+            }
+          });
+          m.trigger('pgadmin:view:fetched', m, self.column);
+        }
+        // To fetch only options from cache, we do not need time from 'at'
+        // attribute but only options.
+        //
+        // It is feasible that the data may not have been fetched.
+        data = (data && data.data) || [];
+
+        /*
+         * Transform the data
+         */
+        transform = this.column.get('transform') || self.defaults.transform;
+        if (transform && _.isFunction(transform)) {
+          // We will transform the data later, when rendering.
+          // It will allow us to generate different data based on the
+          // dependencies.
+          self.column.set('options', transform.bind(self, data));
+        } else {
+          self.column.set('options', data);
+        }
+      }
+    },
+    render: function() {
+      /*
+       * Let SelectCell render it, we will do our magic on the
+       * select control in it.
+       */
+
+      var col = _.defaults(this.column.toJSON(), this.defaults),
+          model = this.model, column = this.column,
+          editable = Backgrid.callByNeed(col.editable, column, model),
+          optionValues = _.clone(this.optionValues ||
+                _.isFunction(this.column.get('options')) ?
+                    this.column.get('options').apply(this) :
+                    this.column.get(' options')),
+          select2_opts = _.defaults({}, col.select2, this.defaults.select2),
+          evalF = function(f, col, m) {
+            return (_.isFunction(f) ? !!f.apply(col, [m]) : !!f);
+          };
+
+      this.$el.empty();
+
+      if (!_.isArray(optionValues)) throw new TypeError("optionValues must be an array");
+
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work.
+       */
+      optionValues.unshift({'label':null, 'value':null, 'image':null});
+
+      var optionText = null,
+          optionValue = null,
+          model = this.model,
+          selectedValues = model.get(this.column.get("name"));
+
+      delete this.$select;
+
+      this.$select = $("<select>", {tabIndex: -1}).appendTo(this.$el);
+
+      for (var i = 0; i < optionValues.length; i++) {
+        var op = optionValues[i];
+
+        optionText  = op['label'];
+        optionValue = op['value'];
+        optionImage = op['image'];
+
+        this.$select.append(
+          this.template({
+            text: optionText,
+            value: optionValue,
+            image: optionImage,
+            selected: (selectedValues == optionValue) ||
+              (_.indexOf(selectedValues, optionValue) > -1)
+          }));
+      }
+      // Initialize select2 control.
+      this.$select.select2(
+          _.defaults(
+            {'disabled': !editable},
+            col.select2,
+            this.defaults.select2
+            ));
+
+      /*
+       * If select2 options do not have any disabled property on this cell
+       * and schema has disabled property then we need to apply it
+       */
+      if(!_.has(select2_opts, 'disabled') && (col && col.disabled)) {
+        _.extend(select2_opts, {
+          disabled: evalF(col.disabled, col, this.model)
+        });
+      }
+
+      this.$el.find("select").select2(select2_opts);
+
+      this.delegateEvents();
+
+      return this;
+    }
+  });
+
+  var NodeListByIdCell =  Backgrid.Extension.NodeListByIdCell = NodeAjaxOptionsCell.extend({
+    controlClassName: 'pgadmin-node-select backgrid-cell',
+    defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
+      url: 'nodes',
+      filter: undefined,
+      transform: function(rows) {
+        var self = this,
+            node = self.column.get('schema_node'),
+            res = [],
+            filter = self.column.get('filter') || function() { return true; };
+
+        filter = filter.bind(self);
+
+        _.each(rows, function(r) {
+          if (filter(r)) {
+            var l = (_.isFunction(node['node_label']) ?
+                  (node['node_label']).apply(node, [r, self.model, self]) :
+                  r.label),
+                image= (_.isFunction(node['node_image']) ?
+                  (node['node_image']).apply(
+                    node, [r, self.model, self]
+                    ) :
+                  (node['node_image'] || ('icon-' + node.type)));
+
+            res.push({
+              'value': r._id,
+              'image': image,
+              'label': l
+            });
+          }
+        });
+
+        return res;
+      },
+      select2: {
+        placeholder: 'Select from the list',
+        width: 'style',
+        templateResult: formatNode,
+        templateSelection: formatNode
+      }
+    })
+  });
+
+
+  var NodeListByNameCell =  Backgrid.Extension.NodeListByNameCell = NodeAjaxOptionsCell.extend({
+    controlClassName: 'pgadmin-node-select backgrid-cell',
+    defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
+      url: 'nodes',
+      filter: undefined,
+      transform: function(rows) {
+        var self = this,
+            node = self.column.get('schema_node'),
+            res = [],
+            filter = self.column.get('filter') || function() { return true; };
+
+        filter = filter.bind(self);
+
+        _.each(rows, function(r) {
+          if (filter(r)) {
+            var l = (_.isFunction(node['node_label']) ?
+                  (node['node_label']).apply(node, [r, self.model, self]) :
+                  r.label),
+                image= (_.isFunction(node['node_image']) ?
+                  (node['node_image']).apply(
+                    node, [r, self.model, self]
+                    ) :
+                  (node['node_image'] || ('icon-' + node.type)));
+
+            res.push({
+              'value': r.label,
+              'image': image,
+              'label': l
+            });
+          }
+        });
+
+        return res;
+      },
+      select2: {
+        placeholder: 'Select from the list',
+        width: 'style',
+        templateResult: formatNode,
+        templateSelection: formatNode
+      }
+    })
+  });
+
 
   return Backform;
 });
