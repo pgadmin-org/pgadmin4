@@ -619,8 +619,8 @@
       }
 
       // Prepare columns for backgrid
-      _.each(groups, function(fields, key) {
-        _.each(fields, function(f) {
+      _.each(groups, function(group, key) {
+        _.each(group.fields, function(f) {
           if (!f.cell) {
             return;
           }
@@ -630,7 +630,7 @@
             columns.push(f);
           }
         });
-        schema.push({label: key, fields: fields});
+        schema.push(group);
       });
       return {
         'columns': _.sortBy(columns, function(c) {
