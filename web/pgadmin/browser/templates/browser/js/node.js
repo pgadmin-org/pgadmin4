@@ -136,7 +136,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
             newModel = new (this.model.extend({urlRoot: urlBase})) (
                 attrs, {node_info: info}
                 ),
-            groups = Backform.generateViewSchema(
+            fields = Backform.generateViewSchema(
                 info, newModel, type, this, node
                 );
 
@@ -175,17 +175,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           newModel.on('pgadmin-session:invalid', onSessionInvalid);
         }
         // 'schema' has the information about how to generate the form.
-        if (groups) {
-          var fields = [];
-
+        if (_.size(fields)) {
           // This will contain the actual view
           var view;
-
-          // Create an array from the dictionary with proper required
-          // structure.
-          _.each(groups, function(val, key) {
-            fields.push({label: key, fields: val});
-          });
 
           if (formType == 'fieldset') {
             // It is used to show, edit, create the object in the
@@ -668,6 +660,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           // Create a view to show the properties in fieldsets
           view = that.getView(item, 'properties', content, data, 'fieldset');
           if (view) {
+            panel.icon(
+                _.isFunction(that['node_image']) ?
+                  (that['node_image']).apply(that, [data, view.model]) :
+                  (that['node_image'] || ('icon-' + that.type))
+                );
+
             // Save it for release it later
             j.data('obj-view', view);
 
@@ -746,6 +744,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, Backform) {
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);
+
+            panel.icon(
+                _.isFunction(that['node_image']) ?
+                  (that['node_image']).apply(that, [data, view.model]) :
+                  (that['node_image'] || ('icon-' + that.type))
+                );
 
             // Create proper buttons
             createButtons([{

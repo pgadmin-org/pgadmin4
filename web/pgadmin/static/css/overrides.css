@@ -532,7 +532,7 @@ fieldset[disabled] .form-control {
 
 }
 .subnode-footer {
-    height:38px;;
+    height:38px;
     margin: 0px, 15px;
     min-height:40px;
     vertical-align: bottom;
@@ -652,4 +652,69 @@ table.backgrid tr.new {
 div.rolmembership {
 	border: 1.5px solid #faebd7;
 	margin-top: 15px;
+}
+
+fieldset.inline-fieldset {
+    margin: 0px; margin-left: 2px; margin-right: 2px;
+	padding-right: 10px; padding-left: 10px; padding-top: 6px; padding-bottom: 12px;
+	border: 2px solid; border-radius: 5px;
+}
+
+fieldset.inline-fieldset > legend {
+	display: block; border: 0px solid black; box-shadow: none;
+	box-sizing: content-box; top: auto; bottom: auto; left: auto;
+	font-size: 16px; font-style: normal; font-weight: 600;
+	height: 20px; line-height: 20px; margin: 0px; padding-bottom: 0px;
+	padding-left: 5px; padding-right: 5px; padding-top: 0px;
+	vertical-align: middle; width: auto;
+}
+
+
+fieldset.inline-fieldset > div {
+	padding: 0px; margin: 0px; border: 0px;
+}
+
+div.inline-tab-panel {
+	float: left; width: 100%;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li {
+	background-color: lightgrey; border-top-left-radius: 10px; border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li:first-child {
+	background-color: lightgrey; border-top-left-radius: 3px; border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li > a,
+div.inline-tab-panel > ul.nav-tabs > li > a:active,
+div.inline-tab-panel > ul.nav-tabs > li > a:hover,
+div.inline-tab-panel > ul.nav-tabs > li > a:focus {
+	border-top-left-radius: 10px; border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:active,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:hover,
+div.inline-tab-panel > ul.nav-tabs > li:first-child > a:focus {
+	border-top-left-radius: 3px; border-top-right-radius: 10px;
+}
+
+div.inline-tab-panel > ul.tab-content {
+	padding-left: 5px; padding-right: 5px; border-color: #DDD;
+	border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+	border-width: 1px; border-bottom-right-radius: 8px;
+	border-bottom-left-radius: 8px; border-style: solid solid outset;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane {
+	min-height: 300px; padding: 0px !important;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane > *:first-child {
+	margin-top: 5px;
+}
+
+div.inline-tab-panel > ul.tab-content > div.tab-pane > *:last-child {
+	margin-bottom: 5px;
 }

@@ -107,8 +107,7 @@
 
       return m[idx > len ? 0 : idx];
     }
-    alert ("Developer: did you forget to put/implement the control type - '" + type + "' in mapper");
-    return null;
+    return type;
   }
 
 
@@ -379,6 +378,7 @@
     tabPanelClassName: function() {
       return Backform.tabClassName;
     },
+    tabIndex: 0,
     initialize: function(opts) {
       var s = opts.schema;
       if (s && _.isArray(s)) {
@@ -415,12 +415,12 @@
         controls = this.controls,
         tmpls = this.template,
         self = this,
-        idx=1;
+        idx=(this.tabIndex * 100);
 
       this.$el
           .empty()
           .attr('role', 'tabpanel')
-          .attr('class', this.tabPanelClassName());
+          .attr('class', _.result(this, 'tabPanelClassName'));
       m.panelEl = this.$el;
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
@@ -445,6 +445,7 @@
           controls.push(cntr);
         });
         idx++;
+
         tabHead.find('a[data-toggle="tab"]').off(
           'shown.bs.tab'
         ).off('hidden.bs.tab').on(
@@ -475,23 +476,40 @@
   });
 
   var Fieldset = Backform.Fieldset = Backform.Dialog.extend({
+    className: function() {
+      return 'set-group col-xs-12';
+    },
+    tabPanelClassName: function() {
+      return Backform.tabClassName;
+    },
+    fieldsetClass:  Backform.setGroupClassName,
+    legendClass: 'badge',
+    contentClass: Backform.setGroupContentClassName + ' collapse in',
     template: {
       'header': _.template([
-        '<fieldset class="<%=Backform.setGroupClassName%>"<%=disabled ? "disabled" : ""%>>',
-        '  <legend class="badge" data-toggle="collapse" data-target="#<%=cId%>"><span class="caret"></span> <%=label%></legend>',
+        '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
+        '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
         '  ',
         '</fieldset>'
       ].join("\n")),
       'content': _.template(
-        '  <div id="<%= cId %>" class="<%=Backform.setGroupContentClassName%> collapse in"></div>'
+        '  <div id="<%= cId %>" class="<%=contentClass%>"></div>'
     )},
+    collapse: true,
     render: function() {
       this.cleanup();
 
       var m = this.model,
           $el = this.$el,
           tmpl = this.template,
-          controls = this.controls;
+          controls = this.controls,
+          data = {
+            'className': _.result(this, 'className'),
+            'fieldsetClass': _.result(this, 'fieldsetClass'),
+            'legendClass': _.result(this, 'legendClass'),
+            'contentClass': _.result(this, 'contentClass'),
+            'collapse': _.result(this, 'collapse')
+          };
 
       this.$el.empty();
 
@@ -499,9 +517,9 @@
         if (!o.fields)
           return;
 
-        var h = $((tmpl['header'])(o)).appendTo($el),
-          el = $((tmpl['content'])(o))
-              .appendTo(h);
+        var d = _.extend({}, data, o),
+            h = $((tmpl['header'])(d)).appendTo($el),
+            el = $((tmpl['content'])(d)).appendTo(h);
 
         o.fields.each(function(f) {
           var cntr = new (f.get("control")) ({
@@ -523,11 +541,11 @@
 
   var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel =
     function(node_info, m, type, cols) {
-      var groups = Backform.generateViewSchema(node_info, m, type),
-      schema = [],
-      columns = [],
-      func,
-      idx = 0;
+      var groups = Backform.generateViewSchema(node_info, m, type, null, true),
+          schema = [],
+          columns = [],
+          func,
+          idx = 0;
 
       // Create another array if cols is of type object & store its keys in that array,
       // If cols is object then chances that we have custom width class attached with in.
@@ -603,7 +621,7 @@
       // Prepare columns for backgrid
       _.each(groups, function(fields, key) {
         _.each(fields, function(f) {
-          if (!f.control && !f.cell) {
+          if (!f.cell) {
             return;
           }
           // Check custom property in cols & if it is present then attach it to current cell
@@ -1224,10 +1242,12 @@
   //
   // It will be used by the grid, properties, and dialog view generation
   // functions.
-  var generateViewSchema = Backform.generateViewSchema = function(node_info, Model, mode, node, treeData) {
+  var generateViewSchema = Backform.generateViewSchema = function(
+      node_info, Model, mode, node, treeData, noSQL, subschema
+      ) {
     var proto = (Model && Model.prototype) || Model,
-        schema = (proto && proto.schema),
-        groups, pgBrowser = window.pgAdmin.Browser;
+        schema = subschema || (proto && proto.schema),
+        pgBrowser = window.pgAdmin.Browser, fields = [];
 
     // 'schema' has the information about how to generate the form.
     if (schema && _.isArray(schema)) {
@@ -1235,9 +1255,9 @@
         return ((prop && proto[prop] &&
               typeof proto[prop] == "function") ? proto[prop] : prop);
       };
-      groups = {},
-      server_info = node_info && ('server' in node_info) &&
-        pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id];
+      var groups = {},
+          server_info = node_info && ('server' in node_info) &&
+            pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id];
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
@@ -1294,6 +1314,16 @@
           // Temporarily store in dictionary format for
           // utilizing it later.
           groups[group].push(o);
+
+          if (s.type == 'uiLayout') {
+            delete o.name;
+            delete o.cell;
+
+            o.schema = Backform.generateViewSchema(
+                node_info, Model, mode, node, treeData, true, s.schema
+                );
+            o.control = o.control || 'tab';
+          }
         }
       });
 
@@ -1302,7 +1332,8 @@
       if (_.isEmpty(groups)) {
         return null;
       }
-      if (node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
+
+      if (!noSQL && node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
         groups[pgBrowser.messages.SQL_TAB] = [{
             name: 'sql',
             visible: true,
@@ -1315,8 +1346,14 @@
         }];
       }
 
+      // Create an array from the dictionary with proper required
+      // structure.
+      _.each(groups, function(val, key) {
+        fields.push({label: key, fields: val});
+      });
     }
-    return groups;
+
+    return fields;
   };
 
   /*
@@ -1335,5 +1372,41 @@
       return this;
     }
   });
+
+  // Backform Tab Control (in bootstrap tabbular)
+  // A collection of field models.
+  var TabControl = Backform.TabControl = Backform.Dialog.extend({
+    tagName: "div",
+    className: 'inline-tab-panel',
+    tabPanelClassName: 'inline-tab-panel',
+    initialize: function(opts) {
+      Backform.Dialog.prototype.initialize.apply(
+        this, [{schema: opts.field.get('schema')}]
+        );
+      this.dialog = opts.dialog;
+      this.tabIndex = (opts.tabIndex || parseInt(Math.random() * 1000)) + 1;
+    }
+  });
+
+  var FieldsetControl = Backform.FieldsetControl = Backform.Fieldset.extend({
+    initialize: function(opts) {
+      Backform.Dialog.prototype.initialize.apply(
+        this, [{schema: opts.field.get('schema')}]
+        );
+      this.dialog = opts.dialog;
+      this.tabIndex = opts.tabIndex;
+    },
+    className: function() {
+      return 'set-group';
+    },
+    tabPanelClassName: function() {
+      return Backform.tabClassName;
+    },
+    fieldsetClass: 'inline-fieldset',
+    legendClass: '',
+    contentClass: '',
+    collapse: false
+  });
+
   return Backform;
 }));
