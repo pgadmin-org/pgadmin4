@@ -163,22 +163,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'host', label:'{{ _('Host Name/Address') }}', type: 'text', group: "Connection",
+          id: 'host', label:'{{ _('Host Name/Address') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'port', label:'{{ _('Port') }}', type: 'int', group: "Connection",
+          id: 'port', label:'{{ _('Port') }}', type: 'int', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65534
         },{
-          id: 'db', label:'{{ _('Maintenance Database') }}', type: 'text', group: "Connection",
+          id: 'db', label:'{{ _('Maintenance Database') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'username', label:'{{ _('User Name') }}', type: 'text', group: "Connection",
+          id: 'username', label:'{{ _('User Name') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'role', label:'{{ _('Role') }}', type: 'text', group: "Connection",
+          id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'sslmode', label:'{{ _('SSL Mode') }}', type: 'options', group: "Connection",
+          id: 'sslmode', label:'{{ _('SSL Mode') }}', type: 'options', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           'options': [
             {label: 'Allow', value: 'allow'},
