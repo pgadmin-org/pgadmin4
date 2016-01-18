@@ -1,7 +1,7 @@
 Babel==1.3
 Flask==0.10.1
 Flask-Babel==0.9
-Flask-Gravatar==0.4.1
+Flask-Gravatar==0.4.2
 Flask-Login==0.2.11
 Flask-Mail==0.9.1
 Flask-Principal==0.4.0

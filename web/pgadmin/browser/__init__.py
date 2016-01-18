@@ -15,7 +15,7 @@ from flask import current_app, render_template, url_for, make_response
 from flask.ext.security import login_required
 from flask.ext.login import current_user
 from flask.ext.babel import gettext
-from flaskext.gravatar import Gravatar
+from flask_gravatar import Gravatar
 import six
 
 MODULE_NAME = 'browser'
