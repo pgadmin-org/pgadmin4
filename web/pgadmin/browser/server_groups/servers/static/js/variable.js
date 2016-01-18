@@ -38,7 +38,7 @@
   var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
     defaults: {
       name: undefined,
-      value: '',
+      value: undefined,
       role: undefined,
       database: undefined,
     },
@@ -70,6 +70,7 @@
     },
     validate: function() {
       if (_.isUndefined(this.get('value')) ||
+          _.isNull(this.get('value')) ||
           String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
         var msg = 'Please enter some value!';
 
@@ -166,7 +167,7 @@
 
           var formatter = self.formatter;
 
-          formatter.decimals = self.decimals;
+          formatter.decimals = 0;
           formatter.decimalSeparator = self.decimalSeparator;
           formatter.orderSeparator = self.orderSeparator;
 
@@ -291,12 +292,11 @@
       var headerGroups = Backform.generateViewSchema(
           self.field.get('node_info'), self.headerData, 'create',
           node, self.field.get('node_data')
-          );
+          ),
+          fields = [];
 
-      var fields = [];
-
-      _.each(headerGroups, function(val, key) {
-        fields = fields.concat(headerGroups[key]);
+      _.each(headerGroups, function(o) {
+        fields = fields.concat(o.fields);
       });
 
       self.headerFields = new Backform.Fields(fields);
@@ -312,7 +312,6 @@
       self.listenTo(self.headerData, "select2", self.headerDataChanged);
       self.listenTo(self.collection, "remove", self.onRemoveVariable);
     },
-
     /*
      * Get the variable data for this node.
      */
@@ -475,6 +474,29 @@
             editable: false, cell_priority: -1
           });
       }
+
+      // Change format of each of the data
+      // Because - data coming from the server is in string format
+      self.collection.each(function(model) {
+        var name = model.get("name");
+
+        if (name in self.availVariables) {
+          switch(self.availVariables[name].vartype) {
+            case 'real':
+              var v = parseFloat(model.get('value'));
+              model.set('value', (isNaN(v) ? undefined : v), {silent: true});
+
+              break;
+            case 'integer':
+              var v = parseInt(model.get('value'));
+              model.set('value', (isNaN(v) ? undefined : v), {silent: true});
+
+              break;
+            default:
+              break;
+          }
+        }
+      });
 
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
