@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013, The pgAdmin Development Team
+// Copyright (C) 2013 - 2016, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // pgAdmin4.cpp - Main application entry point
@@ -14,14 +14,14 @@
 // Must be before QT
 #include <Python.h>
 
-// QT headers
-#include <QtGlobal>
-
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
 #else
 #include <QApplication>
 #include <QDebug>
+#include <QtNetwork>
+#include <QLineEdit>
+#include <QInputDialog>
 #endif
 
 // App headers
@@ -38,11 +38,18 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME);
 
+    quint16 port = 0L;
+
     // Find an unused port number. Essentially, we're just reserving one
     // here that Flask will use when we start up the server.
-    QTcpSocket socket;
-    socket.bind(0, QAbstractSocket::DontShareAddress);
-    quint16 port = socket.localPort();
+    // In order to use the socket, we need to free this socket ASAP.
+    // Hence - putting this code in a code block so the scope of the socket
+    // variable vanishes to make that socket available.
+    {
+        QTcpSocket socket;
+        socket.bind(0, QAbstractSocket::DontShareAddress);
+        port = socket.localPort();
+    }
 
     // Fire up the webserver
     Server *server = new Server(port);

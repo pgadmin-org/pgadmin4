@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013, The pgAdmin Development Team
+// Copyright (C) 2013 - 2016, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // Server.h - Thread in which the web server will run.
@@ -38,7 +38,8 @@ private:
     QString m_appfile;
     QString m_error;
 
-    quint16 m_port;
+    quint16  m_port;
+    wchar_t *m_wcAppName;
 };
 
 #endif // SERVER_H

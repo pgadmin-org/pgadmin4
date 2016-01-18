@@ -7,20 +7,32 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += webkit network 
 }
 
+PYTHON_CONFIG=python3-config
+
 # Find and configure Python
-!system(which python-config > /dev/null 2>&1) {
-    error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
+!system(which python3-config > /dev/null 2>&1) {
+    !system(which python-config > /dev/null 2>&1) {
+        error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
+    } else {
+	PYTHON_CONFIG=python-config
+	DEFINES += PYTHON2
+    }
 }
-QMAKE_CXXFLAGS += $$system(python-config --includes)
-QMAKE_LFLAGS += $$system(python-config --ldflags)
+
+QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
+QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
 
 # Source code
 HEADERS     =   BrowserWindow.h \
                 Server.h \
-                pgAdmin4.h
+                pgAdmin4.h \
+                TabWindow.h \
+                WebViewWindow.h
 SOURCES     =   pgAdmin4.cpp \
                 BrowserWindow.cpp \
-                Server.cpp
+                Server.cpp \
+                TabWindow.cpp \
+                WebViewWindow.cpp
 FORMS       =   BrowserWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
