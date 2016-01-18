@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2015, The pgAdmin Development Team
+# Copyright (C) 2013 - 2016, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # config.py - Core application configuration settings
@@ -32,7 +32,7 @@ APP_REVISION = 0
 APP_SUFFIX = 'dev'
 
 # Copyright string for display in the app
-APP_COPYRIGHT = 'Copyright 2014 - 2015, The pgAdmin Development Team'
+APP_COPYRIGHT = 'Copyright 2013 - 2016, The pgAdmin Development Team'
 
 # Path to the online help.
 HELP_PATH = '../../../docs/en_US/_build/html/'

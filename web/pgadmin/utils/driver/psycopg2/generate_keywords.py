@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2015, The pgAdmin Development Team
+# Copyright (C) 2013 - 2016, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # This allows us to generate to keywords.py for PostgreSQL for used by
@@ -12,6 +12,7 @@
 # pg_config executable in the PATH.
 #
 ##########################################################################
+
 import re
 import os
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2015, The pgAdmin Development Team
+# Copyright (C) 2013 - 2016, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################

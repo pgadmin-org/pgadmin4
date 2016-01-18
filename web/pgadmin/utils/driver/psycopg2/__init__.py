@@ -2,10 +2,11 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2015, The pgAdmin Development Team
+# Copyright (C) 2013 - 2016, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
 from datetime import datetime
 
 import psycopg2
