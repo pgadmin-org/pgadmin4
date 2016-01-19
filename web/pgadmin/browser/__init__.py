@@ -117,15 +117,29 @@ class BrowserModule(PgAdminModule):
             'preloaded': True
             })
 
+        scripts.append({
+            'name': 'pgadmin.browser.datamodel',
+            'path': url_for('browser.static', filename='js/datamodel'),
+            'preloaded': True
+            })
+
         for name, script in [
                 ['pgadmin.browser',       'js/browser'],
-                ['pgadmin.browser.error', 'js/error'],
-                ['pgadmin.browser.node',  'js/node'],
-                ['pgadmin.browser.collection', 'js/collection']]:
+                ['pgadmin.browser.error', 'js/error']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
                 'preloaded': True
+                })
+
+        for name, script in [
+                ['pgadmin.browser.node', 'js/node'],
+                ['pgadmin.browser.collection', 'js/collection']]:
+            scripts.append({
+                'name': name,
+                'path': url_for('browser.index') + script,
+                'preloaded': True,
+                'deps': ['pgadmin.browser.datamodel']
                 })
 
         for name, end in [
