@@ -37,6 +37,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       transform: undefined,
       url_with_id: false,
       first_empty: false,
+      empty_value: '-- None --',
       select2: {
         allowClear: true,
         placeholder: 'Select from the list',
