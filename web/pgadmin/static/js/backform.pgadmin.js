@@ -1315,7 +1315,7 @@
           // utilizing it later.
           groups[group].push(o);
 
-          if (s.type == 'uiLayout') {
+          if (s.type == 'nested') {
             delete o.name;
             delete o.cell;
 

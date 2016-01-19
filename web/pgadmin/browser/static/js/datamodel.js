@@ -13,71 +13,80 @@ function(_, pgAdmin, $, Backbone) {
           self.tnode = _.extend({}, res.node);
           delete res.node;
         }
-        if (self.schema && _.isArray(self.schema)) {
-          _.each(self.schema, function(s) {
-            var obj, val;
-            switch(s.type) {
-              case 'collection':
-                obj = self.get(s.id);
-                val = res[s.id];
-                if (_.isArray(val) || _.isObject(val)) {
-                  if (!obj || !(obj instanceof Backbone.Collection)) {
-                    obj = new (pgBrowser.Node.Collection)(val, {
-                      model: ((_.isString(s.model) &&
-                               s.model in pgBrowser.Nodes) ?
-                              pgBrowser.Nodes[s.model].model : s.model),
-                      top: self.top || self,
-                      handler: self,
-                      parse: true,
-                      silent: true,
-                      attrName: s.id
-                      });
-                    self.set(s.id, obj, {silent: true, parse: true});
-                  } else {
-                    obj.reset(val, {silent: true, parse: true});
-                  }
-                }
-                else {
-                  if (obj)
-                    delete obj;
-                  obj = null;
-                }
-                self.set(s.id, obj, {silent: true});
-                res[s.id] = obj;
-                break;
-              case 'model':
-                obj = self.get(s.id);
-                val = res[s.id];
-                if (!_.isUndefined(val) && !_.isNull(val)) {
-                  if (!obj || !(obj instanceof Backbone.Model)) {
-                    if (_.isString(s.model) &&
-                        s.model in pgBrowser.Nodes[s.model]) {
-                      obj = new (pgBrowser.Nodes[s.model].Model)(
-                          obj, {
-                            silent: true, top: self.top || self, handler: self,
-                            attrName: s.id
-                          }
-                          );
-                    } else {
-                      obj = new (s.model)(obj, {
-                        silent: true, top: self.top || self, handler: self,
+        var objectOp = function(schema) {
+          if (schema && _.isArray(schema)) {
+            _.each(schema, function(s) {
+              var obj, val;
+              switch(s.type) {
+                case 'collection':
+                  obj = self.get(s.id);
+                  val = res[s.id];
+                  if (_.isArray(val) || _.isObject(val)) {
+                    if (!obj || !(obj instanceof Backbone.Collection)) {
+                      obj = new (pgBrowser.Node.Collection)(val, {
+                        model: ((_.isString(s.model) &&
+                                 s.model in pgBrowser.Nodes) ?
+                                pgBrowser.Nodes[s.model].model : s.model),
+                        top: self.top || self,
+                        handler: self,
+                        parse: true,
+                        silent: true,
                         attrName: s.id
-                      });
+                        });
+                      self.set(s.id, obj, {silent: true, parse: true});
+                    } else {
+                      obj.reset(val, {silent: true, parse: true});
                     }
                   }
-                  obj.set(val, {parse: true, silent: true});
-                } else {
-                  if (obj)
-                    delete obj;
-                  obj = null;
-                }
-                res[s.id] = obj;
-                break;
-              default:
-                break;
-            }
-          });
-        }
+                  else {
+                    if (obj)
+                      delete obj;
+                    obj = null;
+                  }
+                  self.set(s.id, obj, {silent: true});
+                  res[s.id] = obj;
+                  break;
+                case 'model':
+                  obj = self.get(s.id);
+                  val = res[s.id];
+                  if (!_.isUndefined(val) && !_.isNull(val)) {
+                    if (!obj || !(obj instanceof Backbone.Model)) {
+                      if (_.isString(s.model) &&
+                          s.model in pgBrowser.Nodes[s.model]) {
+                        obj = new (pgBrowser.Nodes[s.model].Model)(
+                            obj, {
+                              silent: true, top: self.top || self, handler: self,
+                              attrName: s.id
+                            }
+                            );
+                      } else {
+                        obj = new (s.model)(obj, {
+                          silent: true, top: self.top || self, handler: self,
+                          attrName: s.id
+                        });
+                      }
+                    }
+                    obj.set(val, {parse: true, silent: true});
+                  } else {
+                    if (obj)
+                      delete obj;
+                    obj = null;
+                  }
+                  res[s.id] = obj;
+                  break;
+                case 'nested':
+                  objectOp(s.schema);
+
+                  break;
+                default:
+                  break;
+              }
+            });
+          }
+        };
+
+        objectOp(self.schema);
+
         return res;
       },
       primary_key: function() {
@@ -113,56 +122,72 @@ function(_, pgAdmin, $, Backbone) {
         self.errorModel = new Backbone.Model();
         self.node_info = options.node_info;
 
-        if (self.schema && _.isArray(self.schema)) {
-          _.each(self.schema, function(s) {
-            var obj = self.get(s.id);
-            switch(s.type) {
-              case 'collection':
-                if (!obj || !(obj instanceof pgBrowser.Node.Collection)) {
-                  if (_.isString(s.model) &&
-                    s.model in pgBrowser.Nodes) {
-                    var node = pgBrowser.Nodes[s.model];
-                    obj = new (node.Collection)(obj, {
-                      model: node.model,
-                      top: self.top || self,
-                      handler: self,
-                      attrName: s.id
-                    });
-                  } else {
-                    obj = new (pgBrowser.Node.Collection)(obj, {
-                      model: s.model,
-                      top: self.top || self,
-                      handler: self,
-                      attrName: s.id
-                    });
+        var obj;
+        var objectOp = function(schema) {
+          if (schema && _.isArray(schema)) {
+            _.each(schema, function(s) {
+
+              switch(s.type) {
+                case 'collection':
+                  obj = self.get(s.id)
+                  if (!obj || !(obj instanceof pgBrowser.Node.Collection)) {
+                    if (_.isString(s.model) &&
+                      s.model in pgBrowser.Nodes) {
+                      var node = pgBrowser.Nodes[s.model];
+                      obj = new (node.Collection)(obj, {
+                        model: node.model,
+                        top: self.top || self,
+                        handler: self,
+                        attrName: s.id
+                      });
+                    } else {
+                      obj = new (pgBrowser.Node.Collection)(obj, {
+                        model: s.model,
+                        top: self.top || self,
+                        handler: self,
+                        attrName: s.id
+                      });
+                    }
                   }
-                }
-                break;
-              case 'model':
-                if (!obj || !(obj instanceof Backbone.Model)) {
-                  if (_.isString(s.model) &&
-                      s.model in pgBrowser.Nodes[s.model]) {
-                    obj = new (pgBrowser.Nodes[s.model].Model)(
-                        obj, {
-                          top: self.top || self, handler: self, attrName: s.id
-                        }
-                        );
-                  } else {
-                    obj = new (s.model)(
-                        obj, {
-                          top: self.top || self, handler: self, attrName: s.id
-                        });
+
+                  obj.name = s.id;
+                  self.objects.push(s.id);
+                  self.set(s.id, obj, {silent: true});
+
+                  break;
+                case 'model':
+                  obj = self.get(s.id)
+                  if (!obj || !(obj instanceof Backbone.Model)) {
+                    if (_.isString(s.model) &&
+                        s.model in pgBrowser.Nodes[s.model]) {
+                      obj = new (pgBrowser.Nodes[s.model].Model)(
+                          obj, {
+                            top: self.top || self, handler: self, attrName: s.id
+                          }
+                          );
+                    } else {
+                      obj = new (s.model)(
+                          obj, {
+                            top: self.top || self, handler: self, attrName: s.id
+                          });
+                    }
                   }
-                }
-                break;
-              default:
-                return;
-            }
-            obj.name = s.id;
-            self.objects.push(s.id);
-            self.set(s.id, obj, {silent: true});
-          });
-        }
+
+                  obj.name = s.id;
+                  self.objects.push(s.id);
+                  self.set(s.id, obj, {silent: true});
+
+                  break;
+                case 'nested':
+                  objectOp(s.schema);
+                  break;
+                default:
+                  return;
+              }
+            });
+          }
+        };
+        objectOp(self.schema);
 
         if (self.handler && self.handler.trackChanges) {
           self.startNewSession();
