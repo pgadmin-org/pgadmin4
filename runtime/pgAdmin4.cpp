@@ -26,6 +26,7 @@
 
 // App headers
 #include "BrowserWindow.h"
+#include "ConfigWindow.h"
 #include "Server.h"
 
 int main(int argc, char * argv[])
@@ -82,17 +83,21 @@ int main(int argc, char * argv[])
         QSettings settings;
         bool ok;
 
-        QInputDialog *dlg = new QInputDialog();
-        dlg->setInputMode(QInputDialog::TextInput);
-        dlg->setWindowTitle(QWidget::tr("Python Path"));
-        dlg->setLabelText(QWidget::tr("Set the Python search path (separate entries with a semicolon):"));
-        dlg->setTextValue(settings.value("PythonPath").toString());
-        dlg->resize(600,100);
+        ConfigWindow *dlg = new ConfigWindow();
+        dlg->setWindowTitle(QWidget::tr("Configuration"));
+        dlg->setPythonPath(settings.value("PythonPath").toString());
+        dlg->setApplicationPath(settings.value("ApplicationPath").toString());
+        dlg->setModal(true);
         ok = dlg->exec();
-        QString path = dlg->textValue();
+
+        QString pythonpath = dlg->getPythonPath();
+        QString applicationpath = dlg->getApplicationPath();
 
         if (ok)
-            settings.setValue("PythonPath", path);
+        {
+            settings.setValue("PythonPath", pythonpath);
+            settings.setValue("ApplicationPath", applicationpath);
+        }
 
         exit(1);
     }

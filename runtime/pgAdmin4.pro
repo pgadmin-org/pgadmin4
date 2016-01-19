@@ -27,13 +27,16 @@ HEADERS     =   BrowserWindow.h \
                 Server.h \
                 pgAdmin4.h \
                 TabWindow.h \
-                WebViewWindow.h
+                WebViewWindow.h \
+                ConfigWindow.h
 SOURCES     =   pgAdmin4.cpp \
                 BrowserWindow.cpp \
                 Server.cpp \
                 TabWindow.cpp \
-                WebViewWindow.cpp
-FORMS       =   BrowserWindow.ui
+                WebViewWindow.cpp \
+                ConfigWindow.cpp
+FORMS       =   BrowserWindow.ui \
+                ConfigWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 

@@ -79,10 +79,13 @@ Server::~Server()
 
 bool Server::Init()
 {
+    QSettings settings;
+
     // Find the webapp
     QStringList paths;
     paths.append("../web/"); // Windows/Linux source tree
     paths.append("../../../../web/"); // Mac source tree (in the app bundle)
+    paths.append(settings.value("ApplicationPath").toString()); // System configured value
     paths.append(""); // Should be last!
 
     for (int i = 0; i < paths.size(); ++i)

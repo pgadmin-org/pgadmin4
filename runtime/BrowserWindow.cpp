@@ -26,6 +26,7 @@
 
 // App headers
 #include "BrowserWindow.h"
+#include "ConfigWindow.h"
 
 // Constructor
 BrowserWindow::BrowserWindow(QString url)
@@ -71,7 +72,7 @@ BrowserWindow::BrowserWindow(QString url)
     connect(m_mainWebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
 
     // Register the slot when click on the URL link form main menu bar
-    connect(m_mainWebView,SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
+    connect(m_mainWebView, SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
 
     // Register the slot on tab index change
     connect(m_tabWidget,SIGNAL(currentChanged(int )),this,SLOT(tabIndexChanged(int )));
@@ -109,9 +110,9 @@ void BrowserWindow::createActions()
     connect(openUrlAction, SIGNAL(triggered()), this, SLOT(openUrl()));
 
     // Set the Python Path
-    pythonPathAction = new QAction(tr("&Python Path..."), this);
-    pythonPathAction->setStatusTip(tr("Set the Python search path"));
-    connect(pythonPathAction, SIGNAL(triggered()), this, SLOT(pythonPath()));
+    configurationAction = new QAction(tr("&Configuration..."), this);
+    configurationAction->setStatusTip(tr("Configure the application paths"));
+    connect(configurationAction, SIGNAL(triggered()), this, SLOT(configuration()));
 
     // Exit the app
     exitAction = new QAction(tr("E&xit"), this);
@@ -133,7 +134,7 @@ void BrowserWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openUrlAction);
     fileMenu->addSeparator();
-    fileMenu->addAction(pythonPathAction);
+    fileMenu->addAction(configurationAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
@@ -429,29 +430,43 @@ void BrowserWindow::about()
 void BrowserWindow::openUrl()
 {
     bool ok;
-    QString url = QInputDialog::getText(this, tr("Open URL"), tr("Enter a URL"), QLineEdit::Normal, "http://", &ok);
+
+    QInputDialog *dlg = new QInputDialog();
+    dlg->setInputMode(QInputDialog::TextInput);
+    dlg->setWindowTitle(QWidget::tr("Open URL"));
+    dlg->setLabelText(QWidget::tr("Enter a URL"));
+    dlg->setTextValue("http://");
+    dlg->resize(600,100);
+
+    ok = dlg->exec();
+
+    QString url = dlg->textValue();
 
     if (ok && !url.isEmpty())
-        m_mainWebView->setUrl(url);
+        urlLinkClicked(QUrl(url));
 }
 
 // Open an arbitrary URL
-void BrowserWindow::pythonPath()
+void BrowserWindow::configuration()
 {
     QSettings settings;
     bool ok;
 
-    QInputDialog *dlg = new QInputDialog();
-    dlg->setInputMode(QInputDialog::TextInput);
-    dlg->setWindowTitle(QWidget::tr("Python Path"));
-    dlg->setLabelText(QWidget::tr("Set the Python search path (separate entries with a semicolon):"));
-    dlg->setTextValue(settings.value("PythonPath").toString());
-    dlg->resize(600,100);
+    ConfigWindow *dlg = new ConfigWindow();
+    dlg->setWindowTitle(QWidget::tr("Configuration"));
+    dlg->setPythonPath(settings.value("PythonPath").toString());
+    dlg->setApplicationPath(settings.value("ApplicationPath").toString());
+    dlg->setModal(true);
     ok = dlg->exec();
-    QString path = dlg->textValue();
+
+    QString pythonpath = dlg->getPythonPath();
+    QString applicationpath = dlg->getApplicationPath();
 
     if (ok)
-        settings.setValue("PythonPath", path);
+    {
+        settings.setValue("PythonPath", pythonpath);
+        settings.setValue("ApplicationPath", applicationpath);
+    }
 }
 
 
