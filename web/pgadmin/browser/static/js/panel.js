@@ -1,7 +1,9 @@
 define(
     ['underscore', 'pgadmin', 'wcdocker'],
 function(_, pgAdmin) {
-  pgAdmin.Browser = pgAdmin.Browser || {};
+
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+
   pgAdmin.Browser.Panel = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
@@ -26,6 +28,7 @@ function(_, pgAdmin) {
           title: that.title,
           isPrivate: that.isPrivate,
           onCreate: function(myPanel) {
+            $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
             if (!that.showTitle)
               myPanel.title(false);
@@ -46,8 +49,35 @@ function(_, pgAdmin) {
                 }
               });
             }
+            _.each([
+                wcDocker.EVENT.UPDATED, wcDocker.EVENT.VISIBILITY_CHANGED,
+                wcDocker.EVENT.BEGIN_DOCK, wcDocker.EVENT.END_DOCK,
+                wcDocker.EVENT.GAIN_FOCUS, wcDocker.EVENT.LOST_FOCUS,
+                wcDocker.EVENT.CLOSED, wcDocker.EVENT.BUTTON,
+                wcDocker.EVENT.ATTACHED, wcDocker.EVENT.DETACHED,
+                wcDocker.EVENT.MOVE_STARTED, wcDocker.EVENT.MOVE_ENDED,
+                wcDocker.EVENT.MOVED, wcDocker.EVENT.RESIZE_STARTED,
+                wcDocker.EVENT.RESIZE_ENDED, wcDocker.EVENT.RESIZED,
+                wcDocker.EVENT.SCROLLED], function(ev) {
+                  myPanel.on(ev, that.eventFunc.bind(myPanel, ev));
+                });
           }
         });
+      }
+    },
+    eventFunc: function(eventName) {
+      var name = $(this).data('pgAdminName');
+
+      try {
+        pgBrowser.Events.trigger('pgadmin-browser:panel', eventName, this, arguments);
+        pgBrowser.Events.trigger('pgadmin-browser:panel:' + eventName, this, arguments);
+
+        if (name) {
+          pgBrowser.Events.trigger('pgadmin-browser:panel-' + name, eventName, this, arguments);
+          pgBrowser.Events.trigger('pgadmin-browser:panel-' + name + ':' + eventName, this, arguments);
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   });

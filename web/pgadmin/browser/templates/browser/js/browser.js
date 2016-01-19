@@ -16,34 +16,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
 
-  // TODO:: Remove dmeo SQL (once completed)
-  var demoSql = '-- DROP TABLE tickets_detail; \n\
-\n\
-CREATE TABLE tickets_detail \n\
-( \n\
-  id serial NOT NULL, \n\
-  ticket_id integer NOT NULL, \n\
-  logger_id integer NOT NULL, \n\
-  added timestamp with time zone NOT NULL, \n\
-  detail text NOT NULL, \n\
-  msgid character varying(100), \n\
-  CONSTRAINT tickets_detail_pkey PRIMARY KEY (id), \n\
-  CONSTRAINT ticket_id_refs_id_6b8dc130 FOREIGN KEY (ticket_id) \n\
-  REFERENCES tickets_ticket (id) MATCH SIMPLE \n\
-  ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED, \n\
-  CONSTRAINT tickets_detail_logger_id_fkey FOREIGN KEY (logger_id) \n\
-  REFERENCES auth_user (id) MATCH SIMPLE \n\
-  ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED \n\
-) \n\
-WITH ( \n\
-  OIDS=FALSE \n\
-); \n\
-ALTER TABLE tickets_detail \n\
-OWNER TO helpdesk;\n';
-
   var panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
-
     if (this.isVisible()) {
       var obj = pgAdmin.Browser,
           i   = obj.tree ? obj.tree.selected() : undefined,
@@ -57,13 +31,6 @@ OWNER TO helpdesk;\n';
     }
   };
 
-  var sqlPanelEvents = {};
-  sqlPanelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
-    /* Update the SQL editor to show the latest value all the time */
-    if (this.isVisible()) {
-        pgAdmin.Browser.editor.setValue($('#sql-textarea').val());
-    }
-  };
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
@@ -118,8 +85,7 @@ OWNER TO helpdesk;\n';
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<textarea id="sql-textarea" name="sql-textarea"></textarea>',
-        events: sqlPanelEvents
+        content: '<textarea id="sql-textarea" name="sql-textarea"></textarea>'
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
@@ -282,6 +248,11 @@ OWNER TO helpdesk;\n';
     init: function() {
       var obj=this;
 
+      if (obj.initialized) {
+        return;
+      }
+      obj.initialized = true;
+
       // Store the main browser layout
       $(window).bind('unload', function() {
         if(obj.docker) {
@@ -340,8 +311,6 @@ OWNER TO helpdesk;\n';
             mode: "text/x-sql",
             readOnly: true
           });
-      // TODO:: Revove demoSql later
-      $('#sql-textarea').val(demoSql);
 
       // Initialise the treeview
       $('#tree').aciTree({
@@ -485,8 +454,10 @@ OWNER TO helpdesk;\n';
             break;
         }
 
+        var node;
+
         if (d && obj.Nodes[d._type]) {
-          var node = obj.Nodes[d._type];
+          node = obj.Nodes[d._type];
 
           /* If the node specific callback returns false, we will also return
            * false for further processing.
@@ -506,6 +477,17 @@ OWNER TO helpdesk;\n';
           } catch (e) {
             console.log(e);
           }
+        }
+
+        try {
+          obj.Events.trigger(
+              'pgadmin-browser:tree', eventName, item, d
+              );
+          obj.Events.trigger(
+              'pgadmin-browser:tree:' + eventName, item, d, node
+              );
+        } catch (e) {
+          console.log(e);
         }
         return true;
       });

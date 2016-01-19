@@ -542,6 +542,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // tab is active.)
           }
         }
+
+        return true;
       },
       refresh: function(i) {
         var self = this,

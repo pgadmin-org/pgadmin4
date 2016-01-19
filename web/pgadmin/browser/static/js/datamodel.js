@@ -884,7 +884,9 @@ function(_, pgAdmin, $, Backbone) {
 
         return true;
       }
-    })
+    });
+
+    pgBrowser.Events = _.extend({}, Backbone.Events);
 
     return pgBrowser;
 });
