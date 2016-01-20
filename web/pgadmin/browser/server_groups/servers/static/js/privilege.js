@@ -41,6 +41,9 @@
       privilege_type: undefined,
       privilege: false,
       with_grant: false
+    },
+    validate: function() {
+      return null;
     }
   });
 
@@ -154,7 +157,7 @@
 
     toJSON: function(session) {
       if (session) {
-        return pgNode.Model.prototype.apply(this, [true, false]);
+        return pgNode.Model.prototype.toJSON.apply(this, arguments);
       }
 
       var privileges = [];
@@ -171,6 +174,10 @@
         'grantor': this.get('grantor'),
         'privileges': privileges
         };
+    },
+
+    validate: function() {
+      return null;
     }
   });
 
@@ -185,7 +192,7 @@
       // generating the label for the specific Control
       Labels: {
         "C": "CREATE",
-        "T": "TEMP",
+        "T": "TEMPORARY",
         "c": "CONNECT",
         "a": "INSERT",
         "r": "SELECT",
@@ -203,7 +210,7 @@
         ' <td class="renderable">',
         '  <label>',
         '   <input type="checkbox" name="privilege" privilege="<%- privilege_type %>" target="<%- target %>" <%= privilege ? \'checked\' : "" %>></input>',
-        '   <%- privilege_type %>',
+        '   <%- privilege_label %>',
         '  </label>',
         ' </td>',
         ' <td class="renderable">',
@@ -234,27 +241,32 @@
       collection.each(function(m) {
         var d = m.toJSON();
 
+        privilege = (privilege && d.privilege);
+        with_grant = (with_grant && privilege && d.with_grant);
+
         _.extend(
           d, {
             'target': self.cid,
-            'header': false
+            'header': false,
+            'privilege_label': self.Labels[d.privilege_type]
             });
         privilege = (privilege && d.privilege);
         with_grant = (with_grant && privilege && d.with_grant);
         tbl.append(self.template(d));
       });
 
-      // Preprend the ALL controls on that table
-      tbl.prepend(
-          self.template({
-            'target': self.cid,
-            'name': 'ALL',
-            'privilege_type': 'ALL',
-            'privilege': privilege,
-            'with_grant': with_grant,
-            'header': true
-          }));
-
+      if (collection.length > 1) {
+        // Preprend the ALL controls on that table
+        tbl.prepend(
+            self.template({
+              'target': self.cid,
+              'privilege_label': 'ALL',
+              'privilege_type': 'ALL',
+              'privilege': privilege,
+              'with_grant': with_grant,
+              'header': true
+            }));
+      }
       self.$el.find('input[type=checkbox]').first().focus();
       // Since blur event does not bubble we need to explicitly call parent's blur event.
       $(self.$el.find('input[type=checkbox]')).on('blur',function() {
@@ -279,7 +291,7 @@
             checked = $el.prop('checked'),
             $tr = $el.closest('tr'),
             $tbl = $tr.closest('table'),
-            collection = this.model.get('privileges');;
+            collection = this.model.get('privileges');
 
         /*
          * If the checkbox selected/deselected is for 'ALL', we will select all
@@ -383,7 +395,8 @@
                   'input[name=privilege][privilege!=\'ALL\']:checked'
                   );
 
-            if ($allPrivileges.length == collection.models.length) {
+            if ($allPrivileges.length > 1 &&
+                  $allPrivileges.length == collection.models.length) {
 
               $allPrivilege.prop('checked', true);
 
@@ -469,7 +482,7 @@
       if (rawData instanceof Backbone.Collection) {
         rawData.each(function(m) {
           if (m.get('privilege')) {
-            res += self.notation[m.get('privilege_type')];
+            res += m.get('privilege_type');
             if (m.get('with_grant')) {
               res += '*';
             }
