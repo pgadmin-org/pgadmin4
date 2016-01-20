@@ -39,7 +39,7 @@ function(_, pgAdmin) {
             myPanel.layout().addItem($frameArea);
             that.panel = myPanel;
             var frame = new wcIFrame($frameArea, myPanel);
-            $(myPanel).data('embededFrame', that.frame);
+            $(myPanel).data('embededFrame', frame);
 
             setTimeout(function() { frame.openURL(that.url); }, 500);
 
