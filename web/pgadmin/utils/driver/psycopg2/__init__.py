@@ -843,16 +843,16 @@ class Driver(BaseDriver):
             valNoArray = value[:-2]
 
         if forTypes and valNoArray.lower() in [
-            u"bit varying"
-            u"\"char\"",
-            u"character varying",
-            u"double precision"
-            u"timestamp without time zone"
-            u"timestamp with time zone"
-            u"time without time zone"
-            u"time with time zone"
-            u"\"trigger\""
-            u"\"unknown\""
+            u'bit varying',
+            u'"char"',
+            u'character varying',
+            u'double precision',
+            u'timestamp without time zone',
+            u'timestamp with time zone',
+            u'time without time zone',
+            u'time with time zone',
+            u'"trigger"',
+            u'"unknown"'
             ]:
             return False
 
