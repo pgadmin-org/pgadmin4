@@ -482,7 +482,7 @@ function(_, pgAdmin, $, Backbone) {
                     );
               }
             } else {
-              var msg = _.values(self.errofModel.attributes)[0];
+              var msg = _.values(self.errorModel.attributes)[0];
 
               if (self.handler) {
                 (self.handler).trigger(
@@ -505,7 +505,7 @@ function(_, pgAdmin, $, Backbone) {
                     );
               }
             } else {
-              var msg = _.values(self.errofModel.attributes)[0];
+              var msg = _.values(self.errorModel.attributes)[0];
 
               if (self.handler) {
                 (self.handler).trigger(
