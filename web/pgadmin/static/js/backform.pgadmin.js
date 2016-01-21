@@ -806,7 +806,7 @@
           '  <label class="control-label col-sm-4"><%-label%></label>',
           '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
           '</div>'].join("\n")),
-        gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode-body"></div>').append(
+        gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode"></div>').append(
             gridHeader(data)
             );
 
