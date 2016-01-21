@@ -446,7 +446,7 @@ void BrowserWindow::openUrl()
         urlLinkClicked(QUrl(url));
 }
 
-// Open an arbitrary URL
+// Edit the app configuration
 void BrowserWindow::configuration()
 {
     QSettings settings;
