@@ -152,7 +152,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           var onSessionInvalid = function(msg) {
 
             if(!_.isUndefined(that.statusBar)) {
-              that.statusBar.html(msg);
+              that.statusBar.html(msg).css("visibility", "visible");
             }
             callback(true);
 
@@ -162,7 +162,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           var onSessionValidated =  function(sessHasChanged) {
 
             if(!_.isUndefined(that.statusBar)) {
-              that.statusBar.empty();
+              that.statusBar.empty().css("visibility", "hidden");
             }
 
             callback(false, sessHasChanged);
@@ -579,6 +579,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             var statusBar = $('<div></div>').addClass(
                       'pg-prop-status-bar'
                       ).appendTo(j);
+            statusBar.css("visibility", "hidden");
             if (location == "header") {
                 statusBar.appendTo(that.header);
             } else {
