@@ -317,7 +317,7 @@ class ServerNode(PGChildNodeView):
         }
 
         idx = 0
-        data = request.form if request.form else json.loads(request.data)
+        data = request.form if request.form else json.loads(request.data.decode())
 
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
