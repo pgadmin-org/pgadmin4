@@ -568,7 +568,7 @@ class ServerManager(object):
                         status, res = conn.execute_dict("""
 SELECT
     db.oid as did, db.datname, db.datallowconn, pg_encoding_to_char(db.encoding) AS serverencoding,
-    has_database_privilege(db.oid, 'CREATE') as cancreate
+    has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
 FROM
     pg_database db
 WHERE db.oid = {0}""".format(did))
