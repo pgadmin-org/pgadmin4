@@ -401,7 +401,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           optionValues = _.clone(this.optionValues ||
                 _.isFunction(this.column.get('options')) ?
                     this.column.get('options').apply(this) :
-                    this.column.get(' options')),
+                    this.column.get('options')),
           select2_opts = _.defaults({}, col.select2, this.defaults.select2),
           evalF = function(f, col, m) {
             return (_.isFunction(f) ? !!f.apply(col, [m]) : !!f);
