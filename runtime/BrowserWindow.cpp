@@ -63,10 +63,6 @@ BrowserWindow::BrowserWindow(QString url)
     m_tabWidget->setTabText(0, PGA_APP_NAME);
     m_tabWidget->setTabToolTipText(0, PGA_APP_NAME) ;
 
-#ifndef __APPLE__
-    m_tabWidget->setStyleSheet("QTabBar::tab{max-height:24px;max-width:250px;}");
-#endif
-
     setCentralWidget(m_tabWidget);
 
     connect(m_mainWebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
@@ -364,24 +360,25 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
 
         m_widget = new QWidget(m_addNewTab);
         m_toolBtnBack = new QToolButton(m_widget);
-        m_toolBtnBack->setFixedHeight(16);
-        m_toolBtnBack->setFixedWidth(16);
+        m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
+        m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
         m_toolBtnBack->setText(PGA_BTN_BACK);
         m_toolBtnBack->setDisabled(true);
 
         m_toolBtnForward = new QToolButton(m_widget);
-        m_toolBtnForward->setFixedHeight(16);
-        m_toolBtnForward->setFixedWidth(16);
+        m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
+        m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
         m_toolBtnForward->setText(PGA_BTN_FORWARD);
         m_toolBtnForward->setDisabled(true);
 
         QPushButton *m_btnClose = new QPushButton(m_widget);
         m_btnClose->setText(PGA_BTN_CLOSE);
-        m_btnClose->setFixedHeight(16);
-        m_btnClose->setFixedWidth(16);
+        m_btnClose->setFixedHeight(PGA_BTN_SIZE);
+        m_btnClose->setFixedWidth(PGA_BTN_SIZE);
 
         m_horizontalLayout = new QHBoxLayout(m_widget);
         m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+        m_horizontalLayout->setSpacing(1);
         m_horizontalLayout->addWidget(m_toolBtnBack);
         m_horizontalLayout->addWidget(m_toolBtnForward);
 

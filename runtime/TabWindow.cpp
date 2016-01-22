@@ -21,11 +21,51 @@ TabWindow::TabWindow(QWidget *parent) :
     setParent(parent);
     setTabsClosable(false);
     setElideMode(Qt::ElideRight);
+
+    // Get the system colours we need
+    QPalette palette = QApplication::palette("QPushButton");
+    QColor activebg = palette.color(QPalette::Button);
+    QColor activefg = palette.color(QPalette::ButtonText);
+    QColor inactivebg = palette.color(QPalette::Dark);
+    QColor inactivefg = palette.color(QPalette::ButtonText);
+    QColor border = palette.color(QPalette::Mid);
+
+    setStyleSheet(
+        "QTabBar::tab { "
+                "background-color: " + inactivebg.name() + "; "
+                "color: " + inactivefg.name() + "; "
+                "border: 1px solid " + border.name() + "; "
+                "padding: 1px 0px; "
+                "margin-left: 0px; "
+                "margin-top: 1px; "
+#ifndef __APPLE__
+                "width: 15em; "
+#ifdef _WIN32
+                "height: 1.5em; "
+#else
+                "height: 1em; "
+#endif
+#endif
+            "} "
+        "QTabBar::tab:selected { "
+                "background-color: " + activebg.name() + "; "
+                "color: " + activefg.name() + "; "
+                "border-bottom-style: none; "
+            "} "
+        "QTabWidget::pane { "
+                "border: 0; "
+            "} "
+        "QTabWidget::tab-bar {"
+                "alignment: left; "
+            "}"
+    );
 #ifdef __APPLE__
     m_testTabBar = new TabBar();
     setTabBar(m_testTabBar);
 #endif
 
+    // Hide the default tab
+    tabBar()->setAutoHide(true);
 }
 
 // Hide the close button of given index displayed on right side of tab
