@@ -191,20 +191,28 @@
     hasDatabase: false,
     hasRole: false,
 
-    defaults: _.extend({
-        uniqueCol: ['name', 'role', 'database']
-      },
-      Backform.UniqueColCollectionControl.prototype.defaults
-    ),
-
     initialize: function(opts) {
-      var self = this;
+      var self = this,
+          uniqueCols = ['name'];
 
+      /*
+       * Read from field schema whether user wants to use database and role
+       * fields in Variable control.
+       */
+      self.hasDatabase = opts.field.get('hasDatabase');
+      self.hasRole = opts.field.get('hasRole');
+
+      // Update unique coll field based on above flag status.
+      if (self.hasDatabase) {
+        uniqueCols.push('database')
+      } else if (self.hasRole) {
+        uniqueCols.push('role')
+      }
       // Overriding the uniqueCol in the field
       if (opts && opts.field) {
         if (opts.field instanceof Backform.Field) {
           opts.field.set({
-            uniqueCol: ['name', 'role', 'database'],
+            uniqueCol: uniqueCols,
             model: pgNode.VariableModel
           },
           {
@@ -212,7 +220,7 @@
           });
         } else {
           opts.field.extend({
-            uniqueCol: ['name', 'role', 'database'],
+            uniqueCol: uniqueCols,
             model: pgNode.VariableModel
           });
         }
@@ -222,8 +230,7 @@
           self, arguments
           );
 
-      self.hasDatabase = self.field.get('hasDatabase');
-      self.hasRole = self.field.get('hasRole');
+
       self.availVariables = {};
 
       var node = self.field.get('node').type,
@@ -566,7 +573,7 @@
         checkVars.push('database');
       }
 
-      if (self.role) {
+      if (self.hasRole) {
         checkVars.push('role');
       }
 
