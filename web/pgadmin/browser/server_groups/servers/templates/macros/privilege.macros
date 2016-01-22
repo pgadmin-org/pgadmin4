@@ -1,0 +1,11 @@
+{% macro APPLY(conn, type, role, param, priv, with_grant) -%}
+{% if priv %}
+GRANT {{ priv }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }};
+{% endif %}
+{% if with_grant %}
+GRANT {{ with_grant }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro RESETALL(conn, type, role, param) -%}
+REVOKE ALL ON {{ type }} {{ conn|qtIdent(param) }} FROM {{ conn|qtIdent(role) }};
+{%- endmacro %}

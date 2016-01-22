@@ -1,0 +1,14 @@
+{% macro APPLY(conn, type, role, priv, with_grant) -%}
+{% if priv %}
+ALTER DEFAULT PRIVILEGES
+GRANT {{ priv }} ON {{ type }} TO {{ conn|qtIdent(role) }};
+{% endif %}
+{% if with_grant %}
+ALTER DEFAULT PRIVILEGES
+GRANT {{ with_grant }} ON {{ type }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro RESETALL(conn, type, role) -%}
+ALTER DEFAULT PRIVILEGES
+    REVOKE ALL ON {{ type }} FROM {{ conn|qtIdent(role) }};
+{%- endmacro %}

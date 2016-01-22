@@ -272,6 +272,10 @@
       $(self.$el.find('input[type=checkbox]')).on('blur',function() {
         self.$el.blur();
       });
+
+      // Make row visible in when entering in edit mode.
+      $(self.$el).pgMakeVisible('backform-tab');
+
       self.delegateEvents();
 
       return this;
