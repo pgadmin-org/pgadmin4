@@ -362,19 +362,22 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
         m_toolBtnBack = new QToolButton(m_widget);
         m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
         m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
-        m_toolBtnBack->setText(PGA_BTN_BACK);
+        m_toolBtnBack->setIcon(QIcon(":/back.png"));
+        m_toolBtnBack->setToolTip(tr("Go back"));
         m_toolBtnBack->setDisabled(true);
 
         m_toolBtnForward = new QToolButton(m_widget);
         m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
         m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
-        m_toolBtnForward->setText(PGA_BTN_FORWARD);
+        m_toolBtnForward->setIcon(QIcon(":/forward.png"));
+        m_toolBtnForward->setToolTip(tr("Go forward"));
         m_toolBtnForward->setDisabled(true);
 
         QPushButton *m_btnClose = new QPushButton(m_widget);
-        m_btnClose->setText(PGA_BTN_CLOSE);
         m_btnClose->setFixedHeight(PGA_BTN_SIZE);
         m_btnClose->setFixedWidth(PGA_BTN_SIZE);
+        m_btnClose->setIcon(QIcon(":/close.png"));
+        m_btnClose->setToolTip(tr("Close tab"));
 
         m_horizontalLayout = new QHBoxLayout(m_widget);
         m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pgAdmin4.ico</file>
+        <file>back.png</file>
+        <file>forward.png</file>
+        <file>close.png</file>
+    </qresource>
+</RCC>

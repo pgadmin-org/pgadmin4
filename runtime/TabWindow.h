@@ -15,17 +15,6 @@
 #include "pgAdmin4.h"
 #include "WebViewWindow.h"
 
-// Define button characters
-#ifdef _WIN32
-const QString PGA_BTN_FORWARD = QString(">");
-const QString PGA_BTN_BACK = QString("<");
-const QString PGA_BTN_CLOSE = QString("x");
-#else
-const QString PGA_BTN_FORWARD = QString("\u2192");
-const QString PGA_BTN_BACK = QString("\u2190");
-const QString PGA_BTN_CLOSE = QString("\u2715");
-#endif
-
 // Define button sizes
 #ifdef _WIN32
 const int PGA_BTN_SIZE = 18;

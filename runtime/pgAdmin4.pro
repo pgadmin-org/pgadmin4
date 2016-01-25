@@ -42,3 +42,6 @@ QMAKE_INFO_PLIST = Info.plist
 
 cache()
 
+RESOURCES += \
+    pgadmin4.qrc
+

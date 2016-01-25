@@ -133,6 +133,7 @@ int main(int argc, char * argv[])
     // Create & show the main window
     BrowserWindow browserWindow(appServerUrl);
     browserWindow.setWindowTitle(PGA_APP_NAME);
+    browserWindow.setWindowIcon(QIcon(":/pgAdmin4.ico"));
     browserWindow.show();
 
     // Go!

@@ -97,7 +97,7 @@ void TabWindow::enableDisableToolButton(const int &index)
                 toolBtnPtr = dynamic_cast<QToolButton*>(widgetPtr);
                 if (webviewPtr != NULL && toolBtnPtr != NULL)
                 {
-                    if (!QString::compare(toolBtnPtr->text(), PGA_BTN_BACK, Qt::CaseInsensitive))
+                    if (!QString::compare(toolBtnPtr->toolTip(), tr("Go back"), Qt::CaseInsensitive))
                     {
                         if (webviewPtr->page()->history()->canGoBack())
                             toolBtnPtr->setDisabled(false);
@@ -105,7 +105,7 @@ void TabWindow::enableDisableToolButton(const int &index)
                             toolBtnPtr->setDisabled(true);
                     }
 
-                    if (!QString::compare(toolBtnPtr->text(), PGA_BTN_FORWARD, Qt::CaseInsensitive))
+                    if (!QString::compare(toolBtnPtr->toolTip(), tr("Go forward"), Qt::CaseInsensitive))
                     {
                         if (webviewPtr->page()->history()->canGoForward())
                             toolBtnPtr->setDisabled(false);
