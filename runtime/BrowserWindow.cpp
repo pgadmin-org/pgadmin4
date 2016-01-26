@@ -231,6 +231,12 @@ void BrowserWindow::closetabs()
     QPushButton *btn = NULL;
     int totalTabs = m_tabWidget->count();
 
+    // If QTabWidget contains only one tab then hide the TabBar window
+    if ((totalTabs - 1) < 2)
+	m_tabWidget->tabBar()->setVisible(false);
+    else
+	m_tabWidget->tabBar()->setVisible(true);
+
     QObject *senderPtr = QObject::sender();
     if (senderPtr != NULL)
     {
@@ -399,6 +405,7 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
 
         m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
         m_tabWidget->addTab(m_addNewTab, QString());
+        m_tabWidget->tabBar()->setVisible(true);
         m_tabWidget->setCurrentIndex((m_tabWidget->count() - 1));
 
         // Set the back and forward button on tab

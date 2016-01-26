@@ -65,7 +65,7 @@ TabWindow::TabWindow(QWidget *parent) :
 #endif
 
     // Hide the default tab
-    tabBar()->setAutoHide(true);
+    tabBar()->setVisible(false);
 }
 
 // Hide the close button of given index displayed on right side of tab
