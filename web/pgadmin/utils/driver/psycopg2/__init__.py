@@ -372,7 +372,7 @@ Attempt to reconnect it failed with the below error:
         import copy
         # Get Resultset Column Name, Type and size
         columns = cur.description and [
-                copy.deepcopy(desc.__dict__) for desc in cur.description
+                copy.deepcopy(desc._asdict()) for desc in cur.description
                 ] or []
 
         rows = []
@@ -414,7 +414,7 @@ Attempt to reconnect it failed with the below error:
         import copy
         # Get Resultset Column Name, Type and size
         columns = cur.description and [
-                copy.deepcopy(desc.__dict__) for desc in cur.description
+                copy.deepcopy(desc._asdict()) for desc in cur.description
                 ] or []
 
         rows = []

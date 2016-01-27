@@ -79,8 +79,8 @@ class PgAdmin(Flask):
         for module in self.submodules:
             for key, value in module.menu_items.items():
                 menu_items[key].extend(value)
-        menu_items = {key: sorted(values, key=attrgetter('priority'))
-                      for key, values in menu_items.items()}
+        menu_items = dict((key, sorted(value, key=attrgetter('priority')))
+                          for key, value in menu_items.items())
         return menu_items
 
 

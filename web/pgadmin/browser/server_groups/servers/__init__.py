@@ -325,9 +325,9 @@ class ServerNode(PGChildNodeView):
         not_allowed = {}
 
         if conn.connected():
-            for arg in {
+            for arg in (
                     'host', 'port', 'db', 'username', 'sslmode', 'role'
-                    }:
+                    ):
                 if arg in data:
                     return forbidden(
                             errormsg=gettext(
@@ -660,7 +660,6 @@ class ServerNode(PGChildNodeView):
 
             current_app.logger.info('Connection Established for server: \
                 %s - %s' % (server.id, server.name))
-
             return make_json_response(
                         success=1,
                         info=gettext("Server Connected."),
