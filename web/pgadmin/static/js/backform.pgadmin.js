@@ -1298,6 +1298,7 @@
             canAdd: (disabled ? false : evalASFunc(s.canAdd)),
             canEdit: (disabled ? false : evalASFunc(s.canEdit)),
             canDelete: (disabled ? false : evalASFunc(s.canDelete)),
+            transform: evalASFunc(s.transform),
             mode: mode,
             control: control,
             cell: cell,
