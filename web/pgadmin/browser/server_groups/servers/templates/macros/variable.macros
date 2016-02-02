@@ -1,6 +1,22 @@
+{####################################################}
+{# This will be specific macro for Role objects     #}
+{####################################################}
 {% macro APPLY(conn, database, role, param, value) -%}
-ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %} SET {{ conn|qtIdent(param) }} TO {{ value|qtLiteral }};
+ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+    SET {{ conn|qtIdent(param) }} TO {{ value|qtLiteral }};
 {%- endmacro %}
 {% macro RESET(conn, database, role, param) -%}
-ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %} RESET {{ conn|qtIdent(param) }};
+ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+    RESET {{ conn|qtIdent(param) }};
+{%- endmacro %}
+{################################################}
+{# This will be generic macro for other objects #}
+{################################################}
+{% macro SET(conn, object_type, object_name, v_name, value) -%}
+ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+    SET ({{ conn|qtIdent(v_name) }}={{ value|qtLiteral }});
+{%- endmacro %}
+{% macro UNSET(conn, object_type, object_name, v_name) -%}
+ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+    RESET ({{ conn|qtIdent(v_name) }});
 {%- endmacro %}
