@@ -794,7 +794,7 @@ function(_, pgAdmin, $, Backbone) {
            * If the collection was already invalid, we don't need to inform the
            * parent, or raise the event for the invalid status.
            */
-          if (!isAlreadyInvalid && !_.isUndefined(msg)) {
+          if (!isAlreadyInvalid && !_.isUndefined(msg) && !_.isNull(msg)) {
             if (self.handler) {
               self.handler.trigger('pgadmin-session:model:invalid', msg, self);
             } else {
@@ -815,7 +815,7 @@ function(_, pgAdmin, $, Backbone) {
          * If the collection was already invalid, we don't need to inform the
          * parent, or raise the event for the invalid status.
          */
-        if (!isAlreadyInvalid && !_.isUndefined(msg)) {
+        if (!isAlreadyInvalid && !_.isUndefined(msg) && !_.isNull(msg)) {
           if (self.handler) {
             self.handler.trigger('pgadmin-session:model:invalid', msg, self);
           } else {
