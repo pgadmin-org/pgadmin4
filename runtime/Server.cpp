@@ -83,7 +83,8 @@ bool Server::Init()
 
     // Find the webapp
     QStringList paths;
-    paths.append("../web/"); // Windows/Linux source tree
+    paths.append("../web/"); // Linux source tree
+    paths.append("../../web/"); // Windows source tree
     paths.append("../../../../web/"); // Mac source tree (in the app bundle)
     paths.append(settings.value("ApplicationPath").toString()); // System configured value
     paths.append(""); // Should be last!
@@ -122,8 +123,16 @@ void Server::run()
     // Set the port number
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
 
-    if (PyRun_SimpleFile(cp, m_appfile.toUtf8().data()) != 0)
+#ifdef PYTHON2
+    PyObject* PyFileObject = PyFile_FromString(m_appfile.toUtf8().data(), (char *)"r");
+    if (PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile.toUtf8().data()) != 0)
         setError(tr("Failed to launch the application server, server thread exiting."));
+#else
+    int fd = fileno(cp);
+    PyObject* PyFileObject = PyFile_FromFd(fd, m_appfile.toUtf8().data(), (char *)"r", -1, NULL, NULL,NULL,1);
+    if (PyRun_SimpleFile(fdopen(PyObject_AsFileDescriptor(PyFileObject),"r"), m_appfile.toUtf8().data()) != 0)
+        setError(tr("Failed to launch the application server, server thread exiting."));
+#endif
 
     fclose(cp);
 }

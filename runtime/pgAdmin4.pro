@@ -7,20 +7,52 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += webkit network 
 }
 
-PYTHON_CONFIG=python3-config
+win32 {
+    message(Building for Windows...)
 
-# Find and configure Python
-!system(which python3-config > /dev/null 2>&1) {
-    !system(which python-config > /dev/null 2>&1) {
-        error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
-    } else {
-	PYTHON_CONFIG=python-config
-	DEFINES += PYTHON2
+    # Read the PYTHON_HOME and PYTHON_VERSION system environment variables.
+    PY_HOME = $$(PYTHON_HOME)
+    PY_VERSION = $$(PYTHON_VERSION)
+
+    isEmpty(PY_HOME) {
+        error(Please define the PYTHON_HOME variable in the system environment.)
+    }
+    else {
+        isEmpty(PY_VERSION) {
+            error(Please define the PYTHON_VERSION variable in the system environment.)
+        }
+        else {
+            INCLUDEPATH = $$PY_HOME\include
+            LIBS += -L"$$PY_HOME\libs" -lpython$$PY_VERSION
+            PY2_VERSION = $$find(PY_VERSION, "^2")
+
+            # Set the PYTHON2 macro if appropriate
+            PY2_VERSION = $$find(PY_VERSION, "^2")
+            count( PY2_VERSION, 1) {
+                message(Python version 2.x detected.)
+                DEFINES += PYTHON2
+            }
+        }
     }
 }
+else {
+    message(Building for Linux/Mac...)
 
-QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
-QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
+    PYTHON_CONFIG=python3-config
+
+    # Find and configure Python
+    !system(which python3-config > /dev/null 2>&1) {
+        !system(which python-config > /dev/null 2>&1) {
+            error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
+        } else {
+	    PYTHON_CONFIG=python-config
+	    DEFINES += PYTHON2
+        }
+    }
+
+    QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
+    QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
+}
 
 # Source code
 HEADERS     =   BrowserWindow.h \
