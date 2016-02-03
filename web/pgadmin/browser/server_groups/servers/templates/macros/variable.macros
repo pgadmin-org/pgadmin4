@@ -12,11 +12,13 @@ ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABA
 {################################################}
 {# This will be generic macro for other objects #}
 {################################################}
-{% macro SET(conn, object_type, object_name, v_name, value) -%}
+{% macro SET(conn, object_type, object_name, options) -%}
 ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
-    SET ({{ conn|qtIdent(v_name) }}={{ value|qtLiteral }});
+    SET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}={{ opt.value|qtLiteral }}{% endfor %});
 {%- endmacro %}
-{% macro UNSET(conn, object_type, object_name, v_name) -%}
+{% macro UNSET(conn, object_type, object_name, options) -%}
 ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
-    RESET ({{ conn|qtIdent(v_name) }});
+    RESET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}{% endfor %});
 {%- endmacro %}
