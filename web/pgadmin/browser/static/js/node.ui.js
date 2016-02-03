@@ -8,11 +8,11 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
   var StringOrJSONFormatter = function() {};
   _.extend(StringOrJSONFormatter.prototype, {
     fromRaw: function(rawData, model) {
-      return JSON.stringify(rawData);
+      return JSON.stringify(_.escape(rawData));
     },
     toRaw: function(formattedData, model) {
       if (typeof(formattedData) == 'string') {
-        return formattedData;
+        return _.unescape(formattedData);
       }
       return JSON.parse(formattedData);
     }
