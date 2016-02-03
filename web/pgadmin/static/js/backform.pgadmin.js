@@ -540,8 +540,8 @@
   });
 
   var generateGridColumnsFromModel = Backform.generateGridColumnsFromModel =
-    function(node_info, m, type, cols) {
-      var groups = Backform.generateViewSchema(node_info, m, type, null, true),
+    function(node_info, m, type, cols, node) {
+      var groups = Backform.generateViewSchema(node_info, m, type, node, true, true),
           schema = [],
           columns = [],
           func,
@@ -979,7 +979,7 @@
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
-            data.node_info, subnode, this.field.get('mode'), data.columns
+            data.node_info, subnode, this.field.get('mode'), data.columns, data.schema_node
             ), self = this,
           pgBrowser = window.pgAdmin.Browser;
 
