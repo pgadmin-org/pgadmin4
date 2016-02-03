@@ -40,8 +40,16 @@ $ make
 On Linux, an executable called 'pgAdmin4' will be built, and on Mac OS X, an
 app bundle called pgAdmin4.app will be created.
 
-At the time of writing, no attempt has been made to build the runtime on a
-Windows system, though in theory it should work.
+To build the runtime on a Windows system, export PYTHON_HOME and PYTHON_VERSION 
+variables in the System environment. Specify the PYTHON_VERSION with the major 
+and minor number. Do not specify micro level version.
+For example, given a Python version of A.B.C; A - Major number, B - Minor number, 
+C - Micro level (Bug fix releases).
+
+If Python version is 2.7.2 than specify PYTHON_VERSION=27
+
+ e.g. PYTHON_HOME=C:\Python27\
+      PYTHON_VERSION=27
 
 Support
 -------

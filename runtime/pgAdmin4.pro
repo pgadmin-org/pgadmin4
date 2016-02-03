@@ -24,7 +24,6 @@ win32 {
         else {
             INCLUDEPATH = $$PY_HOME\include
             LIBS += -L"$$PY_HOME\libs" -lpython$$PY_VERSION
-            PY2_VERSION = $$find(PY_VERSION, "^2")
 
             # Set the PYTHON2 macro if appropriate
             PY2_VERSION = $$find(PY_VERSION, "^2")
