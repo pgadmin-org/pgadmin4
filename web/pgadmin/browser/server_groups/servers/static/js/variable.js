@@ -31,6 +31,53 @@
   }
 } (this, function(root, _, $, Backbone, Backform, Alertify, pgAdmin, pgNode) {
 
+  /*
+   * cellFunction for variable control.
+   * This function returns cell class depending on vartype.
+   */
+  var cellFunction = function(model) {
+    var self = this,
+      name = model.get("name"),
+      availVariables = self.get('availVariables'),
+      variable = availVariables[name];
+
+    switch(variable && variable.vartype) {
+      case "bool":
+        /*
+         * bool cell and variable can not be stateless (i.e undefined).
+         * It should be either true or false.
+         */
+        if (_.isUndefined(model.get("value"))) {
+          model.set("value", false);
+        }
+
+        return Backgrid.Extension.SwitchCell;
+      break;
+      case "enum":
+        var options = [],
+            enumVals = variable.enumvals;
+
+        _.each(enumVals, function(enumVal) {
+          options.push([enumVal, enumVal]);
+        });
+
+        return Backgrid.Extension.Select2Cell.extend({optionValues: options});
+      break;
+      case "integer":
+        return Backgrid.IntegerCell;
+        break;
+      case "real":
+        return Backgrid.NumberCell.extend({decimals: 0});
+      break;
+      case "string":
+        return Backgrid.StringCell;
+      break;
+      default:
+        return Backgrid.Cell;
+      break;
+    }
+  }
+
   /**
    *  VariableModel used to represent configuration parameters (variables tab)
    *  for database objects.
@@ -46,8 +93,8 @@
     schema: [
       {id: 'name', label:'Name', type:'text', editable: false, cellHeaderClasses: 'width_percent_30'},
       {
-        id: 'value', label:'Value', type: 'text', cell: 'dynamic-variable',
-        editable: true, cellHeaderClasses: 'width_percent_50'
+        id: 'value', label:'Value', type: 'text', editable: true,
+        cellFunction: cellFunction, cellHeaderClasses: 'width_percent_50'
       },
       {id: 'database', label:'Database', type: 'text', editable: false},
       {id: 'role', label:'Role', type: 'text', editable: false}
@@ -82,102 +129,6 @@
       }
 
       return null;
-    }
-  });
-
-  /*
-   * Dynamic Variable cell. Used for variable data type column in Variables tab.
-   * Behaviour of cell depends on variable data type.
-   */
-  var DynamicVariableCell = Backgrid.Extension.DynamicVariableCell = Backgrid.Cell.extend({
-    /*
-     * Mapping of postgres data type to backgrid cell type.
-     */
-    variableCellMapper: {
-      "bool":Backgrid.Extension.SwitchCell,
-      "enum":Backgrid.Extension.Select2Cell,
-      "string":Backgrid.Cell,
-      "integer":Backgrid.IntegerCell,
-      "real":Backgrid.NumberCell
-    },
-    initialize: function (opts) {
-
-      var self = this,
-          name = opts.model.get("name");
-      self.availVariables = opts.column.get('availVariables');
-
-      var variable = (self.availVariables[name]),
-          cell = self.variableCellMapper[variable && variable.vartype] || Backgrid.Cell;
-
-      /*
-       * Set properties for dynamic cell.
-       */
-      _.each(cell.prototype, function(v,k) {
-        self[k] = v;
-      });
-
-      DynamicVariableCell.__super__.initialize.apply(self, arguments);
-
-      switch(variable && variable.vartype) {
-        case "bool":
-          // There are no specific properties for BooleanCell.
-          break;
-
-        case "enum":
-          var options = [],
-              name = self.model.get("name"),
-              enumVals = variable.enumvals;
-
-          _.each(enumVals, function(enumVal) {
-            options.push([enumVal, enumVal]);
-          });
-
-          self.optionValues = options;
-          self.multiple = cell.prototype.multiple;
-          self.delimiter = cell.prototype.delimiter;
-
-          self.listenTo(
-              self.model, "backgrid:edit",
-              function (model, column, cell, editor) {
-                if (column.get("name") == self.column.get("name")) {
-                  editor.setOptionValues(self.optionValues);
-                  editor.setMultiple(self.multiple);
-                }
-              });
-          break;
-
-        case "integer":
-
-          self.decimals = 0;
-          self.decimalSeparator = cell.prototype.decimalSeparator;
-          self.orderSeparator = cell.prototype.orderSeparator;
-          var formatter = self.formatter;
-
-          formatter.decimals = self.decimals;
-          formatter.decimalSeparator = self.decimalSeparator;
-          formatter.orderSeparator = self.orderSeparator;
-
-          break;
-
-        case "real":
-
-          self.decimals = cell.prototype.decimals;
-          self.decimalSeparator = cell.prototype.decimalSeparator;
-          self.orderSeparator = cell.prototype.orderSeparator;
-
-          var formatter = self.formatter;
-
-          formatter.decimals = 0;
-          formatter.decimalSeparator = self.decimalSeparator;
-          formatter.orderSeparator = self.orderSeparator;
-
-          break;
-
-        case "string":
-        default:
-          // There are no specific properties for StringCell and Cell.
-          break;
-      }
     }
   });
 

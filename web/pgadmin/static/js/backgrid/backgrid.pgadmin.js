@@ -22,6 +22,49 @@
     factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
   }
 } (this, function(root, _, $, Backbone, Backform, Alertify) {
+
+  /*
+     * Add mechanism in backgrid to render different types of cells in
+     * same column;
+   */
+
+  // Add new property cellFunction in Backgrid.Column.
+  _.extend(Backgrid.Column.prototype.defaults, { cellFunction: undefined });
+
+  _.extend(Backgrid.Row.prototype, {
+    makeCell: function (column) {
+      return new (this.getCell(column))({
+        column: column,
+        model: this.model
+      });
+    },
+    /*
+     * getCell function will check and execute user given cellFunction to get
+     * appropriate cell class for current cell being rendered.
+     * User provided cellFunction must return valid cell class.
+     * cellFunction will be called with context (this) as column and model as
+     * argument.
+     */
+    getCell: function (column) {
+      var cf = column.get("cellFunction");
+      if (_.isFunction(cf)){
+        var cell = cf.apply(column, [this.model]);
+        try {
+          return Backgrid.resolveNameToClass(cell, "Cell");
+        } catch (e) {
+          if (e instanceof ReferenceError) {
+            // Fallback to column cell.
+            return column.get("cell");
+          } else {
+            throw e; // Let other exceptions bubble up
+          }
+        }
+      } else {
+        return column.get("cell");
+      }
+    }
+  });
+
   var ObjectCellEditor = Backgrid.Extension.ObjectCellEditor = Backgrid.CellEditor.extend({
     modalTemplate: _.template([
       '<div class="subnode-dialog" tabindex="1">',
