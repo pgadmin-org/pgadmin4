@@ -636,7 +636,8 @@ class DatabaseView(NodeView):
             if arg not in data:
                 return " -- definition incomplete"
         # Privileges
-        data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
+        if 'datacl' in data:
+            data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
 
         # Default privileges
         for key in ['deftblacl', 'defseqacl', 'deffuncacl', 'deftypeacl']:
@@ -692,39 +693,36 @@ class DatabaseView(NodeView):
         """
         This function will generate sql for sql panel
         """
-        try:
-            SQL = render_template("/".join([self.template_path, 'properties.sql']), did=did)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path, 'properties.sql']), did=did)
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            SQL = render_template("/".join([self.template_path, 'acl.sql']), did=did)
-            status, dataclres = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            res = self.formatdbacl(res, dataclres['rows'])
+        SQL = render_template("/".join([self.template_path, 'acl.sql']), did=did)
+        status, dataclres = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        res = self.formatdbacl(res, dataclres['rows'])
 
-            SQL = render_template("/".join([self.template_path, 'defacl.sql']), did=did)
-            status, defaclres = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path, 'defacl.sql']), did=did)
+        status, defaclres = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            res = self.formatdbacl(res, defaclres['rows'])
+        res = self.formatdbacl(res, defaclres['rows'])
 
-            result = res['rows'][0]
+        result = res['rows'][0]
 
-            SQL = render_template("/".join([self.template_path, 'get_variables.sql']), did=did)
-            status, res1 = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res1)
+        SQL = render_template("/".join([self.template_path, 'get_variables.sql']), did=did)
+        status, res1 = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res1)
 
-            frmtd_reslt = self.formatter(result, res1)
-            result.update(frmtd_reslt)
+        frmtd_reslt = self.formatter(result, res1)
+        result.update(frmtd_reslt)
 
-            SQL = self.getNewSQL(gid, sid, result, did)
-            return ajax_response(response=SQL)
+        SQL = self.getNewSQL(gid, sid, result, did)
 
-        except Exception as e:
-            return ajax_response(response=str(e))
+        return ajax_response(response=SQL)
 
 DatabaseView.register_node_view(blueprint)

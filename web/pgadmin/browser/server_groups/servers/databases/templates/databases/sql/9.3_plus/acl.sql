@@ -1,4 +1,4 @@
-SELECT 'datacl' as deftype, COALESCE(gt.rolname, 'public') grantee, g.rolname grantor, array_agg(privilege_type) as privileges, array_agg(is_grantable) as grantable
+SELECT 'datacl' AS deftype, COALESCE(gt.rolname, 'public') AS grantee, g.rolname AS grantor, array_agg(privilege_type) AS privileges, array_agg(is_grantable) AS grantable
 FROM
 	(SELECT
 		d.grantee, d.grantor, d.is_grantable,
