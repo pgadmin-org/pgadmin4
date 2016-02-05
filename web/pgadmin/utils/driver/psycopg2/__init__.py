@@ -875,7 +875,7 @@ class Driver(BaseDriver):
             return False
 
         # COL_NAME_KEYWORD
-        if forTypes and category == 3:
+        if forTypes and category == 1:
             return False
 
         return True

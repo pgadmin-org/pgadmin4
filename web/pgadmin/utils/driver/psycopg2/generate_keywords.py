@@ -42,7 +42,7 @@ if __name__ == '__main__':
 		pattern = re.compile(r'"([^"]+)",\s*[^,]*\s*,\s*(.*)$')
 		keyword_types = [
 				u'UNRESERVED_KEYWORD', u'COL_NAME_KEYWORD',
-				u'TYPE_FUNC_NAME_KEYWORD',	u'RESERVED_KEYWORD'
+				u'TYPE_FUNC_NAME_KEYWORD', u'RESERVED_KEYWORD'
 				]
 
 		for line in ins:
