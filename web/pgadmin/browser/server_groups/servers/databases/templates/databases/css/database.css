@@ -1,0 +1,12 @@
+.pg-icon-database {
+  background-image: url('{{ url_for('NODE-database.static', filename='img/database.png') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-database-not-connected {
+  background-image: url('{{ url_for('NODE-database.static', filename='img/databasebad.png') }}') !important;
+  border-radius: 10px
+}
