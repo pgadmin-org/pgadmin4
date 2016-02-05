@@ -53,7 +53,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         return scripts
 
     def generate_browser_node(
-            self, node_id, label, icon, **kwargs
+            self, node_id, parent_id, label, icon, **kwargs
             ):
         obj = {
                 "id": "%s/%s" % (self.node_type, node_id),
@@ -62,20 +62,22 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
                 "inode": self.node_inode,
                 "_type": self.node_type,
                 "_id": node_id,
+                "_pid": parent_id,
                 "module": 'pgadmin.node.%s' % self.node_type
                 }
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
         return obj
 
-    def generate_browser_collection_node(self, sid, **kwargs):
+    def generate_browser_collection_node(self, parent_id, **kwargs):
         obj = {
-                "id": "coll-%s/%d" % (self.node_type, sid),
+                "id": "coll-%s/%d" % (self.node_type, parent_id),
                 "label": self.collection_label,
                 "icon": self.collection_icon,
                 "inode": True,
                 "_type": 'coll-%s' % (self.node_type),
-                "_id": sid,
+                "_id": parent_id,
+                "_pid": parent_id,
                 "module": 'pgadmin.node.%s' % self.node_type
                 }
 

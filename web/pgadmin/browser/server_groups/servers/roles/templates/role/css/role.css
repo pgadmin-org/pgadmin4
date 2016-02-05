@@ -1,0 +1,27 @@
+.icon-role {
+  background-image: url('{{ url_for('NODE-role.static', filename='img/role.png')}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+ height: 1.3em;
+}
+
+.icon-group {
+  background-image: url('{{ url_for('NODE-role.static', filename='img/group.png')}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.pgadmin-node-select option[node="role"] {
+  background-image: url('{{ url_for('NODE-role.static', filename='img/role.png')}}') !important;
+  background-repeat: no-repeat;
+  background-position: center left;
+}
+
+.pgadmin-node-select option[node="group"] {
+  background-image: url('{{ url_for('NODE-role.static', filename='img/group.png')}}') !important;
+  background-repeat: no-repeat;
+  background-position: center left;
+}

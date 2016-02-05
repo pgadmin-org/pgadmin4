@@ -32,7 +32,7 @@ class ServerGroupModule(BrowserPluginModule):
         groups = ServerGroup.query.filter_by(user_id=current_user.id)
         for group in groups:
             yield self.generate_browser_node(
-                    "%d" % (group.id),
+                    "%d" % (group.id), None,
                     group.name,
                     "icon-%s" % self.node_type,
                     True,
@@ -184,7 +184,7 @@ class ServerGroupView(NodeView):
                 
                 return jsonify(
                         node=self.blueprint.generate_browser_node(
-                            "%d" % (sg.id),
+                            "%d" % (sg.id), None,
                             sg.name,
                             "icon-%s" % self.node_type,
                             True,
@@ -241,7 +241,7 @@ class ServerGroupView(NodeView):
         for group in groups:
             nodes.append(
                     self.generate_browser_node(
-                        "%d" % (group.id),
+                        "%d" % (group.id), None,
                         group.name,
                         "icon-%s" % self.node_type,
                         True,

@@ -201,7 +201,7 @@ class BrowserPluginModule(PgAdminModule):
         return scripts
 
     def generate_browser_node(
-            self, node_id, label, icon, inode, node_type, **kwargs
+            self, node_id, parent_id, label, icon, inode, node_type, **kwargs
             ):
         obj = {
                 "id": "%s/%s" % (node_type, node_id),
@@ -210,6 +210,7 @@ class BrowserPluginModule(PgAdminModule):
                 "inode": inode,
                 "_type": node_type,
                 "_id": node_id,
+                "_pid": parent_id,
                 "module": 'pgadmin.node.%s' % node_type
                 }
         for key in kwargs:

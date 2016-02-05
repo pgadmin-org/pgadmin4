@@ -218,7 +218,12 @@ function(_, pgAdmin, $, Backbone) {
       set: function(key, val, options) {
         var opts = _.isObject(key) ? val : options;
 
+        this._changing = true;
+        this._previousAttributes = _.clone(this.attributes);
+        this.changed = {};
+
         var res = Backbone.Model.prototype.set.call(this, key, val, options);
+        this._changing = false;
 
         if ((opts&& opts.intenal) || !this.trackChanges) {
           return true;
@@ -233,7 +238,7 @@ function(_, pgAdmin, $, Backbone) {
               return;
             }
             attrs[k] = v;
-            if (self.origSessAttrs[k] == v) {
+            if (_.isEqual(self.origSessAttrs[k], v)) {
               delete self.sessAttrs[k];
             } else {
               self.sessAttrs[k] = v;
@@ -248,7 +253,9 @@ function(_, pgAdmin, $, Backbone) {
           }
 
           self.trigger('pgadmin-session:set', self, attrs);
-
+          if (!options || !options.silent) {
+            self.trigger('change', self, options);
+          }
           if ('validate' in self && typeof(self['validate']) === 'function') {
 
             var msg = self.validate(_.keys(attrs));
@@ -770,17 +777,15 @@ function(_, pgAdmin, $, Backbone) {
             isAlreadyInvalid = (_.size(self.sessAttrs['invalid']) != 0),
             idx = self.objFindInSession(obj, 'deleted');
 
-        if ('validate' in obj && typeof(obj.validate) === 'function') {
-          msg = obj.validate();
-
-          if (msg) {
-            self.sessAttrs['invalid'].push(obj);
-          }
-        }
-
         // Hmm.. - it was originally deleted from this collection, we should
         // remove it from the 'deleted' list.
         if (idx >= 0) {
+          var origObj = self.sessAttrs['deleted'][idx];
+
+          obj.origSessAttrs = _.clone(origObj.origSessAttrs);
+          obj.attributes = _.extend(obj.attributes, origObj.attributes);
+          obj.sessAttrs = _.clone(origObj.sessAttrs);
+
           self.sessAttrs['deleted'].splice(idx, 1);
 
           // It has been changed originally!
@@ -789,6 +794,14 @@ function(_, pgAdmin, $, Backbone) {
           }
 
           (self.handler || self).trigger('pgadmin-session:added', self, obj);
+
+          if ('validate' in obj && typeof(obj.validate) === 'function') {
+            msg = obj.validate();
+
+            if (msg) {
+              self.sessAttrs['invalid'].push(obj);
+            }
+          }
 
           /*
            * If the collection was already invalid, we don't need to inform the
@@ -803,6 +816,13 @@ function(_, pgAdmin, $, Backbone) {
           }
 
           return true;
+        }
+        if ('validate' in obj && typeof(obj.validate) === 'function') {
+          msg = obj.validate();
+
+          if (msg) {
+            self.sessAttrs['invalid'].push(obj);
+          }
         }
         self.sessAttrs['added'].push(obj);
 
@@ -840,6 +860,7 @@ function(_, pgAdmin, $, Backbone) {
         }
 
         idx = self.objFindInSession(obj, 'added');
+
         // Hmm - it was newly added, we can safely remove it.
         if (idx >= 0) {
           self.sessAttrs['added'].splice(idx, 1);

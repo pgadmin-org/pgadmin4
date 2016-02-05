@@ -74,6 +74,7 @@ class ServerModule(sg.ServerGroupPluginModule):
 
             yield self.generate_browser_node(
                     "%d" % (server.id),
+                    gid,
                     server.name,
                     "icon-server-not-connected" if not connected else
                     "icon-{0}".format(manager.server_type),
@@ -196,6 +197,7 @@ class ServerNode(PGChildNodeView):
             res.append(
                 self.blueprint.generate_browser_node(
                     "%d" % (server.id),
+                    gid,
                     server.name,
                     "icon-server-not-connected" if not connected else
                     "icon-{0}".format(manager.server_type),
@@ -236,6 +238,7 @@ class ServerNode(PGChildNodeView):
         return make_json_response(
                 result=self.blueprint.generate_browser_node(
                     "%d" % (server.id),
+                    gid,
                     server.name,
                     "icon-server-not-connected" if not connected else
                     "icon-{0}".format(manager.server_type),
@@ -490,7 +493,7 @@ class ServerNode(PGChildNodeView):
 
             return jsonify(
                     node=self.blueprint.generate_browser_node(
-                        "%d" % (server.id),
+                        "%d" % (server.id), gid,
                         server.name,
                         "icon-server-not-connected",
                         True,
