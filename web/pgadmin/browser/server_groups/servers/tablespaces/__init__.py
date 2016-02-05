@@ -46,6 +46,10 @@ class TablespaceModule(CollectionNodeModule):
         """
         return servers.ServerModule.NODE_TYPE
 
+    @property
+    def node_inode(self):
+        return False
+
 
 blueprint = TablespaceModule(__name__)
 
