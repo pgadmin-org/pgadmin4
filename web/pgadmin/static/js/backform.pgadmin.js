@@ -182,7 +182,10 @@
 
       this.clearInvalid();
 
-      this.$el.find(':input').not('button').each(function(ix, el) {
+      /*
+      * Find input which have name attribute.
+      */
+      this.$el.find(':input[name]').not('button').each(function(ix, el) {
         var attrArr = $(el).attr('name').split('.'),
         name = attrArr.shift(),
         path = attrArr.join('.'),
@@ -245,6 +248,22 @@
     "change input": "onChange",
     "blur input": "onChange",
     "focus input": "clearInvalid"
+  };
+
+  /*
+   * Override the textarea control events in order to resolve the issue related
+   * to not updating the value in model on certain browsers in few situations
+   * like copy/paste, deletion using backspace.
+   *
+   * Reference:
+   * http://stackoverflow.com/questions/11338592/how-can-i-bind-to-the-change-event-of-a-textarea-in-jquery
+   */
+  Backform.TextareaControl.prototype.events = {
+    "change textarea": "onChange",
+    "keyup textarea": "onChange",
+    "paste textarea": "onChange",
+    "selectionchange textarea": "onChange",
+    "focus textarea": "clearInvalid"
   };
 
   /*
@@ -1154,9 +1173,9 @@
     }
 });
 
-/*
- * Integer input Control functionality just like backgrid
- */
+  /*
+   * Integer input Control functionality just like backgrid
+   */
   var IntegerControl = Backform.IntegerControl = Backform.InputControl.extend({
     defaults: {
       type: "number",
@@ -1407,6 +1426,69 @@
     legendClass: '',
     contentClass: '',
     collapse: false
+  });
+
+  /*
+   * Control For Code Mirror SQL text area.
+   */
+  var SqlFieldControl = Backform.SqlFieldControl = Backform.TextareaControl.extend({
+
+    defaults: {
+      label: "",
+      extraClasses: [],
+      helpMessage: null,
+      maxlength: 4096
+    },
+
+    /*
+     * Initialize the SQL Field control properly
+     */
+    initialize: function(o) {
+      Backform.TextareaControl.prototype.initialize.apply(this, arguments);
+
+      // There is an issue with the Code Mirror SQL.
+      //
+      // It does not initialize the code mirror object completely when the
+      // referenced textarea is hidden (not visible), hence - we need to
+      // refresh the code mirror object on 'pg-property-tab-changed' event to
+      // make it work properly.
+      this.listenTo(this.model, 'pg-property-tab-changed', this.refreshTextArea);
+    },
+
+    getValueFromDOM: function() {
+      return this.sqlField.getValue();
+    },
+
+    render: function() {
+      // Use the Backform TextareaControl's render function
+      Backform.TextareaControl.prototype.render.apply(this, arguments);
+      var self = this,
+          sqlField = CodeMirror.fromTextArea(
+            (self.$el.find("textarea")[0]), {
+            lineNumbers: true,
+            mode: "text/x-sql",
+            readOnly: false
+          });
+
+      self.sqlField = sqlField;
+
+      // Refresh SQL Field to refresh the control lazily after it renders
+      setTimeout(function() {
+        self.refreshTextArea.apply(self);
+      }, 100);
+
+      return self;
+    },
+
+    refreshTextArea: function() {
+      this.sqlField.refresh();
+    },
+
+    remove: function() {
+      this.stopListening(this.model, "pg-property-tab-changed", this.refreshTextArea);
+
+      Backform.TextareaControl.prototype.remove.apply(this, arguments);
+    }
   });
 
   return Backform;
