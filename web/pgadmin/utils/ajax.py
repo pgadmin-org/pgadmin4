@@ -12,6 +12,18 @@
 from flask import Response
 from flask.ext.babel import gettext as _
 import simplejson as json
+import datetime
+import decimal
+
+
+class DataTypeJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+
+        return json.JSONEncoder.default(self, obj)
 
 
 def make_json_response(success=1, errormsg='', info='', result=None,
@@ -26,7 +38,7 @@ def make_json_response(success=1, errormsg='', info='', result=None,
     doc['data'] = data
 
     return Response(
-            response=json.dumps(doc),
+            response=json.dumps(doc, cls=DataTypeJSONEncoder),
             status=status,
             mimetype="text/json"
             )
@@ -35,7 +47,7 @@ def make_json_response(success=1, errormsg='', info='', result=None,
 def make_response(response=None, status=200):
     """Create a JSON response handled by the backbone models."""
     return Response(
-            response=json.dumps(response),
+            response=json.dumps(response, cls=DataTypeJSONEncoder),
             status=status,
             mimetype="text/json"
             )
