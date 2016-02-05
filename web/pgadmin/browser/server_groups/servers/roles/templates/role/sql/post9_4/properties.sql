@@ -7,7 +7,7 @@ SELECT
 		FROM
 			(SELECT * FROM pg_auth_members WHERE member = r.oid) am
 			LEFT JOIN pg_catalog.pg_roles rm ON (rm.oid = am.roleid)
-	) rolmembership,
+	) AS rolmembership,
 	(SELECT array_agg(provider || '=' || label) FROM pg_shseclabel sl1 WHERE sl1.objoid=r.oid) AS seclabels
 FROM
 	{{ role_tbl }} r

@@ -1,5 +1,5 @@
 SELECT
-	array_to_string(array_agg(sql), E'\n\n')
+	array_to_string(array_agg(sql), E'\n\n') AS sql
 FROM
 (SELECT
 	CASE WHEN rolcanlogin THEN '-- User: ' ELSE '-- Role: ' END	||
@@ -24,11 +24,11 @@ WHERE
 	r.oid=%(rid)s::OID
 UNION ALL
 (SELECT
-	array_to_string(array_agg(sql), E'\n')
+	array_to_string(array_agg(sql), E'\n') AS sql
 FROM
 (SELECT
 	'GRANT ' || array_to_string(array_agg(rolname), ', ') || ' TO ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) ||
-	CASE WHEN admin_option THEN ' WITH ADMIN OPTION;' ELSE ';' END sql
+	CASE WHEN admin_option THEN ' WITH ADMIN OPTION;' ELSE ';' END AS sql
 FROM
 	(SELECT
 		quote_ident(r.rolname) AS rolname, m.admin_option AS admin_option
@@ -43,7 +43,7 @@ FROM
 GROUP BY admin_option) s)
 UNION ALL
 (SELECT
-	array_to_string(array_agg(sql), E'\n') sql
+	array_to_string(array_agg(sql), E'\n') AS sql
 FROM
 (SELECT
 	'ALTER ' || CASE WHEN rolcanlogin THEN 'USER ' ELSE 'ROLE ' END || pg_catalog.quote_ident(rolname) || ' SET ' || param || ' TO ' || CASE WHEN param IN ('search_path', 'temp_tablespaces') THEN value ELSE quote_literal(value) END || ';' AS sql
