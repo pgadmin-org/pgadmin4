@@ -12,12 +12,20 @@ from pgadmin import current_blueprint
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.settings import get_setting
-from flask import current_app, render_template, url_for, make_response
+from flask import current_app, render_template, url_for, make_response, \
+     Response, flash
 from flask.ext.security import login_required
 from flask.ext.login import current_user
 from flask.ext.babel import gettext
 from flask_gravatar import Gravatar
-import six
+import json, six
+
+import config
+
+try:
+    import urllib.request as urlreq
+except:
+    import urllib as urlreq
 
 MODULE_NAME = 'browser'
 
@@ -280,6 +288,34 @@ def index():
                         force_default=False,
                         use_ssl=False,
                         base_url=None)
+
+    # Get the current version info from the website, and flash a message if
+    # the user is out of date, and the check is enabled.
+    if config.UPGRADE_CHECK_ENABLED:
+        data = None
+        url = '%s?version=%s' % (config.UPGRADE_CHECK_URL, config.APP_VERSION)
+        current_app.logger.debug('Checking version data at: %s' % url)
+
+        try:
+            response = urlreq.urlopen(url)
+            current_app.logger.debug('Version check HTTP response code: %d' % response.getcode())
+
+            if response.getcode() == 200:
+                data = json.load(response)
+                current_app.logger.debug('Response data: %s' % data)
+        except:
+            pass
+
+        if data != None:
+            if data['pgadmin4']['version'] != config.APP_VERSION:
+                msg = render_template(MODULE_NAME + "/upgrade.html",
+                                      current_version=config.APP_VERSION,
+                                      upgrade_version=data['pgadmin4']['version'],
+                                      product_name=config.APP_NAME,
+                                      download_url=data['pgadmin4']['download_url'])
+
+            flash(msg, 'warning')
+
     return render_template(
             MODULE_NAME + "/index.html",
             username=current_user.email,

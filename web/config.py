@@ -173,6 +173,16 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
         "Your password for %s has been changed" % APP_NAME
 
 ##########################################################################
+# Upgrade checks
+##########################################################################
+
+# Check for new versions of the application?
+UPGRADE_CHECK_ENABLED = True
+
+# Where should we get the data from?
+UPGRADE_CHECK_URL = 'http://www.pgadmin.org/versions.json'
+
+##########################################################################
 # Local config settings
 ##########################################################################
 
