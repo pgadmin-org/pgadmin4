@@ -894,7 +894,7 @@ class Driver(BaseDriver):
             value = val
 
             if (Driver.needsQuoting(val, True)):
-                value.replace("\"", "\"\"")
+                value = value.replace("\"", "\"\"")
                 value = "\"" + value + "\""
 
             res = ((res and res + '.') or '') + value
@@ -918,7 +918,7 @@ class Driver(BaseDriver):
             value = val
 
             if (Driver.needsQuoting(val, False)):
-                value.replace("\"", "\"\"")
+                value = value.replace("\"", "\"\"")
                 value = "\"" + value + "\""
 
             res = ((res and res + '.') or '') + value
