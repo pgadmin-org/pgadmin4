@@ -14,6 +14,9 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       if (typeof(formattedData) == 'string') {
         return _.unescape(formattedData);
       }
+      if (formattedData instanceof Array) {
+        return JSON.stringify(JSON.parse(JSON.stringify(formattedData)));
+      }
       return JSON.parse(formattedData);
     }
   });
