@@ -177,6 +177,22 @@
     },
 
     validate: function() {
+      var err = {},
+        errmsg = null,
+        changedAttrs = this.sessAttrs,
+        msg = undefined;
+      // We will throw error if user have not entered
+      // either grantee or privileges
+      if (_.has(changedAttrs, 'grantor')) {
+          if (_.isUndefined(this.get('grantee')) ||
+          this.get('privileges').length == 0) {
+            errmsg = 'Please specify grantee/privileges';
+            this.errorModel.set('grantee', errmsg);
+            return errmsg;
+          }
+      } else {
+        this.errorModel.unset('grantee');
+      }
       return null;
     }
   });
