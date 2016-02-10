@@ -694,7 +694,7 @@
           self.model.set(self.field.get('name'), collection, {silent: true});
         }
 
-        if (this.field.get('version_compitible')) {
+        if (this.field.get('version_compatible')) {
           self.listenTo(collection, "add", self.collectionChanged);
           self.listenTo(collection, "change", self.collectionChanged);
         }
@@ -702,7 +702,7 @@
     remove: function() {
       var self = this;
 
-      if (this.field.get('version_compitible')) {
+      if (this.field.get('version_compatible')) {
         self.stopListening(self.collection, "add", self.collectionChanged);
         self.stopListening(self.collection, "change", self.collectionChanged);
       }
@@ -799,12 +799,12 @@
 
       // Evaluate the disabled, visible, required, canAdd, & canDelete option
       _.extend(data, {
-        disabled: (field.version_compitible &&
+        disabled: (field.version_compatible &&
                    evalF.apply(this.field, [data.disabled, this.model])
                    ),
         visible:  evalF.apply(this.field, [data.visible, this.model]),
         required: evalF.apply(this.field, [data.required, this.model]),
-        canAdd: (field.version_compitible &&
+        canAdd: (field.version_compatible &&
           evalF.apply(this.field, [data.canAdd, this.model])
           ),
         canDelete: evalF.apply(this.field, [data.canDelete, this.model])
@@ -1327,7 +1327,7 @@
             visible: evalASFunc(s.visible),
             node: node,
             node_data: treeData,
-            version_compitible: ver_in_limit
+            version_compatible: ver_in_limit
           });
           delete o.id;
 

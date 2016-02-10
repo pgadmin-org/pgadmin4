@@ -195,7 +195,7 @@
             },
             availVariables: self.availVariables,
             node: node, first_empty: false,
-            version_compitible: self.field.get('version_compitible'),
+            version_compatible: self.field.get('version_compatible'),
             transform: function(vars) {
               var self = this,
                   opts = self.field.get('availVariables');
@@ -226,7 +226,7 @@
         headerSchema.push({
           id: 'database', label:'', type: 'text', cache_level: 'server',
           control: Backform.NodeListByNameControl, node: 'database',
-          version_compitible: self.field.get('version_compitible')
+          version_compatible: self.field.get('version_compatible')
         });
         headerDefaults['database'] = null;
         gridCols.push('database');
@@ -236,7 +236,7 @@
         headerSchema.push({
           id: 'role', label:'', type: 'text', cache_level: 'server',
           control: Backform.NodeListByNameControl, node: 'role',
-          version_compitible: self.field.get('version_compitible')
+          version_compatible: self.field.get('version_compatible')
         });
         headerDefaults['role'] = null;
         gridCols.push('role');
@@ -278,7 +278,7 @@
           url = this.field.get('url'),
           m = self.model;
 
-      if (!this.field.get('version_compitible'))
+      if (!this.field.get('version_compatible'))
         return;
 
       if (url && !m.isNew()) {
