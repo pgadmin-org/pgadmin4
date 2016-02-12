@@ -316,18 +316,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       })
   });
   function connect_to_database(obj, data, tree, item, interactive) {
-    if (interactive) {
-      Alertify.confirm(
-        '{{ _('Connect to Database') }}',
-        '{{ _('Do you want to connect the database?') }}',
-        function(evt) {
-          connect(obj, data, tree, item);
-        },
-        function() {});
-    }
-    else{
       connect(obj, data, tree, item)
-    }
   };
   function connect(obj, data, tree, item) {
     var onFailure = function(xhr, status, error, _model, _data, _tree, _item) {

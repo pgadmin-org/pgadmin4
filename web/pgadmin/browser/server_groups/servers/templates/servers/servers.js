@@ -335,25 +335,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         });
       }
 
-      alertify.confirm(
-        '{{ _('Connect to server') }}',
-        '{{ _('Do you want to connect the server?') }}',
-        function(evt) {
-          url = obj.generate_url(item, "connect", data, true);
-          $.post(url)
-          .done(
-            function(res) {
-              if (res.success == 1) {
-                return onSuccess(res, obj, data, tree, item);
-              }
-            })
-          .fail(
-            function(xhr, status, error) {
-              return onFailure(xhr, status, error, obj, data, tree, item);
-            });
-        },
-        function() {});
+      url = obj.generate_url(item, "connect", data, true);
+      $.post(url)
+      .done(
+        function(res) {
+          if (res.success == 1) {
+            return onSuccess(res, obj, data, tree, item);
+          }
+        })
+      .fail(
+        function(xhr, status, error) {
+          return onFailure(xhr, status, error, obj, data, tree, item);
+        });
     }
+    
     /* Send PING to indicate that session is alive */
     function server_status(server_id)
     {
