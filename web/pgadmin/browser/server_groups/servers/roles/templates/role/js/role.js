@@ -294,9 +294,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       hasSQL: true,
       canDrop: true,
       node_label: function(r) {
-        if (!r.can_login) {
-          return r.label + '(GROUP)';
-        }
         return r.label;
       },
       node_image: function(r) {
