@@ -45,14 +45,16 @@ function(_, $, pgBrowser) {
             sql = '-- No SQL generated for the selected object.';
             if (node.hasSQL) {
 
-              sql = '-- Please wait while we fetch the SQL from the server.';
+              sql = '';
               var url = node.generate_url(item, 'sql', data, true);
 
               $.ajax({
                 url: url,
                 type:'GET',
                 success: function(res) {
-                  pgAdmin.Browser.editor.setValue(res);
+                  if (pgAdmin.Browser.editor.getValue() != res) {
+                    pgAdmin.Browser.editor.setValue(res);
+                  }
                 },
                 error:  function() {
                   // TODO:: Report this
@@ -60,7 +62,9 @@ function(_, $, pgBrowser) {
               });
             }
           }
-          pgAdmin.Browser.editor.setValue(sql);
+          if (sql != '') {
+            pgAdmin.Browser.editor.setValue(sql);
+          }
         }, 400);
     },
     sqlPanelVisibilityChanged: function(panel) {
