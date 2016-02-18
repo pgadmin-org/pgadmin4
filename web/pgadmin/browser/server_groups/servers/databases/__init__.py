@@ -290,10 +290,7 @@ class DatabaseView(NodeView):
     def formatdbacl(res, dbacl):
         for row in dbacl:
             priv = parse_priv_from_db(row)
-            if row['deftype'] in res['rows'][0]:
-                res['rows'][0][row['deftype']].append(priv)
-            else:
-                res['rows'][0][row['deftype']] = [priv]
+            res['rows'][0].setdefault(row['deftype'], []).append(priv)
         return res
 
     def module_js(self):
@@ -500,21 +497,20 @@ class DatabaseView(NodeView):
                 data['name'] = name
 
         try:
+            status = self.manager.release(did=did)
+            conn = self.manager.connection()
             for action in ["rename_database", "tablespace"]:
                 SQL = self.getOfflineSQL(gid, sid, data, did, action)
                 SQL = SQL.strip('\n').strip(' ')
                 if SQL and SQL != "":
-                    status = self.manager.release(did=did)
-
-                    conn = self.manager.connection()
                     status, msg = conn.execute_scalar(SQL)
-
                     if not status:
                         return internal_server_error(errormsg=msg)
 
-                    self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
-                    status, errmsg = self.conn.connect()
                     info = "Database updated."
+
+            self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
+            status, errmsg = self.conn.connect()
 
             SQL = self.getOnlineSQL(gid, sid, data, did)
             SQL = SQL.strip('\n').strip(' ')
