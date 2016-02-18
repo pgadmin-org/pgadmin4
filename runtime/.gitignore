@@ -1,0 +1,13 @@
+.qmake.cache
+Makefile
+moc_BrowserWindow.cpp
+moc_Server.cpp
+pgAdmin4.app/
+pgAdmin4.pro.user*
+ui_BrowserWindow.h
+.qmake.stash
+moc_ConfigWindow.cpp
+moc_TabWindow.cpp
+moc_WebViewWindow.cpp
+qrc_pgadmin4.cpp
+ui_ConfigWindow.h
