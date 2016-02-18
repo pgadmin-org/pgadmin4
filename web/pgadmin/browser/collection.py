@@ -11,9 +11,9 @@ import six
 from abc import ABCMeta, abstractmethod
 from flask import url_for, render_template
 from flask.ext.babel import gettext
-from pgadmin.browser.utils import PgAdminModule, PGChildModule
+from pgadmin.utils import PgAdminModule
+from pgadmin.browser.utils import PGChildModule
 from pgadmin.browser import BrowserPluginModule
-from pgadmin.browser.utils import PGChildNodeView
 
 @six.add_metaclass(ABCMeta)
 class CollectionNodeModule(PgAdminModule, PGChildModule):
@@ -25,11 +25,14 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
         kwargs.setdefault("static_url_path", '/static')
-        super(CollectionNodeModule, self).__init__(
-                                            "NODE-%s" % self.node_type,
-                                            import_name,
-                                            **kwargs
-                                            )
+
+        PgAdminModule.__init__(
+            self,
+            "NODE-%s" % self.node_type,
+            import_name,
+            **kwargs
+            )
+        PGChildModule.__init__(self)
 
     @property
     def jssnippets(self):

@@ -9,16 +9,14 @@
 
 """Browser helper utilities"""
 
-from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import OrderedDict
+from abc import ABCMeta, abstractmethod
 import flask
 from flask.views import View, MethodViewType, with_metaclass
 from flask.ext.babel import gettext
 import six
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.browser import PgAdminModule
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, precondition_required
 
 @six.add_metaclass(ABCMeta)
 class NodeAttr(object):
@@ -34,7 +32,7 @@ class NodeAttr(object):
         pass
 
 
-class PGChildModule:
+class PGChildModule(object):
     """
     class PGChildModule
 
@@ -55,15 +53,14 @@ class PGChildModule:
     """
 
     def __init__(self, *args, **kwargs):
-        self.min_ver = 1000000000
-        self.max_ver = 0
+        self.min_ver = 0
+        self.max_ver = 1000000000
         self.server_type = None
-        self.attributes = {}
 
         super(PGChildModule, self).__init__(*args, **kwargs)
 
-    def BackendSupported(self, mangaer, **kwargs):
-        sversion = getattr(mangaer, 'sversion', None)
+    def BackendSupported(self, manager, **kwargs):
+        sversion = getattr(manager, 'sversion', None)
         if (sversion is None or not isinstance(sversion, int)):
             return False
 
@@ -84,33 +81,6 @@ class PGChildModule:
     @abstractmethod
     def get_nodes(self, sid=None, **kwargs):
         pass
-
-    def AddAttr(self, attr):
-        assert(isinstance(attr, PGNodeAttr))
-
-        name = getattr(attr, 'name', None)
-        assert(name is not None and isinstance(name, str))
-        assert(name not in self.attributes)
-        # TODO:: Check for naming convention
-
-        min_ver = getattr(attr, 'min_ver', None)
-        assert(min_ver is None or isinstance(min_ver, int))
-
-        max_ver = getattr(attr, 'max_ver', None)
-        assert(max_ver is None or isinstance(max_ver, int))
-
-        self.attributes[name] = attr
-
-        if max_ver is None:
-            self.max_ver = None
-        elif self.max_var is not None and self.max_ver < max_ver:
-            self.max_ver < max_ver
-
-        if min_ver is None:
-            self.min_ver = None
-        elif self.min_ver is not None and self.min_ver > min_ver:
-            self.min_ver = min_ver
-
 
 class NodeView(with_metaclass(MethodViewType, View)):
     """
