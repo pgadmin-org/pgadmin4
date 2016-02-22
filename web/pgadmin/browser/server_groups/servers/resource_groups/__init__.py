@@ -60,31 +60,11 @@ class ResourceGroupModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        self.min_ver = None
-        self.max_ver = None
-
         super(ResourceGroupModule, self).__init__(*args, **kwargs)
 
-    def BackendSupported(self, manager, **kwargs):
-        """
-        This function is used to check the database server type and version.
-        Resource Group only supported in PPAS 9.4 and above.
-
-        Args:
-            manager: Object of the server manager class.
-            **kwargs:
-
-        Returns: True or False
-        """
-        if super(ResourceGroupModule, self).BackendSupported(manager, **kwargs):
-            conn = manager.connection()
-            # If DB is not connected then return error to browser
-            if not conn.connected():
-                return precondition_required(gettext("Connection to the server has been lost!"))
-        if manager.server_type == 'ppas' and manager.version >= 90400:
-            return True
-        else:
-            return False
+        self.min_ver = 90400
+        self.max_ver = None
+        self.server_type = ['ppas']
 
     def get_nodes(self, gid, sid):
         """
