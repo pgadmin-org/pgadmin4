@@ -102,7 +102,15 @@ class Connection(BaseConnection):
             if user is None:
                 return False, gettext("Unauthorized Request.")
 
-            password = decrypt(encpass, user.password)
+            try:
+                password = decrypt(encpass, user.password)
+            except Exception as e:
+                current_app.logger.exception(e)
+                return False, \
+                    _("Failed to decrypt the saved password!\nError: {0}").format(
+                        str(e)
+                        )
+
             # password is in bytes, for python3 we need it in string
             if isinstance(password, bytes):
                 password = password.decode()
