@@ -836,8 +836,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           } else if (view.model.get('name')) {
             tree.setLabel(item, {label: view.model.get("name")});
           }
+          tree.deselect(item);
           panel.$container.removeAttr('action-mode');
           setTimeout(function() { closePanel(); }, 0);
+
+          setTimeout(function() { tree.select(item, {focus: true}); }, 10);
         },
         saveNewNode = function() {
           /* TODO:: Create new tree node for this */
