@@ -8,7 +8,7 @@
 ##########################################################################
 
 import json
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractproperty
 from flask import render_template, request, make_response, jsonify, \
         current_app, url_for
 from flask.ext.security import login_required, current_user
@@ -21,7 +21,7 @@ from pgadmin.browser.utils import PGChildNodeView
 import traceback
 from flask.ext.babel import gettext
 import pgadmin.browser.server_groups as sg
-from pgadmin.utils.crypto import encrypt, decrypt
+from pgadmin.utils.crypto import encrypt
 from pgadmin.browser import BrowserPluginModule
 from config import PG_DEFAULT_DRIVER
 import six
@@ -230,8 +230,7 @@ class ServerNode(PGChildNodeView):
                 )
 
         from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
-
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
         conn = manager.connection()
         connected = conn.connected()
 
@@ -325,7 +324,6 @@ class ServerNode(PGChildNodeView):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
-        not_allowed = {}
 
         if conn.connected():
             for arg in (
