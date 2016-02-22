@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 import flask
 from flask.views import View, MethodViewType, with_metaclass
 from flask.ext.babel import gettext
+from flask import render_template, current_app
 import six
 
 from config import PG_DEFAULT_DRIVER
@@ -336,3 +337,206 @@ class PGChildNodeView(NodeView):
                 nodes.extend(module.get_nodes(**kwargs))
 
         return make_json_response(data=nodes)
+
+    def get_dependencies(self, conn, object_id, show_system_object=False, where=None):
+        """
+        This function is used to fetch the dependencies for the selected node.
+
+        Args:
+            conn: Connection object
+            object_id: Object Id of the selected node.
+            show_system_object: True or False (optional)
+            where: where clause for the sql query (optional)
+
+        Returns: Dictionary of dependencies for the selected node.
+        """
+
+        # Set the sql_path
+        sql_path = ''
+        if conn.manager.version >= 90100:
+            sql_path = 'depends/sql/9.1_plus'
+
+        if where is None:
+            where_clause = "WHERE dep.objid={0}::oid".format(object_id)
+        else:
+            where_clause = where
+
+        query = render_template("/".join([sql_path, 'dependents.sql']),
+                                fetch_dependencies=True, where_clause=where_clause)
+        # fetch the dependency for the selected object
+        dependencies = self.__fetch_dependency(conn, query, show_system_object)
+
+        # fetch role dependencies
+        if where_clause.find('subid') < 0:
+            sql = render_template("/".join([sql_path, 'dependents.sql']),
+                                  fetch_role_dependencies=True, where_clause=where_clause)
+
+            status, result = conn.execute_dict(sql)
+            if not status:
+                current_app.logger.error(result)
+
+            for row in result['rows']:
+                ref_name = row['refname']
+                dep_str = row['deptype']
+                dep_type = ''
+
+                if dep_str == 'a':
+                    dep_type = 'ACL'
+                elif dep_str == 'o':
+                    dep_type = 'Owner'
+
+                if row['refclassid'] == 1260:
+                    dependencies.append({'type': 'role', 'name': ref_name, 'field': dep_type})
+
+        return dependencies
+
+    def get_dependents(self, conn, object_id, show_system_object=False, where=None):
+        """
+        This function is used to fetch the dependents for the selected node.
+
+        Args:
+            conn: Connection object
+            object_id: Object Id of the selected node.
+            show_system_object: True or False (optional)
+            where: where clause for the sql query (optional)
+
+        Returns: Dictionary of dependents for the selected node.
+        """
+        # Set the sql_path
+        sql_path = ''
+        if conn.manager.version >= 90100:
+            sql_path = 'depends/sql/9.1_plus'
+
+        if where is None:
+            where_clause = "WHERE dep.refobjid={0}::oid".format(object_id)
+        else:
+            where_clause = where
+
+        query = render_template("/".join([sql_path, 'dependents.sql']),
+                                fetch_dependents=True, where_clause=where_clause)
+        # fetch the dependency for the selected object
+        dependents = self.__fetch_dependency(conn, query, show_system_object)
+
+        return dependents
+
+    def __fetch_dependency(self, conn, query, show_system_object):
+        """
+        This function is used to fetch the dependency for the selected node.
+
+        Args:
+            conn: Connection object
+            query: sql query to fetch dependencies/dependents
+            show_system_object: true or false
+
+        Returns: Dictionary of dependency for the selected node.
+        """
+
+        # Dictionary for the object types
+        types = {
+            # None specified special handling for this type
+            'r': None,
+            'i': 'index',
+            'S': 'sequence',
+            'v': 'view',
+            'x': 'external_table',
+            'p': 'function',
+            'n': 'schema',
+            'y': 'type',
+            'T': 'trigger',
+            'l': 'language',
+            'R': None,
+            'C': None,
+            'A': None
+        }
+
+        # Dictionary for the restrictions
+        dep_types = {
+            # None specified special handling for this type
+            'n': 'normal',
+            'a': 'auto',
+            'i': None,
+            'p': None
+        }
+
+        status, result = conn.execute_dict(query)
+        if not status:
+            current_app.logger.error(result)
+
+        dependency = list()
+
+        for row in result['rows']:
+            _ref_name = row['refname']
+            type_str = row['type']
+            dep_str = row['deptype']
+            nsp_name = row['nspname']
+
+            ref_name = ''
+            if nsp_name is not None:
+                ref_name = nsp_name + '.'
+
+            type_name = ''
+
+            # Fetch the type name from the dictionary
+            # if type is not present in the types dictionary then
+            # we will continue and not going to add it.
+            if type_str[0] in types:
+
+                # if type is present in the types dictionary, but it's
+                # value is None then it requires special handling.
+                if types[type_str[0]] is None:
+                    if type_str[0] == 'r':
+                        if int(type_str[1]) > 0:
+                            type_name = 'column'
+                        else:
+                            type_name = 'table'
+                    elif type_str[0] == 'R':
+                        type_name = 'rule'
+                        ref_name = _ref_name + ' ON ' + _ref_name + row['ownertable']
+                        _ref_name = None
+                    elif type_str[0] == 'C':
+                        if type_str[1] == 'c':
+                            type_name = 'check'
+                        elif type_str[1] == 'f':
+                            type_name = 'foreign_key'
+                            ref_name += row['ownertable'] + '.'
+                        elif type_str[1] == 'p':
+                            type_name = 'primary_key'
+                        elif type_str[1] == 'u':
+                            type_name = 'unique'
+                        elif type_str[1] == 'x':
+                            type_name = 'exclude'
+                    elif type_str[0] == 'A':
+                        # Include only functions
+                        if row['adbin'].startswith('{FUNCEXPR'):
+                            type_name = 'function'
+                            ref_name = row['adsrc']
+                        else:
+                            continue
+                else:
+                    type_name = types[type_str[0]]
+            else:
+                continue
+
+            if _ref_name is not None:
+                ref_name += _ref_name
+
+            dep_type = ''
+            if dep_str[0] in dep_types:
+
+                # if dep_type is present in the dep_types dictionary, but it's
+                # value is None then it requires special handling.
+                if dep_types[dep_str[0]] is None:
+                    if dep_str[0] == 'i':
+                        if show_system_object:
+                            dep_type = 'internal'
+                        else:
+                            continue
+                    elif dep_str[0] == 'p':
+                        dep_type = 'pin'
+                        type_name = ''
+                else:
+                    dep_type = dep_types[dep_str[0]]
+
+            dependency.append({'type': type_name, 'name': ref_name, 'field': dep_type})
+
+        return dependency

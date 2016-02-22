@@ -293,10 +293,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       label: '{{ _('Login/Group Role') }}',
       hasSQL: true,
       canDrop: true,
+      hasDepends: true,
       node_label: function(r) {
         return r.label;
       },
       node_image: function(r) {
+        if (r == null || r == undefined)
+            return 'icon-role';
         return (r.can_login ? 'icon-role' : 'icon-group');
       },
       title: function(d) {

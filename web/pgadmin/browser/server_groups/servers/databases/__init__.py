@@ -22,6 +22,7 @@ from config import PG_DEFAULT_DRIVER
 from functools import wraps
 import re
 
+
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'database'
     COLLECTION_LABEL = _("Databases")
@@ -852,5 +853,39 @@ class DatabaseView(PGChildNodeView):
         SQL = self.get_new_sql(gid, sid, result, did)
 
         return ajax_response(response=SQL)
+
+    @check_precondition()
+    def dependents(self, gid, sid, did):
+        """
+        This function gets the dependents and returns an ajax response
+        for the database.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        dependents_result = self.get_dependents(self.conn, did)
+        return ajax_response(
+                response=dependents_result,
+                status=200
+                )
+
+    @check_precondition()
+    def dependencies(self, gid, sid, did):
+        """
+        This function gets the dependencies and returns an ajax response
+        for the database.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        dependencies_result = self.get_dependencies(self.conn, did)
+        return ajax_response(
+                response=dependencies_result,
+                status=200
+                )
 
 DatabaseView.register_node_view(blueprint)

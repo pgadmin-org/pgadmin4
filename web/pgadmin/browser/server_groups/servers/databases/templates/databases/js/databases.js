@@ -46,6 +46,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       parent_type: 'server',
       type: 'database',
       hasSQL: true,
+      hasDepends: true,
       canDrop: true,
       label: '{{ _('Database') }}',
       node_image: function() {

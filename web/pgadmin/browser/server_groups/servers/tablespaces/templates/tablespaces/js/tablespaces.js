@@ -48,6 +48,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       label: '{{ _('Tablespace') }}',
       hasSQL:  true,
       canDrop: true,
+      hasDepends: true,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

@@ -569,5 +569,149 @@ class TablespaceView(PGChildNodeView):
 
         return ajax_response(response=result)
 
+    @check_precondition
+    def dependencies(self, gid, sid, tsid):
+        """
+        This function gets the dependencies and returns an ajax response
+        for the tablespace.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            tsid: Tablespace ID
+        """
+        dependencies_result = self.get_dependencies(self.conn, tsid)
+        return ajax_response(
+                response=dependencies_result,
+                status=200
+                )
+
+    @check_precondition
+    def dependents(self, gid, sid, tsid):
+        """
+        This function gets the dependents and returns an ajax response
+        for the tablespace.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            tsid: Tablespace ID
+        """
+        dependents_result = self.get_dependents(self.conn, sid, tsid)
+        return ajax_response(
+                response=dependents_result,
+                status=200
+                )
+
+    def get_dependents(self, conn, sid, tsid):
+        """
+        This function is used to fetch the dependents for the selected node.
+
+        Args:
+            conn: Connection object
+            sid: Server Id
+            tsid: Tablespace ID
+
+        Returns: Dictionary of dependents for the selected node.
+        """
+        # Dictionary for the object types
+        types = {
+            # None specified special handling for this type
+            'r': 'table',
+            'i': None,
+            'S': 'sequence',
+            'v': 'view',
+            'x': 'external_table',
+            'p': 'function',
+            'n': 'schema',
+            'y': 'type',
+            'd': 'domain',
+            'T': 'trigger_function',
+            'C': 'conversion',
+            'o': None
+        }
+
+        # Fetching databases with CONNECT privileges status.
+        query = render_template("/".join([self.template_path, 'dependents.sql']), fetch_database=True)
+        status, db_result = self.conn.execute_dict(query)
+        if not status:
+            current_app.logger.error(db_result)
+
+        dependents = list()
+
+        # Get the server manager
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+        for db_row in db_result['rows']:
+            oid = db_row['dattablespace']
+
+            # Append all the databases to the dependents list if oid is same
+            if tsid == oid:
+                dependents.append({
+                    'type': 'database', 'name': '', 'field': db_row['datname']
+                    })
+
+            # If connection to the database is not allowed then continue
+            # with the next database
+            if not db_row['datallowconn']:
+                continue
+
+            # Get the connection from the manager for the specified database.
+            # Check the connect status and if it is not connected then create
+            # a new connection to run the query and fetch the dependents.
+            is_connected = True
+            try:
+                temp_conn = manager.connection(db_row['datname'])
+                is_connected = temp_conn.connected()
+                if not is_connected:
+                    temp_conn.connect()
+            except Exception as e:
+                current_app.logger.exception(e)
+
+            if temp_conn.connected():
+                query = render_template("/".join([self.template_path, 'dependents.sql']),
+                                        fetch_dependents=True, tsid=tsid)
+                status, result = temp_conn.execute_dict(query)
+                if not status:
+                    current_app.logger.error(result)
+
+                for row in result['rows']:
+                    rel_name = row['nspname']
+                    if rel_name is not None:
+                        rel_name += '.'
+
+                    if rel_name is None:
+                        rel_name = row['relname']
+                    else:
+                        rel_name += row['relname']
+
+                    type_name = ''
+                    type_str = row['relkind']
+                    # Fetch the type name from the dictionary
+                    # if type is not present in the types dictionary then
+                    # we will continue and not going to add it.
+                    if type_str[0] in types:
+
+                        # if type is present in the types dictionary, but it's
+                        # value is None then it requires special handling.
+                        if types[type_str[0]] is None:
+                            if type_str[0] == 'i':
+                                type_name = 'index'
+                                rel_name = row['indname'] + ' ON ' + rel_name
+                            elif type_str[0] == 'o':
+                                type_name = 'operator'
+                                rel_name = row['relname']
+                        else:
+                            type_name = types[type_str[0]]
+                    else:
+                        continue
+
+                    dependents.append({'type': type_name, 'name': rel_name, 'field': db_row['datname']})
+
+                # Release only those connections which we have created above.
+                if not is_connected:
+                    manager.release(db_row['datname'])
+
+        return dependents
 
 TablespaceView.register_node_view(blueprint)
