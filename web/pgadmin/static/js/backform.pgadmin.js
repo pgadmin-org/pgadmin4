@@ -335,6 +335,44 @@
     }
   });
 
+  /*
+   * Override the function 'updateInvalid' of the radio control to resolve an
+   * issue, which will not render the error block multiple times for each
+   * options.
+   */
+  _.extend(
+    Backform.RadioControl.prototype, {
+      updateInvalid: function() {
+        var self = this,
+            errorModel = this.model.errorModel;
+
+        if (!(errorModel instanceof Backbone.Model)) return this;
+
+        this.clearInvalid();
+
+        /*
+         * Find input which have name attribute.
+         */
+        this.$el.find(':input[name]').not('button').each(function(ix, el) {
+          var attrArr = $(el).attr('name').split('.'),
+              name = attrArr.shift(),
+              path = attrArr.join('.'),
+              error = self.keyPathAccessor(
+                errorModel.toJSON(), $(el).attr('name')
+              );
+
+          if (_.isEmpty(error)) return;
+
+          self.$el.addClass(Backform.errorClassName).find(
+            '[type="radio"]'
+          ).append(
+          $("<div></div>").addClass(
+            'pgadmin-control-error-message col-xs-12 help-block'
+          ).text(error));
+        });
+      }
+    });
+
   // Requires the Bootstrap Switch to work.
   var SwitchControl = Backform.SwitchControl = Backform.InputControl.extend({
     defaults: {
