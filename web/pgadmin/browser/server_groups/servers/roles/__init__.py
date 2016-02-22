@@ -6,13 +6,13 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-from flask import render_template, request, current_app, jsonify
+from flask import render_template, request, jsonify
 from flask.ext.babel import gettext as _
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, precondition_required, \
     internal_server_error, forbidden, \
-    not_implemented, success_return
-from pgadmin.browser.utils import NodeView
+    not_implemented, success_return, gone
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups as sg
 from pgadmin.utils.driver import get_driver
@@ -76,7 +76,7 @@ class RoleModule(CollectionNodeModule):
 blueprint = RoleModule(__name__)
 
 
-class RoleView(NodeView):
+class RoleView(PGChildNodeView):
     node_type = 'role'
 
     parent_ids = [
@@ -453,14 +453,11 @@ rolmembership:{
                                 u'rolvaliduntil', u'rolpassword'
                                 ]
 
-                auth_tbl=False
                 check_permission=False
                 fetch_name=False
                 forbidden_msg = None
 
-                if action in ['list', 'properties']:
-                    auth_tbl = True
-                elif action in ['drop', 'update']:
+                if action in ['drop', 'update']:
                     check_permission = True
                     fetch_name = True
                     if action == 'drop':
@@ -480,28 +477,13 @@ rolmembership:{
                         'rid' in kwargs and kwargs['rid'] != -1):
                     fetch_name = True
 
-                if auth_tbl:
-                    status, res = self.conn.execute_scalar(
-                        "SELECT has_table_privilege('pg_authid', 'SELECT')"
-                        )
-
-                    if not status:
-                        return internal_server_error(
-                                _(
-                                    "Error checking the permission to the pg_authid!\n{0}"
-                                    ).format(res)
-                                )
-                    self.role_tbl = 'pg_authid' if res else 'pg_roles'
-                else:
-                    self.role_tbl = 'pg_roles'
-
                 if check_permission:
                     user = self.manager.user_info
 
                     if not user['is_superuser'] and not user['can_create_role']:
                         if (action != 'update' or
                                 'rid' in kwargs and kwargs['rid'] != -1 and
-                                user['id'] != rid):
+                                user['id'] != kwargs['rid']):
                             return forbidden(forbidden_msg)
 
                 if fetch_name:
@@ -540,8 +522,8 @@ rolmembership:{
     @check_precondition(action='list')
     def list(self, gid, sid):
         status, res = self.conn.execute_dict(
-                render_template(self.sql_path + 'properties.sql',
-                    role_tbl=self.role_tbl
+                render_template(
+                    self.sql_path + 'properties.sql'
                     )
                 )
 
@@ -563,16 +545,14 @@ rolmembership:{
     def nodes(self, gid, sid):
 
         status, rset = self.conn.execute_2darray(
-                render_template(self.sql_path + 'nodes.sql',
-                    role_tbl=self.role_tbl
-                    )
-                )
+            render_template(self.sql_path + 'nodes.sql')
+            )
 
         if not status:
             return internal_server_error(
                     _(
                         "Error fetching the roles information from the database server!\n{0}"
-                        ).format(res)
+                        ).format(rset)
                     )
 
         res = []
@@ -596,17 +576,17 @@ rolmembership:{
     def node(self, gid, sid, rid):
 
         status, rset = self.conn.execute_2darray(
-                render_template(self.sql_path + 'nodes.sql',
-                    rid=rid,
-                    role_tbl=self.role_tbl
-                    )
+            render_template(
+                self.sql_path + 'nodes.sql',
+                rid=rid
                 )
+            )
 
         if not status:
             return internal_server_error(
                     _(
                         "Error fetching the roles information from the database server!\n{0}"
-                        ).format(res)
+                        ).format(rset)
                     )
 
         for row in rset['rows']:
@@ -653,8 +633,8 @@ rolmembership:{
     def properties(self, gid, sid, rid):
 
         status, res = self.conn.execute_dict(
-                render_template(self.sql_path + 'properties.sql',
-                    role_tbl=self.role_tbl,
+                render_template(
+                    self.sql_path + 'properties.sql',
                     rid=rid
                     )
                 )
@@ -692,8 +672,7 @@ rolmembership:{
     def sql(self, gid, sid, rid):
         status, res = self.conn.execute_scalar(
                 render_template(
-                    self.sql_path + 'sql.sql',
-                    role_tbl=self.role_tbl
+                    self.sql_path + 'sql.sql'
                     ),
                 dict({'rid':rid})
                 )
@@ -731,9 +710,7 @@ rolmembership:{
                     )
 
         status, rid = self.conn.execute_scalar(
-                "SELECT oid FROM {0} WHERE rolname = %(rolname)s".format(
-                    self.role_tbl
-                    ),
+                "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
                 {'rolname': self.request[u'rolname']}
                 )
 
@@ -745,8 +722,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_dict(
                 render_template(self.sql_path + 'nodes.sql',
-                    rid=rid,
-                    role_tbl=self.role_tbl
+                    rid=rid
                     )
                 )
 
@@ -754,7 +730,7 @@ rolmembership:{
             return internal_server_error(
                     _(
                         "Error fetching the roles information from the database server!\n{0}"
-                        ).format(res)
+                        ).format(rset)
                     )
         for row in rset['rows']:
             return jsonify(
@@ -793,8 +769,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_dict(
                 render_template(self.sql_path + 'nodes.sql',
-                    rid=rid,
-                    role_tbl=self.role_tbl
+                    rid=rid
                     )
                 )
 
@@ -802,7 +777,7 @@ rolmembership:{
             return internal_server_error(
                     _(
                         "Error fetching the roles information from the database server!\n{0}"
-                        ).format(res)
+                        ).format(rset)
                     )
 
         for row in rset['rows']:

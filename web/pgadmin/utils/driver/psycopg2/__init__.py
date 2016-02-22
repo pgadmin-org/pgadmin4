@@ -19,7 +19,7 @@ from flask.ext.security import current_user
 
 from ..abstract import BaseDriver, BaseConnection
 from pgadmin.settings.settings_model import Server, User
-from pgadmin.utils.crypto import encrypt, decrypt
+from pgadmin.utils.crypto import decrypt
 import random
 
 from .keywords import ScanKeyword
@@ -453,7 +453,7 @@ Attempt to reconnect it failed with the below error:
             pg_conn = psycopg2.connect(
                     host=mgr.host,
                     port=mgr.port,
-                    database=db,
+                    database=self.db,
                     user=mgr.user,
                     password=password
                     )
@@ -912,6 +912,7 @@ class Driver(BaseDriver):
             if type(val) == list:
                 return map(lambda w: Driver.qtIdent(conn, w), val)
 
+            val = str(val)
             if len(val) == 0:
                 continue
 

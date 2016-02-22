@@ -1,0 +1,30 @@
+{# List down allowed privileges for PostgreSQL/PPAS 9.1, or less #}
+{#
+    Format for allowed privileges are:
+    "acl_col": {
+        "type": "name",
+        "acl": [...]
+    }
+#}
+{
+    "datacl": {
+        "type": "DATABASE",
+        "acl": ["c", "C", "T"]
+    },
+    "deftblacl": {
+        "type": "TABLE",
+        "acl": ["r", "a", "w", "d", "D", "x", "t"]
+    },
+    "defseqacl": {
+        "type": "SEQUENCE",
+        "acl": ["U", "r", "a"]
+    },
+    "deffuncacl": {
+        "type": "FUNCTION",
+        "acl": ["X"]
+    },
+    "deftypeacl": {
+        "type": "TYPE",
+        "acl": ["U"]
+    }
+}

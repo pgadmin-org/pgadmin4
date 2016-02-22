@@ -7,11 +7,11 @@
 #
 ##########################################################################
 import json
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, make_response, request, jsonify, current_app
 from flask.ext.babel import gettext
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import NodeView
+    make_response as ajax_response, internal_server_error, gone
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups.servers as servers
 from pgadmin.utils.ajax import precondition_required
@@ -54,7 +54,7 @@ class TablespaceModule(CollectionNodeModule):
 blueprint = TablespaceModule(__name__)
 
 
-class TablespaceView(NodeView):
+class TablespaceView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -62,7 +62,7 @@ class TablespaceView(NodeView):
             {'type': 'int', 'id': 'sid'}
             ]
     ids = [
-            {'type': 'int', 'id': 'did'}
+            {'type': 'int', 'id': 'tsid'}
             ]
 
     operations = dict({
@@ -70,11 +70,11 @@ class TablespaceView(NodeView):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
@@ -102,17 +102,20 @@ class TablespaceView(NodeView):
         """
         @wraps(f)
         def wrap(*args, **kwargs):
-            # Here args[0] will hold self & kwargs will hold gid,sid,did
+            # Here args[0] will hold self & kwargs will hold gid,sid,tsid
             self = args[0]
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection()
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
+                current_app.logger.warning(
+                    "Connection to the server has been lost!"
+                    )
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
-                    )
+                        "Connection to the server has been lost!"
+                        )
                 )
 
             ver = self.manager.version
@@ -122,13 +125,19 @@ class TablespaceView(NodeView):
                 self.template_path = 'tablespaces/sql/9.1_plus'
             else:
                 self.template_path = 'tablespaces/sql/pre_9.1'
+            current_app.logger.debug(
+                "Using the template path: %s", self.template_path
+                )
 
             return f(*args, **kwargs)
         return wrap
 
     @check_precondition
     def list(self, gid, sid):
-        SQL = render_template("/".join([self.template_path, 'properties.sql']))
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            conn=self.conn
+            )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -139,9 +148,12 @@ class TablespaceView(NodeView):
                 )
 
     @check_precondition
-    def nodes(self, gid, sid):
+    def nodes(self, gid, sid, tsid=None):
         res = []
-        SQL = render_template("/".join([self.template_path, 'properties.sql']))
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            tsid=tsid, conn=self.conn
+            )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -160,11 +172,11 @@ class TablespaceView(NodeView):
                 status=200
                 )
 
-    def _formatter(self, data, did=None):
+    def _formatter(self, data, tsid=None):
         """
         Args:
             data: dict of query result
-            did: tablespace oid
+            tsid: tablespace oid
 
         Returns:
             It will return formatted output of collections
@@ -188,8 +200,10 @@ class TablespaceView(NodeView):
             data['seclabels'] = seclabels
 
         # We need to parse & convert ACL coming from database to json format
-        SQL = render_template("/".join([self.template_path, 'acl.sql']),
-                              did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            tsid=tsid, conn=self.conn
+            )
         status, acl = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=acl)
@@ -208,16 +222,18 @@ class TablespaceView(NodeView):
         return data
 
     @check_precondition
-    def properties(self, gid, sid, did):
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                              did=did, conn=self.conn)
+    def properties(self, gid, sid, tsid):
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tsid=tsid, conn=self.conn
+            )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
-        copy_data = self._formatter(copy_data, did)
+        copy_data = self._formatter(copy_data, tsid)
 
         return ajax_response(
                 response=copy_data,
@@ -250,49 +266,61 @@ class TablespaceView(NodeView):
 
         # To format privileges coming from client
         if 'spcacl' in data:
-            data['spcacl'] = parse_priv_to_db(data['spcacl'], 'TABLESPACE')
+            data['spcacl'] = parse_priv_to_db(data['spcacl'], ['C'])
 
         try:
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn
+                )
+
             status, res = self.conn.execute_scalar(SQL)
+
             if not status:
                 return internal_server_error(errormsg=res)
-            SQL = render_template("/".join([self.template_path, 'alter.sql']),
-                                  data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'alter.sql']),
+                data=data, conn=self.conn
+                )
+
             # Checking if we are not executing empty query
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
-            # To fetch the oid of newly created tablespace
-            SQL = render_template("/".join([self.template_path, 'alter.sql']),
-                                  tablespace=data['name'], conn=self.conn)
-            status, did = self.conn.execute_scalar(SQL)
-            if not status:
 
-                return internal_server_error(errormsg=did)
+            # To fetch the oid of newly created tablespace
+            SQL = render_template(
+                "/".join([self.template_path, 'alter.sql']),
+                tablespace=data['name'], conn=self.conn
+                )
+
+            status, tsid = self.conn.execute_scalar(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=tsid)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    did,
+                    tsid,
                     sid,
                     data['name'],
                     icon="icon-tablespace"
                 )
             )
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def update(self, gid, sid, did):
+    def update(self, gid, sid, tsid):
         """
         This function will update tablespace object
         """
         data = request.form if request.form else json.loads(request.data.decode())
 
         try:
-            SQL = self.getSQL(gid, sid, data, did)
+            SQL = self.get_sql(gid, sid, data, tsid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -302,7 +330,7 @@ class TablespaceView(NodeView):
                     success=1,
                     info="Tablespace updated",
                     data={
-                        'id': did,
+                        'id': tsid,
                         'sid': sid,
                         'gid': gid
                     }
@@ -312,30 +340,44 @@ class TablespaceView(NodeView):
                     success=1,
                     info="Nothing to update",
                     data={
-                        'id': did,
+                        'id': tsid,
                         'sid': sid,
                         'gid': gid
                     }
                 )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did):
+    def delete(self, gid, sid, tsid):
         """
         This function will drop the tablespace object
         """
         try:
-            # Get name for tablespace from did
-            SQL = render_template("/".join([self.template_path, 'delete.sql']),
-                                  did=did, conn=self.conn)
-            status, tsname = self.conn.execute_scalar(SQL)
+            # Get name for tablespace from tsid
+            status, rset = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'nodes.sql']),
+                    tsid=tsid, conn=self.conn
+                    )
+                )
+
             if not status:
-                return internal_server_error(errormsg=tsname)
+                return internal_server_error(errormsg=rset)
+
+            if len(rset['rows']) != 1:
+                return gone(
+                    errormsg=gettext("Couldn't the tablespace in the server!")
+                    )
+
             # drop tablespace
-            SQL = render_template("/".join([self.template_path, 'delete.sql']),
-                                  tsname=tsname, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                tsname=(rset['rows'][0])['name'], conn=self.conn
+                )
+
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -344,17 +386,18 @@ class TablespaceView(NodeView):
                 success=1,
                 info=gettext("Tablespace dropped"),
                 data={
-                    'id': did,
+                    'id': tsid,
                     'sid': sid,
                     'gid': gid,
-                }
-            )
+                    }
+                )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def msql(self, gid, sid, did=None):
+    def msql(self, gid, sid, tsid=None):
         """
         This function to return modified SQL
         """
@@ -362,20 +405,22 @@ class TablespaceView(NodeView):
         for k, v in request.args.items():
             try:
                 data[k] = json.loads(v)
-            except ValueError:
+            except ValueError as ve:
+                current_app.logger.exception(ve)
                 data[k] = v
         try:
-            SQL = self.getSQL(gid, sid, data, did)
-
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+            SQL = self.get_sql(gid, sid, data, tsid)
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
-    def getSQL(self, gid, sid, data, did=None):
+        if SQL and SQL.strip('\n') and SQL.strip(' '):
+            return make_json_response(
+                data=SQL,
+                status=200
+            )
+
+    def get_sql(self, gid, sid, data, tsid=None):
         """
         This function will genrate sql from model/properties data
         """
@@ -383,16 +428,18 @@ class TablespaceView(NodeView):
             'name'
         ]
 
-        if did is not None:
-            SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                                  did=did, conn=self.conn)
+        if tsid is not None:
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tsid=tsid, conn=self.conn
+                )
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             # Making copy of output for further processing
             old_data = dict(res['rows'][0])
-            old_data = self._formatter(old_data, did)
+            old_data = self._formatter(old_data, tsid)
 
             # To format privileges data coming from client
             for key in ['spcacl']:
@@ -410,28 +457,36 @@ class TablespaceView(NodeView):
                 if arg not in data:
                     data[arg] = old_data[arg]
 
-            SQL = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data, o_data=old_data)
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data
+                )
         else:
             # To format privileges coming from client
             if 'spcacl' in data:
                 data['spcacl'] = parse_priv_to_db(data['spcacl'], 'TABLESPACE')
-            # If the request for new object which do not have did
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data)
+            # If the request for new object which do not have tsid
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data
+                )
             SQL += "\n"
-            SQL += render_template("/".join([self.template_path, 'alter.sql']),
-                                   data=data)
+            SQL += render_template(
+                "/".join([self.template_path, 'alter.sql']),
+                data=data, conn=self.conn
+                )
 
         return SQL
 
     @check_precondition
-    def sql(self, gid, sid, did):
+    def sql(self, gid, sid, tsid):
         """
         This function will generate sql for sql panel
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                              did=did, conn=self.conn)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tsid=tsid, conn=self.conn
+            )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -439,7 +494,7 @@ class TablespaceView(NodeView):
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
 
-        old_data = self._formatter(old_data, did)
+        old_data = self._formatter(old_data, tsid)
 
         # To format privileges
         if 'spcacl' in old_data:
@@ -448,16 +503,20 @@ class TablespaceView(NodeView):
         SQL = ''
         # We are not showing create sql for system tablespace
         if not old_data['name'].startswith('pg_'):
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=old_data)
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=old_data
+                )
             SQL += "\n"
-        SQL += render_template("/".join([self.template_path, 'alter.sql']),
-                               data=old_data)
+        SQL += render_template(
+            "/".join([self.template_path, 'alter.sql']),
+            data=old_data, conn=self.conn
+            )
 
         sql_header = """
 -- Tablespace: {0}
 
--- DROP TABLESPACE {0}
+-- DROP TABLESPACE {0};
 
 """.format(old_data['name'])
 
@@ -477,9 +536,11 @@ class TablespaceView(NodeView):
             This function will return list of variables available for
             table spaces.
         """
-        res = []
-        SQL = render_template("/".join([self.template_path, 'variables.sql']))
+        SQL = render_template(
+            "/".join([self.template_path, 'variables.sql'])
+            )
         status, rset = self.conn.execute_dict(SQL)
+
         if not status:
             return internal_server_error(errormsg=rset)
 
@@ -489,19 +550,23 @@ class TablespaceView(NodeView):
                 )
 
     @check_precondition
-    def stats(self, gid, sid, did):
+    def statistics(self, gid, sid, tsid=None):
         """
         This function will return data for statistics panel
         """
-        SQL = render_template("/".join([self.template_path, 'stats.sql']),
-                              did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'stats.sql']),
+            tsid=tsid, conn=self.conn
+            )
         status, res = self.conn.execute_scalar(SQL)
+
         if not status:
             return internal_server_error(errormsg=res)
 
         # TODO:// Format & return output of stats call accordingly
         # TODO:// for now it's hardcoded as below
         result = 'Tablespace Size: {0}'.format(res)
+
         return ajax_response(response=result)
 
 

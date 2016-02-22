@@ -37,5 +37,5 @@ COMMENT ON TABLESPACE {{ conn|qtIdent(data.name) }}
 {% endif %}
 {# ======== The SQl Below will fetch id for given dataspace ======== #}
 {% if tablespace %}
-SELECT ts.oid FROM pg_tablespace ts WHERE spcname = {{tablespace|qtLiteral}}
+SELECT ts.oid FROM pg_tablespace ts WHERE spcname = {{tablespace|qtLiteral}};
 {% endif %}

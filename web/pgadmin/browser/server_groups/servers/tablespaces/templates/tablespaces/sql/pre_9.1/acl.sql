@@ -11,15 +11,15 @@ FROM
   FROM
     (SELECT ts.spcacl
         FROM pg_tablespace ts
-        {% if did %}
-        WHERE ts.oid={{did}}::int
+        {% if tsid %}
+        WHERE ts.oid={{ tsid|qtLiteral }}::OID
         {% endif %}
     ) acl,
     (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable
         AS is_grantable, (d).privilege_type AS privilege_type FROM (SELECT
         aclexplode(ts.spcacl) as d FROM pg_tablespace ts
-        {% if did %}
-        WHERE ts.oid={{did}}::int
+        {% if tsid %}
+        WHERE ts.oid={{ tsid|qtLiteral }}::OID
         {% endif %}
         ) a) d
     ) d

@@ -9,8 +9,8 @@ SELECT
 			LEFT JOIN pg_catalog.pg_roles rm ON (rm.oid = am.roleid)
 	) rolmembership
 FROM
-	{{ role_tbl }} r
+	pg_roles r
 {% if rid %}
-WHERE r.oid = {{ rid }}::int
+WHERE r.oid = {{ rid|qtIdent }}::OID
 {% endif %}
 ORDER BY r.rolcanlogin, r.rolname

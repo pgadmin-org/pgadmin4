@@ -10,16 +10,17 @@ import json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask.ext.babel import gettext as _
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import NodeView
+    make_response as ajax_response, internal_server_error, unauthorized
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups.servers as servers
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import precondition_required, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from functools import wraps
+import re
 
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'database'
@@ -72,7 +73,7 @@ class DatabaseModule(CollectionNodeModule):
 blueprint = DatabaseModule(__name__)
 
 
-class DatabaseView(NodeView):
+class DatabaseView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -91,7 +92,7 @@ class DatabaseView(NodeView):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
@@ -99,8 +100,8 @@ class DatabaseView(NodeView):
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
             }],
-        'get_encodings': [{'get': 'getEncodings'}, {'get': 'getEncodings'}],
-        'get_ctypes': [{'get': 'getCtypes'}, {'get': 'getCtypes'}],
+        'get_encodings': [{'get': 'get_encodings'}, {'get': 'get_encodings'}],
+        'get_ctypes': [{'get': 'get_ctypes'}, {'get': 'get_ctypes'}],
         'vopts': [{}, {'get': 'variable_options'}]
     })
 
@@ -124,10 +125,8 @@ class DatabaseView(NodeView):
                 # If DB not connected then return error to browser
                 if not self.conn.connected():
                     return precondition_required(
-                        _(
-                                "Connection to the server has been lost!"
+                        _("Connection to the server has been lost!")
                         )
-                    )
 
                 ver = self.manager.version
                 # we will set template path for sql scripts
@@ -143,7 +142,9 @@ class DatabaseView(NodeView):
 
     @check_precondition(action="list")
     def list(self, gid, sid):
-        SQL = render_template("/".join([self.template_path, 'properties.sql']))
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql'])
+            )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -157,8 +158,10 @@ class DatabaseView(NodeView):
     @check_precondition(action="nodes")
     def nodes(self, gid, sid):
         res = []
-        SQL = render_template("/".join([self.template_path, 'get_nodes.sql']))
-        status, rset = self.conn.execute_2darray(SQL)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql'])
+            )
+        status, rset = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=rset)
@@ -194,7 +197,10 @@ class DatabaseView(NodeView):
 
     @check_precondition(action="node")
     def node(self, gid, sid, did):
-        SQL = render_template("/".join([self.template_path, 'get_nodes.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            did=did, conn=self.conn
+            )
         status, rset = self.conn.execute_2darray(SQL)
 
         if not status:
@@ -205,7 +211,7 @@ class DatabaseView(NodeView):
                 connected=True
             else:
                 conn=self.manager.connection(row['name'])
-                connected=self.conn.connected()
+                connected=conn.connected()
             return make_json_response(
                     data=self.blueprint.generate_browser_node(
                         row['did'],
@@ -220,22 +226,35 @@ class DatabaseView(NodeView):
                     ),
                     status=200
                     )
+
+        return gone(errormsg=_("Couldn't find the database in the server!"))
+
+
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
-        SQL = render_template("/".join([self.template_path, 'properties.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            did=did, conn=self.conn
+            )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
 
-        SQL = render_template("/".join([self.template_path, 'acl.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            did=did, conn=self.conn
+            )
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         res = self.formatdbacl(res, dataclres['rows'])
 
-        SQL = render_template("/".join([self.template_path, 'defacl.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'defacl.sql']),
+            did=did, conn=self.conn
+            )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -244,7 +263,10 @@ class DatabaseView(NodeView):
 
         result = res['rows'][0]
         # Fetching variable for database
-        SQL = render_template("/".join([self.template_path, 'get_variables.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_variables.sql']),
+            did=did, conn=self.conn
+            )
 
         status, res1 = self.conn.execute_dict(SQL)
 
@@ -355,15 +377,17 @@ class DatabaseView(NodeView):
                         }
                     )
 
-    @check_precondition(action="getEncodings")
-    def getEncodings(self, gid, sid, did=None):
+    @check_precondition(action="get_encodings")
+    def get_encodings(self, gid, sid, did=None):
         """
         This function to return list of avialable encodings
         """
         res = [{ 'label': '', 'value': '' }]
         try:
-            SQL = render_template("/".join([self.template_path, 'get_encodings.sql']))
-            status, rset = self.conn.execute_2darray(SQL)
+            SQL = render_template(
+                "/".join([self.template_path, 'get_encodings.sql'])
+                )
+            status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
@@ -380,8 +404,8 @@ class DatabaseView(NodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    @check_precondition(action="getCtypes")
-    def getCtypes(self, gid, sid, did=None):
+    @check_precondition(action="get_ctypes")
+    def get_ctypes(self, gid, sid, did=None):
         """
         This function to return list of available collation/character types
         """
@@ -392,16 +416,16 @@ class DatabaseView(NodeView):
                         {'label': val, 'value': val}
                     )
         try:
-            SQL = render_template("/".join([self.template_path, 'get_ctypes.sql']))
-            status, rset = self.conn.execute_2darray(SQL)
+            SQL = render_template(
+                "/".join([self.template_path, 'get_ctypes.sql'])
+                )
+            status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             for row in rset['rows']:
                 if row['cname'] not in default_list:
-                    res.append(
-                                { 'label': row['cname'], 'value': row['cname'] }
-                            )
+                    res.append({'label': row['cname'], 'value': row['cname']})
 
             return make_json_response(
                     data=res,
@@ -431,7 +455,10 @@ class DatabaseView(NodeView):
                 )
         try:
             # The below SQL will execute CREATE DDL only
-            SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn
+                )
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=msg)
@@ -440,7 +467,10 @@ class DatabaseView(NodeView):
                 data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
 
             # The below SQL will execute rest DMLs because we can not execute CREATE with any other
-            SQL = render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'grant.sql']),
+                data=data, conn=self.conn
+                )
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, msg = self.conn.execute_scalar(SQL)
@@ -448,7 +478,10 @@ class DatabaseView(NodeView):
                     return internal_server_error(errormsg=msg)
 
             # We need oid of newly created database
-            SQL = render_template("/".join([self.template_path, 'properties.sql']), name=data['name'])
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                name=data['name'], conn=self.conn
+                )
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, res = self.conn.execute_dict(SQL)
@@ -487,20 +520,29 @@ class DatabaseView(NodeView):
 
         if did is not None:
             # Fetch the name of database for comparison
-            SQL = render_template("/".join([self.template_path, 'get_name.sql']), did=did)
-            status, name = self.conn.execute_scalar(SQL)
+            status, rset = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'nodes.sql']),
+                    did=did, conn=self.conn
+                    )
+                )
             if not status:
-                return internal_server_error(errormsg=name)
+                return internal_server_error(errormsg=rset)
 
-            data['old_name'] = name
+            if len(rset['rows']) == 0:
+                return gone(
+                    _("Couldn't find the database on the server!")
+                    )
+
+            data['old_name'] = (rset['rows'][0])['name']
             if 'name' not in data:
-                data['name'] = name
+                data['name'] = data['old_name']
 
         try:
             status = self.manager.release(did=did)
             conn = self.manager.connection()
             for action in ["rename_database", "tablespace"]:
-                SQL = self.getOfflineSQL(gid, sid, data, did, action)
+                SQL = self.get_offline_sql(gid, sid, data, did, action)
                 SQL = SQL.strip('\n').strip(' ')
                 if SQL and SQL != "":
                     status, msg = conn.execute_scalar(SQL)
@@ -512,7 +554,7 @@ class DatabaseView(NodeView):
             self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
             status, errmsg = self.conn.connect()
 
-            SQL = self.getOnlineSQL(gid, sid, data, did)
+            SQL = self.get_online_sql(gid, sid, data, did)
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, msg = self.conn.execute_scalar(SQL)
@@ -543,7 +585,10 @@ class DatabaseView(NodeView):
         """Delete the database."""
         try:
             default_conn = self.manager.connection()
-            SQL = render_template("/".join([self.template_path, 'delete.sql']), did=did)
+            SQL = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                did=did, conn=self.conn
+                )
             status, res = default_conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -559,7 +604,10 @@ class DatabaseView(NodeView):
 
                 status = self.manager.release(did=did)
 
-                SQL = render_template("/".join([self.template_path, 'delete.sql']), datname=res, conn=self.conn)
+                SQL = render_template(
+                    "/".join([self.template_path, 'delete.sql']),
+                    datname=res, conn=self.conn
+                    )
 
                 status, msg = default_conn.execute_scalar(SQL)
                 if not status:
@@ -587,40 +635,57 @@ class DatabaseView(NodeView):
             except ValueError:
                 data[k] = v
         try:
-            SQL = self.getSQL(gid, sid, data, did)
-            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.get_sql(gid, sid, data, did)
+
+            if not status:
+                return res
+
+            SQL = res.strip('\n').strip(' ')
+
             return make_json_response(
                     data=SQL,
                     status=200
                     )
         except Exception as e:
+            current_app.logger.exception(e)
             return make_json_response(
                     data="-- modified SQL",
                     status=200
                     )
 
-    def getSQL(self, gid, sid, data, did=None):
+    def get_sql(self, gid, sid, data, did=None):
         SQL = ''
         if did is not None:
             # Fetch the name of database for comparison
-            SQL = render_template("/".join([self.template_path, 'get_name.sql']), did=did)
-            status, name = self.conn.execute_scalar(SQL)
+            status, rset = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'nodes.sql']),
+                    did=did, conn=self.conn
+                    )
+                )
             if not status:
-                return internal_server_error(errormsg=name)
+                return False, internal_server_error(errormsg=rset)
 
-            data['old_name'] = name
+            if len(rset['rows']) == 0:
+                return False, gone(
+                    _("Couldn't find the database on the server!")
+                    )
+
+            data['old_name'] = (rset['rows'][0])['name']
             if 'name' not in data:
-                data['name'] = name
+                data['name'] = data['old_name']
+
             SQL = ''
             for action in ["rename_database", "tablespace"]:
-                SQL += self.getOfflineSQL(gid, sid, data, did, action)
+                SQL += self.get_offline_sql(gid, sid, data, did, action)
 
-            SQL += self.getOnlineSQL(gid, sid, data, did)
+            SQL += self.get_online_sql(gid, sid, data, did)
         else:
-            SQL += self.getNewSQL(gid, sid, data, did)
-        return SQL
+            SQL += self.get_new_sql(gid, sid, data, did)
 
-    def getNewSQL(self, gid, sid, data, did=None):
+        return True, SQL
+
+    def get_new_sql(self, gid, sid, data, did=None):
         """
         Generates sql for creating new database.
         """
@@ -630,52 +695,84 @@ class DatabaseView(NodeView):
 
         for arg in required_args:
             if arg not in data:
-                return " -- definition incomplete"
+                return _(" -- definition incomplete")
+
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'allowed_privs.json'])
+                )
+            acls = json.loads(acls)
+        except Exception as e:
+            current_app.logger.exception(e)
+
         # Privileges
-        if 'datacl' in data:
-            data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+                data[aclcol] = parse_priv_to_db(
+                    data[aclcol], allowedacl['acl']
+                    )
 
-        # Default privileges
-        for key in ['deftblacl', 'defseqacl', 'deffuncacl', 'deftypeacl']:
-            if key in data and data[key] is not None:
-                data[key] = parse_priv_to_db(data[key])
-
-        SQL = render_template("/".join([self.template_path, 'create.sql']), data=data)
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data, conn=self.conn
+            )
         SQL += "\n"
-        SQL += render_template("/".join([self.template_path, 'grant.sql']), data=data)
+        SQL += render_template(
+            "/".join([self.template_path, 'grant.sql']),
+            data=data, conn=self.conn
+            )
         return SQL
 
-    def getOnlineSQL(self, gid, sid, data, did=None):
+    def get_online_sql(self, gid, sid, data, did=None):
         """
         Generates sql for altering database which don not require
         database to be disconnected before applying.
         """
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'allowed_privs.json'])
+                )
+            acls = json.loads(acls)
+        except Exception as e:
+            current_app.logger.exception(e)
 
-        for key in ['datacl', 'deftblacl', 'defseqacl', 'deffuncacl', 'deftypeacl']:
-            if key in data and data[key] is not None:
-                if 'added' in data[key]:
-                  data[key]['added'] = parse_priv_to_db(data[key]['added'])
-                if 'changed' in data[key]:
-                  data[key]['changed'] = parse_priv_to_db(data[key]['changed'])
-                if 'deleted' in data[key]:
-                  data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'])
+        # Privileges
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
 
-        return render_template("/".join([self.template_path, 'alter_online.sql']), data=data, conn=self.conn)
+                for key in ['added', 'changed', 'deleted']:
+                    if key in data[aclcol]:
+                        data[aclcol][key] = parse_priv_to_db(
+                            data[aclcol][key], allowedacl['acl']
+                            )
 
-    def getOfflineSQL(self, gid, sid, data, did=None, action=None):
+        return render_template(
+            "/".join([self.template_path, 'alter_online.sql']),
+            data=data, conn=self.conn
+            )
+
+    def get_offline_sql(self, gid, sid, data, did=None, action=None):
         """
         Generates sql for altering database which require
         database to be disconnected before applying.
         """
 
-        return render_template("/".join([self.template_path, 'alter_offline.sql']),
-                               data=data, conn=self.conn, action=action)
+        return render_template(
+            "/".join([self.template_path, 'alter_offline.sql']),
+            data=data, conn=self.conn, action=action
+            )
 
     @check_precondition(action="variable_options")
     def variable_options(self, gid, sid):
-        res = []
-        SQL = render_template("/".join([self.template_path, 'variables.sql']))
+        SQL = render_template(
+            "/".join([self.template_path, 'variables.sql'])
+            )
         status, rset = self.conn.execute_dict(SQL)
+
         if not status:
             return internal_server_error(errormsg=rset)
 
@@ -684,23 +781,55 @@ class DatabaseView(NodeView):
                 status=200
                 )
 
+    @check_precondition()
+    def statistics(self, gid, sid, did=None):
+        """
+        statistics
+        Returns the statistics for a particular database if did is specified,
+        otherwise it will return statistics for all the databases in that
+        server.
+        """
+        status, res = self.conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'stats.sql']),
+                did=did, conn=self.conn
+                )
+            )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res['rows'],
+                status=200
+                )
+
     @check_precondition(action="sql")
     def sql(self, gid, sid, did):
         """
         This function will generate sql for sql panel
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            did=did, conn=self.conn
+            )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
-        SQL = render_template("/".join([self.template_path, 'acl.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            did=did, conn=self.conn
+            )
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
         res = self.formatdbacl(res, dataclres['rows'])
 
-        SQL = render_template("/".join([self.template_path, 'defacl.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'defacl.sql']),
+            did=did, conn=self.conn
+            )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -709,7 +838,10 @@ class DatabaseView(NodeView):
 
         result = res['rows'][0]
 
-        SQL = render_template("/".join([self.template_path, 'get_variables.sql']), did=did)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_variables.sql']),
+            did=did, conn=self.conn
+            )
         status, res1 = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res1)
@@ -717,7 +849,7 @@ class DatabaseView(NodeView):
         frmtd_reslt = self.formatter(result, res1)
         result.update(frmtd_reslt)
 
-        SQL = self.getNewSQL(gid, sid, result, did)
+        SQL = self.get_new_sql(gid, sid, result, did)
 
         return ajax_response(response=SQL)
 

@@ -19,7 +19,7 @@ FROM
 		-- PostgreSQL < 9.5
 		CASE WHEN rolsuper AND NOT rolcatupdate THEN E'\n\nUPDATE pg_authid SET rolcatupdate=false WHERE rolname=' || pg_catalog.quote_literal(rolname) || ';' ELSE '' END AS sql
 FROM
-	{{ role_tbl }} r
+	pg_roles r
 WHERE
 	r.oid=%(rid)s::OID
 UNION ALL

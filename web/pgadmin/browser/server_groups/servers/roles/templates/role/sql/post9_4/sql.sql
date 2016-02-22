@@ -19,7 +19,7 @@ FROM
 		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
 		CASE WHEN rolvaliduntil IS NOT NULL THEN E'\n  VALID UNTIL ' || quote_literal(rolvaliduntil::text) ELSE ';' END AS sql
 FROM
-	{{ role_tbl }} r
+	pg_roles r
 WHERE
 	r.oid=%(rid)s::OID
 UNION ALL

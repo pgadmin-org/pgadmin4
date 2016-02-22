@@ -1,2 +1,6 @@
 {### SQL to fetch tablespace object stats ###}
-SELECT pg_size_pretty(pg_tablespace_size({{did}})) AS tablespace_size
+{% if tsid %}
+SELECT pg_size_pretty(pg_tablespace_size({{ tsid|qtLiteral }}::OID)) AS size
+{% else %}
+SELECT ts.spcname as name, pg_size_pretty(pg_tablespace_size(ts.oid)) AS size FROM pg_catalog.pg_tablespace ts;
+{% endif %}

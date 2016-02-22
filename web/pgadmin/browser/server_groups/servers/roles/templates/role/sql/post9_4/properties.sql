@@ -10,8 +10,8 @@ SELECT
 	) AS rolmembership,
 	(SELECT array_agg(provider || '=' || label) FROM pg_shseclabel sl1 WHERE sl1.objoid=r.oid) AS seclabels
 FROM
-	{{ role_tbl }} r
+	pg_roles r
 {% if rid %}
-WHERE r.oid = {{ rid }}::int
+WHERE r.oid = {{ rid|qtLiteral }}::int
 {% endif %}
 ORDER BY r.rolcanlogin, r.rolname

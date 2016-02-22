@@ -33,7 +33,7 @@ def parse_priv_from_db(db_privileges):
     return acl
 
 
-def parse_priv_to_db(str_privileges, object_type = None):
+def parse_priv_to_db(str_privileges, allowed_acls = []):
     """
     Common utility function to parse privileges before sending to database.
     """
@@ -51,18 +51,22 @@ def parse_priv_to_db(str_privileges, object_type = None):
         'U': 'USAGE',
         'X': 'EXECUTE'
         }
-    privileges_max_cnt = {
-        'DATABASE': 3,
-        'TABLESPACE': 2,
-        'SCHEMA': 2
-      }
 
     privileges = []
+    allowed_acls_len = len(allowed_acls)
 
     for priv in str_privileges:
         priv_with_grant = []
         priv_without_grant = []
+
         for privilege in priv['privileges']:
+
+            if privilege['privilege_type'] not in db_privileges:
+                continue
+
+            if privilege['privilege_type'] not in allowed_acls:
+                continue
+
             if privilege['with_grant']:
                 priv_with_grant.append(
                             db_privileges[privilege['privilege_type']]
@@ -72,19 +76,15 @@ def parse_priv_to_db(str_privileges, object_type = None):
                             db_privileges[privilege['privilege_type']]
                             )
 
-        if object_type in ("DATABASE", "SCHEMA", "TABLESPACE"):
-            priv_with_grant = ", ".join(priv_with_grant) if (
-              len(priv_with_grant) < privileges_max_cnt[object_type.upper()]
-              ) else 'ALL'
-            priv_without_grant = ", ".join(priv_without_grant) if (
-              len(priv_without_grant) < privileges_max_cnt[object_type.upper()]
-              ) else 'ALL'
-        else:
-            priv_with_grant = ", ".join(priv_with_grant)
-            priv_without_grant = ", ".join(priv_without_grant)
+        priv_with_grant = ", ".join(priv_with_grant) \
+             if len(priv_with_grant) < allowed_acls_len else 'ALL'
+        priv_without_grant = ", ".join(priv_without_grant) \
+            if len(priv_without_grant) < allowed_acls_len else 'ALL'
 
-        privileges.append({'grantee': priv['grantee'],
-                           'with_grant': priv_with_grant,
-                           'without_grant': priv_without_grant})
+        privileges.append({
+            'grantee': priv['grantee'],
+            'with_grant': priv_with_grant,
+            'without_grant': priv_without_grant
+            })
 
     return privileges
