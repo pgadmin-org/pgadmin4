@@ -634,6 +634,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'SQL_TAB': '{{ _('SQL') }}',
       'SQL_NO_CHANGE': '\n -- ' + '{{ _('Nothing changed') }}',
       'MUST_BE_INT' : " {{ _("'%%s' must be an integer.") }}",
+      'MUST_BE_NUM' : " {{ _("'%%s' must be a numeric.") }}",
       'MUST_GR_EQ' : " {{ _("'%%s' must be greater than or equals to %%d.") }}",
       'MUST_LESS_EQ' : " {{ _("'%%s' must be less than or equals to %%d.") }}"
     }
