@@ -152,9 +152,19 @@
         privileges.add(p, {silent: true});
       });
 
+      this.on("change:grantee", this.granteeChanged)
       return this;
     },
-
+    granteeChanged: function() {
+      var privileges = this.get('privileges'),
+        grantee = this.get('grantee');
+      // Reset all with grant options if grantee is public.
+      if (grantee == 'public') {
+        privileges.each(function(m) {
+          m.set("with_grant", false);
+        });
+      }
+    },
     toJSON: function(session) {
       if (session) {
         return pgNode.Model.prototype.toJSON.apply(this, arguments);
@@ -231,145 +241,155 @@
         ' </td>',
         ' <td class="renderable">',
         '  <label>',
-        '   <input type="checkbox" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= privilege ? "" : \'disabled\'%>></input>',
+        '   <input type="checkbox" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= enable_with_grant ? "" : \'disabled\'%>></input>',
         '   WITH GRANT OPTION',
         '  </label>',
         ' </td>',
         '</tr>'].join(" "), null, {variable: null}),
 
-    events: {
-      'change': 'privilegeChanged',
-      'blur': 'lostFocus'
-    },
+      events: {
+        'change': 'privilegeChanged',
+        'blur': 'lostFocus'
+      },
 
-    render: function () {
-      this.$el.empty();
-      this.$el.attr('tabindex', '1');
-      this.$el.attr('target', this.elId);
+      render: function () {
+        this.$el.empty();
+        this.$el.attr('tabindex', '1');
+        this.$el.attr('target', this.elId);
 
-      var collection = this.model.get(this.column.get("name")),
-          tbl = $("<table></table>").appendTo(this.$el),
-          self = this,
-          privilege = true, with_grant = true;
+        var collection = this.model.get(this.column.get("name")),
+            tbl = $("<table></table>").appendTo(this.$el),
+            self = this,
+            privilege = true, with_grant = true;
 
-      // For each privilege generate html template.
-      // List down all the Privilege model.
-      collection.each(function(m) {
-        var d = m.toJSON();
+        // For each privilege generate html template.
+        // List down all the Privilege model.
+        collection.each(function(m) {
+          var d = m.toJSON();
 
-        privilege = (privilege && d.privilege);
-        with_grant = (with_grant && privilege && d.with_grant);
+          privilege = (privilege && d.privilege);
+          with_grant = (with_grant && privilege && d.with_grant);
 
-        _.extend(
-          d, {
-            'target': self.cid,
-            'header': false,
-            'privilege_label': self.Labels[d.privilege_type]
-            });
-        privilege = (privilege && d.privilege);
-        with_grant = (with_grant && privilege && d.with_grant);
-        tbl.append(self.template(d));
-      });
-
-      if (collection.length > 1) {
-        // Preprend the ALL controls on that table
-        tbl.prepend(
-            self.template({
+          _.extend(
+            d, {
               'target': self.cid,
-              'privilege_label': 'ALL',
-              'privilege_type': 'ALL',
-              'privilege': privilege,
-              'with_grant': with_grant,
-              'header': true
-            }));
-      }
-      self.$el.find('input[type=checkbox]').first().focus();
-      // Since blur event does not bubble we need to explicitly call parent's blur event.
-      $(self.$el.find('input[type=checkbox]')).on('blur',function() {
-        self.$el.blur();
-      });
+              'header': false,
+              'privilege_label': self.Labels[d.privilege_type],
+              'with_grant': (self.model.get('grantee') != 'public' && d.with_grant),
+              'enable_with_grant': (self.model.get('grantee') != 'public' && d.privilege)
+              });
+          privilege = (privilege && d.privilege);
+          with_grant = (with_grant && privilege && d.with_grant);
+          tbl.append(self.template(d));
+        });
 
-      // Make row visible in when entering in edit mode.
-      $(self.$el).pgMakeVisible('backform-tab');
+        if (collection.length > 1) {
+          // Preprend the ALL controls on that table
+          tbl.prepend(
+              self.template({
+                'target': self.cid,
+                'privilege_label': 'ALL',
+                'privilege_type': 'ALL',
+                'privilege': privilege,
+                'with_grant': (self.model.get('grantee') != 'public' && with_grant),
+                'enable_with_grant': (self.model.get('grantee') != 'public' && privilege),
+                'header': true
+              }));
+        }
+        self.$el.find('input[type=checkbox]').first().focus();
+        // Since blur event does not bubble we need to explicitly call parent's blur event.
+        $(self.$el.find('input[type=checkbox]')).on('blur',function() {
+          self.$el.blur();
+        });
 
-      self.delegateEvents();
+        // Make row visible in when entering in edit mode.
+        $(self.$el).pgMakeVisible('backform-tab');
 
-      return this;
-    },
+        self.delegateEvents();
 
-    /*
-     * Listen to the checkbox value change and update the model accordingly.
-     */
-    privilegeChanged: function(ev) {
-      if (ev && ev.target) {
-        /*
-         * We're looking for checkboxes only.
-         */
-        var $el = $(ev.target),
-            privilege_type = $el.attr('privilege'),
-            type = $el.attr('name'),
-            checked = $el.prop('checked'),
-            $tr = $el.closest('tr'),
-            $tbl = $tr.closest('table'),
-            collection = this.model.get('privileges');
+        return this;
+      },
 
-        /*
-         * If the checkbox selected/deselected is for 'ALL', we will select all
-         * the checkbox for each privilege.
-         */
-        if (privilege_type == 'ALL') {
-          var $elGrant = $tr.find('input[name=with_grant]'),
-              $allPrivileges = $tbl.find(
-                  'input[name=privilege][privilege!=\'ALL\']'
-                  ),
-              $allGrants = $tbl.find(
-                  'input[name=with_grant][privilege!=\'ALL\']'
-                  ),
-              allPrivilege, allWithGrant;
+      /*
+       * Listen to the checkbox value change and update the model accordingly.
+       */
+      privilegeChanged: function(ev) {
+        if (ev && ev.target) {
+          /*
+           * We're looking for checkboxes only.
+           */
+          var $el = $(ev.target),
+              privilege_type = $el.attr('privilege'),
+              type = $el.attr('name'),
+              checked = $el.prop('checked'),
+              $tr = $el.closest('tr'),
+              $tbl = $tr.closest('table'),
+              collection = this.model.get('privileges'),
+              grantee = this.model.get('grantee');
 
-          if (type == 'privilege') {
-            /*
-             * We clicked the privilege checkbox, and not checkbox for with
-             * grant options.
-             */
-            allPrivilege = checked;
-            allWithGrant = false;
+          /*
+           * If the checkbox selected/deselected is for 'ALL', we will select all
+           * the checkbox for each privilege.
+           */
+          if (privilege_type == 'ALL') {
+            var $elGrant = $tr.find('input[name=with_grant]'),
+                $allPrivileges = $tbl.find(
+                    'input[name=privilege][privilege!=\'ALL\']'
+                    ),
+                $allGrants = $tbl.find(
+                    'input[name=with_grant][privilege!=\'ALL\']'
+                    ),
+                allPrivilege, allWithGrant;
 
-            if (checked) {
-              $allPrivileges.prop('checked', true);
+            if (type == 'privilege') {
               /*
-               * We have clicked the ALL checkbox, we should be able to select
-               * the grant options too.
+               * We clicked the privilege checkbox, and not checkbox for with
+               * grant options.
                */
-              $allGrants.prop('disabled', false);
-              $elGrant.prop('disabled', false);
+              allPrivilege = checked;
+              allWithGrant = false;
+
+              if (checked) {
+                $allPrivileges.prop('checked', true);
+                /*
+                 * We have clicked the ALL checkbox, we should be able to select
+                 * the grant options too.
+                 */
+                if (grantee == 'public') {
+                  $allGrants.prop('disabled', true);
+                  $elGrant.prop('disabled', true);
+                } else {
+                  $allGrants.prop('disabled', false);
+                  $elGrant.prop('disabled', false);
+                }
+
+              } else {
+                /*
+                 * ALL checkbox has been deselected, hence - we need to make
+                 * sure.
+                 * 1. Deselect all the privileges checkboxes
+                 * 2. Deselect and disable all with grant privilege checkboxes.
+                 * 3. Deselect and disable the checkbox for ALL with grant privilege.
+                 */
+                $allPrivileges.prop('checked', false);
+                $elGrant.prop('checked', false),
+                $allGrants.prop('checked', false);
+                $elGrant.prop('disabled', true);
+                $allGrants.prop('disabled', true);
+              }
             } else {
               /*
-               * ALL checkbox has been deselected, hence - we need to make
-               * sure.
-               * 1. Deselect all the privileges checkboxes
-               * 2. Deselect and disable all with grant privilege checkboxes.
-               * 3. Deselect and disable the checkbox for ALL with grant privilege.
+               * We were able to click the ALL with grant privilege checkbox,
+               * that means, privilege for Privileges are true.
+               *
+               * We need to select/deselect all the with grant options
+               * checkboxes, based on the current value of the ALL with grant
+               * privilege checkbox.
                */
-              $allPrivileges.prop('checked', false);
-              $elGrant.prop('checked', false),
-              $allGrants.prop('checked', false);
-              $elGrant.prop('disabled', true);
-              $allGrants.prop('disabled', true);
+              allPrivilege = true;
+              allWithGrant = checked;
+              $allGrants.prop('checked', checked);
             }
-          } else {
-            /*
-             * We were able to click the ALL with grant privilege checkbox,
-             * that means, privilege for Privileges are true.
-             *
-             * We need to select/deselect all the with grant options
-             * checkboxes, based on the current value of the ALL with grant
-             * privilege checkbox.
-             */
-            allPrivilege = true;
-            allWithGrant = checked;
-            $allGrants.prop('checked', checked);
-          }
 
           /*
            * Set the values for each Privilege Model.
@@ -402,8 +422,8 @@
               $allPrivilege.prop('checked', false);
               $allGrant.prop('disabled', true);
               $allGrant.prop('checked', false);
-            } else {
-              $elGrant.prop('disabled', false);
+            } else if (grantee != "public") {
+                $elGrant.prop('disabled', false);
             }
           } else if (!checked) {
             $allGrant.prop('checked', false);
@@ -428,7 +448,7 @@
                   $allGrant.prop('disabled', false);
                   $allGrant.prop('checked', true);
                 }
-              } else {
+              } else if (grantee != "public") {
                 $allGrant.prop('disabled', false);
               }
             }
@@ -437,7 +457,7 @@
       }
     },
 
-    lostFocus: function(ev) {
+      lostFocus: function(ev) {
       /*
        * We lost the focus, it's time for us to exit the editor.
        */
@@ -519,7 +539,24 @@
   var PrivilegeCell = Backgrid.Extension.PrivilegeCell = Backgrid.Cell.extend({
     className: "edit-cell",
     formatter: PrivilegeCellFormatter,
-    editor: PrivilegeCellEditor
+    editor: PrivilegeCellEditor,
+
+    initialize: function (options) {
+      var self = this;
+      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+
+      self.model.on("change:grantee", function () {
+        if (!self.$el.hasClass("editor")) {
+          /*
+           * Add time out before render; As we might want to wait till model
+           * is updated by PrivilegeRoleModel:granteeChanged.
+           */
+          setTimeout(function() {
+            self.render();
+          },10);
+        }
+      });
+    }
   });
 
   return PrivilegeRoleModel;
