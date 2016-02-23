@@ -9,7 +9,7 @@ define(
         node: 'resource_group',
         label: '{{ _('Resource Groups') }}',
         type: 'coll-resource_group',
-        columns: ['name']
+        columns: ['name', 'cpu_rate_limit', 'dirty_rate_limit']
     });
   };
 
@@ -72,10 +72,10 @@ define(
           id: 'name', label: '{{ _('Group Name') }}', cell: 'string',
           type: 'text',
         },{
-          id: 'cpu_rate_limit', label:'{{ _('CPU Rate Limit') }}', cell: 'string',
+          id: 'cpu_rate_limit', label:'{{ _('CPU Rate Limit (%%)') }}', cell: 'string',
           type: 'numeric', min:0, max:16777216
         },{
-          id: 'dirty_rate_limit', label:'{{ _('Dirty Rate Limit') }}', cell: 'string',
+          id: 'dirty_rate_limit', label:'{{ _('Dirty Rate Limit (KB)') }}', cell: 'string',
           type: 'numeric', min:0, max:16777216
         }],
 
