@@ -23,6 +23,7 @@
 #include <QtWidgets>
 #else
 #include <QApplication>
+#include <QtGui>
 #include <Qt/qurl.h>
 #endif
 

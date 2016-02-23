@@ -14,7 +14,11 @@
 
 #include "pgAdmin4.h"
 
+#if QT_VERSION >= 0x050000
 #include <QtWebKitWidgets>
+#else
+#include <QWebView>
+#endif
 
 class WebViewWindow : public QWebView
 {

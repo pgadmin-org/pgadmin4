@@ -71,8 +71,6 @@ FORMS       =   BrowserWindow.ui \
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 
-cache()
-
 RESOURCES += \
     pgadmin4.qrc
 

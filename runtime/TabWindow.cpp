@@ -14,6 +14,7 @@
 // App headers
 #include "TabWindow.h"
 
+#include <QWebHistory>
 
 TabWindow::TabWindow(QWidget *parent) :
     QTabWidget(parent)

@@ -197,7 +197,7 @@ int BrowserWindow::findURLTab(const QUrl &name)
                 {
 	            webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
 
-	            if (webviewPtr != NULL && !QString::compare(webviewPtr->getFirstLoadURL(),name.url(), Qt::CaseInsensitive))
+	            if (webviewPtr != NULL && !QString::compare(webviewPtr->getFirstLoadURL(),name.host(), Qt::CaseInsensitive))
 	            {
 		        m_tabWidget->setCurrentIndex(tabCount);
 		        return 1;
@@ -412,7 +412,7 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
         m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::LeftSide, m_widget);
         m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_btnClose);
 
-        m_addNewWebView->setFirstLoadURL(name.url());
+        m_addNewWebView->setFirstLoadURL(name.host());
         m_addNewWebView->setTabIndex((m_tabWidget->count() - 1));
         m_addNewWebView->setUrl(name);
     }

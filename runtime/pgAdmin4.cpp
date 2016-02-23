@@ -29,6 +29,17 @@
 #include "ConfigWindow.h"
 #include "Server.h"
 
+#include <QTime>
+
+void delay( int milliseconds )
+{
+    QTime endTime = QTime::currentTime().addMSecs( milliseconds );
+    while( QTime::currentTime() < endTime )
+    {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+}
+
 int main(int argc, char * argv[])
 {
     // Create the QT application
@@ -47,8 +58,8 @@ int main(int argc, char * argv[])
     // Hence - putting this code in a code block so the scope of the socket
     // variable vanishes to make that socket available.
     {
-        QTcpSocket socket;
-        socket.bind(0, QAbstractSocket::DontShareAddress);
+        QUdpSocket socket;
+        socket.bind(0, QUdpSocket::ShareAddress);
         port = socket.localPort();
     }
 
@@ -69,7 +80,7 @@ int main(int argc, char * argv[])
 
     // This is a hack. Wait a second and then check to see if the server thread
     // is still running. If it's not, we probably had a startup error
-    QThread::sleep(1);
+    delay(1000);
 
     // Any errors?
     if (server->isFinished() || server->getError().length() > 0)
@@ -127,7 +138,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
-        QThread::sleep(1);
+        delay(1000);
     }
 
     // Create & show the main window
