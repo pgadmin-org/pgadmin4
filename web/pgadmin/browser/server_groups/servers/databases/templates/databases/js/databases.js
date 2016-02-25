@@ -306,7 +306,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           var name = this.get('name');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name can not be empty!') }}';
+            var msg = '{{ _('Database name cannot be empty!') }}';
             this.errorModel.set('name', msg);
             return msg;
           } else {
