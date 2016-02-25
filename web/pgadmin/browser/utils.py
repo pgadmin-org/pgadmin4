@@ -491,7 +491,7 @@ class PGChildNodeView(NodeView):
                             type_name = 'table'
                     elif type_str[0] == 'R':
                         type_name = 'rule'
-                        ref_name = _ref_name + ' ON ' + _ref_name + row['ownertable']
+                        ref_name = _ref_name + ' ON ' + ref_name + row['ownertable']
                         _ref_name = None
                     elif type_str[0] == 'C':
                         if type_str[1] == 'c':
