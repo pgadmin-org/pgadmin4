@@ -1,5 +1,5 @@
 {### SQL to update tablespace object ###}
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% if data %}
@@ -41,17 +41,17 @@ COMMENT ON TABLESPACE {{ conn|qtIdent(data.name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.DROP(conn, 'TABLESPACE', data.name, r.provider) }}
+{{ SECLABEL.DROP(conn, 'TABLESPACE', data.name, r.provider) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
 {% endfor %}
 {% endif %}
 

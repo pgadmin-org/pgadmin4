@@ -3,7 +3,7 @@
 # other sql statments along with it, so we wrote
 # seprate sql for rest alter sql statments here
 #}
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
@@ -15,7 +15,7 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
 {# We will generate Security Label SQL's using macro #}
 {% if data.securities %}
 {% for r in data.securities %}
-{{ SECLABLE.APPLY(conn, 'DATABASE', data.name, r.provider, r.securitylabel) }}
+{{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.securitylabel) }}
 {% endfor %}
 {% endif %}
 {# We will generate Variable SQL's using macro #}

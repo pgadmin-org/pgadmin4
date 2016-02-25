@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 CREATE {% if data.rolcanlogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data.rolcanlogin is sameas True  %}
 

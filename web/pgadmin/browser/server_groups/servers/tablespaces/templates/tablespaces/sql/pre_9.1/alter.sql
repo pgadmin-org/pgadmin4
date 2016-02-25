@@ -1,5 +1,5 @@
 {### SQL to alter tablespace ###}
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% if data %}
@@ -18,7 +18,7 @@ COMMENT ON TABLESPACE {{ conn|qtIdent(data.name) }}
 {### Security Labels on tablespace ###}
 {% if data.seclabels and data.seclabels|length > 0 %}
 {% for r in data.seclabels %}
-{{ SECLABLE.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
 {% endfor %}
 
 {% endif %}

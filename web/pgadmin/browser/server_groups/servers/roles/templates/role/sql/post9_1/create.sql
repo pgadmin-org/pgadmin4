@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 CREATE {% if data.rolcanlogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data.rolcanlogin is sameas True  %}
 
@@ -42,7 +42,7 @@ GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(data.rolname
 
 {% for r in data.seclabels %}
 
-{{ SECLABLE.APPLY(conn, 'ROLE', data.rolname, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'ROLE', data.rolname, r.provider, r.label) }}
 {% endfor %}{% endif %}{% if data.variables %}
 
 {% for var in data.variables %}
