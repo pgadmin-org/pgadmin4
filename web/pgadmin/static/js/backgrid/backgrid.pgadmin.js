@@ -246,7 +246,7 @@
         that = this;
         Alertify.confirm(
             'Delete Row',
-            'Are You Sure, you want to delete this object?',
+            'Are you sure you wish to delete this row?',
             function(evt) {
               that.model.collection.remove(that.model);
             },
