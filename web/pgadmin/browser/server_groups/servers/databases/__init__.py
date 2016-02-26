@@ -6,6 +6,9 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
+"""Implements the Database Node"""
+
 import json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask.ext.babel import gettext as _
@@ -17,6 +20,8 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups.servers as servers
 from pgadmin.utils.ajax import precondition_required, gone
+from pgadmin.browser.server_groups.servers.databases.utils import \
+    parse_sec_labels_from_db, parse_variables_from_db
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from functools import wraps
@@ -273,41 +278,19 @@ class DatabaseView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res1)
-        # sending result to formtter
-        frmtd_reslt = self.formatter(result, res1)
-        # mergeing formated result with main result again
-        result.update(frmtd_reslt)
+
+        # Get Formatted Security Labels
+        frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+        result.update(frmtd_sec_labels)
+
+        # Get Formatted Variables
+        frmtd_variables = parse_variables_from_db(res1['rows'])
+        result.update(frmtd_variables)
+
         return ajax_response(
                 response=result,
                 status=200
                 )
-
-    @staticmethod
-    def formatter(result, varibles_rset):
-        """ We will use this function to format our output for
-        security label & variables"""
-        frmtd_result = dict()
-        sec_lbls = []
-        if 'seclabels' in result and result['seclabels'] is not None:
-            for sec in result['seclabels']:
-                sec = re.search(r'([^=]+)=(.*$)', sec)
-                sec_lbls.append({
-                    'provider': sec.group(1),
-                    'security_label': sec.group(2)
-                    })
-        frmtd_result.update({"seclabels" :sec_lbls})
-
-        variablesLst = []
-        for row in varibles_rset['rows']:
-            for d in row['setconfig']:
-                var_name, var_value = d.split("=")
-                # Because we save as boolean string in db so it needs conversion
-                if var_value == 'false' or var_value == 'off':
-                    var_value = False
-                variablesLst.append({'role': row['user_name'], 'name': var_name, 'value': var_value, 'database': row['db_name']})
-        frmtd_result.update({"variables" : variablesLst})
-        # returning final result
-        return frmtd_result
 
     @staticmethod
     def formatdbacl(res, dbacl):
@@ -847,8 +830,13 @@ class DatabaseView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res1)
 
-        frmtd_reslt = self.formatter(result, res1)
-        result.update(frmtd_reslt)
+        # Get Formatted Security Labels
+        frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+        result.update(frmtd_sec_labels)
+
+        # Get Formatted Variables
+        frmtd_variables = parse_variables_from_db(res1['rows'])
+        result.update(frmtd_variables)
 
         SQL = self.get_new_sql(gid, sid, result, did)
 
