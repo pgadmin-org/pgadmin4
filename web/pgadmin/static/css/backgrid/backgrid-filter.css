@@ -1,0 +1,201 @@
+/*
+  backgrid-filter
+  http://github.com/wyuenho/backgrid
+
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
+  Licensed under the MIT @license.
+*/
+
+/*
+  Search Icon CSS derived from:
+
+  PURE CSS GUI ICONS
+  by Nicolas Gallagher
+  - http://nicolasgallagher.com/pure-css-gui-icons/
+
+  http://nicolasgallagher.com
+  http://twitter.com/necolas
+
+  Created: 29 July 2010
+  Version: 1.0.1
+
+  Dual licensed under MIT and GNU GPLv2 (c) Nicolas Gallagher
+*/
+
+.backgrid-filter.form-search {
+  position: relative;
+  width: 248px;
+  height: 30px;
+  margin: 20px;
+}
+
+/*
+  Search Icon
+*/
+
+.backgrid-filter .search {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  z-index: 1000;
+  width: 10px;
+  height: 20px;
+  margin-top: -10px;
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+.backgrid-filter .search:before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: -6px;
+  background: transparent;
+  border: 3px solid gray;
+  -webkit-border-radius: 12px;
+     -moz-border-radius: 12px;
+          border-radius: 12px;
+  content: "";
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+.backgrid-filter .search:after {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 3px;
+  height: 7px;
+  margin-top: 2px;
+  background-color: gray;
+  content: "";
+  -webkit-transform: rotate(-45deg);
+     -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+       -o-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+/*
+  Clear button
+ */
+
+.backgrid-filter .clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  z-index: 1000;
+  width: 10px;
+  height: 20px;
+  margin-top: -10px;
+  font-family: sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 20px;
+  color: gray;
+  text-decoration: none;
+}
+
+.backgrid-filter input[type="search"] {
+  position: absolute;
+  display: inline-block;
+  width: 206px;
+  height: 20px;
+  padding: 4px 6px;
+  font-weight: normal;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+     -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+       -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+          transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+
+/*
+  Normalize the search input box, with code borrowed from normalize.css.
+
+  https://github.com/necolas/normalize.css/
+
+  Copyright (c) Nicolas Gallagher and Jonathan Neal, MIT @license.
+ */
+
+/*
+ * 1. Correct font family not being inherited in all browsers.
+ * 2. Correct font size not being inherited in all browsers.
+ * 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome.
+ * 4. Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet.
+ */
+
+.backgrid-filter input {
+  margin: 0;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: normal;
+}
+
+/*
+ * Re-set default cursor for disabled elements.
+ */
+
+.backgrid-filter input[disabled] {
+  cursor: default;
+}
+
+/*
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+.backgrid-filter input[type="search"] {
+  outline: none;
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+  -webkit-appearance: none;
+}
+
+/*
+ * Remove the default clear button on IE
+ */
+
+.backgrid-filter input[type="search"]::-ms-clear {
+  display: none;
+}
+
+/*
+ * Remove the default clear button on WebKit browsers
+ */
+
+.backgrid-filter input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/*
+ * Remove inner padding and border in Firefox 4+.
+ */
+
+.backgrid-filter input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.backgrid-filter input[type="search"] {
+  padding-right: 18px;
+  padding-left: 22px;
+}

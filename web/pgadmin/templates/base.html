@@ -24,6 +24,9 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-select-all.css' if config.DEBUG else 'css/backgrid/backgrid-select-all.min.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-paginator.css' if config.DEBUG else 'css/backgrid/backgrid-paginator.min.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-filter.css' if config.DEBUG else 'css/backgrid/backgrid-filter.min.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
 
         <!-- View specified stylesheets -->
@@ -32,6 +35,7 @@
         {% endfor %}
 
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
+        {% block css_link %}{% endblock %}
 
         <!-- Base template scripts -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/require.js' if config.DEBUG else 'js/require.min.js') }}"></script>
@@ -44,12 +48,24 @@
                         "deps": ['underscore', 'jquery'],
                         "exports": 'Backbone'
                     },
+                    "backbone.paginator": {
+                        "deps": ['underscore', 'jquery', 'backbone']
+                    },
                     "bootstrap": {
                         "deps": ['jquery'],
                     },
                     "backgrid": {
                         "deps": ['backform'],
                         "exports": 'Backgrid',
+                    },
+                    "backgrid.select.all": {
+                        "deps": ['backgrid']
+                    },
+                    "backgrid.paginator": {
+                        "deps": ['backgrid', 'backbone.paginator']
+                    },
+                    "backgrid.filter": {
+                        "deps": ['backgrid']
                     },
                     "bootstrap.switch": {
                         "deps": ['jquery', 'bootstrap'],
@@ -85,10 +101,14 @@
                     alertifyjs: "{{ url_for('static', filename='js/alertifyjs/' + ('alertify' if config.DEBUG else 'alertify.min')) }}",
                     'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults') }}",
                     backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
+                    "backbone.paginator": "{{ url_for('static', filename='js/' + ('backbone.paginator' if config.DEBUG else 'backbone.paginator.min')) }}",
                     "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
                     "bootstrap.switch": "{{ url_for('static', filename='js/' + ('bootstrap-switch' if config.DEBUG else 'bootstrap-switch.min')) }}",
                     backform: "{{ url_for('static', filename='js/backform') }}",
                     backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",
+                    "backgrid.select.all": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-select-all' if config.DEBUG else 'backgrid-select-all.min')) }}",
+                    "backgrid.paginator": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-paginator' if config.DEBUG else 'backgrid-paginator.min')) }}",
+                    "backgrid.filter": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-filter' if config.DEBUG else 'backgrid-filter.min')) }}",
                     "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}"{% for script in current_app.javascripts %},
