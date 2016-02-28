@@ -366,7 +366,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
               } else {
                 pgAdmin.Browser.report_error(
                     S('Developer Warning: Callback - "%s" not found!').
-                    sprintf(o.cb).value()); 
+                    sprintf(o.cb).value());
               }
             }
           };
@@ -509,8 +509,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         // First - register the menus from the other
         // modules/extensions.
         if (counter.total == counter.loaded) {
-          {% set cnt = 1 %}
-          obj.add_menus([{% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if cnt != 1 %}, {% endif %} {
+          {% set hasMenus = None %}
+          obj.add_menus([{% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if hasMenus is not none %}, {% endif %} {
             name: "{{ item.name }}",
             {% if item.module %}module: {{ item.module }},
             {% endif %}{% if item.url %}url: "{{ item.url }}",
@@ -521,7 +521,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
             priority: {{ item.priority }},
             enable: '{{ item.enable }}'
-          }{% set cnt = cnt + 1 %}{% endfor %}{% set cnt = cnt + 1 %}{% endfor %}]);
+          }{% set hasMenus = True %}{% endfor %}{% endfor %}]);
           obj.create_menus();
         } else {
           // recall after some time
@@ -629,7 +629,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     },
     messages: {
       'server_lost': '{{ _('Connection to the server has been lost!') }}',
-      'click_for_detailed_msg': '{{ _('%s<br><br>click here for details!') }}',
+      'click_for_detailed_msg': '{{ _('%%s<br><br>click here for details!') }}',
       'general_cateogty': '{{ _('General') }}',
       'SQL_TAB': '{{ _('SQL') }}',
       'SQL_NO_CHANGE': '-- ' + '{{ _('Nothing changed') }}',
