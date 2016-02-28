@@ -550,12 +550,16 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           if (m.init && typeof(m.init) == 'function')
             m.init();
         } catch (e) {
+          // Log this exception on console to understand the issue properly.
+          console.log(e);
           obj.report_error(
             '{{ _('Error loading script - ') }}' + path);
         }
         if (c)
         c.loaded += 1;
       }, function() {
+        // Log the arguments on console to understand the issue properly.
+        console.log(arguments);
         obj.report_error(
           '{{ _('Error loading script - ') }}' + path);
       });
