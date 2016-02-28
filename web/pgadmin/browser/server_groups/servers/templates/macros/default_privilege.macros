@@ -1,11 +1,11 @@
 {% macro APPLY(conn, type, role, priv, with_grant) -%}
 {% if priv %}
 ALTER DEFAULT PRIVILEGES
-GRANT {{ priv }} ON {{ type }} TO {{ conn|qtIdent(role) }};
+    GRANT {{ priv }} ON {{ type }} TO {{ conn|qtIdent(role) }};
 {% endif %}
 {% if with_grant %}
 ALTER DEFAULT PRIVILEGES
-GRANT {{ with_grant }} ON {{ type }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+    GRANT {{ with_grant }} ON {{ type }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
 {% endif %}
 {%- endmacro %}
 {% macro RESETALL(conn, type, role) -%}
@@ -16,11 +16,11 @@ ALTER DEFAULT PRIVILEGES
 {% macro SET(conn, db_object_type, db_object_name, type, role, priv, with_grant) -%}
 {% if priv %}
 ALTER DEFAULT PRIVILEGES IN {{ db_object_type }} {{ conn|qtIdent(db_object_name) }}
-GRANT {{ priv }} ON {{ type }} TO {{ conn|qtIdent(role) }};
+    GRANT {{ priv }} ON {{ type }} TO {{ conn|qtIdent(role) }};
 {% endif %}
 {% if with_grant %}
 ALTER DEFAULT PRIVILEGES IN {{ db_object_type }} {{ conn|qtIdent(db_object_name) }}
-GRANT {{ with_grant }} ON {{ type }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+    GRANT {{ with_grant }} ON {{ type }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
 {% endif %}
 {%- endmacro %}
 {% macro UNSET(conn, db_object_type, db_object_name, type, role) -%}
