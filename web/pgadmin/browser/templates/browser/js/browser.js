@@ -509,8 +509,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         // First - register the menus from the other
         // modules/extensions.
         if (counter.total == counter.loaded) {
-          {% set hasMenus = None %}
-          obj.add_menus([{% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if hasMenus is not none %}, {% endif %} {
+{% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}{% set menu_items = current_app.menu_items['%s_items' % key.lower()] %}{% if menu_items|length > 0 %}{% set hasMenus = False %}
+          obj.add_menus([{% for item in menu_items %}{% if hasMenus %},{% endif %}{
             name: "{{ item.name }}",
             {% if item.module %}module: {{ item.module }},
             {% endif %}{% if item.url %}url: "{{ item.url }}",
@@ -521,7 +521,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
             priority: {{ item.priority }},
             enable: '{{ item.enable }}'
-          }{% set hasMenus = True %}{% endfor %}{% endfor %}]);
+          }{% set hasMenus = True %}{% endfor %}]);
+{% endif %}{% endfor %}
           obj.create_menus();
         } else {
           // recall after some time
