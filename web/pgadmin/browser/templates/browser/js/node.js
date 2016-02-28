@@ -551,7 +551,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             d = t.itemData(i);
 
         t.unload(i);
-        t.setInode((d && d.inode) || false);
+        t.setInode(i, (d && d.inode) || false);
         t.deselect(i);
 
         setTimeout(function() {
