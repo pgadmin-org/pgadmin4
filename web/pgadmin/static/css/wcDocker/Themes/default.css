@@ -19,8 +19,7 @@
 }
 
 .wcModalBlocker {
-  background-color: black;
-  opacity: 0.8;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .wcPanelBackground {
@@ -32,11 +31,11 @@
 }
 
 .wcFrameFlasher {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 .wcFrameShadower {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 .wcFrameTitleBar {
@@ -60,11 +59,11 @@
   background-color: #555555;
 }
 
-.wcFrameButton:hover {
+.wcFrameButton:hover, .wcFrameButtonHover {
   background-color: #666;
 }
 
-.wcFrameButton:active {
+.wcFrameButton:active, .wcFrameButtonActive {
   border: 2px inset #444;
 }
 
@@ -77,7 +76,7 @@
 }
 
 .wcLayoutGridAlternate tr:nth-child(even), .wcLayoutGridAltColor {
-  background-color: rgba(200, 200, 200, 0.2) !important;
+  background-color: rgba(200, 200, 200, 0.2);
 }
 
 .wcPanelTab {
@@ -94,7 +93,7 @@
   padding-bottom: 0px;
 }
 
-.wcPanelTab:hover {
+.wcPanelTab:hover, .wcPanelTabHover {
   background-color: #AAA;
 }
 
@@ -105,7 +104,7 @@
   margin-top: 1px;
 }
 
-.wcPanelTabActive:hover {
+.wcPanelTabActive:hover, .wcPanelTabActiveHover {
   background-color: #CCC;
 }
 
@@ -134,24 +133,24 @@
   border-radius: 6px;
 }
 
-::-webkit-scrollbar {
+.wcScrollbar, ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
   background-color: #888;
 }
 
-::-webkit-scrollbar-corner {
+.wcScrollbarCorner, ::-webkit-scrollbar-corner {
   background-color: #888;
 }
 
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+.wcScrollbarTrack, ::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
   border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb {
+.wcScrollbarThumb, ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.7);
+  box-shadow: inset -2px 0 6px rgba(0,0,0,0.7);
 }
 
 .wcMenuList, .context-menu-list {
@@ -230,7 +229,7 @@
   color: #555 !important;
 }
 
-.wcButton:focus, button:focus {
+.wcButtonFocus, .wcButton:focus, button:focus {
   outline: 0px;
 }
 

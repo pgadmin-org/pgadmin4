@@ -140,10 +140,15 @@ html, body {
   text-align: center;
   overflow: hidden;
   z-index: 1;
+  box-sizing: content-box;
 }
 
 .wcFrameButton > div {
   width: 100%;
+}
+
+.wcButton {
+  box-sizing: content-box;
 }
 
 .wcFrameCenter {
@@ -157,15 +162,12 @@ html, body {
 
 .wcFloating {
   position: fixed;
-  z-index: 10;
 }
 
 .wcFloatingFocus {
-  z-index: 20;
 }
 
 .wcModal {
-  z-index: 40;
 }
 
 .wcLayout, .wcLayout tr, .wcLayout td {
@@ -501,7 +503,9 @@ html, body {
 }
 
 .wcMenuSubMenu {
-  float: right;
+  position: absolute;
+  right: 3px;
+  top: 3px;
 }
 
 .wcIFrame, .wcIFrame iframe {
@@ -532,16 +536,20 @@ html, body {
   display: block;
 }
 
+.wcDisableSelection .wcIFrameFocus {
+  display: block;
+}
+
 .wcIFrame.wcDrawer {
   z-index: 6;
 }
 
 .wcIFrameFloating {
-  z-index: 11;
+  /*z-index: 11;*/
 }
 
 .wcIFrameFloatingFocus {
-  z-index: 21;
+  /*z-index: 21;*/
 }
 
 .wcIFrameHidden, .wcIFramePanelHidden {
@@ -605,7 +613,35 @@ html, body {
   text-align: center;
 }
 
+.wcFullSized {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .fa-pulse {
   -webkit-animation: fa-spin 1s infinite steps(8);
   animation: fa-spin 1s infinite steps(8);
+}
+
+.wcAttributeLabel {
+  white-space: nowrap;
+  padding-right: 10px;
+  text-align: right;
+}
+
+.wcAttributeControl {
+  width: 100%;
+}
+
+.wcAttributeSpacer, .wcAttributeSpacerSolid {
+  width: 100%;
+  height: 22px;
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.wcAttributeSpacerSolid {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
 }
