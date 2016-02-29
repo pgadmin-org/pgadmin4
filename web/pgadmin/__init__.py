@@ -16,14 +16,14 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import login_user
 from flask_mail import Mail
 from htmlmin.minify import html_minify
-from pgadmin.settings.settings_model import db, Role, User, Version
+from pgadmin.model import db, Role, User, Version
 from importlib import import_module
 from werkzeug.local import LocalProxy
 from pgadmin.utils import PgAdminModule, driver
 from werkzeug.utils import find_modules
 import sys
-import os
 import logging
+
 
 # Configuration settings
 import config
