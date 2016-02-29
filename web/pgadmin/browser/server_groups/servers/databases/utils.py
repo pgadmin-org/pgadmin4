@@ -65,7 +65,7 @@ def parse_variables_from_db(db_variables):
     variables_lst = []
 
     if db_variables is not None:
-        for row in db_varibles:
+        for row in db_variables:
             if 'setconfig' in row and row['setconfig'] is not None:
                 for d in row['setconfig']:
                     var_name, var_value = d.split("=")
