@@ -25,25 +25,11 @@ define(
          'showDependencies', 'dependenciesPanelVisibilityChanged', '__updateCollection'
       );
 
-      // Find the panels to render the grid.
-      var dependenciesPanels = this.dependenciesPanels = pgBrowser.docker.findPanels('dependencies');
-      var dependentsPanels = this.dependentsPanels = pgBrowser.docker.findPanels('dependents');
-
       // We will listened to the visibility change of the Dependencies and Dependents panel
       pgBrowser.Events.on('pgadmin-browser:panel-dependencies:' + wcDocker.EVENT.VISIBILITY_CHANGED,
                         this.dependenciesPanelVisibilityChanged);
       pgBrowser.Events.on('pgadmin-browser:panel-dependents:' + wcDocker.EVENT.VISIBILITY_CHANGED,
                         this.dependentsPanelVisibilityChanged);
-
-      // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
-      if ((dependenciesPanels.length == 1 && dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
-        pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
-      }
-
-      // If Dependents panel exists and is focused then we need to listen the browser tree selection events.
-      if ((dependentsPanels.length == 1 && dependentsPanels[0].isVisible()) || dependentsPanels.length != 1) {
-        pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
-      }
 
       // Defining Backbone Model for Dependencies and Dependents.
       var Model = Backbone.Model.extend({
@@ -85,7 +71,7 @@ define(
        * panel only once.
        */
       var appendGridToPanel = function(collection, panel, is_dependent) {
-        var $container = panel[0].layout().$table.find('.pg-panel-content'),
+        var $container = panel[0].layout().scene().find('.pg-panel-content'),
             $gridContainer = $container.find('.pg-panel-depends-container'),
             grid = new Backgrid.Grid({
               columns: [
@@ -127,16 +113,71 @@ define(
           self.dependenciesGrid = grid;
 
         $gridContainer.append(grid.render().el);
+
+        return true;
       };
 
-      appendGridToPanel(this.dependentCollection, this.dependentsPanels, true);
-      appendGridToPanel(this.dependenciesCollection, this.dependenciesPanels, false);
+      // We will listened to the visibility change of the Dependencies and Dependents panel
+      pgBrowser.Events.on('pgadmin-browser:panel-dependencies:' + wcDocker.EVENT.VISIBILITY_CHANGED,
+                        this.dependenciesPanelVisibilityChanged);
+      pgBrowser.Events.on('pgadmin-browser:panel-dependents:' + wcDocker.EVENT.VISIBILITY_CHANGED,
+                        this.dependentsPanelVisibilityChanged);
+
+      // We will render the grid objects in the panel after some time, because -
+      // it is possible, it is not yet available.
+      // Find the panels to render the grid.
+      var dependenciesPanels = this.dependenciesPanels = pgBrowser.docker.findPanels('dependencies');
+      var dependentsPanels = this.dependentsPanels = pgBrowser.docker.findPanels('dependents');
+
+      if (dependenciesPanels.length == 0) {
+        pgBrowser.Events.on(
+          'pgadmin-browser:panel-dependencies:' + wcDocker.EVENT.INIT,
+          function() {
+            this.dependenciesPanels = pgBrowser.docker.findPanels('dependencies');
+            appendGridToPanel(this.dependenciesCollection, this.dependenciesPanels, false);
+
+            // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
+            if ((dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
+            pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
+            }
+          }.bind(this)
+          );
+      } else {
+        appendGridToPanel(this.dependenciesCollection, this.dependenciesPanels, false);
+
+        // If Dependencies panel exists and is focused then we need to listen the browser tree selection events.
+        if ((dependenciesPanels[0].isVisible()) || dependenciesPanels.length != 1) {
+          pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependencies);
+        }
+      }
+
+      if (dependentsPanels.length == 0) {
+        pgBrowser.Events.on(
+          'pgadmin-browser:panel-dependents:' + wcDocker.EVENT.INIT,
+          function() {
+            this.dependentsPanels = pgBrowser.docker.findPanels('dependents');
+            appendGridToPanel(this.dependentCollection, this.dependentsPanels, true);
+
+            // If Dependents panel exists and is focused then we need to listen the browser tree selection events.
+            if ((dependentsPanels[0].isVisible()) || dependentsPanels.length != 1) {
+              pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
+            }
+          }.bind(this)
+          );
+      } else {
+        appendGridToPanel(this.dependentCollection, this.dependentsPanels, true);
+
+        // If Dependents panel exists and is focused then we need to listen the browser tree selection events.
+        if ((dependentsPanels[0].isVisible()) || dependentsPanels.length != 1) {
+          pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showDependents);
+        }
+      }
     },
 
     // Fetch the actual data and update the collection
     __updateCollection: function(collection, panel, url, messages, node) {
       var msg = messages[0],
-          $container = panel[0].layout().$table.find('.pg-panel-content'),
+          $container = panel[0].layout().scene().find('.pg-panel-content'),
           $msgContainer = $container.find('.pg-panel-depends-message'),
           $gridContainer = $container.find('.pg-panel-depends-container');
 

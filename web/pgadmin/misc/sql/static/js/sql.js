@@ -19,13 +19,30 @@ function(_, $, pgBrowser) {
       var sqlPanels = pgBrowser.docker.findPanels('sql');
 
       // We will listend to the visibility change of the SQL panel
-      pgBrowser.Events.on('pgadmin-browser:panel-sql:' + wcDocker.EVENT.VISIBILITY_CHANGED, this.sqlPanelVisibilityChanged);
+      pgBrowser.Events.on(
+        'pgadmin-browser:panel-sql:' + wcDocker.EVENT.VISIBILITY_CHANGED,
+        this.sqlPanelVisibilityChanged
+      );
 
       // Hmm.. Did we find the SQL panel, and is it visible (openned)?
       // If that is the case - we need to listen the browser tree selection
       // events.
-      if ((sqlPanels.length == 1 && sqlPanels[0].isVisible()) || sqlPanels.length != 1) {
-        pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showSQL);
+      if (sqlPanels.length == 0) {
+        pgBrowser.Events.on(
+          'pgadmin-browser:panel-sql:' + wcDocker.EVENT.INIT,
+          function() {
+            if ((sqlPanels[0].isVisible()) || sqlPanels.length != 1) {
+              pgBrowser.Events.on(
+                'pgadmin-browser:tree:selected', this.showSQL
+              );
+            }
+          }.bind(this)
+          );
+      }
+      else {
+        if ((sqlPanels[0].isVisible()) || sqlPanels.length != 1) {
+          pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showSQL);
+        }
       }
     },
     showSQL: function(item, data, node) {
