@@ -25,7 +25,6 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from functools import wraps
-import re
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -280,8 +279,10 @@ class DatabaseView(PGChildNodeView):
             return internal_server_error(errormsg=res1)
 
         # Get Formatted Security Labels
-        frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-        result.update(frmtd_sec_labels)
+        if 'seclabels' in result:
+            # Security Labels is not available for PostgreSQL <= 9.1
+            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+            result.update(frmtd_sec_labels)
 
         # Get Formatted Variables
         frmtd_variables = parse_variables_from_db(res1['rows'])
