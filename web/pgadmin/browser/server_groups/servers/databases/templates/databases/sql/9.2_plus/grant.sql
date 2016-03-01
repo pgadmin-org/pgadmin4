@@ -9,16 +9,16 @@
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data.comments %}
 COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
-  IS {{ data.comments|qtLiteral }};
+    IS {{ data.comments|qtLiteral }};
 {% endif %}
 
-{# To generate Security Label SQL using macro #}
+{# Generate the security labels #}
 {% if data.securities %}
 {% for r in data.securities %}
 {{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.securitylabel) }}
 {% endfor %}
 {% endif %}
-{# To generate Variable SQL using macro #}
+{# Generate the variable/options #}
 {% if data.variables %}
 {% for var in data.variables %}
 {% if var.value == True %}
@@ -30,6 +30,7 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% endfor %}
 {% endif %}
+{# Generate the privileges/ACLs #}
 {% if data.datacl %}
 {% for priv in data.datacl %}
 {{ PRIVILEGE.APPLY(conn, 'DATABASE', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}

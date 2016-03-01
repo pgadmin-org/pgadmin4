@@ -3,20 +3,20 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data %}
-{# To change owner #}
+{# Change the owner #}
 {% if data.datowner %}
 ALTER DATABASE {{ conn|qtIdent(data.name) }} OWNER TO {{ conn|qtIdent(data.datowner) }};
 {% endif %}
-{# TO change comments #}
+{# Change the comments/description #}
 {% if data.comments %}
 COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
-IS {{ data.comments|qtLiteral }};
+    IS {{ data.comments|qtLiteral }};
 {% endif %}
-{# TO change conn limit #}
+{# Change the connection limit #}
 {% if data.datconnlimit %}
 ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.datconnlimit }};
 {% endif %}
-{# To change Security Label #}
+{# Change the security labels #}
 {% if data.seclabels and data.seclabels|length > 0 %}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
@@ -35,7 +35,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endfor %}
 {% endif %}
 {% endif %}
-{# To change Variables #}
+{# Change the variables/options #}
 {% if data.variables and data.variables|length > 0 %}
 {% set variables = data.variables %}
 {% if 'deleted' in variables and variables.deleted|length > 0 %}
@@ -67,7 +67,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endif %}
 {% endif %}
 
-{# To change priviledges #}
+{# Change the priviledges/ACLs #}
 {% if data.datacl %}
 {% if 'deleted' in data.datacl %}
 {% for priv in data.datacl.deleted %}
@@ -87,7 +87,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endif %}
 {% endif %}
 
-{# To change default priviledges #}
+{# Change the default priviledges/ACLs for the tables #}
 {% if data.deftblacl %}
 {% if 'deleted' in data.deftblacl %}
 {% for priv in data.deftblacl.deleted %}
@@ -107,7 +107,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endif %}
 {% endif %}
 
-{# To change default priviledges #}
+{# Change the default priviledges/ACLs for the sequences #}
 {% if data.defseqacl %}
 {% if 'deleted' in data.defseqacl %}
 {% for priv in data.defseqacl.deleted %}
@@ -127,7 +127,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endif %}
 {% endif %}
 
-{# To change default priviledges #}
+{# Change the default priviledges/ACLs for the functions #}
 {% if data.deffuncacl %}
 {% if 'deleted' in data.deffuncacl %}
 {% for priv in data.deffuncacl.deleted %}
@@ -147,7 +147,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.dat
 {% endif %}
 {% endif %}
 
-{# To change default priviledges #}
+{# Change the default priviledges/ACLs for the types #}
 {% if data.deftypeacl %}
 {% if 'deleted' in data.deftypeacl %}
 {% for priv in data.deftypeacl.deleted %}

@@ -4,7 +4,7 @@
 #}
 SELECT * FROM
 (SELECT pg_encoding_to_char(s.i) AS encoding
-	FROM (SELECT generate_series(0, 100, 1) as i) s) a
+FROM (SELECT generate_series(0, 100, 1) as i) s) a
 WHERE encoding != '';
 
 {#
