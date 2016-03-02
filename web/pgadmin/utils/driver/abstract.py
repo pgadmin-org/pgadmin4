@@ -7,10 +7,13 @@
 #
 ##########################################################################
 
+"""Implement the Base class for Driver and Connection"""
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 from flask import session
 from .registry import DriverRegistry
 import six
+
 
 @six.add_metaclass(DriverRegistry)
 class BaseDriver(object):
@@ -59,6 +62,7 @@ class BaseDriver(object):
     def gc(self):
         pass
 
+
 @six.add_metaclass(ABCMeta)
 class BaseConnection(object):
     """
@@ -67,7 +71,7 @@ class BaseConnection(object):
         It is a base class for database connection. A different connection
         drive must implement this to expose abstract methods for this server.
 
-        General idea is to create a wrapper around the actaul driver
+        General idea is to create a wrapper around the actual driver
         implementation. It will be instantiated by the driver factory
         basically. And, they should not be instantiated directly.
 
@@ -82,9 +86,15 @@ class BaseConnection(object):
       - Implement this method to execute the given query and returns single
         datum result.
 
+    * execute_async(query, params)
+      - Implement this method to execute the given query asynchronously and returns result.
+
+    * execute_void(query, params)
+      - Implement this method to execute the given query with no result.
+
     * execute_2darray(query, params)
       - Implement this method to execute the given query and returns the result
-        as a 2 dimentional array.
+        as a 2 dimensional array.
 
     * execute_dict(query, params)
       - Implement this method to execute the given query and returns the result
@@ -113,7 +123,24 @@ class BaseConnection(object):
       NOTE: Please use BaseDriver.release_connection(...) for releasing the
             connection object for better memory management, and connection pool
             management.
+
+    * _wait(conn)
+      - Implement this method to wait for asynchronous connection. This is a blocking call.
+
+    * _wait_timeout(conn, time)
+      - Implement this method to wait for asynchronous connection with timeout. This is a non blocking call.
+
+    * poll()
+      - Implement this method to poll the data of query running on asynchronous connection.
+
+    * cancel_transaction(conn_id, did=None)
+      - Implement this method to cancel the running transaction.
     """
+
+    ASYNC_OK = 1
+    ASYNC_READ_TIMEOUT = 2
+    ASYNC_WRITE_TIMEOUT = 3
+    ASYNC_NOT_CONNECTED = 4
 
     @abstractmethod
     def connect(self, **kwargs):
@@ -121,6 +148,14 @@ class BaseConnection(object):
 
     @abstractmethod
     def execute_scalar(self, query, params=None):
+        pass
+
+    @abstractmethod
+    def execute_async(self, query, params=None):
+        pass
+
+    @abstractmethod
+    def execute_void(self, query, params=None):
         pass
 
     @abstractmethod
@@ -149,4 +184,20 @@ class BaseConnection(object):
 
     @abstractmethod
     def _release(self):
+        pass
+
+    @abstractmethod
+    def _wait(self, conn):
+        pass
+
+    @abstractmethod
+    def _wait_timeout(self, conn, time):
+        pass
+
+    @abstractmethod
+    def poll(self):
+        pass
+
+    @abstractmethod
+    def cancel_transaction(self, conn_id, did=None):
         pass
