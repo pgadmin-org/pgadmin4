@@ -1,0 +1,14 @@
+{##############################################}
+{# Macros for Privileges (functions module)   #}
+{##############################################}
+{% macro SET(conn, type, role, param, priv, with_grant, schema, func_args) -%}
+{% if priv %}
+GRANT {{ priv }} ON {{ type }} {{ conn|qtIdent(schema, param) }}({{func_args}}) TO {{ conn|qtIdent(role) }};
+{% endif %}
+{% if with_grant %}
+GRANT {{ with_grant }} ON {{ type }} {{ conn|qtIdent(schema, param) }}({{func_args}}) TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro UNSETALL(conn, type, role, param, schema, func_args) -%}
+REVOKE ALL ON {{ type }} {{ conn|qtIdent(schema, param) }}({{func_args}}) FROM {{conn|qtIdent(role) }};
+{%- endmacro %}

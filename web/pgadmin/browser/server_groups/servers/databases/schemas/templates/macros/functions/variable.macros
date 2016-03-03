@@ -1,0 +1,13 @@
+{################################################}
+{# Macros for Variables (functions module)      #}
+{################################################}
+{% macro SET(conn, object_type, object_name, options, schema, func_args) -%}
+ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
+    SET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}={{ opt.value|qtLiteral }}{% endfor %});
+{%- endmacro %}
+{% macro UNSET(conn, object_type, object_name, options, schema, func_args) -%}
+ALTER {{object_type}} {{ conn|qtIdent(schema, object_name) }}({{func_args}})
+    RESET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}{% endfor %});
+{%- endmacro %}
