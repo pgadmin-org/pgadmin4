@@ -1,0 +1,9 @@
+{##########################################}
+{# Macros for schema and its child nodes  #}
+{##########################################}
+{% macro SET(conn, type, name, provider, label, schema) -%}
+SECURITY LABEL FOR {{ provider }} ON {{ type }} {{ conn|qtIdent(schema, name) }} IS {{ label|qtLiteral }};
+{%- endmacro %}
+{% macro UNSET(conn, type, name, provider, schema) -%}
+SECURITY LABEL FOR {{ provider }} ON {{ type }} {{ conn|qtIdent(schema, name) }} IS NULL;
+{%- endmacro %}
