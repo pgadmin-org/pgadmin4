@@ -1076,7 +1076,6 @@
         });
         self.model.set(data.name, collection, {silent: true});
       }
-
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
           columns: gridSchema.columns,
@@ -1452,7 +1451,8 @@
             // This can be disabled in some cases (if not hidden)
 
             disabled: (disabled ? true : evalASFunc(s.disabled)),
-            editable: (disabled ? false : (_.isUndefined(s.editable) ? pgAdmin.editableCell : !!(s.editable))),
+            editable: _.isUndefined(s.editable) ?
+                pgAdmin.editableCell : evalASFunc(s.editable),
             subnode: ((_.isString(s.model) && s.model in pgBrowser.Nodes) ?
                 pgBrowser.Nodes[s.model].model : s.model),
             canAdd: (disabled ? false : evalASFunc(s.canAdd)),
