@@ -1,11 +1,3 @@
-/*
-  Backform
-  http://github.com/amiliaapp/backform
-
-  Copyright (c) 2014 Amilia Inc.
-  Written by Martin Drapeau
-  Licensed under the MIT @license
- */
 (function(root, factory) {
 
   // Set up Backform appropriately for the environment. Start with AMD.
