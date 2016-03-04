@@ -891,6 +891,18 @@
           });
       }
 
+      // Insert Edit Cell into Grid
+      if (data.disabled == false && data.canEdit) {
+          var editCell = Backgrid.Extension.ObjectCell.extend({
+            schema: gridSchema.schema
+          });
+
+          gridSchema.columns.unshift({
+            name: "pg-backform-edit", label: "", cell : editCell,
+            cell_priority: -2
+          });
+      }
+
       var collection = this.model.get(data.name);
 
       // Initialize a new Grid instance
@@ -906,6 +918,7 @@
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
         $(subNodeGrid).find("th.pg-backform-delete").remove();
+        $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
       }
 
       $dialog =  gridBody.append(subNodeGrid);
@@ -1603,15 +1616,39 @@
     render: function() {
       // Use the Backform TextareaControl's render function
       Backform.TextareaControl.prototype.render.apply(this, arguments);
+
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+          }),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
+
+      // Evaluate the disabled, visible option
+      var isDisabled = evalF(data.disabled, data, this.model);
+      var isVisible = evalF(data.visible, data, this.model);
+
       var self = this,
           sqlField = CodeMirror.fromTextArea(
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
             mode: "text/x-sql",
-            readOnly: false
+            readOnly: isDisabled
           });
 
       self.sqlField = sqlField;
+
+      if (!isVisible)
+        this.$el.addClass(Backform.hiddenClassname);
 
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
