@@ -100,8 +100,8 @@ This module defines a set of methods, properties and attributes, that every modu
             for module in self.submodules:
                 for key, value in module.menu_items.items():
                     menu_items[key].extend(value)
-            menu_items = {key: sorted(values, key=attrgetter('priority'))
-                          for key, values in menu_items.items()}
+            menu_items = dict((key, sorted(value, key=attrgetter('priority')))
+                          for key, value in menu_items.items())
             return menu_items
 
 
@@ -135,24 +135,27 @@ pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
         This class can be inherited to achieve the diffrent routes for each of the
         object types/collections.
 
-        OPERATION      |              URL       | Method
-        ---------------+------------------------+--------
-        List           | /obj/[Parent URL]/     | GET
-        Properties     | /obj/[Parent URL]/id   | GET
-        Create         | /obj/[Parent URL]/     | POST
-        Delete         | /obj/[Parent URL]/id   | DELETE
-        Update         | /obj/[Parent URL]/id   | PUT
+           OPERATION   |             URL             | HTTP Method |    Method
+        ---------------+-----------------------------+-------------+--------------
+        List           | /obj/[Parent URL]/          | GET         | list
+        Properties     | /obj/[Parent URL]/id        | GET         | properties
+        Create         | /obj/[Parent URL]/          | POST        | create
+        Delete         | /obj/[Parent URL]/id        | DELETE      | delete
+        Update         | /obj/[Parent URL]/id        | PUT         | update
 
-        SQL (Reversed  | /sql/[Parent URL]/id   | GET
+        SQL (Reversed  | /sql/[Parent URL]/id        | GET         | sql
         Engineering)   |
-        SQL (Modified  | /sql/[Parent URL]/id   | POST
+        SQL (Modified  | /msql/[Parent URL]/id       | GET         | modified_sql
         Properties)    |
 
-        Statistics     | /stats/[Parent URL]/id | GET
-        Dependencies   | /deps/[Parent URL]/id  | GET
-        Dependents     | /deps/[Parent URL]/id  | POST
+        Statistics     | /stats/[Parent URL]/id      | GET         | statistics
+        Dependencies   | /dependency/[Parent URL]/id | GET         | dependencies
+        Dependents     | /dependent/[Parent URL]/id  | GET         | dependents
 
-        Children Nodes | /nodes/[Parent URL]/id | GET
+        Nodes          | /nodes/[Parent URL]/        | GET         | nodes
+        Current Node   | /nodes/[Parent URL]/id      | GET         | node
+
+        Children       | /children/[Parent URL]/id   | GET         | children
 
         NOTE:
         Parent URL can be seen as the path to identify the particular node.
@@ -166,10 +169,13 @@ pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
                 {'get': 'properties', 'delete': 'delete', 'put': 'update'},
                 {'get': 'list', 'post': 'create'}
             ],
-            'nodes': [{'get': 'nodes'}],
-            'sql': [{'get': 'sql', 'post': 'modified_sql'}],
+            'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+            'sql': [{'get': 'sql'}],
+            'msql': [{'get': 'modified_sql'}],
             'stats': [{'get': 'statistics'}],
-            'deps': [{'get': 'dependencies', 'post': 'dependents'}],
+            'dependency': [{'get': 'dependencies'}],
+            'dependent': [{'get': 'dependents'}],
+            'children': [{'get': 'children'}],
             'module.js': [{}, {}, {'get': 'module_js'}]
         })
 
@@ -188,7 +194,6 @@ pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
                             'with_id': (idx != 2), 'methods': meths
                             })
                     idx += 1
-
             return cmds
 
         # Inherited class needs to modify these parameters
@@ -314,19 +319,19 @@ pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
             """
             return flask.make_response(
                     flask.render_template(
-                        "{0}/{0}.js".format(self.node_type)
+                        "{0}/js/{0}.js".format(self.node_type)
                         ),
                     200, {'Content-Type': 'application/x-javascript'}
                     )
 
-        def nodes(self, *args, **kwargs):
+        def children(self, *args, **kwargs):
             """Build a list of treeview nodes from the child nodes."""
-            nodes = []
+            children = []
 
             for module in self.blueprint.submodules:
-                nodes.extend(module.get_nodes(*args, **kwargs))
+                children.extend(module.get_nodes(*args, **kwargs))
 
-            return make_json_response(data=nodes)
+            return make_json_response(data=children)
 
 
 .. _BaseDriver:
@@ -365,7 +370,6 @@ BaseDriver
           session, which has not been pinged from more than the idle timeout
           configuration.
         """
-        __metaclass__ = DriverRegistry
 
         @abstractproperty
         def Version(cls):
@@ -398,7 +402,7 @@ BaseConnection
             It is a base class for database connection. A different connection
             drive must implement this to expose abstract methods for this server.
 
-            General idea is to create a wrapper around the actaul driver
+            General idea is to create a wrapper around the actual driver
             implementation. It will be instantiated by the driver factory
             basically. And, they should not be instantiated directly.
 
@@ -413,9 +417,15 @@ BaseConnection
           - Implement this method to execute the given query and returns single
             datum result.
 
+        * execute_async(query, params)
+          - Implement this method to execute the given query asynchronously and returns result.
+
+        * execute_void(query, params)
+          - Implement this method to execute the given query with no result.
+
         * execute_2darray(query, params)
           - Implement this method to execute the given query and returns the result
-            as a 2 dimentional array.
+            as a 2 dimensional array.
 
         * execute_dict(query, params)
           - Implement this method to execute the given query and returns the result
@@ -444,8 +454,31 @@ BaseConnection
           NOTE: Please use BaseDriver.release_connection(...) for releasing the
                 connection object for better memory management, and connection pool
                 management.
+
+        * _wait(conn)
+          - Implement this method to wait for asynchronous connection to finish the
+            execution, hence - it must be a blocking call.
+
+        * _wait_timeout(conn, time)
+          - Implement this method to wait for asynchronous connection with timeout.
+            This must be a non blocking call.
+
+        * poll()
+          - Implement this method to poll the data of query running on asynchronous
+            connection.
+
+        * cancel_transaction(conn_id, did=None)
+          - Implement this method to cancel the running transaction.
+
+        * messages()
+          - Implement this method to return the list of the messages/notices from
+            the database server.
         """
-        __metaclass__ = ABCMeta
+
+        ASYNC_OK = 1
+        ASYNC_READ_TIMEOUT = 2
+        ASYNC_WRITE_TIMEOUT = 3
+        ASYNC_NOT_CONNECTED = 4
 
         @abstractmethod
         def connect(self, **kwargs):
@@ -453,6 +486,14 @@ BaseConnection
 
         @abstractmethod
         def execute_scalar(self, query, params=None):
+            pass
+
+        @abstractmethod
+        def execute_async(self, query, params=None):
+            pass
+
+        @abstractmethod
+        def execute_void(self, query, params=None):
             pass
 
         @abstractmethod
@@ -481,4 +522,20 @@ BaseConnection
 
         @abstractmethod
         def _release(self):
+            pass
+
+        @abstractmethod
+        def _wait(self, conn):
+            pass
+
+        @abstractmethod
+        def _wait_timeout(self, conn, time):
+            pass
+
+        @abstractmethod
+        def poll(self):
+            pass
+
+        @abstractmethod
+        def cancel_transaction(self, conn_id, did=None):
             pass

@@ -86,11 +86,12 @@ learn how pgAdmin works, and how to develop improvements and new features.
 .. toctree::
    :maxdepth: 2
    
-   coding-standards
    code-overview
    code-snippet
-   submitting-patches
    translations
+   submitting-patches
+   coding-standards
+   code-review
 
 *******
 Website
