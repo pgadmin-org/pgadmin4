@@ -10,7 +10,6 @@
 """Implement the Base class for Driver and Connection"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from flask import session
 from .registry import DriverRegistry
 import six
 
@@ -125,16 +124,23 @@ class BaseConnection(object):
             management.
 
     * _wait(conn)
-      - Implement this method to wait for asynchronous connection. This is a blocking call.
+      - Implement this method to wait for asynchronous connection to finish the
+        execution, hence - it must be a blocking call.
 
     * _wait_timeout(conn, time)
-      - Implement this method to wait for asynchronous connection with timeout. This is a non blocking call.
+      - Implement this method to wait for asynchronous connection with timeout.
+        This must be a non blocking call.
 
     * poll()
-      - Implement this method to poll the data of query running on asynchronous connection.
+      - Implement this method to poll the data of query running on asynchronous
+        connection.
 
     * cancel_transaction(conn_id, did=None)
       - Implement this method to cancel the running transaction.
+
+    * messages()
+      - Implement this method to return the list of the messages/notices from
+        the database server.
     """
 
     ASYNC_OK = 1

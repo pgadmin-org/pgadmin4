@@ -7,7 +7,11 @@
 #
 ##########################################################################
 
-"""Implementation of Connection, ServerManager and Driver classes"""
+"""
+Implementation of Connection, ServerManager and Driver classes using the
+psycopg2. It is a wrapper around the actual psycopg2 driver, and connection
+object.
+"""
 
 from datetime import datetime
 
@@ -79,17 +83,24 @@ class Connection(BaseConnection):
       - Release the connection object of psycopg2
 
     * _wait(conn)
-      - This method is used to wait for asynchronous connection. This is a blocking call.
+      - This method is used to wait for asynchronous connection. This is a
+        blocking call.
 
     * _wait_timeout(conn, time)
-      - This method is used to wait for asynchronous connection with timeout. This is a non blocking call.
+      - This method is used to wait for asynchronous connection with timeout.
+        This is a non blocking call.
 
     * poll()
-      - This method is used to poll the data of query running on asynchronous connection.
+      - This method is used to poll the data of query running on asynchronous
+        connection.
 
     * cancel_transaction(conn_id, did=None)
       - This method is used to cancel the transaction for the
         specified connection id and database id.
+
+    * messages()
+      - Returns the list of messages/notices sends from the PostgreSQL database
+        server.
     """
     def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0):
         assert(manager is not None)
@@ -780,6 +791,12 @@ Polling result for (Query-id: {query_id})""".format(query_id=self.__async_query_
                 msg = gettext("Not connected to the database server.")
 
         return status, msg
+
+    def messages(self):
+        """
+        Returns the list of the messages/notices send from the database server.
+        """
+        return self.pg_conn.notices if self.pg_conn else []
 
 
 class ServerManager(object):
