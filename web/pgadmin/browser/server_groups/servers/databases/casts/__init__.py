@@ -14,7 +14,7 @@ from flask import render_template, make_response, current_app, request, jsonify
 from flask.ext.babel import gettext
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import NodeView
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups.servers.databases as databases
 from pgadmin.utils.ajax import precondition_required
@@ -78,11 +78,11 @@ class CastModule(CollectionNodeModule):
 blueprint = CastModule(__name__)
 
 
-class CastView(NodeView):
+class CastView(PGChildNodeView):
     """
-    class CastView(NodeView)
+    class CastView(PGChildNodeView)
 
-        A view class for cast node derived from NodeView. This class is
+        A view class for cast node derived from PGChildNodeView. This class is
         responsible for all the stuff related to view like create/update/delete cast,
         showing properties of cast node, showing sql in sql pane.
 
@@ -614,7 +614,7 @@ class CastView(NodeView):
             did: Database ID
             cid: Cast ID
         """
-        dependents_result = get_dependents(self.conn, cid, 'language')
+        dependents_result = self.get_dependents(self.conn, cid, 'cast')
         return ajax_response(
                 response=dependents_result,
                 status=200
@@ -632,7 +632,7 @@ class CastView(NodeView):
             did: Database ID
             cid: Cast ID
         """
-        dependencies_result = get_dependencies(self.conn, cid, 'language')
+        dependencies_result = self.get_dependencies(self.conn, cid, 'cast')
         return ajax_response(
                 response=dependencies_result,
                 status=200
