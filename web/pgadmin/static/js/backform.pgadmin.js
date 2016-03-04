@@ -845,7 +845,8 @@
         canAdd: (field.version_compatible &&
           evalF.apply(this.field, [data.canAdd, this.model])
           ),
-        canDelete: evalF.apply(this.field, [data.canDelete, this.model])
+        canDelete: evalF.apply(this.field, [data.canDelete, this.model]),
+        canEdit: evalF.apply(this.field, [data.canEdit, this.model])
       });
       _.extend(data, {add_label: "ADD"});
 
