@@ -464,7 +464,10 @@
         controls = this.controls,
         tmpls = this.template,
         self = this,
-        idx=(this.tabIndex * 100);
+        idx=(this.tabIndex * 100),
+        evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
 
       this.$el
           .empty()
@@ -478,6 +481,10 @@
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
+        idx++;
+        if (!o.version_compatible || !evalF(o.visible, o, m)) {
+          return;
+        }
         var el = $((tmpls['panel'])(_.extend(o, {'tabIndex': idx})))
               .appendTo(tabContent)
               .removeClass('collapse').addClass('collapse'),
@@ -493,7 +500,6 @@
           el.append(cntr.render().$el);
           controls.push(cntr);
         });
-        idx++;
 
         tabHead.find('a[data-toggle="tab"]').off(
           'shown.bs.tab'
@@ -558,11 +564,20 @@
             'legendClass': _.result(this, 'legendClass'),
             'contentClass': _.result(this, 'contentClass'),
             'collapse': _.result(this, 'collapse')
+          },
+          idx=(this.tabIndex * 100),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
           };
 
       this.$el.empty();
 
       _.each(this.schema, function(o) {
+        idx++;
+        if (!o.version_compatible || !evalF(o.visible, o, m)) {
+          return;
+        }
+
         if (!o.fields)
           return;
 
@@ -573,7 +588,8 @@
         o.fields.each(function(f) {
           var cntr = new (f.get("control")) ({
             field: f,
-            model: m
+            model: m,
+            tabIndex: idx
           });
           el.append(cntr.render().$el);
           controls.push(cntr);
@@ -1412,7 +1428,8 @@
       ) {
     var proto = (Model && Model.prototype) || Model,
         schema = subschema || (proto && proto.schema),
-        pgBrowser = window.pgAdmin.Browser, fields = [];
+        pgBrowser = window.pgAdmin.Browser, fields = [],
+        groupInfo = {};
 
     // 'schema' has the information about how to generate the form.
     if (schema && _.isArray(schema)) {
@@ -1427,6 +1444,24 @@
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
         // here?
+        if (s.type == 'group') {
+          var ver_in_limit = (_.isUndefined(server_info) ? true :
+              ((_.isUndefined(s.server_type) ? true :
+                (server_info.type in s.server_type)) &&
+              (_.isUndefined(s.min_version) ? true :
+               (server_info.version >= s.min_version)) &&
+              (_.isUndefined(s.max_version) ? true :
+               (server_info.version <= s.max_version))));
+          groupInfo[s.id] = {
+            label: s.label || s.id,
+            version_compatible: ver_in_limit,
+            visible: !s.mode || (
+              s && s.mode && _.isObject(s.mode) &&
+                _.indexOf(s.mode, mode) != -1) && evalASFunc(s.visible) || true
+          };
+          return;
+        }
+
         if (!s.mode || (s && s.mode && _.isObject(s.mode) &&
           _.indexOf(s.mode, mode) != -1)) {
           // Each field is kept in specified group, or in
@@ -1516,7 +1551,9 @@
       // Create an array from the dictionary with proper required
       // structure.
       _.each(groups, function(val, key) {
-        fields.push({label: key, fields: val});
+        fields.push(_.extend({
+          label: key, fields: val
+        }, (groupInfo[key] || {version_compatible: true, visible: true})));
       });
     }
 

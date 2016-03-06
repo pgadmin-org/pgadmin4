@@ -273,7 +273,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           min_version: 90200
         },{
           type: 'nested', control: 'tab', group: '{{ _('Default Privileges') }}',
-          mode: ['edit', 'create'],
+          mode: ['edit'],
           schema:[{
               id: 'deftblacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
               {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '{{ _('Default Privileges: Tables') }}',
@@ -295,11 +295,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             },{
               id: 'deftypeacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
               {privileges: ['U']}),  label: '{{ _('Default Privileges: Types') }}',
-              editable: false, type: 'collection', group: '{{ _('Types') }}',
+              editable: false, type: 'collection', group: 'deftypesacl_group',
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
               min_version: 90200
-            }]
+            },{
+              id: 'deftypesacl_group', type: 'group', label: '{{ _('Types') }}',
+              mode: ['edit', 'create'], min_version: 90200
+            }
+          ]
         }
         ],
         validate: function(keys) {
