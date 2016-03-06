@@ -432,6 +432,9 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                         if (m && m.init && typeof m.init == 'function') {
                           try {
                             m.init();
+                            obj.Events.trigger(
+                              'pgadmin-browser:' + s.name + ':initialized', m, obj
+                            );
                           } catch (err) {
                             console.log("Error running module Init script for '" + s.path + "'");
                             console.log(err);
