@@ -796,7 +796,7 @@ Polling result for (Query-id: {query_id})""".format(query_id=self.__async_query_
         """
         Returns the list of the messages/notices send from the database server.
         """
-        return self.pg_conn.notices if self.pg_conn else []
+        return self.conn.notices if self.conn else []
 
 
 class ServerManager(object):
