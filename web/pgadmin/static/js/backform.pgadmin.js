@@ -127,7 +127,7 @@
     },
 
     remove: function() {
-      // Listen to the dependent fields in the model for any change
+      // Remove the events for the dependent fields in the model
       var self = this,
           deps = self.field.get('deps');
 
@@ -142,6 +142,10 @@
 
           self.stopListening(self.model, "change:" + name, self.render);
         });
+      }
+
+      if (this.cleanup) {
+        this.cleanup.apply(this);
       }
 
       if (BackformControlRemove) {
@@ -745,15 +749,18 @@
           self.listenTo(collection, "change", self.collectionChanged);
         }
     },
-    remove: function() {
-      var self = this;
+    cleanup: function() {
+      this.stopListening(this.collection, "change", this.collectionChanged);
 
       if (this.field.get('version_compatible')) {
-        self.stopListening(self.collection, "add", self.collectionChanged);
-        self.stopListening(self.collection, "change", self.collectionChanged);
+        this.stopListening(self.collection, "add", this.collectionChanged);
+        this.stopListening(self.collection, "change", this.collectionChanged);
       }
-
-      Backform.Control.prototype.remove.apply(this, arguments);
+      if (this.grid) {
+        this.grid.remove();
+        delete this.grid;
+      }
+      this.$el.empty();
     },
     collectionChanged: function(newModel, coll, op) {
       var uniqueCol = this.field.get('uniqueCol') || [],
@@ -827,6 +834,9 @@
       this.listenTo(collection, "change", this.collectionChanged);
     },
     render: function() {
+      // Clean up existing elements
+      this.cleanup();
+
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
           attrArr = field.name.split('.'),
@@ -857,6 +867,11 @@
         canEdit: evalF.apply(this.field, [data.canEdit, this.model])
       });
       _.extend(data, {add_label: "ADD"});
+
+      // This control is not visible, we should remove it.
+      if (!data.visible) {
+        return this;
+      }
 
       // Show Backgrid Control
       grid = this.showGridControl(data);
@@ -1577,28 +1592,53 @@
     }
   });
 
-  // Backform Tab Control (in bootstrap tabbular)
-  // A collection of field models.
-  var TabControl = Backform.TabControl = Backform.Dialog.extend({
-    tagName: "div",
-    className: 'inline-tab-panel',
-    tabPanelClassName: 'inline-tab-panel',
-    initialize: function(opts) {
-      Backform.Dialog.prototype.initialize.apply(
-        this, [{schema: opts.field.get('schema')}]
-        );
-      this.dialog = opts.dialog;
-      this.tabIndex = (opts.tabIndex || parseInt(Math.random() * 1000)) + 1;
-    }
-  });
-
   var FieldsetControl = Backform.FieldsetControl = Backform.Fieldset.extend({
     initialize: function(opts) {
+      Backform.Control.prototype.initialize.apply(
+        this, arguments
+        );
       Backform.Dialog.prototype.initialize.apply(
         this, [{schema: opts.field.get('schema')}]
         );
       this.dialog = opts.dialog;
       this.tabIndex = opts.tabIndex;
+
+      // Listen to the dependent fields in the model for any change
+      var deps = this.field.get('deps');
+      var self = this;
+
+      if (deps && _.isArray(deps)) {
+        _.each(deps, function(d) {
+          attrArr = d.split('.');
+          name = attrArr.shift();
+          self.listenTo(self.model, "change:" + name, self.render);
+        });
+      }
+    },
+    // Render using Backform.Fieldset (only if this control is visible)
+    orig_render: Backform.Fieldset.prototype.render,
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
+
+      if (!field.version_compatible ||
+          !evalF(field.visible, field, this.model)) {
+        this.cleanup();
+        this.$el.empty()
+      } else {
+        this.orig_render.apply(this, arguments);
+      }
+      return this;
+    },
+    formatter: function() {},
+    cleanup: function() {
+      Backform.Fieldset.prototype.cleanup.apply(this);
+    },
+    remove: function() {
+      Backform.Control.prototype.remove.apply(this, arguments);
+      Backform.Dialog.prototype.remove.apply(this, arguments);
     },
     className: function() {
       return 'set-group';
@@ -1610,6 +1650,25 @@
     legendClass: '',
     contentClass: '',
     collapse: false
+  });
+
+
+  // Backform Tab Control (in bootstrap tabbular)
+  // A collection of field models.
+  var TabControl = Backform.TabControl = Backform.FieldsetControl.extend({
+    tagName: "div",
+    className: 'inline-tab-panel',
+    tabPanelClassName: 'inline-tab-panel',
+    initialize: function(opts) {
+      Backform.FieldsetControl.prototype.initialize.apply(
+        this, arguments
+        );
+      this.tabIndex = (opts.tabIndex || parseInt(Math.random() * 1000)) + 1;
+    },
+    // Render using Backform.Dialog (tabular UI) (only if this control is
+    // visible).
+    orig_render: Backform.Dialog.prototype.render,
+    template: Backform.Dialog.prototype.template
   });
 
   /*
