@@ -28,3 +28,4 @@ pycrypto==2.6.1
 wsgiref==0.1.2
 simplejson==3.6.5
 importlib==1.0.3
+python-dateutil==2.5.0
