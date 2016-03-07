@@ -17,10 +17,9 @@ import random
 import string
 
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
-from pgadmin.settings.settings_model import db, Role, User, Server, \
+from pgadmin.model import db, Role, User, Server, \
     ServerGroup, Version
 
 # Configuration settings
@@ -146,7 +145,7 @@ Exiting...""".format(version.value))
                 )
         if int(version.value) < 5:
             db.engine.execute('ALTER TABLE server ADD COLUMN role text(64)')
-        if int(version.value) == 6:
+        if int(version.value) < 6:
             db.engine.execute("ALTER TABLE server RENAME TO server_old")
             db.engine.execute("""
 CREATE TABLE server (
@@ -177,9 +176,46 @@ INSERT INTO server (
 FROM server_old""")
             db.engine.execute("DROP TABLE server_old")
 
-        # Finally, update the schema version
-        version.value = config.SETTINGS_SCHEMA_VERSION
-        db.session.merge(version)
+        if int(version.value) < 8:
+            app.logger.info(
+                "Creating the preferences tables..."
+                )
+            db.engine.execute("""
+CREATE TABLE module_preference(
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(256) NOT NULL
+    )""")
+
+            db.engine.execute("""
+CREATE TABLE preference_category(
+    id INTEGER PRIMARY KEY,
+    mid INTEGER,
+    name VARCHAR(256) NOT NULL,
+
+    FOREIGN KEY(mid) REFERENCES module_preference(id)
+    )""")
+
+            db.engine.execute("""
+CREATE TABLE preferences (
+
+    id INTEGER PRIMARY KEY,
+    cid INTEGER NOT NULL,
+    name VARCHAR(256) NOT NULL,
+
+    FOREIGN KEY(cid) REFERENCES preference_category (id)
+    )""")
+
+            db.engine.execute("""
+CREATE TABLE user_preferences (
+
+    pid INTEGER,
+    uid INTEGER,
+    value VARCHAR(1024) NOT NULL,
+
+    PRIMARY KEY (pid, uid),
+    FOREIGN KEY(pid) REFERENCES preferences (pid),
+    FOREIGN KEY(uid) REFERENCES user (id)
+    )""")
 
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
@@ -190,7 +226,7 @@ FROM server_old""")
     # Done!
     app.logger.info(
         "The configuration database %s has been upgraded to version %d" %
-        (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
+            (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
         )
 
 ###############################################################################
@@ -222,8 +258,8 @@ if __name__ == '__main__':
     # Check if the database exists. If it does, tell the user and exit.
     if os.path.isfile(config.SQLITE_PATH):
         print("""
-The configuration database %s already exists.
-Entering upgrade mode...""".format(config.SQLITE_PATH))
+The configuration database '%s' already exists.
+Entering upgrade mode...""" % config.SQLITE_PATH)
 
         # Setup Flask-Security
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -238,12 +274,12 @@ Entering upgrade mode...""".format(config.SQLITE_PATH))
                 print("""
 The database schema version is %d, whilst the version required by the \
 software is %d.
-Exiting...""".format(version.value, config.SETTINGS_SCHEMA_VERSION))
+Exiting...""" % (version.value, config.SETTINGS_SCHEMA_VERSION))
                 sys.exit(1)
             elif int(version.value) == int(config.SETTINGS_SCHEMA_VERSION):
                 print("""
 The database schema version is %d as required.
-Exiting...""".format(version.value))
+Exiting...""" % (version.value))
                 sys.exit(1)
 
             print("NOTE: Upgrading database schema from version %d to %d." % (
@@ -252,6 +288,6 @@ Exiting...""".format(version.value))
             do_upgrade(app, user_datastore, security, version)
     else:
         print("""
-The configuration database - {0} does not exist.
+The configuration database - '{0}' does not exist.
 Entering initial setup mode...""".format(config.SQLITE_PATH))
         do_setup(app)

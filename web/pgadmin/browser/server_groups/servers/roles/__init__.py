@@ -10,8 +10,7 @@ from flask import render_template, request, jsonify, current_app
 from flask.ext.babel import gettext as _
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, precondition_required, \
-    internal_server_error, forbidden, \
-    not_implemented, success_return, gone
+    internal_server_error, forbidden, success_return, gone
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups as sg
@@ -37,8 +36,9 @@ class RoleModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-
-        yield self.generate_browser_collection_node(sid)
+        if self.show_node:
+            yield self.generate_browser_collection_node(sid)
+        pass
 
     @property
     def node_inode(self):
@@ -480,7 +480,8 @@ rolmembership:{
                 if check_permission:
                     user = self.manager.user_info
 
-                    if not user['is_superuser'] and not user['can_create_role']:
+                    if not user['is_superuser'] and \
+                            not user['can_create_role']:
                         if (action != 'update' or
                                 'rid' in kwargs and kwargs['rid'] != -1 and
                                 user['id'] != kwargs['rid']):

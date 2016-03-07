@@ -9,28 +9,13 @@
 
 """Browser helper utilities"""
 
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 import flask
 from flask.views import View, MethodViewType, with_metaclass
 from flask.ext.babel import gettext
 from flask import render_template, current_app
-import six
-
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import make_json_response, precondition_required
-
-@six.add_metaclass(ABCMeta)
-class NodeAttr(object):
-    """
-    """
-
-    @abstractmethod
-    def validate(self, mode, value):
-        pass
-
-    @abstractmethod
-    def schema(self):
-        pass
 
 
 class PGChildModule(object):
@@ -47,10 +32,6 @@ class PGChildModule(object):
     - Return True when it supports certain version.
       Uses the psycopg2 server connection manager as input for checking the
       compatibility of the current module.
-
-    * AddAttr(attr)
-    - This adds the attribute supported for specific version only. It takes
-      NodeAttr as input, and update max_ver, min_ver variables for this module.
     """
 
     def __init__(self, *args, **kwargs):
@@ -58,9 +39,12 @@ class PGChildModule(object):
         self.max_ver = 1000000000
         self.server_type = None
 
-        super(PGChildModule, self).__init__(*args, **kwargs)
+        super(PGChildModule, self).__init__()
 
     def BackendSupported(self, manager, **kwargs):
+        if hasattr(self, 'show_node'):
+            if not self.show_node:
+                return False
         sversion = getattr(manager, 'sversion', None)
         if (sversion is None or not isinstance(sversion, int)):
             return False
@@ -82,6 +66,7 @@ class PGChildModule(object):
     @abstractmethod
     def get_nodes(self, sid=None, **kwargs):
         pass
+
 
 class NodeView(with_metaclass(MethodViewType, View)):
     """

@@ -26,12 +26,6 @@ class TablespaceModule(CollectionNodeModule):
     NODE_TYPE = 'tablespace'
     COLLECTION_LABEL = gettext("Tablespaces")
 
-    def __init__(self, *args, **kwargs):
-        self.min_ver = None
-        self.max_ver = None
-
-        super(TablespaceModule, self).__init__(*args, **kwargs)
-
     def get_nodes(self, gid, sid):
         """
         Generate the collection node

@@ -9,17 +9,15 @@
 """Defines views for management of server groups"""
 
 from abc import ABCMeta, abstractmethod
-import traceback
 import json
 from flask import request, render_template, make_response, jsonify
 from flask.ext.babel import gettext
-from flask.ext.security import current_user, login_required
-from pgadmin import current_blueprint
+from flask.ext.security import current_user
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.utils.menu import MenuItem
-from pgadmin.settings.settings_model import db, ServerGroup
+from pgadmin.model import db, ServerGroup
 from pgadmin.browser.utils import NodeView
 import six
 
@@ -41,11 +39,29 @@ class ServerGroupModule(BrowserPluginModule):
 
     @property
     def node_type(self):
+        """
+        node_type
+        Node type for Server Group is server-group. It is defined by NODE_TYPE
+        static attribute of the class.
+        """
         return self.NODE_TYPE
 
     @property
     def script_load(self):
+        """
+        script_load
+        Load the server-group javascript module on loading of browser module.
+        """
         return None
+
+    def register_preferences(self):
+        """
+        register_preferences
+        Overrides the register_preferences PgAdminModule, because - we will not
+        register any preference for server-group (specially the show_node
+        preference.)
+        """
+        pass
 
 
 class ServerGroupMenuItem(MenuItem):
@@ -153,7 +169,6 @@ class ServerGroupView(NodeView):
         sg = ServerGroup.query.filter_by(
                 user_id=current_user.id,
                 id=gid).first()
-        data = {}
 
         if sg is None:
             return make_json_response(
@@ -181,7 +196,7 @@ class ServerGroupView(NodeView):
 
                 data[u'id'] = sg.id
                 data[u'name'] = sg.name
-                
+
                 return jsonify(
                         node=self.blueprint.generate_browser_node(
                             "%d" % (sg.id), None,

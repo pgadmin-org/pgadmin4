@@ -425,6 +425,7 @@
     /* Array of objects having attributes [label, fields] */
     schema: undefined,
     tagName: "form",
+    legend: true,
     className: function() {
       return 'col-sm-12 col-md-12 col-lg-12 col-xs-12';
     },
@@ -441,6 +442,7 @@
           o.cId = o.cId || _.uniqueId('pgC_');
           o.hId = o.hId || _.uniqueId('pgH_');
           o.disabled = o.disabled || false;
+          o.legend = opts.legend;
         });
         if (opts.tabPanelClassName && _.isFunction(opts.tabPanelClassName)) {
           this.tabPanelClassName = opts.tabPanelClassName;
@@ -547,8 +549,9 @@
     template: {
       'header': _.template([
         '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
+        ' <% if (legend != false) { %>',
         '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %><%=label%></legend>',
-        '  ',
+        ' <% } %>',
         '</fieldset>'
       ].join("\n")),
       'content': _.template(

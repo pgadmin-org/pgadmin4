@@ -1,0 +1,40 @@
+.preferences_dialog {
+  height: 100%;
+  position: absolute;
+  top: 5px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  padding-bottom: 30px;
+}
+
+.preferences_tree{
+  padding: 0px;
+  padding-top: 2px;
+  height: 100%;
+  overflow: auto;
+  border-right: 2px solid #999999;
+  background-image: #FAFAFA;
+}
+
+.preferences_content {
+  padding-top: 10px;
+  height: 100%;
+  overflow: auto;
+}
+
+.preferences_content .control-label, .preferences_content .pgadmin-controls {
+  min-width: 100px !important;
+}
+
+.pgadmin-preference-body {
+    min-width: 300px !important;
+    min-height: 400px !important;
+}
+
+@media (min-width: 768px) {
+  .pgadmin-preference-body {
+    min-width: 600px !important;
+    min-height: 480px !important;
+  }
+}

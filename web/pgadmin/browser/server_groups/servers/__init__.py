@@ -8,24 +8,21 @@
 ##########################################################################
 
 import json
-from abc import ABCMeta, abstractproperty
 from flask import render_template, request, make_response, jsonify, \
         current_app, url_for
-from flask.ext.security import login_required, current_user
-from pgadmin.settings.settings_model import db, Server, ServerGroup, User
+from flask.ext.security import current_user
+from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.menu import MenuItem
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, success_return, \
-    unauthorized, bad_request, precondition_required, forbidden
+from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
+    make_response as ajax_response, internal_server_error, unauthorized
 from pgadmin.browser.utils import PGChildNodeView
 import traceback
 from flask.ext.babel import gettext
 import pgadmin.browser.server_groups as sg
 from pgadmin.utils.crypto import encrypt
-from pgadmin.browser import BrowserPluginModule
 from config import PG_DEFAULT_DRIVER
-import six
 from pgadmin.browser.server_groups.servers.types import ServerType
+
 
 def has_any(data, keys):
     """
@@ -46,6 +43,7 @@ def has_any(data, keys):
 
 class ServerModule(sg.ServerGroupPluginModule):
     NODE_TYPE = "server"
+    LABEL = gettext("Servers")
 
     @property
     def node_type(self):
@@ -145,6 +143,15 @@ class ServerModule(sg.ServerGroupPluginModule):
             app.jinja_env.filters['hasAny'] = has_any
 
         super(ServerModule, self).register(app, options, first_registration)
+
+    # We do not have any preferences for server node.
+    def register_preferences(self):
+        """
+        register_preferences
+        Override it so that - it does not register the show_node preference for
+        server type.
+        """
+        pass
 
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):

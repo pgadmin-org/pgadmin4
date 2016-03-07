@@ -29,7 +29,10 @@ except:
 
 MODULE_NAME = 'browser'
 
+
 class BrowserModule(PgAdminModule):
+
+    LABEL = gettext('Browser')
 
     def get_own_stylesheets(self):
         stylesheets = []
@@ -168,20 +171,56 @@ class BrowserModule(PgAdminModule):
             scripts.extend(module.get_own_javascripts())
         return scripts
 
+    def register_preferences(self):
+        self.show_system_objects = self.preference.register(
+            'display', 'show_system_objects',
+            gettext("Show system objects"), 'boolean', False,
+            category_label=gettext('Display')
+            )
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
+
 
 @six.add_metaclass(ABCMeta)
 class BrowserPluginModule(PgAdminModule):
     """
-    Base class for browser submodules.
+    Abstract base class for browser submodules.
+
+    It helps to define the node for each and every node comes under the browser
+    tree. It makes sure every module comes under browser will have prefix
+    '/browser', and sets the 'url_prefix', 'static_url_path', etc.
+
+    Also, creates some of the preferences to be used by the node.
     """
 
     browser_url_prefix = blueprint.url_prefix + '/'
+    SHOW_ON_BROWSER = True
 
     def __init__(self, import_name, **kwargs):
+        """
+        Construct a new 'BrowserPluginModule' object.
+
+        :param import_name: Name of the module
+        :param **kwargs:    Extra parameters passed to the base class
+                            pgAdminModule.
+
+        :return: returns nothing
+
+        It sets the url_prefix to based on the 'node_path'. And,
+        static_url_path to relative path to '/static'.
+
+        Every module extended from this will be identified as 'NODE-<type>'.
+
+        Also, create a preference 'show_node_<type>' to fetch whether it
+        can be shown in the browser or not. Also,  refer to the browser-preference.
+        """
         kwargs.setdefault("url_prefix", self.node_path)
         kwargs.setdefault("static_url_path", '/static')
+
+        self.browser_preference = None
+        self.pref_show_system_objects = None
+        self.pref_show_node = None
+
         super(BrowserPluginModule, self).__init__(
                                             "NODE-%s" % self.node_type,
                                             import_name,
@@ -196,6 +235,24 @@ class BrowserPluginModule(PgAdminModule):
         return []
 
     def get_own_javascripts(self):
+        """
+        Returns the list of javascripts information used by the module.
+
+        Each javascripts information must contain name, path of the script.
+
+        The name must be unique for each module, hence - in order to refer them
+        properly, we do use 'pgadmin.node.<type>' as norm.
+
+        That can also refer to when to load the script.
+
+        i.e.
+        We may not need to load the javascript of table node, when we're
+        not yet connected to a server, and no database is loaded. Hence - it
+        make sense to load them when a database is loaded.
+
+        We may also add 'deps', which also refers to the list of javascripts,
+        it may depends on.
+        """
         scripts = []
 
         scripts.extend([{
@@ -211,6 +268,27 @@ class BrowserPluginModule(PgAdminModule):
     def generate_browser_node(
             self, node_id, parent_id, label, icon, inode, node_type, **kwargs
             ):
+        """
+        Helper function to create a browser node for this particular subnode.
+
+        :param node_id:   Unique Id for each node
+        :param parent_id: Id of the parent.
+        :param label:     Label for the node
+        :param icon:      Icon for displaying along with this node on browser
+                          tree. Icon refers to a class name, it refers to.
+        :param inode:     True/False.
+                          Used by the browser tree node to check, if the
+                          current node will have children or not.
+        :param node_type: String to refer to the node type.
+        :param **kwargs:  A node can have extra information other than this
+                          data, which can be passed as key-value pair as
+                          argument here.
+                          i.e. A database, server node can have extra
+                          information like connected, or not.
+
+        Returns a dictionary object representing this node object for the
+        browser tree.
+        """
         obj = {
                 "id": "%s/%s" % (node_type, node_id),
                 "label": label,
@@ -269,11 +347,65 @@ class BrowserPluginModule(PgAdminModule):
 
     @property
     def node_path(self):
+        """
+        Defines the url path prefix for this submodule.
+        """
         return self.browser_url_prefix + self.node_type
 
     @property
     def javascripts(self):
+        """
+        Override the javascript of PgAdminModule, so that - we don't return
+        javascripts from the get_own_javascripts itself.
+        """
         return []
+
+    @property
+    def label(self):
+        """
+        Module label.
+        """
+        return self.LABEL
+
+    @property
+    def show_node(self):
+        """
+        A proper to check to show node for this module on the browser tree or not.
+
+        Relies on show_node preference object, otherwise on the SHOW_ON_BROWSER
+        default value.
+        """
+        if self.pref_show_node:
+            return self.pref_show_node.get()
+        else:
+            return self.SHOW_ON_BROWSER
+
+    @property
+    def show_system_objects(self):
+        """
+        Show/Hide the system objects in the database server.
+        """
+        if self.pref_show_system_objects:
+            return self.pref_show_system_objects.get()
+        else:
+            return False
+
+    def register_preferences(self):
+        """
+        Registers the preferences object for this module.
+
+        Sets the browser_preference, show_system_objects, show_node preference
+        objects for this submodule.
+        """
+        # Add the node informaton for browser, not in respective node preferences
+        self.browser_preference = blueprint.preference
+        self.pref_show_system_objects = blueprint.preference.preference(
+            'display', 'show_system_objects'
+            )
+        self.pref_show_node = self.browser_preference.preference(
+            'node', 'show_node_' + self.node_type,
+            self.label, 'boolean', self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
+            )
 
 
 @blueprint.route("/")

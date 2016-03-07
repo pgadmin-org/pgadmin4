@@ -10,7 +10,7 @@
 from flask import Blueprint
 from collections import defaultdict
 from operator import attrgetter
-import sys
+from .preferences import Preferences
 
 
 class PgAdminModule(Blueprint):
@@ -26,7 +26,24 @@ class PgAdminModule(Blueprint):
         kwargs.setdefault('template_folder', 'templates')
         kwargs.setdefault('static_folder', 'static')
         self.submodules = []
+
         super(PgAdminModule, self).__init__(name, import_name, **kwargs)
+
+        def create_module_preference():
+            # Create preference for each module by default
+            if hasattr(self, 'LABEL'):
+                self.preference = Preferences(self.name, self.LABEL)
+            else:
+                self.preference = Preferences(self.name, None)
+
+            self.register_preferences()
+
+        # Create and register the module preference object and preferences for
+        # it just before the first request
+        self.before_app_first_request(create_module_preference)
+
+    def register_preferences(self):
+        pass
 
     def register(self, app, options, first_registration=False):
         """
@@ -35,7 +52,9 @@ class PgAdminModule(Blueprint):
         """
         if first_registration:
             self.submodules = list(app.find_submodules(self.import_name))
+
         super(PgAdminModule, self).register(app, options, first_registration)
+
         for module in self.submodules:
             app.register_blueprint(module)
 

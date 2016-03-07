@@ -24,7 +24,7 @@ from flask.ext.babel import gettext
 from flask.ext.security import current_user
 
 from ..abstract import BaseDriver, BaseConnection
-from pgadmin.settings.settings_model import Server, User
+from pgadmin.model import Server, User
 from pgadmin.utils.crypto import decrypt
 import random
 import select
@@ -1003,7 +1003,7 @@ class Driver(BaseDriver):
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
-            from pgadmin.settings.settings_model import Server
+            from pgadmin.model import Server
             s = Server.query.filter_by(id=sid).first()
 
             managers[str(sid)] = ServerManager(s)

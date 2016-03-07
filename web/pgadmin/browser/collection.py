@@ -14,6 +14,8 @@ from flask.ext.babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.browser.utils import PGChildModule
 from pgadmin.browser import BrowserPluginModule
+from pgadmin.utils.preferences import Preferences
+
 
 @six.add_metaclass(ABCMeta)
 class CollectionNodeModule(PgAdminModule, PGChildModule):
@@ -21,6 +23,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     Base class for collection node submodules.
     """
     browser_url_prefix = BrowserPluginModule.browser_url_prefix
+    SHOW_ON_BROWSER = True
 
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
@@ -124,6 +127,10 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         return self.COLLECTION_LABEL
 
     @property
+    def label(self):
+        return self.COLLECTION_LABEL
+
+    @property
     def collection_icon(self):
         """
         icon to be displayed for the browser collection node
@@ -173,3 +180,47 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     @property
     def javascripts(self):
         return []
+
+    @property
+    def show_node(self):
+        """
+        Property to check whether to show the node for this module on the
+        browser tree or not.
+
+        Relies on show_node preference object, otherwise on the SHOW_ON_BROWSER
+        default value.
+        """
+        if self.pref_show_node:
+            return self.pref_show_node.get()
+        else:
+            return self.SHOW_ON_BROWSER
+
+    @property
+    def show_system_objects(self):
+        """
+        Show/Hide the system objects in the database server.
+        """
+        if self.pref_show_system_objects:
+            return self.pref_show_system_objects.get()
+        else:
+            return False
+
+    def register_preferences(self):
+        """
+        register_preferences
+        Register preferences for this module.
+
+        Keep the browser preference object to be used by overriden submodule,
+        along with that get two browser level preferences show_system_objects,
+        and show_node will be registered to used by the submodules.
+        """
+        # Add the node informaton for browser, not in respective node preferences
+        self.browser_preference = Preferences.module('browser')
+        self.pref_show_system_objects = self.browser_preference.preference(
+                'show_system_objects'
+                )
+        self.pref_show_node = self.browser_preference.register(
+                'node', 'show_node_' + self.node_type,
+                self.collection_label, 'node', self.SHOW_ON_BROWSER,
+                category_label=gettext('Nodes')
+                )

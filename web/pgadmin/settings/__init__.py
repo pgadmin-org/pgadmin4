@@ -9,16 +9,13 @@
 
 """Utility functions for storing and retrieving user configuration settings."""
 
-from flask import current_app
 from flask.ext.login import current_user
-from flask.ext.sqlalchemy import SQLAlchemy
 
-from .settings_model import db, Setting
+from pgadmin.model import db, Setting
 import traceback
-from flask import Blueprint, Response, abort, request, render_template
+from flask import Response, request, render_template
 from flask.ext.security import login_required
 
-import config
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils import PgAdminModule
 
@@ -59,7 +56,6 @@ def store(setting=None, value=None):
     """Store a configuration setting, or if this is a POST request and a
     count value is present, store multiple settings at once."""
     success = 1
-    errorcode = 0
     errormsg = ''
 
     try:
@@ -97,7 +93,6 @@ def get(setting=None, default=None):
         default = request.form['default']
 
     success = 1
-    errorcode = 0
     errormsg = ''
 
     try:

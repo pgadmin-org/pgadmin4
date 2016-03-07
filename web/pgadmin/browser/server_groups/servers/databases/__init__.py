@@ -41,7 +41,8 @@ class DatabaseModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(sid)
+        if self.show_node:
+            yield self.generate_browser_collection_node(sid)
 
     @property
     def script_load(self):
@@ -634,7 +635,7 @@ class DatabaseView(PGChildNodeView):
         except Exception as e:
             current_app.logger.exception(e)
             return make_json_response(
-                    data="-- modified SQL",
+                    data=_("-- modified SQL"),
                     status=200
                     )
 

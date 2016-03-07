@@ -109,3 +109,42 @@ class Server(db.Model):
     comment = db.Column(
             db.String(1024),
             nullable=True)
+
+class ModulePreference(db.Model):
+    """Define a preferences table for any modules."""
+    __tablename__ = 'module_preference'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), nullable=False)
+
+class PreferenceCategory(db.Model):
+    """Define a preferences category for each modules."""
+    __tablename__ = 'preference_category'
+    id = db.Column(db.Integer, primary_key=True)
+    mid = db.Column(
+        db.Integer,
+        db.ForeignKey('module_preference.id'),
+        nullable=False
+        )
+    name = db.Column(db.String(256), nullable=False)
+
+class Preferences(db.Model):
+    """Define a particular preference."""
+    __tablename__ = 'preferences'
+    id = db.Column(db.Integer, primary_key=True)
+    cid = db.Column(
+        db.Integer,
+        db.ForeignKey('preference_category.id'),
+        nullable=False
+        )
+    name = db.Column(db.String(1024), nullable=False)
+
+class UserPreference(db.Model):
+    """Define the preference for a particular user."""
+    __tablename__ = 'user_preferences'
+    pid = db.Column(
+        db.Integer, db.ForeignKey('preferences.id'), primary_key=True
+        )
+    uid = db.Column(
+        db.Integer, db.ForeignKey('user.id'), primary_key=True
+        )
+    value = db.Column(db.String(1024), nullable=False)
