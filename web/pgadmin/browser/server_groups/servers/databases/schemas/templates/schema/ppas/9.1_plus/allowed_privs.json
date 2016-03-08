@@ -1,0 +1,26 @@
+{# List of allowed privileges for PPAS 9.1 #}
+{#
+    Format for allowed privileges is:
+    "acl_col": {
+        "type": "name",
+        "acl": [...]
+    }
+#}
+{
+    "nspacl": {
+        "type": "SCHEMA",
+        "acl": ["C", "U"]
+    },
+    "deftblacl": {
+        "type": "TABLE",
+        "acl": ["r", "a", "w", "d", "D", "x", "t"]
+    },
+    "defseqacl": {
+        "type": "SEQUENCE",
+        "acl": ["U", "r", "a"]
+    },
+    "deffuncacl": {
+        "type": "FUNCTION",
+        "acl": ["X"]
+    }
+}
