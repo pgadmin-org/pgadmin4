@@ -718,16 +718,17 @@ Polling result for (Query-id: {query_id})""".format(query_id=self.__async_query_
 
         status = self._wait_timeout(self.conn, ASYNC_WAIT_TIMEOUT)
         if status == self.ASYNC_OK:
+            # Fetch the column information
+            colinfo = [desc for desc in cur.description]
+
             if cur.rowcount > 0:
-                # Fetch the column information
-                colinfo = [desc for desc in cur.description]
                 result = []
                 # Fetch the data rows.
                 for row in cur:
                     result.append(dict(row))
                 self.__async_cursor = None
                 return status, result, colinfo
-        return status, None, None
+        return status, None, colinfo
 
     def cancel_transaction(self, conn_id, did=None):
         """
