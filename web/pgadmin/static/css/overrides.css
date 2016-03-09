@@ -718,3 +718,7 @@ div.inline-tab-panel > ul.tab-content > div.tab-pane > *:first-child {
 div.inline-tab-panel > ul.tab-content > div.tab-pane > *:last-child {
 	margin-bottom: 5px;
 }
+.pgadmin-control-error-message
+{
+	padding-left:4px;
+}

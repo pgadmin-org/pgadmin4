@@ -190,7 +190,7 @@
       if (_.isEmpty(error)) return;
 
       self.$el.addClass(Backform.errorClassName).append(
-        $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+        $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
         );
       });
     },
@@ -363,7 +363,7 @@
             '[type="radio"]'
           ).append(
           $("<div></div>").addClass(
-            'pgadmin-control-error-message col-xs-12 help-block'
+            'pgadmin-control-error-message col-xs-offset-4 col-xs-8 col-xs-8 help-block'
           ).text(error));
         });
       }
@@ -1008,7 +1008,7 @@
         if (_.isEmpty(error)) return;
 
         self.$el.addClass(Backform.errorClassName).append(
-          $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+          $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
           );
       });
     }
@@ -1064,7 +1064,7 @@
       if (_.isEmpty(error)) return;
 
       self.$el.addClass(Backform.errorClassName).append(
-        $("<div></div>").addClass('pgadmin-control-error-message col-xs-12 help-block').text(error)
+        $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
         );
     },
     showGridControl: function(data) {
