@@ -75,12 +75,12 @@ def parse_priv_to_db(str_privileges, allowed_acls = []):
                 priv_without_grant.append(
                             db_privileges[privilege['privilege_type']]
                             )
-
-        priv_with_grant = ", ".join(priv_with_grant) \
-             if len(priv_with_grant) < allowed_acls_len else 'ALL'
-        priv_without_grant = ", ".join(priv_without_grant) \
-            if len(priv_without_grant) < allowed_acls_len else 'ALL'
-
+        # If we have all acl then just return all
+        if len(priv_with_grant) == allowed_acls_len:
+            priv_with_grant = ['ALL']
+        if len(priv_without_grant) == allowed_acls_len:
+            priv_without_grant = ['ALL']
+        # Appending and returning all ACL
         privileges.append({
             'grantee': priv['grantee'],
             'with_grant': priv_with_grant,

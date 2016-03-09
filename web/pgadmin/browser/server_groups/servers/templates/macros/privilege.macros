@@ -1,9 +1,9 @@
-{% macro APPLY(conn, type, role, param, priv, with_grant) -%}
-{% if priv %}
-GRANT {{ priv }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }};
+{% macro APPLY(conn, type, role, param, privs, with_grant_privs) -%}
+{% if privs %}
+GRANT {{ privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }};
 {% endif %}
-{% if with_grant %}
-GRANT {{ with_grant }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+{% if with_grant_privs %}
+GRANT {{ with_grant_privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
 {% endif %}
 {%- endmacro %}
 {% macro RESETALL(conn, type, role, param) -%}
