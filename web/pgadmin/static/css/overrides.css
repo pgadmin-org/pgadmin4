@@ -283,6 +283,24 @@ iframe {
     padding-right: 3px;
     padding-left: 3px;
 }
+.pgadmin-controls > textarea.form-control,
+.pgadmin-controls > textarea.form-control[disabled] {
+   min-width: 100%;
+   max-width: 100%;
+}
+.pgadmin-controls > div.checkbox, .pgadmin-controls > div.checkbox[disabled] {
+    height: 28px;
+}
+
+.pgadmin-controls > .uneditable-input, .pgadmin-controls > .pgadmin-node-select,
+.pgadmin-controls > input.form-control, .pgadmin-controls > select.form-control,
+.pgadmin-controls > .uneditable-input[disabled],
+.pgadmin-controls > .pgadmin-node-select[disabled],
+.pgadmin-controls > input.form-control[disabled],
+.pgadmin-controls > select.form-control[disabled] {
+    height: 28px;
+    padding: 3px 6px !important;
+}
 
 .obj_properties fieldset > div > .pgadmin-control-group > label {
     height: 30px;

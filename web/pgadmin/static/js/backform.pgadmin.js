@@ -254,13 +254,33 @@
    * Reference:
    * http://stackoverflow.com/questions/11338592/how-can-i-bind-to-the-change-event-of-a-textarea-in-jquery
    */
-  Backform.TextareaControl.prototype.events = {
-    "change textarea": "onChange",
-    "keyup textarea": "onChange",
-    "paste textarea": "onChange",
-    "selectionchange textarea": "onChange",
-    "focus textarea": "clearInvalid"
-  };
+  _.extend(
+		    Backform.TextareaControl.prototype, {
+		      defaults: _.extend(
+		        Backform.TextareaControl.prototype.defaults, {
+		          rows: 5
+		        }),
+		      events : {
+		        "change textarea": "onChange",
+		        "keyup textarea": "onChange",
+		        "paste textarea": "onChange",
+		        "selectionchange textarea": "onChange",
+		        "focus textarea": "clearInvalid"
+		      },
+		      template: _.template([
+		        '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+		        '<div class="<%=Backform.controlsClassName%>">',
+		        '  <textarea ',
+		        '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
+		        '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+		        '    rows=<%=rows%>',
+		        '    <%=required ? "required" : ""%>><%-value%></textarea>',
+		        '  <% if (helpMessage && helpMessage.length) { %>',
+		        '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+		        '  <% } %>',
+		        '</div>'
+		      ].join("\n"))
+		  });
 
   /*
    * Overriding the render function of the select control to allow us to use
