@@ -141,8 +141,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           sslmode: 'prefer',
           host: null,
           port: 5432,
-          db: null,
-          username: null,
+          db: 'postgres',
+          username: '{{ username }}',
           role: null
         },
         schema: [{

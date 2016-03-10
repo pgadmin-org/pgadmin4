@@ -22,7 +22,7 @@ import pgadmin.browser.server_groups as sg
 from pgadmin.utils.crypto import encrypt
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.types import ServerType
-
+import config
 
 def has_any(data, keys):
     """
@@ -535,11 +535,16 @@ class ServerNode(PGChildNodeView):
         This property defines (if javascript) exists for this node.
         Override this property for your own logic.
         """
+        username = 'postgres'
+        if config.SERVER_MODE is True:
+            username = current_user.email.split('@')[0]
+
         return make_response(
                 render_template(
                     "servers/servers.js",
                     server_types=ServerType.types(),
-                    _=gettext
+                    _=gettext,
+                    username=username,
                     ),
                 200, {'Content-Type': 'application/x-javascript'}
                 )
