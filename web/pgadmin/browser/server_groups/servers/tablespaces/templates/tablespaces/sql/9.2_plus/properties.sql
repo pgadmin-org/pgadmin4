@@ -6,7 +6,8 @@ SELECT
     (SELECT
         array_agg(provider || '=' || label)
     FROM pg_shseclabel sl1
-    WHERE sl1.objoid=ts.oid) AS seclabels
+    WHERE sl1.objoid=ts.oid) AS seclabels,
+    spcacl as acl
 FROM
     pg_tablespace ts
 {% if tsid %}

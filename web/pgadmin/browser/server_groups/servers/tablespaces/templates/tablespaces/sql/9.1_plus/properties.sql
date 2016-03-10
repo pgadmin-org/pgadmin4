@@ -2,7 +2,8 @@
 SELECT
     ts.oid, spcname AS name, spclocation, spcoptions,
     pg_get_userbyid(spcowner) as spcuser, spcacl,
-    pg_catalog.shobj_description(oid, 'pg_tablespace') AS description
+    pg_catalog.shobj_description(oid, 'pg_tablespace') AS description,
+    spcacl as acl
 FROM
     pg_tablespace ts
 {% if tsid %}

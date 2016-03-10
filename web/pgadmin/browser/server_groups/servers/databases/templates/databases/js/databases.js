@@ -205,6 +205,18 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           defseqacl: [],
           deftypeacl: []
         },
+
+        // Default values!
+        initialize: function(attrs, args) {
+          var isNew = (_.size(attrs) === 0);
+
+          if (isNew) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            this.set({'datowner': userInfo.name}, {silent: true});
+          }
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+        },
+
         schema: [{
           id: 'name', label: '{{ _('Database') }}', cell: 'string',
           editable: false, type: 'text'

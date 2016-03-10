@@ -57,6 +57,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         this.initialized = true;
 
         pgBrowser.add_menus([{
+          name: 'create_tablespace_on_server', node: 'server', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
+          icon: 'wcTabIcon icon-tablespace', data: {action: 'create'}
+        },{
           name: 'create_tablespace_on_coll', node: 'coll-tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
@@ -79,6 +84,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           spcacl: [],
           seclabels:[]
         },
+
+        // Default values!
+        initialize: function(attrs, args) {
+          var isNew = (_.size(attrs) === 0);
+
+          if (isNew) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            this.set({'spcuser': userInfo.name}, {silent: true});
+          }
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+        },
+
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text'
@@ -97,6 +114,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'spcuser', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', control: 'node-list-by-name', node: 'role'
         },{
+          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
+          mode: ['properties'], disabled: true
+        },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
@@ -109,7 +129,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'spcacl', label: 'Privileges', type: 'collection',
           group: '{{ _('Security') }}', control: 'unique-col-collection',
           model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
-          mode: ['properties', 'edit', 'create'], canAdd: true, canDelete: true,
+          mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee'],
           columns: ['grantee', 'grantor', 'privileges']
          },{
