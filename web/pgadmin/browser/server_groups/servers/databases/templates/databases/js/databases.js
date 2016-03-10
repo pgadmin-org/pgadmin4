@@ -228,6 +228,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           editable: false, type: 'text', node: 'role',
           control: Backform.NodeListByNameControl
         },{
+          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
+          mode: ['properties'], disabled: true
+        },{
           id: 'comments', label:'{{ _('Comment') }}',
           editable: false, type: 'multiline'
         },{
