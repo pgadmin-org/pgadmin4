@@ -80,18 +80,25 @@ define(
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text',
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
           type: 'text', disabled: true
         },{
           id: 'lanowner', label:'{{ _('Owner') }}', type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'properties'], select2: { allowClear: false }
         },{
+          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+        },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'trusted', label:'{{ _('Trusted?') }}', type: 'switch', options: { onText: 'Yes', offText: 'No',
-          onColor: 'success', offColor: 'default', size: 'small'},
+          id: 'trusted', label:'{{ _('Trusted?') }}', type: 'switch', 
+          options: {
+            'onText': 'Yes', 'offText': 'No',
+            'onColor': 'success', 'offColor': 'primary',
+            'size': 'small'
+          },
           group: 'Definition', mode: ['edit', 'properties'],
           disabled: function(m) {
             return !(m.isNew());
@@ -159,7 +166,7 @@ define(
         },{
           id: 'lanacl', label: '{{ _('Privileges') }}', type: 'collection', group: '{{ _('Security') }}',
           model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
-          mode: ['properties', 'edit'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
+          mode: ['edit'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
           model: SecurityModel, editable: false, type: 'collection',

@@ -367,7 +367,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           id: 'rolname', label: '{{ _('Name') }}', type: 'text',
           disabled: 'readonly'
         },{
-          id: 'oid', label:'{{ _('Role ID') }}', cell: 'string',
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
           editable: false, type: 'text', visible: true, disabled: true
         },{
           id: 'rolpassword', label: '{{ _('Password') }}', type: 'password',

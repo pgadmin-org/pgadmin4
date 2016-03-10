@@ -37,7 +37,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'tablespace',
         label: '{{ _('Tablespaces') }}',
         type: 'coll-tablespace',
-        columns: ['name', 'oid', 'description']
+        columns: ['name', 'spcuser', 'description']
       });
   };
 
@@ -100,11 +100,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text'
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
-          type: 'text', disabled: true, mode: ['properties', 'edit']
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          type: 'text', disabled: true, mode: ['properties']
         },{
           id: 'spclocation', label:'{{ _('Location') }}', cell: 'string',
-          type: 'text', mode: ['properties', 'edit','create'],
+          group: '{{ _('Definition') }}', type: 'text', mode: ['properties', 'edit','create'],
           disabled: function(m) {
             // To disabled it in edit mode,
             // We'll check if model is new if yes then disabled it
@@ -115,7 +115,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           type: 'text', control: 'node-list-by-name', node: 'role'
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'

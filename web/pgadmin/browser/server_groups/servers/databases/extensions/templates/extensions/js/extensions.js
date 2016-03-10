@@ -164,8 +164,8 @@ function($, _, S, pgAdmin, pgBrowser) {
             })
           },
           {
-            id: 'eid', label: '{{ _('Oid')}}', cell: 'string',
-            type: 'text', disabled: true, mode: ['properties', 'edit', 'create']
+            id: 'eid', label: '{{ _('OID')}}', cell: 'string',
+            type: 'text', disabled: true, mode: ['properties']
           },
           {
             id: 'owner', label:'{{ _('Owner') }}', control: 'node-list-by-name',
@@ -194,9 +194,11 @@ function($, _, S, pgAdmin, pgBrowser) {
           },
           {
             id: 'relocatable', label: '{{ _('Relocatable?')}}', cell: 'switch',
-            type: 'switch', mode: ['properties'], 'options': {
-              'onText': 'Yes', 'offText': 'No', 'onColor': 'success',
-              'offColor': 'default', 'size': 'small'
+            group: 'Definition', type: 'switch', mode: ['properties'], 
+            options: {
+              'onText': 'Yes', 'offText': 'No',
+              'onColor': 'success', 'offColor': 'primary',
+              'size': 'small'
             }
           },
           {

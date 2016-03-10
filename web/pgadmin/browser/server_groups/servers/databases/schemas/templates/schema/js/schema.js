@@ -41,7 +41,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         node: 'schema',
         label: '{{ _('Schemas') }}',
         type: 'coll-schema',
-        columns: ['name', 'oid', 'description']
+        columns: ['name', 'namespaceowner', 'description']
       });
   };
   // Extend the browser's node class for schema node
@@ -100,15 +100,12 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text'
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
-          type: 'text', disabled: true, mode: ['edit', 'properties']
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          type: 'text', disabled: true, mode: ['properties']
         },{
           id: 'namespaceowner', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', control: 'node-list-by-name', node: 'role',
           select2: { allowClear: false }
-        },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
-          type: 'multiline'
         },{
           id: 'is_sys_object', label:'{{ _('System schema?') }}',
           cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
@@ -118,20 +115,23 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             'size': 'small'
           }
         },{
+          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          type: 'multiline'
+        },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'tblacl', label: '{{ _('Default TABLE Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'seqacl', label: '{{ _('Default SEQUENCE Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'funcacl', label: '{{ _('Default FUNCTION Privileges') }}',
-          type: 'text', mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', type: 'text', mode: ['properties'], disabled: true
         },{
           id: 'typeacl', label: '{{ _('Default TYPE Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true, min_version: 90200,
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true, min_version: 90200,
           visible: function() {
             return this.version_compatible;
           }

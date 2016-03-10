@@ -66,11 +66,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // Define the schema for cast
           schema: [{
-            id: 'name', label: '{{ _('Name') }}', cell: 'string', group: '{{ _('Definition') }}',
+            id: 'name', label: '{{ _('Name') }}', cell: 'string',
             editable: false, type: 'text', disabled: true, cellHeaderClasses: 'width_percent_50'
           },{
-            id: 'oid', label:'{{ _('Oid') }}', cell: 'string', group: '{{ _('Definition') }}',
-            editable: false, type: 'text', disabled: true
+            id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+            editable: false, type: 'text', disabled: true, mode: ['properties'],
           },{
             id: 'srctyp', label:'{{ _('Source type') }}', url: 'get_type',
             type: 'text', group: 'Definition', disabled: function(m) {
@@ -252,10 +252,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }], editable: false, type: 'select2', group: 'Definition',
           mode:['properties', 'edit']
         },{
-          id: 'syscast', label:'{{ _('System Cast?') }}', mode: ['properties'],
-          editable: false, type: 'text'
+          id: 'syscast', label:'{{ _('System cast?') }}',
+          cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
+          options: {
+            'onText': 'Yes', 'offText': 'No',
+            'onColor': 'success', 'offColor': 'primary',
+            'size': 'small'
+          }
         },{
-          id: 'description', label:'{{ _('Comment') }}',type: 'text', group: 'Definition',
+          id: 'description', label:'{{ _('Comment') }}',type: 'text',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         }
         ],

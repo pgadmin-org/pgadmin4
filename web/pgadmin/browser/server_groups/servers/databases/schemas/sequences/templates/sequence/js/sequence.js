@@ -41,7 +41,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'sequence',
         label: '{{ _('Sequences') }}',
         type: 'coll-sequence',
-        columns: ['oid', 'name', 'seqowner', 'comment']
+        columns: ['name', 'seqowner', 'comment']
       });
   };
 
@@ -151,8 +151,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit']
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
-          type: 'text' , mode: ['properties']
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          type: 'text', mode: ['properties']
         },{
           id: 'seqowner', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
@@ -191,10 +191,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
         },{
           id: 'cycled', label: '{{ _('Cycled') }}', type: 'switch',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
+          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          options: {
+            'onText': 'Yes', 'offText': 'No',
+            'onColor': 'success', 'offColor': 'primary',
+            'size': 'small'
+          }
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'relacl', label: '{{ _('Privileges') }}', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
             {privileges: ['r', 'w', 'U']}), uniqueCol : ['grantee', 'grantor'],

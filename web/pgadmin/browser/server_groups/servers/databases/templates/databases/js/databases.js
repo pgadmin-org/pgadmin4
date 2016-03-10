@@ -11,7 +11,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         node: 'database',
         label: '{{ _('Databases') }}',
         type: 'coll-database',
-        columns: ['name', 'did', 'datowner', 'comments']
+        columns: ['name', 'datowner', 'comments']
       });
   };
 
@@ -221,15 +221,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'name', label: '{{ _('Database') }}', cell: 'string',
           editable: false, type: 'text'
         },{
-          id: 'did', label:'{{ _('Oid') }}', cell: 'string', mode: ['properties'],
-          editable: false, type: 'text', visible: false
+          id: 'did', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
+          editable: false, type: 'text'
         },{
           id: 'datowner', label:'{{ _('Owner') }}',
           editable: false, type: 'text', node: 'role',
           control: Backform.NodeListByNameControl
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'comments', label:'{{ _('Comment') }}',
           editable: false, type: 'multiline'
@@ -267,7 +267,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },{
           id: 'datallowconn', label: '{{ _('Allow Connections?') }}',
           editable: false, type: 'switch', group: 'Definition',
-          mode: ['properties'], disabled: true
+          mode: ['properties'], disabled: true,
+          options: {
+            'onText': 'Yes', 'offText': 'No',
+            'onColor': 'success', 'offColor': 'primary',
+            'size': 'small'
+          }
         },{
           id: 'datacl', label: '{{ _('Privileges') }}', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
             {privileges: ['C', 'T', 'c']}), uniqueCol : ['grantee', 'grantor'],

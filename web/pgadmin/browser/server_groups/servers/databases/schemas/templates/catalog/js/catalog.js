@@ -39,7 +39,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         node: 'catalog',
         label: '{{ _('Catalogs') }}',
         type: 'coll-catalog',
-        columns: ['name', 'oid', 'description']
+        columns: ['name', 'namespaceowner', 'description']
       });
   };
   // Extend the browser's node class for catalog node
@@ -80,14 +80,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
           type: 'text', disabled: true
         },{
           id: 'namespaceowner', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', disabled: true
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          mode: ['properties'], disabled: true
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
