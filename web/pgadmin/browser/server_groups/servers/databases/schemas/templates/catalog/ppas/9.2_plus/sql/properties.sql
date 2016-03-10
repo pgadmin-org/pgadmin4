@@ -1,6 +1,6 @@
 {% import 'catalog/ppas/macros/catalogs.sql' as CATALOGS %}
 SELECT
-    2 END AS nsptyp,
+    2 AS nsptyp,
     nsp.nspname AS name,
     nsp.oid,
     array_to_string(nsp.nspacl::text[], ', ') as acl,

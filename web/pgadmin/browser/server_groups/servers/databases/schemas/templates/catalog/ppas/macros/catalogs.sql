@@ -9,7 +9,7 @@
         (SELECT 1 FROM pg_class
         WHERE relname = 'tables' AND relnamespace = {{ tbl }}.oid LIMIT 1)) OR
     ({{ tbl }}.nspname = 'dbo' OR {{ tbl }}.nspname = 'sys') OR
-    {{ tbl }}.nspname = 'dbms_job_procedure' AND EXISTS
+    ({{ tbl }}.nspname = 'dbms_job_procedure' AND EXISTS
        (SELECT 1 FROM pg_proc
         WHERE pronamespace = {{ tbl }}.oid and proname = 'run_job' LIMIT 1))
 {%- endmacro %}

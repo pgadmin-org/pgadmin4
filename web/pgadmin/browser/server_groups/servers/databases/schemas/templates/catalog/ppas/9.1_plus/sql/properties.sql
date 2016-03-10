@@ -1,9 +1,6 @@
 {% import 'catalog/ppas/macros/catalogs.sql' as CATALOGS %}
 SELECT
-    CASE
-    WHEN (nspname LIKE E'pg\\_temp\\_%') THEN 1
-    WHEN (nspname LIKE E'pg\\_%') THEN 0
-    ELSE 3 END AS nsptyp,
+    2 AS nsptyp,
     nsp.nspname AS name,
     nsp.oid,
     array_to_string(nsp.nspacl::text[], ', ') as acl,
