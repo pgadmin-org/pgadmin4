@@ -31,14 +31,15 @@ class EventTriggerModule(CollectionNodeModule):
     Methods:
     -------
     * __init__(*args, **kwargs)
-      - Method is used to initialize the EventTriggerModule and it's base module.
+      - Method is used to initialize the EventTriggerModule and it's base
+        module.
 
     * get_nodes(gid, sid, did)
       - Method is used to generate the browser collection node.
 
     * script_load()
-      - Load the module script for Event trigger, when any of the database node is
-        initialized.
+      - Load the module script for Event trigger, when any of the database node
+        is initialized.
     """
 
     NODE_TYPE = 'event_trigger'
@@ -65,15 +66,16 @@ class EventTriggerModule(CollectionNodeModule):
     @property
     def node_inode(self):
         """
-        If a node have child return True otherwise False
+        Always returns false, it is a leaf node, and do not have children
+        nodes.
         """
         return False
-    
+
     @property
     def script_load(self):
         """
-        Load the module script for event_trigger, when any of the database node is
-        initialized.
+        Load the module script for event_trigger, when any of the database node
+        is initialized.
         """
         return database.DatabaseModule.NODE_TYPE
 
@@ -96,8 +98,7 @@ class EventTriggerView(PGChildNodeView):
       - Method is used to initialize the EventTriggerView and it's base view.
 
     * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
+      - Returns the javascript module for event trigger.
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -105,42 +106,36 @@ class EventTriggerView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the event trigger nodes within
-        that collection.
+      - Lists proroperties of all the nodes of type - event trigger.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
-        Here it will create all the event trigger node.
+      - Creates all the child nodes of type - event trigger.
 
     * properties(gid, sid, did, etid)
-      - This function will show the properties of the selected
-        event trigger node
+      - Returns the properties of the given event trigger node
 
     * update(gid, sid, did, etid)
-      - This function will update the data for the selected event trigger node.
+      - Updates the data for the given event trigger node.
 
     * msql(gid, sid, did, etid)
-      - This function is used to return modified SQL for the selected
-        event trigger node.
+      - Return modified SQL for the given event trigger node based on the
+        request data.
 
     * get_sql(data, etid)
-      - This function will generate sql from model data
+      - Generates the sql from model data
 
     * sql(gid, sid, did, etid):
-      - This function will generate sql to show it in sql pane for the selected
-        event trigger node.
+      - Generates the reversed engineered query for the given event trigger
+        node.
 
     * get_event_funcs(gid, sid, did, etid):
-      - This function gets the event functions and returns an ajax response
-        for the event trigger node.
+      - Returns the event functions available in that database.
 
     * dependents(gid, sid, did, etid):
-      - This function get the dependents and return ajax response for the
-        event trigger node.
+      - Returns the dependents list for the given event trigger node.
 
     * dependencies(self, gid, sid, did, etid):
-      - This function get the dependencies and return ajax response for the
-        event trigger node.
+      - Returns the dependencies list for the given event trigger node.
     """
 
     node_type = blueprint.node_type
@@ -172,7 +167,7 @@ class EventTriggerView(PGChildNodeView):
 
     def module_js(self):
         """
-        This property defines whether javascript exists for this node.
+        Returns the javascript module for event trigger.
         """
         return make_response(
                 render_template(
