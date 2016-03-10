@@ -1,12 +1,12 @@
 {##########################################}
 {# Macros for schema and its child nodes  #}
 {##########################################}
-{% macro SET(conn, type, role, param, priv, with_grant, schema) -%}
-{% if priv %}
-GRANT {{ priv }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }};
+{% macro SET(conn, type, role, param, privs, with_grant_privs, schema) -%}
+{% if privs %}
+GRANT {{ privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }};
 {% endif %}
-{% if with_grant %}
-GRANT {{ with_grant }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
+{% if with_grant_privs %}
+GRANT {{ with_grant_privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
 {% endif %}
 {%- endmacro %}
 {% macro UNSETALL(conn, type, role, param, schema) -%}
