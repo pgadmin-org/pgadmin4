@@ -452,7 +452,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }
         },{
           id: 'variables', label: '{{ _('Variables') }}', type: 'collection',
-          group: '{{ _('Security') }}', hasDatabase: true, url: 'variables',
+          group: '{{ _('Variables') }}', hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel, control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
           url: "variables", disabled: 'readonly'

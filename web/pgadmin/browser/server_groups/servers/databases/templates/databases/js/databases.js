@@ -281,7 +281,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },{
           id: 'variables', label: '{{ _('Variables') }}', type: 'collection',
           model: pgAdmin.Browser.Node.VariableModel, editable: false,
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: '{{ _('Variables') }}', mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
         },{
