@@ -1098,11 +1098,13 @@
       if (data.disabled == false && data.canEdit) {
           var editCell = Backgrid.Extension.ObjectCell.extend({
             schema: gridSchema.schema
-          });
+          }),
+          canEdit = self.field.has('canEdit') &&
+          self.field.get('canEdit') || true;
 
           gridSchema.columns.unshift({
             name: "pg-backform-edit", label: "", cell : editCell,
-            cell_priority: -2
+            cell_priority: -2, editable: canEdit
           });
       }
 
@@ -1140,7 +1142,7 @@
         grid.insertRow({});
         var newRow = $(grid.body.rows[collection.length - 1].$el);
         newRow.attr("class", "new").click(function(e) {
-          $(this).attr("class", "");
+          $(this).attr("class", "editable");
         });
         $(newRow).pgMakeVisible('backform-tab');
         return false;
