@@ -120,13 +120,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'spcoptions', label: 'Variables', type: 'collection',
+          id: 'spcoptions', label: '{{ _('Variables') }}', type: 'collection',
           group: "Variables", control: 'variable-collection',
           model: pgAdmin.Browser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
          },{
-          id: 'spcacl', label: 'Privileges', type: 'collection',
+          id: 'spcacl', label: '{{ _('Privileges') }}', type: 'collection',
           group: '{{ _('Security') }}', control: 'unique-col-collection',
           model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
