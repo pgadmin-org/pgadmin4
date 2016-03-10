@@ -3,17 +3,17 @@
 {# ============= Update language name ============= #}
 {% if data.name != o_data.name %}
 ALTER LANGUAGE {{ conn|qtIdent(o_data.name) }}
-  RENAME TO {{ conn|qtIdent(data.name) }};
+    RENAME TO {{ conn|qtIdent(data.name) }};
 {% endif %}
 {# ============= Update language user ============= #}
 {% if data.lanowner and data.lanowner != o_data.lanowner %}
 ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
-  OWNER TO {{ conn|qtIdent(data.lanowner) }};
+    OWNER TO {{ conn|qtIdent(data.lanowner) }};
 {% endif %}
 {# ============= Update language comments ============= #}
 {% if data.description and data.description != o_data.description %}
 COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
-  IS '{{ data.description }}';
+    IS '{{ data.description }}';
 {% endif %}
 {% endif %}
 
