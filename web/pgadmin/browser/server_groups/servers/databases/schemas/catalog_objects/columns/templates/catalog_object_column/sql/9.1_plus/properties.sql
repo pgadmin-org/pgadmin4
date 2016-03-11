@@ -34,7 +34,7 @@ FROM pg_attribute att
   LEFT OUTER JOIN pg_collation coll ON att.attcollation=coll.oid
   LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
 WHERE att.attrelid = {{coid}}::oid{% if clid %}
-  AND att.atttypid = {{clid}}::oid
+  AND att.attnum = {{clid}}::int
 {% endif %}
   AND att.attnum > 0
   AND att.attisdropped IS FALSE

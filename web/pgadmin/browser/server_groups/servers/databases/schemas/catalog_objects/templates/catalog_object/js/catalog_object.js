@@ -7,7 +7,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       pgAdmin.Browser.Collection.extend({
         node: 'catalog_object',
         label: '{{ _('Catalog Objects') }}',
-        type: 'coll-catalog_object'
+        type: 'coll-catalog_object',
+        columns: ['name', 'owner', 'description']
       });
   };
 
@@ -37,7 +38,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'oid', label:'{{ _('Oid') }}', cell: 'string',
+          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
           type: 'text', disabled: true
         },{
           id: 'owner', label:'{{ _('Owner') }}', cell: 'string',

@@ -7,7 +7,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       pgAdmin.Browser.Collection.extend({
         node: 'catalog_object_column',
         label: '{{ _('catalog_object_column') }}',
-        type: 'coll-catalog_object_column'
+        type: 'coll-catalog_object_column',
+        columns: ['attname', 'attnum', 'cltype', 'description']
       });
   };
 
@@ -42,9 +43,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'attname', label: '{{ _('Column') }}', cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'atttypid', label: '{{ _('Oid') }}', cell: 'string',
-          type: 'text', disabled: true
-        },{
           id: 'attowner', label: '{{ _('Owner') }}', cell: 'string',
           type: 'text', disabled: true
         },{
@@ -52,13 +50,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           type: 'text', disabled: true
         },{
           id: 'cltype', label:'{{ _('Data type') }}', cell: 'string',
-          type: 'text', disabled: true
+          group: '{{ _('Definition') }}', type: 'text', disabled: true
         },{
           id: 'collspcname', label:'{{ _('Collation') }}', cell: 'string',
-          type: 'text', disabled: true
+          group: '{{ _('Definition') }}', type: 'text', disabled: true
         },{
-          id: 'attacl', label:'{{ _('ACL') }}', cell: 'string',
-          type: 'text', disabled: true
+          id: 'attacl', label:'{{ _('Privileges') }}', cell: 'string',
+          group: '{{ _('Security') }}', type: 'text', disabled: true
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', disabled: true

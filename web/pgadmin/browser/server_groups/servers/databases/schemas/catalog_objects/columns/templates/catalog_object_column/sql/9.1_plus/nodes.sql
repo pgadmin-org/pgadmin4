@@ -1,5 +1,5 @@
 SELECT
-    atttypid, attname
+    attnum, attname
 FROM pg_attribute att
 WHERE att.attrelid = {{coid}}::oid
   AND att.attnum > 0

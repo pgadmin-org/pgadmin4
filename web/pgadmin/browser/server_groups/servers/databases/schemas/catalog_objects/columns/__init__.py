@@ -217,7 +217,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
         for row in rset['rows']:
             res.append(
                     self.blueprint.generate_browser_node(
-                        row['atttypid'],
+                        row['attnum'],
                         coid,
                         row['attname'],
                         icon="icon-catalog_object_column"
@@ -238,7 +238,6 @@ class CatalogObjectColumnsView(PGChildNodeView):
             gid: Server Group ID
             sid: Server ID
             did:  Database ID
-            scid: Schema ID
             scid: Schema ID
             coid: Catalog object ID
             clid: Column ID
