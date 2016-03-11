@@ -7,7 +7,7 @@ FROM
     format_type(tt.oid, tt.typtypmod) ||
     E'\n\n-- DROP CAST (' || format_type(st.oid, null) ||
     E' AS ' || format_type(tt.oid,tt.typtypmod) ||
-    E');\n\n  CREATE CAST (' || format_type(st.oid, null) ||
+    E');\n\nCREATE CAST (' || format_type(st.oid, null) ||
     E' AS ' || format_type(tt.oid,tt.typtypmod) || E')\n' ||
     CASE WHEN ca.castfunc != 0 THEN
     E'\tWITH FUNCTION ' ||
