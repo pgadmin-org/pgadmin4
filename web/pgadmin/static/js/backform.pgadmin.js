@@ -273,7 +273,7 @@
 		        '  <textarea ',
 		        '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
 		        '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
-		        '    rows=<%=rows%>',
+		        '    rows=<%=rows ? rows : ""%>',
 		        '    <%=required ? "required" : ""%>><%-value%></textarea>',
 		        '  <% if (helpMessage && helpMessage.length) { %>',
 		        '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
@@ -1705,7 +1705,8 @@
       label: "",
       extraClasses: [],
       helpMessage: null,
-      maxlength: 4096
+      maxlength: 4096,
+      rows: undefined
     },
 
     /*
