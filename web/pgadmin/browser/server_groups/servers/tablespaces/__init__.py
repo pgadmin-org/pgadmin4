@@ -122,6 +122,8 @@ class TablespaceView(PGChildNodeView):
             current_app.logger.debug(
                 "Using the template path: %s", self.template_path
                 )
+            # Allowed ACL on tablespace
+            self.acls = ['C']
 
             return f(*args, **kwargs)
         return wrap
@@ -439,11 +441,11 @@ class TablespaceView(PGChildNodeView):
             for key in ['spcacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                      data[key]['added'] = parse_priv_to_db(data[key]['added'], 'TABLESPACE')
+                      data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], 'TABLESPACE')
+                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], 'TABLESPACE')
+                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -458,7 +460,7 @@ class TablespaceView(PGChildNodeView):
         else:
             # To format privileges coming from client
             if 'spcacl' in data:
-                data['spcacl'] = parse_priv_to_db(data['spcacl'], 'TABLESPACE')
+                data['spcacl'] = parse_priv_to_db(data['spcacl'], self.acl)
             # If the request for new object which do not have tsid
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
@@ -492,7 +494,7 @@ class TablespaceView(PGChildNodeView):
 
         # To format privileges
         if 'spcacl' in old_data:
-            old_data['spcacl'] = parse_priv_to_db(old_data['spcacl'], 'TABLESPACE')
+            old_data['spcacl'] = parse_priv_to_db(old_data['spcacl'], self.acl)
 
         SQL = ''
         # We are not showing create sql for system tablespace
