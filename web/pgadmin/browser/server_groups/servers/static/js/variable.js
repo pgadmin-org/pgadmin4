@@ -528,21 +528,26 @@
         checkVars.push('role');
       }
 
-      self.collection.each(function(m) {
-        if (!inSelected) {
-          var has = true;
-          _.each(checkVars, function(v) {
-            val = m.get(v);
-            has = has && ((
-              (_.isUndefined(val) || _.isNull(val)) &&
-              (_.isUndefined(data[v]) || _.isNull(data[v]))
-              ) ||
-              (val == data[v]));
-          });
+      if (self.control_data.canAdd) {
+        self.collection.each(function(m) {
+          if (!inSelected) {
+            var has = true;
+            _.each(checkVars, function(v) {
+              val = m.get(v);
+              has = has && ((
+                (_.isUndefined(val) || _.isNull(val)) &&
+                (_.isUndefined(data[v]) || _.isNull(data[v]))
+                ) ||
+                (val == data[v]));
+            });
 
-          inSelected = has;
-        }
-      });
+            inSelected = has;
+          }
+        });
+      }
+      else {
+        inSelected = true;
+      }
 
       self.$header.find('button.add').prop('disabled', inSelected);
     },

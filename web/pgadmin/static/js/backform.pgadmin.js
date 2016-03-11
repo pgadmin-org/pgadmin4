@@ -872,22 +872,22 @@
             attributes: attributes,
             formatter: this.formatter
            }),
-          evalF = function(f, m) {
-            return (_.isFunction(f) ? !!f(m) : !!f);
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
           };
 
       // Evaluate the disabled, visible, required, canAdd, & canDelete option
       _.extend(data, {
         disabled: (field.version_compatible &&
-                   evalF.apply(this.field, [data.disabled, this.model])
+                   evalF.apply(this.field, [data.disabled, data, this.model])
                    ),
-        visible:  evalF.apply(this.field, [data.visible, this.model]),
-        required: evalF.apply(this.field, [data.required, this.model]),
+        visible:  evalF.apply(this.field, [data.visible, data, this.model]),
+        required: evalF.apply(this.field, [data.required, data, this.model]),
         canAdd: (field.version_compatible &&
-          evalF.apply(this.field, [data.canAdd, this.model])
+          evalF.apply(this.field, [data.canAdd, data, this.model])
           ),
-        canDelete: evalF.apply(this.field, [data.canDelete, this.model]),
-        canEdit: evalF.apply(this.field, [data.canEdit, this.model])
+        canDelete: evalF.apply(this.field, [data.canDelete, data, this.model]),
+        canEdit: evalF.apply(this.field, [data.canEdit, data, this.model])
       });
       _.extend(data, {add_label: "ADD"});
 
@@ -895,6 +895,8 @@
       if (!data.visible) {
         return this;
       }
+
+      this.control_data = _.clone(data);
 
       // Show Backgrid Control
       grid = this.showGridControl(data);
