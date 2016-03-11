@@ -92,6 +92,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           source: undefined,
           language: undefined
         },
+        
+        // Default values!
+        initialize: function(attrs, args) {
+          var isNew = (_.size(attrs) === 0);
+
+          if (isNew) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+
+            this.set({'eventowner': userInfo.name}, {silent: true});
+          }
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+        },
+        
         // Define the schema for the event trigger node
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
