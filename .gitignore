@@ -18,3 +18,8 @@ web/config_local.py
 pgadmin4.log
 *.swp
 *.swo
+/pgadmin4
+/pgadmin4.egg-info
+/MANIFEST.in
+/build
+/dist
