@@ -298,7 +298,7 @@ iframe {
 .pgadmin-controls > .pgadmin-node-select[disabled],
 .pgadmin-controls > input.form-control[disabled],
 .pgadmin-controls > select.form-control[disabled] {
-    height: 28px;
+    min-height: 28px;
     padding: 3px 6px !important;
 }
 
@@ -422,10 +422,11 @@ iframe {
 }
 
 .pg-prop-content .uneditable-input {
-    white-space: nowrap;
+    white-space: initial;
     overflow: hidden;
     text-overflow: ellipsis;
     -o-text-overow: ellipsis;
+    height: auto !important;
 }
 
 .form-control {
