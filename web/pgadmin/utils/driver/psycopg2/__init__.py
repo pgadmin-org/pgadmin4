@@ -717,6 +717,7 @@ Failed to reset the connection of the server due to following error:
 Polling result for (Query-id: {query_id})""".format(query_id=self.__async_query_id))
 
         status = self._wait_timeout(self.conn, ASYNC_WAIT_TIMEOUT)
+        colinfo = None
         if status == self.ASYNC_OK:
             # Fetch the column information
             colinfo = [desc for desc in cur.description]
