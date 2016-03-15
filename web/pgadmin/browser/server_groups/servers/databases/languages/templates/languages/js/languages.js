@@ -13,10 +13,12 @@ define(
     // Define the schema for the Security Label
     schema: [{
       id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false
+      type: 'text', disabled: false,
+      cellHeaderClasses:'width_percent_50'
     },{
       id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false
+      type: 'text', disabled: false,
+      cellHeaderClasses:'width_percent_50'
     }],
     /* validate function is used to validate the input given by
      * the user. In case of error, message will be displayed on

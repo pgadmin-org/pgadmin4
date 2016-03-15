@@ -27,10 +27,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
     },
     schema: [{
       id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false
+      type: 'text', disabled: false,
+      cellHeaderClasses:'width_percent_50'
     },{
       id: 'label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false
+      type: 'text', disabled: false,
+      cellHeaderClasses:'width_percent_50'
     }],
     validate: function() {
       var err = {},
