@@ -79,8 +79,8 @@
           return false;
         }
         return !(
-          this.node_info &&
-          this.node_info.server.user.name == column.get('grantor')
+          this.top && this.top.node_info &&
+          this.top.node_info.server.user.name == column.get('grantor')
         );
       },
       transform: function(data) {
@@ -141,7 +141,7 @@
               res = opts.apply(this),
               selected = {},
               cid = self.model.cid,
-              curr_user = self.model.node_info.server.user.name;
+              curr_user = self.model.top.node_info.server.user.name;
 
           var idx = 0;
 
