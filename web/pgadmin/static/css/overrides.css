@@ -480,7 +480,10 @@ fieldset[disabled] .form-control {
 .backgrid th, .backgrid td {
     line-height: 18px;
     font-size: 12px;
-    letter-spacing:0.7px
+}
+
+.backgrid th {
+    letter-spacing:0.5px
 }
 
 .backgrid td {
