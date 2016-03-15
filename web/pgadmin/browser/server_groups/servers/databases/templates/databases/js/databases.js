@@ -22,10 +22,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
     },
     schema: [{
       id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true
+      type: 'text', editable: true,
+      cellHeaderClasses:'width_percent_50'
     },{
       id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true
+      type: 'text', editable: true,
+      cellHeaderClasses:'width_percent_50'
     }],
     validate: function() {
       var err = {},
