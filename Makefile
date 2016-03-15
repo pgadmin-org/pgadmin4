@@ -34,13 +34,13 @@ PIP_CHECK_CMD = which pip &> /dev/null && pip show pip | grep Metadata-Version 2
 PGADMIN_SRC_DIR = pgadmin4
 PGADMIN_EGG = ${PGADMIN_SRC_DIR}.egg-info
 PGADMIN_BUILD = build
-PGADMIN_DIST = build
+PGADMIN_DIST = dist
 PGADMIN_MANIFEST = MANIFEST.in
 PGADMIN_INSTALL_CMD = pip install --use-wheel --find-links=${PGADMIN_DIST} ${PGADMIN_SRC_DIR}
 
 
 define create_manifest
-@echo 'recursive-include ${PGADMIN_SRC_DIR} *\nglobal-exclude pgadmin4.db *.pyc' > ${PGADMIN_MANIFEST}
+@printf 'recursive-include ${PGADMIN_SRC_DIR} *\nglobal-exclude pgadmin4.db *.pyc' > ${PGADMIN_MANIFEST}
 endef
 
 define build
@@ -75,7 +75,7 @@ ifeq ($(shell ${WHEEL_CHECK_CMD}),)
 		false; \
 	fi
 endif
-
+	rm -rf ${PGADMIN_SRC_DIR}
 	cp -r web ${PGADMIN_SRC_DIR}
 	$(call create_manifest)
 	$(call build)
