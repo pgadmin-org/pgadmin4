@@ -321,28 +321,25 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     initialize: function () {
       Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
 
-      var col = _.defaults(this.column.toJSON(), this.defaults),
-          model = this.model, column = this.column,
-          editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = _.clone(this.optionValues || this.column.get('options'));
-
-
-      var self = this,
-          url = self.column.get('url') || self.defaults.url,
-          m = self.model.handler || self.model;
+      var url = this.column.get('url') || this.defaults.url,
+          options_cached = this.column.get('options_cached');
 
       // Hmm - we found the url option.
       // That means - we needs to fetch the options from that node.
-      if (url) {
-        var node = this.column.get('schema_node'),
-            node_info = this.column.get('node_info'),
+      if (url && !options_cached) {
+
+        var self = this,
+            model = this.model, column = this.column,
+            eventHandler = model.top || model,
+            node = column.get('schema_node'),
+            node_info = column.get('node_info'),
             full_url = node.generate_url.apply(
               node, [
-                null, url, this.column.get('node_data'),
-                this.column.get('url_with_id') || false, node_info
+                null, url, column.get('node_data'),
+                column.get('url_with_id') || false, node_info
               ]),
-            cache_level = this.column.get('cache_level') || node.type,
-            cache_node = this.column.get('cache_node');
+            cache_level = column.get('cache_level') || node.type,
+            cache_node = column.get('cache_node');
 
         cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
 
@@ -353,9 +350,9 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
          */
         var data = cache_node.cache(url, node_info, cache_level);
 
-        if (this.column.get('version_compatible') &&
+        if (column.get('version_compatible') &&
             (_.isUndefined(data) || _.isNull(data))) {
-          m.trigger('pgadmin:view:fetching', m, self.column);
+          eventHandler.trigger('pgadmin:view:fetching', m, column);
           $.ajax({
             async: false,
             url: full_url,
@@ -367,10 +364,10 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
               data = cache_node.cache(url, node_info, cache_level, res.data);
             },
             error: function() {
-              m.trigger('pgadmin:view:fetch:error', m, self.column);
+              eventHandler.trigger('pgadmin:view:fetch:error', m, column);
             }
           });
-          m.trigger('pgadmin:view:fetched', m, self.column);
+          eventHandler.trigger('pgadmin:view:fetched', m, column);
         }
         // To fetch only options from cache, we do not need time from 'at'
         // attribute but only options.
@@ -381,15 +378,16 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         /*
          * Transform the data
          */
-        transform = this.column.get('transform') || self.defaults.transform;
+        transform = column.get('transform') || self.defaults.transform;
         if (transform && _.isFunction(transform)) {
           // We will transform the data later, when rendering.
           // It will allow us to generate different data based on the
           // dependencies.
-          self.column.set('options', transform.bind(self, data));
+          column.set('options', transform.bind(self, data));
         } else {
-          self.column.set('options', data);
+          column.set('options', data);
         }
+        column.set('options_cached', true);
       }
     },
     render: function() {

@@ -240,11 +240,24 @@
    * Override the input control events in order to reslove the issue related to
    * not updating the value sometimes in the input control.
    */
-  Backform.InputControl.prototype.events = {
-    "change input": "onChange",
-    "blur input": "onChange",
-    "focus input": "clearInvalid"
-  };
+  _.extend(
+    Backform.InputControl.prototype, {
+      events: {
+        "change input": "onChange",
+        "blur input": "onChange",
+        "keyup input": "onKeyUp",
+        "focus input": "clearInvalid"
+      },
+      onKeyUp: function(ev) {
+        if (this.key_timeout) {
+          clearTimeout(this.key_timeout);
+        }
+
+        this.keyup_timeout = setTimeout(function() {
+          this.onChange(ev);
+        }.bind(this), 400);
+      }
+    });
 
   /*
    * Override the textarea control events in order to resolve the issue related
@@ -255,32 +268,40 @@
    * http://stackoverflow.com/questions/11338592/how-can-i-bind-to-the-change-event-of-a-textarea-in-jquery
    */
   _.extend(
-		    Backform.TextareaControl.prototype, {
-		      defaults: _.extend(
-		        Backform.TextareaControl.prototype.defaults, {
-		          rows: 5
-		        }),
-		      events : {
-		        "change textarea": "onChange",
-		        "keyup textarea": "onChange",
-		        "paste textarea": "onChange",
-		        "selectionchange textarea": "onChange",
-		        "focus textarea": "clearInvalid"
-		      },
-		      template: _.template([
-		        '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-		        '<div class="<%=Backform.controlsClassName%>">',
-		        '  <textarea ',
-		        '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
-		        '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
-		        '    rows=<%=rows ? rows : ""%>',
-		        '    <%=required ? "required" : ""%>><%-value%></textarea>',
-		        '  <% if (helpMessage && helpMessage.length) { %>',
-		        '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-		        '  <% } %>',
-		        '</div>'
-		      ].join("\n"))
-		  });
+    Backform.TextareaControl.prototype, {
+      defaults: _.extend(
+        Backform.TextareaControl.prototype.defaults, {rows: 5}
+      ),
+      events : {
+        "change textarea": "onChange",
+        "keyup textarea": "onKeyUp",
+        "paste textarea": "onChange",
+        "selectionchange textarea": "onChange",
+        "focus textarea": "clearInvalid"
+      },
+      template: _.template([
+        '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+        '<div class="<%=Backform.controlsClassName%>">',
+        '  <textarea ',
+        '    class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>"',
+        '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+        '    rows=<%=rows ? rows : ""%>',
+        '    <%=required ? "required" : ""%>><%-value%></textarea>',
+        '  <% if (helpMessage && helpMessage.length) { %>',
+        '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+        '  <% } %>',
+        '</div>'
+      ].join("\n")),
+      onKeyUp: function(ev) {
+        if (this.key_timeout) {
+          clearTimeout(this.key_timeout);
+        }
+
+        this.keyup_timeout = setTimeout(function() {
+          this.onChange(ev);
+        }.bind(this), 400);
+      }
+    });
 
   /*
    * Overriding the render function of the select control to allow us to use
@@ -748,7 +769,7 @@
 
         // Check if unique columns provided are also in model attributes.
         if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
-            errorMsg = "Developer: Unique column/s [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
+            errorMsg = "Developer: Unique columns [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
             alert (errorMsg);
         }
 
@@ -1000,7 +1021,9 @@
           var m = new (data.model) (null, {
             silent: true,
             handler: self.model.handler || self.model,
-            top: self.model.top || self.model
+            top: self.model.top || self.model,
+            node_info: self.model.node_info,
+            collection: collection
           });
           collection.add(m);
 
