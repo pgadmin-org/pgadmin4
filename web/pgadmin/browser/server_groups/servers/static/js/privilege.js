@@ -54,7 +54,7 @@
    * It has basically three properties:
    *  + grantee    - Role to which that privilege applies to.
    *                Empty value represents to PUBLIC.
-   *  + grantor    - Granter who has given this permission.
+   *  + grantor    - Grantor who has given this permission.
    *  + privileges - Privileges for that role.
    **/
   var PrivilegeRoleModel = pgNode.PrivilegeRoleModel = pgNode.Model.extend({
@@ -72,13 +72,16 @@
     schema: [{
       id: 'grantee', label:'Grantee', type:'text', group: null,
       editable: true, cellHeaderClasses: 'width_percent_40',
-      cell: 'node-list-by-name', node: 'role',
+      node: 'role',
       disabled : function(column, collection) {
         if (column instanceof Backbone.Collection) {
           // This has been called during generating the header cell
           return false;
         }
-        return !(this.node_info && this.node_info.server.user.name == column.get('grantor'));
+        return !(
+          this.node_info &&
+          this.node_info.server.user.name == column.get('grantor')
+        );
       },
       transform: function(data) {
         var res =
@@ -87,7 +90,79 @@
             );
         res.unshift({label: 'public', value: 'public'});
         return res;
-      }
+      },
+      cell: Backgrid.Extension.NodeListByNameCell.extend({
+        initialize: function(opts) {
+          var self = this,
+              override_opts = true;
+
+          // We would like to override the original options, because - we
+          // should omit the existing role/user from the privilege cell.
+          // Because - the column is shared among all the cell, we can only
+          // override only once.
+          if (opts && opts.column &&
+              opts.column instanceof Backbone.Model &&
+              opts.column.has('orig_options')) {
+            override_opts = false;
+          }
+          Backgrid.Extension.NodeListByNameCell.prototype.initialize.apply(
+            self, arguments
+          );
+
+          // Let's override the options
+          if (override_opts) {
+            var opts = self.column.get('options');
+            self.column.set('options', self.omit_selected_roles);
+            self.column.set('orig_options', opts);
+          }
+
+          var rerender = function (m) {
+            var self = this;
+            if ('grantee' in m.changed && this.model.cid != m.cid) {
+              setTimeout(
+                function() {
+                  self.render();
+                }, 50
+              );
+            }
+          }.bind(this);
+
+          // We would like to rerender all the cells of this type for this
+          // collection, because - we need to omit the newly selected roles
+          // form the list. Also, the render will be automatically called for
+          // the model represented by this cell, we will not do that again.
+          this.listenTo(self.model.collection, "change", rerender, this);
+          this.listenTo(self.model.collection, "remove", rerender, this);
+        },
+        // Remove all the selected roles (though- not mine).
+        omit_selected_roles: function() {
+          var self = this,
+              opts = self.column.get('orig_options'),
+              res = opts.apply(this),
+              selected = {},
+              cid = self.model.cid,
+              curr_user = self.model.node_info.server.user.name;
+
+          var idx = 0;
+
+          this.model.collection.each(function(m) {
+            var grantee = m.get('grantee');
+
+            if (m.cid != cid && !_.isUndefined(grantee) &&
+                curr_user == m.get('grantor')) {
+              selected[grantee] = m.cid;
+            }
+          });
+
+          res = _.filter(res, function(o) {
+            return !(o.value in selected);
+          });
+
+          this.model.collection.available_roles = {};
+
+          return res;
+        }
+      }),
     },{
       id: 'privileges', label:'Privileges',
       type: 'collection', model: PrivilegeModel, group: null,
@@ -101,7 +176,7 @@
                 this.attributes.node_info.server.user.name == column.get('grantor'));
       }
     },{
-      id: 'grantor', label: 'Granter', type: 'text', disabled: true,
+      id: 'grantor', label: 'Grantor', type: 'text', disabled: true,
       cell: 'node-list-by-name', node: 'role'
     }],
 
@@ -124,7 +199,10 @@
       /*
        * Define the collection of the privilege supported by this model
        */
-      var privileges = this.get('privileges') || {};
+      var self = this,
+          models = self.get('privileges'),
+          privileges = this.get('privileges') || {};
+
       if (_.isArray(privileges)) {
         privileges = new (pgNode.Collection)(
             models, {
@@ -138,7 +216,7 @@
       }
 
       var privs = {};
-      _.each(this.privileges, function(p) {
+      _.each(self.privileges, function(p) {
         privs[p] = {
           'privilege_type': p, 'privilege': false, 'with_grant': false
         }
@@ -152,20 +230,28 @@
         privileges.add(p, {silent: true});
       });
 
-      this.on("change:grantee", this.granteeChanged)
-      return this;
+      self.on("change:grantee", self.granteeChanged);
+      privileges.on('change', function() {
+        self.trigger('change:privileges', self);
+      });
+
+      return self;
     },
+
     granteeChanged: function() {
       var privileges = this.get('privileges'),
-        grantee = this.get('grantee');
+          grantee = this.get('grantee');
+
       // Reset all with grant options if grantee is public.
       if (grantee == 'public') {
         privileges.each(function(m) {
-          m.set("with_grant", false);
+          m.set("with_grant", false, {silent: true});
         });
       }
     },
+
     toJSON: function(session) {
+
       if (session) {
         return pgNode.Model.prototype.toJSON.apply(this, arguments);
       }
@@ -191,19 +277,32 @@
         errmsg = null,
         changedAttrs = this.sessAttrs,
         msg = undefined;
-      // We will throw error if user have not entered
-      // either grantee or privileges
-      if (_.has(changedAttrs, 'grantor')) {
-          if (_.isUndefined(this.get('grantee')) ||
-          this.get('privileges').length == 0) {
-            errmsg = 'Please specify grantee/privileges';
-            this.errorModel.set('grantee', errmsg);
-            return errmsg;
-          }
+
+      if (_.isUndefined(this.get('grantee'))) {
+        msg = window.pgAdmin.Browser.messages.PRIV_GRANTEE_NOT_SPECIFIED;
+        this.errorModel.set('grantee', msg);
+        errmsg = msg;
       } else {
-        this.errorModel.unset('grantee');
+         this.errorModel.unset('grantee');
       }
-      return null;
+
+      var anyPrivSelected = false;
+      this.attributes['privileges'].each(
+        function(p) {
+          if (p.get('privilege')) {
+            anyPrivSelected = true;
+          }
+        });
+
+      if (!anyPrivSelected) {
+        msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
+        this.errorModel.set('privileges', msg);
+        errmsg = errmsg || msg;
+      } else {
+        this.errorModel.unset('privileges');
+      }
+
+      return errmsg;
     }
   });
 
@@ -314,6 +413,7 @@
        * Listen to the checkbox value change and update the model accordingly.
        */
       privilegeChanged: function(ev) {
+
         if (ev && ev.target) {
           /*
            * We're looking for checkboxes only.
@@ -327,6 +427,7 @@
               collection = this.model.get('privileges'),
               grantee = this.model.get('grantee');
 
+          this.undelegateEvents();
           /*
            * If the checkbox selected/deselected is for 'ALL', we will select all
            * the checkbox for each privilege.
@@ -395,7 +496,10 @@
            * Set the values for each Privilege Model.
            */
           collection.each(function(m) {
-            m.set({'privilege': allPrivilege, 'with_grant': allWithGrant});
+            m.set(
+              {'privilege': allPrivilege, 'with_grant': allWithGrant},
+              {silent: true}
+            );
           });
         } else {
           /*
@@ -423,12 +527,12 @@
               $allGrant.prop('disabled', true);
               $allGrant.prop('checked', false);
             } else if (grantee != "public") {
-                $elGrant.prop('disabled', false);
+              $elGrant.prop('disabled', false);
             }
           } else if (!checked) {
             $allGrant.prop('checked', false);
           }
-          collection.get(privilege_type).set(attrs);
+          collection.get(privilege_type).set(attrs, {silent: true});
 
           if (checked) {
             var $allPrivileges = $tbl.find(
@@ -454,10 +558,40 @@
             }
           }
         }
+        this.model.trigger('change', this.model);
+
+        var anySelected = false,
+            msg = null;
+
+        collection.each(function(m) {
+          anySelected = anySelected || m.get('privilege');
+        });
+
+        if (anySelected) {
+          this.model.errorModel.unset('privileges');
+          if (this.model.errorModel.has('grantee')) {
+            msg = this.model.errorModel.get('grantee');
+          }
+        } else {
+          this.model.errorModel.set(
+            'privileges', window.pgAdmin.Browser.messages.NO_PRIV_SELECTED
+            );
+          msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
+        }
+        if (msg) {
+          this.model.collection.trigger(
+            'pgadmin-session:model:invalid', msg, this.model
+            );
+        } else {
+          this.model.collection.trigger(
+            'pgadmin-session:model:valid', this.model
+            );
+        }
       }
+      this.delegateEvents();
     },
 
-      lostFocus: function(ev) {
+    lostFocus: function(ev) {
       /*
        * We lost the focus, it's time for us to exit the editor.
        */
@@ -545,7 +679,7 @@
       var self = this;
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
 
-      self.model.on("change:grantee", function () {
+      self.model.on("change:grantee", function() {
         if (!self.$el.hasClass("editor")) {
           /*
            * Add time out before render; As we might want to wait till model
@@ -560,4 +694,5 @@
   });
 
   return PrivilegeRoleModel;
+
 }));

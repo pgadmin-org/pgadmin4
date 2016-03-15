@@ -266,21 +266,22 @@ function(_, pgAdmin, $, Backbone) {
              *
              * If not parent found, we will raise the issue
              */
-            if (msg != null) {
-              if (self.collection || self.handler) {
-                (self.collection || self.handler).trigger(
-                    'pgadmin-session:model:invalid', msg, self
-                    );
-              } else {
-                self.trigger('pgadmin-session:invalid', msg, self);
-              }
-            } else if (_.size(self.errorModel.attributes) == 0) {
+            if (_.size(self.errorModel.attributes) == 0) {
               if (self.collection || self.handler) {
                 (self.collection || self.handler).trigger(
                     'pgadmin-session:model:valid', self
                     );
               } else {
                 self.trigger('pgadmin-session:valid', self.sessChanged(), self);
+              }
+            } else {
+              msg = msg || _.values(self.errorModel.attributes)[0];
+              if (self.collection || self.handler) {
+                (self.collection || self.handler).trigger(
+                    'pgadmin-session:model:invalid', msg, self
+                    );
+              } else {
+                self.trigger('pgadmin-session:invalid', msg, self);
               }
             }
           }
@@ -387,6 +388,7 @@ function(_, pgAdmin, $, Backbone) {
         self.on('pgadmin-session:added', self.onChildChanged);
         self.on('pgadmin-session:removed', self.onChildChanged);
       },
+
       onChildInvalid: function(msg, obj) {
         var self = this;
 
@@ -421,18 +423,17 @@ function(_, pgAdmin, $, Backbone) {
             _.findIndex(self.objects, comparator);
           }
 
-          if (objName && !self.errorModel.has(objName)) {
+          if (objName) {
             /*
-             * We will trigger error information only once.
+             * Update the error message for this object.
              */
-            if (!_.size(self.errorModel.attributes)) {
-              if (self.handler) {
-                (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
-              } else  {
-                self.trigger('pgadmin-session:invalid', msg, self);
-              }
-            }
             self.errorModel.set(objName, msg);
+
+            if (self.handler) {
+              (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
+            } else  {
+              self.trigger('pgadmin-session:invalid', msg, self);
+            }
           }
         }
 
@@ -473,54 +474,53 @@ function(_, pgAdmin, $, Backbone) {
               _.findIndex(self.objects, comparator);
           }
 
+          var msg = null,
+              validate = function(m) {
+                if ('validate' in obj && typeof(obj.validate) == 'function') {
+                  msg = obj.validate();
+
+                  return msg;
+                }
+                return null;
+              };
+
+          if (obj instanceof Backbone.Collection) {
+            for (idx in obj.models) {
+              if (validate(obj.models[idx]))
+                break;
+            }
+          } else if (obj instanceof Backbone.Model) {
+            validate(obj);
+          }
+
           if (objName && self.errorModel.has(objName)) {
-
-            self.errorModel.unset(objName);
-
-            /*
-             * We will trigger validation information
-             */
-            if (_.size(self.errorModel.attributes) == 0) {
-              if (self.handler) {
-                (self.handler).trigger('pgadmin-session:model:valid', self);
-              } else  {
-                self.trigger(
-                    'pgadmin-session:valid', self.sessChanged(), self
-                    );
-              }
+            if (!msg) {
+              self.errorModel.unset(objName);
             } else {
-              var msg = _.values(self.errorModel.attributes)[0];
+              self.errorModel.set(objName, msg);
+            }
+          }
 
-              if (self.handler) {
-                (self.handler).trigger(
-                    'pgadmin-session:model:invalid', msg, self
-                    );
-              } else  {
-                self.trigger('pgadmin-session:invalid', msg, self);
-              }
+          /*
+           * We will trigger validation information
+           */
+          if (_.size(self.errorModel.attributes) == 0) {
+            if (self.handler) {
+              (self.handler).trigger('pgadmin-session:model:valid', self);
+            } else  {
+              self.trigger(
+                  'pgadmin-session:valid', self.sessChanged(), self
+                  );
             }
           } else {
-            /*
-             * We will trigger validation information
-             */
-            if (_.size(self.errorModel.attributes) == 0) {
-              if (self.handler) {
-                (self.handler).trigger('pgadmin-session:model:valid', self);
-              } else  {
-                self.trigger(
-                    'pgadmin-session:valid', self.sessChanged(), self
-                    );
-              }
-            } else {
-              var msg = _.values(self.errorModel.attributes)[0];
+            msg = msg || _.values(self.errorModel.attributes)[0];
 
-              if (self.handler) {
-                (self.handler).trigger(
-                    'pgadmin-session:model:invalid', msg, self
-                    );
-              } else  {
-                self.trigger('pgadmin-session:invalid', msg, self);
-              }
+            if (self.handler) {
+              (self.handler).trigger(
+                  'pgadmin-session:model:invalid', msg, self
+                  );
+            } else  {
+              self.trigger('pgadmin-session:invalid', msg, self);
             }
           }
         }
@@ -632,7 +632,7 @@ function(_, pgAdmin, $, Backbone) {
             var msg = m.validate();
 
             if (msg) {
-              self.sessAttrs['invalid'].push(m);
+              self.sessAttrs['invalid'][m.cid] = msg;
             }
           }
         });
@@ -644,15 +644,14 @@ function(_, pgAdmin, $, Backbone) {
         self.on('pgadmin-session:model:valid', self.onModelValid);
       },
       onModelInvalid: function(msg, m) {
-        var self = this;
+        var self = this,
+            invalidModels = self.sessAttrs['invalid'];
 
         if (self.trackChanges) {
           // Do not add the existing invalid object
-          if (self.objFindInSession(m, 'invalid') == -1) {
-            self.sessAttrs['invalid'].push(m);
-          }
+          invalidModels[m.cid] = msg;
 
-          // Inform the parent that - I am an invalid object.
+          // Inform the parent that - I am an invalid model.
           if (self.handler) {
             (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
           } else {
@@ -663,22 +662,17 @@ function(_, pgAdmin, $, Backbone) {
         return true;
       },
       onModelValid: function(m) {
-        var self = this;
+        var self = this,
+            invalidModels = self.sessAttrs['invalid'];
 
         if (self.trackChanges) {
           // Find the object the invalid list, if found remove it from the list
           // and inform the parent that - I am a valid object now.
-          var idx = self.objFindInSession(m, 'invalid');
-          if (idx != -1) {
-            self.sessAttrs['invalid'].splice(m, 1);
+          if (m.cid in invalidModels) {
+            delete invalidModels[m.cid];
           }
 
-          // Inform the parent that - I am the valid object.
-          if (self.handler) {
-            (self.handler).trigger('pgadmin-session:model:valid', self);
-          } else {
-            self.trigger('pgadmin-session:valid', self.sessChanged(), self);
-          }
+          this.triggerValidationEvent.apply(this);
         }
 
         return true;
@@ -799,21 +793,12 @@ function(_, pgAdmin, $, Backbone) {
             msg = obj.validate();
 
             if (msg) {
-              self.sessAttrs['invalid'].push(obj);
+              (self.sessAttrs['invalid'])[obj.cid] = msg;
             }
           }
 
-          /*
-           * If the collection was already invalid, we don't need to inform the
-           * parent, or raise the event for the invalid status.
-           */
-          if (!isAlreadyInvalid && !_.isUndefined(msg) && !_.isNull(msg)) {
-            if (self.handler) {
-              self.handler.trigger('pgadmin-session:model:invalid', msg, self);
-            } else {
-              self.trigger('pgadmin-session:invalid', msg, self);
-            }
-          }
+          // Let the parent/listener know about my status (valid/invalid).
+          this.triggerValidationEvent.apply(this);
 
           return true;
         }
@@ -821,7 +806,7 @@ function(_, pgAdmin, $, Backbone) {
           msg = obj.validate();
 
           if (msg) {
-            self.sessAttrs['invalid'].push(obj);
+            (self.sessAttrs['invalid'])[obj.cid] = msg;
           }
         }
         self.sessAttrs['added'].push(obj);
@@ -831,17 +816,8 @@ function(_, pgAdmin, $, Backbone) {
          */
         (self.handler || self).trigger('pgadmin-session:added', self, obj);
 
-        /*
-         * If the collection was already invalid, we don't need to inform the
-         * parent, or raise the event for the invalid status.
-         */
-        if (!isAlreadyInvalid && !_.isUndefined(msg) && !_.isNull(msg)) {
-          if (self.handler) {
-            self.handler.trigger('pgadmin-session:model:invalid', msg, self);
-          } else {
-            self.trigger('pgadmin-session:invalid', msg, self);
-          }
-        }
+        // Let the parent/listener know about my status (valid/invalid).
+        this.triggerValidationEvent.apply(this);
 
         return true;
       },
@@ -851,15 +827,14 @@ function(_, pgAdmin, $, Backbone) {
           return true;
 
         var self = this,
-            idx = self.objFindInSession(obj, 'added'),
-            copy = _.clone(obj);
+            invalidModels = self.sessAttrs['invalid'],
+            copy = _.clone(obj),
+            idx = self.objFindInSession(obj, 'added');
 
         // We need to remove it from the invalid object list first.
-        if (idx >= 0) {
-          self.sessAttrs['invalid'].splice(idx, 1);
+        if (obj.cid in invalidModels) {
+          delete invalidModels[obj.cid];
         }
-
-        idx = self.objFindInSession(obj, 'added');
 
         // Hmm - it was newly added, we can safely remove it.
         if (idx >= 0) {
@@ -867,13 +842,8 @@ function(_, pgAdmin, $, Backbone) {
 
           (self.handler || self).trigger('pgadmin-session:removed', self, copy);
 
-          if (_.size(self.sessAttrs['invalid']) == 0) {
-            if (self.handler) {
-              self.handler.trigger('pgadmin-session:model:valid', self);
-            } else {
-              self.trigger('pgadmin-session:valid', self.sessChanged(), self);
-            }
-          }
+          // Let the parent/listener know about my status (valid/invalid).
+          this.triggerValidationEvent.apply(this);
 
           return true;
         }
@@ -891,25 +861,53 @@ function(_, pgAdmin, $, Backbone) {
 
         self.sessAttrs['deleted'].push(obj);
 
+        // Let the parent/listener know about my status (valid/invalid).
+        this.triggerValidationEvent.apply(this);
+
         /*
-         * This object has been remove, that means - we can safely say, it has been
-         * modified.
+         * This object has been remove, we need to check (if we still have any
+         * other invalid message pending).
          */
-        if (_.size(self.sessAttrs['invalid']) == 0) {
-          if (self.handler) {
-            self.handler.trigger('pgadmin-session:model:valid', self);
-          } else {
-            self.trigger('pgadmin-session:valid', true, self);
+
+        return true;
+      },
+      triggerValidationEvent: function() {
+        var self = this,
+            msg = null,
+            invalidModels = self.sessAttrs['invalid'],
+            validModels = [];
+
+        for (var key in invalidModels) {
+          msg = invalidModels[key];
+          if (msg) {
+            break;
           }
-        } else {
-          if (self.handler) {
-            self.handler.trigger('pgadmin-session:model:invalid', self);
-          } else {
-            self.trigger('pgadmin-session:invalid', true, self);
+          else {
+            // Hmm..
+            // How come - you have been assinged in invalid list.
+            // I will make a list of it, and remove it later.
+            validModels.push(key);
           }
         }
 
-        return true;
+        // Let's remove the un
+        for (key in validModels) {
+          delete invalidModels[validModels[key]];
+        }
+
+        if (!msg) {
+          if (self.handler) {
+            self.handler.trigger('pgadmin-session:model:valid', self);
+          } else {
+            self.trigger('pgadmin-session:valid', self.sessChanged(), self);
+          }
+        } else {
+          if (self.handler) {
+            self.handler.trigger('pgadmin-session:model:invalid', msg, self);
+          } else {
+            self.trigger('pgadmin-session:invalid', msg, self);
+          }
+        }
       },
       onModelChange: function(obj) {
 
@@ -942,7 +940,6 @@ function(_, pgAdmin, $, Backbone) {
         }
 
         if (idx >= 0) {
-
 
           if (!obj.sessChanged()) {
             // This object is no more updated, removing it from the changed

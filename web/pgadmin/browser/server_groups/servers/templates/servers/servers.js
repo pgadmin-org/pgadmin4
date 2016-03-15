@@ -38,6 +38,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           category: 'drop', priority: 5, label: '{{ _('Disconnect Server...') }}',
           icon: 'fa fa-chain-broken', enable : 'is_connected'
         }]);
+
+        pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
+          '{{ _('Please select the grantee from the list!') }}';
+        pgBrowser.messages['NO_PRIV_SELECTED'] =
+          '{{ _('Please select at least one privilege to grant!') }}';
       },
       is_not_connected: function(node) {
         return (node && node.connected != true);
@@ -259,7 +264,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             tree.select(item);
             tree.open(item);
           }, 10);
-                    
+
         }
       };
 
@@ -348,7 +353,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return onFailure(xhr, status, error, obj, data, tree, item);
         });
     }
-    
+
     /* Send PING to indicate that session is alive */
     function server_status(server_id)
     {
