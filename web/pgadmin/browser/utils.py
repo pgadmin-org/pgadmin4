@@ -323,14 +323,13 @@ class PGChildNodeView(NodeView):
 
         return make_json_response(data=nodes)
 
-    def get_dependencies(self, conn, object_id, show_system_object=False, where=None):
+    def get_dependencies(self, conn, object_id, where=None):
         """
         This function is used to fetch the dependencies for the selected node.
 
         Args:
             conn: Connection object
             object_id: Object Id of the selected node.
-            show_system_object: True or False (optional)
             where: where clause for the sql query (optional)
 
         Returns: Dictionary of dependencies for the selected node.
@@ -349,7 +348,7 @@ class PGChildNodeView(NodeView):
         query = render_template("/".join([sql_path, 'dependents.sql']),
                                 fetch_dependencies=True, where_clause=where_clause)
         # fetch the dependency for the selected object
-        dependencies = self.__fetch_dependency(conn, query, show_system_object)
+        dependencies = self.__fetch_dependency(conn, query)
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:
@@ -375,14 +374,13 @@ class PGChildNodeView(NodeView):
 
         return dependencies
 
-    def get_dependents(self, conn, object_id, show_system_object=False, where=None):
+    def get_dependents(self, conn, object_id, where=None):
         """
         This function is used to fetch the dependents for the selected node.
 
         Args:
             conn: Connection object
             object_id: Object Id of the selected node.
-            show_system_object: True or False (optional)
             where: where clause for the sql query (optional)
 
         Returns: Dictionary of dependents for the selected node.
@@ -400,18 +398,17 @@ class PGChildNodeView(NodeView):
         query = render_template("/".join([sql_path, 'dependents.sql']),
                                 fetch_dependents=True, where_clause=where_clause)
         # fetch the dependency for the selected object
-        dependents = self.__fetch_dependency(conn, query, show_system_object)
+        dependents = self.__fetch_dependency(conn, query)
 
         return dependents
 
-    def __fetch_dependency(self, conn, query, show_system_object):
+    def __fetch_dependency(self, conn, query):
         """
         This function is used to fetch the dependency for the selected node.
 
         Args:
             conn: Connection object
             query: sql query to fetch dependencies/dependents
-            show_system_object: true or false
 
         Returns: Dictionary of dependency for the selected node.
         """
@@ -512,7 +509,7 @@ class PGChildNodeView(NodeView):
                 # value is None then it requires special handling.
                 if dep_types[dep_str[0]] is None:
                     if dep_str[0] == 'i':
-                        if show_system_object:
+                        if self.blueprint.show_system_objects:
                             dep_type = 'internal'
                         else:
                             continue
