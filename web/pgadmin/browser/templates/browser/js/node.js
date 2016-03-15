@@ -237,7 +237,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
-          content: '<div class="obj_properties">No object selected!</div>'
+          content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>'
         });
       p.load(pgBrowser.docker);
     },
@@ -422,14 +422,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         var msg, title;
         if (input.url == 'delete') {
 
-          msg = S('{{ _('Are you sure you want to drop %%s "%%s" and all the objects that depend on it?"?') }}')
+          msg = S('{{ _('Are you sure you want to drop %%s "%%s" and all the objects that depend on it?') }}')
             .sprintf(obj.label, d.label).value();
-          title = S('{{ _('Drop CASACDE %%s?') }}').sprintf(obj.label).value();
+          title = S('{{ _('DROP CASCADE %%s?') }}').sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.notify(
-                S('The %s - "%s" can not be deleted!')
+                S('The %s - "%s" can not be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error',
                 10
@@ -439,12 +439,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         } else {
           msg = S('{{ _('Are you sure you want to drop %%s "%%s"?') }}')
             .sprintf(obj.label, d.label).value();
-          title = S('{{ _('Drop %%s?') }}').sprintf(obj.label).value();
+          title = S('{{ _('DROP %%s?') }}').sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDrop) ?
                 obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.notify(
-                S('The %s - "%s" can not be deleted!')
+                S('The %s - "%s" can not be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error', 10
                 );
@@ -797,7 +797,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 });
               }
             },{
-              label: '{{ _("Reset") }}', type: 'reset',
+              label: '{{ _('Reset') }}', type: 'reset',
               extraClasses: ['btn-warning'],
               icon: 'fa fa-lg fa-recycle',
               disabled: true,

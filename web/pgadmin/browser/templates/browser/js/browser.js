@@ -65,7 +65,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="obj_properties">No object selected!</div>',
+        content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>',
         events: panelEvents
       }),
       // Statistics of the object
@@ -94,7 +94,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="pg-panel-depends-message">No object selected!</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-depends-container hidden"></div></div>',
         events: panelEvents
       }),
       // Dependents of the object
@@ -104,7 +104,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="pg-panel-depends-message">No object selected!</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-depends-container hidden"></div></div>',
         events: panelEvents
       })/* Add hooked-in panels by extensions */{% for panel_item in current_app.panels %}{% if not panel_item.isIframe %},'{{ panel_item.name }}' : new pgAdmin.Browser.Panel({
         name: '{{ panel_item.name }}',

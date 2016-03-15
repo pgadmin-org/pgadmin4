@@ -781,3 +781,12 @@ td.edit-cell.editable.sortable.renderable.editor {
 {
     padding-left: 3px;
 }
+
+/* Message panel shown on browser tabs */
+.pg-panel-message {
+    margin-top: 25px !important;
+    width: 600px;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+}

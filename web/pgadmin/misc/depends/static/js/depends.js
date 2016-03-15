@@ -245,8 +245,8 @@ define(
           self.dependentCollection,
           self.dependentsPanels,
           node.generate_url(item, 'dependent', data, true),
-          ['-- No object selected!', '-- No dependent information is available for the current selection.',
-            '-- Please wait while we fetch the dependent information from the server.'],
+          ['No object selected.', 'No dependent information is available for the current object.',
+            'Fetching dependent information from the server...'],
           node
         ), 400
       );
@@ -284,8 +284,8 @@ define(
           self.dependenciesCollection,
           self.dependenciesPanels,
           node.generate_url(item, 'dependency', data, true),
-          ['-- No object selected!', '-- No dependency information is available for the current selection.',
-            '-- Please wait while we fetch the dependency information from the server.'],
+          ['Please select an object in the tree view.', 'No dependency information is available for the current object.',
+            'Fetching dependency information from the server...'],
           node
         ), 400
       );
