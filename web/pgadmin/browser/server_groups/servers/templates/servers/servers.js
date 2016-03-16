@@ -156,8 +156,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'name', label:'{{ _('Name') }}', type: 'text',
           mode: ['properties', 'edit', 'create']
         },{
+          id: 'server_type', label: '{{ _('Server Type') }}', type: 'options',
+          mode: ['properties'], visible: 'isConnected',
+          'options': [{% for st in server_types %}
+            {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
+            {label: '{{ _('Unknown') }}', value: ''}
+          ]
+        },{
           id: 'connected', label:'{{ _('Connected') }}', type: 'switch',
-          mode: ['properties'], 'options': {
+          mode: ['properties'], group: "{{ 'Connection' }}", 'options': {
             'onText':   'True', 'offText':  'False', 'onColor':  'success',
             'offColor': 'danger', 'size': 'small'
           }
@@ -192,13 +199,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             {label: 'Disable', value: 'disable'},
             {label: 'Verify-CA', value: 'verify-ca'},
             {label: 'Verify-Full', value: 'verify-full'}
-          ]
-        },{
-          id: 'server_type', label: '{{ _('Server Type') }}', type: 'options',
-          mode: ['properties'], visible: 'isConnected',
-          'options': [{% for st in server_types %}
-            {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
-            {label: '{{ _('Unknown') }}', value: ''}
           ]
         }],
         validate: function() {
