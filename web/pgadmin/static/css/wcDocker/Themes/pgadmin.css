@@ -67,24 +67,36 @@
 }
 
 .wcFrameEdge {
-  border-width: 3px;
-  border-style: groove;
-  border-color: #dddddd;
-  background-color: #999999;
+  border: 1px solid #dddddd;
+  background-color: #dddddd;
+}
+.wcFrame > .wcFrameEdgeV ~ .wcFrameEdgeV {
+  box-shadow: 3px 6px 3px 1px #888888 !important;
+}
+
+.wcFrame > .wcFrameEdge ~ .wcFrameEdgeV {
+  box-shadow: 1px 0px 0px 0px #888888;
+}
+
+.wcFrame > .wcFrameEdgeH ~ .wcFrameEdgeH {
+  box-shadow: 2px 3px 3px 2px #888888 !important;
+}
+
+.wcFrame > .wcFrameEdgeH {
+  box-shadow: 1px 0px 0px 0px #888888;
 }
 
 .wcFrameEdgeH {
-  height: 6px;
+  height: 4px;
 }
 
 .wcFrameEdgeV {
-  width: 6px;
+  width: 4px;
 }
-
 .wcFrameCornerNW,
 .wcFrameCornerNE {
-  height: 6px;
-  width: 6px;
+  height: 4px;
+  width: 4px;
 }
 
 .wcSplitterBar {
