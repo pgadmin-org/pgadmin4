@@ -413,6 +413,37 @@
       model.set(column.get("name"), this.$select.val());
     }
   });
+
+  /**
+    TextareaCellEditor the cell editor renders a textarea multi-line text input
+    box as its editor.
+
+    @class Backgrid.TextareaCellEditor
+    @extends Backgrid.InputCellEditor
+  */
+  var TextareaCellEditor = Backgrid.TextareaCellEditor = Backgrid.InputCellEditor.extend({
+    /** @property */
+    tagName: "textarea",
+
+    events: {
+      "blur": "saveOrCancel",
+      "keydown": ""
+    }
+  });
+
+  /**
+    TextareaCell displays multiline HTML strings.
+
+      @class Backgrid.Extension.TextareaCell
+      @extends Backgrid.Cell
+  */
+  var TextareaCell = Backgrid.Extension.TextareaCell = Backgrid.Cell.extend({
+    /** @property */
+    className: "textarea-cell",
+
+    editor: TextareaCellEditor
+  });
+
   return Backgrid;
 
 }));

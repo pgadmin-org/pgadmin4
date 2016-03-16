@@ -790,3 +790,12 @@ td.edit-cell.editable.sortable.renderable.editor {
     position: relative;
     text-align: center;
 }
+
+.backgrid .textarea-cell {
+    text-align: left;
+}
+
+.backgrid .textarea-cell.editor textarea {
+    width: 100%;
+    height: auto;
+}
