@@ -96,7 +96,7 @@ class ServerGroupView(NodeView):
 
         for sg in ServerGroup.query.filter_by(
                 user_id=current_user.id
-                ):
+                ).order_by(name):
             res.append({
                 'id': sg.id,
                 'name': sg.name

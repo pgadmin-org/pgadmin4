@@ -18,4 +18,4 @@ WHERE
     NOT (
 {{ CATALOGS.LIST('nsp') }}
     )
-ORDER BY 1, nspname;
+ORDER BY nspname;

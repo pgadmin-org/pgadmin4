@@ -379,7 +379,7 @@ class ServerNode(PGChildNodeView):
         """
         servers = Server.query.filter_by(
                 user_id=current_user.id,
-                servergroup_id=gid)
+                servergroup_id=gid).order_by(name)
         sg = ServerGroup.query.filter_by(
                 user_id=current_user.id,
                 id=gid

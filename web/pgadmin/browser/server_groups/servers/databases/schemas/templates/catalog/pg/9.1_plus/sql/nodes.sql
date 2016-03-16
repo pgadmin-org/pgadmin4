@@ -13,4 +13,4 @@ WHERE
     (
 {{ CATALOGS.LIST('nsp') }}
     )
-ORDER BY 1, nspname;
+ORDER BY 2;
