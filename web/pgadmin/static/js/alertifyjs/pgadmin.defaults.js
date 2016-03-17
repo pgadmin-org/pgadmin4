@@ -117,6 +117,8 @@ function(alertify, S) {
           return;
         }
       }
-      alertify.alert().show().set('message', msg).set('title', promptmsg);
+      alertify.alert().show().set(
+        'message', msg.replace(new RegExp('\r?\n','g'), '<br />')
+        ).set('title', promptmsg);
   };
 });

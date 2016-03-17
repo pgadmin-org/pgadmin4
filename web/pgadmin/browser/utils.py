@@ -426,6 +426,8 @@ class PGChildNodeView(NodeView):
             'y': 'type',
             'T': 'trigger',
             'l': 'language',
+            'f': 'foreign_data_wrapper',
+            'F': 'foreign_server',
             'R': None,
             'C': None,
             'A': None

@@ -49,7 +49,7 @@ define(
                   (node['node_image']).apply(node, [null, null]) :
                   (node['node_image'] || ('icon-' + res.type))) :
                   ('icon-' + res.type);
-          res.type = S.capitalize(res.type, true);
+          res.type = S.titleize(res.type.replace(/_/g, " "), true);
           return res;
         }
       });
@@ -82,7 +82,7 @@ define(
                   cell: Backgrid.Cell.extend({
                     render: function() {
                       Backgrid.Cell.prototype.render.apply(this, arguments);
-                      this.$el.addClass(this.model.get('icon')).css({"padding-left": "18px"});
+                      this.$el.prepend($('<i>', {class: "wcTabIcon " + this.model.get('icon')}));
                       return this;
                     }
                   }),
