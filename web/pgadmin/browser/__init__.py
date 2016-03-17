@@ -39,7 +39,8 @@ class BrowserModule(PgAdminModule):
         # Add browser stylesheets
         for (endpoint, filename) in [
                 ('static', 'css/codemirror/codemirror.css'),
-                ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css'),
+                ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
+                    else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
                 ('static', 'css/wcDocker/wcDocker.css' if current_app.debug
                     else 'css/wcDocker/wcDocker.min.css'),
                 ('browser.static', 'css/browser.css'),
@@ -77,19 +78,22 @@ class BrowserModule(PgAdminModule):
         scripts.append({
             'name': 'jqueryui.position',
             'path': url_for(
-                        'static',
-                        filename='js/jQuery-contextMenu/jquery.ui.position'
+                'static',
+                filename='js/jQuery-contextMenu/jquery.ui.position' if \
+                current_app.debug else \
+                'js/jQuery-contextMenu/jquery.ui.position.min'
                         ),
             'deps': ['jquery'],
             'exports': 'jQuery.ui.position',
             'preloaded': True
-
             })
         scripts.append({
             'name': 'jquery.contextmenu',
             'path': url_for(
-                            'static',
-                            filename='js/jQuery-contextMenu/jquery.contextMenu'
+                'static',
+                filename='js/jQuery-contextMenu/jquery.contextMenu' if \
+                current_app.debug else \
+                'js/jQuery-contextMenu/jquery.contextMenu.min'
                             ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
