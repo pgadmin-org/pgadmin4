@@ -14,7 +14,7 @@
     SELECT
         ca.oid,
     CASE
-        WHEN {{datlastsysoid}}::OID > ca.oid then 'Yes' ELSE 'No'
+        WHEN {{datlastsysoid}}::OID > ca.oid then True ELSE False
     END AS syscast,
     CASE
         WHEN ca.castcontext = 'a' THEN 'ASSIGNMENT'
@@ -46,9 +46,8 @@
         WHERE ca.oid={{cid}}::int
     {% endif %}
 
---TODO: add check for showSystemObject(). currently assumed as false
-    {#
-    {% if datlastsysoid %}
+    {# Check for Show system object #}
+    {% if (not showsysobj) and datlastsysoid %}
         {% if cid %}
             AND
         {% else %}
@@ -56,6 +55,5 @@
         {% endif %}
         ca.oid > {{datlastsysoid}}::OID
     {% endif %}
-    #}
     ORDER BY st.typname, tt.typname
 {% endif %}

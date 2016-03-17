@@ -225,7 +225,8 @@ class CastView(PGChildNodeView):
         """
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid']
+            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            showsysobj=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -252,21 +253,46 @@ class CastView(PGChildNodeView):
         """
         res = []
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid']
+            "/".join([self.template_path, 'nodes.sql']),
+            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            showsysobj=self.blueprint.show_system_objects
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            row['castcontext'] = True if row['castcontext'] == 'IMPLICIT' else False
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
                     did,
                     row['name'],
                     icon="icon-cast"
+                ))
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
+    def node(self, gid, sid, did, cid):
+        res = []
+        sql = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            cid=cid
+        )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            res.append(
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-fts_template"
                 ))
 
         return make_json_response(
@@ -287,7 +313,8 @@ class CastView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),
             cid=cid,
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid']
+            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            showsysobj=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -338,7 +365,8 @@ class CastView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'properties.sql']),
                                   srctyp=data['srctyp'],
                                   trgtyp=data['trgtyp'],
-                                  datlastsysoid=self.manager.db_info[did]['datlastsysoid']
+                                  datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+                                  showsysobj=self.blueprint.show_system_objects
                                   )
             status, cid = self.conn.execute_scalar(sql)
             if not status:
@@ -485,7 +513,8 @@ class CastView(PGChildNodeView):
             if cid is not None:
                 sql = render_template("/".join([self.template_path, 'properties.sql']),
                                       cid=cid,
-                                      datlastsysoid=self.manager.db_info[did]['datlastsysoid'])
+                                      datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+                                      showsysobj=self.blueprint.show_system_objects)
                 status, res = self.conn.execute_dict(sql)
 
                 if not status:
@@ -614,7 +643,7 @@ class CastView(PGChildNodeView):
             did: Database ID
             cid: Cast ID
         """
-        dependents_result = self.get_dependents(self.conn, cid, 'cast')
+        dependents_result = self.get_dependents(self.conn, cid)
         return ajax_response(
                 response=dependents_result,
                 status=200
@@ -632,7 +661,7 @@ class CastView(PGChildNodeView):
             did: Database ID
             cid: Cast ID
         """
-        dependencies_result = self.get_dependencies(self.conn, cid, 'cast')
+        dependencies_result = self.get_dependencies(self.conn, cid)
         return ajax_response(
                 response=dependencies_result,
                 status=200
