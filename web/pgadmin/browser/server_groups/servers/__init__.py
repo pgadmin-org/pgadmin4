@@ -278,6 +278,7 @@ class ServerNode(PGChildNodeView):
                     db.session.delete(s)
                 db.session.commit()
             except Exception as e:
+                current_app.logger.exception(e)
                 return make_json_response(
                     success=0,
                     errormsg=e.message)
@@ -285,6 +286,7 @@ class ServerNode(PGChildNodeView):
         try:
             info = traceback.format_exc()
         except Exception as e:
+            current_app.logger.exception(e)
             info = str(e)
 
         return make_json_response(success=1,
@@ -357,6 +359,7 @@ class ServerNode(PGChildNodeView):
         try:
             db.session.commit()
         except Exception as e:
+            current_app.logger.exception(e)
             return make_json_response(
                 success=0,
                 errormsg=e.message
@@ -509,6 +512,7 @@ class ServerNode(PGChildNodeView):
                     )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return make_json_response(
                 status=410,
                 success=0,
@@ -618,6 +622,7 @@ class ServerNode(PGChildNodeView):
             password = encrypt(password, user.password) \
                     if password is not None else server.password
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=e.message)
 
         # Connect the Server
@@ -631,6 +636,7 @@ class ServerNode(PGChildNodeView):
                     server_types=ServerType.types()
                     )
         except Exception as e:
+            current_app.logger.exception(e)
             # TODO::
             # Ask the password again (if existing password couldn't be
             # descrypted)
@@ -666,6 +672,7 @@ class ServerNode(PGChildNodeView):
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
+                    current_app.logger.exception(e)
                     manager.release(database=server.maintenance_db)
                     conn = None
 
