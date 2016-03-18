@@ -329,8 +329,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       if (url && !options_cached) {
 
         var self = this,
-            model = this.model, column = this.column,
-            eventHandler = model.top || model,
+            m = this.model, column = this.column,
+            eventHandler = m.top || m,
             node = column.get('schema_node'),
             node_info = column.get('node_info'),
             full_url = node.generate_url.apply(
