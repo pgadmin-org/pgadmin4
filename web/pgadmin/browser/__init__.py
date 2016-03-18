@@ -25,7 +25,7 @@ import config
 try:
     import urllib.request as urlreq
 except:
-    import urllib as urlreq
+    import urllib2 as urlreq
 
 MODULE_NAME = 'browser'
 
