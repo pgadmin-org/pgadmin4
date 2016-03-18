@@ -65,17 +65,20 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           name: 'create_database_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Database...') }}',
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'}
+          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+          enable: 'can_create_database'
         },{
           name: 'create_database_on_coll', node: 'coll-database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Database...') }}',
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'}
+          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+          enable: 'can_create_database'
         },{
           name: 'create_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Database...') }}',
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'}
+          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+          enable: 'can_create_database'
         },{
           name: 'connect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'connect_database',
@@ -87,6 +90,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           category: 'drop', priority: 5, label: '{{ _('Disconnect Database...') }}',
           icon: 'fa fa-chain-broken', enable : 'is_connected'
         }]);
+      },
+      can_create_database: function(node, item) {
+        var treeData = this.getTreeNodeHierarchy(item),
+            server = treeData['server'];
+
+        return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
         return (node && node.connected != true);
