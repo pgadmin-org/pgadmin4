@@ -685,6 +685,12 @@ fieldset.inline-fieldset {
     border: 2px solid; border-radius: 5px;
 }
 
+fieldset.inline-fieldset-without-border {
+    margin: 0px; margin-left: 0px; margin-right: 0px;
+    padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;
+    border: 0px solid; border-radius: 0px; display: inline-block;
+}
+
 fieldset.inline-fieldset > legend {
     display: block; border: 0px solid black; box-shadow: none;
     box-sizing: content-box; top: auto; bottom: auto; left: auto;
@@ -694,6 +700,9 @@ fieldset.inline-fieldset > legend {
     vertical-align: middle; width: auto;
 }
 
+fieldset.inline-fieldset-without-border legend {
+    border: none; margin-bottom: 0px !important;
+ }
 
 fieldset.inline-fieldset > div {
     padding: 0px; margin: 0px; border: 0px;

@@ -1721,6 +1721,30 @@
     template: Backform.Dialog.prototype.template
   });
 
+
+  // Backform Tab Control (in bootstrap tabbular)
+  // A collection of field models.
+  var PlainFieldsetControl = Backform.PlainFieldsetControl = Backform.FieldsetControl.extend({
+    initialize: function(opts) {
+      Backform.FieldsetControl.prototype.initialize.apply(
+        this, arguments
+        );
+    },
+    template: {
+      'header': _.template([
+        '<fieldset class="<%=fieldsetClass%>" <%=disabled ? "disabled" : ""%>>',
+        ' <% if (legend != false) { %>',
+        '  <legend class="<%=legendClass%>" <%=collapse ? "data-toggle=\'collapse\'" : ""%> data-target="#<%=cId%>"><%=collapse ? "<span class=\'caret\'></span>" : "" %></legend>',
+        ' <% } %>',
+        '</fieldset>'
+      ].join("\n")),
+      'content': _.template(
+        '  <div id="<%= cId %>" class="<%=contentClass%>"></div>'
+    )},
+    fieldsetClass: 'inline-fieldset-without-border',
+    legend: false,
+  });
+
   /*
    * Control For Code Mirror SQL text area.
    */
