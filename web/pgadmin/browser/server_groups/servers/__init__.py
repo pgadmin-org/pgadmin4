@@ -365,7 +365,11 @@ class ServerNode(PGChildNodeView):
                 errormsg=e.message
             )
 
-        manager.update(server)
+        # When server is connected, we don't require to update the connection
+        # manager. Because - we don't allow to change any of the parameters,
+        # which will affect the connections.
+        if not conn.connected():
+            manager.update(server)
 
         return make_json_response(
             success=1,
@@ -382,7 +386,7 @@ class ServerNode(PGChildNodeView):
         """
         servers = Server.query.filter_by(
                 user_id=current_user.id,
-                servergroup_id=gid).order_by(name)
+                servergroup_id=gid).order_by(Server.name)
         sg = ServerGroup.query.filter_by(
                 user_id=current_user.id,
                 id=gid
