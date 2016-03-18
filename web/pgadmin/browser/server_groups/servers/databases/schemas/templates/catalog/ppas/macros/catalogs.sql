@@ -18,6 +18,8 @@
     WHEN 'pg_catalog' THEN '{{ _( 'PostgreSQL Catalog' ) }} (pg_catalog)'
     WHEN 'pgagent' THEN '{{ _( 'pgAgent Job Scheduler' ) }} (pgagent)'
     WHEN 'information_schema' THEN '{{ _( 'ANSI' ) }} (information_schema)'
+    WHEN 'dbo' THEN 'Redmond (dbo)'
+    WHEN 'sys' THEN 'Redwood (sys)'
     ELSE {{ tbl }}.nspname
     END AS name
 {%- endmacro %}
