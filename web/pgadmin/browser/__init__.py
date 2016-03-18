@@ -433,7 +433,10 @@ def index():
         current_app.logger.debug('Checking version data at: %s' % url)
 
         try:
-            response = urlreq.urlopen(url)
+            # Do not wait for more than 5 seconds.
+            # It stuck on rendering the browser.html, while working in the
+            # broken network.
+            response = urlreq.urlopen(url, data, 5)
             current_app.logger.debug('Version check HTTP response code: %d' % response.getcode())
 
             if response.getcode() == 200:
