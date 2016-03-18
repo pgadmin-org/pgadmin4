@@ -424,6 +424,7 @@ class PGChildNodeView(NodeView):
             'p': 'function',
             'n': 'schema',
             'y': 'type',
+            'd': 'domain',
             'T': 'trigger',
             'l': 'language',
             'f': 'foreign_data_wrapper',

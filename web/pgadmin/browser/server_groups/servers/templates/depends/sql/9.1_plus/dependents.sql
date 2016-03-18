@@ -2,7 +2,8 @@
 SELECT DISTINCT dep.deptype, dep.refclassid, cl.relkind, ad.adbin, ad.adsrc,
     CASE WHEN cl.relkind IS NOT NULL THEN cl.relkind || COALESCE(dep.refobjsubid::text, '')
         WHEN tg.oid IS NOT NULL THEN 'T'::text
-        WHEN ty.oid IS NOT NULL THEN 'y'::text
+        WHEN ty.oid IS NOT NULL AND ty.typbasetype = 0 THEN 'y'::text
+        WHEN ty.oid IS NOT NULL AND ty.typbasetype != 0 THEN 'd'::text
         WHEN ns.oid IS NOT NULL THEN 'n'::text
         WHEN pr.oid IS NOT NULL THEN 'p'::text
         WHEN la.oid IS NOT NULL THEN 'l'::text
