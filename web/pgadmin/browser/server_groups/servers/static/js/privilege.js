@@ -73,14 +73,14 @@
       id: 'grantee', label:'Grantee', type:'text', group: null,
       editable: true, cellHeaderClasses: 'width_percent_40',
       node: 'role',
-      disabled : function(column, collection) {
-        if (column instanceof Backbone.Collection) {
+      disabled : function(m) {
+        if (!(m instanceof Backbone.Model)) {
           // This has been called during generating the header cell
           return false;
         }
         return !(
-          this.top && this.top.node_info &&
-          this.top.node_info.server.user.name == column.get('grantor')
+          m.top && m.top.node_info &&
+          m.top.node_info.server.user.name == m.get('grantor')
         );
       },
       transform: function(data) {
