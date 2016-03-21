@@ -329,6 +329,16 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             if (n)
               settings.url = n.generate_url(item, 'children', d, true);
           }
+        },
+        loaderDelay: 100,
+        show: {
+          duration: 75
+        },
+        hide: {
+          duration: 75
+        },
+        view: {
+          duration: 75
         }
       });
 
