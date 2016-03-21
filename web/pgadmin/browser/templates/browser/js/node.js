@@ -545,12 +545,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
         return true;
       },
-      refresh: function(i) {
+      refresh: function(n, i) {
         var self = this,
             t = pgBrowser.tree,
             d = t.itemData(i);
 
-        t.unload(i);
+        if (t.isInode(i) && t.wasLoad(i))
+            t.unload(i);
         t.setInode(i, (d && d.inode) || false);
         t.deselect(i);
 
