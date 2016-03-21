@@ -3,7 +3,7 @@
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
-  height: 1.3em;
+  height: 20px;
 }
 
 .pgadmin-node-select option[node="{{node_type}}"] {

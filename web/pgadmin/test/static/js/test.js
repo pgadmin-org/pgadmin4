@@ -3,6 +3,9 @@ define(
   function($, alertify, pgAdmin, pgServer, ServerGroup) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
+    if (pgAdmin.Test)
+      return pgAdmin.Test;
+
     pgAdmin.Test = {
       test_alert: function() {
           alertify.alert(
@@ -66,19 +69,31 @@ define(
 
         alertify.myAlert('Dialog Test 2',
             'This is another test dialog from Alertify!', 'This is dialog 2');
+      },
+      init: function() {
+        if (this.initialized)
+          return;
+
+        this.initialized = true;
+
+        // Add the alertify category
+        pgAdmin.Browser.add_menu_category(
+          'alertify', 'Alertify', 3, 'fa fa-film', true, true
+          );
+
+        pgServer.on(
+          'server-connected', function() {
+            console.log(arguments);
+            console.log('Yay - we connected the server!');
+          },
+          {'a': 'test'});
+
+        ServerGroup.on('browser-node.loaded', function() {
+            console.log('I know that the server-group has been expanded!');
+          }, pgAdmin.Test);
+
       }
     };
-
-    pgServer.on(
-      'server-connected', function() {
-        console.log(arguments);
-        console.log('Yay - we connected the server!');
-      },
-      {'a': 'test'});
-
-    ServerGroup.on('browser-node.loaded', function() {
-      console.log('I know that the server-group has been expanded!');
-    }, pgAdmin.Test);
 
     return pgAdmin.Test;
 });

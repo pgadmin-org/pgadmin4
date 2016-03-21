@@ -160,6 +160,18 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       // Help menus
       help: {}
     },
+    menu_categories: {
+      /* name, label (pair) */
+      'create': {
+        label: '{{ _('Create')|safe }}',
+        priority: 1,
+        /* separator above this menu */
+        above: false,
+        below: true,
+        icon: 'fa fa-magic',
+        single: true
+      }
+    },
     // A callback to load/fetch a script when a certain node is loaded
     register_script: function(n, m, p) {
       var scripts = this.scripts;
@@ -186,63 +198,57 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     enable_disable_menus: function(item) {
       // Mechanism to enable/disable menus depending on the condition.
       var obj = this, j, e,
-      // menu navigation bar
-      navbar = $('#navbar-menu > ul').first(),
-      // Drop down menu for objects
-      obj_mnu = navbar.find('li#mnu_obj > ul#mnu_dropdown_obj').first(),
-      // Drop down menu for create object
-      create_mnu = navbar.find("#mnu_create_obj").empty(),
-      // data for current selected object
-      d = this.tree.itemData(item);
+          // menu navigation bar
+          navbar = $('#navbar-menu > ul').first(),
+          // Drop down menu for objects
+          $obj_mnu = navbar.find('li#mnu_obj > ul.dropdown-menu').first(),
+          // data for current selected object
+          d = obj.tree.itemData(item),
+          update_menuitem = function(m) {
+            if (m instanceof pgAdmin.Browser.MenuItem) {
+              m.update(d, item);
+            } else {
+              for (var key in m) {
+                update_menuitem(m[key]);
+              }
+            }
+          };
+
       // All menus from the object menus (except the create drop-down
       // menu) needs to be removed.
-      obj_mnu.children("li:not(:first-child)").remove();
-      // Create a dummy 'no object seleted' menu
-      create_mnu.html('<li class="menu-item disabled"><a href="#">{{ _('No object selected') }}</a></li>\n');
+      $obj_mnu.empty();
 
       // All menus (except for the object menus) are already present.
       // They will just require to check, wheather they are
       // enabled/disabled.
       _.each([
-              {m: 'file', id: '#mnu_file'},
-              {m: 'edit', id: '#mnu_edit'},
-              {m: 'management', id: '#mnu_management'},
-              {m: 'tools', id: '#mnu_tools'},
-              {m: 'help', id:'#mnu_help'}], function(o) {
-                j = navbar.children(o.id).children('.dropdown-menu').first();
-                _.each(obj.menus[o.m],
-                  function(v, k) {
-                    // Remove disabled class in any case first.
-                    e = j.find('#' + k).closest('.menu-item').removeClass('disabled');
-                    if (v.disabled(d, item)) {
-                      // Make this menu disabled
-                      e.addClass('disabled');
-                    }
-                  });
-              });
+        {m: 'file', id: '#mnu_file'},
+        {m: 'edit', id: '#mnu_edit'},
+        {m: 'management', id: '#mnu_management'},
+        {m: 'tools', id: '#mnu_tools'},
+        {m: 'help', id:'#mnu_help'}], function(o) {
+          _.each(
+            obj.menus[o.m],
+            function(m, k) {
+              update_menuitem(m);
+            });
+        });
 
       // Create the object menu dynamically
-      if (item && this.menus['object'] && this.menus['object'][d._type]) {
-        var create_items = [];
-        // The menus will be created based on the priority given.
-        // Menu with lowest value has the highest priority.
-        _.each(_.sortBy(
-              this.menus['object'][d._type],
-              function(o) { return o.priority; }),
-            function(m) {
-              if (m.category && m.category == 'create') {
-                create_items.push(m.generate(d, item));
-              } else {
-                obj_mnu.append(m.generate(d, item));
-              }
-            });
-        // Create menus goes seperately
-        if (create_items.length > 0) {
-          create_mnu.empty();
-          _.each(create_items, function(c) {
-            create_mnu.append(c);
-          });
-        }
+      if (item && obj.menus['object'] && obj.menus['object'][d._type]) {
+        pgAdmin.Browser.MenuCreator(
+          $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
+        )
+      } else {
+        // Create a dummy 'no object seleted' menu
+        create_submenu = pgAdmin.Browser.MenuGroup(
+          obj.menu_categories['create'], [{
+            $el: $('<li class="menu-item disabled"><a href="#">{{ _("No object selected") }}</a></li>'),
+            priority: 1,
+            category: 'create',
+            update: function() {}
+          }], false);
+        $obj_mnu.append(create_submenu.$el);
       }
     },
     init: function() {
@@ -347,66 +353,22 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       // Build the treeview context menu
       $('#tree').contextMenu({
         selector: '.aciTreeLine',
+        autoHide: false,
         build: function(element) {
           var item = obj.tree.itemFrom(element),
-          menu = { },
-          createMenu = { },
-          d = obj.tree.itemData(item),
-          menus = obj.menus['context'][d._type],
-          cb = function(name) {
-            var o = undefined;
+              d = obj.tree.itemData(item),
+              menus = obj.menus['context'][d._type],
+              $div = $('<div></div>'),
+              context_menu = {};
 
-            _.each(menus, function(m) {
-              if (name == (m.module.type + '_' + m.name)) {
-                o = m;
-              }
-            });
+          pgAdmin.Browser.MenuCreator(
+            $div, menus, obj.menu_categories, d, item, context_menu
+          );
 
-            if (o) {
-              var cb;
-              if (o.module['callbacks'] && (
-                  o.callback in o.module['callbacks'])) {
-                cb = o.module['callbacks'][o.callback];
-              } else if (o.callback in o.module) {
-                cb = o.module[o.callback];
-              }
-
-              if (cb) {
-                cb.apply(o.module, [o.data, item]);
-              } else {
-                pgAdmin.Browser.report_error(
-                    S('Developer Warning: Callback - "%s" not found!').
-                    sprintf(o.cb).value());
-              }
-            }
+          return {
+            autoHide: false,
+            items: context_menu
           };
-
-          _.each(
-            _.sortBy(menus, function(m) { return m.priority; }),
-              function(m) {
-                if (m.category == 'create' && !m.disabled(d, item)) {
-                  createMenu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon || m.module.type };
-                }
-              });
-
-          if (_.size(createMenu)) {
-            menu["create"] = { name: "{{ _('Create') }}", icon: 'fa fa-magic' };
-            menu["create"]["items"] = createMenu;
-          }
-
-          _.each(
-              _.sortBy(menus, function(m) { return m.priority; }),
-              function(m) {
-                if (m.category != 'create' && !m.disabled(d, item)) {
-                  menu[m.module.type + '_' + m.name] = { name: m.label, icon: m.icon };
-                }
-              });
-
-          return _.size(menu) ? {
-            autoHide: true,
-            items: menu,
-            callback: cb
-          } : {};
         }
       });
 
@@ -529,6 +491,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             {% endif %}{% if item.url %}url: "{{ item.url }}",
             {% endif %}{% if item.target %}target: "{{ item.target }}",
             {% endif %}{% if item.callback %}callback: "{{ item.callback }}",
+            {% endif %}{% if item.category %}category: "{{ item.category }}",
             {% endif %}{% if item.icon %}icon: '{{ item.icon }}',
             {% endif %}{% if item.data %}data: {{ item.data }},
             {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
@@ -577,6 +540,18 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           '{{ _('Error loading script - ') }}' + path);
       });
     },
+    add_menu_category: function(
+      id, label, priority, icon, above_separator, below_separator, single
+    ) {
+      this.menu_categories[id] = {
+        label: label,
+        priority: priority,
+        icon: icon,
+        above: (above_separator === true),
+        below: (below_separator === true),
+        single: single
+      }
+    },
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
       var pgMenu = this.menus;
@@ -591,7 +566,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             pgMenu[a] = pgMenu[a] || {};
             if (_.isString(m.node)) {
               menus = pgMenu[a][m.node] = pgMenu[a][m.node] || {};
-            } else {
+            } else if (_.isString(m.category)) {
+              menus = pgMenu[a][m.category] = pgMenu[a][m.category] || {};
+            }
+            else {
               menus = pgMenu[a];
             }
 
@@ -623,26 +601,31 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     },
     // Create the menus
     create_menus: function() {
+
       /* Create menus */
       var navbar = $('#navbar-menu > ul').first();
       var obj = this;
 
       _.each([
-          {menu: 'file', id: '#mnu_file'},
-          {menu: 'edit', id: '#mnu_edit'},
-          {menu: 'management', id: '#mnu_management'},
-          {menu: 'tools', id: '#mnu_tools'},
-          {menu: 'help', id:'#mnu_help'}], function(o) {
-            var j = navbar.children(o.id).children('.dropdown-menu').first().empty();
-            _.each(
-              _.sortBy(obj.menus[o.menu],
-                function(v, k) { return v.priority; }),
-              function(v) {
-                j.closest('.dropdown').removeClass('hide');
-                j.append(v.generate());
-              });
-            navbar.children('#mnu_obj').removeClass('hide');
-          });
+        {menu: 'file', id: '#mnu_file'},
+        {menu: 'edit', id: '#mnu_edit'},
+        {menu: 'management', id: '#mnu_management'},
+        {menu: 'tools', id: '#mnu_tools'},
+        {menu: 'help', id:'#mnu_help'}],
+        function(o) {
+          var $mnu = navbar.children(o.id).first(),
+              $dropdown = $mnu.children('.dropdown-menu').first();
+          $dropdown.empty();
+          var menus = {};
+
+          if (pgAdmin.Browser.MenuCreator(
+            $dropdown, obj.menus[o.menu], obj.menu_categories
+            )) {
+            $mnu.removeClass('hide');
+          }
+        });
+
+      navbar.children('#mnu_obj').removeClass('hide');
        obj.enable_disable_menus();
     },
     messages: {

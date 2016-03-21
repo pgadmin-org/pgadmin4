@@ -10,7 +10,7 @@
 """Browser integration functions for the Test module."""
 MODULE_NAME = 'test'
 from flask.ext.security import login_required
-from flask import render_template, url_for, current_app
+from flask import url_for, current_app
 from flask.ext.babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
@@ -22,32 +22,37 @@ class TestModule(PgAdminModule):
         return {'file_items': [
             MenuItem(name='mnu_generate_test_html',
                      label=gettext('Generated Test HTML'),
-                     priority=100,
+                     priority=2,
                      url=url_for('test.generated')),
             MenuItem(name='mnu_test_alert',
                      label=gettext('Test Alert'),
                      priority=200,
                      module='pgAdmin.Test',
+                     category=gettext('alertify'),
                      callback='test_alert'),
             MenuItem(name='mnu_test_confirm',
                      label=gettext('Test Confirm'),
                      priority=300,
                      module='pgAdmin.Test',
+                     category=gettext('alertify'),
                      callback='test_confirm'),
             MenuItem(name='mnu_test_dialog',
                      label=gettext('Test Dialog'),
                      priority=400,
                      module='pgAdmin.Test',
+                     category=gettext('alertify'),
                      callback='test_dialog'),
             MenuItem(name='mnu_test_prompt',
                      label=gettext('Test Prompt'),
                      priority=500,
                      module='pgAdmin.Test',
+                     category=gettext('alertify'),
                      callback='test_prompt'),
             MenuItem(name='mnu_test_notifier',
                      label=gettext('Test Notifier'),
                      priority=600,
                      module='pgAdmin.Test',
+                     category=gettext('alertify'),
                      callback='test_notifier'),
             MenuItem(name='mnu_test_disabled',
                 label=gettext('Test Disabled'),
