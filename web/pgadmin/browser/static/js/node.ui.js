@@ -556,6 +556,46 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     })
   });
 
+  /*
+   * Control to select multiple columns.
+   */
+  var MultiSelectAjaxControl = Backform.MultiSelectAjaxControl = NodeAjaxOptionsControl.extend({
+    formatter: {
+      fromRaw: function (rawData, model) {
+        return (_.isUndefined(rawData) || _.isObject(rawData)) ? rawData : JSON.parse(rawData);
+      },
+      toRaw: function (formattedData, model) {
+        return formattedData;
+      }
+    },
+    template: _.template([
+      '<label class="control-label col-sm-4"><%=label%></label>',
+      '<div class="pgadmin-controls col-sm-8">',
+      '  <select multiple="multiple" style="width:100%;" class="pgadmin-controls <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-JSON.stringify(value)%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>>',
+      '    <% for (var i=0; i < options.length; i++) { %>',
+      '      <% var option = options[i]; %>',
+      '      <option value=<%-option.value%> <%=value != null && _.indexOf(value, option.value) != -1 ? "selected" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
+      '    <% } %>',
+      '  </select>',
+      '</div>'
+      ].join("\n")),
+    getValueFromDOM: function() {
+      var res = [];
+
+      this.$el.find("select").find(':selected').each(function() {
+        res.push($(this).attr('value'));
+      });
+
+      return res;
+    },
+    defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
+      select2: {
+        multiple: true,
+        allowClear: true,
+        width: 'style'
+      }
+    })
+  });
 
   return Backform;
 });

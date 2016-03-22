@@ -811,6 +811,12 @@ td.edit-cell.editable.sortable.renderable.editor {
     height: auto;
 }
 
+.select2-container--default.select2-container--focus
+.select2-selection--multiple {
+    border: 1px solid #aaa !important;
+    outline: 0 none;
+}
+
 /* CSS for SqlField control */
 .sql_field_layout {
     border: 1px solid rgba(184, 184, 184, 1) !important;
