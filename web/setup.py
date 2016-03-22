@@ -287,6 +287,12 @@ Exiting...""" % (version.value))
                 ))
             do_upgrade(app, user_datastore, security, version)
     else:
+        directory = os.path.dirname(config.SQLITE_PATH)
+        if not os.path.exists(directory):
+            os.makedirs(directory, int('700', 8))
+        db_file = os.open(config.SQLITE_PATH, os.O_CREAT, int('600', 8))
+        os.close(db_file)
+
         print("""
 The configuration database - '{0}' does not exist.
 Entering initial setup mode...""".format(config.SQLITE_PATH))

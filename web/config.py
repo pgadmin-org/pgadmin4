@@ -78,7 +78,10 @@ CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
-LOG_FILE = 'pgadmin4.log'
+LOG_FILE = os.path.join(
+    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    'pgadmin4.log'
+    )
 
 ##########################################################################
 # Server settings
@@ -144,9 +147,34 @@ SETTINGS_SCHEMA_VERSION = 8
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
 SQLITE_PATH = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'pgadmin4.db'
-        )
+    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    'pgadmin4.db'
+    )
+
+##########################################################################
+# Server-side session storage path
+#
+# SESSION_DB_PATH (Default: $HOME/.pgadmin4/sessions)
+##########################################################################
+#
+# We use SQLite for server-side session storage. There will be one
+# SQLite database object per session created.
+#
+# Specify the path used to store your session objects.
+#
+# If the specified directory does not exist, the setup script will create
+# it with permission mode 700 to keep the session database secure.
+#
+# On certain systems, you can use shared memory (tmpfs) for maximum
+# scalability, for example, on Ubuntu:
+#
+# SESSION_DB_PATH = '/run/shm/pgAdmin4_session'
+#
+##########################################################################
+SESSION_DB_PATH = os.path.join(
+    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    'sessions'
+    )
 
 ##########################################################################
 # Mail server settings

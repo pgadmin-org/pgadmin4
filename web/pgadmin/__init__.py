@@ -24,6 +24,8 @@ from werkzeug.utils import find_modules
 import sys
 import logging
 
+from pgadmin.utils.session import ServerSideSessionInterface
+
 
 # Configuration settings
 import config
@@ -98,6 +100,11 @@ def create_app(app_name=config.APP_NAME):
     # Removes unwanted whitespace from render_template function
     app.jinja_env.trim_blocks = True
     app.config.from_object(config)
+
+    ##########################################################################
+    # Setup session management
+    ##########################################################################
+    app.session_interface = ServerSideSessionInterface(config.SESSION_DB_PATH)
 
     ##########################################################################
     # Setup logging and log the application startup
