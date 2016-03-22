@@ -811,6 +811,46 @@ td.edit-cell.editable.sortable.renderable.editor {
     height: auto;
 }
 
+/* CSS for SqlField control */
+.sql_field_layout {
+    border: 1px solid rgba(184, 184, 184, 1) !important;
+    border-radius: 4px;
+    padding: 0px;
+}
+
+/*
+ * Remove border right from "CodeMirror-gutters"
+ * class becuase its height doesn't increase
+ * with every new line added, instead add border
+ * right to ".CodeMirror-linenumber" class which
+ * adds a new div for every new line added
+ */
+.sql_field_layout .CodeMirror-gutters {
+    border-right: none;
+}
+
+.sql_field_layout .CodeMirror-linenumber {
+    border-right: 1px solid #ddd;
+    background-color: #f7f7f7;
+}
+
+/* Define custom height for use in SqlField control */
+.sql_field_height_100 {
+    height: 100px;
+}
+
+.sql_field_height_200 {
+    height: 200px;
+}
+
+.sql_field_height_300 {
+    height: 300px;
+}
+
+.sql_field_height_400 {
+    height: 400px;
+}
+
 .nav-tabs{
 	border-bottom:0px;
 }

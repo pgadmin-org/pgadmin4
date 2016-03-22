@@ -1754,11 +1754,26 @@
 
     defaults: {
       label: "",
-      extraClasses: [],
+      extraClasses: ['sql_field_height_300'], // Add default control height
       helpMessage: null,
       maxlength: 4096,
       rows: undefined
     },
+
+    // Customize template to add new styles
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%> sql_field_layout <%=extraClasses.join(\' \')%>">',
+      '  <textarea ',
+      '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
+      '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
+      '    rows=<%=rows%>',
+      '    <%=required ? "required" : ""%>><%-value%></textarea>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>'
+    ].join("\n")),
 
     /*
      * Initialize the SQL Field control properly
