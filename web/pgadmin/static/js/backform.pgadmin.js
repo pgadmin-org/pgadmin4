@@ -977,6 +977,29 @@
 
       var collection = this.model.get(data.name);
 
+      var cellEditing = function(args){
+        var self = this,
+          cell = args[0];
+        // Search for any other rows which are open.
+        this.each(function(m){
+          // Check if row which we are about to close is not current row.
+          if (cell.model != m) {
+            var idx = self.indexOf(m);
+            if (idx > -1) {
+              var row = grid.body.rows[idx],
+                  editCell = row.$el.find(".subnode-edit-in-process").parent();
+              // Only close row if it's open.
+              if (editCell.length > 0){
+                var event = new Event('click');
+                editCell[0].dispatchEvent(event);
+              }
+            }
+          }
+        });
+      }
+      // Listen for any row which is about to enter in edit mode.
+      collection.on( "enteringEditMode", cellEditing, collection);
+
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
         columns: gridSchema.columns,
@@ -999,6 +1022,17 @@
       if (!(data.disabled || data.canAdd == false)) {
         $dialog.find('button.add').first().click(function(e) {
           e.preventDefault();
+
+          // Close any existing expanded row before adding new one.
+          _.each(grid.body.rows, function(row){
+            var editCell = row.$el.find(".subnode-edit-in-process").parent();
+            // Only close row if it's open.
+            if (editCell.length > 0){
+              var event = new Event('click');
+              editCell[0].dispatchEvent(event);
+            }
+          });
+
           var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
 
           // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
@@ -1165,6 +1199,30 @@
         });
         self.model.set(data.name, collection, {silent: true});
       }
+
+      var cellEditing = function(args){
+        var self = this,
+          cell = args[0];
+        // Search for any other rows which are open.
+        this.each(function(m){
+          // Check if row which we are about to close is not current row.
+          if (cell.model != m) {
+            var idx = self.indexOf(m);
+            if (idx > -1) {
+              var row = grid.body.rows[idx],
+                  editCell = row.$el.find(".subnode-edit-in-process").parent();
+              // Only close row if it's open.
+              if (editCell.length > 0){
+                var event = new Event('click');
+                editCell[0].dispatchEvent(event);
+              }
+            }
+          }
+        });
+      }
+      // Listen for any row which is about to enter in edit mode.
+      collection.on( "enteringEditMode", cellEditing, collection);
+
       // Initialize a new Grid instance
       var grid = self.grid = new Backgrid.Grid({
           columns: gridSchema.columns,
@@ -1186,7 +1244,18 @@
       // Add button callback
       $dialog.find('button.add').click(function(e) {
         e.preventDefault();
+        // Close any existing expanded row before adding new one.
+        _.each(grid.body.rows, function(row){
+          var editCell = row.$el.find(".subnode-edit-in-process").parent();
+          // Only close row if it's open.
+          if (editCell.length > 0){
+            var event = new Event('click');
+            editCell[0].dispatchEvent(event);
+          }
+        });
+
         grid.insertRow({});
+
         var newRow = $(grid.body.rows[collection.length - 1].$el);
         newRow.attr("class", "new").click(function(e) {
           $(this).attr("class", "editable");

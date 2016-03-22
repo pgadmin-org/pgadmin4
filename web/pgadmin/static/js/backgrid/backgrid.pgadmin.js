@@ -190,6 +190,9 @@
       });
     },
     enterEditMode: function () {
+      // Notify that we are about to enter in edit mode for current cell.
+      this.model.trigger("enteringEditMode", [this]);
+
       Backgrid.Cell.prototype.enterEditMode.apply(this, arguments);
       /* Make sure - we listen to the click event */
       this.delegateEvents();
