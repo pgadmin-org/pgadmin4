@@ -6,6 +6,7 @@
 _build
 build-*
 .DS_Store
+.idea
 runtime/.qmake.cache
 runtime/Makefile
 runtime/moc_BrowserWindow.cpp
