@@ -441,19 +441,21 @@
     },
     events: {'switchChange.bootstrapSwitch': 'onChange'},
     render: function() {
-      var field = _.defaults(this.field.toJSON(), this.defaults, {options: $.fn.bootstrapSwitch.defaults}),
+      var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
           attrArr = field.name.split('.'),
           name = attrArr.shift(),
           path = attrArr.join('.'),
-          rawValue = this.keyPathAccessor(attributes[name], path);
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          options =  _.defaults({}, this.field.get('options'), this.defaults.options,
+                        $.fn.bootstrapSwitch.defaults);
 
       Backform.InputControl.prototype.render.apply(this, arguments);
       this.$input = this.$el.find("input[type=checkbox]").first();
 
       //Check & set additional properties
       this.$input.bootstrapSwitch(
-          _.extend(field.options, {'state': rawValue})
+          _.extend(options, {'state': rawValue})
           );
 
       return this;
