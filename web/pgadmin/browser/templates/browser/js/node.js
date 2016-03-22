@@ -825,7 +825,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           panel.close()
         },
         updateTreeItem = function() {
-          // Update the item lable (if lable is modified.)
+          // Update the item lable (if label is modified.)
           if (view.model.tnode) {
             var itemData = tree.itemData(item),
                 icon = itemData.icon;
@@ -836,6 +836,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             tree.addIcon(item, {icon: itemData.icon});
           } else if (view.model.get('name')) {
             tree.setLabel(item, {label: view.model.get("name")});
+            if (view.model.get('data').icon && view.model.get('data').icon != '')
+                tree.addIcon(item, {icon: view.model.get('data').icon});
           }
           tree.deselect(item);
           panel.$container.removeAttr('action-mode');
