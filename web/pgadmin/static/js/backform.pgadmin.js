@@ -447,8 +447,13 @@
           name = attrArr.shift(),
           path = attrArr.join('.'),
           rawValue = this.keyPathAccessor(attributes[name], path),
-          options =  _.defaults({}, this.field.get('options'), this.defaults.options,
-                        $.fn.bootstrapSwitch.defaults);
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+            },
+          options = _.defaults({
+              disabled: evalF(field.disabled, field, this.model)
+            }, this.field.get('options'), this.defaults.options,
+            $.fn.bootstrapSwitch.defaults);
 
       Backform.InputControl.prototype.render.apply(this, arguments);
       this.$input = this.$el.find("input[type=checkbox]").first();
@@ -1109,18 +1114,18 @@
             attributes: attributes,
             formatter: this.formatter
            }),
-          evalF = function(f, m) {
-            return (_.isFunction(f) ? !!f(m) : !!f);
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
           };
 
       // Evaluate the disabled, visible, required, canAdd, cannEdit & canDelete option
       _.extend(data, {
-        disabled: evalF(data.disabled, this.model),
-        visible:  evalF(data.visible, this.model),
-        required: evalF(data.required, this.model),
-        canAdd: evalF(data.canAdd, this.model),
-        canEdit: evalF(data.canEdit, this.model),
-        canDelete: evalF(data.canDelete, this.model)
+        disabled: evalF(data.disabled, data, this.model),
+        visible:  evalF(data.visible, data, this.model),
+        required: evalF(data.required, data, this.model),
+        canAdd: evalF(data.canAdd, data, this.model),
+        canEdit: evalF(data.canEdit, data, this.model),
+        canDelete: evalF(data.canDelete, data, this.model)
       });
       // Show Backgrid Control
       grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
