@@ -415,10 +415,10 @@
     defaults: {
       label: "",
       options: {
-        onText: 'True',
-        offText: 'False',
+        onText: 'Yes',
+        offText: 'No',
         onColor: 'success',
-        offColor: 'default',
+        offColor: 'primary',
         size: 'small'
       },
       extraClasses: []
