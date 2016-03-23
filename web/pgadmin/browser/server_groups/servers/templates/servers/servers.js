@@ -91,7 +91,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     d.connected = false;
                     d.icon = 'icon-server-not-connected';
                     t.addIcon(i, {icon: d.icon});
-                    obj.callbacks.refresh.apply(obj, [i]);
+                    obj.callbacks.refresh.apply(obj, [null, i]);
                     if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                       delete pgBrowser.serverInfo[d._id]
                     }
