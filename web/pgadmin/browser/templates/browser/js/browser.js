@@ -408,7 +408,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                               'pgadmin-browser:' + s.name + ':initialized', m, obj
                             );
                           } catch (err) {
-                            console.log("Error running module Init script for '" + s.path + "'");
+                            console.log("Error running module init script for '" + s.path + "'");
                             console.log(err);
 
                             obj.report_error(
@@ -575,7 +575,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
             if (_.has(menus, m.name)) {
               console && console.log && console.log(m.name +
-                ' has been ignored!\nIt is already exist in the ' +
+                ' has been ignored!\nIt already exists in the ' +
                 a +
                 ' list of menus!');
             } else {
@@ -630,14 +630,14 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     },
     messages: {
       'server_lost': '{{ _('Connection to the server has been lost!') }}',
-      'click_for_detailed_msg': '{{ _('%%s<br><br>click here for details!') }}',
+      'click_for_detailed_msg': '{{ _('%%s<br><br>Click here for details.') }}',
       'general_cateogty': '{{ _('General') }}',
       'SQL_TAB': '{{ _('SQL') }}',
       'SQL_NO_CHANGE': '-- ' + '{{ _('Nothing changed') }}',
       'MUST_BE_INT' : " {{ _("'%%s' must be an integer.") }}",
       'MUST_BE_NUM' : " {{ _("'%%s' must be a numeric.") }}",
-      'MUST_GR_EQ' : " {{ _("'%%s' must be greater than or equals to %%d.") }}",
-      'MUST_LESS_EQ' : " {{ _("'%%s' must be less than or equals to %%d.") }}"
+      'MUST_GR_EQ' : " {{ _("'%%s' must be greater than or equal to %%d.") }}",
+      'MUST_LESS_EQ' : " {{ _("'%%s' must be less than or equal to %%d.") }}"
     }
   });
 
