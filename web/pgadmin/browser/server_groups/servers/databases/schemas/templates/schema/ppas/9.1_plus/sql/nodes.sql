@@ -7,6 +7,7 @@ SELECT
 FROM
     pg_namespace nsp
 WHERE
+    nsp.nspparent = 0 AND
     {% if scid %}
     nsp.oid={{scid}}::int AND
     {% else %}
