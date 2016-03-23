@@ -358,9 +358,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
              **/
             var mode = p.$container.attr('action-mode');
             if (mode) {
-              var msg = '{{ _('Are you sure wish to stop editing the properties of the %%s - "%%s"?') }}';
+              var msg = '{{ _('Are you sure want to stop editing the properties of the %%s - "%%s"?') }}';
               if (args.action == 'edit') {
-                msg = '{{ _('Are you sure wish to reset the current changes, and reopen the panel for %%s - "%%s"?') }}';
+                msg = '{{ _('Are you sure want to reset the current changes and reopen the panel for %%s - "%%s"?') }}';
               }
 
               Alertify.confirm(
@@ -429,7 +429,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.notify(
-                S('The %s - "%s" can not be dropped!')
+                S('The %s "%s" can not be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error',
                 10
@@ -444,7 +444,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!(_.isFunction(obj.canDrop) ?
                 obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.notify(
-                S('The %s - "%s" can not be dropped!')
+                S('The %s "%s" can not be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error', 10
                 );
