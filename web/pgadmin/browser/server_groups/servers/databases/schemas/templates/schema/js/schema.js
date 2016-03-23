@@ -110,12 +110,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           select2: { allowClear: false }
         },{
           id: 'is_sys_object', label:'{{ _('System schema?') }}',
-          cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
-          options: {
-            'onText': 'Yes', 'offText': 'No',
-            'onColor': 'success', 'offColor': 'primary',
-            'size': 'small'
-          }
+          cell: 'switch', type: 'switch', mode: ['properties'], disabled: true
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
