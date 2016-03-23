@@ -72,7 +72,7 @@ class SqliteSessionStorage(MutableMapping, SessionMixin):
         rv = None
         with self._get_conn() as conn:
             for row in conn.execute(self._get_sql, (key,)):
-                rv = loads(str(row[0]))
+                rv = loads(bytes(row[0]))
                 break
         if rv is None:
             raise KeyError('Key not in this session')
