@@ -368,7 +368,7 @@ class Preferences(object):
         assert _type is not None, "Type for a preference can not be none!"
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
-            'options', 'multiline', 'switch', 'node'
+            'options', 'multiline', 'switch', 'node', 'text'
             ), "Type can not be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
@@ -523,6 +523,7 @@ Did you forget to register it?"""
         try:
             pref.set(value)
         except Exception as e:
+            current_app.logger.exeception(e)
             return False, str(e)
 
         return True, None

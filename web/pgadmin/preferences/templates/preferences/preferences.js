@@ -49,22 +49,34 @@ define(
            * We will use only one collection object to keep track of all the
            * preferences.
            */
-          var preferences = this.preferences = new (Backbone.Collection.extend({
-            model: PreferenceModel,
-            url: "{{ url_for('preferences.preferences') }}",
-            updateAll: function() {
-              // We will send only the modified data to the server.
-              this.each(function(m) {
-                if (m.hasChanged()) {
-                  m.save({
-                    fail: function() {
-                    }
-                  });
+          var changed = {},
+              preferences = this.preferences = new (Backbone.Collection.extend({
+                model: PreferenceModel,
+                url: "{{ url_for('preferences.preferences') }}",
+                updateAll: function() {
+                  // We will send only the modified data to the server.
+                  for (var key in changed) {
+                    this.get(key).save();
+                  }
+                  return true;
                 }
-              });
-              return true;
+              }))(null);
+
+          preferences.on('reset', function() {
+            // Reset the changed variables
+            changed = {};
+          });
+
+          preferences.on('change', function(m) {
+            var id = m.get('id');
+            if (!(id in changed)) {
+              // Keep track of the original value
+              changed[id] = m._previousAttributes.value;
+            } else if (_.isEqual(m.get('value'), changed[id])) {
+              // Remove unchanged models.
+              delete changed[id];
             }
-          }))(null);
+          });
 
           /*
            * Function: renderPreferencePanel
@@ -96,7 +108,9 @@ define(
             _.each(prefs, function(p) {
 
               var m = preferences.get(p.id),
-                  f = new Backform.Field(_.extend({}, p, {id: 'value', name: 'value'})),
+                  f = new Backform.Field(
+                    _.extend({}, p, {id: 'value', name: 'value'})
+                    ),
                   cntr = new (f.get("control")) ({
                     field: f,
                     model: m
@@ -171,6 +185,8 @@ define(
              */
             getControlMappedForType = function(p) {
               switch(p.type) {
+                case 'text':
+                    return 'input';
                 case 'boolean':
                   p.options = {
                       onText: '{{ _('True') }}',
@@ -282,6 +298,9 @@ define(
                        */
                       if (!p.control) {
                         p.control = getControlMappedForType(p);
+                      }
+                      if (p.help_str) {
+                        p.helpMessage = p.help_str;
                       }
                     });
                   }
