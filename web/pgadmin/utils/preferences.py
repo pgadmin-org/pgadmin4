@@ -146,9 +146,11 @@ class _Preference(object):
             if type(value) != bool:
                 return False, gettext("Invalid value for boolean type!")
         elif self._type == 'integer':
+            value = int(value)
             if type(value) != int:
                 return False, gettext("Invalid value for integer type!")
         elif self._type == 'numeric':
+            value = float(value)
             t = type(value)
             if t != float and t != int and t != decimal.Decimal:
                 return False, gettext("Invalid value for numeric type!")
