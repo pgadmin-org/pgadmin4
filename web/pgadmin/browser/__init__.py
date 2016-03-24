@@ -121,6 +121,17 @@ class BrowserModule(PgAdminModule):
             'preloaded': True
             })
         scripts.append({
+            'name': 'jquery.acisortable',
+            'path': url_for(
+                        'browser.static',
+                        filename='js/aciTree/jquery.aciSortable.min'
+                        ),
+            'deps': ['jquery', 'jquery.aciplugin'],
+            'exports': 'aciPluginClass.plugins.aciTree',
+            'when': None,
+            'preloaded': True
+            })
+        scripts.append({
             'name': 'wcdocker',
             'path': url_for(
                         'static',
