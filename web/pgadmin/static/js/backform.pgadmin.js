@@ -110,6 +110,8 @@
   // and rerender the View element
   _.extend(Backform.Control.prototype, {
 
+    defaults: _.extend(Backform.Control.prototype.defaults, {helpMessage: null}),
+
     initialize: function() {
       BackformControlInit.apply(this, arguments);
 
@@ -161,7 +163,10 @@
                   '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
                   '    <%=value%>',
                   '  </span>',
-                  '</div>'
+                  '</div>',
+                  '<% if (helpMessage && helpMessage.length) { %>',
+                  '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+                  '<% } %>',
                   ].join("\n")),
 
     clearInvalid: function() {
@@ -270,7 +275,7 @@
   _.extend(
     Backform.TextareaControl.prototype, {
       defaults: _.extend(
-        Backform.TextareaControl.prototype.defaults, {rows: 5}
+        Backform.TextareaControl.prototype.defaults, {rows: 5, helpMessage: null}
       ),
       events : {
         "change textarea": "onChange",
@@ -353,6 +358,7 @@
 
     return this;
   };
+  _.extend(Backform.SelectControl.prototype.defaults, {helpMessage: null});
 
   var ReadonlyOptionControl = Backform.ReadonlyOptionControl = Backform.SelectControl.extend({
     template: _.template([
@@ -363,6 +369,9 @@
       ' <% if (option.value === rawValue) { %>',
       ' <span class="<%=Backform.controlClassName%> uneditable-input" disabled><%-option.label%></span>',
       ' <% } %>',
+      '<% } %>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '<% } %>',
       '</div>'
     ].join("\n")),
@@ -421,7 +430,8 @@
         offColor: 'primary',
         size: 'small'
       },
-      extraClasses: []
+      extraClasses: [],
+      helpMessage: null
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
@@ -431,7 +441,10 @@
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    </label>',
       '  </div>',
-      '</div>'
+      '</div>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '<% } %>'
     ].join("\n")),
     getValueFromDOM: function() {
       return this.formatter.toRaw(
