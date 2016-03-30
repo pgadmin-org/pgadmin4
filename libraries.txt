@@ -10,7 +10,7 @@ Modernizr           2.6.2       MIT/BSD      http://modernizr.com/
 AlertifyJS          1.1.0       MIT          http://alertifyjs.com/
 CodeMirror          4.12        MIT          http://codemirror.net/
 aciTree             4.5.0-rc.7  MIT/GPL      http://acoderinsights.ro/en/aciTree-tree-view-with-jQuery
-contextMenu         1.9.2       MIT          https://github.com/swisnl/jQuery-contextMenu
+contextMenu         2.1.0       MIT          https://github.com/swisnl/jQuery-contextMenu
 wcDocker            0f5690318c  MIT/GPL      https://github.com/WebCabin/wcDocker
 Require.js          2.1.18      BSD/MIT      http://requirejs.org/
 Underscore.js       1.8.3       MIT          http://underscorejs.org/

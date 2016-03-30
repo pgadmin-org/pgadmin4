@@ -1,48 +1,113 @@
+@charset "UTF-8";
 /*!
  * jQuery contextMenu - Plugin for simple contextMenu handling
  *
- * Version: v1.9.2
+ * Version: v2.1.0
  *
  * Authors: Björn Brala (SWIS.nl), Rodney Rehm, Addy Osmani (patches for FF)
  * Web: http://swisnl.github.io/jQuery-contextMenu/
  *
- * Copyright (c) 2011-2015 SWIS BV and contributors
+ * Copyright (c) 2011-2016 SWIS BV and contributors
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
-
- * Date: 2015-10-25T14:36:11.963Z
+ *
+ * Date: 2016-02-28T09:41:28.803Z
  */
+@font-face {
+  font-family: "context-menu-icons";
+  font-style: normal;
+  font-weight: normal;
+
+  src: url("font/context-menu-icons.eot?2qmzf");
+  src: url("font/context-menu-icons.eot?2qmzf#iefix") format("embedded-opentype"), url("font/context-menu-icons.woff2?2qmzf") format("woff2"), url("font/context-menu-icons.woff?2qmzf") format("woff"), url("font/context-menu-icons.ttf?2qmzf") format("truetype");
+}
+
+.context-menu-icon:before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 28px;
+  font-family: "context-menu-icons";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  color: #2980b9;
+  text-align: center;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+       -o-transform: translateY(-50%);
+          transform: translateY(-50%);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.context-menu-icon-add:before {
+  content: "";
+}
+
+.context-menu-icon-copy:before {
+  content: "";
+}
+
+.context-menu-icon-cut:before {
+  content: "";
+}
+
+.context-menu-icon-delete:before {
+  content: "";
+}
+
+.context-menu-icon-edit:before {
+  content: "";
+}
+
+.context-menu-icon-paste:before {
+  content: "";
+}
+
+.context-menu-icon-quit:before {
+  content: "";
+}
+
+.context-menu-icon.context-menu-hover:before {
+  color: #fff;
+}
 
 .context-menu-list {
   position: absolute;
   display: inline-block;
-  min-width: 120px;
-  max-width: 250px;
-  padding: 0;
-  margin: 0;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 11px;
+  min-width: 180px;
+  max-width: 360px;
+  padding: 4px 0;
+  margin: 5px;
+  font-family: inherit;
+  font-size: inherit;
   list-style-type: none;
-  background: #eee;
-  border: 1px solid #ddd;
+  background: #fff;
+  border: 1px solid #bebebe;
+  border-radius: 3px;
   -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
           box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
 }
 
 .context-menu-item {
   position: relative;
-  padding: 2px 2px 2px 24px;
+  padding: 3px 28px;
+  color: #2f2f2f;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  background-color: #eee;
+  background-color: #fff;
 }
 
 .context-menu-separator {
-  padding-bottom: 0;
-  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 5px 0;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .context-menu-item > label > input,
@@ -53,62 +118,49 @@
           user-select: text;
 }
 
-.context-menu-item.hover {
+.context-menu-item.context-menu-hover {
+  color: #fff;
   cursor: pointer;
-  background-color: #39f;
+  background-color: #2980b9;
 }
 
-.context-menu-item.disabled {
-  color: #666;
+.context-menu-item.context-menu-disabled {
+  color: #626262;
+  background-color: #fff;
 }
 
-.context-menu-input.hover,
-.context-menu-item.disabled.hover {
+.context-menu-item.context-menu-disabled {
+  color: #626262;
+}
+
+.context-menu-input.context-menu-hover,
+.context-menu-item.context-menu-disabled.context-menu-hover {
   cursor: default;
   background-color: #eee;
 }
 
 .context-menu-submenu:after {
   position: absolute;
-  top: 0;
-  right: 3px;
+  top: 50%;
+  right: 8px;
   z-index: 1;
-  color: #666;
-  content: ">";
+  width: 0;
+  height: 0;
+  content: '';
+  border-color: transparent transparent transparent #2f2f2f;
+  border-style: solid;
+  border-width: 4px 0 4px 4px;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+       -o-transform: translateY(-50%);
+          transform: translateY(-50%);
 }
 
-/* icons
-    #protip:
-    In case you want to use sprites for icons (which I would suggest you do) have a look at
-    http://css-tricks.com/13224-pseudo-spriting/ to get an idea of how to implement 
-    .context-menu-item.icon:before {}
+/**
+ * Inputs
  */
-.context-menu-item.icon {
-  min-height: 18px;
-  list-style-type: none;
-  background-repeat: no-repeat;
-  background-position: 4px 2px;
-}
-.context-menu-item.icon-edit {
-  background-image: url(images/page_white_edit.png);
-}
-.context-menu-item.icon-cut {
-  background-image: url(images/cut.png);
-}
-.context-menu-item.icon-copy {
-  background-image: url(images/page_white_copy.png);
-}
-.context-menu-item.icon-paste {
-  background-image: url(images/page_white_paste.png);
-}
-.context-menu-item.icon-delete {
-  background-image: url(images/page_white_delete.png);
-}
-.context-menu-item.icon-add {
-  background-image: url(images/page_white_add.png);
-}
-.context-menu-item.icon-quit {
-  background-image: url(images/door.png);
+.context-menu-item.context-menu-input {
+  padding: 5px 10px;
 }
 
 /* vertically align inside labels */
@@ -119,10 +171,8 @@
 /* position checkboxes and radios as icons */
 .context-menu-input > label > input[type="checkbox"],
 .context-menu-input > label > input[type="radio"] {
-  margin-left: -17px;
-}
-.context-menu-input > label > span {
-  margin-left: 5px;
+  position: relative;
+  top: 3px;
 }
 
 .context-menu-input > label,
@@ -139,6 +189,7 @@
 .context-menu-input > label > textarea {
   height: 100px;
 }
+
 .context-menu-item > .context-menu-list {
   top: 5px;
   /* re-positioned by js */
@@ -146,7 +197,7 @@
   display: none;
 }
 
-.context-menu-item.visible > .context-menu-list {
+.context-menu-item.context-menu-visible > .context-menu-list {
   display: block;
 }
 
