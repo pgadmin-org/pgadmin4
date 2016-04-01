@@ -899,7 +899,7 @@
     },
     render: function() {
       // Clean up existing elements
-      this.cleanup();
+      this.undelegateEvents();
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -945,6 +945,7 @@
       this.$el.html(grid).addClass(field.name);
       this.updateInvalid();
 
+      this.delegateEvents();
       return this;
     },
     showGridControl: function(data) {
@@ -1169,7 +1170,7 @@
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
           "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
-          "  <button class='btn-sm btn-default add'>Add</buttton>",
+          "  <button class='btn-sm btn-default add'>ADD</buttton>",
           "</div>"].join("\n");
         gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
 
