@@ -50,7 +50,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value=<%-value%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+      '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
       '    <% if (first_empty) { %>',
       '    <option value="" <%="" === rawValue ? "selected" : "" %>><%- empty_value %></option>',
       '    <% } %>',
