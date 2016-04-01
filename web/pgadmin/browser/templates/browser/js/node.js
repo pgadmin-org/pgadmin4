@@ -847,7 +847,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         },
         saveNewNode = function() {
           /* TODO:: Create new tree node for this */
-          if (view.model.tnode) {
+          if (view.model.tnode && '_id' in view.model.tnode) {
             var d = _.extend({}, view.model.tnode),
               func = function(i) {
                 setTimeout(function() {
@@ -888,7 +888,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                       if (data && data._type && data._type in pgBrowser.Nodes) {
                         node = pgBrowser.Nodes[data._type];
 
-                        if (node && node.node && node.node == that.type) {
+                        if (node && ((node.node && node.node == that.type) ||
+                                node.type == that.collection_type)) {
                           found = true;
                           if (tree.wasLoad(j)) {
                             tree.append(j, {
@@ -977,6 +978,48 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 success: function(i, o) {
                   func(i);
                 }
+              });
+            }
+          } else {
+          /*
+           * Sometime we don't get node in response even though it's saved
+           * on server. In such case just reload the collection to get newly
+           * created nodes.
+           */
+
+           var children = tree.children(item, false, false),
+            openNode = function(item, animation){
+              tree.open(item, {
+                success: function (item, options){
+                  setTimeout(function() {
+                    closePanel();
+                  }, 0);
+                },
+                fail: function (item, options){
+                },
+                unanimated: animation
+              });
+            };
+
+            if (children) {
+              _.each(children, function(child) {
+                var $child = $(child);
+                var data = tree.itemData($child)
+                  if (data._type == that.collection_type){
+                    // We found collection which need to reload.
+                    if (tree.wasLoad($child)) {
+                      tree.unload($child, {
+                        success: function (item, options){
+                          openNode(item, true);
+                        },
+                        fail: function (item, options){
+                        },
+                        unanimated: true
+                      });
+                    } else {
+                      openNode($child, false);
+                    }
+                  }
               });
             }
           }
