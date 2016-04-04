@@ -81,21 +81,21 @@ class BaseConnection(object):
       - Define this method to connect the server using that particular driver
         implementation.
 
-    * execute_scalar(query, params)
+    * execute_scalar(query, params, formatted_exception_msg)
       - Implement this method to execute the given query and returns single
         datum result.
 
-    * execute_async(query, params)
+    * execute_async(query, params, formatted_exception_msg)
       - Implement this method to execute the given query asynchronously and returns result.
 
-    * execute_void(query, params)
+    * execute_void(query, params, formatted_exception_msg)
       - Implement this method to execute the given query with no result.
 
-    * execute_2darray(query, params)
+    * execute_2darray(query, params, formatted_exception_msg)
       - Implement this method to execute the given query and returns the result
         as a 2 dimensional array.
 
-    * execute_dict(query, params)
+    * execute_dict(query, params, formatted_exception_msg)
       - Implement this method to execute the given query and returns the result
         as an array of dict (column name -> value) format.
 
@@ -131,7 +131,7 @@ class BaseConnection(object):
       - Implement this method to wait for asynchronous connection with timeout.
         This must be a non blocking call.
 
-    * poll()
+    * poll(formatted_exception_msg)
       - Implement this method to poll the data of query running on asynchronous
         connection.
 
@@ -147,29 +147,30 @@ class BaseConnection(object):
     ASYNC_READ_TIMEOUT = 2
     ASYNC_WRITE_TIMEOUT = 3
     ASYNC_NOT_CONNECTED = 4
+    ASYNC_EXECUTION_ABORTED = 5
 
     @abstractmethod
     def connect(self, **kwargs):
         pass
 
     @abstractmethod
-    def execute_scalar(self, query, params=None):
+    def execute_scalar(self, query, params=None, formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_async(self, query, params=None):
+    def execute_async(self, query, params=None, formatted_exception_msg=True):
         pass
 
     @abstractmethod
-    def execute_void(self, query, params=None):
+    def execute_void(self, query, params=None, formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_2darray(self, query, params=None):
+    def execute_2darray(self, query, params=None, formatted_exception_msg=False):
         pass
 
     @abstractmethod
-    def execute_dict(self, query, params=None):
+    def execute_dict(self, query, params=None, formatted_exception_msg=False):
         pass
 
     @abstractmethod
@@ -201,7 +202,7 @@ class BaseConnection(object):
         pass
 
     @abstractmethod
-    def poll(self):
+    def poll(self, formatted_exception_msg=True):
         pass
 
     @abstractmethod
