@@ -312,7 +312,9 @@
           name = attrArr.shift(),
           path = attrArr.join('.'),
           model = this.model, column = this.column,
-          rawValue = this.formatter.fromRaw(model.get(column.get("name")), model),
+          rawValue = this.formatter.fromRaw(
+            model.get(column.get("name")), model
+          ),
           editable = Backgrid.callByNeed(col.editable, column, model);
 
       this.$el.empty();
@@ -326,7 +328,8 @@
       // Override BooleanCell checkbox with Bootstrapswitch
       this.$input.bootstrapSwitch(
         _.defaults(
-          {'state': rawValue, 'disabled': !editable}, col.options, this.defaults.options
+          {'state': rawValue, 'disabled': !editable}, col.options,
+          this.defaults.options
           ));
 
       this.delegateEvents();
@@ -335,22 +338,147 @@
     }
   });
 
+  /**
+    Select2CellEditor the cell editor renders a Select2 input
+    box as its editor.
+  */
+  var Select2CellEditor = Backgrid.Select2CellEditor =
+      Backgrid.SelectCellEditor.extend({
+    /** @property */
+    events: {
+      "change": "onSave"
+    },
+
+    /** @property */
+    setSelect2Options: function (options) {
+      this.select2Options = _.extend(options || {});
+    },
+
+    /** @property */
+    // This option will prevent Select2 list to pop up
+    // when user press tab on select2
+    select2Options: {
+      openOnEnter: false
+    },
+
+    /** @property {function(Object, ?Object=): string} template */
+    template: _.template([
+      '<option value="<%- value %>" ',
+      '<%= selected ? \'selected="selected"\' : "" %>>',
+      '<%- text %></option>'].join(''),
+      null,{
+        variable: null
+      }),
+
+    initialize: function () {
+      Backgrid.SelectCellEditor.prototype.initialize.apply(this, arguments);
+      this.close = _.bind(this.close, this);
+    },
+    /**
+       Renders a `select2` select box instead of the default `<select>` HTML
+       element using the supplied options from #select2Options.
+      */
+    render: function () {
+      var self =this,
+          col = _.defaults(this.column.toJSON(), this.defaults),
+          model = this.model, column = this.column,
+          editable = Backgrid.callByNeed(col.editable, column, model),
+          optionValues = Backgrid.callByNeed(col.options, column, this);
+
+      this.$el.empty();
+
+      if (!_.isArray(optionValues))
+        throw new TypeError("optionValues must be an array");
+
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work.
+       */
+
+      var optionText = null,
+          optionValue = null,
+          model = this.model,
+          selectedValues = model.get(this.column.get("name"));
+
+      for (var i = 0; i < optionValues.length; i++) {
+        var optionValue = optionValues[i];
+
+        if (_.isArray(optionValue) || _.isObject(optionValue)) {
+          optionText  = optionValue[0] || optionValue.label;
+          optionValue = optionValue[1] || optionValue.value;
+
+          this.$el.append(
+            this.template({
+              text: optionText,
+              value: optionValue,
+              selected: (selectedValues == optionValue) ||
+                (_.indexOf(selectedValues, optionValue) > -1)
+            }));
+        } else {
+          throw new TypeError(
+            "optionValues elements must be a name-value pair."
+          );
+        }
+      }
+      // Initialize select2 control.
+      this.$el.select2(
+          _.defaults(
+            {'disabled': !editable}, col.select2, this.select2Options
+            ));
+
+      setTimeout(function(){
+        model.set(column.get("name"), self.$el.val());
+      },10);
+
+      this.delegateEvents();
+
+      return this;
+    },
+    /**
+       Attach event handlers to the select2 box and focus it.
+    */
+    postRender: function () {
+      var self = this;
+      self.$el.on("blur", function (e) {
+        self.close(e);
+      }).select2("focus");
+    },
+
+    remove: function () {
+      this.$el.select2("destroy");
+      return Backgrid.SelectCellEditor.prototype.remove.apply(this, arguments);
+    },
+    onSave: function (e) {
+      var model = this.model;
+      var column = this.column;
+      model.set(column.get("name"), this.$el.val());
+    }
+  });
 
   /*
    *  Select2Cell for backgrid.
    */
-  var Select2Cell = Backgrid.Extension.Select2Cell = Backgrid.Cell.extend({
+  var Select2Cell = Backgrid.Extension.Select2Cell =
+      Backgrid.SelectCell.extend({
     className: "select2-cell",
+    /** @property */
+    editor: Select2CellEditor,
     defaults: _.defaults({
         select2: {}
-      }, Backgrid.Cell.prototype.defaults),
+      }, Backgrid.SelectCell.prototype.defaults),
     events: {
       "change": "onSave",
       "select2:unselect": "onSave"
     },
-    template: _.template(
-      '<option value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>'
-    ),
+    /** @property {function(Object, ?Object=): string} template */
+    template: _.template([
+      '<option value="<%- value %>" ',
+      '<%= selected ? \'selected="selected"\' : "" %>>',
+      '<%- text %></option>'].join(''),
+      null,{
+        variable: null
+      }),
+
     render: function () {
       var col = _.defaults(this.column.toJSON(), this.defaults),
           model = this.model, column = this.column,
@@ -359,7 +487,8 @@
 
       this.$el.empty();
 
-      if (!_.isArray(optionValues)) throw new TypeError("optionValues must be an array");
+      if (!_.isArray(optionValues))
+        throw new TypeError("optionValues must be an array");
 
       /*
        * Add empty option as Select2 requires any empty '<option><option>' for
