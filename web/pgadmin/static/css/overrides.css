@@ -907,8 +907,3 @@ ul.nav.nav-tabs {
 .btn-primary{
 	margin: 2px 13px !important;
 }
-
-.select2-cell .select2-container > .backgrid th, .backgrid td
-{
-    padding: 0px;
-}
