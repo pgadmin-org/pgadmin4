@@ -10,9 +10,8 @@ WHERE
     {% if scid %}
     nsp.oid={{scid}}::int AND
     {% else %}
-    {% if show_sysobj %}
-    nspname NOT LIKE E'pg\\_temp\\_%' AND
-    nspname NOT LIKE E'pg\\_toast\\_temp\\_%' AND
+    {% if not show_sysobj %}
+    nspname NOT LIKE E'pg\_%' AND
     {% endif %}
     {% endif %}
     NOT (
