@@ -270,12 +270,12 @@
 
 .context-menu-list {
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-font-size: 14px;
+font-size: 13px;
 }
 
 .context-menu-icon:before {
   color: #222;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .context-menu-icon-fa:before {
@@ -285,7 +285,7 @@ font-size: 14px;
 .context-menu-item {
   display:block;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: normal;
 }
 
@@ -311,5 +311,5 @@ font-size: 14px;
 }
 
 ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
-  width: 15px;
+  width: 14px;
 }
