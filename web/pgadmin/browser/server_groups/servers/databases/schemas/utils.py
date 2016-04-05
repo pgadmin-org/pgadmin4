@@ -12,6 +12,7 @@
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from flask import render_template
+from pgadmin.utils.ajax import internal_server_error
 
 class SchemaChildModule(CollectionNodeModule):
     """
@@ -139,3 +140,110 @@ class DataTypeReader:
             return False, str(e)
 
         return True, res
+
+
+def trigger_definition(data):
+    """
+    This function will set the trigger definition details from the raw data
+
+    Args:
+        data: Properties data
+
+    Returns:
+        Updated properties data with trigger definition
+    """
+
+    # Here we are storing trigger definition
+    # We will use it to check trigger type definition
+    trigger_definition = {
+        'TRIGGER_TYPE_ROW':         (1 << 0),
+        'TRIGGER_TYPE_BEFORE':      (1 << 1),
+        'TRIGGER_TYPE_INSERT':      (1 << 2),
+        'TRIGGER_TYPE_DELETE':      (1 << 3),
+        'TRIGGER_TYPE_UPDATE':      (1 << 4),
+        'TRIGGER_TYPE_TRUNCATE':    (1 << 5),
+        'TRIGGER_TYPE_INSTEAD':     (1 << 6)
+    }
+
+    # Fires event definition
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_BEFORE']:
+        data['fires'] = 'BEFORE'
+    elif data['tgtype'] & trigger_definition['TRIGGER_TYPE_INSTEAD']:
+        data['fires'] = 'INSTEAD OF'
+    else:
+        data['fires'] = 'AFTER'
+
+    # Trigger of type definition
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_ROW']:
+        data['is_row_trigger'] = True
+    else:
+        data['is_row_trigger'] = False
+
+    # Event definition
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_INSERT']:
+        data['evnt_insert'] = True
+    else:
+        data['evnt_insert'] = False
+
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_DELETE']:
+        data['evnt_delete'] = True
+    else:
+        data['evnt_delete'] = False
+
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_UPDATE']:
+        data['evnt_update'] = True
+    else:
+        data['evnt_update'] = False
+
+    if data['tgtype'] & trigger_definition['TRIGGER_TYPE_TRUNCATE']:
+        data['evnt_turncate'] = True
+    else:
+        data['evnt_turncate'] = False
+
+    return data
+
+
+def parse_rule_definition(res):
+    """
+    This function extracts:
+    - events
+    - do_instead
+    - statements
+    - condition
+    from the defintion row, forms an array with fields and returns it.
+    """
+    res_data = []
+    try:
+        res_data = res['rows'][0]
+        data_def = res_data['definition']
+        import re
+        # Parse data for event
+        e_match = re.search(r"ON\s+(.*)\s+TO", data_def)
+        event_data = e_match.group(1) if e_match is not None else None
+        event = event_data if event_data is not None else ''
+
+        # Parse data for do instead
+        inst_match = re.search(r"\s+(INSTEAD)\s+", data_def)
+        instead_data = inst_match.group(1) if inst_match is not None else None
+        instead = True if instead_data is not None else False
+
+        # Parse data for condition
+        condition_match = re.search(r"(?:WHERE)\s+(.*)\s+(?:DO)", data_def)
+        condition_data = condition_match.group(1) \
+            if condition_match is not None else None
+        condition = condition_data if condition_data is not None else ''
+
+        # Parse data for statements
+        statement_match = re.search(
+            r"(?:DO\s+)(?:INSTEAD\s+)?((.|\n)*)", data_def)
+        statement_data = statement_match.group(1) if statement_match else None
+        statement = statement_data if statement_data is not None else ''
+
+        # set columns parse data
+        res_data['event'] = event.lower().capitalize()
+        res_data['do_instead'] = instead
+        res_data['statements'] = statement
+        res_data['condition'] = condition
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+    return res_data
