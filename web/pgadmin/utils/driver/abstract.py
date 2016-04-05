@@ -206,5 +206,9 @@ class BaseConnection(object):
         pass
 
     @abstractmethod
+    def status_message(self):
+        pass
+
+    @abstractmethod
     def cancel_transaction(self, conn_id, did=None):
         pass

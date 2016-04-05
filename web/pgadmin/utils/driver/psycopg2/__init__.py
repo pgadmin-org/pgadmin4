@@ -95,6 +95,9 @@ class Connection(BaseConnection):
       - This method is used to poll the data of query running on asynchronous
         connection.
 
+    * status_message()
+      - Returns the status message returned by the last command executed on the server.
+
     * cancel_transaction(conn_id, did=None)
       - This method is used to cancel the transaction for the
         specified connection id and database id.
@@ -464,6 +467,7 @@ Attempt to reconnect it failed with the below error:
             params: extra parameters to the function
             formatted_exception_msg: if True then function return the formatted exception message
         """
+        self.__async_cursor = None
         status, cur = self.__cursor()
 
         if not status:
@@ -767,7 +771,7 @@ Failed to reset the connection of the server due to following error:
         cur = self.__async_cursor
         if not cur:
             return False, gettext(
-                "Cursor could not be found for the aysnc connection."
+                "Cursor could not be found for the async connection."
                 ), None
 
         current_app.logger.log(
@@ -784,19 +788,19 @@ Failed to reset the connection of the server due to following error:
             return False, errmsg, None
 
         colinfo = None
+        result = None
         if status == self.ASYNC_OK:
 
             # if user has cancelled the transaction then changed the status
             if self.execution_aborted:
                 status = self.ASYNC_EXECUTION_ABORTED
                 self.execution_aborted = False
-                return status, None, colinfo
+                return status, result, colinfo
 
             # Fetch the column information
             if cur.description is not None:
                 colinfo = [desc for desc in cur.description]
 
-            result = cur.statusmessage
             if cur.rowcount > 0:
                 result = []
 
@@ -809,12 +813,26 @@ Failed to reset the connection of the server due to following error:
                     for row in cur:
                         result.append(dict(row))
                 except psycopg2.ProgrammingError:
-                    result = cur.statusmessage
+                    result = None
 
-            self.__async_cursor = None
-            return status, result, colinfo
+        return status, result, colinfo
 
-        return status, None, colinfo
+    def status_message(self):
+        """
+        This function will return the status message returned by the last command executed on the server.
+        """
+        cur = self.__async_cursor
+        if not cur:
+            return gettext("Cursor could not be found for the async connection.")
+
+        current_app.logger.log(
+            25,
+            "Status message for (Query-id: {query_id})".format(
+                query_id=self.__async_query_id
+                )
+            )
+
+        return cur.statusmessage
 
     def cancel_transaction(self, conn_id, did=None):
         """
