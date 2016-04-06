@@ -128,6 +128,10 @@ function(_, pgAdmin, $, Backbone) {
             _.each(schema, function(s) {
 
               switch(s.type) {
+                case 'array':
+                  self.objects.push(s.id);
+
+                  break;
                 case 'collection':
                   obj = self.get(s.id)
                   if (!obj || !(obj instanceof pgBrowser.Node.Collection)) {
@@ -324,7 +328,9 @@ function(_, pgAdmin, $, Backbone) {
                * transformed to JSON data.
                */
               if (session) {
-                if ((obj.sessChanged && obj.sessChanged()) || isNew) {
+                if (res[k] instanceof Array) {
+                  res[k] = JSON.stringify(res[k]);
+                } else if ((obj.sessChanged && obj.sessChanged()) || isNew) {
                   res[k] = obj && obj.toJSON(!isNew);
                   /*
                    * We will run JSON.stringify(..) only from the main object,
@@ -340,7 +346,7 @@ function(_, pgAdmin, $, Backbone) {
                 } else {
                   delete res[k];
                 }
-              } else {
+              } else if (!(res[k] instanceof Array)) {
                 res[k] = (obj && obj.toJSON());
               }
             });
