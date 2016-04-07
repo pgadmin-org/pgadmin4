@@ -37,13 +37,22 @@
 .wcFrameButton {
   width: 20px;
   height: 20px;
-  border: 2px solid #8A0D0D;
-  background-color: #A56D6D;
+  border: 2px solid #9E9E9E;
+  background-color: #ddd;
   font-size: 12px;
+  border-radius: 5px 5px 5px 5px;
+  margin-right: 2px;
 }
 
 .wcFrameMiniButton {
   width: 8px;
+}
+
+.wcFrameButton.wcFrameButtonLeft {
+  right: 10px;
+}
+.wcFrameButton.wcFrameButtonRight {
+  right: 10px;
 }
 
 .wcFrameButton:hover {
@@ -263,11 +272,9 @@
 }
 
 .wcFrameButtonBar {
-  top: 7px;
+  top: 5px;
   right: 5px;
-  color: white;
 }
-
 .context-menu-list {
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 13px;
@@ -312,4 +319,13 @@ font-size: 13px;
 
 ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
   width: 14px;
+}
+
+.wcFrameButton .fa.fa-close {
+  margin-top: 3.5px;
+  padding-left: 1px;
+}
+
+span.fa.fa-arrow-left, .fa-arrow-right {
+  margin-top: 4px;
 }

@@ -1,3 +1,4 @@
+16/03/2016
 The wcDocker theme frame width has been changed from 6px to 4px. This change has 
 been brought about to keep the width of the frame consistent with the width of 
 the window divider. 
@@ -35,3 +36,32 @@ index 954d73e..bc64b3b 100755
 The same changes have been made to wcDocker-min.js and is not included as the 
 file is tidy formatted. 
                  
+06/04/2016
+The wcDocker is updated to remove the extra left and the right arrows ( signs ) which are not required for tab navigation. New rules has been added to set the position for each specific navigational buttons ; left & right
+
+diff --git a/web/pgadmin/static/js/wcDocker/wcDocker.js b/web/pgadmin/static/js/wcDocker/wcDocker.js
+index bc64b3b..b4a5193 100755
+--- a/web/pgadmin/static/js/wcDocker/wcDocker.js
++++ b/web/pgadmin/static/js/wcDocker/wcDocker.js
+@@ -3392,8 +3392,8 @@ define('wcDocker/frame',[
+             this.$tabBar = $('<div class="wcFrameTitleBar">');
+             this.$tabScroll = $('<div class="wcTabScroller">');
+             this.$center = $('<div class="wcFrameCenter wcPanelBackground">');
+-            this.$tabLeft = $('<div class="wcFrameButton" title="Scroll tabs to the left."><span class="fa fa-arrow-left"></span>&lt;</div>');
+-            this.$tabRight = $('<div class="wcFrameButton" title="Scroll tabs to the right."><span class="fa fa-arrow-right"></span>&gt;</div>');
++            this.$tabLeft = $('<div class="wcFrameButton wcFrameButtonLeft" title="Scroll tabs to the left."><span class="fa fa-arrow-left"></span></div>');
++            this.$tabRight = $('<div class="wcFrameButton wcFrameButtonRight" title="Scroll tabs to the right."><span class="fa fa-arrow-right"></span></div>');
+             this.$close = $('<div class="wcFrameButton" title="Close the currently active panel tab"><div class="fa fa-close"></div>X</div>');
+ 
+             this.$collapse = $('<div class="wcFrameButton" title="Collapse the active panel"><div class="fa fa-download"></div>C</div>');
+@@ -5985,8 +5985,8 @@ define('wcDocker/tabframe',[
+             this.$tabBar = $('<div class="wcFrameTitleBar wcCustomTabTitle wcWide">');
+             this.$tabScroll = $('<div class="wcTabScroller">');
+             this.$center = $('<div class="wcFrameCenter wcPanelBackground">');
+-            this.$tabLeft = $('<div class="wcFrameButton" title="Scroll tabs to the left."><span class="fa fa-arrow-left"></span>&lt;</div>');
+-            this.$tabRight = $('<div class="wcFrameButton" title="Scroll tabs to the right."><span class="fa fa-arrow-right"></span>&gt;</div>');
++            this.$tabLeft = $('<div class="wcFrameButton wcFrameButtonLeft" title="Scroll tabs to the left."><span class="fa fa-arrow-left"></span></div>');
++            this.$tabRight = $('<div class="wcFrameButton wcFrameButtonRight" title="Scroll tabs to the right."><span class="fa fa-arrow-right"></span></div>');
+             this.$close = $('<div class="wcFrameButton" title="Close the currently active panel tab"><span class="fa fa-close"></span>X</div>');
+ 
+             //this.$maximize = $('<div class="wcFrameButton" title="Close the currently active panel tab"><span class="fa fa-expand"></span>X</div>');
