@@ -152,19 +152,18 @@
 }
 
 .wcFloating .wcPanelTabActive {
-  background-color: rgb(33, 81, 128);
+  background-color: #2C76B4;
   margin-top: -2px;
   font-weight: bold;
   color: white;
 }
 
 .wcFloating .wcPanelTabActive:hover {
-  background-color: #AAAAAA;
-  color: black;
+  background-color: #74B5ED;
 }
 
 .wcGhost {
-  background-color: #337ab7;
+  background-color: #74B5ED;
   border-radius: 6px;
 }
 
@@ -264,11 +263,7 @@
 
 .wcFloating .wcFrameTitleBar {
   border-bottom: 2px solid darkgray;
-  background-color: rgb(33, 81, 128);
-}
-
-.wcFloating .wcFrameTitleBar:hover {
-  background-color: #AAAAAA;
+  background-color: #2C76B4;
 }
 
 .wcFrameButtonBar {
