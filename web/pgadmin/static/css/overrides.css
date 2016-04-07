@@ -660,6 +660,10 @@ table.backgrid tr.new {
     margin-right: 0px;
 }
 
+.subnode-error .help-block {
+    color: #a94442;
+}
+
 .select2-container--default .select2-search--inline .select2-search__field {
     background: transparent none repeat scroll 0% 0%;
     border: medium none;

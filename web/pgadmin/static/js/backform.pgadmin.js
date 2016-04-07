@@ -1094,6 +1094,11 @@
 
       return $dialog;
     },
+    clearInvalid: function() {
+      this.$el.removeClass("subnode-error");
+      this.$el.find(".pgadmin-control-error-message").remove();
+      return this;
+    },
     updateInvalid: function() {
       var self = this,
       errorModel = this.model.errorModel;
@@ -1107,7 +1112,7 @@
 
         if (_.isEmpty(error)) return;
 
-        self.$el.addClass(Backform.errorClassName).append(
+        self.$el.addClass("subnode-error").append(
           $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
           );
       });
@@ -1163,9 +1168,14 @@
 
       if (_.isEmpty(error)) return;
 
-      self.$el.addClass(Backform.errorClassName).append(
+      self.$el.addClass('subnode-error').append(
         $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
         );
+    },
+    clearInvalid: function() {
+      this.$el.removeClass('subnode-error');
+      this.$el.find(".pgadmin-control-error-message").remove();
+      return this;
     },
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
