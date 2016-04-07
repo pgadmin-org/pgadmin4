@@ -20,7 +20,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'fts_template',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS Templates') }}',
+      label: '{{ _('FTS Template') }}',
       hasSQL: true,
       hasDepends: true,
       Init: function() {
