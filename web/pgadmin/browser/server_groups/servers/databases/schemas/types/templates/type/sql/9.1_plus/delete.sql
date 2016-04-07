@@ -1,0 +1,1 @@
+DROP TYPE {{ conn|qtIdent(data.schema, data.name) }}{% if cascade%} CASCADE{% endif %};
