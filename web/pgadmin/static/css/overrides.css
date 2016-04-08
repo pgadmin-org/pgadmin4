@@ -916,3 +916,7 @@ ul.nav.nav-tabs {
 .btn-primary{
   margin: 2px 13px !important;
 }
+
+.pgadmin-control-group span.wcTabIcon {
+  padding-left: 20px;
+}
