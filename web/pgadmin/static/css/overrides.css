@@ -364,27 +364,40 @@ iframe {
 }
 
 .pg-prop-btn-group {
-    text-align: right;
-    background-color: #D2D2D2;
-    border: 2px solid #A9A9A9;
-    left: 0px;
-    right: 0px;
+  background-color: #D2D2D2;
+  border: 2px solid #A9A9A9;
+  left: 0px;
+  right: 0px;
+  padding: 2px;
+}
+
+.pg-prop-btn-group button {
+  padding: 5px;
 }
 
 .pg-prop-btn-group-below {
+    text-align: right;
     border-color: #A9A9A9;
     border-width: 2px 1px 0px;
     border-style: inset;
     border-left-style: solid
 }
 
-.pg-prop-btn-group button {
-  padding: 5px;
+.pg-prop-btn-group-below .pg-prop-btn-group button {
   margin: 2px 5px;
 }
 
 .pg-prop-btn-group button:not(:first-child):not(:last-child) {
     margin-left: 0px;
+}
+
+.pg-prop-btn-group-below button:not(:first-child):not(:last-child) {
+    margin-left: 2px;
+    margin-right: 5px;
+}
+
+.btn-primary{
+  margin: 2px 13px !important;
 }
 
 .pg-prop-content {
@@ -911,10 +924,6 @@ ul.nav.nav-tabs {
 
 .pg-panel-depends-container > table > thead > tr > th:last-child {
   border-right: 0px;
-}
-
-.btn-primary{
-  margin: 2px 13px !important;
 }
 
 .pgadmin-control-group span.wcTabIcon {

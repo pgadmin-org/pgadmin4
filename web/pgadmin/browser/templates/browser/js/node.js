@@ -605,9 +605,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               tmpl = _.template([
                 '<button type="<%= type %>" ',
                 'class="btn <%=extraClasses.join(\' \')%>"',
-                '<% if (disabled) { %> disabled="disabled"<% } %> >',
-                '<i class="<%= icon %>"></i>&nbsp;',
-                '<%-label%></button>'
+                '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
+                '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>'
                 ].join(' '));
             if (location == "header"){
                 btnGroup.appendTo(that.header);
@@ -679,8 +678,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
             var buttons = [];
             buttons.push({
-              label: '{{ _("Edit") }}', type: 'edit',
-              extraClasses: ['btn-primary'],
+              label: '', type: 'edit',
+              tooltip: '{{ _("Edit") }}',
+              extraClasses: ['btn-default'],
               icon: 'fa fa-lg fa-pencil-square-o',
               disabled: false,
               register: function(btn) {
@@ -757,6 +757,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Create proper buttons
             createButtons([{
               label: '{{ _("Save") }}', type: 'save',
+              tooltip: '{{ _("Save this object") }}',
               extraClasses: ['btn-primary'],
               icon: 'fa fa-lg fa-save',
               disabled: true,
@@ -787,6 +788,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '{{ _('Cancel') }}', type: 'cancel',
+              tooltip: '{{ _("Cancel changes this object") }}',
               extraClasses: ['btn-danger'],
               icon: 'fa fa-lg fa-close',
               disabled: false,
@@ -799,6 +801,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '{{ _('Reset') }}', type: 'reset',
+              tooltip: '{{ _("Reset the fields on this dialogue") }}',
               extraClasses: ['btn-warning'],
               icon: 'fa fa-lg fa-recycle',
               disabled: true,
