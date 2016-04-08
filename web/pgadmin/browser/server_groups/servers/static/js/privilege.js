@@ -102,7 +102,7 @@
           // override only once.
           if (opts && opts.column &&
               opts.column instanceof Backbone.Model &&
-              opts.column.has('orig_options')) {
+              opts.column.get('options_cached')) {
             override_opts = false;
           }
           Backgrid.Extension.NodeListByNameCell.prototype.initialize.apply(
@@ -112,8 +112,7 @@
           // Let's override the options
           if (override_opts) {
             var opts = self.column.get('options');
-            self.column.set('options', self.omit_selected_roles);
-            self.column.set('orig_options', opts);
+            self.column.set('options', self.omit_selected_roles.bind(self, opts));
           }
 
           var rerender = function (m) {
@@ -135,17 +134,16 @@
           this.listenTo(self.model.collection, "remove", rerender, this);
         },
         // Remove all the selected roles (though- not mine).
-        omit_selected_roles: function() {
-          var self = this,
-              opts = self.column.get('orig_options'),
-              res = opts.apply(this),
+        omit_selected_roles: function(opts, cell) {
+          var res = opts(cell),
               selected = {},
-              cid = self.model.cid,
-              curr_user = self.model.top.node_info.server.user.name;
+              model = cell.model,
+              cid = model.cid,
+              curr_user = model.top.node_info.server.user.name;
 
           var idx = 0;
 
-          this.model.collection.each(function(m) {
+          model.collection.each(function(m) {
             var grantee = m.get('grantee');
 
             if (m.cid != cid && !_.isUndefined(grantee) &&
@@ -157,8 +155,6 @@
           res = _.filter(res, function(o) {
             return !(o.value in selected);
           });
-
-          this.model.collection.available_roles = {};
 
           return res;
         }

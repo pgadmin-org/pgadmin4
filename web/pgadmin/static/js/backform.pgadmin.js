@@ -339,11 +339,11 @@
     // Evaluation the options
     if (_.isFunction(data.options)) {
       try {
-        data.options = data.options.apply(this)
+        data.options = data.options(this)
       } catch(e) {
         // Do nothing
         data.options = []
-        this.model.trigger('pgadmin-view:transform:error', m, self.field, e);
+        this.model.trigger('pgadmin-view:transform:error', this.model, this.field, e);
       }
     }
 
@@ -1732,12 +1732,19 @@
     render: function() {
       Backform.SelectControl.prototype.render.apply(this, arguments);
 
-      var col = _.defaults(this.field.toJSON(), this.defaults)
+      var opts = this.field.toJSON();
+      var select2Opts = _.defaults(
+        {}, opts.select2, (this.defaults && this.defaults.select2) || {}
+      );
+
       /*
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work and initialize select2 control.
        */
-      this.$el.find("select").prepend($('<option></option>')).select2(col.select2);
+      var $select = this.$el.find("select");
+      $select.prepend($('<option></option>'));
+      $select.select2(select2Opts);
+
       return this;
     }
   });

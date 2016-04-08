@@ -153,8 +153,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
        * and schema has disabled property then we need to apply it
        */
       if(!_.has(select2_opts, 'disabled') && (d && d.disabled)) {
-        _.extend(select2_opts, {
-          disabled: evalF(d.disabled, d, this.model)
+        _.extend(select2_opts, {disabled: evalF(d.disabled, d, this.model)
         });
       }
 
@@ -178,9 +177,11 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     if(!optimage){
       return opt.text;
     } else {
-      return $(
-          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
-          );
+      return $('<span></span>').append(
+        $('<span></span>', {class: "wcTabIcon " + optimage})
+      ).append(
+        $('<span></span>').text(opt.text)
+      );
     }
   };
 
@@ -383,7 +384,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           // We will transform the data later, when rendering.
           // It will allow us to generate different data based on the
           // dependencies.
-          column.set('options', transform.bind(self, data));
+          column.set('options', transform.bind(column, data));
         } else {
           column.set('options', data);
         }
@@ -401,7 +402,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           editable = Backgrid.callByNeed(col.editable, column, model),
           optionValues = _.clone(this.optionValues ||
                 _.isFunction(this.column.get('options')) ?
-                    this.column.get('options').apply(this) :
+                    (this.column.get('options'))(this) :
                     this.column.get('options')),
           select2_opts = _.defaults({}, col.select2, this.defaults.select2),
           evalF = function(f, col, m) {
@@ -443,13 +444,12 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
               (_.indexOf(selectedValues, optionValue) > -1)
           }));
       }
+
       // Initialize select2 control.
       this.$select.select2(
-          _.defaults(
-            {'disabled': !editable},
-            col.select2,
-            this.defaults.select2
-            ));
+        _.defaults(
+          {'disabled': !editable}, col.select2, this.defaults.select2
+        ));
 
       /*
        * If select2 options do not have any disabled property on this cell
@@ -460,7 +460,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           disabled: evalF(col.disabled, col, this.model)
         });
       }
-
       this.$el.find("select").select2(select2_opts);
 
       this.delegateEvents();
@@ -474,8 +473,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
       url: 'nodes',
       filter: undefined,
-      transform: function(rows) {
-        var self = this,
+      transform: function(rows, control) {
+        var self = control || this,
             node = self.column.get('schema_node'),
             res = [],
             filter = self.column.get('filter') || function() { return true; };
@@ -518,8 +517,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
       url: 'nodes',
       filter: undefined,
-      transform: function(rows) {
-        var self = this,
+      transform: function(rows, control) {
+        var self = control || this,
             node = self.column.get('schema_node'),
             res = [],
             filter = self.column.get('filter') || function() { return true; };
