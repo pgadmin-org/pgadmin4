@@ -86,10 +86,12 @@ function($, _, S, pgAdmin, pgBrowser) {
             visible: true, url:'avails', disabled: function(m) {
               return !m.isNew();
             },
-            transform: function(data) {
-              var res = [];
-              var label = this.model.get('name');
-              if (!this.model.isNew()) {
+            transform: function(data, cell) {
+              var res = [],
+                  control = cell || this,
+                  label = control.model.get('name');
+
+              if (!control.model.isNew()) {
                 res.push({label: label, value: label});
               }
               else {
@@ -173,7 +175,7 @@ function($, _, S, pgAdmin, pgBrowser) {
           },
           {
             id: 'schema', label: '{{ _('Schema')}}', type: 'text', control: 'node-ajax-options',
-            mode: ['properties', 'create', 'edit'], group: 'Definition', deps: ['relocatable'],
+            mode: ['properties', 'create', 'edit'], group: '{{ _('Definition')}}', deps: ['relocatable'],
             url: 'schemas', first_empty: true, disabled: function(m) {
 
               /*
@@ -194,7 +196,7 @@ function($, _, S, pgAdmin, pgBrowser) {
           },
           {
             id: 'relocatable', label: '{{ _('Relocatable?')}}', cell: 'switch',
-            group: 'Definition', type: 'switch', mode: ['properties'], 
+            group: '{{ _('Definition')}}', type: 'switch', mode: ['properties'],
             options: {
               'onText': 'Yes', 'offText': 'No',
               'onColor': 'success', 'offColor': 'primary',
@@ -203,13 +205,15 @@ function($, _, S, pgAdmin, pgBrowser) {
           },
           {
             id: 'version', label: '{{ _('Version')}}', cell: 'string',
-            mode: ['properties', 'create', 'edit'], group: 'Definition',
+            mode: ['properties', 'create', 'edit'], group: '{{ _('Definition')}}',
             control: 'node-ajax-options', url:'avails', first_empty: true,
 
             // Transform the data into version for the selected extension.
-            transform: function(data) {
-              res = [];
-              var extension = this.model.get('name');
+            transform: function(data, cell) {
+              var res = [],
+                  control = cell || this,
+                  extension = control.model.get('name');
+
               _.each(data, function(dt) {
                 if(dt.name == extension) {
                   if(dt.version && _.isArray(dt.version)) {
