@@ -302,9 +302,13 @@ FROM
 WHERE db.datname = current_database()""")
 
         if status:
-            mgr.db_info = dict()
+            mgr.db_info = mgr.db_info or dict()
             f_row = res['rows'][0]
             mgr.db_info[f_row['did']] = f_row.copy()
+
+            # We do not have database oid for the maintenance database.
+            if len(mgr.db_info) == 1:
+                mgr.did = f_row['did']
 
         status, res = self.execute_dict("""
 SELECT
@@ -996,6 +1000,7 @@ class ServerManager(object):
         self.host = server.host
         self.port = server.port
         self.db = server.maintenance_db
+        self.did = None
         self.user = server.username
         self.password = server.password
         self.role = server.role
