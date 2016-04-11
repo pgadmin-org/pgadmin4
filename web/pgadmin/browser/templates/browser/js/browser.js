@@ -1,10 +1,12 @@
-define(
+define('pgadmin.browser',
         ['require', 'jquery', 'underscore', 'underscore.string', 'bootstrap',
         'pgadmin', 'alertify', 'codemirror', 'codemirror.sql', 'wcdocker',
-        'jquery.contextmenu', 'jquery.acitree', 'pgadmin.alertifyjs',
-        'pgadmin.browser.menu', 'pgadmin.browser.panel', 'jquery.aciplugin',
+        'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
+        'pgadmin.alertifyjs', 'pgadmin.browser.messages',
+        'pgadmin.browser.menu', 'pgadmin.browser.panel',
         'pgadmin.browser.error', 'pgadmin.browser.frame',
         'pgadmin.browser.node', 'pgadmin.browser.collection'
+
        ],
 function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
@@ -75,7 +77,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<p>Statistics pane</p>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-statistics-container hidden"></div></div>',
         events: panelEvents
       }),
       // Reversed engineered SQL for the object
@@ -627,17 +629,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
       navbar.children('#mnu_obj').removeClass('hide');
        obj.enable_disable_menus();
-    },
-    messages: {
-      'server_lost': '{{ _('Connection to the server has been lost!') }}',
-      'click_for_detailed_msg': '{{ _('%%s<br><br>Click here for details.') }}',
-      'general_cateogty': '{{ _('General') }}',
-      'SQL_TAB': '{{ _('SQL') }}',
-      'SQL_NO_CHANGE': '-- ' + '{{ _('Nothing changed') }}',
-      'MUST_BE_INT' : " {{ _("'%%s' must be an integer.") }}",
-      'MUST_BE_NUM' : " {{ _("'%%s' must be a numeric.") }}",
-      'MUST_GR_EQ' : " {{ _("'%%s' must be greater than or equal to %%d.") }}",
-      'MUST_LESS_EQ' : " {{ _("'%%s' must be less than or equal to %%d.") }}"
     }
   });
 

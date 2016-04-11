@@ -57,9 +57,9 @@ function(_, $, pgBrowser) {
       }
       this.timeout =  setTimeout(
         function() {
-          var sql = '-- Please select an object in the tree view.';
+          var sql = '';
           if (node) {
-            sql = '-- No SQL could be generated for the selected object.';
+            sql = pgBrowser.messages.NODE_HAS_NO_SQL;
             if (node.hasSQL) {
 
               sql = '';

@@ -90,7 +90,7 @@ function(alertify, S) {
           contentType = xhr.getResponseHeader('Content-Type');
 
       if (xhr.status == 0) {
-        msg = window.pgAdmin.Browser.messages.server_lost;
+        msg = window.pgAdmin.Browser.messages.SERVER_LOST;
       }
 
       if (contentType) {
@@ -110,7 +110,7 @@ function(alertify, S) {
         if (contentType.indexOf('text/html') == 0) {
           alertify.notify(
               S(
-                window.pgAdmin.Browser.messages.click_for_detailed_msg
+                window.pgAdmin.Browser.messages.CLICK_FOR_DETAILED_MSG
                ).sprintf(promptmsg).value(), type, 0, function() {
                 alertify.pgIframeDialog().show().set({ frameless: false }).set('pg_msg', msg);
               });

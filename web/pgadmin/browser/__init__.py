@@ -12,8 +12,7 @@ from pgadmin import current_blueprint
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.settings import get_setting
-from flask import current_app, render_template, url_for, make_response, \
-     Response, flash
+from flask import current_app, render_template, url_for, make_response, flash
 from flask.ext.security import login_required
 from flask.ext.login import current_user
 from flask.ext.babel import gettext
@@ -160,6 +159,7 @@ class BrowserModule(PgAdminModule):
 
         for name, script in [
                 ['pgadmin.browser.node', 'js/node'],
+                ['pgadmin.browser.messages', 'js/messages'],
                 ['pgadmin.browser.collection', 'js/collection']]:
             scripts.append({
                 'name': name,
@@ -428,13 +428,13 @@ class BrowserPluginModule(PgAdminModule):
 def index():
     """Render and process the main browser window."""
     # Get the Gravatar
-    gravatar = Gravatar(current_app,
-                        size=100,
-                        rating='g',
-                        default='retro',
-                        force_default=False,
-                        use_ssl=False,
-                        base_url=None)
+    Gravatar(current_app,
+             size=100,
+             rating='g',
+             default='retro',
+             force_default=False,
+             use_ssl=False,
+             base_url=None)
 
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
@@ -499,11 +499,17 @@ def error_js():
 
 
 @blueprint.route("/js/node.js")
-@login_required
 def node_js():
     return make_response(
             render_template('browser/js/node.js', _=gettext),
             200, {'Content-Type': 'application/x-javascript'})
+
+@blueprint.route("/js/messages.js")
+def messages_js():
+    return make_response(
+            render_template('browser/js/messages.js', _=gettext),
+            200, {'Content-Type': 'application/x-javascript'})
+
 
 @blueprint.route("/js/collection.js")
 @login_required

@@ -103,7 +103,7 @@ define(
               ],
 
               collection: collection,
-              className: "backgrid table-bordered"
+              className: "backgrid presentation table backgrid-striped table-bordered table-hover",
             });
 
         // Condition is used to save grid object to change the label of the header.
