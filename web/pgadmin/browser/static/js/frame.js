@@ -32,14 +32,14 @@ function(_, pgAdmin) {
             $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
             if (myPanel.showTitle == false)
-              myPanle.title(false);
+              myPanel.title(false);
             myPanel.closeable(!!that.isCloseable);
 
             var $frameArea = $('<div style="width:100%;height:100%;position:relative;display:table">');
             myPanel.layout().addItem($frameArea);
             that.panel = myPanel;
             var frame = new wcIFrame($frameArea, myPanel);
-            $(myPanel).data('embededFrame', frame);
+            $(myPanel).data('embeddedFrame', frame);
 
             setTimeout(function() { frame.openURL(that.url); }, 500);
 
