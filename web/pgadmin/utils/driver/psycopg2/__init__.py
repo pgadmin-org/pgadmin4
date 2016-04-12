@@ -98,6 +98,9 @@ class Connection(BaseConnection):
     * status_message()
       - Returns the status message returned by the last command executed on the server.
 
+    * rows_affected()
+      - Returns the no of rows affected by the last command executed on the server.
+
     * cancel_transaction(conn_id, did=None)
       - This method is used to cancel the transaction for the
         specified connection id and database id.
@@ -126,6 +129,7 @@ class Connection(BaseConnection):
         self.__async_query_id = None
         self.__backend_pid = None
         self.execution_aborted = False
+        self.row_count = 0
 
         super(Connection, self).__init__()
 
@@ -426,6 +430,7 @@ Attempt to reconnect it failed with the below error:
 
     def execute_scalar(self, query, params=None, formatted_exception_msg=False):
         status, cur = self.__cursor()
+        self.row_count = 0
 
         if not status:
             return False, str(cur)
@@ -455,6 +460,7 @@ Attempt to reconnect it failed with the below error:
                     )
             return False, errmsg
 
+        self.row_count = cur.rowcount
         if cur.rowcount > 0:
             res = cur.fetchone()
             if len(res) > 0:
@@ -522,6 +528,7 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
             formatted_exception_msg: if True then function return the formatted exception message
         """
         status, cur = self.__cursor()
+        self.row_count = 0
 
         if not status:
             return False, str(cur)
@@ -555,10 +562,13 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             )
             return False, errmsg
 
+        self.row_count = cur.rowcount
+
         return True, None
 
     def execute_2darray(self, query, params=None, formatted_exception_msg=False):
         status, cur = self.__cursor()
+        self.row_count = 0
 
         if not status:
             return False, str(cur)
@@ -595,6 +605,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
                 ] or []
 
         rows = []
+        self.row_count = cur.rowcount
         if cur.rowcount > 0:
             for row in cur:
                 rows.append(row)
@@ -603,6 +614,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
 
     def execute_dict(self, query, params=None, formatted_exception_msg=False):
         status, cur = self.__cursor()
+        self.row_count = 0
 
         if not status:
             return False, str(cur)
@@ -637,6 +649,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
                 ] or []
 
         rows = []
+        self.row_count = cur.rowcount
         if cur.rowcount > 0:
             for row in cur:
                 rows.append(dict(row))
@@ -793,6 +806,7 @@ Failed to reset the connection of the server due to following error:
 
         colinfo = None
         result = None
+        self.row_count = 0
         if status == self.ASYNC_OK:
 
             # if user has cancelled the transaction then changed the status
@@ -805,6 +819,7 @@ Failed to reset the connection of the server due to following error:
             if cur.description is not None:
                 colinfo = [desc for desc in cur.description]
 
+            self.row_count = cur.rowcount
             if cur.rowcount > 0:
                 result = []
 
@@ -837,6 +852,14 @@ Failed to reset the connection of the server due to following error:
             )
 
         return cur.statusmessage
+
+    def rows_affected(self):
+        """
+        This function will return the no of rows affected by the last command
+        executed on the server.
+        """
+
+        return self.row_count
 
     def cancel_transaction(self, conn_id, did=None):
         """

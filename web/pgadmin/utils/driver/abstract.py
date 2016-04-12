@@ -141,6 +141,10 @@ class BaseConnection(object):
     * messages()
       - Implement this method to return the list of the messages/notices from
         the database server.
+
+    * rows_affected()
+      - Implement this method to get the rows affected by the last command
+        executed on the server.
     """
 
     ASYNC_OK = 1
@@ -207,6 +211,10 @@ class BaseConnection(object):
 
     @abstractmethod
     def status_message(self):
+        pass
+
+    @abstractmethod
+    def rows_affected(self):
         pass
 
     @abstractmethod
