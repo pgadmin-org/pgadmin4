@@ -191,19 +191,33 @@
     },
     enterEditMode: function () {
       // Notify that we are about to enter in edit mode for current cell.
-      this.model.trigger("enteringEditMode", [this]);
+     // We will check if this row is editable first
+      var canEditRow = (!_.isUndefined(this.column.get('canEditRow')) &&
+                          _.isFunction(this.column.get('canEditRow'))) ?
+                          Backgrid.callByNeed(this.column.get('canEditRow'),
+                          this.column, this.model) : true;
+      if (canEditRow) {
+        // Notify that we are about to enter in edit mode for current cell.
+        this.model.trigger("enteringEditMode", [this]);
 
-      Backgrid.Cell.prototype.enterEditMode.apply(this, arguments);
-      /* Make sure - we listen to the click event */
-      this.delegateEvents();
-      var editable = Backgrid.callByNeed(this.column.editable(), this.column, this.model);
-      if (editable) {
-        this.$el.html(
-          "<i class='fa fa-pencil-square subnode-edit-in-process'></i>"
-          );
-        this.model.trigger(
-          "pg-sub-node:opened", this.model, this
-          );
+        Backgrid.Cell.prototype.enterEditMode.apply(this, arguments);
+        /* Make sure - we listen to the click event */
+        this.delegateEvents();
+        var editable = Backgrid.callByNeed(this.column.editable(), this.column, this.model);
+
+        if (editable) {
+          this.$el.html(
+            "<i class='fa fa-pencil-square subnode-edit-in-process'></i>"
+            );
+          this.model.trigger(
+            "pg-sub-node:opened", this.model, this
+            );
+        }
+      } else {
+          Alertify.alert("This object is not editable by user",
+            function(){
+              return true;
+          });
       }
     },
     render: function(){
@@ -247,7 +261,13 @@
       deleteRow: function (e) {
         e.preventDefault();
         that = this;
-        Alertify.confirm(
+        // We will check if row is deletable or not
+        var canDeleteRow = (!_.isUndefined(this.column.get('canDeleteRow')) &&
+                            _.isFunction(this.column.get('canDeleteRow')) ) ?
+                             Backgrid.callByNeed(this.column.get('canDeleteRow'),
+                              this.column, this.model) : true;
+        if (canDeleteRow) {
+          Alertify.confirm(
             'Delete Row',
             'Are you sure you wish to delete this row?',
             function(evt) {
@@ -257,6 +277,13 @@
               return true;
             }
           );
+        } else {
+          Alertify.alert("This object can not be deleted",
+            function(){
+              return true;
+            }
+          );
+        }
       },
       initialize: function () {
           Backgrid.Cell.prototype.initialize.apply(this, arguments);
@@ -293,10 +320,26 @@
         size: 'mini'
         }, $.fn.bootstrapSwitch.defaults)
     },
+
     className: 'switch-cell',
+
+    initialize: function() {
+      Backgrid.BooleanCell.prototype.initialize.apply(this, arguments);
+      this.onChange = this.onChange.bind(this);
+    },
+
+    enterEditMode: function() {
+      this.$el.addClass('editor');
+    },
+
+    exitEditMode: function() {
+      this.$el.removeClass('editor');
+    },
+
     events: {
       'switchChange.bootstrapSwitch': 'onChange'
     },
+
     onChange: function () {
       var model = this.model,
           column = this.column,
@@ -305,6 +348,7 @@
       // on bootstrap change we also need to change model's value
       model.set(column.get("name"), val);
     },
+
     render: function () {
       var col = _.defaults(this.column.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -317,7 +361,10 @@
           ),
           editable = Backgrid.callByNeed(col.editable, column, model);
 
+      this.undelegateEvents();
+
       this.$el.empty();
+
       this.$el.append(
         $("<input>", {
           tabIndex: -1,
@@ -338,134 +385,37 @@
     }
   });
 
-  /**
-    Select2CellEditor the cell editor renders a Select2 input
-    box as its editor.
-  */
-  var Select2CellEditor = Backgrid.Select2CellEditor =
-      Backgrid.SelectCellEditor.extend({
-    /** @property */
-    events: {
-      "change": "onSave"
-    },
-
-    /** @property */
-    setSelect2Options: function (options) {
-      this.select2Options = _.extend(options || {});
-    },
-
-    /** @property */
-    // This option will prevent Select2 list to pop up
-    // when user press tab on select2
-    select2Options: {
-      openOnEnter: false
-    },
-
-    /** @property {function(Object, ?Object=): string} template */
-    template: _.template([
-      '<option value="<%- value %>" ',
-      '<%= selected ? \'selected="selected"\' : "" %>>',
-      '<%- text %></option>'].join(''),
-      null,{
-        variable: null
-      }),
-
-    initialize: function () {
-      Backgrid.SelectCellEditor.prototype.initialize.apply(this, arguments);
-      this.close = _.bind(this.close, this);
-    },
-    /**
-       Renders a `select2` select box instead of the default `<select>` HTML
-       element using the supplied options from #select2Options.
-      */
-    render: function () {
-      var self =this,
-          col = _.defaults(this.column.toJSON(), this.defaults),
-          model = this.model, column = this.column,
-          editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = Backgrid.callByNeed(col.options, column, this);
-
-      this.$el.empty();
-
-      if (!_.isArray(optionValues))
-        throw new TypeError("optionValues must be an array");
-
-      /*
-       * Add empty option as Select2 requires any empty '<option><option>' for
-       * some of its functionality to work.
-       */
-
-      var optionText = null,
-          optionValue = null,
-          model = this.model,
-          selectedValues = model.get(this.column.get("name"));
-
-      for (var i = 0; i < optionValues.length; i++) {
-        var optionValue = optionValues[i];
-
-        if (_.isArray(optionValue) || _.isObject(optionValue)) {
-          optionText  = optionValue[0] || optionValue.label;
-          optionValue = optionValue[1] || optionValue.value;
-
-          this.$el.append(
-            this.template({
-              text: optionText,
-              value: optionValue,
-              selected: (selectedValues == optionValue) ||
-                (_.indexOf(selectedValues, optionValue) > -1)
-            }));
-        } else {
-          throw new TypeError(
-            "optionValues elements must be a name-value pair."
-          );
-        }
-      }
-      // Initialize select2 control.
-      this.$el.select2(
-          _.defaults(
-            {'disabled': !editable}, col.select2, this.select2Options
-            ));
-
-      setTimeout(function(){
-        model.set(column.get("name"), self.$el.val());
-      },10);
-
-      this.delegateEvents();
-
-      return this;
-    },
-    /**
-       Attach event handlers to the select2 box and focus it.
-    */
-    postRender: function () {
-      var self = this;
-      self.$el.on("blur", function (e) {
-        self.close(e);
-      }).select2("focus");
-    },
-
-    remove: function () {
-      this.$el.select2("destroy");
-      return Backgrid.SelectCellEditor.prototype.remove.apply(this, arguments);
-    },
-    onSave: function (e) {
-      var model = this.model;
-      var column = this.column;
-      model.set(column.get("name"), this.$el.val());
-    }
-  });
-
   /*
    *  Select2Cell for backgrid.
    */
   var Select2Cell = Backgrid.Extension.Select2Cell =
       Backgrid.SelectCell.extend({
     className: "select2-cell",
+
     /** @property */
-    editor: Select2CellEditor,
+    editor: null,
+
     defaults: _.defaults({
-        select2: {}
+      select2: {},
+      opt: {
+        text: null,
+        value: null,
+        selected: false
+       }
       }, Backgrid.SelectCell.prototype.defaults),
+
+    enterEditMode: function() {
+      this.$el.addClass('editor');
+      this.$select.select2('focus');
+      this.$select.on('blur', this.exitEditMode);
+    },
+
+    exitEditMode: function() {
+      this.$select.off('blur', this.exitEditMode);
+      this.$el.removeClass('editor');
+      this.$select.select2('blur');
+    },
+
     events: {
       "change": "onSave",
       "select2:unselect": "onSave"
@@ -479,11 +429,26 @@
         variable: null
       }),
 
+    initialize: function() {
+      Backgrid.SelectCell.prototype.initialize.apply(this, arguments);
+      this.onSave = this.onSave.bind(this);
+    },
+
     render: function () {
       var col = _.defaults(this.column.toJSON(), this.defaults),
           model = this.model, column = this.column,
           editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = _.clone(this.optionValues || this.column.get('options'));
+          optionValues = _.clone(this.optionValues ||
+                _.isFunction(this.column.get('options')) ?
+                    (this.column.get('options'))(this) :
+                    this.column.get('options'));
+
+      this.undelegateEvents();
+
+      if (this.$select) {
+        this.$select.select2('destroy');
+        this.$select.off('change', this.onSave);
+      }
 
       this.$el.empty();
 
@@ -494,7 +459,7 @@
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work.
        */
-      optionValues.unshift([null, null]);
+      optionValues.unshift(this.defaults.opt);
 
       var optionText = null,
           optionValue = null,
@@ -503,33 +468,48 @@
 
       delete this.$select;
 
-      this.$select = $("<select>", {tabIndex: -1}).appendTo(this.$el);
+       selectedValues = model.get(this.column.get("name")),
+       self = this,
+       $select = self.$select = $('<select></select>').appendTo(this.$el);
 
       for (var i = 0; i < optionValues.length; i++) {
-        var optionValue = optionValues[i];
+        var opt = optionValues[i];
 
-        if (_.isArray(optionValue)) {
-          optionText  = optionValue[0];
-          optionValue = optionValue[1];
+        if (_.isArray(opt)) {
+          optionText  = opt[0];
+          optionValue = opt[1];
 
-          this.$select.append(
-            this.template({
-              text: optionText,
-              value: optionValue,
-              selected: (selectedValues == optionValue) ||
-                (_.indexOf(selectedValues, optionValue) > -1)
+          $select.append(
+            self.template({
+               text: optionText,
+               value: optionValue,
+               selected: (selectedValues == optionValue) ||
+                 (_.indexOf(selectedValues, optionValue) > -1)
             }));
-        } else {
-          throw new TypeError("optionValues elements must be a name-value pair.");
+         } else {
+          opt = _.defaults(opt, {
+            selected: ((selectedValues == opt.value) ||
+                (_.indexOf(selectedValues, opt.value) > -1))
+          }, self.defaults.opt);
+          $select.append(self.template(opt));
         }
       }
+
+      var select2_opts = _.extend(
+            {openOnEnter: false},
+            col.select2, this.defaults.select2
+            );
+
+      if(col && _.has(col.disabled)) {
+        _.extend(select2_opts, {
+          disabled: evalF(col.disabled, col, model)
+        });
+      } else {
+        _.extend(select2_opts, {disabled: !editable});
+      }
+
       // Initialize select2 control.
-      this.$select.select2(
-          _.defaults(
-            {'disabled': !editable},
-            col.select2,
-            this.defaults.select2
-            ));
+      this.$select.select2(select2_opts).on('change', self.onSave);
 
       this.delegateEvents();
 
@@ -542,8 +522,16 @@
     onSave: function (e) {
       var model = this.model;
       var column = this.column;
+
       model.set(column.get("name"), this.$select.val());
-    }
+    },
+
+    remove: function() {
+      this.$select.off('change', this.onSave);
+      this.$select.select2('destroy');
+      this.$el.empty();
+      Backgrid.SelectCell.prototype.remove.apply(this, arguments);
+     }
   });
 
   /**

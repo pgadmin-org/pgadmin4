@@ -314,10 +314,16 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         allowClear: true,
         placeholder: 'Select from the list',
         width: 'style'
-      }
+      },
+      opt: {
+        label: null,
+        value: null,
+        image: null,
+        selected: false
+       }
     }),
     template: _.template(
-      '<option <% if (image) { %> data-image=<%= image %> <% } %> value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- text %></option>'
+      '<option <% if (image) { %> data-image=<%= image %> <% } %> value="<%- value %>" <%= selected ? \'selected="selected"\' : "" %>><%- label %></option>'
     ),
     initialize: function () {
       Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
@@ -390,81 +396,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         }
         column.set('options_cached', true);
       }
-    },
-    render: function() {
-      /*
-       * Let SelectCell render it, we will do our magic on the
-       * select control in it.
-       */
-
-      var col = _.defaults(this.column.toJSON(), this.defaults),
-          model = this.model, column = this.column,
-          editable = Backgrid.callByNeed(col.editable, column, model),
-          optionValues = _.clone(this.optionValues ||
-                _.isFunction(this.column.get('options')) ?
-                    (this.column.get('options'))(this) :
-                    this.column.get('options')),
-          select2_opts = _.defaults({}, col.select2, this.defaults.select2),
-          evalF = function(f, col, m) {
-            return (_.isFunction(f) ? !!f.apply(col, [m]) : !!f);
-          };
-
-      this.$el.empty();
-
-      if (!_.isArray(optionValues)) throw new TypeError("optionValues must be an array");
-
-      /*
-       * Add empty option as Select2 requires any empty '<option><option>' for
-       * some of its functionality to work.
-       */
-      optionValues.unshift({'label':null, 'value':null, 'image':null});
-
-      var optionText = null,
-          optionValue = null,
-          model = this.model,
-          selectedValues = model.get(this.column.get("name"));
-
-      delete this.$select;
-
-      this.$select = $("<select>", {tabIndex: -1}).appendTo(this.$el);
-
-      for (var i = 0; i < optionValues.length; i++) {
-        var op = optionValues[i];
-
-        optionText  = op['label'];
-        optionValue = op['value'];
-        optionImage = op['image'];
-
-        this.$select.append(
-          this.template({
-            text: optionText,
-            value: optionValue,
-            image: optionImage,
-            selected: (selectedValues == optionValue) ||
-              (_.indexOf(selectedValues, optionValue) > -1)
-          }));
-      }
-
-      // Initialize select2 control.
-      this.$select.select2(
-        _.defaults(
-          {'disabled': !editable}, col.select2, this.defaults.select2
-        ));
-
-      /*
-       * If select2 options do not have any disabled property on this cell
-       * and schema has disabled property then we need to apply it
-       */
-      if(!_.has(select2_opts, 'disabled') && (col && col.disabled)) {
-        _.extend(select2_opts, {
-          disabled: evalF(col.disabled, col, this.model)
-        });
-      }
-      this.$el.find("select").select2(select2_opts);
-
-      this.delegateEvents();
-
-      return this;
     }
   });
 
