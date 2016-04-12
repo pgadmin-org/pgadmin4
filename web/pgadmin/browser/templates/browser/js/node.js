@@ -756,7 +756,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             (that['node_image'] || ('icon-' + that.type))
           );
           pnlSqlHelp.focus();
-          iframe.url = url;
           iframe.openURL(url);
         }
         editFunc = function() {
