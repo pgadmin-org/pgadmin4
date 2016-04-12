@@ -50,6 +50,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['user_mapping'] = pgAdmin.Browser.Node.extend({
       parent_type: 'foreign_server',
       type: 'user_mapping',
+      sqlAlterHelp: 'sql-alterusermapping.html',
+      sqlCreateHelp: 'sql-createusermapping.html',
       label: '{{ _('User Mapping') }}',
       hasSQL:  true,
       hasDepends: true,

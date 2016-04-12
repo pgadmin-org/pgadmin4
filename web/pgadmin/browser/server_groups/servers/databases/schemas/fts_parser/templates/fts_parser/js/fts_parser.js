@@ -19,6 +19,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['fts_parser'] = pgAdmin.Browser.Node.extend({
       parent_type: ['schema', 'catalog'],
       type: 'fts_parser',
+      sqlAlterHelp: 'sql-altertsparser.html',
+      sqlCreateHelp: 'sql-createtsparser.html',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS Parser') }}',

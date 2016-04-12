@@ -47,6 +47,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['event_trigger'] = pgAdmin.Browser.Node.extend({
       parent_type: 'database',
       type: 'event_trigger',
+      sqlAlterHelp: 'sql-altereventtrigger.html',
+      sqlCreateHelp: 'sql-createeventtrigger.html',
       label: '{{ _('Event Trigger') }}',
       hasSQL:  true,
       hasDepends: true,

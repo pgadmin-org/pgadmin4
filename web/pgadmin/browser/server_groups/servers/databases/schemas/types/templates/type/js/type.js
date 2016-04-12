@@ -206,6 +206,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
   if (!pgBrowser.Nodes['type']) {
     pgAdmin.Browser.Nodes['type'] = pgBrowser.Node.extend({
       type: 'type',
+      sqlAlterHelp: 'sql-altertype.html',
+      sqlCreateHelp: 'sql-createtype.html',
       label: '{{ _('Type') }}',
       collection_type: 'coll-type',
       hasSQL: true,

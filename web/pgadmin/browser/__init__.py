@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from pgadmin import current_blueprint
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from flask import current_app, render_template, url_for, make_response, flash
 from flask.ext.security import login_required
@@ -499,9 +500,22 @@ def error_js():
 
 
 @blueprint.route("/js/node.js")
+@login_required
 def node_js():
+    prefs = Preferences.module('paths')
+
+    pg_help_path_pref = prefs.preference('pg_help_path')
+    pg_help_path = pg_help_path_pref.get()
+
+    edbas_help_path_pref = prefs.preference('edbas_help_path')
+    edbas_help_path = edbas_help_path_pref.get()
+
     return make_response(
-            render_template('browser/js/node.js', _=gettext),
+            render_template('browser/js/node.js',
+                            pg_help_path=pg_help_path,
+                            edbas_help_path=edbas_help_path,
+                            _=gettext
+                            ),
             200, {'Content-Type': 'application/x-javascript'})
 
 @blueprint.route("/js/messages.js")

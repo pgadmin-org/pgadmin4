@@ -38,6 +38,8 @@ function($, _, S, pgAdmin, pgBrowser) {
     pgAdmin.Browser.Node.extend({
       parent_type: 'database',
       type: 'extension',
+      sqlAlterHelp: 'sql-alterextension.html',
+      sqlCreateHelp: 'sql-createextension.html',
       hasSQL: true,
       hasDepends: true,
       canDrop: true,

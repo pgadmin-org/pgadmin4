@@ -55,6 +55,8 @@ define(
     pgAdmin.Browser.Nodes['language'] = pgAdmin.Browser.Node.extend({
       parent_type: 'database',
       type: 'language',
+      sqlAlterHelp: 'sql-alterlanguage.html',
+      sqlCreateHelp: 'sql-createlanguage.html',
       label: '{{ _('language') }}',
       hasSQL:  true,
       hasDepends: true,

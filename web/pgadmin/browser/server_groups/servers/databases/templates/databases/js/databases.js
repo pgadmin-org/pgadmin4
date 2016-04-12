@@ -47,6 +47,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
     pgAdmin.Browser.Nodes['database'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server',
       type: 'database',
+      sqlAlterHelp: 'sql-alterdatabase.html',
+      sqlCreateHelp: 'sql-createdatabase.html',
       hasSQL: true,
       hasDepends: true,
       canDrop: true,

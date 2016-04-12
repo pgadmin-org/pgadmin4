@@ -18,6 +18,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       pgAdmin.Browser.Nodes['cast'] = pgAdmin.Browser.Node.extend({
         parent_type: 'database',
         type: 'cast',
+        sqlAlterHelp: 'sql-altercast.html',
+        sqlCreateHelp: 'sql-createcast.html',
         canDrop: true,
         canDropCascade: true,
         label: '{{ _('Cast') }}',

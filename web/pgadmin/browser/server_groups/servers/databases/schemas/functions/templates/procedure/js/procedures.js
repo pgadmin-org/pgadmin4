@@ -22,6 +22,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
   if (!pgBrowser.Nodes['procedure']) {
     pgAdmin.Browser.Nodes['procedure'] = Function.extend({
       type: 'procedure',
+      sqlAlterHelp: 'sql-alterprocedure.html',
+      sqlCreateHelp: 'sql-createprocedure.html',
       label: '{{ _('Procedure') }}',
       collection_type: 'coll-procedure',
       hasSQL: true,

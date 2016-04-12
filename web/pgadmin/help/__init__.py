@@ -10,6 +10,7 @@
 """A blueprint module implementing the pgAdmin help system."""
 MODULE_NAME = 'help'
 
+from pgadmin.utils.preferences import Preferences
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from flask.ext.babel import gettext
@@ -57,9 +58,36 @@ class HelpModule(PgAdminModule):
             Panel(name='pnl_postgresql_website',
                   priority=300,
                   title=gettext('PostgreSQL Website'),
-                  content='http://www.postgresql.org/')]
+                  content='http://www.postgresql.org/'),
 
+            Panel(name='pnl_sql_help',
+                  priority=400,
+                  isPrivate=True,
+                  title=gettext('SQL Help'))]
 
+    def register_preferences(self):
+        """
+        register_preferences
+        Register preferences for this module.
+        """
+        # Register options for the PG and PPAS help paths
+        self.help_preference = Preferences('paths', gettext('Paths'))
+
+        self.pg_help_path = self.help_preference.register(
+            'help', 'pg_help_path',
+            gettext("PostgreSQL Help Path"), 'text',
+            'http://www.postgresql.org/docs/$VERSION$/static/',
+            category_label=gettext('Help'),
+            help_str=gettext('Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major.minor version number.')
+            )
+
+        self.edbas_help_path = self.help_preference.register(
+            'help', 'edbas_help_path',
+            gettext("EDB Advanced Server Help Path"), 'text',
+            'http://www.enterprisedb.com/docs/en/$VERSION$/pg/',
+            category_label=gettext('Help'),
+            help_str=gettext('Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
+            )
 
 # Initialise the module
 blueprint = HelpModule(MODULE_NAME, __name__, static_url_path='/help',

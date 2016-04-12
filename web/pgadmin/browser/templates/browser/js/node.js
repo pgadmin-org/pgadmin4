@@ -50,6 +50,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
     type: undefined,
     // Label
     label: '',
+    // SQL help pages
+    sqlAlterHelp: '',
+    sqlCreateHelp: '',
+
     title: function(d) {
       return o.label + (d ? (' - ' + d.label) : '');
     },
@@ -689,10 +693,72 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 });
               }
             });
+            buttons.push({
+              label: '', type: 'help',
+              tooltip: '{{ _("Help on the SQL for this object type") }}',
+              extraClasses: ['btn-default'],
+              icon: 'fa fa-lg fa-question-circle',
+              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
+              register: function(btn) {
+                btn.click(function() {
+                  onSqlHelp();
+                });
+              }
+            });
+
             createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
         },
+        onSqlHelp = function() {
+          // See if we can find an existing panel, if not, create one
+          pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
+
+          if (pnlSqlHelp == null) {
+            pnlProperties = pgBrowser.docker.findPanels('properties')[0];
+            pgBrowser.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
+            pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
+          }
+
+          // Construct the URL
+          server = that.getTreeNodeHierarchy(item).server;
+
+          url = '{{ pg_help_path }}'
+          if (server.server_type == 'ppas') {
+            url = '{{ edbas_help_path }}'
+          }
+
+          major = Math.floor(server.version / 10000)
+          minor = Math.floor(server.version / 100) - (major * 100)
+
+          url = url.replace('$VERSION$', major + '.' + minor)
+          if (!url.endsWith('/')) {
+            url = url + '/'
+          }
+          if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
+              url = url + that.sqlAlterHelp
+          } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
+              url = url + that.sqlCreateHelp
+          } else {
+            if (view.model.isNew()) {
+              url = url + that.sqlCreateHelp
+            } else {
+              url = url + that.sqlAlterHelp
+            }
+          }
+
+          // Update the panel
+          iframe = $(pnlSqlHelp).data('embeddedFrame');
+          pnlSqlHelp.title('SQL: ' + that.label);
+          pnlSqlHelp.icon(
+            _.isFunction(that['node_image']) ?
+            (that['node_image']).apply(that, [data, view.model]) :
+            (that['node_image'] || ('icon-' + that.type))
+          );
+          pnlSqlHelp.focus();
+          iframe.url = url;
+          iframe.openURL(url);
+        }
         editFunc = function() {
           if (action && action == 'properties') {
             action = 'edit';
@@ -756,6 +822,17 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
             // Create proper buttons
             createButtons([{
+              label: '', type: 'help',
+              tooltip: '{{ _("Help on the SQL for this object type") }}',
+              extraClasses: ['btn-default'],
+              icon: 'fa fa-lg fa-question-circle',
+              disabled: that.sqlCreateHelp == '' ? true : false,
+              register: function(btn) {
+                btn.click(function() {
+                  onSqlHelp();
+                });
+              }
+            },{
               label: '{{ _("Save") }}', type: 'save',
               tooltip: '{{ _("Save this object") }}',
               extraClasses: ['btn-primary'],

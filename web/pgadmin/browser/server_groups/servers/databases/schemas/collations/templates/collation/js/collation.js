@@ -15,6 +15,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['collation']) {
     pgAdmin.Browser.Nodes['collation'] = pgBrowser.Node.extend({
       type: 'collation',
+      sqlAlterHelp: 'sql-altercollation.html',
+      sqlCreateHelp: 'sql-createcollation.html',
       label: '{{ _('Collation') }}',
       collection_type: 'coll-collation',
       hasSQL: true,

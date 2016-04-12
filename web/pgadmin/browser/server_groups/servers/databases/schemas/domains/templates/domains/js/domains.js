@@ -109,6 +109,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['domain']) {
     pgAdmin.Browser.Nodes['domain'] = pgBrowser.Node.extend({
       type: 'domain',
+      sqlAlterHelp: 'sql-alterdomain.html',
+      sqlCreateHelp: 'sql-createdomain.html',
       label: '{{ _('Domain') }}',
       collection_type: 'coll-domain',
       hasSQL: true,

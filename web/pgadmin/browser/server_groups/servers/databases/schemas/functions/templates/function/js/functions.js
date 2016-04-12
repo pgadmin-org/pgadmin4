@@ -102,6 +102,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['function']) {
     pgAdmin.Browser.Nodes['function'] = pgBrowser.Node.extend({
       type: 'function',
+      sqlAlterHelp: 'sql-alterfunction.html',
+      sqlCreateHelp: 'sql-createfunction.html',
       label: '{{ _('Function') }}',
       collection_type: 'coll-function',
       hasSQL: true,

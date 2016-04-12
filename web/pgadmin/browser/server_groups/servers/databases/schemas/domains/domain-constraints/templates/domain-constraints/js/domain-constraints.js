@@ -18,6 +18,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['domain-constraints']) {
     pgAdmin.Browser.Nodes['domain-constraints'] = pgBrowser.Node.extend({
       type: 'domain-constraints',
+      sqlAlterHelp: 'sql-alterdomain.html',
+      sqlCreateHelp: 'sql-alterdomain.html',
       label: '{{ _('Domain Constraints') }}',
       collection_type: 'coll-domain-constraints',
       hasSQL: true,

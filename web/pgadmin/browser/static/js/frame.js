@@ -19,7 +19,7 @@ function(_, pgAdmin) {
     showTitle: true,
     isClosable: true,
     isPrivate: false,
-    url: 'about:blank',
+    url: '',
     panel: null,
     frame: null,
     load: function(docker) {
@@ -41,7 +41,9 @@ function(_, pgAdmin) {
             var frame = new wcIFrame($frameArea, myPanel);
             $(myPanel).data('embeddedFrame', frame);
 
-            setTimeout(function() { frame.openURL(that.url); }, 500);
+            if (that.url != '') {
+              setTimeout(function() { frame.openURL(that.url); }, 500);
+            }
 
             if (that.events && _.isObject(that.events)) {
               _.each(that.events, function(v, k) {

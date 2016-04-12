@@ -18,7 +18,7 @@ class MenuItem(object):
 
 class Panel(object):
 
-    def __init__(self, name, title, content, width=500, height=600, isIframe=True,
+    def __init__(self, name, title, content='', width=500, height=600, isIframe=True,
                  showTitle=True, isCloseable=True, isPrivate=False, priority=None,
                  icon=None, data=None):
         self.name = name

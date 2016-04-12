@@ -47,6 +47,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['tablespace'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server',
       type: 'tablespace',
+      sqlAlterHelp: 'sql-altertablespace.html',
+      sqlCreateHelp: 'sql-createtablespace.html',
       label: '{{ _('Tablespace') }}',
       hasSQL:  true,
       canDrop: true,

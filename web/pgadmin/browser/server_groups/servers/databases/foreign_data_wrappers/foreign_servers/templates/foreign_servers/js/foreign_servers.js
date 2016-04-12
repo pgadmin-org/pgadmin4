@@ -51,6 +51,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['foreign_server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'foreign_data_wrapper',
       type: 'foreign_server',
+      sqlAlterHelp: 'sql-alterforeignserver.html',
+      sqlCreateHelp: 'sql-createforeignserver.html',
       label: '{{ _('Foreign Server') }}',
       hasSQL:  true,
       hasDepends: true,

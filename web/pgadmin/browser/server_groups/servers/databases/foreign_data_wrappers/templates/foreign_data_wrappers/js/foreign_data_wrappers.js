@@ -52,6 +52,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['foreign_data_wrapper'] = pgAdmin.Browser.Node.extend({
       parent_type: 'database',
       type: 'foreign_data_wrapper',
+      sqlAlterHelp: 'sql-alterforeigndatawrapper.html',
+      sqlCreateHelp: 'sql-createforeigndatawrapper.html',
       label: '{{ _('Foreign Data Wrapper') }}',
       hasSQL:  true,
       hasDepends: true,

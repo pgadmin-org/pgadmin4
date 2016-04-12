@@ -51,6 +51,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     pgAdmin.Browser.Nodes['schema'] = pgAdmin.Browser.Node.extend({
       parent_type: 'database',
       type: 'schema',
+      sqlAlterHelp: 'sql-alterschema.html',
+      sqlCreateHelp: 'sql-createschema.html',
       label: '{{ _('Schema') }}',
       hasSQL:  true,
       canDrop: true,

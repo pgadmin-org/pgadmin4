@@ -292,6 +292,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
     var role = pgAdmin.Browser.Nodes['role'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server',
       type: 'role',
+      sqlAlterHelp: 'sql-alterrole.html',
+      sqlCreateHelp: 'sql-createrole.html',
       label: '{{ _('Login/Group Role') }}',
       hasSQL: true,
       canDrop: true,

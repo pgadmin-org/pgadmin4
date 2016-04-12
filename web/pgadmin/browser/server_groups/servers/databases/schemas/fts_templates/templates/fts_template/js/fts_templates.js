@@ -18,6 +18,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['fts_template'] = pgAdmin.Browser.Node.extend({
       parent_type: ['schema', 'catalog'],
       type: 'fts_template',
+      sqlAlterHelp: 'sql-altertstemplate.html',
+      sqlCreateHelp: 'sql-createtstemplate.html',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS Template') }}',

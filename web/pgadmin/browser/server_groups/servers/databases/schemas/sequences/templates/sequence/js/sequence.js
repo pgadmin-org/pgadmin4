@@ -51,6 +51,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['sequence']) {
     pgAdmin.Browser.Nodes['sequence'] = pgBrowser.Node.extend({
       type: 'sequence',
+      sqlAlterHelp: 'sql-altersequence.html',
+      sqlCreateHelp: 'sql-createsequence.html',
       label: '{{ _('Sequence') }}',
       collection_type: 'coll-sequence',
       hasSQL: true,
