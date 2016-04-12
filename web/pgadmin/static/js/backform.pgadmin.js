@@ -1631,7 +1631,7 @@
           _.indexOf(s.mode, mode) != -1)) {
           // Each field is kept in specified group, or in
           // 'General' category.
-          var group = s.group || pgBrowser.messages.GENERAL_CATEOGTY,
+          var group = s.group || pgBrowser.messages.GENERAL_CATEGORY,
               control = s.control || Backform.getMappedControl(s.type, mode),
               cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
 
