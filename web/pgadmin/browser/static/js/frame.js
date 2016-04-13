@@ -39,10 +39,25 @@ function(_, pgAdmin) {
             myPanel.layout().addItem($frameArea);
             that.panel = myPanel;
             var frame = new wcIFrame($frameArea, myPanel);
+            $(myPanel).data('frameInitialized', false);
             $(myPanel).data('embeddedFrame', frame);
 
-            if (that.url != '') {
-              setTimeout(function() { frame.openURL(that.url); }, 500);
+            if (that.url != '' && that.url != 'about:blank') {
+              setTimeout(function() {
+                frame.openURL(that.url);
+                $(myPanel).data('frameInitialized', true);
+                pgBrowser.Events.trigger(
+                  'pgadmin-browser:frame:urlloaded:' + that.name, frame,
+                  that.url, self
+                );
+              }, 50);
+            } else {
+              frame.openURL('about:blank');
+              $(myPanel).data('frameInitialized', true);
+              pgBrowser.Events.trigger(
+                'pgadmin-browser:frame:urlloaded:' + that.name, frame,
+                that.url, self
+              );
             }
 
             if (that.events && _.isObject(that.events)) {
