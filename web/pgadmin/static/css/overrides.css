@@ -158,6 +158,7 @@ iframe {
 
 .dropdown-menu > li > a > span {
     padding-left: 3px;
+    cursor:pointer;
 }
 
 .dropdown-menu > li > a > .has-icon {
