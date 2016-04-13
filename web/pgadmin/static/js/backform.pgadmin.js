@@ -899,7 +899,9 @@
     },
     render: function() {
       // Clean up existing elements
+
       this.undelegateEvents();
+      this.$el.empty();
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -927,6 +929,7 @@
         canAdd: (field.version_compatible &&
           evalF.apply(this.field, [data.canAdd, data, this.model])
           ),
+        canAddRow: data.canAddRow,
         canDelete: evalF.apply(this.field, [data.canDelete, data, this.model]),
         canEdit: evalF.apply(this.field, [data.canEdit, data, this.model])
       });
@@ -978,7 +981,8 @@
           gridSchema.columns.unshift({
             name: "pg-backform-delete", label: "",
             cell: Backgrid.Extension.DeleteCell,
-            editable: false, cell_priority: -1
+            editable: false, cell_priority: -1,
+            canDeleteRow: data.canDeleteRow
           });
       }
 
@@ -990,7 +994,7 @@
 
           gridSchema.columns.unshift({
             name: "pg-backform-edit", label: "", cell : editCell,
-            cell_priority: -2
+            cell_priority: -2, canEditRow: data.canEditRow
           });
       }
 
@@ -1041,54 +1045,57 @@
       if (!(data.disabled || data.canAdd == false)) {
         $dialog.find('button.add').first().click(function(e) {
           e.preventDefault();
+          var canAddRow = _.isFunction(data.canAddRow) ?
+                            data.canAddRow.apply(self, [self.model]) : true;
+          if (canAddRow) {
+              // Close any existing expanded row before adding new one.
+              _.each(grid.body.rows, function(row){
+                var editCell = row.$el.find(".subnode-edit-in-process").parent();
+                // Only close row if it's open.
+                if (editCell.length > 0){
+                  var event = new Event('click');
+                  editCell[0].dispatchEvent(event);
+                }
+              });
 
-          // Close any existing expanded row before adding new one.
-          _.each(grid.body.rows, function(row){
-            var editCell = row.$el.find(".subnode-edit-in-process").parent();
-            // Only close row if it's open.
-            if (editCell.length > 0){
-              var event = new Event('click');
-              editCell[0].dispatchEvent(event);
-            }
-          });
+              var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
 
-          var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
-
-          // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
-          // There should be only one empty row.
-          if (!allowMultipleEmptyRows && collection) {
-            var isEmpty = false;
-            collection.each(function(model) {
-              var modelValues = [];
-              _.each(model.attributes, function(val, key) {
-                modelValues.push(val);
-              })
-              if(!_.some(modelValues, _.identity)) {
-                isEmpty = true;
+              // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
+              // There should be only one empty row.
+              if (!allowMultipleEmptyRows && collection) {
+                var isEmpty = false;
+                collection.each(function(model) {
+                  var modelValues = [];
+                  _.each(model.attributes, function(val, key) {
+                    modelValues.push(val);
+                  })
+                  if(!_.some(modelValues, _.identity)) {
+                    isEmpty = true;
+                  }
+                });
+                if(isEmpty) {
+                  return false;
+                }
               }
-            });
-            if(isEmpty) {
+
+              $(grid.body.$el.find($("tr.new"))).removeClass("new")
+              var m = new (data.model) (null, {
+                silent: true,
+                handler: self.model.handler || self.model,
+                top: self.model.top || self.model,
+                node_info: self.model.node_info,
+                collection: collection
+              });
+              collection.add(m);
+
+              var idx = collection.indexOf(m),
+                  newRow = grid.body.rows[idx].$el;
+
+              newRow.addClass("new");
+              $(newRow).pgMakeVisible('backform-tab');
+
               return false;
-            }
           }
-
-          $(grid.body.$el.find($("tr.new"))).removeClass("new")
-          var m = new (data.model) (null, {
-            silent: true,
-            handler: self.model.handler || self.model,
-            top: self.model.top || self.model,
-            node_info: self.model.node_info,
-            collection: collection
-          });
-          collection.add(m);
-
-          var idx = collection.indexOf(m),
-              newRow = grid.body.rows[idx].$el;
-
-          newRow.addClass("new");
-          $(newRow).pgMakeVisible('backform-tab');
-
-          return false;
         });
       }
 
@@ -1143,6 +1150,7 @@
         visible:  evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
         canAdd: evalF(data.canAdd, data, this.model),
+        canAddRow: data.canAddRow,
         canEdit: evalF(data.canEdit, data, this.model),
         canDelete: evalF(data.canDelete, data, this.model)
       });
@@ -1200,7 +1208,8 @@
           gridSchema.columns.unshift({
             name: "pg-backform-delete", label: "",
             cell: Backgrid.Extension.DeleteCell,
-            editable: false, cell_priority: -1
+            editable: false, cell_priority: -1,
+            canDeleteRow: data.canDeleteRow
           });
       }
 
@@ -1214,7 +1223,8 @@
 
           gridSchema.columns.unshift({
             name: "pg-backform-edit", label: "", cell : editCell,
-            cell_priority: -2, editable: canEdit
+            cell_priority: -2, editable: canEdit,
+            canEditRow: data.canEditRow
           });
       }
 
@@ -1272,25 +1282,29 @@
 
       // Add button callback
       $dialog.find('button.add').click(function(e) {
-        e.preventDefault();
-        // Close any existing expanded row before adding new one.
-        _.each(grid.body.rows, function(row){
-          var editCell = row.$el.find(".subnode-edit-in-process").parent();
-          // Only close row if it's open.
-          if (editCell.length > 0){
-            var event = new Event('click');
-            editCell[0].dispatchEvent(event);
-          }
-        });
+         e.preventDefault();
+        var canAddRow = _.isFunction(data.canAddRow) ?
+                            data.canAddRow.apply(self, [self.model]) : true;
+        if (canAddRow) {
+          // Close any existing expanded row before adding new one.
+          _.each(grid.body.rows, function(row){
+            var editCell = row.$el.find(".subnode-edit-in-process").parent();
+            // Only close row if it's open.
+            if (editCell.length > 0){
+              var event = new Event('click');
+              editCell[0].dispatchEvent(event);
+            }
+          });
 
-        grid.insertRow({});
+          grid.insertRow({});
 
-        var newRow = $(grid.body.rows[collection.length - 1].$el);
-        newRow.attr("class", "new").click(function(e) {
-          $(this).attr("class", "editable");
-        });
-        $(newRow).pgMakeVisible('backform-tab');
-        return false;
+          var newRow = $(grid.body.rows[collection.length - 1].$el);
+          newRow.attr("class", "new").click(function(e) {
+            $(this).attr("class", "editable");
+          });
+          $(newRow).pgMakeVisible('backform-tab');
+          return false;
+        }
       });
 
       return $dialog;
@@ -1662,8 +1676,11 @@
             subnode: ((_.isString(s.model) && s.model in pgBrowser.Nodes) ?
                 pgBrowser.Nodes[s.model].model : s.model),
             canAdd: (disabled ? false : evalASFunc(s.canAdd)),
+            canAddRow: (disabled ? false : evalASFunc(s.canAddRow)),
             canEdit: (disabled ? false : evalASFunc(s.canEdit)),
             canDelete: (disabled ? false : evalASFunc(s.canDelete)),
+            canEditRow: (disabled ? false : evalASFunc(s.canEditRow)),
+            canDeleteRow: (disabled ? false : evalASFunc(s.canDeleteRow)),
             transform: evalASFunc(s.transform),
             mode: mode,
             control: control,
