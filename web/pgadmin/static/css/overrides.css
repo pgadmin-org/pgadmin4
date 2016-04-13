@@ -45,6 +45,10 @@ body {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAVElEQVQY05WQuQ0AMQgEB8lN0H9vdhnj4B7ZJwfcJkjsImBCpaIGMMYQIDNjNbe+Su9d1bsee5yM0+AbXMPfkHrdWNKv1ZVn2oJiw5OZ8eABiCrwCW8QwRIof5qAAAAAAElFTkSuQmCC) !important;
 }
 
+.alertify .ajs-modal {
+    overflow: hidden;
+}
+
 /* iFrames should have no border */
 iframe {
     border-width: 0;

@@ -1,0 +1,109 @@
+/** Grant Wizard CSS **/
+
+/**
+  CSS to make db object type table
+  fixed so that tbody content may
+  scroll
+ */
+
+.db_objects_container  {
+  height: 100%;
+}
+
+.object_type_table {
+  display: inline-block;
+  height: 100%;
+  border: 0 !important;
+}
+
+.object_type_table thead tr {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.object_type_table tbody {
+  display: block;
+  overflow: scroll;
+  border: 1px solid #ddd;
+  width: 100%;
+  min-height: 100%;
+  max-height: 66%;
+  height: 66%;
+}
+
+.object_type_table tbody tr {
+  display: table;
+  max-width: 100%;
+  width: 100%;
+}
+
+.object_type_table tbody tr td {
+  background-position: 4px 4px;
+  border-radius: 0;
+}
+
+.object_type_table tbody tr td:nth-child(1),
+.object_type_table thead tr th:nth-child(1) {
+  width: 28px;
+  min-width: 28px;
+}
+
+.object_type_table tbody tr td:nth-child(2) {
+  width: 161px;
+  min-width: 161px;
+  max-width: 161px;
+}
+
+.object_type_table thead tr th:nth-child(2) {
+  width: 161px;
+  min-width: 161px;
+  max-width: 161px;
+}
+
+.object_type_table tbody tr td:nth-child(3) {
+  width: 109px;
+  min-width: 109px;
+  max-width: 109px;
+}
+
+.object_type_table thead tr th:nth-child(3) {
+  width: 109px;
+  min-width: 109px;
+  max-width: 109px;
+}
+
+.object_type_table thead tr th:nth-child(4) {
+  width: 100%;
+}
+
+.object_type_table tbody tr td:nth-child(4) {
+  width: 100%;
+  max-width: 100%;
+}
+
+/** Override Backgrid filter CSS **/
+.db_objects_container .backgrid-filter.form-search {
+  float: left;
+  margin: 0px 5px 5px 0;
+}
+
+/** Custom styling for Codemirror field **/
+.wizard-right-panel_content {
+  border: 1px solide #ccc;
+}
+
+.wizard-right-panel_content .CodeMirror {
+  border: 1px solid #ccc;
+  height: 285px !important;
+  min-height: 285px !important;
+}
+
+.wizard-right-panel_content .CodeMirror-linenumber {
+  background: #F7F7F7;
+  border-right: 1px solid #DDDDDD;
+}
+
+.wizard-right-panel_content .CodeMirror-gutters {
+  min-height: 285px !important;
+}

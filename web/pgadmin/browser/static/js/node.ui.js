@@ -280,7 +280,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         return false;
       };
 
-      while(p) {
+      // check if p is not empty
+      while(p && p.length > 0) {
         top = p.get(0).offsetTop + p.height();
         p = p.parent();
         if (hasScrollbar(p)) {

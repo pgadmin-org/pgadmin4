@@ -1,0 +1,143 @@
+/** CSS for Wizard **/
+.pgadmin_grant_wizard_body .ajs-content {
+  padding-top: 0px !important;
+}
+
+.wizard-header {
+  background: #428bca;
+  padding-left: 15px;
+  padding-bottom: 7px;
+  color: #fff;
+  font-size: 18px;
+  height: 76px;
+  line-height: 76px;
+  border-radius: 6px 6px 0 0;
+}
+
+.wizard-header h3 {
+  font-size: 18px;
+  display: inline-block;
+}
+
+.wizard_dlg {
+  float: left;
+  height: 100%;
+  width: 100%;
+}
+
+.grant_wizard_container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.grant_wizard_container .pgadmin-wizard {
+  width: 100%;
+  height: 100%;
+}
+
+.grant_wizard_container .wizard-content {
+  position: relative;
+  padding: 0;
+  height: 78%;
+}
+
+.grant_wizard_container .wizard-right-panel {
+  overflow-y: auto;
+  height: 100%;
+  top: 0;
+  right: 0;
+  position: absolute;
+  bottom: 0;
+}
+
+.grant_wizard_container .wizard-left-panel {
+  position: absolute;
+  top: 0;
+  display: flex;
+  bottom: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+}
+
+.grant_wizard_container .wizard-left-panel img {
+  width: 140px;
+}
+
+.grant_wizard_container .wizard-right-panel_content {
+  height: 60%;
+}
+
+.grant_wizard_container {
+  height: 100%;
+}
+
+/* Wizard Footer CSS */
+.grant_wizard_container .footer {
+  position: absolute;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  bottom: 0px;
+  height: 62px;
+  right: 0px;
+  padding-top: 22px;
+  border-radius: 0 0 6px 6px;
+  z-index: 10;
+}
+
+/* Wizard Button CSS */
+.grant_wizard_container .wizard-buttons {
+  float: right;
+}
+
+.grant_wizard_container .wizard-buttons button {
+  float: left;
+  padding: 7px 15.2px;
+  font-size: 14px;
+  margin: 0px 5px 0 0 !important;
+}
+
+.grant_wizard_container .wizard-buttons button.wizard-next i.fa {
+  padding-left: 5px;
+}
+
+.grant_wizard_container .wizard-buttons button.wizard-back i.fa,
+.grant_wizard_container .wizard-buttons button.wizard-cancel i.fa {
+  padding-right: 5px;
+}
+
+.grant_wizard_container .wizard-buttons .wizard-finish {
+  margin-right: 0 !important;
+}
+
+/* Wizard Status bar CSS */
+.grant_wizard_container .wizard-description {
+  padding: 1.7em 0.1em;
+}
+
+/* Error message css */
+.grant_wizard_container .error_msg_div {
+  display: block;
+  position: absolute;
+  bottom: 55px;
+  background: #fff;
+}
+
+.grant_wizard_container .error_msg_div p {
+  background: #fff;
+  color: #b92c28;
+}
+
+/* In wizard select2 dropdown doesn't
+ * popup because z-index of alertify
+ * wizard is greater than the z-index
+ * of select2 dropdown. To make select2
+ * visible, set z-index of select2
+ * higher value than wizard's
+ */
+.select2-container--open {
+  z-index: 10000;
+}
