@@ -277,6 +277,11 @@ iframe {
     padding-right: 3px;
     padding-left: 3px;
 }
+.pgadmin-controls.SQL {
+  min-width: 290px;
+  padding-right: 3px;
+  padding-left: 1px;
+}
 .pgadmin-controls > textarea.form-control,
 .pgadmin-controls > textarea.form-control[disabled] {
    min-width: 100%;
@@ -856,11 +861,20 @@ td.edit-cell.editable.sortable.renderable.editor {
 }
 
 .sql_field_height_300 {
-    height: 300px;
+    height: 340px;
 }
 
 .sql_field_height_400 {
-    height: 400px;
+    height: 440px;
+}
+
+.tab-pane.SQL {
+  padding: 0px 7px 0px 0px;
+}
+
+.pgadmin-control-group.sql {
+  margin: 0px;
+  padding: 0px;
 }
 
 .nav-tabs{
@@ -929,4 +943,8 @@ ul.nav.nav-tabs {
 
 .pgadmin-control-group span.wcTabIcon {
   padding-left: 20px;
+}
+
+.pgadmin-controls.SQL>.CodeMirror {
+  height: 500px!important;
 }

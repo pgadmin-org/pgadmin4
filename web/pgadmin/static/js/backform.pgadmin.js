@@ -519,7 +519,7 @@
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>'].join(" ")),
       'panel': _.template(
-        '<div role="tabpanel" class="tab-pane col-sm-12 col-md-12 col-lg-12 col-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
+        '<div role="tabpanel" class="tab-pane <%=label%> col-sm-12 col-md-12 col-lg-12 col-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       )},
     render: function() {
       this.cleanup();
@@ -1307,7 +1307,7 @@
   var SqlTabControl = Backform.SqlTabControl = Backform.Control.extend({
     defaults: {
       label: "",
-      controlsClassName: "pgadmin-controls col-sm-12",
+      controlsClassName: "pgadmin-controls col-sm-12 SQL",
       extraClasses: [],
       helpMessage: null
     },
