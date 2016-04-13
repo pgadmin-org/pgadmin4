@@ -57,7 +57,7 @@ define(
       type: 'language',
       sqlAlterHelp: 'sql-alterlanguage.html',
       sqlCreateHelp: 'sql-createlanguage.html',
-      label: '{{ _('language') }}',
+      label: '{{ _('Language') }}',
       hasSQL:  true,
       hasDepends: true,
       Init: function() {
