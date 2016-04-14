@@ -294,9 +294,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           editable: false, type: 'collection', group: '{{ _('Security') }}', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
-          id: 'variables', label: '{{ _('Variables') }}', type: 'collection',
+          id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
           model: pgAdmin.Browser.Node.VariableModel, editable: false,
-          group: '{{ _('Variables') }}', mode: ['edit', 'create'],
+          group: '{{ _('Parameters') }}', mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
         },{

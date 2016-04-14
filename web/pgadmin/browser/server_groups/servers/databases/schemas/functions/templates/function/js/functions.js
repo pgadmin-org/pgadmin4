@@ -308,16 +308,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
            group: '{{ _('Security') }}', cell:'boolean', type: 'text', cell: 'string',
            mode: ['properties']
         },{
-          id: 'arguments', label: '{{ _('Parameters') }}', cell: 'string',
-          group: '{{ _('Parameters') }}', type: 'collection', canAdd: function(m){
+          id: 'arguments', label: '{{ _('Arguments') }}', cell: 'string',
+          group: '{{ _('Arguments') }}', type: 'collection', canAdd: function(m){
             return m.isNew();
           },
           canDelete: true, model: ArgumentModel, mode: ['create', 'edit'],
           columns: ['argtype', 'argmode', 'argname', 'argdefval'],
           disabled: 'isDisabled'
         },{
-          id: 'variables', label: '{{ _('Variables') }}', type: 'collection',
-          group: '{{ _('Variables') }}', control: 'variable-collection',
+          id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
+          group: '{{ _('Parameters') }}', control: 'variable-collection',
           model: pgAdmin.Browser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
           canDelete: true, disabled: 'isDisabled'

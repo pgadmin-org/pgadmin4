@@ -133,8 +133,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'spcoptions', label: '{{ _('Variables') }}', type: 'collection',
-          group: "Variables", control: 'variable-collection',
+          id: 'spcoptions', label: '{{ _('Parameters') }}', type: 'collection',
+          group: "Parameters", control: 'variable-collection',
           model: pgAdmin.Browser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true

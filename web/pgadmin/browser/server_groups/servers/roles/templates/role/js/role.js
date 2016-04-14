@@ -455,8 +455,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
             return this.model.isNew() || (this.model.get('rolname') != d.label);
           }
         },{
-          id: 'variables', label: '{{ _('Variables') }}', type: 'collection',
-          group: '{{ _('Variables') }}', hasDatabase: true, url: 'variables',
+          id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
+          group: '{{ _('Parameters') }}', hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel, control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
           url: "variables", disabled: 'readonly'

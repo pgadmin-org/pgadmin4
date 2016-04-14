@@ -363,7 +363,7 @@
 
       // TODO:: Do the i18n
       _.extend(data, {
-        variable_label: "Variable Name",
+        variable_label: "Parameter name",
         add_label: "ADD",
         database_label: "Database",
         role_label: "Role"
