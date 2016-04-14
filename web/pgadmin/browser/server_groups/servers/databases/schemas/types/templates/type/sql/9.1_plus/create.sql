@@ -1,9 +1,13 @@
 {% import 'macros/schemas/security.macros' as SECLABLE %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
+{## If user selected shell type then just create type template ##}
+{% if data and data.typtype == 's' %}
+CREATE TYPE {{ conn|qtIdent(data.schema, data.name) }};
+{% endif %}
 {###  Composite Type ###}
 {% if data and data.typtype == 'c' %}
 CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else %}{{ conn|qtIdent(data.name) }}{% endif %} AS
-    ({% if data.composite %}{% for d in data.composite %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(d.member_name) }} {{ d.type }}{% if d.is_tlength and d.tlength %}({{d.tlength}}{% if d.is_precision and d.precision %},{{d.precision}}{% endif %}){% endif %}{% if d.collation %} COLLATE {{d.collation}}{% endif %}{% endfor %}{% endif %});
+({{"\n\t"}}{% if data.composite %}{% for d in data.composite %}{% if loop.index != 1 %},{{"\n\t"}}{% endif %}{{ conn|qtIdent(d.member_name) }} {{ d.type }}{% if d.is_tlength and d.tlength %}({{d.tlength}}{% if d.is_precision and d.precision %},{{d.precision}}{% endif %}){% endif %}{% if d.collation %} COLLATE {{d.collation}}{% endif %}{% endfor %}{% endif %}{{"\n"}});
 {% endif %}
 {###  Enum Type ###}
 {% if data and data.typtype == 'e' %}

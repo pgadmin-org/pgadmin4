@@ -13,6 +13,7 @@ from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from flask import render_template
 from pgadmin.utils.ajax import internal_server_error
+import json
 
 class SchemaChildModule(CollectionNodeModule):
     """
@@ -140,6 +141,97 @@ class DataTypeReader:
             return False, str(e)
 
         return True, res
+
+    def get_full_type(self, nsp, typname, isDup, numdims, typmod):
+        """
+        Returns full type name with Length and Precision.
+
+        Args:
+            conn: Connection Object
+            condition: condition to restrict SQL statement
+        """
+        needSchema = isDup
+        schema = nsp if nsp is not None else ''
+        name = ''
+        array = ''
+        length = ''
+
+        # Above 7.4, format_type also sends the schema name if it's not included
+        # in the search_path, so we need to skip it in the typname
+        if typname.find(schema + '".') >= 0:
+            name = typname[len(schema)+3]
+        elif typname.find(schema + '.') >= 0:
+            name = typname[len(schema)+1]
+        else:
+            name = typname
+
+        if name.startswith('_'):
+            if not numdims:
+                numdims = 1
+            name = name[1:]
+
+        if name.endswith('[]'):
+            if not numdims:
+                numdims = 1
+            name = name[:-2]
+
+        if name.startswith('"') and name.endswith('"'):
+            name = name[1:-1]
+
+        if numdims > 0:
+            while numdims:
+                array += '[]'
+                numdims -= 1
+
+        if typmod != -1:
+            length = '('
+            if name == 'numeric':
+                _len = (typmod - 4) >> 16;
+                _prec = (typmod - 4) & 0xffff;
+                length += str(_len)
+                if(_prec):
+                    length += ',' + str(_prec)
+            elif name == 'time' or \
+                    name == 'timetz' or \
+                    name == 'time without time zone' or \
+                    name == 'time with time zone' or \
+                    name == 'timestamp' or \
+                    name == 'timestamptz'or \
+                    name == 'timestamp without time zone' or \
+                    name == 'timestamp with time zone' or \
+                    name == 'bit' or \
+                    name == 'bit varying' or \
+                    name == 'varbit':
+                _prec = 0
+                _len = typmod
+                length += str(_len)
+            elif name == 'interval':
+                _prec = 0
+                _len = typmod & 0xffff
+                length += str(_len)
+            elif name == 'date':
+                # Clear length
+                length = ''
+            else:
+                _len = typmod - 4
+                _prec = 0
+                length += str(_len)
+
+            if len(length) > 0:
+                length += ')'
+
+        if name == 'char' and schema == 'pg_catalog':
+            return '"char"' + array
+        elif name == 'time with time zone':
+            return 'time' + length + ' with time zone' + array
+        elif name == 'time without time zone':
+            return 'time' + length + ' without time zone' + array
+        elif name == 'timestamp with time zone':
+            return 'timestamp' + length + ' with time zone' + array
+        elif name == 'timestamp without time zone':
+            return 'timestamp' + length + ' without time zone' + array
+        else:
+            return name + length + array
 
 
 def trigger_definition(data):

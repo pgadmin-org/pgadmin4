@@ -16,7 +16,7 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
-    import SchemaChildModule
+    import SchemaChildModule, DataTypeReader
 import pgadmin.browser.server_groups.servers.databases as database
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
@@ -87,7 +87,7 @@ class TypeModule(SchemaChildModule):
 blueprint = TypeModule(__name__)
 
 
-class TypeView(PGChildNodeView):
+class TypeView(PGChildNodeView, DataTypeReader):
     """
     This class is responsible for generating routes for Type node
 
@@ -335,7 +335,13 @@ class TypeView(PGChildNodeView):
             composite_lst = []
 
             for row in rset['rows']:
-                typelist = ' '.join([row['attname'], row['typname']])
+                # We will fetch Full type name
+                fulltype = self.get_full_type(
+                    row['collnspname'], row['typname'],
+                    row['isdup'], row['attndims'], row['atttypmod']
+                )
+
+                typelist = ' '.join([row['attname'], fulltype])
                 if not row['collname'] or (row['collname'] == 'default'
                                            and row['collnspname'] == 'pg_catalog'):
                     full_collate = ''
@@ -349,19 +355,28 @@ class TypeView(PGChildNodeView):
 
                 # Below logic will allow us to split length, precision from type name for grid
                 import re
-                matchObj = re.match( r'(.*)\((.*?),(.*?)\)', row['typname'])
+                # If we have length & precision both
+                matchObj = re.search(r'(\d+),(\d+)', fulltype)
                 if matchObj:
-                    t_name = matchObj.group(1)
-                    t_len = matchObj.group(2)
-                    t_prec = matchObj.group(3)
+                    t_len = matchObj.group(1)
+                    t_prec = matchObj.group(2)
                 else:
-                    t_name = row['typname']
-                    t_len = None
-                    t_prec = None
+                    # If we have length only
+                    matchObj = re.search(r'(\d+)', fulltype)
+                    if matchObj:
+                        t_len = matchObj.group(1)
+                        t_prec = None
+                    else:
+                        t_len = None
+                        t_prec = None
+
+                is_tlength = True if t_len else False
+                is_precision = True if t_prec else False
 
                 composite_lst.append({
-                    'attnum':row['attnum'], 'member_name': row['attname'], 'type': t_name, 'collation': full_collate,
-                    'tlength': t_len, 'precision': t_prec })
+                    'attnum':row['attnum'], 'member_name': row['attname'], 'type': row['typname'], 'collation': full_collate,
+                    'tlength': t_len, 'precision': t_prec,
+                    'is_tlength': is_tlength, 'is_precision': is_precision })
 
             # Adding both results
             res['member_list'] = ', '.join(properties_list)
@@ -441,7 +456,6 @@ class TypeView(PGChildNodeView):
         # We will set get privileges from acl sql so we don't need
         # it from properties sql
         copy_dict['typacl'] = []
-
 
         for row in acl['rows']:
             priv = parse_priv_from_db(row)

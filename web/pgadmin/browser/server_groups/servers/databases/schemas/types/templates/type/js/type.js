@@ -308,23 +308,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           group: '{{ _('Definition') }}',
           mode: ['edit', 'create'],
           select2: { width: "50%" },
-          options: function() {
-           if(!this.model.isNew()) {
+          options: function(obj) {
               return [
                 {label: "Composite", value: "c"},
                 {label: "Enumeration", value: "e"},
                 {label: "External", value: "b"},
                 {label: "Range", value: "r"},
+                {label: "Shell", value: "s"}
               ]
-            } else {
-              return [
-                {label: "Composite", value: "c"},
-                {label: "Enumeration", value: "e"},
-                {label: "Range", value: "r"},
-              ]
-
-           }
-          },
+           },
           disabled: 'inSchemaWithModelCheck',
           // If create mode then by default open composite type
           control: Backform.Select2Control.extend({
@@ -345,10 +337,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           canAdd: true, canEdit: true, canDelete: true, disabled: 'inSchema',
           deps: ['typtype'], deps: ['typtype'],
           visible: function(m) {
-           if (m.get('typtype') === 'c') {
-             return true;
-           }
-           return false;
+           return m.get('typtype') === 'c';
           }
         },{
           id: 'enum', label: '{{ _('Enumeration Type') }}',
@@ -524,7 +513,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         },{
           type: 'nested', control: 'tab', group: '{{ _('Definition') }}',
           label: '{{ _('External Type') }}', deps: ['typtype'],
-          mode: ['edit'],
+          mode: ['create', 'edit'],
           visible: function(m) {
             return m.get('typtype') === 'b';
           },
@@ -731,14 +720,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           id: 'typacl', label: 'Privileges', type: 'collection',
           group: '{{ _('Security') }}', control: 'unique-col-collection',
           model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}),
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          uniqueCol : ['grantee']
+          mode: ['edit', 'create'], canDelete: true,
+          uniqueCol : ['grantee'], deps: ['typtype'],
+          canAdd: function(m) {
+            // Do not allow to add when shell type is selected
+            return !(m.get('typtype') === 's');
+          }
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
           model: SecurityModel, editable: false, type: 'collection',
           group: '{{ _('Security') }}', mode: ['edit', 'create'],
-          min_version: 90100, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
+          min_version: 90100, canEdit: false, canDelete: true,
+          control: 'unique-col-collection', deps: ['typtype'],
+          canAdd: function(m) {
+            // Do not allow to add when shell type is selected
+            return !(m.get('typtype') === 's');
+          }
+
         }],
         validate: function() {
         // Validation code for required fields
