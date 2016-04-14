@@ -131,9 +131,9 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {# Below will change the schema for object #}
 {# with extra if condition we will also make sure that object has correct name #}
 {% if data.schema and data.schema != o_data.schema %}
-ALTER TYPE {% if data.name != o_data.name %}{{ conn|qtIdent(o_data.schema, data.name) }}
-{% else %}{{ conn|qtIdent(o_data.schema, o_data.name) }}{% endif %}
+ALTER TYPE {% if data.name and data.name != o_data.name %}{{ conn|qtIdent(o_data.schema, data.name) }}
+{% else %}{{ conn|qtIdent(o_data.schema, o_data.name) }}
+{% endif %}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
-
 {% endif %}
 {% endif %}

@@ -1,7 +1,7 @@
 {% import 'macros/schemas/security.macros' as SECLABLE %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {## If user selected shell type then just create type template ##}
-{% if data and data.typtype == 's' %}
+{% if data and data.typtype == 'p' %}
 CREATE TYPE {{ conn|qtIdent(data.schema, data.name) }};
 {% endif %}
 {###  Composite Type ###}

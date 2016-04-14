@@ -270,7 +270,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema'
+          disabled: 'schemaCheck'
         },{
           id: 'oid', label:'{{ _('OID') }}', cell: 'string',
           type: 'text' , mode: ['properties'], disabled: true
@@ -282,7 +282,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         },{
           id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
           type: 'text', mode: ['create', 'edit'], node: 'schema',
-          disabled: 'inSchema', filter: function(d) {
+          disabled: 'schemaCheck', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
             if(d && d.label.match(/^pg_/))
             {
@@ -290,18 +290,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
             return true;
           },
-          control: Backform.NodeListByNameControl.extend({
-            render: function(){
-            // Initialize parent's render method
-            Backform.NodeListByNameControl.prototype.render.apply(this, arguments);
-
-            // Set schema default value to its parent Schema
-            if(this.model.isNew()){
-            this.model.set({'schema': this.model.node_info.schema.label});
-            }
-            return this;
-            }
-          })
+          control: 'node-list-by-name'
         },{
           id: 'typtype', label:'{{ _('Type') }}',
           mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
@@ -314,7 +303,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 {label: "Enumeration", value: "e"},
                 {label: "External", value: "b"},
                 {label: "Range", value: "r"},
-                {label: "Shell", value: "s"}
+                {label: "Shell", value: "p"}
               ]
            },
           disabled: 'inSchemaWithModelCheck',
@@ -724,7 +713,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           uniqueCol : ['grantee'], deps: ['typtype'],
           canAdd: function(m) {
             // Do not allow to add when shell type is selected
-            return !(m.get('typtype') === 's');
+            return !(m.get('typtype') === 'p');
           }
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
@@ -734,7 +723,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           control: 'unique-col-collection', deps: ['typtype'],
           canAdd: function(m) {
             // Do not allow to add when shell type is selected
-            return !(m.get('typtype') === 's');
+            return !(m.get('typtype') === 'p');
           }
 
         }],
@@ -788,6 +777,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             return true;
           }
           return false;
+        },
+        schemaCheck: function(m) {
+          if(this.node_info && 'schema' in this.node_info)
+          {
+            if (m.isNew()) {
+              return false;
+            } else {
+              return m.get('typtype') === 'p';
+            }
+          }
+          return true;
         },
         // We will check if we are under schema node & in 'create' mode
         inSchemaWithModelCheck: function(m) {
