@@ -592,9 +592,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             }
             that.statusBar = statusBar;
             return statusBar;
-        },
+        }.bind(panel),
         // Template function to create the button-group
         createButtons = function(buttons, location, extraClasses) {
+          var panel = this;
+
           // arguments must be non-zero length array of type
           // object, which contains following attributes:
           // label, type, extraClasses, register
@@ -637,9 +639,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             return btnGroup;
           }
           return null;
-        },
+        }.bind(panel),
         // Callback to show object properties
         properties = function() {
+
+          var panel = this;
 
           if (!content.hasClass('has-pg-prop-btn-group'))
             content.addClass('has-pg-prop-btn-group');
@@ -709,8 +713,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
-        },
+        }.bind(panel),
         onSqlHelp = function() {
+          var panel = this;
           // See if we can find an existing panel, if not, create one
           pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
 
@@ -757,8 +762,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           );
           pnlSqlHelp.focus();
           iframe.openURL(url);
-        }
+        }.bind(panel),
         editFunc = function() {
+          var panel = this;
           if (action && action == 'properties') {
             action = 'edit';
           }
@@ -898,12 +904,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
           // Show contents before buttons
           j.prepend(content);
-        },
+        }.bind(panel),
         closePanel = function() {
           // Closing this panel
-          panel.close()
+          this.close()
         },
         updateTreeItem = function() {
+          var panel = this;
+
           // Update the item lable (if label is modified.)
           if (view.model.tnode) {
             var itemData = tree.itemData(item),
@@ -915,8 +923,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             tree.addIcon(item, {icon: itemData.icon});
           } else if (view.model.get('name')) {
             tree.setLabel(item, {label: view.model.get("name")});
-            if (view.model.get('data').icon && view.model.get('data').icon != '')
-                tree.addIcon(item, {icon: view.model.get('data').icon});
+            if (
+              view.model.get('data').icon && view.model.get('data').icon != ''
+            )
+              tree.addIcon(item, {icon: view.model.get('data').icon});
           }
           tree.deselect(item);
           panel.$container.removeAttr('action-mode');
@@ -925,6 +935,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           setTimeout(function() { tree.select(item, {focus: true}); }, 10);
         },
         saveNewNode = function() {
+          var panel = this;
           /* TODO:: Create new tree node for this */
           if (view.model.tnode && '_id' in view.model.tnode) {
             var d = _.extend({}, view.model.tnode),
@@ -1112,14 +1123,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             }]);
           }, 0);
         },
-        onCancelFunc = closePanel,
-        onSaveFunc = updateTreeItem,
-        onEdit = editFunc;
+        onCancelFunc = closePanel.bind(panel),
+        onSaveFunc = updateTreeItem.bind(panel),
+        onEdit = editFunc.bind(panel);
 
       if (action) {
         if (action == 'create'){
-          onCancelFunc = closePanel;
-          onSaveFunc = saveNewNode;
+          onCancelFunc = closePanel.bind(panel);
+          onSaveFunc = saveNewNode.bind(panel);
         }
         if (action != 'properties') {
           // We need to keep track edit/create mode for this panel.
@@ -1130,7 +1141,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       } else {
         /* Show properties */
         properties();
-        onEdit = editInNewPanel;
+        onEdit = editInNewPanel.bind(panel);
       }
     },
     /**********************************************************************
