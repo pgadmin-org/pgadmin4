@@ -63,19 +63,6 @@ class BrowserModule(PgAdminModule):
             'preloaded': True
             })
         scripts.append({
-            'name': 'codemirror',
-            'path': url_for('static', filename='js/codemirror/codemirror'),
-            'exports': 'CodeMirror',
-            'preloaded': True
-            })
-        scripts.append({
-            'name': 'codemirror.sql',
-            'path': url_for('static', filename='js/codemirror/mode/sql'),
-            'deps': ['codemirror'],
-            'exports': 'CodeMirror.modes.sql',
-            'preloaded': True
-            })
-        scripts.append({
             'name': 'jqueryui.position',
             'path': url_for(
                 'static',

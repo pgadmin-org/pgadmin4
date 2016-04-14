@@ -4,7 +4,7 @@
   if (typeof define === 'function' && define.amd) {
     define([
       'underscore', 'underscore.string', 'jquery', 'backbone', 'backform',
-      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror.sql',
+      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror/mode/sql',
       'select2'
       ],
      function(_, S, $, Backbone, Backform, Backgrid, CodeMirror) {

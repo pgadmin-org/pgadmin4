@@ -1,6 +1,6 @@
 define('pgadmin.browser',
         ['require', 'jquery', 'underscore', 'underscore.string', 'bootstrap',
-        'pgadmin', 'alertify', 'codemirror', 'codemirror.sql', 'wcdocker',
+        'pgadmin', 'alertify', 'codemirror', 'codemirror/mode/sql', 'wcdocker',
         'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
         'pgadmin.alertifyjs', 'pgadmin.browser.messages',
         'pgadmin.browser.menu', 'pgadmin.browser.panel',

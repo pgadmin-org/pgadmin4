@@ -43,6 +43,11 @@
             require.config({
                 baseUrl: '',
                 waitSeconds: 0,
+                packages: [{
+                  name: 'codemirror',
+                  location: '{{ url_for('static', filename='js/codemirror')}}',
+                  main: 'lib/codemirror'
+                }],
                 shim: {
                     "backbone": {
                         "deps": ['underscore', 'jquery'],

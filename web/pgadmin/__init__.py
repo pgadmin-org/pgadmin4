@@ -61,10 +61,18 @@ class PgAdmin(Flask):
 
     @property
     def javascripts(self):
-        stylesheets = []
+        scripts = []
+        scripts_names = []
+
+        # Remove duplicate javascripts from the list
         for module in self.submodules:
-            stylesheets.extend(getattr(module, "javascripts", []))
-        return stylesheets
+            module_scripts = getattr(module, "javascripts", [])
+            for s in module_scripts:
+                if s['name'] not in scripts_names:
+                    scripts.append(s)
+                    scripts_names.append(s['name'])
+
+        return scripts
 
     @property
     def panels(self):
