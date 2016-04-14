@@ -212,9 +212,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             errmsg = err['id'];
           }
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can be empty!') }}';
+            err['name'] = '{{ _('A server name must be specified.') }}';
             errmsg = errmsg || err['name'];
           }
+          if (_.isUndefined(this.get('host')) || this.get('host') == null || String(this.get('host')).replace(/^\s+|\s+$/g, '') == '') {
+            err['host'] = '{{ _('A hostname or address must be specified.') }}';
+            errmsg = errmsg || err['host'];
+          }
+
           this.errorModel.set(err);
 
           if (_.size(err)) {
