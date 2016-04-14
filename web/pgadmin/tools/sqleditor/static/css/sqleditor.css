@@ -1,0 +1,248 @@
+#main-editor_panel {
+  height: 100%;
+  width: 100%;
+}
+
+.sql-editor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top : 0;
+    bottom: 0;
+}
+
+.sql-editor-busy-fetching {
+  position:absolute;
+  left: 0;
+  top: 41px;
+  bottom: 0;
+  right: 0;
+  margin:0;
+  padding: 0;
+  background: black;
+  opacity: 0.4;
+  z-index: 100;
+}
+
+.sql-editor-busy-icon {
+  position:absolute;
+  left: 45%;
+  top: 40%;
+}
+
+.sql-editor-busy-text {
+  position:absolute;
+  left: 42%;
+  top: 50%;
+  font-size: 20px;
+}
+
+#editor-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top : 65px;
+  bottom: 0;
+  z-index: 0;
+}
+
+.editor-title {
+  background-color: #2C76B4;
+  padding: 2px;
+  color: white;
+  font-size: 13px;
+}
+
+.sql-editor-btn-group {
+  background-color: #D2D2D2;
+  border: 2px solid #A9A9A9;
+  left: 0px;
+  right: 0px;
+  padding: 2px;
+}
+
+.sql-editor-btn-group button {
+  padding: 5px;
+}
+
+.sql-editor-btn-group button.dropdown-toggle {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+.sql-editor-btn-group .dropdown-menu {
+  min-width: initial;
+}
+
+.sql-editor-btn-group .backgrid-filter.form-search {
+  position: relative;
+  width: 248px;
+  height: 30px;
+  float: right;
+  margin-top: 2px;
+  margin-right: 10px;
+}
+
+#output-panel .wcDocker {
+  top: 0px;
+  bottom: 0px;
+  height: auto;
+}
+
+#output-panel .wcFrameCenter {
+  overflow: hidden;
+}
+
+.sql-editor-grid-container {
+  height: calc(100% - 45px);
+  overflow: auto;
+}
+
+#datagrid-paginator {
+  bottom: 0px;
+  width: 100%;
+  background-color: white;
+}
+
+/*Move he original checkbox out of the way */
+#datagrid .select-row-cell .sqleditor-checkbox {
+  position: absolute;
+  left: -9999px;
+}
+/*Align the icon and the label.deletable text to same height using tabl-cell display*/
+/*If you change the font-size of the text, you may also want to do som padding or alignhment changes here*/
+#datagrid .sqleditor-checkbox ~ label.deletable >  span {
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 5px;
+}
+/*The label.deletable will contain the icon and the text, will grab the focus*/
+#datagrid .select-row-cell .sqleditor-checkbox + label.deletable {
+  cursor: pointer;
+  display: table;
+}
+/*The icon container, set it to fixed size and font size, the padding is to align the border*/
+/*If you change the font-size of this icon, be sure to adjust the min-width as well*/
+#datagrid .select-row-cell .sqleditor-checkbox + label.deletable:before {
+  font-family: 'FontAwesome';
+  font-size: small;
+  font-weight: normal;
+  display: inline-block;
+  min-width: 28px;
+}
+
+/* toggle font awesome icon*/
+#datagrid .select-row-cell .sqleditor-checkbox:checked + label:before {
+  content: "\f014";
+}
+
+#datagrid .select-row-cell .sqleditor-checkbox:not(:checked) + label:before {
+  content: "\f014";
+}
+
+/*Do something on focus, in this case show dashed border*/
+#datagrid .select-row-cell .sqleditor-checkbox:focus + label:before {
+  border: 1px dashed #777;
+}
+
+/*Do something on hover, in this case change the image color*/
+#datagrid .select-row-cell .sqleditor-checkbox:hover + label:before {
+  color: #67afe5;
+}
+
+.pgadmin-row-deleted td {
+  color: red !important;
+  text-decoration: line-through;
+}
+
+.filter-container {
+  position: relative;
+  background-color: white;
+  border: 1px solid black;
+  box-shadow: 0.5px 0.5px 5px #000;
+  padding-bottom: 30px;
+  top: 10px;
+  z-index: 1;
+  margin: auto;
+  width: 60%;
+}
+
+.filter-container .CodeMirror-scroll {
+  min-height: 120px;
+  max-height: 120px;
+}
+
+.filter-container .sql-textarea{
+  box-shadow: 0.1px 0.1px 3px #000;
+  margin-bottom: 5px;
+}
+
+.filter-title {
+  background-color: #2C76B4;
+  padding: 2px;
+  color: white;
+  font-size: 13px;
+}
+
+#filter .btn-group {
+  margin-right: 2px;
+  float: right;
+}
+
+#filter .btn-group > button {
+  padding: 3px;
+}
+
+#filter .btn-group .btn-primary {
+  margin: auto !important;
+}
+
+.has-select-all table thead tr th:nth-child(1),
+.has-select-all table tbody tr td:nth-child(1) {
+  width: 35px !important;
+  max-width: 35px !important;
+  min-width: 35px !important;
+}
+
+.sql-editor-message {
+  white-space:pre-wrap;
+  font-family: monospace;
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+.limit-enabled {
+  background-color: white;
+}
+
+.sql-editor-history-container {
+  height: 100%;
+  overflow: auto;
+}
+
+.sql-status-cell {
+  max-width: 30px;
+}
+
+.btn-circle {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1.428571429;
+  border-radius: 10px;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.sql-editor-mark {
+  border-bottom: 2px dotted red;
+}
+
+#editor-panel .CodeMirror-activeline-background {
+  background: #5B9CEF;
+  color: white;
+}

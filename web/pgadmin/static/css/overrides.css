@@ -528,6 +528,10 @@ fieldset[disabled] .form-control {
     background-color: #AAA;
 }
 
+.backgrid th.renderable, .backgrid td.renderable {
+    white-space: pre-wrap;
+}
+
 .subnode-header {
     background-color: #2C76B4;
     height: 35px;
@@ -951,4 +955,9 @@ ul.nav.nav-tabs {
 
 .pgadmin-controls.SQL>.CodeMirror {
   height: 500px!important;
+}
+
+.wcPanelTab > div .wcTabIcon.fa {
+  padding-left: 0px !important;
+  color: black;
 }

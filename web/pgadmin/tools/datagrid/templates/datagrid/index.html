@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ config.APP_NAME }} - Datagrid{% endblock %}
+{% block css_link %}
+    <link type="text/css" rel="stylesheet" href="{{ url_for('sqleditor.static', filename='css/sqleditor.css') }}">
+{% endblock %}
+{% block body %}
+<style>
+body {
+  padding: 0px;
+}
+</style>
+    <div id="main-editor_panel">
+        <div id="fetching_data" class="sql-editor-busy-fetching hide">',
+            <span class="sql-editor-busy-icon"><img src="{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}"></span>
+            <span class="sql-editor-busy-text"></span>
+        </div>
+        <div class="sql-editor" data-trans-id="{{ uniqueId }}"></div>
+    </div>
+{% endblock %}
+
+{% block init_script %}
+try {
+  require(
+    ['jquery', 'pgadmin', 'pgadmin.sqleditor'],
+    function($, pgAdmin) {
+
+        var editorPanel = $('.sql-editor'),
+            loadingDiv = $('#fetching_data'),
+            msgDiv = loadingDiv.find('.sql-editor-busy-text');
+
+        // Get the controller object from pgAdmin.SqlEditor
+        var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
+
+        // Listen on events to show/hide loading-icon and change messages.
+        sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
+            msgDiv.text(msg);
+        }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
+            loadingDiv.removeClass('hide');
+            msgDiv.text(msg);
+        }).on('pgadmin-sqleditor:loading-icon:hide', function() {
+            if (!loadingDiv.hasClass('hide')) {
+                loadingDiv.addClass('hide');
+            }
+        });
+
+        // Start the query tool.
+        sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}");
+    });
+} catch (err) {
+  /* Show proper error dialog */
+  console.log(err);
+}
+{% endblock %}
