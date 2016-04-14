@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
+# Copyright (C) 2016 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-03 10:50+0000\n"
+"POT-Creation-Date: 2016-04-14 15:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: pgadmin/about/views.py:35
+#: pgadmin/about/__init__.py:33
+#, python-format
+msgid "About %(appname)s"
+msgstr ""
+
+#: pgadmin/about/__init__.py:60
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:9
 msgid "Server"
 msgstr ""
 
-#: pgadmin/about/views.py:37
+#: pgadmin/about/__init__.py:62
 msgid "Desktop"
 msgstr ""
 
 #: pgadmin/about/templates/about/index.html:2
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:209
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:139
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:174
 msgid "Version"
 msgstr ""
 
@@ -49,148 +58,2578 @@ msgstr ""
 msgid "Current User"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/hooks.py:34
-msgid "Add a server group..."
+#: pgadmin/browser/__init__.py:35
+#: pgadmin/browser/templates/browser/js/browser.js:57
+msgid "Browser"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/hooks.py:35
-#: pgadmin/browser/nodes/server_groups/hooks.py:43
-msgid "Delete server group"
+#: pgadmin/browser/__init__.py:180
+msgid "Show system objects"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/hooks.py:36
-#: pgadmin/browser/nodes/server_groups/hooks.py:44
-msgid "Rename server group..."
+#: pgadmin/browser/__init__.py:181 pgadmin/tools/sqleditor/__init__.py:66
+msgid "Display"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/views.py:48
-msgid "No server group name was specified"
+#: pgadmin/browser/__init__.py:410 pgadmin/browser/collection.py:225
+msgid "Nodes"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/views.py:73
-#: pgadmin/browser/nodes/server_groups/views.py:104
+#: pgadmin/browser/utils.py:228
+msgid "Unimplemented method ({0}) for this url ({1})"
+msgstr ""
+
+#: pgadmin/browser/utils.py:294
+msgid "Required properties are missing!"
+msgstr ""
+
+#: pgadmin/browser/utils.py:310
+msgid "Connection has been lost with the server!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/__init__.py:119
+#: pgadmin/browser/server_groups/__init__.py:149
+#: pgadmin/browser/server_groups/__init__.py:177
 msgid "The specified server group could not be found."
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/views.py:84
-msgid "No server group  was specified."
+#: pgadmin/browser/server_groups/__init__.py:219
+msgid "No server group name was specified"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/views.py:115
-msgid "No server group was specified."
+#: pgadmin/browser/server_groups/servers/__init__.py:46
+msgid "Servers"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:4
+#: pgadmin/browser/server_groups/servers/__init__.py:269
+msgid ""
+"The specified server could not be found.\n"
+"Does the user have permission to access the server?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:303
+msgid "Couldn't find the given server."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:320
+msgid "name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:321
+msgid "Host name/address"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:322
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:183
+msgid "Port"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:323
+msgid "Maintenance database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:324
+msgid "Username"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:325
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:195
+msgid "SSL Mode"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:326
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:420
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:177
+msgid "Comments"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:327
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:192
+msgid "Role"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:343
+msgid "'{0}' is not allowed to modify, when server is connected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:356
+msgid "No parameters were changed!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:433
+msgid "Couldn't find the given server"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:485
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:445
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:351
+#: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:222
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:359
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:360
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/__init__.py:368
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:503
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:391
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:352
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:329
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:305
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:481
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:793
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:316
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:257
+#, python-format
+msgid "Couldn't find the required parameter (%s)."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:555
+msgid "Server has no active connection for generating statistics!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:616
+#: pgadmin/browser/server_groups/servers/__init__.py:732
+msgid "Server Not Found."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:621
+#: pgadmin/utils/driver/psycopg2/__init__.py:189
+#: pgadmin/utils/driver/psycopg2/__init__.py:680
+#: pgadmin/utils/driver/psycopg2/__init__.py:888
+msgid "Unauthorized Request."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:714
+msgid "Server Connected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:741
+msgid "Server Could Not Disconnect."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:745
+msgid "Server Disconnected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/ppas.py:20
+msgid "Postgres Plus Advanced Server"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/types.py:76
+msgid "PostgreSQL"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:32
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:12
+msgid "Databases"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:134
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:204
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:196
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:213
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:207
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/__init__.py:221
+#: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:223
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:132
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/__init__.py:148
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/__init__.py:156
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:267
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/__init__.py:261
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:224
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:213
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:328
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:227
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:218
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:434
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:110
+#: pgadmin/browser/templates/browser/js/messages.js:11
+#: pgadmin/tools/grant_wizard/__init__.py:119
+msgid "Connection to the server has been lost!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:243
+msgid "Couldn't find the database in the server!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:345
+msgid "Database Connected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:362
+msgid "Database Could Not Disconnect."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:366
+msgid "Database Disconnected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:529
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:666
+msgid "Couldn't find the database on the server!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:594
+msgid "The specified database could not be found.\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:647
+msgid "-- modified SQL"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:693
+msgid " -- definition incomplete"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:467
+msgid "Cast dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:619
+msgid ""
+"ERROR: Couldn't generate reversed engineered SQL for the cast!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:626
+msgid "ERROR: Couldn't generate reversed engineered SQL for the cast node!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:10
+msgid "Casts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:25
+msgid "Cast"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:40
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:45
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:50
+msgid "Cast..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:71
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:112
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:86
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:118
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:118
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:84
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:38
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:81
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:69
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:68
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:184
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:80
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:73
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:155
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:82
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:104
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:271
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:371
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:113
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:158
+msgid "Name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:74
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:115
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:171
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:127
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:127
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:129
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:41
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:85
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:72
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:83
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:76
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:194
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:158
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:85
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:107
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:275
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:239
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:374
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:116
+msgid "OID"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:77
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:121
+msgid "Source type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:124
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:166
+msgid "Target type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:176
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:229
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:107
+msgid "Function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:214
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:159
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:107
+msgid " + err.errormsg + "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:215
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:160
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:108
+msgid "\" + err.errormsg + \""
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:232
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:247
+msgid "Context"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:257
+msgid "System cast?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:265
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:122
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:232
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:142
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:139
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:97
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:61
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:47
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:135
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:75
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:205
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:90
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:83
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:213
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:176
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:94
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:705
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:249
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:133
+msgid "Comment"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:282
+msgid "Source type must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/casts/templates/cast/js/casts.js:293
+msgid "Target type must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:46
+msgid "Event Triggers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:335
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:538
+#, python-format
+msgid "Couldn't find the required parameter/s %s."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:452
+msgid "Event trigger dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:21
+msgid "Provider can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:26
+msgid "Security Label can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:39
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:52
+msgid "Event Trigger"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:66
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:71
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:76
+msgid "Event Trigger..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:118
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:175
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:130
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:132
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:90
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:46
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:44
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:88
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:161
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:88
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:110
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:278
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:242
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:127
+msgid "Owner"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:124
+msgid "Enabled status"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:133
+msgid "Trigger function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:137
+msgid "Events"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:145
+msgid "When"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:161
+msgid "Event trigger name can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:168
+msgid "Event trigger owner can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:174
+msgid "Event trigger enabled status can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:181
+msgid "Event trigger function can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/templates/event_triggers/js/event_trigger.js:187
+msgid "Event trigger event can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:55
+msgid "Extensions"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:319
+msgid "Extension dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:345
+msgid "-- Modified SQL --"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:17
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:47
+msgid "Extension"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:63
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:68
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:73
+msgid "Extension..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:179
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:92
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:193
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:86
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:79
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:201
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:165
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:56
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:283
+msgid "Schema"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:180
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:201
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:210
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:135
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:140
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:137
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:148
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:53
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:56
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:79
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:83
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:88
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:81
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:209
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:217
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:244
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:271
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:275
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:283
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:96
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:101
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:106
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:111
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:116
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:86
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:90
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:217
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:220
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:224
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:228
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:233
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:237
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:242
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:253
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:260
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:183
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:186
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:189
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:195
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:198
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:297
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:324
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:334
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:350
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:503
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:684
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:693
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:378
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:391
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:395
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:120
+msgid "Definition"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:200
+msgid "Relocatable?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:247
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:168
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:145
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:168
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:191
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:155
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:109
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:307
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:350
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:130
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:740
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:486
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:164
+msgid "Name can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:48
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:44
+msgid "Foreign Data Wrappers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:485
+msgid "Foreign Data Wrapper dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:48
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:43
+msgid "Foreign Servers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:495
+msgid "Foreign Server dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:56
+msgid "Foreign Server"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:75
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:80
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:85
+msgid "Foreign Server..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:134
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:69
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:211
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:295
+msgid "Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:150
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:155
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:150
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:155
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:95
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:171
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:177
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:59
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:294
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:308
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:328
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:336
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:210
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:215
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:92
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:99
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:121
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:124
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:127
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:130
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:133
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:141
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:147
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:680
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:710
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:721
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:247
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:294
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:305
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:466
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:131
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:143
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:151
+msgid "Security"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:154
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:154
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:94
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:171
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:58
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:307
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:325
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:205
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:91
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:120
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:138
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:679
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:246
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:292
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:130
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:142
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:570
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:755
+msgid "Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/__init__.py:49
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:42
+msgid "User Mappings"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/__init__.py:516
+msgid "User Mapping dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:55
+msgid "User Mapping"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:74
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:79
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:84
+msgid "User Mapping..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:111
+msgid "User"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:57
+msgid "Foreign Data Wrapper"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:76
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:81
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:86
+msgid "Foreign Data Wrapper..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:136
+msgid "Handler"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:142
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:267
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:274
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:279
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:288
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:292
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:295
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:299
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:304
+msgid "Options"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/templates/foreign_data_wrappers/js/foreign_data_wrappers.js:147
+msgid "Validator"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:53
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:47
+msgid "Languages"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:25
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:25
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:24
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:25
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:29
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:11
+msgid "Provider"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:28
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:28
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:27
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:29
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:33
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:15
+msgid "Security Label"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:32
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:38
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:27
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:29
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:45
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:56
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:26
+msgid "Please specify the value for all the security providers."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:60
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:236
+msgid "Language"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:100
+msgid "Trusted?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:111
+msgid "Handler Function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:131
+msgid "Inline Function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:151
+msgid "Validator Function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/languages/templates/languages/js/languages.js:175
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:292
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:334
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:97
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:145
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:719
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:303
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:464
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:149
+msgid "Security Labels"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:67
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:44
+msgid "Schemas"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:105
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:42
+msgid "Catalogs"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:416
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:467
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:760
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:845
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:951
+msgid ""
+"\n"
+"Could not find the schema in the database.\n"
+"It may have been removed by another user.\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:644
+msgid "Schema dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:721
+msgid "definition incomplete"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/__init__.py:45
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:9
+msgid "Catalog Objects"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/__init__.py:48
+msgid "Columns"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:9
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:20
+msgid "catalog_object_column"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:43
+msgid "Column"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:49
+msgid "Position"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:52
+msgid "Data type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column.js:55
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:20
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:282
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:131
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:398
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:270
+msgid "Collation"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/templates/catalog_object/js/catalog_object.js:19
+msgid "Catalog Object"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:50
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:9
+msgid "Collations"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:399
+msgid ""
+"Incomplete definition, Please provide Locale                     OR Copy "
+"collation OR LC_TYPE/LC_COLLATE"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:469
+msgid "Collation dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:35
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:41
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:47
+msgid "Collation..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:115
+msgid "Copy collation"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:121
+msgid "Locale"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:126
+msgid "LC_COLLATE"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:130
+msgid "LC_TYPE"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:175
+msgid ""
+"Incomplete definition, Please provide Locale OR Copy collation OR "
+"LC_TYPE/LC_COLLATE!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:50
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:12
+msgid "Domains"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/__init__.py:210
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:257
+#, python-format
+msgid "Couldn't find the required parameter                                 (%s)."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:359
+msgid ""
+"\n"
+"Could not find the domain in the database.\n"
+"It may have been removed by another user or\n"
+"shifted to the another schema.\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:581
+msgid "Domain dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/__init__.py:49
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:23
+msgid "Domain Constraints"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/__init__.py:454
+msgid "Domain Constraint dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:38
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:44
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:50
+msgid "Domain Constraint..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:78
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:80
+msgid "Check"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:82
+msgid "No Inherit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:86
+msgid "Validate?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain-constraints/templates/domain-constraints/js/domain-constraints.js:114
+msgid "Check can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:114
+msgid "Domain"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:129
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:135
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:141
+msgid "Domain..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:197
+msgid "System domain?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:208
+msgid "Base type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:216
+msgid "Length"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:243
+msgid "Precision"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:270
+msgid "Default"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:274
+msgid "Not Null?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:287
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:288
+msgid "Constraints"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/templates/domains/js/domains.js:312
+msgid "Base Type can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:45
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:11
+msgid "FTS Parsers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:288
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:316
+msgid ""
+"\n"
+"                Could not find the FTS Parser node.\n"
+"                "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:435
+msgid ""
+"\n"
+"                        Could not find the FTS Parser node to update.\n"
+"                    "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:489
+msgid ""
+"\n"
+"                    Could not find the FTS Parser node.\n"
+"                    "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:508
+msgid "FTS Parser dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:571
+msgid ""
+"\n"
+"                        Could not find the FTS Parser node.\n"
+"                    "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:800
+msgid ""
+"ERROR: Couldn't generate reversed engineered                         "
+"query for the FTS Parser!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:808
+msgid ""
+"ERROR: Couldn't generate reversed engineered                         "
+"query for FTS Parser node!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:26
+msgid "FTS Parser"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:41
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:46
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:52
+msgid "FTS Parser..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:93
+msgid "Start function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:98
+msgid "Get next token function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:103
+msgid "End function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:108
+msgid "Lextypes function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:113
+msgid "Headline function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:136
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:107
+msgid "Name must be specified!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:145
+msgid "Start function must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:154
+msgid "Get next token function must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:163
+msgid "End function must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:172
+msgid "Lextype function must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:181
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:121
+msgid "Schema must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:48
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:10
+msgid "FTS Templates"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:464
+msgid "FTS template dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:664
+msgid ""
+"ERROR: Couldn't generate reversed engineered Query for the FTS Template!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:672
+msgid "ERROR: Couldn't generate reversed engineered Query for FTS Template node!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:25
+msgid "FTS Template"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:40
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:45
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:50
+msgid "FTS Template..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:86
+msgid "Init function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:90
+msgid "Lexize function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:114
+msgid "Lexize function must be selected!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:62
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:171
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:327
+msgid "Functions"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:795
+msgid "Function Dropped."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1110
+msgid ""
+"\n"
+"Could not find the function in the database.\n"
+"It may have been removed by another user or\n"
+"created/shifted to the another schema.\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1230
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:13
+msgid "Procedures"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:59
+msgid "Data Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:70
+msgid "Mode"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:85
+msgid "Argument Name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:88
+msgid "Default Value"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:122
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:128
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:134
+msgid "Function..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:205
+msgid "System function?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:209
+msgid "System procedure?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:216
+msgid "Argument count"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:219
+msgid "Arguments"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:223
+msgid "Signature arguments"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:232
+msgid "Return type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:240
+msgid "Code"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:252
+msgid "Object file"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:259
+msgid "Link symbol"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:266
+msgid "Volatility"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:274
+msgid "Returns a set?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:278
+msgid "Strict?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:287
+msgid "Security of definer?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:291
+msgid "Window?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:295
+msgid "Estimated cost"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:298
+msgid "Estimated rows"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:303
+msgid "Leak proof?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:311
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:312
+msgid "Parameters"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:319
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:320
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:297
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:299
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:458
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:459
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:136
+msgid "Variables"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:355
+msgid "Owner can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:360
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:135
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:745
+msgid "Schema can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:365
+msgid "Return Type can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:370
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:140
+msgid "Language can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:377
+msgid "Object File can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:382
+msgid "Link Symbol can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:388
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:145
+msgid "Code can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:27
+msgid "Procedure"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:43
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:49
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:55
+msgid "Procedure..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:53
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:44
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:164
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:321
+msgid "Sequences"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:386
+msgid "Sequence dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:56
+msgid "Sequence"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:71
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:77
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:83
+msgid "Sequence..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:179
+msgid "Increment"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:182
+msgid "Start"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:185
+msgid "Current value"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:188
+msgid "Minimum"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:191
+msgid "Maximum"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:194
+msgid "Cache"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:197
+msgid "Cycled"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:213
+msgid "Securitiy Labels"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:233
+msgid "Sequence name can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:240
+msgid "Sequence owner can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:247
+msgid "Sequence schema can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:52
+msgid "Catalog"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:71
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:76
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:81
+msgid "Schema..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:114
+msgid "System schema?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:123
+msgid "Default TABLE Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:126
+msgid "Default SEQUENCE Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:129
+msgid "Default FUNCTION Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:132
+msgid "Default TYPE Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:151
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:310
+msgid "Default Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:156
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:314
+msgid "Default Privileges: Tables"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:157
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:315
+msgid "Tables"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:163
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:320
+msgid "Default Privileges: Sequences"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:170
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:326
+msgid "Default Privileges: Functions"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:177
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:332
+msgid "Default Privileges: Types"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:178
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:52
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:11
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:338
+msgid "Types"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:193
+msgid "Name can not be empty."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:199
+msgid "Owner can not be empty."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:805
+msgid "Composite types requires at least two members"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:815
+msgid "Enumeration types requires at least one label"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:825
+msgid "Subtype must be defined for range types"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:837
+msgid ""
+"External types require both Input &                             Output "
+"conversion function."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:967
+msgid "Type dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:38
+msgid "Please provide the value for security label."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:66
+msgid "Member Name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:80
+msgid "Length/precision"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:107
+msgid "Scale"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:145
+msgid "Please specify the value for member name."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:153
+msgid "Length/precision should not be less than "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:155
+msgid "Length/precision should not be greater than "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:166
+msgid "Scale should not be less than "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:168
+msgid "Scale should not be greater than "
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:184
+msgid "Label"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:196
+msgid "Please specify the value for label."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:226
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:232
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:238
+msgid "Type..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:322
+msgid "Composite Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:332
+msgid "Enumeration Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:356
+msgid "Sub-type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:360
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:367
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:400
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:434
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:468
+msgid "Range Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:366
+msgid "Sub-type operator class"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:432
+msgid "Canonical function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:466
+msgid "Sub-type diff function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:504
+msgid "External Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:510
+msgid "Input function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:518
+msgid "Output function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:527
+msgid "Receive function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:535
+msgid "Send function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:543
+msgid "Typmod in function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:560
+msgid "Typmod out function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:577
+msgid "Internal length"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:582
+msgid "Variable?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:587
+msgid "Default?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:592
+msgid "Analyze function"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:600
+msgid "Category type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:623
+msgid "Preferred?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:628
+msgid "Element type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:633
+msgid "Delimiter"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:637
+msgid "Alignment type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:650
+msgid "Storage type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:663
+msgid "Passed by value?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:668
+msgid "Collatable?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:675
+msgid "Alias"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:683
+msgid "Members"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:692
+msgid "Labels"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:701
+msgid "System type?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:750
+msgid "Type can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:756
+msgid "Subtype Name can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:762
+msgid "Input function can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:768
+msgid "Output function can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:57
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:236
+msgid "Database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:71
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:77
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:83
+msgid "Database..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:89
+msgid "Connect Database..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:94
+msgid "Disconnect Database..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:137
+msgid "Disconnect the database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:138
+#, python-format
+msgid "Are you sure you want to disconnect the database - %%s ?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:146
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:90
+msgid "\" + res.info + \""
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:252
+msgid "Encoding"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:257
+msgid "Template"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:262
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:52
+msgid "Tablespace"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:275
+msgid "Character Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:280
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:396
+msgid "Connection Limit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:283
+msgid "Allow Connections?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:348
+msgid "Database name cannot be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:370
+msgid "Connect to Database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:53
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:10
+msgid "Resource Groups"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:436
+msgid "Resource Group dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:21
+msgid "Resource Group"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:36
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:51
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:56
+msgid "Resource Group..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:72
+msgid "Group Name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:75
+#, python-format
+msgid "CPU Rate Limit (%%)"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:78
+msgid "Dirty Rate Limit (KB)"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:96
+msgid "Group Name can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:112
+msgid "CPU Rate Limit can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:128
+msgid "Dirty Rate Limit can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:27
+msgid "Login/Group Roles"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:133
+msgid "Name is not provided!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:141
+msgid "Connection limit must be an integer value or equals to -1!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:146
+msgid ""
+"\n"
+"Role membership information must be passed as an array of JSON object in "
+"the\n"
+"following format:\n"
+"\n"
+"rolmembership:[{\n"
+"    role: [rolename],\n"
+"    admin: True/False\n"
+"    },\n"
+"    ...\n"
+"]"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:171
+msgid ""
+"\n"
+"Role membership information must be passed a string representing an array"
+" of\n"
+"JSON object in the following format:\n"
+"rolmembership:{\n"
+"    'added': [{\n"
+"        role: [rolename],\n"
+"        admin: True/False\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'deleted': [{\n"
+"        role: [rolename],\n"
+"        admin: True/False\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'updated': [{\n"
+"        role: [rolename],\n"
+"        admin: True/False\n"
+"        },\n"
+"        ...\n"
+"        ]\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:249
+msgid ""
+"\n"
+"Security Label must be passed as an array of JSON object in the following"
+"\n"
+"format:\n"
+"seclabels:[{\n"
+"    provider: <provider>,\n"
+"    label: <label>\n"
+"    },\n"
+"    ...\n"
+"]"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:266
+msgid ""
+"\n"
+"Security Label must be passed as an array of JSON object in the following"
+"\n"
+"format:\n"
+"seclabels:{\n"
+"    'added': [{\n"
+"        provider: <provider>,\n"
+"        label: <label>\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'deleted': [{\n"
+"        provider: <provider>,\n"
+"        label: <label>\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'updated': [{\n"
+"        provider: <provider>,\n"
+"        label: <label>\n"
+"        },\n"
+"        ...\n"
+"        ]\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:328
+msgid ""
+"\n"
+"Configuration parameters/variables must be passed as an array of JSON "
+"object in\n"
+"the following format (create mode):\n"
+"variables:[{\n"
+"    database: <database> or null,\n"
+"    name: <configuration>,\n"
+"    value: <value>\n"
+"    },\n"
+"    ...\n"
+"]"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:347
+msgid ""
+"\n"
+"Configuration parameters/variables must be passed as an array of JSON "
+"object in\n"
+"the following format (update mode):\n"
+"rolmembership:{\n"
+"    'added': [{\n"
+"        database: <database> or null,\n"
+"        name: <configuration>,\n"
+"        value: <value>\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'deleted': [{\n"
+"        database: <database> or null,\n"
+"        name: <configuration>,\n"
+"        value: <value>\n"
+"        },\n"
+"        ...\n"
+"        ],\n"
+"    'updated': [{\n"
+"        database: <database> or null,\n"
+"        name: <configuration>,\n"
+"        value: <value>\n"
+"        },\n"
+"        ...\n"
+"        ]\n"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:464
+msgid "The current user does not have permission to drop the role!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:468
+msgid "The current user does not have permission to update the role!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:473
+msgid "The current user does not have permission to create the role!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:502
+msgid ""
+"ERROR: fetching the role information!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:509
+msgid "Couldn't find the specific role in the database server!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:533
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:645
+msgid ""
+"Error fetching the roles from the database server!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:554
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:588
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:732
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:779
+msgid ""
+"Error fetching the roles information from the database server!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:605
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:652
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:746
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:795
+msgid "Couldn't find the role information!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:667
+msgid ""
+"ERROR: Couldn't drop the user!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:683
+msgid ""
+"ERROR: Couldn't generate reversed engineered Query for the role/user!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:690
+msgid "ERROR: Couldn't generate reversed engineered Query for the role/user!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:710
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:768
+msgid ""
+"ERROR: Couldn't create the role!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:720
+msgid ""
+"ERROR: Couldn't fetch the role information!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:981
+msgid ""
+"Error fetching the variable information for the given role!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1013
+msgid ""
+"Error fetching the variable options for role!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:240
+msgid ""
+"Selection of checkbox represents the permission to give grant to other "
+"roles."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:297
+msgid "Login/Group Role"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:314
+msgid "Login Role"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:316
+msgid "Group Role"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:328
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:334
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:340
+msgid "Login/Group Role..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:377
+msgid "Password"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:391
+msgid "Account Expires"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:399
+msgid "Can login?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:400
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:404
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:417
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:425
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:430
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:434
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:438
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:444
+msgid "Role Privileges"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:403
+msgid "Superuser"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:416
+msgid "Create roles?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:424
+msgid "Create databases?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:428
+msgid "Update Catalog?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:435
+msgid "Inherit rights from the parent roles?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:439
+msgid "Can initiate streaming replication and backups?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:443
+msgid "Role Membership"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:27
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:40
+msgid "Tablespaces"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:368
+msgid "Couldn't the tablespace in the server!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:383
+msgid "Tablespace dropped"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:66
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:72
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:78
+msgid "Tablespace..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:119
+msgid "Location"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:169
+msgid "Location can not be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/password.html:6
+msgid ""
+"Please enter the password for the user '{0}' to connect the server - "
+"\"{1}\""
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:24
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:29
+msgid "Server..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:34
+msgid "Connect Server..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:40
+msgid "Disconnect Server..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:45
+msgid "Please select the grantee from the list!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:47
+msgid "Please select at least one privilege to grant!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:82
+msgid "Disconnect the server"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:83
+#, python-format
+msgid "Are you sure you want to disconnect the server - %%s ?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:156
+msgid "ID"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:161
+msgid "Server Type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:165
+msgid "Unknown"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:168
+msgid "Connected"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:180
+msgid "Host Name/Address"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:186
+msgid "Maintenance Database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:189
+msgid "User Name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:211
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:45
+msgid "Id can not be changed!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:215
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:48
+msgid "Name can be empty!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:240
+msgid "Connect to Server"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:289
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:311
+#: pgadmin/preferences/templates/preferences/preferences.js:356
+#: pgadmin/preferences/templates/preferences/preferences.js:371
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:243
+msgid "OK"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:292
+#: pgadmin/browser/templates/browser/js/node.js:872
+#: pgadmin/preferences/templates/preferences/preferences.js:359
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:267
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:268
+msgid "Cancel"
+msgstr ""
+
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:9
+msgid "Server Group"
+msgstr ""
+
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:20
+msgid "Server Group..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:25
+msgid "Drop Server Group..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:67
 msgid "Add a server group"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:5
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:68
 msgid "Enter a name for the new server group"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:37
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:96
 msgid "Delete server group?"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:38
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:97
 msgid "Are you sure you wish to delete the server group \"{0}\"?"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:65
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:126
 msgid "Rename server group"
 msgstr ""
 
-#: pgadmin/browser/nodes/server_groups/templates/server_groups/server_groups.js:66
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:127
 msgid "Enter a new name for the server group"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:8
+#: pgadmin/browser/templates/browser/index.html:24
 msgid "Toggle navigation"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:21
+#: pgadmin/browser/templates/browser/index.html:40
 msgid "File"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:28
+#: pgadmin/browser/templates/browser/index.html:44
+#: pgadmin/browser/templates/browser/js/node.js:690
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:235
 msgid "Edit"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:35
-msgid "Tools"
+#: pgadmin/browser/templates/browser/index.html:48
+msgid "Object"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:42
+#: pgadmin/browser/templates/browser/index.html:52
 msgid "Management"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:49
+#: pgadmin/browser/templates/browser/index.html:56
+msgid "Tools"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/index.html:60 pgadmin/help/__init__.py:80
+#: pgadmin/help/__init__.py:88
 msgid "Help"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:61
+#: pgadmin/browser/templates/browser/index.html:69
 #: pgadmin/templates/security/change_password.html:10
 msgid "Change Password"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:63
+#: pgadmin/browser/templates/browser/index.html:71
 msgid "Logout"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:89
-msgid "SQL"
+#: pgadmin/browser/templates/browser/upgrade.html:1
+msgid ""
+"You are currently running version {0} of {1}, however the current version"
+" is {2}."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:91
-msgid "Browser"
+#: pgadmin/browser/templates/browser/upgrade.html:2
+msgid ""
+"Please click <a class=\"alert-link\" href=\"{0}\" "
+"target=\"_new\">here</a> for more information."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:93
-msgid "Dashboard"
-msgstr ""
-
-#: pgadmin/browser/templates/browser/js/browser.js:95
+#: pgadmin/browser/templates/browser/js/browser.js:66
 msgid "Properties"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:97
+#: pgadmin/browser/templates/browser/js/browser.js:70
+#: pgadmin/browser/templates/browser/js/browser.js:80
+#: pgadmin/browser/templates/browser/js/browser.js:99
+#: pgadmin/browser/templates/browser/js/browser.js:109
+#: pgadmin/browser/templates/browser/js/node.js:244
+msgid "Please select an object in the tree view."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:76
+#: pgadmin/browser/templates/browser/js/messages.js:20
 msgid "Statistics"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:99
+#: pgadmin/browser/templates/browser/js/browser.js:86
+#: pgadmin/browser/templates/browser/js/messages.js:14
+msgid "SQL"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:95
 msgid "Dependencies"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:101
+#: pgadmin/browser/templates/browser/js/browser.js:105
 msgid "Dependents"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:105
-msgid "Online Help"
+#: pgadmin/browser/templates/browser/js/browser.js:128
+msgid "Dashboard"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:107
-msgid "pgAdmin Website"
+#: pgadmin/browser/templates/browser/js/browser.js:168
+msgid "Create"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:109
-msgid "PostgreSQL Website"
+#: pgadmin/browser/templates/browser/js/browser.js:248
+msgid "No object selected"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:173
+#: pgadmin/browser/templates/browser/js/browser.js:295
+msgid "Loading..."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:417
+msgid "Error Initializing script - "
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:424
+#: pgadmin/browser/templates/browser/js/browser.js:534
+#: pgadmin/browser/templates/browser/js/browser.js:542
+msgid "Error loading script - "
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/browser.js:638
+msgid "Do you really want to leave the page?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/collection.js:36
+#: pgadmin/browser/templates/browser/js/node.js:82
+msgid "Refresh..."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/collection.js:101
+#: pgadmin/browser/templates/browser/js/node.js:216
+#, python-format
+msgid "Error fetching the properties - %%s!"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/error.js:13
 msgid "Error message"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:187
+#: pgadmin/browser/templates/browser/js/error.js:27
 msgid "Additional info"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/browser.js:201
-msgid "An error has occurred"
+#: pgadmin/browser/templates/browser/js/messages.js:12
+msgid "Click here for details!"
 msgstr ""
 
-#: pgadmin/help/hooks.py:21
-msgid "Contents"
+#: pgadmin/browser/templates/browser/js/messages.js:13
+msgid "General"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:15
+msgid "Nothing changed"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:16
+#, python-format
+msgid "'%%s' must be an integer."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:17
+#, python-format
+msgid "'%%s' must be a numeric."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:18
+#, python-format
+msgid "'%%s' must be greater than or equals to %%d."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:19
+#, python-format
+msgid "'%%s' must be less than or equals to %%d."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:21
+msgid "Value"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:22
+msgid "No SQL could be generated for the selected object."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:23
+msgid "No statistics are available for the selected object!"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:24
+#: pgadmin/preferences/templates/preferences/preferences.js:192
+msgid "True"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/messages.js:25
+#: pgadmin/preferences/templates/preferences/preferences.js:193
+msgid "False"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:77
+msgid "Properties..."
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:90
+msgid "Delete/Drop"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:98
+msgid "Drop Cascade"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:341
+#, python-format
+msgid "Create - %%s"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:365
+#, python-format
+msgid "Are you sure want to stop editing the properties of the %%s - \"%%s\"?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:367
+#, python-format
+msgid ""
+"Are you sure want to reset the current changes and reopen the panel for "
+"%%s - \"%%s\"?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:371
+msgid "Edit in progress?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:429
+#, python-format
+msgid ""
+"Are you sure you want to drop %%s \"%%s\" and all the objects that depend"
+" on it?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:431
+#, python-format
+msgid "DROP CASCADE %%s?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:444
+#, python-format
+msgid "Are you sure you want to drop %%s \"%%s\"?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:446
+#, python-format
+msgid "DROP %%s?"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:487
+#, python-format
+msgid "Error dropping %%s: \"%%s\""
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:702
+#: pgadmin/browser/templates/browser/js/node.js:831
+msgid "Help on the SQL for this object type"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:841
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:171
+msgid "Save"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:842
+msgid "Save this object"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:863
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:1063
+#, python-format
+msgid "Error during saving properties - %%s!"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:873
+msgid "Cancel changes this object"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:885
+msgid "Reset"
+msgstr ""
+
+#: pgadmin/browser/templates/browser/js/node.js:886
+msgid "Reset the fields on this dialogue"
+msgstr ""
+
+#: pgadmin/help/__init__.py:28 pgadmin/help/__init__.py:50
+msgid "Online Help"
+msgstr ""
+
+#: pgadmin/help/__init__.py:34 pgadmin/help/__init__.py:55
+msgid "pgAdmin Website"
+msgstr ""
+
+#: pgadmin/help/__init__.py:40 pgadmin/help/__init__.py:60
+msgid "PostgreSQL Website"
+msgstr ""
+
+#: pgadmin/help/__init__.py:66
+msgid "SQL Help"
+msgstr ""
+
+#: pgadmin/help/__init__.py:74
+msgid "Paths"
+msgstr ""
+
+#: pgadmin/help/__init__.py:78
+msgid "PostgreSQL Help Path"
+msgstr ""
+
+#: pgadmin/help/__init__.py:81
+msgid ""
+"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
+" major.minor version number."
+msgstr ""
+
+#: pgadmin/help/__init__.py:86
+msgid "EDB Advanced Server Help Path"
+msgstr ""
+
+#: pgadmin/help/__init__.py:89
+msgid ""
+"Path to the EDB Advanced Server documentation. $VERSION$ will be replaced"
+" with the major.minor version number."
+msgstr ""
+
+#: pgadmin/preferences/__init__.py:58
+#: pgadmin/preferences/templates/preferences/preferences.js:366
+msgid "Preferences"
+msgstr ""
+
+#: pgadmin/preferences/templates/preferences/preferences.js:201
+msgid "Show"
+msgstr ""
+
+#: pgadmin/preferences/templates/preferences/preferences.js:202
+msgid "Hide"
+msgstr ""
+
+#: pgadmin/preferences/templates/preferences/preferences.js:333
+msgid "Category is not selected."
 msgstr ""
 
 #: pgadmin/templates/security/change_password.html:2
@@ -236,27 +2675,375 @@ msgstr ""
 msgid "Reset Password"
 msgstr ""
 
-#: pgadmin/test/hooks.py:19
+#: pgadmin/test/__init__.py:24
 msgid "Generated Test HTML"
 msgstr ""
 
-#: pgadmin/test/hooks.py:20
+#: pgadmin/test/__init__.py:28
 msgid "Test Alert"
 msgstr ""
 
-#: pgadmin/test/hooks.py:21
+#: pgadmin/test/__init__.py:31 pgadmin/test/__init__.py:37
+#: pgadmin/test/__init__.py:43 pgadmin/test/__init__.py:49
+#: pgadmin/test/__init__.py:55
+msgid "alertify"
+msgstr ""
+
+#: pgadmin/test/__init__.py:34
 msgid "Test Confirm"
 msgstr ""
 
-#: pgadmin/test/hooks.py:22
+#: pgadmin/test/__init__.py:40
 msgid "Test Dialog"
 msgstr ""
 
-#: pgadmin/test/hooks.py:23
+#: pgadmin/test/__init__.py:46
 msgid "Test Prompt"
 msgstr ""
 
-#: pgadmin/test/hooks.py:24
+#: pgadmin/test/__init__.py:52
 msgid "Test Notifier"
+msgstr ""
+
+#: pgadmin/test/__init__.py:58
+msgid "Test Disabled"
+msgstr ""
+
+#: pgadmin/tools/__init__.py:25
+msgid "This URL can not be requested directly!"
+msgstr ""
+
+#: pgadmin/tools/datagrid/__init__.py:53
+msgid "User can not call this URL directly"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:61
+msgid "Query tool"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:71
+msgid "View First 100 Rows"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:76
+msgid "View Last 100 Rows"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:81
+msgid "View All Rows"
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:86
+msgid "View Filtered Rows..."
+msgstr ""
+
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:90
+msgid "View Data"
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:63
+msgid "Please select any database object type"
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:166
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:176
+msgid "Grant Wizard..."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard.js:566
+msgid "Objects"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:65
+msgid "Items per page in grid"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:75
+msgid "User can not call this url directly"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:101
+#: pgadmin/tools/sqleditor/__init__.py:199
+#: pgadmin/tools/sqleditor/__init__.py:646
+msgid "Transaction ID not found in the session."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:117
+#: pgadmin/tools/sqleditor/__init__.py:262
+#: pgadmin/tools/sqleditor/__init__.py:683
+#: pgadmin/tools/sqleditor/command.py:176
+#: pgadmin/tools/sqleditor/command.py:390
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1546
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1592
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1638
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1674
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1715
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1790
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2099
+msgid "Not connected to server or connection with the server has been closed."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:269
+#: pgadmin/tools/sqleditor/__init__.py:686
+msgid "Either Transaction object or Session object not found."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:410
+msgid "No primary key found for this object, so unable to save records."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/command.py:65
+msgid "This feature has not been implemented for object type '{0}'!"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/command.py:242
+msgid "Filter string is empty!"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/command.py:303
+msgid "Not allowed to save the data for the selected object!"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:176
+msgid "Copy Row"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:179
+msgid "Paste Row"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:184
+msgid "Add New Row"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:189
+msgid "Filter"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:197
+msgid "Remove"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:198
+msgid "By selection"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:199
+msgid "Exclude selection"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:212
+msgid "Execute/Refresh"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:222
+msgid "Auto-Commit"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:226
+msgid "Auto-Rollback"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:230
+msgid "Cancel query"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:245
+msgid "Clear query window"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:249
+msgid "Clear history"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:255
+msgid "Download as CSV"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:272
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:273
+msgid "Apply"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:365
+msgid "Data Output"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:375
+msgid "Explain"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:385
+msgid "Messages"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:395
+msgid "History"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:852
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1822
+msgid "Initializing the query execution!"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:862
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1861
+msgid "Waiting for the query execution to complete..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:902
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:983
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1494
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1886
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1985
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2048
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2139
+msgid "Not connected to server Or connection with the server has been closed."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:933
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1051
+msgid "Loading the data from the database server, and rendering into the grid..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1149
+msgid "Fetching the information about the columns returned..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1434
+msgid "Primary key columns can not be null."
+msgstr ""
+
+#: pgadmin/utils/ajax.py:119
+msgid "It is not implemented!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:147
+msgid "Invalid value for boolean type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:151
+msgid "Invalid value for integer type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:156
+msgid "Invalid value for numeric type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:162
+msgid "Invalid value for date type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:168
+msgid "Invalid value for datetime type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:171
+msgid "Invalid value for options type!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:489
+msgid "Couldn't find the specified module."
+msgstr ""
+
+#: pgadmin/utils/preferences.py:494
+msgid "Module '{0}' is no longer in use!"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:507
+msgid "Module '{0}' does not have category with id '{1}'"
+msgstr ""
+
+#: pgadmin/utils/preferences.py:521
+msgid "Couldn't find the given preference!"
+msgstr ""
+
+#: pgadmin/utils/driver/registry.py:74
+msgid "Driver - '{0}' has not been implemented!"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:196
+msgid ""
+"Failed to decrypt the saved password!\n"
+"Error: {0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:276
+msgid ""
+"Failed to setup the role with error message:\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:369
+msgid ""
+"\n"
+"Attempt to reconnect has failed with the below error:\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:373
+msgid ""
+"Connection was lost!\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:381
+msgid ""
+"\n"
+"Failed to create cursor for psycopg2 connection with error message for "
+"the server#{1}:{2}:\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:399
+msgid ""
+"\n"
+"Connection for server#{0} with database \"{1}\" was lost.\n"
+"Attempt to reconnect it failed with the below error:\n"
+"{2}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:699
+msgid ""
+"\n"
+"Failed to reset the connection of the server due to following error:\n"
+"{0}"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:790
+#: pgadmin/utils/driver/psycopg2/__init__.py:845
+msgid "Cursor could not be found for the async connection."
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:926
+msgid "Not connected to the database server."
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:971
+msgid "SQL state: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:977
+msgid "Detail: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:983
+msgid "Hint: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:989
+msgid "Character: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:995
+msgid "Context: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:1087
+msgid "Server has no active connection, please connect it first!"
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg2/__init__.py:1116
+msgid "Couldn't find the database!"
 msgstr ""
 
