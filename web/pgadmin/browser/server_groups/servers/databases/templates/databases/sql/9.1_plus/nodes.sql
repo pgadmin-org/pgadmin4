@@ -4,7 +4,9 @@ SELECT
 FROM
     pg_database db
     LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace = ta.oid{% if did %}
-    
-WHERE db.oid={{ did|qtLiteral }}::OID{% endif %}
+WHERE {% if did %}
+db.oid = {{ did|qtLiteral }}::OID{% else %}
+db.oid > {{ last_system_oid }}::OID
+{% endif %}
 
 ORDER BY datname;

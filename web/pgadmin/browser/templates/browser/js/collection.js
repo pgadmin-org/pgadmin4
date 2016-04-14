@@ -12,7 +12,11 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
   if (pgBrowser.Collection)
     return pgBrowser.Collection;
 
-  pgBrowser.Collection = _.extend(_.clone(pgBrowser.Node), {
+  pgBrowser.Collection = function() {};
+
+   _.extend(
+     pgBrowser.Collection,
+     _.clone(pgBrowser.Node), {
     ///////
     // Initialization function
     // Generally - used to register the menus for this type of node.
@@ -34,6 +38,9 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       }]);
     },
     hasId: false,
+    // A collection will always have a collection of statistics, when the node
+    // it represent will have some statistics.
+    hasCollectiveStatistics: true,
     showProperties: function(item, data, panel) {
       var that = this,
         j = panel.$container.find('.obj_properties').first(),
@@ -133,5 +140,5 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
     }
   });
 
-  return pgAdmin.Browser.Collection;
+  return pgBrowser.Collection;
 });

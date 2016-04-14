@@ -8,6 +8,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'server',
       label: '{{ _('Server') }}',
       canDrop: true,
+      hasStatistics: true,
+      hasCollectiveStatistics: true,
       Init: function() {
 
         /* Avoid multiple registration of same menus */

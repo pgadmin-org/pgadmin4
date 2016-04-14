@@ -11,7 +11,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         node: 'database',
         label: '{{ _('Databases') }}',
         type: 'coll-database',
-        columns: ['name', 'datowner', 'comments']
+        columns: ['name', 'datowner', 'comments'],
+        hasStatistics: true
       });
   };
 
@@ -51,6 +52,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       sqlCreateHelp: 'sql-createdatabase.html',
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       canDrop: true,
       label: '{{ _('Database') }}',
       node_image: function() {

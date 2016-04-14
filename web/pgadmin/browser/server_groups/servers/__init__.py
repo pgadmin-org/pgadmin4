@@ -530,7 +530,32 @@ class ServerNode(PGChildNodeView):
         return make_json_response(data='')
 
     def statistics(self, gid, sid):
-        return make_json_response(data='')
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        if conn.connected():
+            status, res = conn.execute_dict(
+                render_template(
+                    "/".join([
+                        'servers/sql',
+                        '9.2_plus' if manager.version >= 90200 else '9.1_plus',
+                        'stats.sql'
+                        ]),
+                    conn=conn, _=gettext
+                    )
+                )
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(data=res)
+
+        return make_json_response(
+            info=gettext(
+                "Server has no active connection for generating statistics!"
+                )
+            )
 
     def dependencies(self, gid, sid):
         return make_json_response(data='')
