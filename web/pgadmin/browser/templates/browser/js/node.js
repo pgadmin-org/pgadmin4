@@ -851,7 +851,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   if (d && !_.isEmpty(d)) {
                     m.save({}, {
                       attrs: d,
-                      validate: false,
+                      validate: true,
                       cache: false,
                       success: function() {
                         onSaveFunc.call();
@@ -860,7 +860,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                         Alertify.pgNotifier(
                           "error", jqxhr,
                           S(
-                            "{{ _("Error during saving properties - %%s!") }}"
+                            "{{ _("Error during saving properties: %%s!") }}"
                             ).sprintf(jqxhr.statusText).value()
                           );
                       }
