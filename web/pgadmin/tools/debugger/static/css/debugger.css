@@ -1,0 +1,72 @@
+.navbar-static-top, .navbar-fixed-top, .navbar-fixed-bottom {
+  background-image: linear-gradient(to bottom, #CCC 0%, #D2D2D2 100%);
+}
+
+.btn-default {
+  background-color: #D2D2D2;
+  left: 0px;
+  right: 0px;
+  padding: 7px;
+}
+
+.btn-toolbar {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+#container {
+  position: absolute;
+  top: 44px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.full-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom:0px;
+}
+
+.full-container-pane {
+  width: 100%;
+  height: 100%;
+}
+
+.top-container {
+  min-height: 300px;
+  height: 100%;
+}
+
+.pg-debugger-panel {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0; bottom: 0; right: 0; left: 0;
+}
+
+.wcLoadingIcon {
+  position: absolute;
+  font-size: 100px;
+  left: calc(50% - 100px);
+  top: calc(50% - 100px);
+  height: 95px;
+}
+
+.wcLoadingLabel {
+  position: absolute;
+  width: 103%;
+  font-size: 30px;
+  top: calc(50% + 0px);
+  text-align: center;
+}
+
+.top-container .breakpoints {
+    width: 0.9em;
+}
+
+.top-container .CodeMirror-activeline-background {
+    background: #50B0F0;
+}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Debugger - ') + function_name }}{% endblock %}
+{% block init_script %}
+try {
+  require(
+    ['pgadmin', 'pgadmin.tools.debugger.direct'],
+    function(pgAdmin, pgDirectDebug) {
+      pgDirectDebug.init({{ uniqueId }}, {{ debug_type }});
+    },
+    function() {
+      /* TODO:: Show proper error dialog */
+      console.log(arguments);
+    });
+} catch (err) {
+  /* Show proper error dialog */
+  console.log(err);
+}
+{% endblock %}
+{% block body %}
+
+<nav class="navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <div id="btn-toolbar" class="btn-toolbar" role="toolbar" aria-label="">
+          <div class="btn-group" role="group" aria-label="">
+              <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}">
+                  <i class="fa fa-indent"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}">
+                  <i class="fa fa-outdent"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}">
+                  <i class="fa fa-play-circle"></i>
+              </button>
+          </div>
+           <div class="btn-group" role="group" aria-label="">
+              <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}">
+                  <i class="fa fa-circle"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}">
+                  <i class="fa fa-ban"></i>
+              </button>
+          </div>
+           <div class="btn-group" role="group" aria-label="">
+              <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}">
+                  <i class="fa fa-stop-circle"></i>
+              </button>
+          </div>
+        </div>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div id="container"></div>
+{% endblock %}
+
+
+{% block css_link %}
+{% for stylesheet in stylesheets %}
+<link type="text/css" rel="stylesheet" href="{{ stylesheet }}"/>
+{% endfor %}
+{% endblock %}

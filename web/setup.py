@@ -217,6 +217,21 @@ CREATE TABLE user_preferences (
     FOREIGN KEY(uid) REFERENCES user (id)
     )""")
 
+        if int(version.value) < 9:
+            db.engine.execute("""
+CREATE TABLE IF NOT EXISTS debugger_function_arguments (
+    server_id INTEGER ,
+    database_id INTEGER ,
+    schema_id INTEGER ,
+    function_id INTEGER ,
+    arg_id INTEGER ,
+    is_null INTEGER NOT NULL CHECK (is_null >= 0 AND is_null <= 1) ,
+    is_expression INTEGER NOT NULL CHECK (is_expression >= 0 AND is_expression <= 1) ,
+    use_default INTEGER NOT NULL CHECK (use_default >= 0 AND use_default <= 1) ,
+    value TEXT,
+    PRIMARY KEY (server_id, database_id, schema_id, function_id, arg_id)
+    )""")
+
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
     db.session.merge(version)

@@ -564,6 +564,236 @@
     editor: TextareaCellEditor
   });
 
+
+  /**
+   * Custom header icon cell to add the icon in table header.
+  */
+  var CustomHeaderIconCell = Backgrid.Extension.CustomHeaderIconCell = Backgrid.HeaderCell.extend({
+      /** @property */
+      className: "header-icon-cell",
+      events: {
+        "click": "addHeaderIcon"
+      },
+      addHeaderIcon: function (e) {
+        self = this;
+        m = new (this.collection.model);
+        this.collection.add(m)
+        e.preventDefault();
+      },
+      render: function () {
+          this.$el.empty();
+          //this.$el.html("<i class='fa fa-plus-circle'></i>");
+          this.$el.html("<label><a><span style='font-weight:normal;'>Array Values</a></span></label> <button class='btn-sm btn-default add'>ADD</button>");
+          this.delegateEvents();
+          return this;
+      }
+  });
+
+
+  var arrayCellModel = Backbone.Model.extend({
+    defaults: {
+        value: undefined
+    }
+  });
+
+  /**
+     Custom InputArrayCellEditor for editing user input array for debugger.
+   */
+  var InputArrayCellEditor = Backgrid.Extension.InputArrayCellEditor =
+    Backgrid.CellEditor.extend({
+      tagName: "div",
+
+    events: {
+      'blur': 'lostFocus'
+    },
+
+    render: function () {
+        var self = this,
+            arrayValuesCol = this.model.get(this.column.get("name")),
+            tbl = $("<table></table>").appendTo(this.$el),
+            gridCols = [
+                    {name: 'value', label:'Array Values', type: 'text', cell:'string', headerCell: Backgrid.Extension.CustomHeaderIconCell, cellHeaderClasses: 'width_percent_100'},
+                    ],
+            gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>");
+
+        this.$el.attr('tabindex', '1');
+
+        gridCols.unshift({
+          name: "pg-backform-delete", label: "",
+          cell: Backgrid.Extension.DeleteCell,
+          //headerCell: Backgrid.Extension.CustomHeaderIconCell,
+          editable: false, cell_priority: -1
+        });
+
+      this.$el.empty();
+      var grid = self.grid = new Backgrid.Grid({
+            columns: gridCols,
+            collection:arrayValuesCol
+          });
+
+      grid.render();
+
+      gridBody.append(grid.$el)
+
+      this.$el.html(gridBody);
+
+      $(self.$el).pgMakeVisible('backform-tab');
+      self.delegateEvents();
+
+      return this;
+    },
+
+    /*
+     * Call back function when the grid lost the focus
+     */
+    lostFocus: function(ev) {
+
+      var self = this,
+      /*
+       * Function to determine whether one dom element is descendant of another
+       * dom element.
+       */
+      isDescendant = function (parent, child) {
+         var node = child.parentNode;
+         while (node != null) {
+             if (node == parent) {
+                 return true;
+             }
+             node = node.parentNode;
+         }
+         return false;
+      }
+      /*
+       * Between leaving the old element focus and entering the new element focus the
+       * active element is the document/body itself so add timeout to get the proper
+       * focused active element.
+       */
+      setTimeout(function() {
+        if (self.$el[0] != document.activeElement && !isDescendant(self.$el[0], document.activeElement)){
+          var m = self.model,
+            column = self.column;
+          m.trigger('backgrid:edited', m, column, new Backgrid.Command(ev));
+
+          setTimeout(function(){
+            if (self.grid) {
+                self.grid.remove();
+                self.grid = null;
+            }
+          }, 10);
+
+
+        }},10);
+      return;
+    }
+  });
+
+  /*
+   * This will help us transform the user input string array values in proper format to be
+   * displayed in the cell.
+   */
+  var InputStringArrayCellFormatter = Backgrid.Extension.InputStringArrayCellFormatter =
+    function () {};
+  _.extend(InputStringArrayCellFormatter.prototype, {
+    /**
+     * Takes a raw value from a model and returns an optionally formatted
+     * string for display.
+     */
+    fromRaw: function (rawData, model) {
+        var values = []
+        rawData.each(function(m){
+            var val = m.get('value');
+            if (_.isUndefined(val)) {
+                values.push("null");
+            } else {
+                values.push(m.get("value"));
+            }
+          }
+        );
+        return values.toString();
+    },
+    toRaw: function (formattedData, model) {
+      return formattedData;
+    }
+  });
+
+  /*
+   * This will help us transform the user input integer array values in proper format to be
+   * displayed in the cell.
+   */
+  var InputIntegerArrayCellFormatter = Backgrid.Extension.InputIntegerArrayCellFormatter =
+    function () {};
+  _.extend(InputIntegerArrayCellFormatter.prototype, {
+    /**
+     * Takes a raw value from a model and returns an optionally formatted
+     * string for display.
+     */
+    fromRaw: function (rawData, model) {
+        var values = []
+        rawData.each(function(m){
+            var val = m.get('value');
+            if (_.isUndefined(val)) {
+                values.push("null");
+            } else {
+                values.push(m.get("value"));
+            }
+          }
+        );
+        return values.toString();
+    },
+    toRaw: function (formattedData, model) {
+        formattedData.each(function(m){
+            m.set("value", parseInt(m.get('value')), {silent: true});
+        });
+
+      return formattedData;
+    }
+  });
+
+  /*
+   *  InputStringArrayCell for rendering and taking input for string array type in debugger
+   */
+  var InputStringArrayCell = Backgrid.Extension.InputStringArrayCell = Backgrid.Cell.extend({
+    className: "width_percent_25",
+    formatter: InputStringArrayCellFormatter,
+    editor: InputArrayCellEditor,
+
+    initialize: function() {
+      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+        // set value to empty array.
+        if (_.isUndefined(this.collection)) {
+            this.collection = new (Backbone.Collection.extend({
+            model: arrayCellModel}));
+        }
+
+        this.model.set(this.column.get('name'), this.collection);
+
+        this.listenTo(this.collection, "remove", this.render);
+    },
+  });
+
+  /*
+   *  InputIntegerArrayCell for rendering and taking input for integer array type in debugger
+   */
+  var InputIntegerArrayCell = Backgrid.Extension.InputIntegerArrayCell = Backgrid.Cell.extend({
+    className: "width_percent_25",
+    formatter: InputIntegerArrayCellFormatter,
+    editor: InputArrayCellEditor,
+
+    initialize: function() {
+      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+        // set value to empty array.
+        if (_.isUndefined(this.collection)) {
+            this.collection = new (Backbone.Collection.extend({
+            model: arrayCellModel}));
+        }
+
+
+        this.model.set(this.column.get('name'),this.collection);
+
+        this.listenTo(this.collection, "remove", this.render);
+    },
+  });
+
   return Backgrid;
 
 }));

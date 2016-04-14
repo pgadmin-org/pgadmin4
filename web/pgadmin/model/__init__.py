@@ -148,3 +148,23 @@ class UserPreference(db.Model):
         db.Integer, db.ForeignKey('user.id'), primary_key=True
         )
     value = db.Column(db.String(1024), nullable=False)
+
+class DebuggerFunctionArguments(db.Model):
+    """Define the debugger input function arguments."""
+    __tablename__ = 'debugger_function_arguments'
+    server_id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    database_id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    schema_id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    function_id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    arg_id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    is_null = db.Column(db.Integer(),
+            db.CheckConstraint('is_null >= 0 AND is_null <= 1'),
+            nullable=False)
+    is_expression = db.Column(db.Integer(),
+                  db.CheckConstraint('is_expression >= 0 AND is_expression <= 1'),
+                  nullable=False)
+    use_default = db.Column(db.Integer(),
+                db.CheckConstraint('use_default >= 0 AND use_default <= 1'),
+                nullable=False)
+
+    value = db.Column(db.String(), nullable=True)
