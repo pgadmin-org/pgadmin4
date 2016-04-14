@@ -20,7 +20,10 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils import PgAdminModule
 from flask import Response, url_for
 from flask.ext.security import login_required
-from urllib import unquote
+try:
+    from urllib import unquote
+except:
+    from urllib.parse import unquote
 from pgadmin.utils.ajax import precondition_required
 from functools import wraps
 from pgadmin.utils.preferences import Preferences
