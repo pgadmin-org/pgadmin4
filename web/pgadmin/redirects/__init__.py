@@ -23,7 +23,7 @@ def index():
     return redirect(url_for('browser.index'))
 
 
-@blueprint.route('/favicon.ico')
+@blueprint.route('favicon.ico')
 def favicon():
     """Redirect to the favicon"""
     return redirect(url_for('static', filename='favicon.ico'))
