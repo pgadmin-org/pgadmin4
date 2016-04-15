@@ -16,7 +16,7 @@ body {
     width: 100% !important;
 }
 
-.pg-panel-content { position:absolute;top:0px;left:0px;right:0px;bottom:0px; }
+.pg-panel-content { position:absolute;top:0px;left:0px;right:0px;bottom:0px; overflow: hidden; }
 
 /* Restyle the Alertify dialogs */
 .alertify .ajs-dialog {
@@ -239,6 +239,7 @@ iframe {
 
 .obj_properties {
     padding: 0px;
+    overflow: hidden;
 }
 
 .obj_properties .pgadmin-control .uneditable-input {
@@ -424,7 +425,9 @@ iframe {
 }
 
 .has-pg-prop-btn-group {
-    top: 48px;
+    top: 39px;
+    padding-top: 8px;
+    height: calc(100% - 40px);
 }
 
 .pg-prop-content > div {
