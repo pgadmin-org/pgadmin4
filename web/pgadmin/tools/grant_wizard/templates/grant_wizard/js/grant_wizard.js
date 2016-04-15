@@ -164,7 +164,7 @@ define([
           name: 'grant_wizard_schema', module: this,
           applies: ['tools'], callback: 'start_grant_wizard',
           priority: 10, label: '{{_("Grant Wizard...") }}',
-          icon: 'wcTabIcon', enable: menu_enabled
+          icon: 'fa fa-unlock-alt', enable: menu_enabled
         }];
 
         // Add supported menus into the menus list
@@ -174,7 +174,7 @@ define([
             node: supported_nodes[idx], module: this,
             applies: ['context'], callback: 'start_grant_wizard',
             priority: 10, label: '{{_("Grant Wizard...") }}',
-            icon: 'wcTabIcon', enable: menu_enabled
+            icon: 'fa fa-unlock-alt', enable: menu_enabled
             });
         }
         pgAdmin.Browser.add_menus(menus);
