@@ -1,6 +1,7 @@
 define(
-  ['jquery','alertify', 'pgadmin', 'pgadmin.browser', 'wcdocker'],
-  function($, alertify, pgAdmin) {
+  ['jquery','alertify', 'pgadmin','codemirror', 'codemirror/mode/sql',
+   'pgadmin.browser', 'wcdocker'],
+  function($, alertify, pgAdmin, CodeMirror) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,

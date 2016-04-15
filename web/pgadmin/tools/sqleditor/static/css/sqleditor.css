@@ -232,6 +232,7 @@
   font-size: 10px;
   line-height: 1.428571429;
   border-radius: 10px;
+  cursor: auto;
 }
 
 .visibility-hidden {
