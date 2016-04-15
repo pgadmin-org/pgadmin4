@@ -528,7 +528,7 @@ fieldset[disabled] .form-control {
     background-color: #AAA;
 }
 
-.backgrid th.renderable, .backgrid td.renderable {
+.sql-editor-grid-container .backgrid th.renderable, .sql-editor-grid-container .backgrid td.renderable {
     white-space: pre-wrap;
 }
 
