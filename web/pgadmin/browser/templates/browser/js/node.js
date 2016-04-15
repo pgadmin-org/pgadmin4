@@ -731,7 +731,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           minor = Math.floor(server.version / 100) - (major * 100)
 
           url = url.replace('$VERSION$', major + '.' + minor)
-          if (!url.endsWith('/')) {
+          if (!S(url).endsWith('/')) {
             url = url + '/'
           }
           if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
