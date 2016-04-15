@@ -398,14 +398,15 @@
     defaults: _.defaults({
       select2: {},
       opt: {
-        text: null,
+        label: null,
         value: null,
         selected: false
        }
       }, Backgrid.SelectCell.prototype.defaults),
 
     enterEditMode: function() {
-      this.$el.addClass('editor');
+      if (!this.$el.hasClass('editor'))
+        this.$el.addClass('editor');
       this.$select.select2('focus');
       this.$select.on('blur', this.exitEditMode);
     },
@@ -413,10 +414,11 @@
     exitEditMode: function() {
       this.$select.off('blur', this.exitEditMode);
       this.$el.removeClass('editor');
-      this.$select.select2('blur');
     },
 
     events: {
+      "select2:open": "enterEditMode",
+      "select2:close": "exitEditMode",
       "change": "onSave",
       "select2:unselect": "onSave"
     },
@@ -424,7 +426,7 @@
     template: _.template([
       '<option value="<%- value %>" ',
       '<%= selected ? \'selected="selected"\' : "" %>>',
-      '<%- text %></option>'].join(''),
+      '<%- label %></option>'].join(''),
       null,{
         variable: null
       }),
@@ -432,6 +434,8 @@
     initialize: function() {
       Backgrid.SelectCell.prototype.initialize.apply(this, arguments);
       this.onSave = this.onSave.bind(this);
+      this.enterEditMode = this.enterEditMode.bind(this);
+      this.exitEditMode = this.exitEditMode.bind(this);
     },
 
     render: function () {
@@ -447,7 +451,6 @@
 
       if (this.$select) {
         this.$select.select2('destroy');
-        this.$select.off('change', this.onSave);
       }
 
       this.$el.empty();
@@ -467,30 +470,29 @@
           selectedValues = model.get(this.column.get("name"));
 
       delete this.$select;
-
-       selectedValues = model.get(this.column.get("name")),
-       self = this,
-       $select = self.$select = $('<select></select>').appendTo(this.$el);
+      self = this,
+      $select = self.$select = $('<select></select>').appendTo(this.$el);
 
       for (var i = 0; i < optionValues.length; i++) {
         var opt = optionValues[i];
 
         if (_.isArray(opt)) {
+
           optionText  = opt[0];
           optionValue = opt[1];
 
           $select.append(
             self.template({
-               text: optionText,
+               label: optionText,
                value: optionValue,
                selected: (selectedValues == optionValue) ||
                  (_.indexOf(selectedValues, optionValue) > -1)
             }));
          } else {
-          opt = _.defaults(opt, {
+          opt = _.defaults({}, opt, {
             selected: ((selectedValues == opt.value) ||
-                (_.indexOf(selectedValues, opt.value) > -1))
-          }, self.defaults.opt);
+                (_.indexOf(selectedValues, opt.value) > -1)),
+            }, self.defaults.opt);
           $select.append(self.template(opt));
         }
       }
@@ -508,10 +510,10 @@
         _.extend(select2_opts, {disabled: !editable});
       }
 
-      // Initialize select2 control.
-      this.$select.select2(select2_opts).on('change', self.onSave);
-
       this.delegateEvents();
+
+      // Initialize select2 control.
+      this.$select.select2(select2_opts);
 
       return this;
     },
