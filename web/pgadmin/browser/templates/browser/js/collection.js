@@ -67,16 +67,20 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         gridView = {
           'remove': function() {
             if (this.grid) {
+              if (this.grid.collection) {
+                this.grid.collection.reset(null, {silent: true});
+                delete (this.grid.collection);
+              }
               delete (this.grid);
               this.grid = null;
             }
-          }
+          },
+          grid: grid
         };
-        gridView.grid = grid;
 
       if (view) {
         // Release the view
-        view.remove();
+        view.remove({data: true});
         // Deallocate the view
         delete view;
         view = null;

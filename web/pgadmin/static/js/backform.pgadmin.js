@@ -594,6 +594,23 @@
       }
 
       return this;
+    },
+    remove: function(opts) {
+      if (opts && opts.data) {
+        if (this.model) {
+          if (this.model.reset) {
+            this.model.reset();
+          }
+          this.model.clear({silent: true});
+          delete (this.model);
+        }
+        if (this.errorModel) {
+          this.errorModel.clear({silent: true});
+          delete (this.errorModel);
+        }
+      }
+      this.cleanup();
+      Backform.Form.prototype.remove.apply(this, arguments);
     }
   });
 

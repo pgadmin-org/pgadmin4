@@ -199,6 +199,36 @@ function(_, pgAdmin, $, Backbone) {
 
         return self;
       },
+      // Create a reset function, which allow us to remove the nested object.
+      reset: function() {
+        var obj;
+        for(id in this.objects) {
+          obj = this.get(id);
+
+          if (obj) {
+            if (obj instanceof pgBrowser.DataModel) {
+              obj.reset();
+              delete obj;
+            } else if (obj instanceof Backbone.Model) {
+              obj.clear({silent: true});
+              delete obj;
+            } else if (obj instanceof pgBrowser.DataCollection) {
+              obj.reset({silent: true});
+              delete obj;
+            } else if (obj instanceof Backbone.Collection) {
+              obj.each(function(m) {
+                if (m instanceof Bakbone.DataModel) {
+                  obj.reset();
+                  obj.clear({silent: true});
+                }
+              });
+              Backbone.Collection.prototype.reset.apply(obj, {silent: true});
+              delete obj;
+            }
+          }
+        }
+        this.clear({silent: true});
+      },
       sessChanged: function() {
         var self = this;
 
@@ -754,6 +784,20 @@ function(_, pgAdmin, $, Backbone) {
 
           return (_.size(res) == 0 ? null : res);
         }
+      },
+      // Override the reset function, so that - we can reset the model
+      // properly.
+      reset: function(opts) {
+        this.each(function(m) {
+          if (!m)
+            return;
+          if (m instanceof pgBrowser.DataModel) {
+            m.reset();
+          } else {
+            m.clear({silent: true});
+          }
+        });
+        Backbone.Collection.prototype.reset.apply(this, arguments);
       },
       objFindInSession: function(m, type) {
         var hasPrimaryKey = m.primary_key &&
