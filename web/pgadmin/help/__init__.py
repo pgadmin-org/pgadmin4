@@ -28,18 +28,21 @@ class HelpModule(PgAdminModule):
                      label=gettext('Online Help'),
                      priority=100,
                      target='_blank',
+                     icon='fa fa-question',
                      url=url_for('help.static', filename='index.html')),
 
             MenuItem(name='mnu_pgadmin_website',
                      label= gettext('pgAdmin Website'),
                      priority= 200,
                      target= '_blank',
+                     icon='fa fa-external-link',
                      url= 'http://www.pgadmin.org/' ),
 
             MenuItem(name= 'mnu_postgresql_website',
                      label= gettext('PostgreSQL Website'),
                      priority= 300,
                      target= '_blank',
+                     icon='fa fa-external-link',
                      url= 'http://www.postgresql.org/' )]}
 
     def get_panels(self):
@@ -48,21 +51,25 @@ class HelpModule(PgAdminModule):
                 name='pnl_online_help',
                 priority=100,
                 title=gettext('Online Help'),
+                icon='fa fa-question',
                 content=url_for('help.static', filename='index.html')),
 
             Panel(name='pnl_pgadmin_website',
                   priority=200,
                   title=gettext('pgAdmin Website'),
+                  icon='fa fa-external-link',
                   content='http://www.pgadmin.org/'),
 
             Panel(name='pnl_postgresql_website',
                   priority=300,
                   title=gettext('PostgreSQL Website'),
+                  icon='fa fa-external-link',
                   content='http://www.postgresql.org/'),
 
             Panel(name='pnl_sql_help',
                   priority=400,
                   isPrivate=True,
+                  icon='fa fa-info',
                   title=gettext('SQL Help'))]
 
     def register_preferences(self):

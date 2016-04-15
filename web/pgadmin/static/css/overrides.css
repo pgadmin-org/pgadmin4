@@ -788,6 +788,36 @@ div.inline-tab-panel > ul.tab-content > div.tab-pane > *:last-child {
   padding: 3px 3px;
 }
 
+.pg-prop-btn-group > .btn {
+  min-width: 40px;
+}
+
+.pg-prop-btn-group > .btn-group > .btn {
+  min-width: 40px;
+}
+
+.pg-prop-btn-group > .btn-group > .btn + .dropdown-toggle {
+  min-width: 20px;
+}
+
+.pg-prop-btn-group button.dropdown-toggle {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+.pg-prop-btn-group .dropdown-menu {
+  min-width: initial;
+}
+
+.pg-prop-btn-group .backgrid-filter.form-search {
+  position: relative;
+  width: 248px;
+  height: 30px;
+  float: right;
+  margin-top: 2px;
+  margin-right: 10px;
+}
+
 td.edit-cell.editable.sortable.renderable.editor {
   outline: 0px;
 }

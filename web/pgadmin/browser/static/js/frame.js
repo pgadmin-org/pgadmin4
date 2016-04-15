@@ -7,7 +7,7 @@ function(_, pgAdmin) {
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'url'];
+      'isPrivate', 'url', 'icon'];
     _.extend(this, _.pick(options, defaults));
   }
 
@@ -20,6 +20,7 @@ function(_, pgAdmin) {
     isClosable: true,
     isPrivate: false,
     url: '',
+    icon: '',
     panel: null,
     frame: null,
     load: function(docker) {
@@ -31,8 +32,12 @@ function(_, pgAdmin) {
           onCreate: function(myPanel) {
             $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
+
             if (myPanel.showTitle == false)
               myPanel.title(false);
+
+            myPanel.icon(that.icon)
+
             myPanel.closeable(!!that.isCloseable);
 
             var $frameArea = $('<div style="width:100%;height:100%;position:relative;display:table">');

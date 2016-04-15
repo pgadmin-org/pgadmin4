@@ -166,7 +166,7 @@ define(
        * the backgrid inside this div.
        */
       template: _.template([
-        '<div id="btn-toolbar" class="sql-editor-btn-group" role="toolbar" aria-label="">',
+        '<div id="btn-toolbar" class="pg-prop-btn-group" role="toolbar" aria-label="">',
           '<div class="btn-group" role="group" aria-label="">',
             '<button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>',
               '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
@@ -468,7 +468,7 @@ define(
         self.$el.find('#datagrid-paginator').append(paginator.render().el);
 
         // Render the client side filter
-        self.$el.find('.sql-editor-btn-group').append(clientSideFilter.render().el);
+        self.$el.find('.pg-prop-btn-group').append(clientSideFilter.render().el);
 
         // Forcefully sorting by the first column.
         if (columns.length > 1) {

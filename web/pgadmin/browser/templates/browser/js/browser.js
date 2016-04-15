@@ -64,6 +64,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'properties': new pgAdmin.Browser.Panel({
         name: 'properties',
         title: '{{ _('Properties') }}',
+        icon: 'fa fa-cogs',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -74,6 +75,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'statistics': new pgAdmin.Browser.Panel({
         name: 'statistics',
         title: '{{ _('Statistics') }}',
+        icon: 'fa fa-line-chart',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -84,6 +86,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'sql': new pgAdmin.Browser.Panel({
         name: 'sql',
         title: '{{ _('SQL') }}',
+        icon: 'fa fa-file-text-o',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -93,6 +96,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'dependencies': new pgAdmin.Browser.Panel({
         name: 'dependencies',
         title: '{{ _('Dependencies') }}',
+        icon: 'fa fa-hand-o-up',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -103,6 +107,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'dependents': new pgAdmin.Browser.Panel({
         name: 'dependents',
         title: '{{ _('Dependents') }}',
+        icon: 'fa fa-hand-o-down',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -111,6 +116,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       })/* Add hooked-in panels by extensions */{% for panel_item in current_app.panels %}{% if not panel_item.isIframe %},'{{ panel_item.name }}' : new pgAdmin.Browser.Panel({
         name: '{{ panel_item.name }}',
         title: '{{ panel_item.title }}',
+        icon: '{{ panel_item.icon }}',
         width: {{ panel_item.width }},
         height: {{ panel_item.height }},
         showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
@@ -126,6 +132,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'dashboard': new pgAdmin.Browser.Frame({
         name: 'dashboard',
         title: '{{ _('Dashboard') }}',
+        icon: 'fa fa-tachometer',
         width: 500,
         isCloseable: false,
         isPrivate: true,
@@ -134,6 +141,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       '{{ panel_item.name }}' : new pgAdmin.Browser.Frame({
         name: '{{ panel_item.name }}',
         title: '{{ panel_item.title }}',
+        icon: '{{ panel_item.icon }}',
         width: {{ panel_item.width }},
         height: {{ panel_item.height }},
         showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},

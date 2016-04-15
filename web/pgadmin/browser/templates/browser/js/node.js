@@ -670,12 +670,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // Create a view to show the properties in fieldsets
           view = that.getView(item, 'properties', content, data, 'fieldset');
           if (view) {
-            panel.icon(
-                _.isFunction(that['node_image']) ?
-                  (that['node_image']).apply(that, [data, view.model]) :
-                  (that['node_image'] || ('icon-' + that.type))
-                );
-
             // Save it for release it later
             j.data('obj-view', view);
 
@@ -701,7 +695,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               label: '', type: 'help',
               tooltip: '{{ _("Help on the SQL for this object type") }}',
               extraClasses: ['btn-default'],
-              icon: 'fa fa-lg fa-question-circle',
+              icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
                 btn.click(function() {
@@ -755,11 +749,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // Update the panel
           iframe = $(pnlSqlHelp).data('embeddedFrame');
           pnlSqlHelp.title('SQL: ' + that.label);
-          pnlSqlHelp.icon(
-            _.isFunction(that['node_image']) ?
-            (that['node_image']).apply(that, [data, view.model]) :
-            (that['node_image'] || ('icon-' + that.type))
-          );
+
           pnlSqlHelp.focus();
           iframe.openURL(url);
         }.bind(panel),
@@ -828,9 +818,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Create proper buttons
             createButtons([{
               label: '', type: 'help',
-              tooltip: '{{ _("Help on the SQL for this object type") }}',
+              tooltip: '{{ _("SQL info for this object type") }}',
               extraClasses: ['btn-default'],
-              icon: 'fa fa-lg fa-question-circle',
+              icon: 'fa fa-lg fa-info',
               disabled: that.sqlCreateHelp == '' ? true : false,
               register: function(btn) {
                 btn.click(function() {

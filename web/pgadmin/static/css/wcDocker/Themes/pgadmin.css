@@ -254,6 +254,7 @@
   text-align: center;
   padding-left: 20px;
   margin-top: -5px;
+  margin-right: 5px;
 }
 
 .wcFrameTitleBar {
@@ -323,4 +324,8 @@ ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
 
 span.fa.fa-arrow-left, .fa-arrow-right {
   margin-top: 4px;
+}
+
+.wcMenuSubMenu {
+  visibility: hidden;
 }
