@@ -897,8 +897,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         }.bind(panel),
         closePanel = function() {
           // Closing this panel
-          this.close()
-        },
+          this.close();
+        }.bind(panel),
         updateTreeItem = function() {
           var panel = this;
 
@@ -930,9 +930,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (view.model.tnode && '_id' in view.model.tnode) {
             var d = _.extend({}, view.model.tnode),
               func = function(i) {
-                setTimeout(function() {
-                  closePanel();
-                }, 0);
+                setTimeout(function() {closePanel();}, 0);
                 if (i) {
                   tree.select(i, {focus: true});
                 }
@@ -952,6 +950,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                     itemData: d,
                     success: function(i, o) {
                       func(o.items.eq(0));
+                    },
+                    fail: function() {
+                      // We still want to close the panel
+                      console.log(arguments);
+                      func(null);
                     }
                   });
                   return;
@@ -1007,7 +1010,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                                 func(null);
                               },
                               fail: function() {
+                                // We would still like to close it.
                                 console.log(arguments);
+                                func(null);
                               }
                             });
                           }
@@ -1042,68 +1047,81 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                         func(i);
                       },
                       fail: function() {
+                        // We would still like to close it.
                         console.log(arguments);
+                        func(null);
                       }
                     });
 
                   },
                   fail: function() {
+                    // We would still like to close it.
                     console.log(arguments);
+                    func(null);
                   }
                 });
+              } else {
+                func(null);
               }
             } else {
               tree.append(null, {
                 itemData: d,
                 success: function(i, o) {
                   func(i);
+                },
+                fail: function() {
+                  // We would still like to close it.
+                  console.log(arguments);
+                  func(null);
                 }
               });
             }
           } else {
-          /*
-           * Sometime we don't get node in response even though it's saved
-           * on server. In such case just reload the collection to get newly
-           * created nodes.
-           */
+            /*
+             * Sometime we don't get node in response even though it's saved
+             * on server. In such case just reload the collection to get newly
+             * created nodes.
+             */
 
-           var children = tree.children(item, false, false),
-            openNode = function(item, animation){
-              tree.open(item, {
-                success: function (item, options){
-                  setTimeout(function() {
-                    closePanel();
-                  }, 0);
-                },
-                fail: function (item, options){
-                },
-                unanimated: animation
-              });
-            };
+            var children = tree.children(item, false, false),
+                openNode = function(item, animation){
+                  tree.open(item, {
+                    success: function (item, options){
+                      setTimeout(function() {closePanel();}, 0);
+                    },
+                    fail: function (item, options){
+                      setTimeout(function() {closePanel();}, 0);
+                    },
+                    unanimated: animation
+                  });
+                };
 
             if (children) {
               _.each(children, function(child) {
-                var $child = $(child);
-                var data = tree.itemData($child)
-                  if (data._type == that.collection_type){
-                    // We found collection which need to reload.
-                    if (tree.wasLoad($child)) {
-                      tree.unload($child, {
-                        success: function (item, options){
-                          openNode(item, true);
-                        },
-                        fail: function (item, options){
-                        },
-                        unanimated: true
-                      });
-                    } else {
-                      openNode($child, false);
-                    }
+                var $child = $(child),
+                    data = tree.itemData($child);
+                if (data._type == that.collection_type){
+                  // We found collection which need to reload.
+                  if (tree.wasLoad($child)) {
+                    tree.unload($child, {
+                      success: function (item, options){
+                        openNode(item, true);
+                      },
+                      fail: function (item, options){
+                        setTimeout(function() {closePanel();}, 0);
+                      },
+                      unanimated: true
+                    });
+                  } else {
+                    openNode($child, false);
                   }
+                }
               });
+              return;
             }
+            setTimeout(function() {closePanel();}, 0);
           }
-        },
+        }.bind(panel),
         editInNewPanel = function() {
           // Open edit in separate panel
           setTimeout(function() {
@@ -1113,14 +1131,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             }]);
           }, 0);
         },
-        onCancelFunc = closePanel.bind(panel),
+        onCancelFunc = closePanel,
         onSaveFunc = updateTreeItem.bind(panel),
         onEdit = editFunc.bind(panel);
 
       if (action) {
         if (action == 'create'){
-          onCancelFunc = closePanel.bind(panel);
-          onSaveFunc = saveNewNode.bind(panel);
+          onCancelFunc = closePanel;
+          onSaveFunc = saveNewNode;
         }
         if (action != 'properties') {
           // We need to keep track edit/create mode for this panel.
