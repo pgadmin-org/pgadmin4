@@ -200,8 +200,12 @@ function(_, pgAdmin, $, Backbone) {
         return self;
       },
       // Create a reset function, which allow us to remove the nested object.
-      reset: function() {
+      reset: function(opts) {
         var obj;
+
+        if (opts && opts.stop)
+            this.stopSession();
+
         for(id in this.objects) {
           obj = this.get(id);
 
@@ -210,19 +214,19 @@ function(_, pgAdmin, $, Backbone) {
               obj.reset();
               delete obj;
             } else if (obj instanceof Backbone.Model) {
-              obj.clear({silent: true});
+              obj.clear(opts);
               delete obj;
             } else if (obj instanceof pgBrowser.DataCollection) {
-              obj.reset({silent: true});
+              obj.reset(opts);
               delete obj;
             } else if (obj instanceof Backbone.Collection) {
               obj.each(function(m) {
                 if (m instanceof Bakbone.DataModel) {
                   obj.reset();
-                  obj.clear({silent: true});
+                  obj.clear(opts);
                 }
               });
-              Backbone.Collection.prototype.reset.apply(obj, {silent: true});
+              Backbone.Collection.prototype.reset.apply(obj, {opts});
               delete obj;
             }
           }
@@ -259,7 +263,7 @@ function(_, pgAdmin, $, Backbone) {
         var res = Backbone.Model.prototype.set.call(this, key, val, options);
         this._changing = false;
 
-        if ((opts&& opts.intenal) || !this.trackChanges) {
+        if ((opts&& opts.internal) || !this.trackChanges) {
           return true;
         }
 
@@ -788,13 +792,15 @@ function(_, pgAdmin, $, Backbone) {
       // Override the reset function, so that - we can reset the model
       // properly.
       reset: function(opts) {
+        if (opts && opts.stop)
+            this.stopSession();
         this.each(function(m) {
           if (!m)
             return;
           if (m instanceof pgBrowser.DataModel) {
-            m.reset();
+            m.reset(opts);
           } else {
-            m.clear({silent: true});
+            m.clear(opts);
           }
         });
         Backbone.Collection.prototype.reset.apply(this, arguments);

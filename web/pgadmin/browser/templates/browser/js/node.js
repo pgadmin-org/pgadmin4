@@ -652,7 +652,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // creating new view.
           if (view) {
             // Release the view
-            view.remove({data: true});
+            view.remove({data: true, internal: true, silent: true});
             // Deallocate the view
             delete view;
             view = null;
@@ -763,7 +763,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // creating the new view.
           if (view) {
             // Release the view
-            view.remove({data: true});
+            view.remove({data: true, internal: true, silent: true});
             // Deallocate the view
             delete view;
             view = null;
@@ -1157,7 +1157,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               view = j && j.data('obj-view');
 
           if (view) {
-            view.remove({data: true});
+            view.remove({data: true, internal: true, silent: true});
           }
         }.bind(panel);
         panel.on(wcDocker.EVENT.CLOSED, onCloseFunc);

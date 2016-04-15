@@ -80,7 +80,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
 
       if (view) {
         // Release the view
-        view.remove({data: true});
+        view.remove({data: true, internal: true, silent: true});
         // Deallocate the view
         delete view;
         view = null;
