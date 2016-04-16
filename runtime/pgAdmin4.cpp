@@ -108,6 +108,7 @@ int main(int argc, char * argv[])
         {
             settings.setValue("PythonPath", pythonpath);
             settings.setValue("ApplicationPath", applicationpath);
+            settings.sync();
         }
 
         exit(1);
