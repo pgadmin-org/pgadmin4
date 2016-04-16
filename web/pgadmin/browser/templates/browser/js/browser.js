@@ -128,16 +128,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     },
     // We also support showing dashboards, HTML file, external URL
     frames: {
-      // Dashboard
-      'dashboard': new pgAdmin.Browser.Frame({
-        name: 'dashboard',
-        title: '{{ _('Dashboard') }}',
-        icon: 'fa fa-tachometer',
-        width: 500,
-        isCloseable: false,
-        isPrivate: true,
-        url: 'about:blank' // http://www.pgadmin.org'
-      })/* Add hooked-in frames by extensions */{% for panel_item in current_app.panels %}{% if panel_item.isIframe %},
+      /* Add hooked-in frames by extensions */{% for panel_item in current_app.panels %}{% if panel_item.isIframe %}
       '{{ panel_item.name }}' : new pgAdmin.Browser.Frame({
         name: '{{ panel_item.name }}',
         title: '{{ panel_item.title }}',
@@ -148,7 +139,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
         isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
         url: '{{ panel_item.content }}'
-     }){% endif %}{% endfor %}
+     }),{% endif %}{% endfor %}
     },
       /* Menus */
       // pgAdmin.Browser.MenuItem.add_menus(...) will register all the menus
