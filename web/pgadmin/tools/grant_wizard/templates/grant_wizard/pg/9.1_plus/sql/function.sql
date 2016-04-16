@@ -1,14 +1,14 @@
 {# ===== Fetch list of Database object types(Functions) ====== #}
 {% if type and node_id and nspname %}
 {% set func_type = 'Trigger Function' if type == 'trigger_function' else 'Function' %}
+{% set icon = 'icon-function' if type == 'function' else 'icon-trigger_function' %}
 SELECT
     pr.oid,
     pg_get_function_identity_arguments(pr.oid) AS proargs,
-    {# pr.proname || '(' || pg_get_function_identity_arguments(pr.oid) || ')' AS name,#}
     pr.proname AS name,
-    '{{ nspname }}' AS nspname,
     '{{ func_type }}' AS object_type,
-    '{{ "icon-function" if type != "trigger_function" else "icon-trigger_function" }}' AS icon
+    '{{ nspname }}' AS nspname,
+    '{{ icon }}' AS icon
 FROM
     pg_proc pr
 JOIN pg_type typ ON typ.oid=prorettype

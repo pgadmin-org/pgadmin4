@@ -41,8 +41,11 @@ define([
         res.object_id = res.name_with_args;
 
         // create name with args if its object is function
-        if(!_.isUndefined(res.object_type) && (res.object_type == 'Function' ||
-          res.object_type == 'Trigger Function'))
+        if(!_.isUndefined(res.object_type) &&
+          (res.object_type == 'Function' ||
+          res.object_type == 'Trigger Function' ||
+          res.object_type == 'Procedure'
+          ))
           res.name_with_args = res.name+'('+(typeof(res.proargs) != 'undefined' ? res.proargs : '')+')';
         else
           res.name_with_args = res.name;
@@ -138,7 +141,7 @@ define([
         // Define list of nodes on which grant wizard context menu option appears
         var supported_nodes = [
               'schema', 'coll-function', 'coll-sequence',
-              'coll-table', 'coll-view',
+              'coll-table', 'coll-view', 'coll-procedure',
               'coll-materialized_view', 'database'
             ],
 
@@ -507,6 +510,9 @@ define([
                       break;
                     case 'Trigger Function':
                       object_type = 'function';
+                      break;
+                    case 'Procedure':
+                      object_type = 'procedure';
                       break;
                     case 'Table':
                       object_type = 'table';

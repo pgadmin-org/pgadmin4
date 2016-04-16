@@ -227,6 +227,21 @@ def properties(gid, sid, did, node_id, node_type):
 
             res_data.extend(res['rows'])
 
+        # Fetch procedures only if server type is ppas
+        if (len(server_prop) > 0 and
+           server_prop['server_type'] == 'ppas' and
+           ntype in ['schema', 'procedure']):
+            SQL = render_template("/".join(
+                [server_prop['template_path'], '/sql/function.sql']),
+                node_id=node_id, nspname=nspname, type='procedure')
+
+            status, res = conn.execute_dict(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            res_data.extend(res['rows'])
+
         # Fetch trigger functions
         if ntype in ['schema', 'trigger_function']:
             SQL = render_template("/".join(

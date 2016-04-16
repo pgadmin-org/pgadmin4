@@ -26,5 +26,9 @@
     "function": {
         "type": "FUNCTION",
         "acl": ["X"]
+    },
+    "procedure": {
+        "type": "PROCEDURE",
+        "acl": ["X"]
     }
 }
