@@ -4,19 +4,23 @@
 }
 
 .wizard-header {
-  background: #428bca;
-  padding-left: 15px;
-  padding-bottom: 7px;
-  color: #fff;
-  font-size: 18px;
-  height: 76px;
-  line-height: 76px;
-  border-radius: 6px 6px 0 0;
+   padding: 6px 10px!important;
+  min-height: 35px;
+  max-height: 35px;
+  border-bottom: 2px solid darkgray;
+  background-color: #2C76B4;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 0;
 }
 
 .wizard-header h3 {
-  font-size: 18px;
+  font-size: 14px;
   display: inline-block;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .wizard_dlg {
@@ -77,15 +81,16 @@
 
 /* Wizard Footer CSS */
 .grant_wizard_container .footer {
+  background-color: #D2D2D2;
+  border-width: 2px 0px 0px 0px;
+  border-style: solid;
+  border-color: rgb(85, 85, 85);
   position: absolute;
-  background: #fff;
-  border-top: 1px solid #ccc;
-  bottom: 0px;
-  height: 62px;
-  right: 0px;
-  padding-top: 22px;
-  border-radius: 0 0 6px 6px;
-  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /* Wizard Button CSS */
@@ -95,9 +100,8 @@
 
 .grant_wizard_container .wizard-buttons button {
   float: left;
-  padding: 7px 15.2px;
   font-size: 14px;
-  margin: 0px 5px 0 0 !important;
+  margin: 3px 5px 0 0 !important;
 }
 
 .grant_wizard_container .wizard-buttons button.wizard-next i.fa {
@@ -115,14 +119,12 @@
 
 /* Wizard Status bar CSS */
 .grant_wizard_container .wizard-description {
-  padding: 1.7em 0.1em;
+  padding: 1.0em 0.1em;
 }
 
 /* Error message css */
 .grant_wizard_container .error_msg_div {
   display: block;
-  position: absolute;
-  bottom: 55px;
   background: #fff;
 }
 
@@ -140,4 +142,8 @@
  */
 .select2-container--open {
   z-index: 10000;
+}
+
+.alertify .ajs-body .ajs-content {
+  padding: 0px;
 }
