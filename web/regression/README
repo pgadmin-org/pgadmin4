@@ -1,0 +1,96 @@
+pgAdmin 4 Test Framework
+========================
+
+This regression framework is designed for executing the individual unit tests
+available for the existing modules and to help catch regressions. In addition
+to that this should be helpful for other new plugged-in module that can come
+in later in time.
+
+Assumptions
+-----------
+
+- pgAdmin must be configured to run in Server mode, with SMTP configured.
+- There should be a single server group present in the browser.
+- Currently each module will have testcases related to ONLY GET, POST, PUT,
+  and DELETE api’s.
+
+General Information
+-------------------
+
+1) The required test cases should be placed under the /tests directory of the
+   respective module.
+
+  - 'pgadmin/browser/tests' directory contains test-cases for following
+    modules:
+
+	1. Login Page
+	2. Reset Password Page
+	3. Change Password Page
+	4. Logout Page
+
+  - 'pgAdmin4/web/pgadmin/browser/server_groups/tests/' shows an example of
+     tree traversal of the pgAdmin modules and how the test folder is required
+     for each individual module.
+	
+  - 'pgadmin/browser/server_groups/servers/tests/' directory will have separate
+     file for each test-case:
+
+    1. test_server_add.py
+    2. test_server_delete.py
+    3. test_server_get.py
+    4. test_server_update.py
+
+2) The pgAdmin4 source tree includes a file template for the server configuration
+   named ‘test_config.json.in' in the ‘pgAdmin4/web/regression’ directory. After
+   completing the pgAdmin4 configuration, you must make a working copy of the
+   template called test_config.json before modifying the file contents.
+
+	2a) The following command copies the test_config.json.in file, creating a
+	    configuration file named test_config.json
+
+            # cp pgadmin4/web/regression/test_config.json.in \
+              pgadmin4/web/regression/test_config.json
+
+	2b) After creating the server configuration file, add (or modify)
+	    parameter values as per requirements. The configuration
+	    files are owned by root/user. The pgAdmin4 regression framework expects
+	    to find the files in the  directory '/<installation dir>/web/regression/'.
+	    If you move the file to another location, you must create a symbolic link
+	    that specifies the new location.
+
+	2c) Specifying Server Configuration file:
+
+	    The user can use the parameters in the configuration file to specify the
+	    server details and connection properties as per their local setup. The
+	    test_config file is in json format and property values are case-sensitive.
+
+Test Data Details
+-----------------
+
+	"pgAdmin4 Login Credentials":
+
+	 test_login_username = login id
+	 test_login_password = login password
+	 test_new_password = new login password
+
+	 "test_server_credentials":
+
+     test_name = Server/database Name
+     test_db_username = Database Username
+     test_host = IP Address of Server
+     test_db_password = Database Password
+     test_db_port = Database Port
+     test_maintenance_db = Maintenance Database
+     test_sslmode = SSL Mode
+     test_comment = Any Comments to add
+
+
+Execution:
+-----------
+- The test framework is modular and pluggable and dynamically locates tests
+  for modules which are discovered at runtime. All test cases are found
+  and registered automatically by its module name in
+  'pgadmin4/web/pgadmin/utils/test.py' file.
+
+- Execute test framework run 'regression/testsuite.py' file.
+

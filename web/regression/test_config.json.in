@@ -1,0 +1,25 @@
+{
+  "pgAdmin4_login_credentials": {
+    "test_new_password": "NEWPASSWORD",
+    "test_login_password": "PASSWORD",
+    "test_login_username": "USER@EXAMPLE.COM"
+  },
+  "test_server_group": 1,
+  "test_server_credentials": [
+    {
+      "test_name": "PostgreSQL 9.4",
+      "test_comment": "PostgreSQL 9.4 Server (EDB Installer)",
+      "test_db_username": "postgres",
+      "test_host": "localhost",
+      "test_db_password": "PASSWORD",
+      "test_db_port": 5432,
+      "test_maintenance_db": "postgres",
+      "test_sslmode": "prefer"
+    }
+  ],
+  "test_server_update_data": [
+    {
+      "test_comment": "This is test update comment"
+    }
+  ]
+}
