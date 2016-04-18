@@ -211,8 +211,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                    try {
                      var err = $.parseJSON(xhr.responseText);
                      if (err.success == 0) {
-                       msg = S('{{ _(' + err.errormsg + ')}}').value();
-                       alertify.error("{{ _('" + err.errormsg + "') }}");
+                       alertify.error(err.errormsg);
                      }
                    } catch (e) {}
                  }

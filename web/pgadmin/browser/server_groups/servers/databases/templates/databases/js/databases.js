@@ -151,13 +151,18 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                     t.unload(i);
                     t.setInode(i);
                   }
+                  else {
+                    try {
+                      Alertify.error(res.errormsg);
+                    } catch (e) {}
+                    t.unload(i);
+                  }
                 },
                 error: function(xhr, status, error) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      msg = S('{{ _(' + err.errormsg + ')}}').value();
-                      Alertify.error("{{ _('" + err.errormsg + "') }}");
+                      Alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);

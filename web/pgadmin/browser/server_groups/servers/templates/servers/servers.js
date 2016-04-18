@@ -87,7 +87,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 1) {
-                    alertify.success("{{ _('" + res.info + "') }}");
+                    alertify.success(res.info);
                     d = t.itemData(i);
                     t.removeIcon(i);
                     d.connected = false;
@@ -99,13 +99,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     }
                     obj.trigger('server-disconnected', obj, i, d);
                   }
+                  else {
+                    try {
+                        alertify.error(res.errormsg);
+                    } catch (e) {}
+                    t.unload(i);
+                  }
                 },
                 error: function(xhr, status, error) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      msg = S('{{ _(' + err.errormsg + ')}}').value();
-                      alertify.error("{{ _('" + err.errormsg + "') }}");
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
