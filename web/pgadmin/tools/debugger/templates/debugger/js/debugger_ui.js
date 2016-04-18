@@ -558,7 +558,6 @@ define(
                   method: 'POST',
                   data:{'data':JSON.stringify(args_value_list)},
                   success: function(res) {
-                    //TODO: Anything required ? .....
                   },
                   error: function(e) {
                     Alertify.alert(

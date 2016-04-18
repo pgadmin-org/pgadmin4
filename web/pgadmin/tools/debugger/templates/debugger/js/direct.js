@@ -247,6 +247,18 @@ define(
       // Make ajax call to listen the database message
       var baseUrl = "{{ url_for('debugger.index') }}" + "poll_result/" + trans_id;
 
+      /*
+        During the execution we should poll the result in minimum seconds but once the execution is completed
+        and wait for the another debugging session then we should decrease the polling frequency.
+      */
+      if (pgTools.DirectDebug.direct_execution_completed) {
+        // poll the result after 1 second
+        var  poll_timeout = 1000;
+      }
+      else {
+        // poll the result after 200 ms
+        var  poll_timeout = 200;
+      }
 
       setTimeout(
         function() {
@@ -257,12 +269,11 @@ define(
             if (res.data.status === 'Success') {
               // If no result then poll again to wait for results.
               if (res.data.result == null || res.data.result.length == 0) {
-                // NEEL: THIS IS CONDITION IS ADDED
                 self.poll_result(trans_id);
               }
               else {
                 if (res.data.result[0].src != undefined || res.data.result[0].src != null) {
-                pgTools.DirectDebug.docker.finishLoading(500);
+                pgTools.DirectDebug.docker.finishLoading(50);
                 pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
                 self.UpdateBreakpoint(trans_id);
                 pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
@@ -272,9 +283,10 @@ define(
                 // Update the stack, local variables and parameters information
                 self.GetStackInformation(trans_id);
                 self.GetLocalVariables(trans_id);
+
                 }
                 else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
-                  pgTools.DirectDebug.docker.finishLoading(500);
+                  pgTools.DirectDebug.docker.finishLoading(50);
                   if (self.active_line_no != undefined) {
                     pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
                   }
@@ -283,7 +295,7 @@ define(
                   pgTools.DirectDebug.first_time_indirect_debug = true;
                 }
                 else {
-                  pgTools.DirectDebug.docker.finishLoading(500);
+                  pgTools.DirectDebug.docker.finishLoading(50);
                   // If the source is really changed then only update the breakpoint information
                   if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
                     pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
@@ -323,7 +335,6 @@ define(
                 self.poll_result(trans_id);
               }
               else {
-                //TODO: NEEL ADDED
                 self.poll_result(trans_id);
               }
             }
@@ -339,7 +350,7 @@ define(
             );
           }
         });
-      }, 1000 );
+      }, poll_timeout );
 
     },
 
@@ -352,6 +363,19 @@ define(
       //return;
       // Make ajax call to listen the database message
       var baseUrl = "{{ url_for('debugger.index') }}" + "poll_end_execution_result/" + trans_id;
+
+      /*
+        During the execution we should poll the result in minimum seconds but once the execution is completed
+        and wait for the another debugging session then we should decrease the polling frequency.
+      */
+      if (pgTools.DirectDebug.direct_execution_completed) {
+        // poll the result to check that execution is completed or not after 1200 ms
+        var  poll_end_timeout = 1200;
+      }
+      else {
+        // poll the result to check that execution is completed or not after 350 ms
+        var  poll_end_timeout = 250;
+      }
 
       setTimeout(
         function() {
@@ -392,7 +416,7 @@ define(
                 if (res.data.result.name != null) {
                   pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
                   self.AddResults(res.data.result);
-                  pgTools.DirectDebug.paramsTabFrame.tab(3,true);
+                  pgTools.DirectDebug.results_panel.focus();
                   pgTools.DirectDebug.direct_execution_completed = true;
 
                   //Set the alertify message to inform the user that execution is completed.
@@ -404,7 +428,7 @@ define(
                   );
 
                   // Update the message tab of the debugger
-                  pgTools.DirectDebug.dbmsMessages.$elem.text(res.data.status_message);
+                  pgTools.DirectDebug.messages_panel.$container.find('.messages').text(res.data.status_message);
 
                   // Execution completed so disable the buttons other than "Continue/Start" button because user can still
                   // start the same execution again.
@@ -413,12 +437,6 @@ define(
                   self.enable('step_into', false);
                   self.enable('toggle_breakpoint', false);
                   self.enable('clear_all_breakpoints', false);
-
-                  //TODO: Continue button should be enable and user will be able to do next debugging with same function.
-                  //self.enable('continue', false);
-
-                  // NEEL: TODO: Added Execution is completed so again poll the result until user start the another debugging
-                  //self.poll_end_execution_result(pgTools.DirectDebug.trans_id);
                 }
               }
             }
@@ -432,6 +450,29 @@ define(
                 res.data.result
               );
             }
+            else if (res.data.status === 'ERROR') {
+              pgTools.DirectDebug.direct_execution_completed = true;
+              pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
+
+              //Set the alertify message to inform the user that execution is completed with error.
+              Alertify.notify(
+                res.info,
+                'error',
+                3,
+                function() { }
+              );
+
+              pgTools.DirectDebug.messages_panel.$container.find('.messages').text(res.data.status_message);
+              pgTools.DirectDebug.messages_panel.focus();
+
+              // Execution completed so disable the buttons other than "Continue/Start" button because user can still
+              // start the same execution again.
+              self.enable('stop', false);
+              self.enable('step_over', false);
+              self.enable('step_into', false);
+              self.enable('toggle_breakpoint', false);
+              self.enable('clear_all_breakpoints', false);
+            }
           },
           error: function(e) {
             Alertify.alert(
@@ -440,7 +481,7 @@ define(
             );
           }
         });
-      }, 1200);
+      }, poll_end_timeout);
 
     },
 
@@ -453,14 +494,38 @@ define(
         success: function(res) {
           // Restart the same function debugging with previous arguments
           var restart_dbg = res.data.restart_debug ? 1 : 0;
-          debug_function_again(res.data.result, restart_dbg);
+
+          /*
+           Need to check if restart debugging really require to open the input dialog ?
+           If yes then we will get the previous arguments from database and populate the input dialog
+           If no then we should directly start the listener.
+          */
+          if (res.data.result.require_input) {
+            var res_val = debug_function_again(res.data.result, restart_dbg);
+          }
+          else {
+            // Debugging of void function is started again so we need to start the listener again
+            var baseUrl = "{{ url_for('debugger.index') }}" + "start_listener/" + trans_id;
+
+            $.ajax({
+              url: baseUrl,
+              method: 'GET',
+              success: function(res) {
+              },
+              error: function(e) {
+                Alertify.alert(
+                  'Debugger listener starting error',
+                  e.responseJSON.errormsg
+                );
+              }
+            });
+          }
         },
         error: function(xhr, status, error) {
           try {
             var err = $.parseJSON(xhr.responseText);
             if (err.success == 0) {
-              msg = S('{{ _(' + err.errormsg + ')}}').value();
-              Alertify.alert("{{ _('" + err.errormsg + "') }}");
+              Alertify.alert(err.errormsg);
             }
           } catch (e) {}
         }
@@ -473,9 +538,9 @@ define(
 
       //Check first if previous execution was completed or not
       if (pgTools.DirectDebug.direct_execution_completed) {
-        pgTools.DirectDebug.direct_execution_completed = false;
         // TODO: We need to get the arguments given by the user from sqlite database
         self.Restart(trans_id);
+        pgTools.DirectDebug.direct_execution_completed = false;
       }
       else {
         // Make ajax call to listen the database message
@@ -490,8 +555,6 @@ define(
               if (pgTools.DirectDebug.debug_type) {
                 self.poll_end_execution_result(trans_id);
               }
-              //NEEL: ADDED
-              //self.poll_end_execution_result(trans_id);
             }
             else {
               Alertify.alert(
@@ -716,8 +779,6 @@ define(
             self.stack_grid = null;
         }
 
-        pgTools.DirectDebug.stackTab.$elem.empty();
-
         var DebuggerStackModel = Backbone.Model.extend({
           defaults: {
             name: undefined,
@@ -776,7 +837,10 @@ define(
         });
 
         stack_grid.render();
-        pgTools.DirectDebug.stackTab.$elem.append(stack_grid.el);
+
+        // Render the stack grid into stack panel
+        pgTools.DirectDebug.stack_pane_panel.$container.find('.stack_pane').append(stack_grid.el);
+
       },
 
       AddResults: function(result) {
@@ -787,8 +851,6 @@ define(
             self.result_grid.remove();
             self.result_grid = null;
         }
-
-        pgTools.DirectDebug.retResults.$elem.empty();
 
         var DebuggerResultsModel = Backbone.Model.extend({
           defaults: {
@@ -822,7 +884,10 @@ define(
         });
 
         result_grid.render();
-        pgTools.DirectDebug.retResults.$elem.append(result_grid.el);
+
+        // Render the result grid into result panel
+        pgTools.DirectDebug.results_panel.$container.find('.debug_results').append(result_grid.el);
+
       },
 
       AddLocalVariables: function(result) {
@@ -833,8 +898,6 @@ define(
             self.variable_grid.remove();
             self.variable_grid = null;
         }
-
-        pgTools.DirectDebug.localVars.$elem.empty();
 
         var DebuggerVariablesModel = Backbone.Model.extend({
           defaults: {
@@ -873,7 +936,10 @@ define(
         });
 
         variable_grid.render();
-        pgTools.DirectDebug.localVars.$elem.append(variable_grid.el);
+
+        // Render the variables grid into local variables panel
+        pgTools.DirectDebug.local_variables_panel.$container.find('.local_variables').append(variable_grid.el);
+
       },
 
       AddParameters: function(result) {
@@ -884,8 +950,6 @@ define(
             self.param_grid.remove();
             self.param_grid = null;
         }
-
-        pgTools.DirectDebug.paramsTab.$elem.empty();
 
         var DebuggerParametersModel = Backbone.Model.extend({
           defaults: {
@@ -926,7 +990,9 @@ define(
         });
 
         param_grid.render();
-        pgTools.DirectDebug.paramsTab.$elem.append(param_grid.el);
+
+        // Render the parameters grid into parameter panel
+        pgTools.DirectDebug.parameters_panel.$container.find('.parameters').append(param_grid.el);
       },
 
       deposit_parameter_value: function(model) {
@@ -1250,6 +1316,7 @@ define(
       this.registerPanel(
         'code', false, '100%', '100%',
         function(panel) {
+
             var container = panel.layout().scene().find('.pg-debugger-panel');
 
             // Create the wcSplitter used by wcDocker to split the single panel.
@@ -1267,65 +1334,91 @@ define(
             // By default, the splitter splits down the middle, we split the main panel by 80%.
             hSplitter.pos(0.65);
 
-            var $params = $('<div class="full-container params"></div>');
-            hSplitter.right().addItem($params);
+            var params = $('<div class="full-container params"></div>');
+            hSplitter.right().addItem(params);
 
-            // Add Local parameters tab to display function arguments value
-            var paramsTabFrame = self.paramsTabFrame = new wcTabFrame($params, panel);
-            var paramsTab = self.paramsTab = paramsTabFrame.addTab(
-              '{{_('Parameters')}}', -1, wcDocker.LAYOUT.SIMPLE
-              );
-            paramsTab.addItem($('<div id=parameters class="info"></div>'));
+            // Create wcDocker for tab set.
+            var out_docker = new wcDocker(
+              '.full-container', {
+              allowContextMenu: false,
+              allowCollapse: false,
+              themePath: '{{ url_for('static', filename='css/wcDocker/Themes') }}',
+              theme: 'pgadmin'
+            });
 
-            // Add Local variables tab
-            var localVars = self.localVars = paramsTabFrame.addTab(
-              '{{ _('Local variables') }}', -1, wcDocker.LAYOUT.SIMPLE
-              );
-            localVars.addItem($('<div id=local_variables class="info"></div>'));
+            // Create the parameters panel to display the arguments of the functions
+            var parameters = new pgAdmin.Browser.Panel({
+              name: 'parameters',
+              title: '{{ _('Parameters') }}',
+              width: '100%',
+              height:'100%',
+              isCloseable: false,
+              isPrivate: true,
+              content: '<div id ="parameters" class="parameters"></div>'
+            })
 
-            // Add DBMS messages tab
-            var dbmsMessages = self.dbmsMessages = paramsTabFrame.addTab(
-              '{{ _('Messages') }}', -1, wcDocker.LAYOUT.SIMPLE
-              );
-            dbmsMessages.addItem($('<div id=dbms_messages class="info"></div>'));
+            // Create the Local variables panel to display the local variables of the function.
+            var local_variables = new pgAdmin.Browser.Panel({
+              name: 'local_variables',
+              title: '{{ _('Local variables') }}',
+              width: '100%',
+              height:'100%',
+              isCloseable: false,
+              isPrivate: true,
+              content: '<div id ="local_variables" class="local_variables"></div>'
+            })
 
-            // Add function return results tab
-            var retResults = self.retResults = paramsTabFrame.addTab(
-              '{{ _('Results') }}', -1, wcDocker.LAYOUT.SIMPLE
-              );
-            retResults.addItem($('<div id=ret_results class="info"></div>'));
+            // Create the messages panel to display the message returned from the database server
+            var messages = new pgAdmin.Browser.Panel({
+              name: 'messages',
+              title: '{{ _('Messages') }}',
+              width: '100%',
+              height:'100%',
+              isCloseable: false,
+              isPrivate: true,
+              content: '<div id="messages" class="messages"></div>'
+            })
 
-            // Now create a second splitter to go inside the existing one.
-            var $topContainer = $('<div class="debugger top-container"></div>');
-            hSplitter.left().addItem($topContainer);
+            // Create the result panel to display the result after debugging the function
+            var results = new pgAdmin.Browser.Panel({
+              name: 'results',
+              title: '{{ _('Results') }}',
+              width: '100%',
+              height:'100%',
+              isCloseable: false,
+              isPrivate: true,
+              content: '<div id="debug_results" class="debug_results"></div>'
+            })
 
-            // Create the wcSplitter used by wcDocker to split the single panel.
-            var vSplitter = new wcSplitter(
-                $topContainer, panel,
-                wcDocker.ORIENTATION.HORIZONTAL
-                );
+            // Create the stack pane panel to display the debugging stack information.
+            var stack_pane = new pgAdmin.Browser.Panel({
+              name: 'stack_pane',
+              title: '{{ _('Stack') }}',
+              width: '100%',
+              height:'100%',
+              isCloseable: false,
+              isPrivate: true,
+              content: '<div id="stack_pane" class="stack_pane"></div>'
+            })
 
-            // Initialize this splitter with a layout in each pane.
-            vSplitter.initLayouts(wcDocker.LAYOUT.SIMPLE, wcDocker.LAYOUT.SIMPLE);
+            // Load all the created panels
+            parameters.load(out_docker);
+            local_variables.load(out_docker);
+            messages.load(out_docker);
+            results.load(out_docker);
+            stack_pane.load(out_docker);
+
+            // Add all the panels to the docker
+            self.parameters_panel = out_docker.addPanel('parameters', wcDocker.DOCK.LEFT);
+            self.local_variables_panel = out_docker.addPanel('local_variables', wcDocker.DOCK.STACKED, self.parameters_panel);
+            self.stack_pane_panel = out_docker.addPanel('stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
+            self.messages_panel = out_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.parameters_panel);
+            self.results_panel = out_docker.addPanel('results', wcDocker.DOCK.STACKED, self.parameters_panel);
 
             // Now create a tab widget and put that into one of the sub splits.
-            var $stack = $('<div class="full-container stack">');
-            vSplitter.bottom().addItem($stack);
-
-            var stackFrame = new wcTabFrame($stack, panel);
-            var stackTab = self.stackTab = stackFrame.addTab(
-                '{{ _('Stack pane') }}', -1, wcDocker.LAYOUT.SIMPLE
-                );
-            stackTab.addItem(
-                $('<div id="stack_pane" class="full-container-pane info"></div>'));
-
-            // By default, the splitter splits down the middle, we split the main panel by 80%.
-            vSplitter.pos(0.75);
-
-            // Now create a tab widget and put that into one of the sub splits.
-            var editor_pane = $('<div id="stack_pane" class="full-container-pane info"></div>');
+            var editor_pane = $('<div id="stack_editor_pane" class="full-container-pane info"></div>');
             var code_editor_area = $('<textarea id="debugger-editor-textarea"></textarea>').append(editor_pane);
-            vSplitter.top().addItem(code_editor_area);
+            hSplitter.left().addItem(code_editor_area);
 
             // To show the line-number and set breakpoint marker details by user.
             var editor = self.editor = CodeMirror.fromTextArea(

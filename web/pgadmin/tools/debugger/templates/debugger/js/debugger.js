@@ -55,6 +55,7 @@ define(
           width: 500,
           isCloseable: true,
           isPrivate: true,
+          icon: 'fa fa-arrow-circle-right',
           url: 'about:blank'
         });
 
@@ -153,8 +154,7 @@ define(
             try {
               var err = $.parseJSON(xhr.responseText);
               if (err.success == 0) {
-                msg = S('{{ _(' + err.errormsg + ')}}').value();
-                Alertify.alert("{{ _('" + err.errormsg + "') }}");
+                Alertify.alert(err.errormsg);
               }
             } catch (e) {}
           }
@@ -316,8 +316,7 @@ define(
             try {
               var err = $.parseJSON(xhr.responseText);
               if (err.success == 0) {
-                msg = S('{{ _(' + err.errormsg + ')}}').value();
-                Alertify.alert("{{ _('" + err.errormsg + "') }}");
+                Alertify.alert(err.errormsg);
               }
             } catch (e) {}
           }

@@ -171,7 +171,7 @@ def init_function(node_type, sid, did, scid, fid):
             if user['is_superuser']:
                 status_in, rid_pre = conn.execute_scalar("SHOW shared_preload_libraries")
                 if not status_in:
-                    return internal_server_error("ERROR: Couldn't fetch debugger plugin information")
+                    return internal_server_error(gettext("ERROR: Couldn't fetch debugger plugin information"))
 
                 # Need to check if plugin is really loaded or not with "plugin_debugger" string
                 if rid_pre:
@@ -181,7 +181,7 @@ def init_function(node_type, sid, did, scid, fid):
             status_in, rid_tar = conn.execute_scalar("SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
                 current_app.logger.debug("ERROR: Couldn't fetch debugger target information")
-                return internal_server_error("ERROR: Couldn't fetch debugger target information")
+                return internal_server_error(gettext("ERROR: Couldn't fetch debugger target information"))
 
             if rid_tar == 0:
                 ret_status = False
@@ -191,32 +191,13 @@ def init_function(node_type, sid, did, scid, fid):
     # Return the response that function can not be debug...
     if not ret_status:
         current_app.logger.debug("Error: Function/Procedure can not be debug")
-        return internal_server_error("ERROR: Function/Procedure can not be debug.")
+        return internal_server_error(gettext("ERROR: Function/Procedure cannot be debugged."))
 
     # Store the function information in session variable
     if 'funcData' not in session:
         function_data = dict()
     else:
         function_data = session['funcData']
-
-    function_data = {
-        'oid': fid,
-        'name': r_set['rows'][0]['name'],
-        'is_func': r_set['rows'][0]['isfunc'],
-        'is_callable': False,
-        'schema': r_set['rows'][0]['schemaname'],
-        'language': r_set['rows'][0]['lanname'],
-        'return_type': r_set['rows'][0]['rettype'],
-        'args_type': r_set['rows'][0]['proargtypenames'],
-        'args_name': r_set['rows'][0]['proargnames'],
-        'arg_mode': r_set['rows'][0]['proargmodes'],
-        'use_default': r_set['rows'][0]['pronargdefaults'],
-        'default_value': r_set['rows'][0]['proargdefaults'],
-        'pkg': r_set['rows'][0]['pkg'],
-        'args_value': ''
-    }
-
-    session['funcData'] = function_data;
 
     data = {}
     data['name'] = r_set['rows'][0]['proargnames']
@@ -243,6 +224,26 @@ def init_function(node_type, sid, did, scid, fid):
                     break;
 
     r_set['rows'][0]['require_input'] = data['require_input']
+
+    function_data = {
+        'oid': fid,
+        'name': r_set['rows'][0]['name'],
+        'is_func': r_set['rows'][0]['isfunc'],
+        'is_callable': False,
+        'schema': r_set['rows'][0]['schemaname'],
+        'language': r_set['rows'][0]['lanname'],
+        'return_type': r_set['rows'][0]['rettype'],
+        'args_type': r_set['rows'][0]['proargtypenames'],
+        'args_name': r_set['rows'][0]['proargnames'],
+        'arg_mode': r_set['rows'][0]['proargmodes'],
+        'use_default': r_set['rows'][0]['pronargdefaults'],
+        'default_value': r_set['rows'][0]['proargdefaults'],
+        'pkg': r_set['rows'][0]['pkg'],
+        'require_input': data['require_input'],
+        'args_value': ''
+    }
+
+    session['funcData'] = function_data;
 
     return make_json_response(
                 data=r_set['rows'],
@@ -395,6 +396,7 @@ def initialize_target(debug_type, sid, did, scid, func_id):
         'use_default': func_data['use_default'],
         'default_value': func_data['default_value'],
         'pkg': func_data['pkg'],
+        'require_input': func_data['require_input'],
         'args_value': func_data['args_value']
     }
 
@@ -511,7 +513,8 @@ def restart_debugging(trans_id):
                 'proargtypenames': session['functionData'][str(trans_id)]['args_type'],
                 'pronargdefaults': session['functionData'][str(trans_id)]['use_default'],
                 'proargdefaults': session['functionData'][str(trans_id)]['default_value'],
-                'proargnames': session['functionData'][str(trans_id)]['args_name']
+                'proargnames': session['functionData'][str(trans_id)]['args_name'],
+                'require_input': session['functionData'][str(trans_id)]['require_input']
             }
 
         return make_json_response(data={'status': True, 'restart_debug': True, 'result': function_data})
@@ -762,7 +765,7 @@ def execute_debugger_query(trans_id, query_type):
             if not status:
                 return internal_server_error(errormsg=result)
             else:
-                return make_json_response(info='Target Aborted.', data={'status': status, 'result': result})
+                return make_json_response(info=gettext('Target Aborted.'), data={'status': status, 'result': result})
         else:
             status, result = conn.execute_dict(sql)
         if not status:
@@ -1267,14 +1270,19 @@ def poll_end_execution_result(trans_id):
             return make_json_response(success=1, info=gettext("Execution Completed."),
                                       data={'status': status, 'status_message': statusmsg})
         if result:
-            status = 'Success'
-            data = {}
-            for i in result:
-                for k, v in i.items():
-                    data["name"] = k
-                    data.setdefault("value",[]).append(v)
+            if 'ERROR' in result:
+                status = 'ERROR'
+                return make_json_response(info=gettext("Execution completed with error"),
+                                      data={'status': status, 'status_message': result})
+            else:
+                status = 'Success'
+                data = {}
+                for i in result:
+                    for k, v in i.items():
+                        data["name"] = k
+                        data.setdefault("value",[]).append(v)
 
-            return make_json_response(success=1, info=gettext("Execution Completed."),
+                return make_json_response(success=1, info=gettext("Execution Completed."),
                                       data={'status': status, 'result': data, 'status_message': statusmsg})
         else:
             status = 'Busy'

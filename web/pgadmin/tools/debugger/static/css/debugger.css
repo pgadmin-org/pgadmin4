@@ -1,17 +1,17 @@
-.navbar-static-top, .navbar-fixed-top, .navbar-fixed-bottom {
-  background-image: linear-gradient(to bottom, #CCC 0%, #D2D2D2 100%);
-}
-
-.btn-default {
+.btn-step-into, .btn-step-over, .btn-continue, .btn-toggle-breakpoint, .btn-clear-breakpoint, .btn-stop {
   background-color: #D2D2D2;
   left: 0px;
   right: 0px;
   padding: 7px;
 }
 
-.btn-toolbar {
-  padding-top: 3px;
-  padding-bottom: 3px;
+.debugger-toolbar {
+  background-color: #D2D2D2;
+  border: 2px solid #A9A9A9;
+  left: 0px;
+  right: 0px;
+  padding: 0px;
+  padding-left: 2px;
 }
 
 #container {
@@ -63,10 +63,10 @@
   text-align: center;
 }
 
-.top-container .breakpoints {
+.pg-debugger-panel .breakpoints {
     width: 0.9em;
 }
 
-.top-container .CodeMirror-activeline-background {
+.pg-debugger-panel .CodeMirror-activeline-background {
     background: #50B0F0;
 }
