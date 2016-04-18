@@ -69,7 +69,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         isCloseable: false,
         isPrivate: true,
         content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>',
-        events: panelEvents
+        events: panelEvents,
+        onCreate: function(myPanel, $container) {
+          $container.addClass('pg-no-overflow');
+        }
       }),
       // Statistics of the object
       'statistics': new pgAdmin.Browser.Panel({

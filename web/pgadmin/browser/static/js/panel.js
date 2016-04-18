@@ -7,7 +7,7 @@ function(_, pgAdmin) {
   pgAdmin.Browser.Panel = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'content', 'icon', 'events'];
+      'isPrivate', 'content', 'icon', 'events', 'onCreate'];
     _.extend(this, _.pick(options, defaults));
   }
 
@@ -22,6 +22,7 @@ function(_, pgAdmin) {
     content: '',
     icon: '',
     panel: null,
+    onCreate: null,
     load: function(docker, title) {
       var that = this;
       if (!that.panel) {
@@ -40,13 +41,12 @@ function(_, pgAdmin) {
                 myPanel.icon(that.icon)
             }
 
+            var $container = $('<div>', {
+              'class': 'pg-panel-content'
+            }).append($(that.content));
+
             myPanel.closeable(!!that.isCloseable);
-            myPanel.layout().addItem(
-              $('<div>', {
-                'class': 'pg-panel-content'
-              })
-              .append($(that.content))
-            );
+            myPanel.layout().addItem($container);
             that.panel = myPanel;
             if (that.events && _.isObject(that.events)) {
               _.each(that.events, function(v, k) {
@@ -67,6 +67,10 @@ function(_, pgAdmin) {
                 wcDocker.EVENT.SCROLLED], function(ev) {
                   myPanel.on(ev, that.eventFunc.bind(myPanel, ev));
                 });
+
+            if (that.onCreate && _.isFunction(that.onCreate)) {
+              that.onCreate.apply(that, [myPanel, $container]);
+            }
           }
         });
       }

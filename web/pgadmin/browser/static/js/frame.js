@@ -7,7 +7,7 @@ function(_, pgAdmin) {
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'url', 'icon'];
+      'isPrivate', 'url', 'icon', 'onCreate'];
     _.extend(this, _.pick(options, defaults));
   }
 
@@ -23,6 +23,7 @@ function(_, pgAdmin) {
     icon: '',
     panel: null,
     frame: null,
+    onCreate: null,
     load: function(docker) {
       var that = this;
       if (!that.panel) {
@@ -85,6 +86,10 @@ function(_, pgAdmin) {
                 wcDocker.EVENT.SCROLLED], function(ev) {
                   myPanel.on(ev, that.eventFunc.bind(myPanel, ev));
                 });
+
+            if (that.onCreate && _.isFunction(that.onCreate)) {
+              that.onCreate.apply(that, [myPanel, frame, $container]);
+            }
           }
         });
       }

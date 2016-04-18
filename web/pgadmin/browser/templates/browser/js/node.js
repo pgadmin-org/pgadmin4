@@ -241,7 +241,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
-          content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>'
+          content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please wait while we fetch information about the node from the server!') }}</div></div>',
+            onCreate: function(myPanel, $container) {
+              $container.addClass('pg-no-overflow');
+            }
         });
       p.load(pgBrowser.docker);
     },

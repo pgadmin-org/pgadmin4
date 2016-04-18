@@ -375,14 +375,23 @@ iframe {
     padding-top: 0;
     padding-right: 0;
     padding-left: 0;
+    height: 100%;
 }
+
+/* A generic class to make the overflow hidden of a DOM element */
+.pg-no-overflow {
+    overflow: hidden;
+}
+
 
 .pg-prop-has-btn-group-below {
     margin-bottom: 33px;
 }
 
 .has-pg-prop-btn-group {
-    top: 48px;
+    top: 39px;
+    padding-top: 8px;
+    height: calc(100% - 39px);
 }
 
 .pg-prop-content > div {
