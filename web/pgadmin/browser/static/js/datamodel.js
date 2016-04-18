@@ -221,12 +221,13 @@ function(_, pgAdmin, $, Backbone) {
               delete obj;
             } else if (obj instanceof Backbone.Collection) {
               obj.each(function(m) {
-                if (m instanceof Bakbone.DataModel) {
+                if (m instanceof Backbone.DataModel) {
                   obj.reset();
                   obj.clear(opts);
                 }
               });
-              Backbone.Collection.prototype.reset.apply(obj, {opts});
+              if (!(opts instanceof Array)){ opts = [opts] }
+              Backbone.Collection.prototype.reset.apply(obj, opts);
               delete obj;
             }
           }
