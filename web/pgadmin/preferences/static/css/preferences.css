@@ -1,11 +1,8 @@
 .preferences_dialog {
   height: 100%;
-  position: absolute;
-  top: 5px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  padding-bottom: 30px;
+  width: 100%;
+  padding-top: 34px;
+  padding-bottom: 39px;
 }
 
 .preferences_tree{
@@ -21,6 +18,11 @@
   padding-top: 10px;
   height: 100%;
   overflow: auto;
+}
+
+div.pgadmin-preference-body div.ajs-content {
+  top: 0px !important;
+  bottom: 0px !important;
 }
 
 .preferences_content .control-label, .preferences_content .pgadmin-controls {

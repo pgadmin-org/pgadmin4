@@ -114,7 +114,18 @@ class BrowserModule(PgAdminModule):
                         filename='js/aciTree/jquery.aciSortable.min'
                         ),
             'deps': ['jquery', 'jquery.aciplugin'],
-            'exports': 'aciPluginClass.plugins.aciTree',
+            'exports': 'aciPluginClass.plugins.aciSortable',
+            'when': None,
+            'preloaded': True
+            })
+        scripts.append({
+            'name': 'jquery.acifragment',
+            'path': url_for(
+                        'browser.static',
+                        filename='js/aciTree/jquery.aciFragment.min'
+                        ),
+            'deps': ['jquery', 'jquery.aciplugin'],
+            'exports': 'aciPluginClass.plugins.aciFragment',
             'when': None,
             'preloaded': True
             })

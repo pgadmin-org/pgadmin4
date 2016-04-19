@@ -91,6 +91,9 @@ def preferences():
     preferences = Preferences.preferences()
     res = []
 
+    def label(p):
+        return p['label']
+
     for m in preferences:
         if len(m['categories']):
             om = {
@@ -108,15 +111,16 @@ def preferences():
                     "label": c['label'],
                     "inode": False,
                     "open": False,
-                    "preferences": c['preferences']
+                    "preferences": sorted(c['preferences'], key=label)
                     }
 
                 (om['branch']).append(oc)
+            om['branch'] = sorted(om['branch'], key=label)
 
             res.append(om)
 
     return ajax_response(
-            response=res,
+            response=sorted(res, key=label),
             status=200
             )
 
