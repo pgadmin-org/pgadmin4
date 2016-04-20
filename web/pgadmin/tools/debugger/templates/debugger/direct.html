@@ -19,40 +19,34 @@ try {
 {% block body %}
 
 <nav class="navbar-inverse navbar-fixed-top">
-  <div class="container-fluid debugger-toolbar">
-    <div class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
-        <div id="btn-toolbar" class="btn-toolbar" role="toolbar" aria-label="">
-          <div class="btn-group" role="group" aria-label="">
-              <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}">
-                  <i class="fa fa-indent"></i>
-              </button>
-              <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}">
-                  <i class="fa fa-outdent"></i>
-              </button>
-              <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}">
-                  <i class="fa fa-play-circle"></i>
-              </button>
-          </div>
-           <div class="btn-group" role="group" aria-label="">
-              <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}">
-                  <i class="fa fa-circle"></i>
-              </button>
-              <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}">
-                  <i class="fa fa-ban"></i>
-              </button>
-          </div>
-           <div class="btn-group" role="group" aria-label="">
-              <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}">
-                  <i class="fa fa-stop-circle"></i>
-              </button>
-          </div>
+    <div id="btn-toolbar" class="btn-toolbar pg-prop-btn-group" role="toolbar" aria-label="">
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-default btn-step-into" title="{{ _('Step into') }}">
+                <i class="fa fa-indent"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-step-over" title="{{ _('Step over') }}">
+                <i class="fa fa-outdent"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-continue" title="{{ _('Continue/Start') }}">
+                <i class="fa fa-play-circle"></i>
+            </button>
         </div>
-      </ul>
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-default btn-toggle-breakpoint" title="{{ _('Toggle breakpoint') }}">
+                <i class="fa fa-circle"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-clear-breakpoint" title="{{ _('Clear all breakpoints') }}">
+                <i class="fa fa-ban"></i>
+            </button>
+        </div>
+        <div class="btn-group" role="group" aria-label="">
+            <button type="button" class="btn btn-default btn-stop" title="{{ _('Stop') }}">
+                <i class="fa fa-stop-circle"></i>
+            </button>
+        </div>
     </div>
-  </div>
 </nav>
-<div id="container"></div>
+<div id="container" class="debugger-container"></div>
 {% endblock %}
 
 

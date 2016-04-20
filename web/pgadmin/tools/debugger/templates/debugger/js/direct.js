@@ -1317,35 +1317,6 @@ define(
         'code', false, '100%', '100%',
         function(panel) {
 
-            var container = panel.layout().scene().find('.pg-debugger-panel');
-
-            // Create the wcSplitter used by wcDocker to split the single panel.
-            var hSplitter = new wcSplitter(
-                container, panel,
-                wcDocker.ORIENTATION.VERTICAL
-                );
-
-            hSplitter.scrollable(0, false, false);
-            hSplitter.scrollable(1, true, true);
-
-            // Initialize this splitter with a layout in each pane.
-            hSplitter.initLayouts(wcDocker.LAYOUT.SIMPLE, wcDocker.LAYOUT.SIMPLE);
-
-            // By default, the splitter splits down the middle, we split the main panel by 80%.
-            hSplitter.pos(0.65);
-
-            var params = $('<div class="full-container params"></div>');
-            hSplitter.right().addItem(params);
-
-            // Create wcDocker for tab set.
-            var out_docker = new wcDocker(
-              '.full-container', {
-              allowContextMenu: false,
-              allowCollapse: false,
-              themePath: '{{ url_for('static', filename='css/wcDocker/Themes') }}',
-              theme: 'pgadmin'
-            });
-
             // Create the parameters panel to display the arguments of the functions
             var parameters = new pgAdmin.Browser.Panel({
               name: 'parameters',
@@ -1402,48 +1373,49 @@ define(
             })
 
             // Load all the created panels
-            parameters.load(out_docker);
-            local_variables.load(out_docker);
-            messages.load(out_docker);
-            results.load(out_docker);
-            stack_pane.load(out_docker);
+            parameters.load(self.docker);
+            local_variables.load(self.docker);
+            messages.load(self.docker);
+            results.load(self.docker);
+            stack_pane.load(self.docker);
+        });
 
-            // Add all the panels to the docker
-            self.parameters_panel = out_docker.addPanel('parameters', wcDocker.DOCK.LEFT);
-            self.local_variables_panel = out_docker.addPanel('local_variables', wcDocker.DOCK.STACKED, self.parameters_panel);
-            self.stack_pane_panel = out_docker.addPanel('stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
-            self.messages_panel = out_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.parameters_panel);
-            self.results_panel = out_docker.addPanel('results', wcDocker.DOCK.STACKED, self.parameters_panel);
+        self.code_editor_panel = self.docker.addPanel('code', wcDocker.DOCK.TOP );
 
-            // Now create a tab widget and put that into one of the sub splits.
-            var editor_pane = $('<div id="stack_editor_pane" class="full-container-pane info"></div>');
-            var code_editor_area = $('<textarea id="debugger-editor-textarea"></textarea>').append(editor_pane);
-            hSplitter.left().addItem(code_editor_area);
+        self.parameters_panel = self.docker.addPanel(
+          'parameters', wcDocker.DOCK.BOTTOM, self.code_editor_panel);
+        self.local_variables_panel = self.docker.addPanel('local_variables', wcDocker.DOCK.STACKED, self.parameters_panel, {
+          tabOrientation: wcDocker.TAB.TOP
+        });
+        self.messages_panel = self.docker.addPanel('messages', wcDocker.DOCK.STACKED, self.parameters_panel);
+        self.results_panel = self.docker.addPanel(
+          'results', wcDocker.DOCK.STACKED, self.parameters_panel);
+        self.stack_pane_panel = self.docker.addPanel(
+          'stack_pane', wcDocker.DOCK.STACKED, self.parameters_panel);
 
-            // To show the line-number and set breakpoint marker details by user.
-            var editor = self.editor = CodeMirror.fromTextArea(
-                code_editor_area.get(0), {
-                lineNumbers: true,
-                gutters: ["note-gutter", "CodeMirror-linenumbers", "breakpoints"],
-                mode: "text/x-sql",
-                readOnly: true
-              });
+        var editor_pane = $('<div id="stack_editor_pane" class="full-container-pane info"></div>');
+        var code_editor_area = $('<textarea id="debugger-editor-textarea"></textarea>').append(editor_pane);
+        self.code_editor_panel.layout().addItem(code_editor_area);
+
+        // To show the line-number and set breakpoint marker details by user.
+        var editor = self.editor = CodeMirror.fromTextArea(
+          code_editor_area.get(0), {
+          lineNumbers: true,
+          gutters: ["note-gutter", "CodeMirror-linenumbers", "breakpoints"],
+          mode: "text/x-sql",
+          readOnly: true
         });
 
         // On loading the docker, register the callbacks
         var onLoad = function() {
-            self.docker.finishLoading(100);
-            self.docker.off(wcDocker.EVENT.LOADED);
-            // Register the callback when user set/clear the breakpoint on gutter area.
-            self.editor.on("gutterClick", self.onBreakPoint.bind(self), self);
+          self.docker.finishLoading(100);
+          self.docker.off(wcDocker.EVENT.LOADED);
+          // Register the callback when user set/clear the breakpoint on gutter area.
+          self.editor.on("gutterClick", self.onBreakPoint.bind(self), self);
         };
 
         self.docker.startLoading('{{ _('Loading...') }}');
         self.docker.on(wcDocker.EVENT.LOADED, onLoad);
-
-        self.main_panel = self.docker.addPanel(
-          'code', wcDocker.DOCK.TOP, null, {h: '100%', w: '100%'}
-          );
 
         // Create the toolbar view for debugging the function
         this.toolbarView = new DebuggerToolbarView();
