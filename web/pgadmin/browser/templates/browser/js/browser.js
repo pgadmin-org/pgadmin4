@@ -1,6 +1,6 @@
 define('pgadmin.browser',
         ['require', 'jquery', 'underscore', 'underscore.string', 'bootstrap',
-        'pgadmin', 'alertify', 'codemirror', 'codemirror/mode/sql', 'wcdocker',
+        'pgadmin', 'alertify', 'codemirror', 'codemirror/mode/sql/sql', 'wcdocker',
         'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
         'pgadmin.alertifyjs', 'pgadmin.browser.messages',
         'pgadmin.browser.menu', 'pgadmin.browser.panel',
@@ -318,7 +318,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       obj.editor = CodeMirror.fromTextArea(
           document.getElementById("sql-textarea"), {
             lineNumbers: true,
-            mode: "text/x-sql",
+            mode: "text/x-pgsql",
             readOnly: true
           });
 

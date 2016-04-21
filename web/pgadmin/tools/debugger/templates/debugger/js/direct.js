@@ -1402,7 +1402,7 @@ define(
           code_editor_area.get(0), {
           lineNumbers: true,
           gutters: ["note-gutter", "CodeMirror-linenumbers", "breakpoints"],
-          mode: "text/x-sql",
+          mode: "sql/x-pgsql",
           readOnly: true
         });
 

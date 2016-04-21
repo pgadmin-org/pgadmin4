@@ -1,5 +1,5 @@
 define(
-  ['jquery','alertify', 'pgadmin','codemirror', 'codemirror/mode/sql',
+  ['jquery','alertify', 'pgadmin','codemirror', 'codemirror/mode/sql/sql',
    'pgadmin.browser', 'wcdocker'],
   function($, alertify, pgAdmin, CodeMirror) {
     // Some scripts do export their object in the window only.
@@ -235,7 +235,7 @@ define(
                   lineWrapping: true,
                   matchBrackets: true,
                   indentUnit: 4,
-                  mode: "text/x-sql"
+                  mode: "text/x-pgsql"
                 });
               },
 

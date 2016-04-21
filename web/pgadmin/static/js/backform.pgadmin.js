@@ -4,7 +4,7 @@
   if (typeof define === 'function' && define.amd) {
     define([
       'underscore', 'underscore.string', 'jquery', 'backbone', 'backform',
-      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror/mode/sql',
+      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror/mode/sql/sql',
       'select2'
       ],
      function(_, S, $, Backbone, Backform, Backgrid, CodeMirror) {
@@ -1376,7 +1376,7 @@
       var sqlTab = CodeMirror.fromTextArea(
         (this.$el.find("textarea")[0]), {
         lineNumbers: true,
-        mode: "text/x-sql",
+        mode: "text/x-pgsql",
         readOnly: true
       });
       this.sqlTab = sqlTab;

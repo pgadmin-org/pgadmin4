@@ -1,6 +1,6 @@
 define(
   ['jquery', 'underscore', 'alertify', 'pgadmin', 'backbone', 'backgrid', 'codemirror',
-   'codemirror/mode/sql', 'codemirror/addon/selection/mark-selection', 'codemirror/addon/selection/active-line',
+   'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection', 'codemirror/addon/selection/active-line',
    'backgrid.select.all', 'backbone.paginator', 'backgrid.paginator', 'backgrid.filter',
    'bootstrap', 'pgadmin.browser', 'wcdocker'],
   function($, _, alertify, pgAdmin, Backbone, Backgrid, CodeMirror) {
@@ -294,7 +294,7 @@ define(
             lineWrapping: true,
             matchBrackets: true,
             indentUnit: 4,
-            mode: "text/x-sql"
+            mode: "text/x-pgsql"
         });
 
         // Create main wcDocker instance
