@@ -177,20 +177,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             type: 'text', disabled: function(m) { return !m.isNew(); },
             group: 'Definition', mode: ['create'],
             control: 'node-ajax-options',
-            options: function() {
-
-              var srcTyp = this.model.get('srctyp');
-              var trgtyp = this.model.get('trgtyp');
+            options: function(control) {
+              var srcTyp = control.model.get('srctyp');
+              var trgtyp = control.model.get('trgtyp');
               var res = [];
 
               if(srcTyp != undefined && srcTyp != '' &&
                  trgtyp != undefined && trgtyp != '')
               {
-                 var node = this.field.get('schema_node'),
+                 var node = control.field.get('schema_node'),
                  _url = node.generate_url.apply(
                  node, [
-                   null, 'get_functions', this.field.get('node_data'), false,
-                   this.field.get('node_info')
+                   null, 'get_functions', control.field.get('node_data'), false,
+                   control.field.get('node_info')
                  ]);
                  $.ajax({
                  type: 'POST',
