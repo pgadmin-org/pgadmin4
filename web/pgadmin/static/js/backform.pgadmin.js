@@ -1975,9 +1975,10 @@
 
       // Evaluate the disabled, visible option
       var isDisabled = evalF(data.disabled, data, this.model),
-          isVisible = evalF(data.visible, data, this.model);
+          isVisible = evalF(data.visible, data, this.model),
+          self = this;
 
-      this.sqlCtrl = CodeMirror.fromTextArea(
+      self.sqlCtrl = CodeMirror.fromTextArea(
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
             mode: "text/x-sql",
@@ -1985,7 +1986,7 @@
           });
 
       if (!isVisible)
-        this.$el.addClass(Backform.hiddenClassname);
+        self.$el.addClass(Backform.hiddenClassname);
 
       var self = this;
       // Refresh SQL Field to refresh the control lazily after it renders
@@ -2005,7 +2006,7 @@
       if (this.sqlCtrl) {
         delete this.sqlCtrl;
         this.sqlCtrl = null;
-        this.$el.remove();
+        this.$el.empty();
       }
 
       this.stopListening(this.model, "pg-property-tab-changed", this.refreshTextArea);
