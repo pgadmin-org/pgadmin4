@@ -78,6 +78,9 @@ function(_, $, pgBrowser) {
                 }
               });
             }
+          } else {
+            var e = pgAdmin.Browser.editor;
+            e.refresh.apply(e);
           }
           if (sql != '') {
             pgAdmin.Browser.editor.setValue(sql);

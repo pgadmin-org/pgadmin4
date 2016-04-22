@@ -1370,16 +1370,22 @@
         return this.formatter.toRaw(this.$el.find("textarea").val(), this.model);
     },
     render: function() {
+      if (this.sqlCtrl) {
+        delete this.sqlCtrl;
+        this.sqlCtrl = null;
+        this.$el.empty();
+      }
       // Use the Backform Control's render function
       Backform.Control.prototype.render.apply(this, arguments);
 
-      var sqlTab = CodeMirror.fromTextArea(
+      this.sqlCtrl = CodeMirror.fromTextArea(
         (this.$el.find("textarea")[0]), {
         lineNumbers: true,
+        lineWrapping: true,
         mode: "text/x-pgsql",
         readOnly: true
       });
-      this.sqlTab = sqlTab;
+
       return this;
     },
     onTabChange: function(obj) {
@@ -1409,20 +1415,26 @@
             dataType: "json",
             contentType: "application/json"
           }).done(function(res) {
-            self.sqlTab.clearHistory();
-            self.sqlTab.setValue(res.data);
+            self.sqlCtrl.clearHistory();
+            self.sqlCtrl.setValue(res.data);
           }).fail(function() {
             self.model.trigger('pgadmin-view:msql:error', self.method, node, arguments);
           }).always(function() {
             self.model.trigger('pgadmin-view:msql:fetched', self.method, node, arguments);
           });
         } else {
-          this.sqlTab.clearHistory();
-          this.sqlTab.setValue(window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
+          this.sqlCtrl.clearHistory();
+          this.sqlCtrl.setValue(window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
         }
+        this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }
     },
     remove: function() {
+      if (this.sqlCtrl) {
+        delete this.sqlCtrl;
+        this.sqlCtrl = null;
+        this.$el.empty();
+      }
       this.model.off('pg-property-tab-changed', this.onTabChange, this);
       Backform.Control.__super__.remove.apply(this, arguments);
     }
@@ -1919,6 +1931,7 @@
      */
     initialize: function(o) {
       Backform.TextareaControl.prototype.initialize.apply(this, arguments);
+      this.sqlCtrl = null;
 
       // There is an issue with the Code Mirror SQL.
       //
@@ -1930,10 +1943,17 @@
     },
 
     getValueFromDOM: function() {
-      return this.sqlField.getValue();
+      return this.sqlCtrl.getValue();
     },
 
     render: function() {
+      // Clean up the existing sql control
+      if (this.sqlCtrl) {
+        delete this.sqlCtrl;
+        this.sqlCtrl = null;
+        this.$el.empty();
+      }
+
       // Use the Backform TextareaControl's render function
       Backform.TextareaControl.prototype.render.apply(this, arguments);
 
@@ -1954,22 +1974,20 @@
           };
 
       // Evaluate the disabled, visible option
-      var isDisabled = evalF(data.disabled, data, this.model);
-      var isVisible = evalF(data.visible, data, this.model);
+      var isDisabled = evalF(data.disabled, data, this.model),
+          isVisible = evalF(data.visible, data, this.model);
 
-      var self = this,
-          sqlField = CodeMirror.fromTextArea(
+      this.sqlCtrl = CodeMirror.fromTextArea(
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
             mode: "text/x-sql",
             readOnly: isDisabled
           });
 
-      self.sqlField = sqlField;
-
       if (!isVisible)
         this.$el.addClass(Backform.hiddenClassname);
 
+      var self = this;
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
         self.refreshTextArea.apply(self);
@@ -1979,10 +1997,17 @@
     },
 
     refreshTextArea: function() {
-      this.sqlField.refresh();
+      this.sqlCtrl.refresh();
     },
 
     remove: function() {
+      // Clean up the sql control
+      if (this.sqlCtrl) {
+        delete this.sqlCtrl;
+        this.sqlCtrl = null;
+        this.$el.remove();
+      }
+
       this.stopListening(this.model, "pg-property-tab-changed", this.refreshTextArea);
 
       Backform.TextareaControl.prototype.remove.apply(this, arguments);

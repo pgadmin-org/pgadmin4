@@ -318,6 +318,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       obj.editor = CodeMirror.fromTextArea(
           document.getElementById("sql-textarea"), {
             lineNumbers: true,
+            lineWrapping: true,
             mode: "text/x-pgsql",
             readOnly: true
           });

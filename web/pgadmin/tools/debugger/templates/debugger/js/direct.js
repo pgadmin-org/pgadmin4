@@ -1401,8 +1401,9 @@ define(
         var editor = self.editor = CodeMirror.fromTextArea(
           code_editor_area.get(0), {
           lineNumbers: true,
+          lineWrapping: true,
           gutters: ["note-gutter", "CodeMirror-linenumbers", "breakpoints"],
-          mode: "sql/x-pgsql",
+          mode: "text/x-pgsql",
           readOnly: true
         });
 
