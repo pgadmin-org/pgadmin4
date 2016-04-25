@@ -353,11 +353,11 @@ define(
               return {
                 buttons:[
                   {
-                    text: "{{ _(' <span class=button-label> OK </span>') }}", key: 13, className: "btn btn-primary fa fa-lg fa-save"
-                	  
+                    text: "{{ _('OK') }}", key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+
                   },
                   {
-                    text: "{{ _(' <span class=button-label> Cancel </span>') }}", className: "btn btn-danger fa fa-lg fa-close"
+                    text: "{{ _('Cancel') }}", className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },

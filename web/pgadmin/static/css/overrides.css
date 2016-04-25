@@ -351,21 +351,16 @@ iframe {
     border-left-style: solid
 }
 
-.pg-prop-btn-group-below .pg-prop-btn-group button {
-  margin: 2px 5px;
+.pg-prop-btn-group button {
+  margin: 2px 3px 2px 0px;
 }
 
-.pg-prop-btn-group button:not(:first-child):not(:last-child) {
-    margin-left: 0px;
+.pg-prop-btn-group button:first-child {
+    margin-left: 3px;
 }
 
-.pg-prop-btn-group-below button:not(:first-child):not(:last-child) {
-    margin-left: 2px;
-    margin-right: 5px;
-}
-
-.btn-primary{
-  margin: 2px 13px !important;
+.pg-prop-btn-group button:last-child {
+    margin-right: 3px;
 }
 
 .pg-prop-content {
@@ -1013,13 +1008,13 @@ ul.nav.nav-tabs {
 .alertify .ajs-footer .ajs-buttons.ajs-auxiliary .ajs-button, .alertify .ajs-footer .ajs-buttons.ajs-primary .ajs-button {
   margin-left: 2px;
   margin-right: 2px;
-  margin-top:0px;
+  margin-top:2px;
   margin-bottom:0px;
 }
 
 .alertify .ajs-footer .ajs-buttons .ajs-button {
-  min-width: 55px;
-  min-height: 33px;
+  min-width: 80px;
+  min-height: 30px;
 }
 
 .alertify .ajs-commands {
@@ -1087,9 +1082,14 @@ ul.nav.nav-tabs {
   background-image:none;
 }
 span.button-label {
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: initial;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: initial;
 }
-button.ajs-button.btn.btn-primary {
-    margin: 2px!important;
+button.pg-alertify-button {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: initial;
+}
+.fa.pg-alertify-button:before {
+  font: normal normal normal 18px/1 FontAwesome;
+  margin-right: 5px;
 }
