@@ -308,9 +308,8 @@ font-size: 13px;
 .context-menu-icon-wcTabIcon {
   text-align: left;
   padding: 3px 28px;
-  background-position-x: 5px;
   height: auto;
-  background-position-y: 4px
+  background-position: 5px 50%;
 }
 
 ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
