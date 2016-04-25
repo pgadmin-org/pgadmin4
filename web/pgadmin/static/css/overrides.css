@@ -667,7 +667,8 @@ div.rolmembership {
 fieldset.inline-fieldset {
     margin: 0px; margin-left: 2px; margin-right: 2px;
     padding-right: 10px; padding-left: 10px; padding-top: 6px; padding-bottom: 12px;
-    border: 2px solid; border-radius: 5px;
+    border: 1px solid; border-radius: 5px;
+    border-color: #C3C3C3; box-shadow: 0.1px 0.1px 0.1px #C3C3C3;
 }
 
 fieldset.inline-fieldset-without-border {
