@@ -351,15 +351,15 @@ iframe {
     border-left-style: solid
 }
 
-.pg-prop-btn-group button {
+.pg-prop-btn-group > button {
   margin: 2px 3px 2px 0px;
 }
 
-.pg-prop-btn-group button:first-child {
+.pg-prop-btn-group > button:first-child {
     margin-left: 3px;
 }
 
-.pg-prop-btn-group button:last-child {
+.pg-prop-btn-group > button:last-child {
     margin-right: 3px;
 }
 

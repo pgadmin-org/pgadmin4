@@ -159,6 +159,7 @@ define(
         "click #btn-auto-commit": "on_auto_commit",
         "click #btn-auto-rollback": "on_auto_rollback",
         "click #btn-clear-history": "on_clear_history",
+        "click .noclose": 'do_not_close_menu',
         "change .limit": "on_limit_change"
       },
 
@@ -217,13 +218,13 @@ define(
             '</button>',
             '<ul class="dropdown-menu dropdown-menu">',
               '<li>',
-                '<a id="btn-auto-commit" href="#">',
+                '<a id="btn-auto-commit" href="#" class="noclose">',
                     '<i class="auto-commit fa fa-check" aria-hidden="true"></i>',
-                    '<span> {{ _('Auto-Commit') }} </span>',
+                    '<span> {{ _('Auto Commit') }} </span>',
                 '</a>',
-                '<a id="btn-auto-rollback" href="#">',
+                '<a id="btn-auto-rollback" href="#" class="noclose">',
                     '<i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>',
-                    '<span> {{ _('Auto-Rollback') }} </span>',
+                    '<span> {{ _('Auto Rollback') }} </span>',
                 '</a>',
               '</li>',
             '</ul>',
@@ -768,6 +769,9 @@ define(
             self,
             self.handler
         );
+      },
+      do_not_close_menu: function(ev) {
+        ev.stopPropagation();
       }
     });
 
