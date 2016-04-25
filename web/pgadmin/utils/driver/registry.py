@@ -46,7 +46,7 @@ class DriverRegistry(ABCMeta):
       - Use this function from init_app(...) to load all available drivers in
         the registry.
     """
-    registry = dict()
+    registry = None
     drivers = dict()
 
     def __init__(cls, name, bases, d):
@@ -76,7 +76,9 @@ class DriverRegistry(ABCMeta):
 
     @classmethod
     def load_drivers(cls):
-        DriverRegistry.registry = dict()
+        # Initialize the registry only if it has not yet been initialized
+        if DriverRegistry.registry is None:
+            DriverRegistry.registry = dict()
 
         from importlib import import_module
         from werkzeug.utils import find_modules

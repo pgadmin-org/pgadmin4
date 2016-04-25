@@ -201,6 +201,9 @@ def create_app(app_name=config.APP_NAME):
             from setup import do_upgrade
             do_upgrade(app, user_datastore, security, version)
 
+    # Load all available serve drivers
+    driver.init_app(app)
+
     ##########################################################################
     # Load plugin modules
     ##########################################################################
@@ -251,9 +254,6 @@ def create_app(app_name=config.APP_NAME):
             'current_app': current_app,
             'current_blueprint': current_blueprint
             }
-
-    # Load all available serve drivers
-    driver.init_app(app)
 
     ##########################################################################
     # All done!
