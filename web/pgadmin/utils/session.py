@@ -101,7 +101,7 @@ class SqliteSessionStorage(MutableMapping, SessionMixin):
         """
         with self._get_conn() as conn:
             for row in conn.execute(self._ite_sql):
-                yield loads(str(row[0]))
+                yield loads(dumps(row[0]))
 
     def __len__(self):
         """Returns the number of keys stored in this session.
