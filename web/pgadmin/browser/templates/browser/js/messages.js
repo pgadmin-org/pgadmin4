@@ -22,7 +22,8 @@ function(_, S, pgAdmin) {
     'NODE_HAS_NO_SQL': "{{ _("No SQL could be generated for the selected object.") }}",
     'NODE_HAS_NO_STATISTICS': "{{ _("No statistics are available for the selected object!") }}",
     'TRUE': "{{ _("True") }}",
-    'FALSE': "{{ _("False") }}"
+    'FALSE': "{{ _("False") }}",
+    'NOTE_CTRL_LABEL': "{{ _("Note") }}",
   };
 
   return pgBrowser.messages;

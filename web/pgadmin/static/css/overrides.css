@@ -1094,3 +1094,21 @@ button.pg-alertify-button {
   font: normal normal normal 18px/1 FontAwesome;
   margin-right: 5px;
 }
+.backform_control_notes {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  color: #333;
+  display: block;
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+  font-size: 12px;
+  line-height: 1.42857;
+  margin: 0 0 10px;
+  overflow: auto;
+  padding: 5px 10px;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+div.backform_control_notes label.control-label {
+  min-width: 0px;
+}

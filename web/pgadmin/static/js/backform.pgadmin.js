@@ -67,7 +67,8 @@
     'collection': ['sub-node-collection', 'sub-node-collection', 'string'],
     'uniqueColCollection': ['unique-col-collection', 'unique-col-collection', 'string'],
     'switch' : 'switch',
-    'select2': 'select2'
+    'select2': 'select2',
+    'note': 'note'
   };
 
   var getMappedControl = Backform.getMappedControl = function(type, mode) {
@@ -2013,6 +2014,21 @@
 
       Backform.TextareaControl.prototype.remove.apply(this, arguments);
     }
+  });
+
+  // We will use this control just as a annotate in Backform
+  var NoteControl = Backform.NoteControl = Backform.Control.extend({
+    defaults: {
+      label: window.pgAdmin.Browser.messages.NOTE_CTRL_LABEL,
+      text: '',
+      extraClasses: [],
+      noteClass: 'backform_control_notes'
+    },
+    template: _.template([
+      '<div class="<%=noteClass%> col-xs-12 <%=extraClasses.join(\' \')%>">',
+      '<label class="control-label"><%=label%>:</label>',
+      '<span><%=text%></span></div>'
+    ].join("\n"))
   });
 
   return Backform;
