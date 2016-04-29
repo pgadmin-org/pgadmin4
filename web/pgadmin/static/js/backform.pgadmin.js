@@ -1906,7 +1906,7 @@
 
     defaults: {
       label: "",
-      extraClasses: ['sql_field_height_300'], // Add default control height
+      extraClasses: [], // Add default control height
       helpMessage: null,
       maxlength: 4096,
       rows: undefined

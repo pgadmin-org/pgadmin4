@@ -853,23 +853,6 @@ td.edit-cell.editable.sortable.renderable.editor {
     background-color: #f7f7f7;
 }
 
-/* Define custom height for use in SqlField control */
-.sql_field_height_100 {
-    height: 100px;
-}
-
-.sql_field_height_200 {
-    height: 200px;
-}
-
-.sql_field_height_300 {
-    height: 340px;
-}
-
-.sql_field_height_400 {
-    height: 440px;
-}
-
 .tab-pane.SQL {
   padding: 0px 7px 0px 0px;
 }
