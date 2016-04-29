@@ -450,7 +450,11 @@
       this.undelegateEvents();
 
       if (this.$select) {
-        this.$select.select2('destroy');
+        if ( this.$select.data('select2')) {
+          this.$select.select2('destroy');
+        }
+        delete this.$select;
+        this.$select = null;
       }
 
       this.$el.empty();
@@ -530,7 +534,9 @@
 
     remove: function() {
       this.$select.off('change', this.onSave);
-      this.$select.select2('destroy');
+      if (this.$select.data('select2')) {
+        this.$select.select2('destroy');
+      }
       this.$el.empty();
       Backgrid.SelectCell.prototype.remove.apply(this, arguments);
      }

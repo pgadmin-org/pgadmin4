@@ -903,8 +903,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // Closing this panel
           this.close();
         }.bind(panel),
-        updateTreeItem = function() {
+        updateTreeItem = function(that) {
           var panel = this;
+
+          // Clear the cache for this node now.
+          setTimeout(function() { that.clear_cache.apply(that, item); }, 0);
 
           // Update the item lable (if label is modified.)
           if (view.model.tnode) {
@@ -925,11 +928,18 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           tree.deselect(item);
           panel.$container.removeAttr('action-mode');
           setTimeout(function() { closePanel(); }, 0);
-
           setTimeout(function() { tree.select(item, {focus: true}); }, 10);
+
+          pgBrowser.Events.trigger(
+            'pgadmin-node:updated:' + that.type, item, that
+          );
         },
-        saveNewNode = function() {
+        saveNewNode = function(that) {
           var panel = this;
+
+          // Clear the cache for this node now.
+          setTimeout(function() { that.clear_cache.apply(that, item); }, 0);
+
           /* TODO:: Create new tree node for this */
           if (view.model.tnode && '_id' in view.model.tnode) {
             var d = _.extend({}, view.model.tnode),
@@ -938,6 +948,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 if (i) {
                   tree.select(i, {focus: true});
                 }
+                pgBrowser.Events.trigger(
+                  'pgadmin-node:created:' + that.type, i, that
+                );
               }, found = false;
 
             delete view.model.tnode;
@@ -1092,9 +1105,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   tree.open(item, {
                     success: function (item, options){
                       setTimeout(function() {closePanel();}, 0);
+                      pgBrowser.Events.trigger(
+                        'pgadmin-node:created:' + that.type, item, that
+                      );
                     },
                     fail: function (item, options){
                       setTimeout(function() {closePanel();}, 0);
+                      pgBrowser.Events.trigger(
+                        'pgadmin-node:created:' + that.type, item, that
+                      );
                     },
                     unanimated: animation
                   });
@@ -1125,7 +1144,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             }
             setTimeout(function() {closePanel();}, 0);
           }
-        }.bind(panel),
+        }.bind(panel, that),
         editInNewPanel = function() {
           // Open edit in separate panel
           setTimeout(function() {
@@ -1136,7 +1155,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           }, 0);
         },
         onCancelFunc = closePanel,
-        onSaveFunc = updateTreeItem.bind(panel),
+        onSaveFunc = updateTreeItem.bind(panel, that),
         onEdit = editFunc.bind(panel);
 
       if (action) {
@@ -1280,12 +1299,45 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       }
 
       if (_.isUndefined(data)) {
-        return cached[hash];
+        var res = cached[hash];
+
+        if (!_.isUndefined(res) &&
+            (res.at - Date.now() > 300000)) {
+          res = undefined;
+        }
+        return res;
       }
 
-      var res = cached[hash] = {data: data, at: Date(), level: level};
+      res = cached[hash] = {data: data, at: Date.now(), level: level};
 
       return res;
+    },
+    clear_cache: function(item) {
+      /*
+       * Reset the cache, when new node is created.
+       *
+       * FIXME:
+       * At the moment, we will clear all the cache for this node. But - we
+       * would like to clear the cache only this nodes parent, so that - it
+       * fetches the new data.
+       */
+      this.cached = {};
+    },
+    cache_level: function(node_info, with_id) {
+      if (node_info) {
+        if (with_id && this.type in node_info) {
+          return this.type;
+        }
+        if (_.isArray(this.parent_type)) {
+          for (var parent in this.parent_type) {
+            if (parent in node_info) {
+              return parent;
+            }
+          }
+          return this.type;
+        }
+        return this.parent_type;
+      }
     }
   });
 

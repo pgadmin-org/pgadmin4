@@ -1993,13 +1993,15 @@
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
         self.refreshTextArea.apply(self);
-      }, 100);
+      }, 0);
 
       return self;
     },
 
     refreshTextArea: function() {
-      this.sqlCtrl.refresh();
+      if (this.sqlCtrl) {
+        this.sqlCtrl.refresh();
+      }
     },
 
     remove: function() {

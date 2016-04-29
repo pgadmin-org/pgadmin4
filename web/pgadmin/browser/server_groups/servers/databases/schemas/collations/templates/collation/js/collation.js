@@ -62,7 +62,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           lc_collate: undefined,
           description: undefined
         },
-        
+
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -76,7 +76,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
         },
-        
+
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
@@ -87,7 +87,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', control: 'node-list-by-name', node: 'role'
+          disabled: 'inSchema', control: 'node-list-by-name',
+          node: 'role'
         },{
           id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
           type: 'text', mode: ['create', 'edit'], node: 'schema',

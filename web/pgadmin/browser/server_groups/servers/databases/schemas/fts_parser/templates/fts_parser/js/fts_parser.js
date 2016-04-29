@@ -93,27 +93,33 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'prsstart', label: '{{ _('Start function')}}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'start_functions',
-          group: '{{ _('Definition') }}'
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema'
         },{
           id: 'prstoken', label: '{{ _('Get next token function')}}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'token_functions',
-          group: '{{ _('Definition') }}'
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema'
         },{
           id: 'prsend', label: '{{ _('End function')}}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'end_functions',
-          group: '{{ _('Definition') }}'
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema',
+          cache_node: 'schema'
         },{
           id: 'prslextype', label: '{{ _('Lextypes function')}}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'lextype_functions',
-          group: '{{ _('Definition') }}'
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema'
         },{
           id: 'prsheadline', label: '{{ _('Headline function')}}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'headline_functions',
-          group: '{{ _('Definition') }}'
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema'
         }],
 
         /*

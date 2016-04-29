@@ -79,22 +79,28 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       if (url) {
         var node = this.field.get('schema_node'),
             node_info = this.field.get('node_info'),
+            with_id = this.field.get('url_with_id') || false,
             full_url = node.generate_url.apply(
               node, [
-                null, url, this.field.get('node_data'),
-                this.field.get('url_with_id') || false, node_info
+                null, url, this.field.get('node_data'), with_id, node_info
               ]),
-            cache_level = this.field.get('cache_level') || node.type,
+            cache_level,
             cache_node = this.field.get('cache_node');
 
         cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+
+        if (this.field.has('cache_level')) {
+          cache_level = this.field.get('cache_level');
+        } else {
+          cache_level = cache_node.cache_level(node_info, with_id);
+        }
 
         /*
          * We needs to check, if we have already cached data for this url.
          * If yes - use that, and do not bother about fetching it again,
          * and use it.
          */
-        var data = cache_node.cache(url, node_info, cache_level);
+        var data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
 
         if (this.field.get('version_compatible') &&
             (_.isUndefined(data) || _.isNull(data))) {
@@ -107,7 +113,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                * We will cache this data for short period of time for avoiding
                * same calls.
                */
-              data = cache_node.cache(url, node_info, cache_level, res.data);
+              data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
             },
             error: function() {
               m.trigger('pgadmin:view:fetch:error', m, self.field);
@@ -341,22 +347,28 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
             eventHandler = m.top || m,
             node = column.get('schema_node'),
             node_info = column.get('node_info'),
+            with_id = column.get('url_with_id') || false,
             full_url = node.generate_url.apply(
               node, [
-                null, url, column.get('node_data'),
-                column.get('url_with_id') || false, node_info
+                null, url, column.get('node_data'), with_id, node_info
               ]),
-            cache_level = column.get('cache_level') || node.type,
+            cache_level,
             cache_node = column.get('cache_node');
 
         cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+
+        if (this.field.has('cache_level')) {
+          cache_level = this.field.get('cache_level');
+        } else {
+          cache_level = cache_node.cache_level(node_info, with_id);
+        }
 
         /*
          * We needs to check, if we have already cached data for this url.
          * If yes - use that, and do not bother about fetching it again,
          * and use it.
          */
-        var data = cache_node.cache(url, node_info, cache_level);
+        var data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
 
         if (column.get('version_compatible') &&
             (_.isUndefined(data) || _.isNull(data))) {
@@ -369,7 +381,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
                * We will cache this data for short period of time for avoiding
                * same calls.
                */
-              data = cache_node.cache(url, node_info, cache_level, res.data);
+              data = cache_node.cache(node.type + '#' + url, node_info, cache_level, res.data);
             },
             error: function() {
               eventHandler.trigger('pgadmin:view:fetch:error', m, column);

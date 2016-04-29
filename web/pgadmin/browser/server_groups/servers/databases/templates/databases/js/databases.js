@@ -257,12 +257,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'encoding', label: '{{ _('Encoding') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); }, url: 'get_encodings',
-          control: 'node-ajax-options'
+          control: 'node-ajax-options', cache_level: 'server'
         },{
           id: 'template', label: '{{ _('Template') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); },
-          control: 'node-list-by-name', node: 'database'
+          control: 'node-list-by-name', node: 'database', cache_level: 'server'
         },{
           id: 'spcname', label: '{{ _('Tablespace') }}',
           editable: false, type: 'text', group: 'Definition',
@@ -275,12 +275,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'datcollate', label: '{{ _('Collation') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
-          control: 'node-ajax-options'
+          control: 'node-ajax-options', cache_level: 'server'
         },{
           id: 'datctype', label: '{{ _('Character Type') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
-          control: 'node-ajax-options'
+          control: 'node-ajax-options', cache_level: 'server'
         },{
           id: 'datconnlimit', label: '{{ _('Connection Limit') }}',
           editable: false, type: 'int', group: 'Definition', min: -1

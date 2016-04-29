@@ -173,27 +173,20 @@ function($, _, S, pgAdmin, pgBrowser) {
           },
           {
             id: 'owner', label:'{{ _('Owner') }}', control: 'node-list-by-name',
-            mode: ['properties'], node: 'role', cell: 'string'
+            mode: ['properties'], node: 'role', cell: 'string',
+            cache_level: 'server'
           },
           {
-            id: 'schema', label: '{{ _('Schema')}}', type: 'text', control: 'node-ajax-options',
-            mode: ['properties', 'create', 'edit'], group: '{{ _('Definition')}}', deps: ['relocatable'],
-            url: 'schemas', first_empty: true, disabled: function(m) {
-
+            id: 'schema', label: '{{ _('Schema')}}', type: 'text',
+            control: 'node-list-by-name', group: '{{ _('Definition')}}',
+            mode: ['properties', 'create', 'edit'], deps: ['relocatable'],
+            node: 'schema', first_empty: true,
+            disabled: function(m) {
               /*
                * enable or disable schema field if model's relocatable
                * attribute is True or False
                */
               return (m.has('relocatable') ? !m.get('relocatable') : false);
-            },
-            transform: function(data) {
-              var res = [];
-              if (data && _.isArray(data)) {
-                _.each(data, function(d) {
-                  res.push({label: d.schema, value: d.schema});
-                })
-              }
-              return res;
             }
           },
           {

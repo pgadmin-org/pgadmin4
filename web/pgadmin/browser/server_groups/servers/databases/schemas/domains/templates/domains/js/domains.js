@@ -205,10 +205,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'basetype', label:'{{ _('Base type') }}', cell: 'string', control: 'node-ajax-options',
-          type: 'text', mode:['properties', 'create', 'edit'], group: '{{ _('Definition') }}', url: 'get_types',
-          disabled: function(m) { return !m.isNew(); }, first_empty: true,
-          transform: function(d){
+          id: 'basetype', label:'{{ _('Base type') }}', cell: 'string',
+          control: 'node-ajax-options', type: 'text', url: 'get_types',
+          mode:['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          cache_level: 'database', cache_node: 'schema', disabled: function(m) {
+            return !m.isNew();
+          }, first_empty: true, transform: function(d) {
             this.model.type_options =  d;
             return d;
           }
@@ -279,8 +281,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             'size': 'small'
           }
         },{
-          id: 'collname', label:'{{ _('Collation') }}', cell: 'string', control: 'node-ajax-options',
-          type: 'text', group: '{{ _('Definition') }}', url: 'get_collations', disabled: function(m) {
+          id: 'collname', label:'{{ _('Collation') }}', cell: 'string',
+          control: 'node-ajax-options', type: 'text', url: 'get_collations',
+          group: '{{ _('Definition') }}', cache_level: 'database',
+          cache_node: 'schema', disabled: function(m) {
             return !m.isNew();
           }
         },{

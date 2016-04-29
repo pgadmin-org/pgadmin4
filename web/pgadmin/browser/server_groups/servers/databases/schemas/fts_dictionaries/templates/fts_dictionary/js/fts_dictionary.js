@@ -126,14 +126,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
-          control: 'node-list-by-id'
+          cache_node: 'database', control: 'node-list-by-id'
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
           id: 'template', label: '{{ _('Template')}}',type: 'text',
           disabled: function(m) { return !m.isNew(); }, url: 'fetch_templates',
-           group: '{{ _('Definition') }}',control: 'node-ajax-options'
+          group: '{{ _('Definition') }}', control: 'node-ajax-options',
+          cache_node: 'database'
         },{
           id: 'options', label: '{{ _('Option') }}', type: 'collection',
           group: '{{ _('Options') }}', control: 'unique-col-collection',

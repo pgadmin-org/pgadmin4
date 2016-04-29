@@ -83,13 +83,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'tmplinit', label: '{{ _('Init function')}}', group: '{{ _('Definition') }}',
-          type: 'text', disabled: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'get_init'
+          id: 'tmplinit', label: '{{ _('Init function')}}',
+          group: '{{ _('Definition') }}', type: 'text', disabled: function(m) {
+            return !m.isNew();
+          }, control: 'node-ajax-options', url: 'get_init',
+          cache_level: 'database', cache_node: 'schema'
         },{
           id: 'tmpllexize', label: '{{ _('Lexize function')}}', group: '{{ _('Definition') }}',
           type: 'text', disabled: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'get_lexize'
+          control: 'node-ajax-options', url: 'get_lexize', cache_level: 'database',
+          cache_node: 'schema'
         }],
 
         /*
