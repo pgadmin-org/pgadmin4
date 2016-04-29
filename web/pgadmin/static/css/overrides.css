@@ -1068,7 +1068,8 @@ ul.nav.nav-tabs {
 }
 
 .alertify .ajs-handle {
-  background-image:none;
+  right: -4px;
+  bottom: -4px;
 }
 span.button-label {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
