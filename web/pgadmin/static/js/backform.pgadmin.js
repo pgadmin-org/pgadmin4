@@ -819,7 +819,7 @@
               {
                 model: self.field.get('model'),
                 silent: true,
-                handler: self.model.handler || self.model,
+                handler: self.model,
                 top: self.model.top || self.model,
                 attrName: self.field.get('name')
               });
@@ -1099,10 +1099,10 @@
               $(grid.body.$el.find($("tr.new"))).removeClass("new")
               var m = new (data.model) (null, {
                 silent: true,
-                handler: self.model.handler || self.model,
+                handler: collection,
                 top: self.model.top || self.model,
-                node_info: self.model.node_info,
-                collection: collection
+                collection: collection,
+                node_info: self.model.node_info
               });
               collection.add(m);
 
@@ -1251,7 +1251,7 @@
       if (!collection) {
         collection = new (pgBrowser.Node.Collection)(null, {
           handler: self.model.handler || self,
-          model: data.model,
+          model: data.model, top: self.model.top || self.model,
           silent: true
         });
         self.model.set(data.name, collection, {silent: true});

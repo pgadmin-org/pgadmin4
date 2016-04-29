@@ -308,7 +308,7 @@ function(_, pgAdmin, $, Backbone) {
             if (_.size(self.errorModel.attributes) == 0) {
               if (self.collection || self.handler) {
                 (self.collection || self.handler).trigger(
-                    'pgadmin-session:model:valid', self
+                    'pgadmin-session:model:valid', self, (self.collection || self.handler)
                     );
               } else {
                 self.trigger('pgadmin-session:valid', self.sessChanged(), self);
@@ -317,7 +317,7 @@ function(_, pgAdmin, $, Backbone) {
               msg = msg || _.values(self.errorModel.attributes)[0];
               if (self.collection || self.handler) {
                 (self.collection || self.handler).trigger(
-                    'pgadmin-session:model:invalid', msg, self
+                    'pgadmin-session:model:invalid', msg, self, (self.collection || self.handler)
                     );
               } else {
                 self.trigger('pgadmin-session:invalid', msg, self);
@@ -471,7 +471,7 @@ function(_, pgAdmin, $, Backbone) {
             self.errorModel.set(objName, msg);
 
             if (self.handler) {
-              (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
+              (self.handler).trigger('pgadmin-session:model:invalid', msg, self, self.handler);
             } else  {
               self.trigger('pgadmin-session:invalid', msg, self);
             }
@@ -516,9 +516,9 @@ function(_, pgAdmin, $, Backbone) {
           }
 
           var msg = null,
-              validate = function(m) {
-                if ('validate' in obj && typeof(obj.validate) == 'function') {
-                  msg = obj.validate();
+              validate = function(m, attrs) {
+                if ('validate' in m && typeof(m.validate) == 'function') {
+                  msg = m.validate(attrs);
 
                   return msg;
                 }
@@ -543,11 +543,15 @@ function(_, pgAdmin, $, Backbone) {
           }
 
           /*
-           * We will trigger validation information
+           * The object is valid, but does this has any effect on parent?
+           * Let's validate this object itself, before making it clear.
+           *
+           * We will trigger validation information.
            */
-          if (_.size(self.errorModel.attributes) == 0) {
+          if (_.size(self.errorModel.attributes) == 0 &&
+              !validate(self, (objName && [objName]))) {
             if (self.handler) {
-              (self.handler).trigger('pgadmin-session:model:valid', self);
+              (self.handler).trigger('pgadmin-session:model:valid', self, self.handler);
             } else  {
               self.trigger(
                   'pgadmin-session:valid', self.sessChanged(), self
@@ -558,7 +562,7 @@ function(_, pgAdmin, $, Backbone) {
 
             if (self.handler) {
               (self.handler).trigger(
-                  'pgadmin-session:model:invalid', msg, self
+                  'pgadmin-session:model:invalid', msg, self, self.handler
                   );
             } else  {
               self.trigger('pgadmin-session:invalid', msg, self);
@@ -694,7 +698,7 @@ function(_, pgAdmin, $, Backbone) {
 
           // Inform the parent that - I am an invalid model.
           if (self.handler) {
-            (self.handler).trigger('pgadmin-session:model:invalid', msg, self);
+            (self.handler).trigger('pgadmin-session:model:invalid', msg, self, self.handler);
           } else {
             self.trigger('pgadmin-session:invalid', msg, self);
           }
@@ -954,13 +958,13 @@ function(_, pgAdmin, $, Backbone) {
 
         if (!msg) {
           if (self.handler) {
-            self.handler.trigger('pgadmin-session:model:valid', self);
+            self.handler.trigger('pgadmin-session:model:valid', self, self.handler);
           } else {
             self.trigger('pgadmin-session:valid', self.sessChanged(), self);
           }
         } else {
           if (self.handler) {
-            self.handler.trigger('pgadmin-session:model:invalid', msg, self);
+            self.handler.trigger('pgadmin-session:model:invalid', msg, self, self.handler);
           } else {
             self.trigger('pgadmin-session:invalid', msg, self);
           }
