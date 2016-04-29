@@ -357,8 +357,8 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
         cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
 
-        if (this.field.has('cache_level')) {
-          cache_level = this.field.get('cache_level');
+        if (column.has('cache_level')) {
+          cache_level = column.get('cache_level');
         } else {
           cache_level = cache_node.cache_level(node_info, with_id);
         }
