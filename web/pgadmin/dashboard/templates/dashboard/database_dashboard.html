@@ -1,4 +1,89 @@
-<h1>Server Dashboard</h1>
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Database sessions') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Transactions per second') }}</legend>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <div id="graph-sessions" class="graph-container"></div>
+        </div>
+        <div class="col-xs-6">
+            <div id="graph-tps" class="graph-container"></div>
+        </div>
+    </div>
 
-<b>Server ID: </b>{{ sid }}<br />
-<b>Database ID: </b>{{ did }}
+    <div class="row dashboard-header-spacer">
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Tuples in') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Tuples out') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Block I/O') }}</legend>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-4">
+            <div id="graph-ti" class="graph-container"></div>
+        </div>
+        <div class="col-xs-4">
+            <div id="graph-to" class="graph-container"></div>
+        </div>
+        <div class="col-xs-4">
+            <div id="graph-bio" class="graph-container"></div>
+        </div>
+    </div>
+
+    <div class="row dashboard-header-spacer">
+        <div class="col-xs-12">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Database activity') }}</legend>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="dashboard-tab-container">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
+                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity" aria-controls="tab_database_activity" role="tab" data-toggle="tab">Sessions</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks" aria-controls="tab_database_locks" role="tab" data-toggle="tab">Locks</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared" aria-controls="tab_database_prepared" role="tab" data-toggle="tab">Prepared Transactions</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tab_panel_database_activity">
+                        <div id="database_activity" class="grid-container"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tab_panel_database_locks">
+                        <div id="database_locks" class="grid-container"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tab_panel_database_prepared">
+                        <div id="database_prepared" class="grid-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    pgAdmin.Dashboard.init_database_dashboard({{ sid }}, {{ did }}, {{ rates.session_stats_refresh }}, {{ rates.tps_stats_refresh }}, {{ rates.ti_stats_refresh }}, {{ rates.to_stats_refresh }}, {{ rates.bio_stats_refresh }} );
+</script>

@@ -148,6 +148,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
+          gid: undefined,
           id: undefined,
           name: null,
           sslmode: 'prefer',
@@ -157,8 +158,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           username: '{{ username }}',
           role: null
         },
+        // Default values!
+        initialize: function(attrs, args) {
+          var isNew = (_.size(attrs) === 0);
+
+          if (isNew) {
+            this.set({'gid': args.node_info['server-group']._id});
+          }
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+        },
         schema: [{
           id: 'id', label: '{{ _('ID') }}', type: 'int', mode: ['properties']
+        },{
+          id: 'gid', label: '{{ _('Server Group') }}', type: 'int',
+          control: 'node-list-by-id', node: 'server-group',
+          mode: ['create', 'edit'], select2: {allowClear: false}
         },{
           id: 'name', label:'{{ _('Name') }}', type: 'text',
           mode: ['properties', 'edit', 'create']

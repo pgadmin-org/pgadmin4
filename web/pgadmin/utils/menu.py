@@ -20,7 +20,7 @@ class Panel(object):
 
     def __init__(self, name, title, content='', width=500, height=600, isIframe=True,
                  showTitle=True, isCloseable=True, isPrivate=False, priority=None,
-                 icon=None, data=None):
+                 icon=None, data=None, events=None):
         self.name = name
         self.title = title
         self.content = content
@@ -31,7 +31,8 @@ class Panel(object):
         self.isCloseable = isCloseable
         self.isPrivate = isPrivate
         self.icon = icon
-        self.data = None
+        self.data = data
+        self.events = events
         if priority is None:
             global PRIORITY
             PRIORITY += 100

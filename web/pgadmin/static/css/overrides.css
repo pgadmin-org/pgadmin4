@@ -809,7 +809,7 @@ td.edit-cell.editable.sortable.renderable.editor {
 /* Message panel shown on browser tabs */
 .pg-panel-message {
     margin-top: 25px !important;
-    width: 600px;
+    width: 80%;
     margin: 0 auto;
     position: relative;
     text-align: center;

@@ -394,8 +394,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                  * We can remove it from the Browser.scripts object as
                  * these're about to be loaded.
                  *
-                 * This will make sure that - we do check for the script for
-                 * loading only once.
+                 * This will make sure that we check for the script to be
+                 * loaded only once.
                  *
                  */
                 delete obj.scripts[d._type];
@@ -405,7 +405,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                     if (!s.loaded) {
                       require([s.name], function(m) {
                         s.loaded = true;
-                        // Call the initialize (if present)
+                        // Call the initializer (if present)
                         if (m && m.init && typeof m.init == 'function') {
                           try {
                             m.init();

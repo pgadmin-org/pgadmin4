@@ -96,7 +96,7 @@ class ServerGroupView(NodeView):
 
         for sg in ServerGroup.query.filter_by(
                 user_id=current_user.id
-                ).order_by(name):
+                ).order_by('name'):
             res.append({
                 'id': sg.id,
                 'name': sg.name
@@ -255,7 +255,7 @@ class ServerGroupView(NodeView):
 
         for group in groups:
             nodes.append(
-                    self.generate_browser_node(
+                    self.blueprint.generate_browser_node(
                         "%d" % (group.id), None,
                         group.name,
                         "icon-%s" % self.node_type,

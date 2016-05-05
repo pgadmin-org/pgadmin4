@@ -333,8 +333,9 @@ class ServerNode(PGChildNodeView):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
+        connected = conn.connected()
 
-        if conn.connected():
+        if connected:
             for arg in (
                     'host', 'port', 'db', 'username', 'sslmode', 'role'
                     ):
@@ -373,11 +374,16 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            data={
-                'id': server.id,
-                'gid': server.servergroup_id,
-                'icon': 'icon-server-not-connected'
-            }
+            node=self.blueprint.generate_browser_node(
+                "%d" % (server.id), server.servergroup_id,
+                server.name,
+                "icon-server-not-connected" if not connected else
+                "icon-{0}".format(manager.server_type),
+                True,
+                self.node_type,
+                connected=False,
+                server_type='pg'  # default server type
+            )
         )
 
     def list(self, gid):
@@ -490,7 +496,7 @@ class ServerNode(PGChildNodeView):
         try:
             server = Server(
                 user_id=current_user.id,
-                servergroup_id=gid,
+                servergroup_id=data[u'gid'] if u'gid' in data else gid,
                 name=data[u'name'],
                 host=data[u'host'],
                 port=data[u'port'],
@@ -505,7 +511,7 @@ class ServerNode(PGChildNodeView):
 
             return jsonify(
                     node=self.blueprint.generate_browser_node(
-                        "%d" % (server.id), gid,
+                        "%d" % (server.id), server.servergroup_id,
                         server.name,
                         "icon-server-not-connected",
                         True,

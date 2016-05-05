@@ -89,6 +89,13 @@
                     },
                     "pgadmin.backform": {
                         "deps": ['backform', "pgadmin.backgrid", "select2"],
+                    },
+                    "flotr2": {
+                        deps: ['bean'],
+                        exports: function(bean) {
+                            Flotr.bean = bean;
+                            return this.Flotr;
+                        }
                     }{% for script in current_app.javascripts %}{% if 'deps' in script or 'exports' in script %},
                     '{{ script.name }}': {
                     {% if 'deps' in script %}"deps": [ {% set comma = False %}{% for dep in script['deps'] %} {% if comma %},{% else %}{% set comma = True %}{% endif %} '{{ dep }}'{% endfor %}],{% endif %}
@@ -116,7 +123,9 @@
                     "backgrid.filter": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-filter' if config.DEBUG else 'backgrid-filter.min')) }}",
                     "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
-                    'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}"{% for script in current_app.javascripts %},
+                    'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
+                    bean :"{{ url_for('static', filename='js/flotr2/' + ('bean' if config.DEBUG else 'bean-min')) }}",
+                    flotr2 :"{{ url_for('static', filename='js/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
                 }
             });

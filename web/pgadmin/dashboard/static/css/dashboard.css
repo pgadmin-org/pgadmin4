@@ -1,0 +1,55 @@
+.dashboard-container {
+    padding: 15px;
+}
+
+.dashboard-header-spacer {
+    padding-top: 15px;
+}
+
+.dashboard-link {
+    text-align: center;
+}
+
+.dashboard-icon {
+    color: black;
+}
+
+.dashboard-tab-container {
+    border-left: 1px solid #E2E2E2;
+    border-right: 1px solid #E2E2E2;
+    border-bottom: 1px solid #E2E2E2;
+}
+
+.dashboard-tab-panel > li > a {
+    padding: 0px 15px !important;
+}
+
+.dashboard-tab {
+    border: 0px;
+    border-radius: 4px 4px 0px 0px;
+    margin-right: 1px;
+    font-size: 13px;
+    line-height: 25px;
+    margin-top: 5px;
+}
+
+.dashboard-tab.active {
+    margin-top: 0px;
+    line-height: 30px;
+}
+
+.graph-container {
+    margin-top: 10px;
+    height: 150px;
+}
+
+.graph-error {
+    background-color: #E2E2E2;
+    padding-top: 20px
+}
+
+.grid-error {
+    background-color: #E2E2E2;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}

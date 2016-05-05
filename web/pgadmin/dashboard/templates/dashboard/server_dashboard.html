@@ -1,3 +1,93 @@
-<h1>Server Dashboard</h1>
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Server sessions') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Transactions per second') }}</legend>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <div id="graph-sessions" class="graph-container"></div>
+        </div>
+        <div class="col-xs-6">
+            <div id="graph-tps" class="graph-container"></div>
+        </div>
+    </div>
 
-<b>Server ID: </b>{{ sid }}<br />
+    <div class="row dashboard-header-spacer">
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Tuples in') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Tuples out') }}</legend>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Block I/O') }}</legend>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-4">
+            <div id="graph-ti" class="graph-container"></div>
+        </div>
+        <div class="col-xs-4">
+            <div id="graph-to" class="graph-container"></div>
+        </div>
+        <div class="col-xs-4">
+            <div id="graph-bio" class="graph-container"></div>
+        </div>
+    </div>
+
+    <div class="row dashboard-header-spacer">
+        <div class="col-xs-12">
+            <div class="obj_properties">
+                <legend class="badge">{{ gettext('Server activity') }}</legend>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="dashboard-tab-container">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
+                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_server_activity" aria-controls="tab_server_activity" role="tab" data-toggle="tab">Sessions</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_locks" aria-controls="tab_server_locks" role="tab" data-toggle="tab">Locks</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_prepared" aria-controls="tab_server_prepared" role="tab" data-toggle="tab">Prepared Transactions</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_config" aria-controls="tab_server_config" role="tab" data-toggle="tab">Configuration</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tab_panel_server_activity">
+                        <div id="server_activity" class="grid-container"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tab_panel_server_locks">
+                        <div id="server_locks" class="grid-container"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tab_panel_server_prepared">
+                        <div id="server_prepared" class="grid-container"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tab_panel_server_config">
+                        <div id="server_config" class="grid-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    pgAdmin.Dashboard.init_server_dashboard({{ sid }}, {{ rates.session_stats_refresh }}, {{ rates.tps_stats_refresh }}, {{ rates.ti_stats_refresh }}, {{ rates.to_stats_refresh }}, {{ rates.bio_stats_refresh }} );
+</script>

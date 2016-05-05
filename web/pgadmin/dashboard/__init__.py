@@ -10,14 +10,20 @@
 """A blueprint module implementing the dashboard frame."""
 MODULE_NAME = 'dashboard'
 
+from functools import wraps
+
 from config import PG_DEFAULT_DRIVER
 from flask import render_template, url_for, Response
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import make_response as ajax_response, internal_server_error
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
+from pgadmin.utils.preferences import Preferences
+
+server_info = {}
 
 
 class DashboardModule(PgAdminModule):
@@ -34,6 +40,16 @@ class DashboardModule(PgAdminModule):
             'when': None
         }]
 
+    def get_own_stylesheets(self):
+        """
+        Returns:
+            list: the stylesheets used by this module.
+        """
+        stylesheets = [
+            url_for('dashboard.static', filename='css/dashboard.css')
+        ]
+        return stylesheets
+
     def get_panels(self):
         return [
             Panel(
@@ -41,10 +57,59 @@ class DashboardModule(PgAdminModule):
                 priority=1,
                 title=gettext('Dashboard'),
                 icon='fa fa-tachometer',
-                content=url_for('dashboard.index'),
+                content='',
                 isCloseable=False,
-                isPrivate=True)
+                isPrivate=True,
+                isIframe=False)
         ]
+
+    def register_preferences(self):
+        """
+        register_preferences
+        Register preferences for this module.
+        """
+        # Register options for the PG and PPAS help paths
+        self.dashboard_preference = Preferences('dashboards', gettext('Dashboards'))
+
+        self.session_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'session_stats_refresh',
+            gettext("Session statistics refresh rate"), 'integer',
+            1, min_val=1, max_val=999999,
+            category_label=gettext('Graphs'),
+            help_str=gettext('The number of seconds between graph samples.')
+        )
+
+        self.session_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'tps_stats_refresh',
+            gettext("Transaction throughput refresh rate"), 'integer',
+            1, min_val=1, max_val=999999,
+            category_label=gettext('Graphs'),
+            help_str=gettext('The number of seconds between graph samples.')
+        )
+
+        self.session_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'ti_stats_refresh',
+            gettext("Tuples in refresh rate"), 'integer',
+            1, min_val=1, max_val=999999,
+            category_label=gettext('Graphs'),
+            help_str=gettext('The number of seconds between graph samples.')
+        )
+
+        self.session_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'to_stats_refresh',
+            gettext("Tuples out refresh rate"), 'integer',
+            1, min_val=1, max_val=999999,
+            category_label=gettext('Graphs'),
+            help_str=gettext('The number of seconds between graph samples.')
+        )
+
+        self.session_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'bio_stats_refresh',
+            gettext("Block I/O statistics refresh rate"), 'integer',
+            1, min_val=1, max_val=999999,
+            category_label=gettext('Graphs'),
+            help_str=gettext('The number of seconds between graph samples.')
+        )
 
 
 blueprint = DashboardModule(MODULE_NAME, __name__)
@@ -58,21 +123,28 @@ def check_precondition(f):
     """
 
     @wraps(f)
-    def wrap(**kwargs):
+    def wrap(*args, **kwargs):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+
+        server_info.clear()
+        server_info['manager'] = get_driver(
+            PG_DEFAULT_DRIVER).connection_manager(
             kwargs['sid']
         )
-        conn = manager.connection(did=kwargs['did'] if 'did' in kwargs and kwargs['did'] != 0 else None)
+        server_info['conn'] = server_info['manager'].connection()
+
         # If DB not connected then return error to browser
-        if not conn.connected():
+        if not server_info['conn'].connected():
             return precondition_required(
-                gettext(
-                    "Connection to the server has been lost!"
-                )
+                gettext("Connection to the server has been lost!")
             )
 
-        return f(obj, **kwargs)
+        # Set template path for sql scripts
+        server_info['server_type'] = server_info['manager'].server_type
+        server_info['version'] = server_info['manager'].version
+        server_info['template_path'] = 'dashboard/sql/9.1_plus'
+
+        return f(*args, **kwargs)
 
     return wrap
 
@@ -91,10 +163,193 @@ def script():
 @blueprint.route('/<int:sid>/<int:did>')
 @login_required
 def index(sid=None, did=None):
+    """
+    Renders the welcome, server or database dashboard
+    Args:
+        sid: Server ID
+        did: Database ID
+
+    Returns: Welcome/Server/database dashboard
+
+    """
+    rates = {}
+
+    prefs = Preferences.module('dashboards')
+
+    session_stats_refresh_pref = prefs.preference('session_stats_refresh')
+    rates['session_stats_refresh'] = session_stats_refresh_pref.get()
+    tps_stats_refresh_pref = prefs.preference('tps_stats_refresh')
+    rates['tps_stats_refresh'] = tps_stats_refresh_pref.get()
+    ti_stats_refresh_pref = prefs.preference('ti_stats_refresh')
+    rates['ti_stats_refresh'] = ti_stats_refresh_pref.get()
+    to_stats_refresh_pref = prefs.preference('to_stats_refresh')
+    rates['to_stats_refresh'] = to_stats_refresh_pref.get()
+    bio_stats_refresh_pref = prefs.preference('bio_stats_refresh')
+    rates['bio_stats_refresh'] = bio_stats_refresh_pref.get()
+
     # Show the appropriate dashboard based on the identifiers passed to us
     if sid is None and did is None:
         return render_template('/dashboard/welcome_dashboard.html')
     if did is None:
-        return render_template('/dashboard/server_dashboard.html', sid=sid)
+        return render_template('/dashboard/server_dashboard.html', sid=sid, rates=rates)
     else:
-        return render_template('/dashboard/database_dashboard.html', sid=sid, did=did)
+        return render_template('/dashboard/database_dashboard.html', sid=sid, did=did, rates=rates)
+
+
+def get_data(sid, did, template):
+    """
+    Generic function to get server stats based on an SQL template
+    Args:
+        sid: The server ID
+        did: The database ID
+        template: The SQL template name
+
+    Returns:
+
+    """
+    # Allow no server ID to be specified (so we can generate a route in JS)
+    # but throw an error if it's actually called.
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    # Get the db connection
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+    conn = manager.connection()
+
+    sql = render_template(
+        "/".join([server_info['template_path'], template]), did=did
+    )
+    status, res = conn.execute_dict(sql)
+
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    return ajax_response(
+        response=res['rows'],
+        status=200
+    )
+
+
+@blueprint.route('/session_stats/')
+@blueprint.route('/session_stats/<int:sid>')
+@blueprint.route('/session_stats/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def session_stats(sid=None, did=None):
+    """
+    This function returns server session statistics
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'session_stats.sql')
+
+
+@blueprint.route('/tps_stats/')
+@blueprint.route('/tps_stats/<int:sid>')
+@blueprint.route('/tps_stats/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def tps_stats(sid=None, did=None):
+    """
+    This function returns server TPS throughput
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'tps_stats.sql')
+
+
+@blueprint.route('/ti_stats/')
+@blueprint.route('/ti_stats/<int:sid>')
+@blueprint.route('/ti_stats/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def ti_stats(sid=None, did=None):
+    """
+    This function returns server tuple input statistics
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'ti_stats.sql')
+
+
+@blueprint.route('/to_stats/')
+@blueprint.route('/to_stats/<int:sid>')
+@blueprint.route('/to_stats/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def to_stats(sid=None, did=None):
+    """
+    This function returns server tuple output statistics
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'to_stats.sql')
+
+
+@blueprint.route('/bio_stats/')
+@blueprint.route('/bio_stats/<int:sid>')
+@blueprint.route('/bio_stats/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def bio_stats(sid=None, did=None):
+    """
+    This function returns server block IO statistics
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'bio_stats.sql')
+
+
+@blueprint.route('/activity/')
+@blueprint.route('/activity/<int:sid>')
+@blueprint.route('/activity/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def activity(sid=None, did=None):
+    """
+    This function returns server activity information
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'activity.sql')
+
+
+@blueprint.route('/locks/')
+@blueprint.route('/locks/<int:sid>')
+@blueprint.route('/locks/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def locks(sid=None, did=None):
+    """
+    This function returns server lock information
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'locks.sql')
+
+
+@blueprint.route('/prepared/')
+@blueprint.route('/prepared/<int:sid>')
+@blueprint.route('/prepared/<int:sid>/<int:did>')
+@login_required
+@check_precondition
+def prepared(sid=None, did=None):
+    """
+    This function returns prepared XACT information
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'prepared.sql')
+
+
+@blueprint.route('/config/')
+@blueprint.route('/config/<int:sid>')
+@login_required
+@check_precondition
+def config(sid=None):
+    """
+    This function returns server config information
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, None, 'config.sql')
