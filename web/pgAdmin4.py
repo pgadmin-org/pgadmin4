@@ -74,6 +74,8 @@ else:
     server_port = config.DEFAULT_SERVER_PORT
 
 try:
-    app.run(port=server_port, use_reloader=(config.SERVER_MODE and app.debug))
+    app.run(host=config.DEFAULT_SERVER,
+        port=server_port,
+        use_reloader=(config.SERVER_MODE and app.debug))
 except IOError:
     app.logger.error("Error starting the app server: %s", sys.exc_info())
