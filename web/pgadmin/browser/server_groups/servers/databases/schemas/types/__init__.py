@@ -791,7 +791,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." %
+                        "Could not find the required parameter (%s)." %
                         required_args[arg]
                     )
                 )
@@ -803,7 +803,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'Composite types requires at least two members'
+                            'Composite types require at least two members.'
                         )
                     )
             # If type is enum then check if it has minimum one label
@@ -813,7 +813,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'Enumeration types requires at least one label'
+                            'Enumeration types require at least one label.'
                         )
                     )
             # If type is range then check if subtype is defined or not
@@ -823,7 +823,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'Subtype must be defined for range types'
+                            'Subtype must be defined for range types.'
                         )
                     )
             # If type is external then check if input/output
@@ -835,8 +835,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'External types require both Input & \
-                            Output conversion function.'
+                            'External types require both Input and Output conversion functions.'
                         )
                     )
 

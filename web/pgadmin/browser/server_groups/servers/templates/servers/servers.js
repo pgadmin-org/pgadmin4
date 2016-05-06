@@ -42,9 +42,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
-          '{{ _('Please select the grantee from the list!') }}';
+          '{{ _('A grantee must be selected.') }}';
         pgBrowser.messages['NO_PRIV_SELECTED'] =
-          '{{ _('Please select at least one privilege to grant!') }}';
+          '{{ _('At least one privilege should be selected.') }}';
       },
       is_not_connected: function(node) {
         return (node && node.connected != true);
@@ -227,15 +227,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               errmsg;
 
           if (!this.isNew() && 'id' in this.sessAttrs) {
-            err['id'] = '{{ _('Id can not be changed!') }}';;
+            err['id'] = '{{ _('The ID can not be changed.') }}';;
             errmsg = err['id'];
           }
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('A server name must be specified.') }}';
+            err['name'] = '{{ _('Name must be specified.') }}';
             errmsg = errmsg || err['name'];
           }
           if (_.isUndefined(this.get('host')) || this.get('host') == null || String(this.get('host')).replace(/^\s+|\s+$/g, '') == '') {
-            err['host'] = '{{ _('A hostname or address must be specified.') }}';
+            err['host'] = '{{ _('Hostname or address must be specified.') }}';
             errmsg = errmsg || err['host'];
           }
 

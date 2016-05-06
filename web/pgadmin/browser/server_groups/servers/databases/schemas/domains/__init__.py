@@ -204,8 +204,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Couldn't find the required parameter \
-                                (%s)." % arg
+                                "Could not find the required parameter (%s)." % arg
                             )
                         )
 
@@ -358,8 +357,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
         if len(res['rows']) == 0:
             return gone(gettext("""
 Could not find the domain in the database.
-It may have been removed by another user or
-shifted to the another schema.
+It may have been removed by another user or moved to another schema.
 """))
 
         data = res['rows'][0]

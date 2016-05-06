@@ -186,7 +186,7 @@ class Connection(BaseConnection):
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return False, gettext("Unauthorized Request.")
+                return False, gettext("Unauthorized request.")
 
             try:
                 password = decrypt(encpass, user.password)
@@ -365,12 +365,12 @@ Connection to database server (#{server_id}) for the connection - '{conn_id}' ha
                 if not status:
                     errmsg = gettext(
                             """
-Attempt to reconnect has failed with the below error:
+Attempt to reconnect failed with the error:
 {0}""".format(errmsg)
                         )
 
             if not status:
-                msg = gettext("Connection was lost!\n{0}").format(errmsg)
+                msg = gettext("Connection lost.\n{0}").format(errmsg)
                 current_app.logger.error(errmsg)
 
                 return False, msg
@@ -399,7 +399,7 @@ Attempting to reconnect to the database server (#{server_id}) for the connection
                     msg = gettext(
                         """
 Connection for server#{0} with database "{1}" was lost.
-Attempt to reconnect it failed with the below error:
+Attempt to reconnect it failed with the error:
 {2}"""
                         ).format(self.driver.server_id, self.database, cur)
                     current_app.logger.error(msg)
@@ -677,7 +677,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return False, gettext("Unauthorized Request.")
+                return False, gettext("Unauthorized request.")
 
             password = decrypt(password, user.password).decode()
 
@@ -698,7 +698,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             current_app.logger.error(
                 gettext(
                     """
-Failed to reset the connection of the server due to following error:
+Failed to reset the connection to the server due to following error:
 {0}"""
                     ).Format(msg)
                 )
@@ -885,7 +885,7 @@ Failed to reset the connection of the server due to following error:
                 # Fetch Logged in User Details.
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:
-                    return False, gettext("Unauthorized Request.")
+                    return False, gettext("Unauthorized request.")
 
                 password = decrypt(password, user.password).decode()
 
@@ -1069,23 +1069,23 @@ class ServerManager(object):
     def MajorVersion(self):
         if self.sversion is not None:
             return int(self.sversion / 10000)
-        raise Exception("Information is not available!")
+        raise Exception("Information is not available.")
 
     def MinorVersion(self):
         if self.sversion:
             return int(int(self.sversion / 100) % 100)
-        raise Exception("Information is not available!")
+        raise Exception("Information is not available.")
 
     def PatchVersion(self):
         if self.sversion:
             return int(int(self.sversion / 100) / 100)
-        raise Exception("Information is not available!")
+        raise Exception("Information is not available.")
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None
             ):
         msg_active_conn = gettext(
-            "Server has no active connection, please connect it first!"
+            "Server has no active connection. Please connect to the server."
             )
 
         if database is None:
@@ -1114,7 +1114,7 @@ WHERE db.oid = {0}""".format(did))
 
                         if did not in self.db_info:
                             raise Exception(gettext(
-                                "Couldn't find the database!"
+                                "Couldn't find the specified database."
                                 ))
 
         if database is None:

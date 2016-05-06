@@ -239,7 +239,7 @@ class SQLFilter(object):
         result = None
 
         if row_filter is None or row_filter == '':
-            return False, gettext('Filter string is empty!')
+            return False, gettext('Filter string is empty.')
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
@@ -300,7 +300,7 @@ class GridCommand(BaseCommand, SQLFilter):
         return None, None
 
     def save(self, changed_data):
-        return forbidden(errmsg=gettext("Not allowed to save the data for the selected object!"))
+        return forbidden(errmsg=gettext("Data cannot be saved for the current object."))
 
     def get_limit(self):
         """

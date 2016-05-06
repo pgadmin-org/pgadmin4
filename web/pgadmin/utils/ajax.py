@@ -116,7 +116,7 @@ def gone(errormsg=''):
             )
 
 
-def not_implemented(errormsg=_('It is not implemented!')):
+def not_implemented(errormsg=_('Not implemented.')):
     """Create a response with HTTP status code 501 - Not Implemented."""
     return make_json_response(
             status=501,

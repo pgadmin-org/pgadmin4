@@ -42,10 +42,10 @@ function($, _, pgAdmin, Backbone) {
         ],
         validate: function(attrs, options) {
           if (!this.isNew() && 'id' in this.changed) {
-            return '{{ _('Id can not be changed!') }}';
+            return '{{ _('The ID cannot be changed.') }}';
           }
           if (String(this.name).replace(/^\s+|\s+$/g, '') == '') {
-            return '{{ _('Name can be empty!') }}';
+            return '{{ _('Name cannot be empty.') }}';
           }
           return null;
         }
@@ -65,7 +65,7 @@ function($, _, pgAdmin, Backbone) {
           var tree = pgAdmin.Browser.tree;
           var alert = alertify.prompt(
             '{{ _('Add a server group') }}',
-            '{{ _('Enter a name for the new server group') }}',
+            '{{ _('Enter a name for the new server group.') }}',
             function(evt, value) {
               $.post("{{ url_for('browser.index') }}server-group/obj/", { name: value })
                 .done(function(data) {
@@ -124,7 +124,7 @@ function($, _, pgAdmin, Backbone) {
           var tree = pgAdmin.Browser.tree;
           alertify.prompt(
             '{{ _('Rename server group') }}',
-            '{{ _('Enter a new name for the server group') }}',
+            '{{ _('Enter a new name for the server group.') }}',
             tree.getLabel(item),
             function(evt, value) {
               var d = tree.itemData(item);

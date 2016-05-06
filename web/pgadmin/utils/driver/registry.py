@@ -71,7 +71,7 @@ class DriverRegistry(ABCMeta):
             return DriverRegistry.drivers[name]
 
         raise NotImplementedError(
-                gettext("Driver - '{0}' has not been implemented!").format(name)
+                gettext("Driver '{0}' has not been implemented.").format(name)
                 )
 
     @classmethod

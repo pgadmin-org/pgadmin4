@@ -303,7 +303,7 @@ class SequenceView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
         try:
@@ -479,7 +479,7 @@ class SequenceView(PGChildNodeView):
                         status=400,
                         success=0,
                         errormsg=_(
-                            "Couldn't find the required parameter (%s)." % arg
+                            "Could not find the required parameter (%s)." % arg
                         )
                     )
         try:

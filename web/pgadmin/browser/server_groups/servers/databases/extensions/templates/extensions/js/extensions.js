@@ -237,7 +237,7 @@ function($, _, S, pgAdmin, pgBrowser) {
             name = this.get('name');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can not be empty!') }}';
+            err['name'] = '{{ _('Name cannot be empty.') }}';
             errmsg = errmsg || err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;

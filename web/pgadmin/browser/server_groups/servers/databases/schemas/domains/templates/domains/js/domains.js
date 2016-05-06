@@ -308,12 +308,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can not be empty!') }}';
+            err['name'] = '{{ _('Name cannot be empty.') }}';
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('basetype')) || String(this.get('basetype')).replace(/^\s+|\s+$/g, '') == '') {
-            err['basetype'] = '{{ _('Base Type can not be empty!') }}';
+            err['basetype'] = '{{ _('Base Type cannot be empty.') }}';
             errmsg = errmsg || err['basetype'];
           }
 

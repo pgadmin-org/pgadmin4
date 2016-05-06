@@ -161,12 +161,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.has(changedAttrs, 'name') &&
                 (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Name can not be empty!') }}';
+            msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
           } else if (_.has(changedAttrs, 'spclocation') &&
                 (_.isUndefined(this.get('spclocation'))
               || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Location can not be empty!') }}';
+            msg = '{{ _('Location cannot be empty.') }}';
             this.errorModel.set('spclocation', msg);
           } else {
             this.errorModel.unset('name');

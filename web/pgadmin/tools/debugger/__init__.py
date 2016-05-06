@@ -171,7 +171,7 @@ def init_function(node_type, sid, did, scid, fid):
             if user['is_superuser']:
                 status_in, rid_pre = conn.execute_scalar("SHOW shared_preload_libraries")
                 if not status_in:
-                    return internal_server_error(gettext("ERROR: Couldn't fetch debugger plugin information"))
+                    return internal_server_error(gettext("Could not fetch debugger plugin information."))
 
                 # Need to check if plugin is really loaded or not with "plugin_debugger" string
                 if rid_pre:
@@ -180,8 +180,8 @@ def init_function(node_type, sid, did, scid, fid):
 
             status_in, rid_tar = conn.execute_scalar("SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
-                current_app.logger.debug("ERROR: Couldn't fetch debugger target information")
-                return internal_server_error(gettext("ERROR: Couldn't fetch debugger target information"))
+                current_app.logger.debug("Could not fetch debugger target information.")
+                return internal_server_error(gettext("Could not fetch debugger target information."))
 
             if rid_tar == 0:
                 ret_status = False
@@ -190,8 +190,8 @@ def init_function(node_type, sid, did, scid, fid):
 
     # Return the response that function can not be debug...
     if not ret_status:
-        current_app.logger.debug("Error: Function/Procedure can not be debug")
-        return internal_server_error(gettext("ERROR: Function/Procedure cannot be debugged."))
+        current_app.logger.debug(".Function/Procedure can not be debugged.")
+        return internal_server_error(gettext("Function/Procedure cannot be debugged."))
 
     # Store the function information in session variable
     if 'funcData' not in session:

@@ -127,22 +127,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can not be empty!') }}';
+            err['name'] = '{{ _('Name cannot be empty.') }}';
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('pronamespace')) || String(this.get('pronamespace')).replace(/^\s+|\s+$/g, '') == '') {
-            err['pronamespace'] = '{{ _('Schema can not be empty!') }}';
+            err['pronamespace'] = '{{ _('Schema cannot be empty.') }}';
             errmsg = errmsg || err['pronamespace'];
           }
 
           if (_.isUndefined(this.get('lanname')) || String(this.get('lanname')).replace(/^\s+|\s+$/g, '') == '') {
-            err['lanname'] = '{{ _('Language can not be empty!') }}';
+            err['lanname'] = '{{ _('Language cannot be empty.') }}';
             errmsg = errmsg || err['lanname'];
           }
 
           if (_.isUndefined(this.get('prosrc')) || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['prosrc'] = '{{ _('Code can not be empty!') }}';
+            err['prosrc'] = '{{ _('Code cannot be empty.') }}';
             errmsg = errmsg || err['prosrc'];
           }
 

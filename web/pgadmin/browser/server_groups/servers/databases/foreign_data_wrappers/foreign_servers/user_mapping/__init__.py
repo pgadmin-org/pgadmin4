@@ -366,7 +366,7 @@ class UserMappingView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
 

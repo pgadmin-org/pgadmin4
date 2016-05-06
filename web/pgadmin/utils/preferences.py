@@ -144,31 +144,31 @@ class _Preference(object):
         if self._type == 'boolean' or self._type == 'switch' or \
                 self._type == 'node':
             if type(value) != bool:
-                return False, gettext("Invalid value for boolean type!")
+                return False, gettext("Invalid value for a boolean option.")
         elif self._type == 'integer':
             value = int(value)
             if type(value) != int:
-                return False, gettext("Invalid value for integer type!")
+                return False, gettext("Invalid value for an integer option.")
         elif self._type == 'numeric':
             value = float(value)
             t = type(value)
             if t != float and t != int and t != decimal.Decimal:
-                return False, gettext("Invalid value for numeric type!")
+                return False, gettext("Invalid value for a numeric option.")
         elif self._type == 'date':
             try:
                 value = dateutil_parser.parse(value).date()
             except Exception as e:
                 current_app.logger.exeception(e)
-                return False, gettext("Invalid value for date type!")
+                return False, gettext("Invalid value for a date option.")
         elif self._type == 'datetime':
             try:
                 value = dateutil_parser.parse(value)
             except Exception as e:
                 current_app.logger.exeception(e)
-                return False, gettext("Invalid value for datetime type!")
+                return False, gettext("Invalid value for a datetime option.")
         elif self._type == 'options':
             if value not in self.options:
-                return False, gettext("Invalid value for options type!")
+                return False, gettext("Invalid value for an options option.")
 
         pref = UserPrefTable.query.filter_by(
             pid=self.pid
@@ -486,13 +486,13 @@ Did you forget to register it?"""
         # Can't find the reference for it in the configuration database,
         # create on for it.
         if module is None:
-            return False, gettext("Couldn't find the specified module.")
+            return False, gettext("Could not fine the specified module.")
 
         m = cls.modules[module.name]
 
         if m is None:
             return False, gettext(
-                "Module '{0}' is no longer in use!"
+                "Module '{0}' is no longer in use."
             ).format(module.name)
 
         category = None
@@ -519,7 +519,7 @@ Did you forget to register it?"""
 
         if preference is None:
             return False, gettext(
-                 "Couldn't find the given preference!"
+                 "Could not find the specified preference."
             )
 
         try:

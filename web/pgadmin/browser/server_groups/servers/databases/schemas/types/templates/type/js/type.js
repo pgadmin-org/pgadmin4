@@ -737,35 +737,35 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           if (_.has(changedAttrs, 'name') &&
                 (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Name can not be empty!') }}';
+            msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
           } else if (_.has(changedAttrs, 'schema') &&
                 (_.isUndefined(this.get('schema'))
               || String(this.get('schema')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Schema can not be empty!') }}';
+            msg = '{{ _('Schema cannot be empty.') }}';
             this.errorModel.set('schema', msg);
           } else if (_.has(changedAttrs, 'typtype') &&
                 (_.isUndefined(this.get('typtype'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Type can not be empty!') }}';
+            msg = '{{ _('Type can not be empty.') }}';
             this.errorModel.set('typtype', msg);
           } else if (this.get('typtype') == 'r' &&
                 _.has(changedAttrs, 'typname')
               && (_.isUndefined(this.get('typname'))
               || String(this.get('typname')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Subtype Name can not be empty!') }}';
+            msg = '{{ _('Subtype name cannot be empty.') }}';
             this.errorModel.set('typname', msg);
           } else if (this.get('typtype') == 'x' &&
                 _.has(changedAttrs, 'typinput')
               && (_.isUndefined(this.get('typinput'))
               || String(this.get('typinput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Input function can not be empty!') }}';
+            msg = '{{ _('Input function can not be empty.') }}';
             this.errorModel.set('typinput', msg);
           } else if (this.get('typtype') == 'x' &&
                 _.has(changedAttrs, 'typoutput')
               && (_.isUndefined(this.get('typoutput'))
               || String(this.get('typoutput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Output function can not be empty!') }}';
+            msg = '{{ _('Output function can not be empty.') }}';
             this.errorModel.set('typoutput', msg);
           }
           return null;

@@ -69,13 +69,13 @@ define(
 
         // Defining schema for the resource group node
         schema: [{
-          id: 'name', label: '{{ _('Group Name') }}', cell: 'string',
+          id: 'name', label: '{{ _('Name') }}', cell: 'string',
           type: 'text',
         },{
-          id: 'cpu_rate_limit', label:'{{ _('CPU Rate Limit (%%)') }}', cell: 'string',
+          id: 'cpu_rate_limit', label:'{{ _('CPU rate limit (%%)') }}', cell: 'string',
           type: 'numeric', min:0, max:16777216
         },{
-          id: 'dirty_rate_limit', label:'{{ _('Dirty Rate Limit (KB)') }}', cell: 'string',
+          id: 'dirty_rate_limit', label:'{{ _('Dirty rate limit (KB)') }}', cell: 'string',
           type: 'numeric', min:0, max:16777216
         }],
 
@@ -93,7 +93,7 @@ define(
             var name = this.get('name');
             if (_.isUndefined(name) || _.isNull(name) ||
                 String(name).replace(/^\s+|\s+$/g, '') == '') {
-              var msg = '{{ _('Group Name can not be empty!') }}';
+              var msg = '{{ _('Name cannot be empty.') }}';
               this.errorModel.set('name', msg);
               return msg;
             } else {
@@ -109,7 +109,7 @@ define(
             var cpu_rate_limit = this.get('cpu_rate_limit');
             if (_.isUndefined(cpu_rate_limit) || _.isNull(cpu_rate_limit) ||
                 String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-              var msg = '{{ _('CPU Rate Limit can not be empty!') }}';
+              var msg = '{{ _('CPU rate limit cannot be empty.') }}';
               this.errorModel.set('cpu_rate_limit', msg);
               return msg;
             } else {
@@ -125,7 +125,7 @@ define(
             var dirty_rate_limit = this.get('dirty_rate_limit');
             if (_.isUndefined(dirty_rate_limit) || _.isNull(dirty_rate_limit) ||
               String(dirty_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-              var msg = '{{ _('Dirty Rate Limit can not be empty!') }}';
+              var msg = '{{ _('Dirty rate limit cannot be empty.') }}';
               this.errorModel.set('dirty_rate_limit', msg);
               return msg;
             } else {

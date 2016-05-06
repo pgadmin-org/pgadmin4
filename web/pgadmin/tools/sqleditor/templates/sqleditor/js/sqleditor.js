@@ -722,7 +722,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            '{{ _('Initializing the query execution!') }}'
+            '{{ _('Initializing query execution.') }}'
           );
 
           $.ajax({
@@ -772,7 +772,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 self.update_msg_history(false,
-                  '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -803,7 +803,7 @@ define(
                   if (res.data.status === 'Success') {
                     self.trigger(
                       'pgadmin-sqleditor:loading-icon:message',
-                      '{{ _('Loading the data from the database server, and rendering into the grid...') }}'
+                      '{{ _('Loading data from the database server and rendering...') }}'
                     );
 
                     self.query_end_time = new Date();
@@ -853,7 +853,7 @@ define(
 
                   if (e.readyState == 0) {
                     self.update_msg_history(false,
-                      '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                     );
                     return;
                   }
@@ -912,7 +912,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:message',
-            '{{ _('Loading the data from the database server, and rendering into the grid...') }}',
+            '{{ _('Loading data from the database server and rendering...') }}',
             self
           );
 
@@ -1034,7 +1034,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:message',
-            '{{ _('Fetching the information about the columns returned...') }}'
+            '{{ _('Retrieving information about the columns returned...') }}'
           );
 
           // Make ajax call to fetch the pg types to map numeric data type
@@ -1319,7 +1319,7 @@ define(
                     model.attributes[key] === undefined) {
                  alertify.alert(
                     'Save Error',
-                    '{{ _('Primary key columns can not be null.') }}'
+                    '{{ _('Primary key columns cannot be null.') }}'
                  );
                  save_data = false;
 
@@ -1379,7 +1379,7 @@ define(
               error: function(e) {
                 if (e.readyState == 0) {
                   self.update_msg_history(false,
-                    '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                    '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                   );
                   return;
                 }
@@ -1431,7 +1431,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Get Filter Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1477,7 +1477,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Filter By Selection Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1523,7 +1523,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Filter Exclude Selection Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1559,7 +1559,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Remove Filter Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1600,7 +1600,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Apply Filter Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1675,7 +1675,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Change limit Error',
-                  '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1707,7 +1707,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            '{{ _('Initializing the query execution!') }}'
+            '{{ _('Initializing query execution.') }}'
           );
 
           /* If code is selected in the code mirror then execute
@@ -1771,7 +1771,7 @@ define(
 
               if (e.readyState == 0) {
                 self.update_msg_history(false,
-                  '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1870,7 +1870,7 @@ define(
 
               if (e.readyState == 0) {
                 alertify.alert('Cancel Query Error',
-                  '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -1933,7 +1933,7 @@ define(
                 error: function(e) {
                   if (e.readyState == 0) {
                     alertify.alert('Get Object Name Error',
-                     '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                     '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                     );
                     return;
                   }
@@ -1984,7 +1984,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Auto Rollback Error',
-                 '{{ _('Not connected to server or connection with the server has been closed.') }}'
+                 '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }
@@ -2024,7 +2024,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Auto Commit Error',
-                 '{{ _('Not connected to server Or connection with the server has been closed.') }}'
+                 '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
                 );
                 return;
               }

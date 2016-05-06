@@ -194,7 +194,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
             meth = 'get'
 
         assert self.cmd in self.operations, \
-                "Unimplemented Command ({0}) for {1}".format(
+                "Unimplemented command ({0}) for {1}".format(
                     self.cmd,
                     str(self.__class__.__name__)
                     )
@@ -291,7 +291,7 @@ class PGChildNodeView(NodeView):
 
         if 'sid' not in kwargs:
             return precondition_required(
-                gettext('Required properties are missing!')
+                gettext('Required properties are missing.')
             )
 
         from pgadmin.utils.driver import get_driver
@@ -308,7 +308,7 @@ class PGChildNodeView(NodeView):
         if not conn.connected():
             return precondition_required(
                     gettext(
-                        "Connection has been lost with the server!"
+                        "Connection to the server has been lost."
                         )
                     )
 

@@ -501,7 +501,7 @@ It may have been removed by another user.
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." %
+                        "Could not find the required parameter (%s)." %
                         required_args[arg]
                     )
                 )
@@ -718,7 +718,7 @@ It may have been removed by another user.
 
             for arg in required_args:
                 if arg not in data:
-                    return " -- " + gettext("definition incomplete")
+                    return " -- " + gettext("Definition incomplete.")
 
             # Privileges
             self.format_request_acls(data, specific=['nspacl'])

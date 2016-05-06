@@ -237,7 +237,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         $(e.target).find(':selected').each(function() {
         });
       });
-      var msg = '{{ _('Selection of checkbox represents the permission to give grant to other roles.') }}';
+      var msg = '{{ _('Select the checkbox for roles to include WITH ADMIN OPTION.') }}';
 
       this.$el.find('div.note').html("<span>NOTE:<br/>" + msg + "</span>");
 
@@ -483,7 +483,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('rolname')) || String(this.get('rolname')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can not be empty!') }}';
+            err['name'] = '{{ _('Name cannot be empty.') }}';
             errmsg = errmsg || err['name'];
           }
 

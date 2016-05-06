@@ -350,7 +350,7 @@ class FtsParserView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
         try:
@@ -486,9 +486,7 @@ class FtsParserView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(_("""
-                    Could not find the FTS Parser node.
-                    """))
+                return gone(_("Could not find the FTS Parser node."))
 
             # Drop fts Parser
             result = res['rows'][0]
@@ -568,9 +566,7 @@ class FtsParserView(PGChildNodeView):
                     return internal_server_error(errormsg=res)
 
                 if len(res['rows']) == 0:
-                    return gone(_("""
-                        Could not find the FTS Parser node.
-                    """))
+                    return gone(_("Could not find the FTS Parser node."))
 
                 old_data = res['rows'][0]
 
@@ -798,16 +794,14 @@ class FtsParserView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                        "ERROR: Couldn't generate reversed engineered \
-                        query for the FTS Parser!\n{0}"
+                        "Could not generate reversed engineered query for the FTS Parser.\n{0}"
                     ).format(res)
                 )
 
             if res is None:
                 return gone(
                     _(
-                        "ERROR: Couldn't generate reversed engineered \
-                        query for FTS Parser node!"
+                        "Could not generate reversed engineered query for FTS Parser node"
                     )
                 )
 

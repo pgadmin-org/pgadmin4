@@ -333,7 +333,7 @@ class EventTriggerView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter/s %s." % err
+                        "Could not find the required parameter %s." % err
                     )
                 )
         try:
@@ -536,7 +536,7 @@ class EventTriggerView(PGChildNodeView):
                         status=400,
                         success=0,
                         errormsg=gettext(
-                            "Couldn't find the required parameter/s %s." % err
+                            "Could not find the required parameter %s." % err
                         )
                     )
             sql = render_template("/".join([self.template_path, 'create.sql']), data=data)

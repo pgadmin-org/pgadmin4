@@ -50,7 +50,7 @@ blueprint = DataGridModule(MODULE_NAME, __name__, static_url_path='/static')
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=gettext('User can not call this URL directly'))
+    return bad_request(errormsg=gettext('This URL cannot be requested directly.'))
 
 
 @blueprint.route("/css/datagrid.css")

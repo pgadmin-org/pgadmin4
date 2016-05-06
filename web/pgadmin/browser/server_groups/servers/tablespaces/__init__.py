@@ -255,7 +255,7 @@ class TablespaceView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." %
+                        "Could not find the required parameter (%s)." %
                         required_args[arg]
                     )
                 )
@@ -365,7 +365,7 @@ class TablespaceView(PGChildNodeView):
 
             if len(rset['rows']) != 1:
                 return gone(
-                    errormsg=gettext("Couldn't the tablespace in the server!")
+                    errormsg=gettext("Could not find the tablespace on the server.")
                     )
 
             # drop tablespace

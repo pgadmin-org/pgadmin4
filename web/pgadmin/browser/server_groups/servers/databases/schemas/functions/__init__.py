@@ -255,8 +255,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Couldn't find the required parameter \
-                                (%s)." % arg
+                                "Could not find the required parameter (%s)." % arg
                             )
                         )
 
@@ -792,7 +791,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             return make_json_response(
                 success=1,
-                info=gettext("Function Dropped."),
+                info=gettext("Function dropped."),
                 data={
                     'id': fnid,
                     'scid': scid,
@@ -1108,9 +1107,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
         if len(res['rows']) == 0:
             return gone(gettext("""
-Could not find the function in the database.
-It may have been removed by another user or
-created/shifted to the another schema.
+Could not find the function in the database.\n
+It may have been removed by another user or moved to another schema.
 """))
 
         resp_data = res['rows'][0]

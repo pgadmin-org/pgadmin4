@@ -300,7 +300,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=gettext("Couldn't find the given server.")
+                errormsg=gettext("Could not find the required server.")
             )
 
         # Not all parameters can be modified, while the server is connected
@@ -436,7 +436,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=gettext("Couldn't find the given server")
+                errormsg=gettext("Could not find the required server.")
             )
 
         sg = ServerGroup.query.filter_by(
@@ -489,7 +489,7 @@ class ServerNode(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
 
@@ -559,7 +559,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             info=gettext(
-                "Server has no active connection for generating statistics!"
+                "Server has no active connection for generating statistics."
                 )
             )
 
@@ -619,12 +619,12 @@ class ServerNode(PGChildNodeView):
         # Fetch Server Details
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(gettext("Server Not Found."))
+            return bad_request(gettext("Server not found."))
 
         # Fetch User Details.
         user = User.query.filter_by(id=current_user.id).first()
         if user is None:
-            return unauthorized(gettext("Unauthorized Request."))
+            return unauthorized(gettext("Unauthorized request."))
 
         data = request.form if request.form else json.loads(request.data) if \
             request.data else {}
@@ -717,7 +717,7 @@ class ServerNode(PGChildNodeView):
                 %s - %s' % (server.id, server.name))
             return make_json_response(
                         success=1,
-                        info=gettext("Server Connected."),
+                        info=gettext("Server connected."),
                         data={
                             'icon': 'icon-{0}'.format(
                                 manager.server_type
@@ -735,7 +735,7 @@ class ServerNode(PGChildNodeView):
 
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(gettext("Server Not Found."))
+            return bad_request(gettext("Server not found."))
 
         # Release Connection
         from pgadmin.utils.driver import get_driver
@@ -744,11 +744,11 @@ class ServerNode(PGChildNodeView):
         status = manager.release()
 
         if not status:
-            return unauthorized(gettext("Server Could Not Disconnect."))
+            return unauthorized(gettext("Server could not be disconnected."))
         else:
             return make_json_response(
                     success=1,
-                    info=gettext("Server Disconnected."),
+                    info=gettext("Server disconnected."),
                     data={
                         'icon': 'icon-server-not-connected',
                         'connected': False

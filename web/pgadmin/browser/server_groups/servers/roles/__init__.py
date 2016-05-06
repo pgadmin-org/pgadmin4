@@ -130,7 +130,7 @@ class RoleView(PGChildNodeView):
             if u'rid' not in kwargs or kwargs['rid'] == -1:
                 if u'rolname' not in data:
                     return precondition_required(
-                            _("Name is not provided!")
+                            _("Name must be specified.")
                             )
 
             if u'rolconnlimit' in data:
@@ -138,7 +138,7 @@ class RoleView(PGChildNodeView):
                     data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
                     if type(data[u'rolconnlimit']) != int or data[u'rolconnlimit'] < -1:
                         return precondition_required(
-                                _("Connection limit must be an integer value or equals to -1!")
+                                _("Connection limit must be an integer value or equal to -1.")
                                 )
 
             if u'rolmembership' in data:
@@ -462,16 +462,16 @@ rolmembership:{
                     fetch_name = True
                     if action == 'drop':
                         forbidden_msg = _(
-                                "The current user does not have permission to drop the role!"
+                                "The current user does not have permission to drop the role."
                                 )
                     else:
                         forbidden_msg = _(
-                                "The current user does not have permission to update the role!"
+                                "The current user does not have permission to update the role."
                                 )
                 elif action == 'create':
                     check_permission = True
                     forbidden_msg = _(
-                            "The current user does not have permission to create the role!"
+                            "The current user does not have permission to create the role."
                             )
                 elif (action == 'msql' and
                         'rid' in kwargs and kwargs['rid'] != -1):
@@ -500,13 +500,13 @@ rolmembership:{
                     if not status:
                         return internal_server_error(
                                 _(
-                                    "ERROR: fetching the role information!\n{0}"
+                                    "Error retrieving the role information.\n{0}"
                                     ).format(res)
                                 )
 
                     if len(res['rows']) == 0:
                         return gone(
-                                _("Couldn't find the specific role in the database server!")
+                                _("Couldn't find the role on the database server.")
                                 )
 
                     row = res['rows'][0]
@@ -531,7 +531,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles from the database server!\n{0}"
+                        "Error retrieving roles from the database server.\n{0}"
                         ).format(res)
                     )
 
@@ -552,7 +552,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles information from the database server!\n{0}"
+                        "Error fetching role information from the database server.\n{0}"
                         ).format(rset)
                     )
 
@@ -586,7 +586,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles information from the database server!\n{0}"
+                        "Error fetching role information from the database server.\n{0}"
                         ).format(rset)
                     )
 
@@ -602,7 +602,7 @@ rolmembership:{
                     status=200
                     )
 
-        return gone(_("Couldn't find the role information!"))
+        return gone(_("Could not find the role information."))
 
     def transform(self, rset):
         for row in rset['rows']:
@@ -643,13 +643,13 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles from the database server!\n{0}"
+                        "Error retrieving roles from the database server.\n{0}"
                         ).format(res)
                     )
 
         self.transform(res)
         if len(res['rows']) == 0:
-            return gone(_("Couldn't find the role information!"))
+            return gone(_("Could not find the role information."))
 
         return ajax_response(
                 response=res['rows'][0],
@@ -664,7 +664,7 @@ rolmembership:{
                 )
         if not status:
             return internal_server_error(
-                    _("ERROR: Couldn't drop the user!\n{0}").format(res)
+                    _("Couldn't drop the role.\n{0}").format(res)
                     )
 
         return success_return()
@@ -680,14 +680,14 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                    _("ERROR: Couldn't generate reversed engineered Query for the role/user!\n{0}").format(
+                    _("Could not generate reversed engineered Query for the role.\n{0}").format(
                         res
                         )
                     )
 
         if res is None:
             return gone(
-                    _("ERROR: Couldn't generate reversed engineered Query for the role/user!")
+                    _("Could not generate reversed engineered Query for the role.")
                     )
 
         return ajax_response(response=res)
@@ -707,7 +707,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                    _("ERROR: Couldn't create the role!\n{0}").format(msg)
+                    _("Could not create the role.\n{0}").format(msg)
                     )
 
         status, rid = self.conn.execute_scalar(
@@ -717,7 +717,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                    _("ERROR: Couldn't fetch the role information!\n{0}").format(msg)
+                    _("Could not retrieve the role information.\n{0}").format(msg)
                     )
 
 
@@ -730,7 +730,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles information from the database server!\n{0}"
+                        "Error fetching role information from the database server.\n{0}"
                         ).format(rset)
                     )
         for row in rset['rows']:
@@ -743,7 +743,7 @@ rolmembership:{
                         )
                     )
 
-        return gone(_("Couldn't find the role information!"))
+        return gone(_("Could not find the role information."))
 
     @check_precondition(action='update')
     @validate_request
@@ -765,7 +765,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                    _("ERROR: Couldn't create the role!\n{0}").format(msg)
+                    _("Could not create the role.\n{0}").format(msg)
                     )
 
         status, rset = self.conn.execute_dict(
@@ -777,7 +777,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the roles information from the database server!\n{0}"
+                        "Error fetching role information from the database server.\n{0}"
                         ).format(rset)
                     )
 
@@ -792,7 +792,7 @@ rolmembership:{
                         )
                     )
 
-        return gone(_("Couldn't find the role information!"))
+        return gone(_("Could not find the role information."))
 
     @check_precondition(action='msql')
     @validate_request
@@ -979,7 +979,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the variable information for the given role!\n{0}"
+                        "Error retrieving variable information for the role.\n{0}"
                         ).format(rset)
                     )
 
@@ -1011,7 +1011,7 @@ FROM
         if not status:
             return internal_server_error(
                     _(
-                        "Error fetching the variable options for role!\n{0}"
+                        "Error retrieving the variable options for the role.\n{0}"
                         ).format(res)
                     )
         return make_json_response(

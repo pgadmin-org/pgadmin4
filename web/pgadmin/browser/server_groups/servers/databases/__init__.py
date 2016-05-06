@@ -240,7 +240,7 @@ class DatabaseView(PGChildNodeView):
                     status=200
                     )
 
-        return gone(errormsg=_("Couldn't find the database in the server!"))
+        return gone(errormsg=_("Could not find the database on the server."))
 
 
     @check_precondition(action="properties")
@@ -342,7 +342,7 @@ class DatabaseView(PGChildNodeView):
 
             return make_json_response(
                         success=1,
-                        info=_("Database Connected."),
+                        info=_("Database connected."),
                         data={
                             'icon': 'pg-icon-database',
                             'connected': True
@@ -359,11 +359,11 @@ class DatabaseView(PGChildNodeView):
         status = manager.release(did=did)
 
         if not status:
-            return unauthorized(_("Database Could Not Disconnect."))
+            return unauthorized(_("Database could not be disconnected."))
         else:
             return make_json_response(
                     success=1,
-                    info=_("Database Disconnected."),
+                    info=_("Database disconnected."),
                     data={
                         'icon': 'icon-database-not-connected',
                         'connected': False
@@ -443,7 +443,7 @@ class DatabaseView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
         try:
@@ -526,7 +526,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return gone(
-                    _("Couldn't find the database on the server!")
+                    _("Couldnot find the database on the server.")
                     )
 
             data['old_name'] = (rset['rows'][0])['name']
@@ -663,7 +663,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return False, gone(
-                    _("Couldn't find the database on the server!")
+                    _("Could not find the database on the server.")
                     )
 
             data['old_name'] = (rset['rows'][0])['name']

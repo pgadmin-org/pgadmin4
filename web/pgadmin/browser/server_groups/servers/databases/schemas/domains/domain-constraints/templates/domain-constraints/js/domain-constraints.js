@@ -79,7 +79,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           'string', group: '{{ _('Definition') }}', mode: ['properties',
           'create', 'edit'], disabled: function(m) { return !m.isNew(); }
         },{
-          id: 'connoinherit', label: '{{ _('No Inherit') }}', type:
+          id: 'connoinherit', label: '{{ _('No inherit') }}', type:
           'switch', cell: 'boolean', group: '{{ _('Definition') }}', mode:
           ['properties', 'create', 'edit'], disabled: 'isDisabled',
           visible: false
@@ -106,12 +106,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               errmsg;
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name can not be empty!') }}';
+            err['name'] = '{{ _('Name cannot be empty.') }}';
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['consrc'] = '{{ _('Check can not be empty!') }}';
+            err['consrc'] = '{{ _('Check cannot be empty.') }}';
             errmsg = errmsg || err['consrc'];
           }
 

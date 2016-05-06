@@ -63,7 +63,7 @@ define([
           errmsg,
           node = this.get('objects').toJSON();
         if (_.isEmpty(node)) {
-          err['selected'] = '{{ _("Please select any database object type") }}';
+          err['selected'] = '{{ _("Please select any database object type.") }}';
           errmsg = errmsg || err['selected'];
           this.errorModel.set('selected', errmsg);
           return errmsg;

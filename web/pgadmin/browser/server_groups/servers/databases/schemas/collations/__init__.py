@@ -389,7 +389,7 @@ class CollationView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
         if self._check_definition(data):
@@ -397,8 +397,7 @@ class CollationView(PGChildNodeView):
                 status=410,
                 success=0,
                 errormsg=gettext(
-                    "Incomplete definition, Please provide Locale \
-                    OR Copy collation OR LC_TYPE/LC_COLLATE"
+                    "Incomplete definition. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE"
                 )
             )
 

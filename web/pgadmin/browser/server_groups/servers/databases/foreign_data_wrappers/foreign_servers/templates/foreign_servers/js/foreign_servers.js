@@ -165,7 +165,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name can not be empty!') }}';
+            var msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           } else {

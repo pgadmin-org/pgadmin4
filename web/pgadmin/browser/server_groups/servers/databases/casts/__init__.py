@@ -349,7 +349,7 @@ class CastView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
         try:
@@ -616,14 +616,14 @@ class CastView(PGChildNodeView):
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(
-                    _("ERROR: Couldn't generate reversed engineered SQL for the cast!\n{0}").format(
+                    _("Could not generate reversed engineered SQL for the cast.\n\n{0}").format(
                         res
                         )
                     )
 
             if res is None:
                 return gone(
-                    _("ERROR: Couldn't generate reversed engineered SQL for the cast node!")
+                    _("Could not generate reversed engineered SQL for the cast node.\n")
                     )
 
             return ajax_response(response=res)

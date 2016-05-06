@@ -277,7 +277,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // validate source type control
           if (_.isUndefined(srctype) || _.isNull(srctype) || String(srctype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Source type must be selected!') }}';
+            var msg = '{{ _('Source type must be selected.') }}';
             this.errorModel.set('srctyp', msg);
             return msg;
           }
@@ -288,7 +288,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // validate target type control
           if (_.isUndefined(trgtype) || _.isNull(trgtype) || String(trgtype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Target type must be selected!') }}';
+            var msg = '{{ _('Target type must be selected.') }}';
             this.errorModel.set('trgtyp', msg);
             return msg;
           }

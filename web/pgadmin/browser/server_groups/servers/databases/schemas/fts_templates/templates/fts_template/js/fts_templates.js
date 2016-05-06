@@ -107,21 +107,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // Validate fts template name
           if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name must be specified!') }}';
+            var msg = '{{ _('Name must be specified.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
 
           // Validate lexize function control
           else if (_.isUndefined(lexize) || _.isNull(lexize) || String(lexize).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Lexize function must be selected!') }}';
+            var msg = '{{ _('Lexize function must be selected.') }}';
             this.errorModel.set('tmpllexize', msg);
             return msg;
           }
 
           // Validate schema for fts template
           else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Schema must be selected!') }}';
+            var msg = '{{ _('Schema must be selected.') }}';
             this.errorModel.set('schema', msg);
             return msg;
           }

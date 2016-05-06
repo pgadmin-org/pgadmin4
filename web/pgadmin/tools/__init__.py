@@ -22,4 +22,4 @@ blueprint = PgAdminModule(MODULE_NAME, __name__)
 @blueprint.route("/")
 def index():
     """Calling tools index URL directly is not allowed."""
-    return bad_request(gettext('This URL can not be requested directly!'))
+    return bad_request(gettext('This URL cannot be requested directly.'))

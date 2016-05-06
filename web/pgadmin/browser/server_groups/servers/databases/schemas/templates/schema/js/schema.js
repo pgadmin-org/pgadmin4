@@ -190,13 +190,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           if (_.isUndefined(this.get('name')) ||
             _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-                errmsg = '{{ _('Name can not be empty.')}}';
+                errmsg = '{{ _('Name cannot be empty.')}}';
                 this.errorModel.set('name', errmsg);
                 return errmsg;
           } else if (_.isUndefined(this.get('namespaceowner')) ||
             _.isNull(this.get('namespaceowner')) ||
             String(this.get('namespaceowner')).replace(/^\s+|\s+$/g, '') == '') {
-                errmsg = '{{ _('Owner can not be empty.')}}';
+                errmsg = '{{ _('Owner cannot be empty.')}}';
                 this.errorModel.set('namespaceowner', errmsg);
                 return errmsg;
           }

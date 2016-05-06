@@ -230,21 +230,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Sequence name can not be empty!') }}';
+            msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('seqowner'))
               || String(this.get('seqowner')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Sequence owner can not be empty!') }}';
+            msg = '{{ _('Owner can not be empty.') }}';
             this.errorModel.set('seqowner', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('schema'))
               || String(this.get('schema')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Sequence schema can not be empty!') }}';
+            msg = '{{ _('Schema cannot be empty.') }}';
             this.errorModel.set('schema', msg);
             return msg;
           }

@@ -139,7 +139,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isUndefined(name) ||
                 _.isNull(name) ||
                 String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name must be specified!') }}';
+            var msg = '{{ _('Name must be specified.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
@@ -148,7 +148,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(start) ||
                     _.isNull(start) ||
                     String(start).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Start function must be selected!') }}';
+            var msg = '{{ _('Start function must be selected.') }}';
             this.errorModel.set('prsstart', msg);
             return msg;
           }
@@ -157,7 +157,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(token) ||
                     _.isNull(token) ||
                     String(token).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Get next token function must be selected!') }}';
+            var msg = '{{ _('Get next token function must be selected.') }}';
             this.errorModel.set('prstoken', msg);
             return msg;
           }
@@ -166,7 +166,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(end) ||
                     _.isNull(end) ||
                     String(end).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('End function must be selected!') }}';
+            var msg = '{{ _('End function must be selected.') }}';
             this.errorModel.set('prsend', msg);
             return msg;
           }
@@ -175,7 +175,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(lextype) ||
                     _.isNull(lextype) ||
                     String(lextype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Lextype function must be selected!') }}';
+            var msg = '{{ _('Lextype function must be selected.') }}';
             this.errorModel.set('prslextype', msg);
             return msg;
           }
@@ -184,7 +184,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(schema) ||
                     _.isNull(schema) ||
                     String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Schema must be selected!') }}';
+            var msg = '{{ _('Schema must be selected.') }}';
             this.errorModel.set('schema', msg);
             return msg;
           }

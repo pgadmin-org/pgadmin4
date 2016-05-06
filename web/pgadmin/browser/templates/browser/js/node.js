@@ -213,7 +213,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 Alertify.pgNotifier(
                   error, jqxhr,
                   S(
-                    "{{ _("Error fetching the properties - %%s!") }}"
+                    "{{ _("Error retrieving the properties - %%s.") }}"
                     ).sprintf(message).value()
                   );
               });
@@ -367,7 +367,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             if (mode) {
               var msg = '{{ _('Are you sure want to stop editing the properties of the %%s - "%%s"?') }}';
               if (args.action == 'edit') {
-                msg = '{{ _('Are you sure want to reset the current changes and reopen the panel for %%s - "%%s"?') }}';
+                msg = '{{ _('Are you sure want to reset the current changes and re-open the panel for %%s - "%%s"?') }}';
               }
 
               Alertify.confirm(
@@ -697,7 +697,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             });
             buttons.push({
               label: '', type: 'help',
-              tooltip: '{{ _("Help on the SQL for this object type") }}',
+              tooltip: '{{ _("SQL help for this object type.") }}',
               extraClasses: ['btn-default'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
@@ -822,7 +822,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Create proper buttons
             createButtons([{
               label: '', type: 'help',
-              tooltip: '{{ _("SQL info for this object type") }}',
+              tooltip: '{{ _("SQL help for this object type.") }}',
               extraClasses: ['btn-default'],
               icon: 'fa fa-lg fa-info',
               disabled: that.sqlCreateHelp == '' ? true : false,
@@ -833,7 +833,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '{{ _("Save") }}', type: 'save',
-              tooltip: '{{ _("Save this object") }}',
+              tooltip: '{{ _("Save this object.") }}',
               extraClasses: ['btn-primary'],
               icon: 'fa fa-lg fa-save',
               disabled: true,
@@ -864,7 +864,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '{{ _('Cancel') }}', type: 'cancel',
-              tooltip: '{{ _("Cancel changes this object") }}',
+              tooltip: '{{ _("Cancel changes to this object.") }}',
               extraClasses: ['btn-danger'],
               icon: 'fa fa-lg fa-close',
               disabled: false,
@@ -877,7 +877,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '{{ _('Reset') }}', type: 'reset',
-              tooltip: '{{ _("Reset the fields on this dialogue") }}',
+              tooltip: '{{ _("Reset the fields on this dialog.") }}',
               extraClasses: ['btn-warning'],
               icon: 'fa fa-lg fa-recycle',
               disabled: true,

@@ -18,12 +18,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
             this.errorModel.clear()
             if (_.isUndefined(this.get('provider')) || String(this.get('provider')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Provider can not be empty!') }}';
+                var msg = '{{ _('Provider cannot be empty.') }}';
                 this.errorModel.set('provider',msg);
                 return msg;
             }
             if (_.isUndefined(this.get('securitylabel')) || String(this.get('securitylabel')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Security Label can not be empty!') }}';
+                var msg = '{{ _('Security Label cannot be empty.') }}';
                 this.errorModel.set('securitylabel',msg);
                 return msg;
             }
@@ -158,33 +158,33 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger name can not be empty!') }}';
+            msg = '{{ _('Event trigger name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventowner'))
               || String(this.get('eventowner')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger owner can not be empty!') }}';
+            msg = '{{ _('Event trigger owner cannot be empty.') }}';
             this.errorModel.set('eventowner', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('enabled'))) {
-            msg = '{{ _('Event trigger enabled status can not be empty!') }}';
+            msg = '{{ _('Event trigger enabled status cannot be empty.') }}';
             this.errorModel.set('enabled', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventfunname'))
               || String(this.get('eventfunname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger function can not be empty!') }}';
+            msg = '{{ _('Event trigger function cannot be empty.') }}';
             this.errorModel.set('eventfunname', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventname'))) {
-            msg = '{{ _('Event trigger event can not be empty!') }}';
+            msg = '{{ _('Event trigger event cannot be empty.') }}';
             this.errorModel.set('eventname', msg);
             return msg;
           }

@@ -277,15 +277,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
           control: 'node-ajax-options', cache_level: 'server'
         },{
-          id: 'datctype', label: '{{ _('Character Type') }}',
+          id: 'datctype', label: '{{ _('Character type') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
           control: 'node-ajax-options', cache_level: 'server'
         },{
-          id: 'datconnlimit', label: '{{ _('Connection Limit') }}',
+          id: 'datconnlimit', label: '{{ _('Connection limit') }}',
           editable: false, type: 'int', group: 'Definition', min: -1
         },{
-          id: 'datallowconn', label: '{{ _('Allow Connections?') }}',
+          id: 'datallowconn', label: '{{ _('Allow connections?') }}',
           editable: false, type: 'switch', group: 'Definition',
           mode: ['properties'], disabled: true,
           options: {
@@ -350,7 +350,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           var name = this.get('name');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Database name cannot be empty!') }}';
+            var msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           } else {
@@ -372,7 +372,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       Alertify.pgNotifier('error', xhr, error, function(msg) {
         setTimeout(function() {
           Alertify.dlgServerPass(
-            '{{ _('Connect to Database') }}',
+            '{{ _('Connect to database') }}',
             msg, _model, _data, _tree, _item
             ).resizeTo();
         }, 100);

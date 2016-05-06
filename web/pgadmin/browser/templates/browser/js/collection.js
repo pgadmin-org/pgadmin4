@@ -102,7 +102,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           Alertify.pgNotifier(
             error, jqxhr,
             S(
-              "{{ _("Error fetching the properties - %%s!") }}"
+              "{{ _("Error retrieving the properties - %%s.") }}"
               ).sprintf(message).value()
             );
         });
