@@ -328,3 +328,8 @@ span.fa.fa-arrow-left, .fa-arrow-right {
 .wcMenuSubMenu {
   visibility: hidden;
 }
+
+
+i.wcTabIcon {
+  min-width: 20px;
+}
