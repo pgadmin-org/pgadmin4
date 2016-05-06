@@ -5,7 +5,7 @@
     define([
       'underscore', 'underscore.string', 'jquery', 'backbone', 'backform',
       'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror/mode/sql/sql',
-      'select2'
+      'select2', 'pgadmin.browser.messages'
       ],
      function(_, S, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
