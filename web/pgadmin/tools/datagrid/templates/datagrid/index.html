@@ -10,11 +10,121 @@ body {
 }
 </style>
     <div id="main-editor_panel">
-        <div id="fetching_data" class="sql-editor-busy-fetching hide">',
+        <div id="fetching_data" class="sql-editor-busy-fetching hide">
             <span class="sql-editor-busy-icon"><img src="{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}"></span>
             <span class="sql-editor-busy-text"></span>
         </div>
-        <div class="sql-editor" data-trans-id="{{ uniqueId }}"></div>
+        <div class="sql-editor" data-trans-id="{{ uniqueId }}">
+        <div id="btn-toolbar" class="pg-prop-btn-group" role="toolbar" aria-label="">
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>
+              <i class="fa fa-floppy-o" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-copy-row" type="button" class="btn btn-default" title="{{ _('Copy Row') }}" disabled>
+              <i class="fa fa-files-o" aria-hidden="true"></i>
+            </button>
+            <button id="btn-paste-row" type="button" class="btn btn-default" title="{{ _('Paste Row') }}" disabled>
+              <i class="fa fa-clipboard" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-add-row" type="button" class="btn btn-default" title="{{ _('Add New Row') }}" disabled>
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-filter" type="button" class="btn btn-default" title="{{ _('Filter') }}" disabled>
+              <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+            <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+              <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li>
+                <a id="btn-remove-filter" href="#">{{ _('Remove') }}</a>
+                <a id="btn-include-filter" href="#">{{ _('By selection') }}</a>
+                <a id="btn-exclude-filter" href="#">{{ _('Exclude selection') }}</a>
+              </li>
+            </ul>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <select class="limit" style="height: 30px; width: 90px;" disabled>
+              <option value="-1">No limit</option>
+              <option value="1000">1000 rows</option>
+              <option value="500">500 rows</option>
+              <option value="100">100 rows</option>
+            </select>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-flash" type="button" class="btn btn-default" style="width: 40px;" title="{{ _('Execute/Refresh') }}">
+              <i class="fa fa-bolt" aria-hidden="true"></i>
+            </button>
+            <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu">
+              <li>
+                <a id="btn-auto-commit" href="#">
+                    <i class="auto-commit fa fa-check" aria-hidden="true"></i>
+                    <span> {{ _('Auto-Commit') }} </span>
+                </a>
+                <a id="btn-auto-rollback" href="#">
+                    <i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>
+                    <span> {{ _('Auto-Rollback') }} </span>
+                </a>
+              </li>
+            </ul>
+            <button id="btn-cancel-query" type="button" class="btn btn-default" title="{{ _('Cancel query') }}" disabled>
+              <i class="fa fa-stop" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-edit" type="button" class="btn btn-default" title="{{ _('Edit') }}">
+              <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </button>
+            <button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu">
+              <li>
+                <a id="btn-clear" href="#">
+                    <i class="fa fa-eraser" aria-hidden="true"></i>
+                    <span> {{ _('Clear query window') }} </span>
+                </a>
+                <a id="btn-clear-history" href="#">
+                    <i class="fa fa-eraser" aria-hidden="true"></i>
+                    <span> {{ _('Clear history') }} </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="btn-group" role="group" aria-label="">
+            <button id="btn-download" type="button" class="btn btn-default" title="{{ _('Download as CSV') }}">
+              <i class="fa fa-download" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="editor-title"></div>
+        <div id="filter" class="filter-container hidden">
+          <div class="filter-title">Filter</div>
+          <div class="sql-textarea">
+            <textarea id="sql_filter" row="5"></textarea>
+          </div>
+          <div class="btn-group">
+            <button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}">
+              <i class="fa fa-times" aria-hidden="true"></i> {{ _('Cancel') }}
+            </button>
+          </div>
+          <div class="btn-group">
+            <button id="btn-apply" type="button" class="btn btn-primary" title="{{ _('Apply') }}">
+              <i class="fa fa-check" aria-hidden="true"></i> {{ _('Apply') }}
+            </button>
+          </div>
+        </div>
+        <div id="editor-panel"></div>
+        </div>
     </div>
 {% endblock %}
 

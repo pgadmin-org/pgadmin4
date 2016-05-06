@@ -440,7 +440,7 @@ class TableCommand(GridCommand):
                                               data_to_be_saved=row['data'], primary_keys=row['keys'],
                                               nsp_name=self.nsp_name)
                 else:
-                    sql = render_template("/".join([self.sql_path, 'create.sql']), object_name=self.object_name,
+                    sql = render_template("/".join([self.sql_path, 'insert.sql']), object_name=self.object_name,
                                           data_to_be_saved=row['data'], nsp_name=self.nsp_name)
 
                 status, res = conn.execute_void(sql)

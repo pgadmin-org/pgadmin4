@@ -1,6 +1,7 @@
 define(
   ['jquery', 'underscore', 'alertify', 'pgadmin', 'backbone', 'backgrid', 'codemirror',
    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection', 'codemirror/addon/selection/active-line',
+   'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode', 'codemirror/addon/fold/pgadmin-sqlfoldcode',
    'backgrid.select.all', 'backbone.paginator', 'backgrid.paginator', 'backgrid.filter',
    'bootstrap', 'pgadmin.browser', 'wcdocker'],
   function($, _, alertify, pgAdmin, Backbone, Backgrid, CodeMirror) {
@@ -150,8 +151,8 @@ define(
         "click #btn-remove-filter": "on_remove_filter",
         "click #btn-apply": "on_apply",
         "click #btn-cancel": "on_cancel",
-        "click #btn-copy": "on_copy",
-        "click #btn-paste": "on_paste",
+        "click #btn-copy-row": "on_copy_row",
+        "click #btn-paste-row": "on_paste_row",
         "click #btn-flash": "on_flash",
         "click #btn-cancel-query": "on_cancel_query",
         "click #btn-download": "on_download",
@@ -163,128 +164,9 @@ define(
         "change .limit": "on_limit_change"
       },
 
-      /* Defining the template to create buttons and div to render
-       * the backgrid inside this div.
-       */
-      template: _.template([
-        '<div id="btn-toolbar" class="pg-prop-btn-group" role="toolbar" aria-label="">',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>',
-              '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
-            '</button>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-copy" type="button" class="btn btn-default" title="{{ _('Copy Row') }}" disabled>',
-              '<i class="fa fa-files-o" aria-hidden="true"></i>',
-            '</button>',
-            '<button id="btn-paste" type="button" class="btn btn-default" title="{{ _('Paste Row') }}" disabled>',
-              '<i class="fa fa-clipboard" aria-hidden="true"></i>',
-            '</button>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-add-row" type="button" class="btn btn-default" title="{{ _('Add New Row') }}" disabled>',
-              '<i class="fa fa-plus" aria-hidden="true"></i>',
-            '</button>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-filter" type="button" class="btn btn-default" title="{{ _('Filter') }}" disabled>',
-              '<i class="fa fa-filter" aria-hidden="true"></i>',
-            '</button>',
-            '<button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>',
-              '<span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>',
-            '</button>',
-            '<ul class="dropdown-menu dropdown-menu-right">',
-              '<li>',
-                '<a id="btn-remove-filter" href="#">{{ _('Remove') }}</a>',
-                '<a id="btn-include-filter" href="#">{{ _('By selection') }}</a>',
-                '<a id="btn-exclude-filter" href="#">{{ _('Exclude selection') }}</a>',
-              '</li>',
-            '</ul>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<select class="limit" style="height: 30px; width: 90px;" disabled>',
-              '<option value="-1">No limit</option>',
-              '<option value="1000">1000 rows</option>',
-              '<option value="500">500 rows</option>',
-              '<option value="100">100 rows</option>',
-            '</select>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-flash" type="button" class="btn btn-default" style="width: 40px;" title="{{ _('Execute/Refresh') }}">',
-              '<i class="fa fa-bolt" aria-hidden="true"></i>',
-            '</button>',
-            '<button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">',
-              '<span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>',
-            '</button>',
-            '<ul class="dropdown-menu dropdown-menu">',
-              '<li>',
-                '<a id="btn-auto-commit" href="#" class="noclose">',
-                    '<i class="auto-commit fa fa-check" aria-hidden="true"></i>',
-                    '<span> {{ _('Auto Commit') }} </span>',
-                '</a>',
-                '<a id="btn-auto-rollback" href="#" class="noclose">',
-                    '<i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>',
-                    '<span> {{ _('Auto Rollback') }} </span>',
-                '</a>',
-              '</li>',
-            '</ul>',
-            '<button id="btn-cancel-query" type="button" class="btn btn-default" title="{{ _('Cancel query') }}" disabled>',
-              '<i class="fa fa-stop" aria-hidden="true"></i>',
-            '</button>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-edit" type="button" class="btn btn-default" title="{{ _('Edit') }}">',
-              '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-            '</button>',
-            '<button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">',
-              '<span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>',
-            '</button>',
-            '<ul class="dropdown-menu dropdown-menu">',
-              '<li>',
-                '<a id="btn-clear" href="#">',
-                    '<i class="fa fa-eraser" aria-hidden="true"></i>',
-                    '<span> {{ _('Clear query window') }} </span>',
-                '</a>',
-                '<a id="btn-clear-history" href="#">',
-                    '<i class="fa fa-eraser" aria-hidden="true"></i>',
-                    '<span> {{ _('Clear history') }} </span>',
-                '</a>',
-              '</li>',
-            '</ul>',
-          '</div>',
-          '<div class="btn-group" role="group" aria-label="">',
-            '<button id="btn-download" type="button" class="btn btn-default" title="{{ _('Download as CSV') }}">',
-              '<i class="fa fa-download" aria-hidden="true"></i>',
-            '</button>',
-          '</div>',
-        '</div>',
-        '<div class="editor-title"></div>',
-        '<div id="filter" class="filter-container hidden">',
-          '<div class="filter-title">Filter</div>',
-          '<div class="sql-textarea">',
-            '<textarea id="sql_filter" row="5"></textarea>',
-          '</div>',
-          '<div class="btn-group">',
-            '<button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}">',
-              '<i class="fa fa-times" aria-hidden="true"></i> {{ _('Cancel') }}',
-            '</button>',
-          '</div>',
-          '<div class="btn-group">',
-            '<button id="btn-apply" type="button" class="btn btn-primary" title="{{ _('Apply') }}">',
-              '<i class="fa fa-check" aria-hidden="true"></i> {{ _('Apply') }}',
-            '</button>',
-          '</div>',
-        '</div>',
-        '<div id="editor-panel"></div>'
-        ].join("\n")),
-
       // This function is used to render the template.
       render: function() {
         var self = this;
-
-        // Render header only.
-        self.$el.empty();
-        self.$el.html(self.template());
 
         $('.editor-title').text(self.editor_title);
 
@@ -292,10 +174,17 @@ define(
 
         self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
             lineNumbers: true,
-            lineWrapping: true,
             matchBrackets: true,
             indentUnit: 4,
-            mode: "text/x-pgsql"
+            mode: "text/x-pgsql",
+            foldOptions: {
+              widget: "\u2026"
+            },
+            foldGutter: {
+              rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
+                                CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
+            },
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
 
         // Create main wcDocker instance
@@ -307,57 +196,37 @@ define(
           theme: 'pgadmin'
         });
 
-        var sub_panel = new pgAdmin.Browser.Panel({
-          name: 'sub_panel',
+        var sql_panel = new pgAdmin.Browser.Panel({
+          name: 'sql_panel',
           title: false,
           width: '100%',
-          height:'100%',
+          height:'20%',
           isCloseable: false,
           isPrivate: true
         });
 
-        sub_panel.load(main_docker);
-        panel = main_docker.addPanel('sub_panel', wcDocker.DOCK.LEFT);
+        //sql_panel.load(main_docker);
+        sql_panel.load(main_docker);
+        var sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
 
-        // Create a Splitter to divide sql code and data output
-        var hSplitter = new wcSplitter(
-          "#editor-panel", panel,
-          wcDocker.ORIENTATION.VERTICAL
-        );
-        hSplitter.scrollable(0, false, false);
-        hSplitter.scrollable(1, true, true);
-
-        // Initialize this splitter with a layout in each pane.
-        hSplitter.initLayouts(wcDocker.LAYOUT.SIMPLE, wcDocker.LAYOUT.SIMPLE);
-
-        // By default, the splitter splits down the middle, we split the main panel by 80%.
-        hSplitter.pos(0.25);
-
-        var text_container = $('<textarea id="sql_query_tool" row="5"></textarea>');
-
-        // Add text_container at the top half of the splitter
-        hSplitter.left().addItem(text_container);
-
-        // Add data output panel at the bottom half of the splitter
         var output_container = $('<div id="output-panel"></div>');
-        hSplitter.right().addItem(output_container);
+        var text_container = $('<textarea id="sql_query_tool"></textarea>').append(output_container);
+        sql_panel_obj.layout().addItem(text_container);
 
         self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
             lineNumbers: true,
-            lineWrapping: true,
             matchBrackets: true,
             indentUnit: 4,
             styleSelectedText: true,
-            mode: "text/x-sql"
-        });
-
-        // Create wcDocker for tab set.
-        var docker = new wcDocker(
-          '#output-panel', {
-          allowContextMenu: false,
-          allowCollapse: false,
-          themePath: '{{ url_for('static', filename='css/wcDocker/Themes') }}',
-          theme: 'pgadmin'
+            mode: "text/x-pgsql",
+            foldOptions: {
+              widget: "\u2026"
+            },
+            foldGutter: {
+              rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
+                                CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
+            },
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
 
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'
@@ -402,16 +271,16 @@ define(
         })
 
         // Load all the created panels
-        data_output.load(docker);
-        explain.load(docker);
-        messages.load(docker);
-        history.load(docker);
+        data_output.load(main_docker);
+        explain.load(main_docker);
+        messages.load(main_docker);
+        history.load(main_docker);
 
         // Add all the panels to the docker
-        self.data_output_panel = docker.addPanel('data_output', wcDocker.DOCK.LEFT);
-        self.explain_panel = docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
-        self.messages_panel = docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
-        self.history_panel = docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
+        self.data_output_panel = main_docker.addPanel('data_output', wcDocker.DOCK.BOTTOM, sql_panel_obj);
+        self.explain_panel = main_docker.addPanel('explain', wcDocker.DOCK.STACKED, self.data_output_panel);
+        self.messages_panel = main_docker.addPanel('messages', wcDocker.DOCK.STACKED, self.data_output_panel);
+        self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
 
         self.render_history_grid();
       },
@@ -660,24 +529,24 @@ define(
       },
 
       // Callback function for copy button click.
-      on_copy: function() {
+      on_copy_row: function() {
         var self = this;
 
         // Trigger the copy signal to the SqlEditorController class
         self.handler.trigger(
-            'pgadmin-sqleditor:button:copy',
+            'pgadmin-sqleditor:button:copy_row',
             self,
             self.handler
         );
       },
 
       // Callback function for paste button click.
-      on_paste: function() {
+      on_paste_row: function() {
         var self = this;
 
         // Trigger the paste signal to the SqlEditorController class
         self.handler.trigger(
-            'pgadmin-sqleditor:button:paste',
+            'pgadmin-sqleditor:button:paste_row',
             self,
             self.handler
         );
@@ -826,8 +695,8 @@ define(
           self.on('pgadmin-sqleditor:button:exclude_filter', self._exclude_filter, self);
           self.on('pgadmin-sqleditor:button:remove_filter', self._remove_filter, self);
           self.on('pgadmin-sqleditor:button:apply_filter', self._apply_filter, self);
-          self.on('pgadmin-sqleditor:button:copy', self._copy, self);
-          self.on('pgadmin-sqleditor:button:paste', self._paste, self);
+          self.on('pgadmin-sqleditor:button:copy_row', self._copy_row, self);
+          self.on('pgadmin-sqleditor:button:paste_row', self._paste_row, self);
           self.on('pgadmin-sqleditor:button:limit', self._set_limit, self);
           self.on('pgadmin-sqleditor:button:flash', self._refresh, self);
           self.on('pgadmin-sqleditor:button:cancel-query', self._cancel_query, self);
@@ -1028,15 +897,6 @@ define(
           else
             self.can_edit = true;
 
-          /* If user can edit the data then we should enabled
-           * Copy Row, Paste Row and 'Add New Row' buttons.
-           */
-          if (self.can_edit) {
-            $("#btn-add-row").prop('disabled', false);
-            $("#btn-copy").prop('disabled', false);
-            $("#btn-paste").prop('disabled', false);
-          }
-
           /* If user can filter the data then we should enabled
            * Filter and Limit buttons.
            */
@@ -1080,6 +940,7 @@ define(
           self.collection.on('backgrid:editing', self.on_cell_editing, self);
           self.collection.on('backgrid:row:selected', self.on_row_selected, self);
           self.collection.on('backgrid:row:deselected', self.on_row_deselected, self);
+          self.listenTo(self.collection, "reset", self.collection_reset_callback);
 
           // Show message in message and history tab in case of query tool
           self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
@@ -1094,6 +955,29 @@ define(
 
           // Hide the loading icon
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
+        },
+
+        collection_reset_callback: function() {
+          var self = this
+
+          /* If user can edit the data and current page is the
+           * last page of the paginator then we should enabled
+           * Copy Row, Paste Row and 'Add New Row' buttons.
+           */
+           if (self.can_edit &&
+               self.collection.state.currentPage != undefined &&
+               self.collection.state.lastPage != undefined &&
+               self.collection.state.currentPage == self.collection.state.lastPage)
+           {
+             $("#btn-add-row").prop('disabled', false);
+             $("#btn-copy-row").prop('disabled', false);
+             $("#btn-paste-row").prop('disabled', false);
+           }
+           else {
+             $("#btn-add-row").prop('disabled', true);
+             $("#btn-copy-row").prop('disabled', true);
+             $("#btn-paste-row").prop('disabled', true);
+           }
         },
 
         // This function creates the columns as required by the backgrid
@@ -1732,7 +1616,7 @@ define(
         },
 
         // This function will copy the selected row.
-        _copy: function() {
+        _copy_row: function() {
           var self = this;
 
           // Save the selected model as copied model for future use
@@ -1741,7 +1625,7 @@ define(
         },
 
         // This function will paste the selected row.
-        _paste: function() {
+        _paste_row: function() {
           var self = this;
               new_model = null;
           if ('copied_model' in self && self.copied_model != null) {
