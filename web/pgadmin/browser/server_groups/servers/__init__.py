@@ -374,7 +374,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            node=self.blueprint.generate_browser_node(
+            data=self.blueprint.generate_browser_node(
                 "%d" % (server.id), server.servergroup_id,
                 server.name,
                 "icon-server-not-connected" if not connected else
