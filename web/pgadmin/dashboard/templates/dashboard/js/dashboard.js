@@ -328,14 +328,15 @@ function(r, $, pgAdmin, _, Backbone) {
                         cls = 'danger';
                     }
 
-                    // Stash the old content, and replace with the error, if not already present
+                    // Replace the content with the error, if not already present. Always update the message
                     if (!$(container).hasClass('grid-error')) {
                         $(filter.el).hide();
                         $(container).addClass('grid-error');
-                        $(container).html(
-                            '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
-                        );
                     }
+
+                    $(container).html(
+                        '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+                    );
 
                     // Try again
                     setTimeout(function() {
