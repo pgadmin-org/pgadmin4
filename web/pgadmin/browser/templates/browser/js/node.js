@@ -787,8 +787,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           var updateButtons = function(hasError, modified) {
 
             var btnGroup = this.find('.pg-prop-btn-group'),
-                btnSave = btnGroup.find('button[type="save"]'),
-                btnReset = btnGroup.find('button[type="reset"]');
+                btnSave = btnGroup.find('button.btn-primary'),
+                btnReset = btnGroup.find('button.btn-warning');
 
             if (hasError || !modified) {
               btnSave.prop('disabled', true);
