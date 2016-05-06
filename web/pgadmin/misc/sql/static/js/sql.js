@@ -59,7 +59,7 @@ function(_, $, pgBrowser) {
         function() {
           var sql = '';
           if (node) {
-            sql = pgBrowser.messages.NODE_HAS_NO_SQL;
+            sql = '-- ' + pgBrowser.messages.NODE_HAS_NO_SQL;
             if (node.hasSQL) {
 
               sql = '';
