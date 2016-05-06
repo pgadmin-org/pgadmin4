@@ -179,6 +179,8 @@ class ServerNode(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
+        'reload':
+            [{'get': 'reload_configuration'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
             }]
@@ -754,6 +756,30 @@ class ServerNode(PGChildNodeView):
                         'connected': False
                         }
                     )
+
+    def reload_configuration(self, gid, sid):
+        """Reload the server configuration"""
+
+        # Reload the server configurations
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        if conn.connected():
+            # Execute the command for reload configuration for the server
+            status, rid = conn.execute_scalar("SELECT pg_reload_conf();")
+
+            if not status:
+                return internal_server_error(
+                        gettext("Could not reload the server configuration.")
+                        )
+            else:
+                return make_json_response(data={'status': True,
+                                            'result': gettext('Server configuration reloaded.')})
+
+        else:
+            return make_json_response(data={'status': False,
+                                            'result': gettext('Not connected to the server or the connection to the server has been closed.')})
 
 
 ServerNode.register_node_view(blueprint)

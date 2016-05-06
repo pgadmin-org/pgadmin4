@@ -39,6 +39,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: '{{ _('Disconnect Server...') }}',
           icon: 'fa fa-chain-broken', enable : 'is_connected'
+        },
+        {
+          name: 'reload_configuration', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'reload_configuration',
+          category: 'reload', priority: 6, label: '{{ _('Reload Configuration...') }}',
+          icon: 'fa fa-repeat', enable : 'is_connected'
         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
@@ -144,6 +150,49 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           pgBrowser.serverInfo[data._id] = _.extend({}, data);
 
           return true;
+        },
+        /* Reload configuration */
+        reload_configuration: function(args){
+          var input = args || {};
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          alertify.confirm(
+            '{{ _('Reload server configuration') }}',
+            S('{{ _('Are you sure you want to reload the server configuration on %%s?') }}').sprintf(d.label).value(),
+            function(evt) {
+              $.ajax({
+                url: obj.generate_url(i, 'reload', d, true),
+                method:'GET',
+                success: function(res) {
+                  if (res.data.status) {
+                    alertify.success(res.data.result);
+                  }
+                  else {
+                    alertify.error(res.data.result);
+                  }
+                },
+                error: function(xhr, status, error) {
+                  try {
+                    var err = $.parseJSON(xhr.responseText);
+                    if (err.success == 0) {
+                      alertify.error(err.errormsg);
+                    }
+                  } catch (e) {}
+                  t.unload(i);
+                }
+              });
+          },
+          function(evt) {
+              return true;
+          });
+
+          return false;
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({
