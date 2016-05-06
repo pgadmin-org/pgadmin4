@@ -34,7 +34,7 @@
 {% set strParam = "p_param" ~ (loop.index - 1) %}
 {% set str_declare = str_declare ~ "\t" ~ strParam ~ " " ~ arg_type[loop.index - 1] %}
 {% if arg_mode == 'b' %}
-{### TODO: to check for Null parameters received from client ###}
+{### Handle Null parameters received from client ###}
 {% if data[input_value_index]['type'] == 'text' and data[input_value_index]['value'] != 'NULL' %}
 {% set tmp_val = data[input_value_index]['value']|qtLiteral %}
 {% set str_declare = str_declare ~ " := " ~ strParam ~ " " ~ tmp_val ~ "::" ~ data[input_value_index]['type'] %}
@@ -61,7 +61,7 @@
 {% set str_statement = str_statement ~ "VARIADIC " %}
 {% endif %}
 
-{### TODO: to check for Null parameters received from client ###}
+{### Handle Null parameters received from client ###}
 {% if data[input_value_index]['type'] == 'text' and data[input_value_index]['value'] != 'NULL' %}
 {% set tmp_var = data[input_value_index]['value']|qtLiteral %}
 {% set str_statement = str_statement ~ tmp_var ~ "::" ~ data[input_value_index]['type'] %}

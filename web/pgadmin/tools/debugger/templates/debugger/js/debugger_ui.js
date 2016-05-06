@@ -287,11 +287,25 @@ define(
               }
 
               // Need to update the func_obj variable from sqlite database if available
-              // TODO: Need to check, how to update the value in Array fields....
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
                   var index = func_args_data[i]['arg_id'];
-                  func_obj.push({ "name": argname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": func_args_data[i]['value'], "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
+                  var values = [];
+                  if (argtype[index].indexOf("[]") !=-1) {
+                      var vals = func_args_data[i]['value'].split(",");
+                      if (argtype[index].indexOf("integer") != -1) {
+                        _.each(vals, function(val){
+                            values.push({'value': parseInt(val)});
+                        });
+                      }
+                      _.each(vals, function(val){
+                            values.push({'value': val});
+                        });
+                  } else {
+                    values = func_args_data[i]['value'];
+                  }
+
+                  func_obj.push({ "name": argname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": values, "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
                 }
               }
             }
@@ -358,11 +372,24 @@ define(
               }
 
               // Need to update the func_obj variable from sqlite database if available
-              // TODO: Need to check, how to update the value in Array fields....
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
                   var index = func_args_data[i]['arg_id'];
-                  func_obj.push({ "name": myargname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": func_args_data[i]['value'], "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
+                  var values = [];
+                  if (argtype[index].indexOf("[]") !=-1) {
+                      var vals = func_args_data[i]['value'].split(",");
+                      if (argtype[index].indexOf("integer") != -1) {
+                        _.each(vals, function(val){
+                            values.push({'value': parseInt(val)});
+                        });
+                      }
+                      _.each(vals, function(val){
+                            values.push({'value': val});
+                        });
+                  } else {
+                    values = func_args_data[i]['value'];
+                  }
+                  func_obj.push({ "name": myargname[index], "type": argtype[index], "is_null": func_args_data[i]['is_null'] ? true: false, "expr": func_args_data[i]['is_expression']? true: false, "value": values, "use_default": func_args_data[i]['use_default']? true: false, "default_value": def_val_list[index]});
                 }
               }
             }
@@ -423,7 +450,6 @@ define(
 
               this.grid.collection.each(function(m) {
 
-                  // TODO: Removed temporary for testing.....
                   // Check if value is set to NULL then we should ignore the value field
                   if (m.get('is_null')) {
                     args_value_list.push({ 'name': m.get('name'),

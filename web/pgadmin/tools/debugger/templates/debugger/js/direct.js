@@ -1,7 +1,8 @@
 define(
   ['jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin','pgadmin.browser',
    'backbone', 'backgrid', 'codemirror', 'backform','pgadmin.tools.debugger.ui',
-  'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid', 'codemirror/addon/selection/active-line'],
+  'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid', 'codemirror/addon/selection/active-line',
+  'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode', 'codemirror/addon/fold/pgadmin-sqlfoldcode'],
   function($, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform, debug_function_again) {
 
   if (pgAdmin.Browser.tree != null) {
@@ -251,7 +252,7 @@ define(
         During the execution we should poll the result in minimum seconds but once the execution is completed
         and wait for the another debugging session then we should decrease the polling frequency.
       */
-      if (pgTools.DirectDebug.direct_execution_completed) {
+      if (pgTools.DirectDebug.polling_timeout_idle) {
         // poll the result after 1 second
         var  poll_timeout = 1000;
       }
@@ -273,6 +274,7 @@ define(
               }
               else {
                 if (res.data.result[0].src != undefined || res.data.result[0].src != null) {
+                pgTools.DirectDebug.polling_timeout_idle = false;
                 pgTools.DirectDebug.docker.finishLoading(50);
                 pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
                 self.UpdateBreakpoint(trans_id);
@@ -293,8 +295,10 @@ define(
                   self.clear_all_breakpoint(trans_id);
                   self.execute_query(trans_id);
                   pgTools.DirectDebug.first_time_indirect_debug = true;
+                  pgTools.DirectDebug.polling_timeout_idle = false;
                 }
                 else {
+                  pgTools.DirectDebug.polling_timeout_idle = false;
                   pgTools.DirectDebug.docker.finishLoading(50);
                   // If the source is really changed then only update the breakpoint information
                   if (res.data.result[0].src != pgTools.DirectDebug.editor.getValue()) {
@@ -321,6 +325,7 @@ define(
               }
             }
             else if (res.data.status === 'Busy') {
+              pgTools.DirectDebug.polling_timeout_idle = true;
               // If status is Busy then poll the result by recursive call to the poll function
               if (!pgTools.DirectDebug.debug_type) {
                 pgTools.DirectDebug.docker.startLoading('{{ _('Waiting for another session to invoke the target...') }}');
@@ -368,7 +373,7 @@ define(
         During the execution we should poll the result in minimum seconds but once the execution is completed
         and wait for the another debugging session then we should decrease the polling frequency.
       */
-      if (pgTools.DirectDebug.direct_execution_completed) {
+      if (pgTools.DirectDebug.polling_timeout_idle) {
         // poll the result to check that execution is completed or not after 1200 ms
         var  poll_end_timeout = 1200;
       }
@@ -391,6 +396,7 @@ define(
                 */
                 pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
                 pgTools.DirectDebug.direct_execution_completed = true;
+                pgTools.DirectDebug.polling_timeout_idle = true;
 
                 //Set the alertify message to inform the user that execution is completed.
                 Alertify.notify(
@@ -418,6 +424,7 @@ define(
                   self.AddResults(res.data.result);
                   pgTools.DirectDebug.results_panel.focus();
                   pgTools.DirectDebug.direct_execution_completed = true;
+                  pgTools.DirectDebug.polling_timeout_idle = true;
 
                   //Set the alertify message to inform the user that execution is completed.
                   Alertify.notify(
@@ -537,10 +544,9 @@ define(
       var self = this;
 
       //Check first if previous execution was completed or not
-      if (pgTools.DirectDebug.direct_execution_completed) {
-        // TODO: We need to get the arguments given by the user from sqlite database
+      if (pgTools.DirectDebug.direct_execution_completed &&
+          pgTools.DirectDebug.direct_execution_completed == pgTools.DirectDebug.polling_timeout_idle) {
         self.Restart(trans_id);
-        pgTools.DirectDebug.direct_execution_completed = false;
       }
       else {
         // Make ajax call to listen the database message
@@ -802,7 +808,6 @@ define(
         if (result.length != 0)
         {
           for (i = 0; i < result.length; i++) {
-            // TODO: change the my_func_test_2 with name of the function to be executed.
             my_obj.push({ "name": result[i].targetname, "value": result[i].args, "line_no": result[i].linenumber });
           }
         }
@@ -871,7 +876,6 @@ define(
         if (result.value.length != 0)
         {
           for (i = 0; i < result.value.length; i++) {
-            // TODO: change the my_func_test_2 with name of the function to be executed.
             my_obj.push({ "value": result.value[i]});
           }
         }
@@ -1014,6 +1018,13 @@ define(
             if (res.data.status) {
               // Get the updated variables value
               self.GetLocalVariables(pgTools.DirectDebug.trans_id);
+              // Show the message to the user that deposit value is success or failure
+              Alertify.notify(
+                res.data.info,
+                res.data.result ? 'success': 'error',
+                3,
+                function() { }
+              );
             }
           },
           error: function(e) {
@@ -1187,6 +1198,7 @@ define(
       this.debug_type = debug_type;
       this.first_time_indirect_debug = false;
       this.direct_execution_completed = false;
+      this.polling_timeout_idle = false;
 
       var docker = this.docker = new wcDocker(
           '#container', {
@@ -1268,14 +1280,14 @@ define(
           }
           else if (res.data.status === 'NotConnected') {
             Alertify.alert(
-              'Data grid poll result error',
+              'Not connected to server or connection with the server has been closed.',
               res.data.result
             );
           }
         },
         error: function(e) {
           Alertify.alert(
-            'Debugger listener starting error'
+            'Debugger: Error fetching messages information'
           );
         }
       });
@@ -1283,31 +1295,33 @@ define(
     },
 
     // Callback function when user click on gutters of codemirror to set/clear the breakpoint
-    onBreakPoint: function(cm, m) {
+    onBreakPoint: function(cm, m, gutter) {
       var self = this;
 
-      // TODO::
-      // We may want to check, if break-point is allowed at this moment or not
-      var info = cm.lineInfo(m);
+      // If breakpoint gutter is clicked and execution is not completed then only set the breakpoint
+      if (gutter == "breakpoints" && !pgTools.DirectDebug.polling_timeout_idle ) {
+        // We may want to check, if break-point is allowed at this moment or not
+        var info = cm.lineInfo(m);
 
-      // If gutterMarker is undefined that means there is no marker defined previously
-      // So we need to set the breakpoint command here...
-      if (info.gutterMarkers == undefined) {
-        controller.set_breakpoint(self.trans_id,m+1,1); //set the breakpoint
-      }
-      else {
-        controller.set_breakpoint(self.trans_id,m+1,0); //clear the breakpoint
-      }
+        // If gutterMarker is undefined that means there is no marker defined previously
+        // So we need to set the breakpoint command here...
+        if (info.gutterMarkers == undefined) {
+          controller.set_breakpoint(self.trans_id,m+1,1); //set the breakpoint
+        }
+        else {
+          controller.set_breakpoint(self.trans_id,m+1,0); //clear the breakpoint
+        }
 
-      cm.setGutterMarker(
-        m, "breakpoints", info.gutterMarkers ? null : function() {
-          var marker = document.createElement("div");
+        cm.setGutterMarker(
+          m, "breakpoints", info.gutterMarkers ? null : function() {
+            var marker = document.createElement("div");
 
-          marker.style.color = "#822";
-          marker.innerHTML = "●";
+            marker.style.color = "#822";
+            marker.innerHTML = "●";
 
-          return marker;
+            return marker;
         }());
+      }
     },
 
     // Create the debugger layout with splitter and display the appropriate data received from server.
@@ -1401,8 +1415,14 @@ define(
         var editor = self.editor = CodeMirror.fromTextArea(
           code_editor_area.get(0), {
           lineNumbers: true,
-          lineWrapping: true,
-          gutters: ["note-gutter", "CodeMirror-linenumbers", "breakpoints"],
+          foldOptions: {
+            widget: "\u2026"
+          },
+          foldGutter: {
+            rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
+                                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
+          },
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "breakpoints"],
           mode: "text/x-pgsql",
           readOnly: true
         });

@@ -142,7 +142,7 @@ def init_function(node_type, sid, did, scid, fid):
     # Check server type is ppas or not
     ppas_server = False
     if server_type == 'ppas':
-        ppas_server = True;
+        ppas_server = True
 
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
@@ -214,14 +214,14 @@ def init_function(node_type, sid, did, scid, fid):
             data['require_input'] = True
 
         if r_set['rows'][0]['proargmodes']:
-            pro_arg_modes = r_set['rows'][0]['proargmodes'].split(",");
+            pro_arg_modes = r_set['rows'][0]['proargmodes'].split(",")
             for pr_arg_mode in pro_arg_modes:
                 if pr_arg_mode == 'o' or pr_arg_mode == 't':
                     data['require_input'] = False
-                    continue;
+                    continue
                 else:
                     data['require_input'] = True
-                    break;
+                    break
 
     r_set['rows'][0]['require_input'] = data['require_input']
 
@@ -243,7 +243,7 @@ def init_function(node_type, sid, did, scid, fid):
         'args_value': ''
     }
 
-    session['funcData'] = function_data;
+    session['funcData'] = function_data
 
     return make_json_response(
                 data=r_set['rows'],
@@ -319,7 +319,7 @@ def initialize_target(debug_type, sid, did, scid, func_id):
     else:
         debugger_data = session['debuggerData']
 
-    status = True;
+    status = True
 
     # Find out the debugger version and store it in session variables
     status, rid = conn.execute_scalar(
@@ -338,9 +338,9 @@ def initialize_target(debug_type, sid, did, scid, func_id):
 
         if status:
             if rid == 2 or rid == 3:
-                debugger_version = rid;
+                debugger_version = rid
             else:
-                status = False;
+                status = False
 
     # Add the debugger version information to pgadmin4 log file
     current_app.logger.debug("Debugger version is: %d", debugger_version)
@@ -401,7 +401,7 @@ def initialize_target(debug_type, sid, did, scid, func_id):
     }
 
     # Update the session variable of function information
-    session['functionData'] = function_data;
+    session['functionData'] = function_data
 
     # Delete the 'funcData' session variables as it is not used now as target is initialized
     del session['funcData']
@@ -447,13 +447,8 @@ def close(trans_id):
 
     # Release the connection
     if conn.connected():
-        if obj['debug_type'] == 'indirect':
-            # render the SQL template and send the query to server
-            sql = render_template("/".join([template_path, 'abort_target.sql']),
-                          session_id=obj['session_id'])
-            status, res = conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # on successful connection cancel the running transaction
+        status, result = conn.cancel_transaction(obj['conn_id'], obj['database_id'])
 
         # Delete the existing debugger data in session variable
         del session['debuggerData'][str(trans_id)]
@@ -599,27 +594,27 @@ def start_debugger_listener(trans_id):
                 # the return value is transformed into an extra OUT-parameter
                 # named "_retval_"
                 if session['functionData'][str(trans_id)]['args_name']:
-                    arg_name = session['functionData'][str(trans_id)]['args_name'].split(",");
+                    arg_name = session['functionData'][str(trans_id)]['args_name'].split(",")
                     if '_retval_' in arg_name:
-                        arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",");
-                        arg_mode.pop();
+                        arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",")
+                        arg_mode.pop()
                     else:
-                        arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",");
+                        arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",")
                 else:
-                    arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",");
+                    arg_mode = session['functionData'][str(trans_id)]['arg_mode'].split(",")
             else:
-                arg_mode = ['i'] * len(session['functionData'][str(trans_id)]['args_type'].split(","));
+                arg_mode = ['i'] * len(session['functionData'][str(trans_id)]['args_type'].split(","))
 
             if session['functionData'][str(trans_id)]['args_type']:
                 if session['functionData'][str(trans_id)]['args_name']:
-                    arg_name = session['functionData'][str(trans_id)]['args_name'].split(",");
+                    arg_name = session['functionData'][str(trans_id)]['args_name'].split(",")
                     if '_retval_' in arg_name:
-                        arg_type = session['functionData'][str(trans_id)]['args_type'].split(",");
-                        arg_type.pop();
+                        arg_type = session['functionData'][str(trans_id)]['args_type'].split(",")
+                        arg_type.pop()
                     else:
-                        arg_type = session['functionData'][str(trans_id)]['args_type'].split(",");
+                        arg_type = session['functionData'][str(trans_id)]['args_type'].split(",")
                 else:
-                    arg_type = session['functionData'][str(trans_id)]['args_type'].split(",");
+                    arg_type = session['functionData'][str(trans_id)]['args_type'].split(",")
 
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
@@ -811,7 +806,7 @@ def messages(trans_id):
             # Notice message returned by the server is   "NOTICE:  PLDBGBREAK:7".
             # From the above message we need to find out port number as "7" so below logic will find 7 as port number
             # and attach listened to that port number
-            offset = notify[0].find('PLDBGBREAK');
+            offset = notify[0].find('PLDBGBREAK')
             str_len = len('PLDBGBREAK')
             str_len = str_len + 1
             tmpOffset = 0
@@ -1066,11 +1061,18 @@ def deposit_parameter_value(trans_id):
             status, result = conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=result)
+
+            # Check if value deposited successfully or not and depending on the result, return the message information.
+            if result['rows'][0]['pldbg_deposit_value']:
+                info = gettext('Value deposited successfully')
+            else:
+                info = gettext('Error while setting the value')
+            return make_json_response(data={'status': status, 'info':info, 'result': result['rows'][0]['pldbg_deposit_value']})
     else:
         status = False
         result = gettext('Not connected to server or connection with the server has been closed.')
 
-    return make_json_response(data={'status': status, 'result': result['rows']})
+    return make_json_response(data={'status': status, 'result': result})
 
 
 @blueprint.route('/select_frame/<int:trans_id>/<int:frame_id>', methods=['GET'])
@@ -1200,6 +1202,18 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     server_id=data[i]['server_id'], database_id=data[i]['database_id'], schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'], arg_id=data[i]['arg_id']).count()
 
+            # handle the Array list sent from the client
+            array_string = ''
+            if data[i]['value'].__class__.__name__ in ('list') and data[i]['value']:
+                for k in range(0, len(data[i]['value'])):
+                    array_string += data[i]['value'][k]['value']
+                    if k != (len(data[i]['value']) - 1):
+                        array_string += ','
+            elif data[i]['value'].__class__.__name__ in ('list') and not data[i]['value']:
+                array_string = ''
+            else:
+                array_string = data[i]['value']
+
             # Check if data is already available in database then update the existing value otherwise add the new value
             if DbgFuncArgsExists:
                 DbgFuncArgs = DebuggerFunctionArguments.query.filter_by(
@@ -1209,7 +1223,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                 DbgFuncArgs.is_null = data[i]['is_null']
                 DbgFuncArgs.is_expression = data[i]['is_expression']
                 DbgFuncArgs.use_default = data[i]['use_default']
-                DbgFuncArgs.value = data[i]['value']
+                DbgFuncArgs.value = array_string
             else:
                 debugger_func_args = DebuggerFunctionArguments(
                     server_id = data[i]['server_id'],
@@ -1220,7 +1234,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     is_null = data[i]['is_null'],
                     is_expression = data[i]['is_expression'],
                     use_default = data[i]['use_default'],
-                    value = data[i]['value']
+                    value = array_string
                 )
 
                 db.session.add(debugger_func_args)

@@ -768,9 +768,10 @@
     initialize: function() {
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
         // set value to empty array.
+        var m = arguments[0].model;
         if (_.isUndefined(this.collection)) {
             this.collection = new (Backbone.Collection.extend({
-            model: arrayCellModel}));
+            model: arrayCellModel}))(m.get('value'));
         }
 
         this.model.set(this.column.get('name'), this.collection);
@@ -790,9 +791,10 @@
     initialize: function() {
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
         // set value to empty array.
+        var m = arguments[0].model;
         if (_.isUndefined(this.collection)) {
             this.collection = new (Backbone.Collection.extend({
-            model: arrayCellModel}));
+            model: arrayCellModel}))(m.get('value'));
         }
 
 
