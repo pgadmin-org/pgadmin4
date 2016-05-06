@@ -85,7 +85,7 @@ bool Server::Init()
     QStringList paths;
     paths.append("../web/"); // Linux source tree
     paths.append("../../web/"); // Windows source tree
-    paths.append("../../../../web/"); // Mac source tree (in the app bundle)
+    paths.append("../Resources/web/"); // Mac source tree (in the app bundle)
     paths.append(settings.value("ApplicationPath").toString()); // System configured value
     paths.append(""); // Should be last!
 
