@@ -1,0 +1,28 @@
+TODO Items
+==========
+
+NOTE: If you intend to work on any of these items, please let the development
+team know by emailing pgadmin-hackers@postgresql.org.=
+
+Foreign Table Module
+--------------------
+
+New functionality added in PG 9.5 for this module as below:
+
+- ALTER [ COLUMN ] col_name SET STORAGE { PLAIN | EXTERNAL | EXTENDED | MAIN }
+- DISABLE TRIGGER [ trigger_name | ALL | USER ]
+- ENABLE TRIGGER [ trigger_name | ALL | USER ]
+- ENABLE REPLICA TRIGGER trigger_name
+- ENABLE ALWAYS TRIGGER trigger_name
+- SET WITH OIDS
+- SET WITHOUT OIDS
+
+To add this functionality we need to add Columns, Triggers and Constraints as 
+separate Nodes under the Foreign Table Node.
+
+Query Tool updateable recordset support
+---------------------------------------
+
+Add smarts to the Query Tool to allow it to recognise if a query produces a
+data set that would be updateable (e.g. from a single table, all primary key
+columns present), and if so, allow editing.
