@@ -204,7 +204,7 @@ class ServerSideSessionInterface(SessionInterface):
         Returns the SqliteSessionStorage object representing this session.
         """
         sid = request.cookies.get(app.session_cookie_name)
-        if not sid:
+        if not sid or len(sid) > 40:
             sid = str(uuid4())
         return SqliteSessionStorage(self.directory, sid)
 
