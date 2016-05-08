@@ -114,6 +114,7 @@ function(_, pgAdmin, $, Backbone) {
         self.sessAttrs = {};
         self.origSessAttrs = {};
         self.objects = [];
+        self.arrays = [];
         self.attrName = options.attrName,
         self.top = (options.top || self.collection && self.collection.top || self.collection || self);
         self.handler = options.handler ||
@@ -129,7 +130,7 @@ function(_, pgAdmin, $, Backbone) {
 
               switch(s.type) {
                 case 'array':
-                  self.objects.push(s.id);
+                  self.arrays.push(s.id);
 
                   break;
                 case 'collection':
@@ -385,6 +386,19 @@ function(_, pgAdmin, $, Backbone) {
                 res[k] = (obj && obj.toJSON());
               }
             });
+        if (session) {
+          _.each(
+              self.arrays,
+              function(a) {
+                /*
+                 * For session changes, we only need the modified data to be
+                 * transformed to JSON data.
+                 */
+                if (res[a] && res[a] instanceof Array) {
+                  res[a] = JSON.stringify(res[a]);
+                }
+              });
+        }
         return res;
       },
       startNewSession: function() {
