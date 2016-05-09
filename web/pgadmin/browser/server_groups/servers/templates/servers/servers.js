@@ -44,7 +44,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 6, label: '{{ _('Reload Configuration...') }}',
-          icon: 'fa fa-repeat', enable : 'is_connected'
+          icon: 'fa fa-repeat', enable : 'enable_reload_config'
         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
@@ -57,6 +57,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },
       is_connected: function(node) {
         return (node && node.connected == true);
+      },
+      enable_reload_config: function(node) {
+        if (node && node._type == "server" && node.connected == true) {
+            return true;
+        }
+        return false;
       },
       callbacks: {
         /* Connect the server */
