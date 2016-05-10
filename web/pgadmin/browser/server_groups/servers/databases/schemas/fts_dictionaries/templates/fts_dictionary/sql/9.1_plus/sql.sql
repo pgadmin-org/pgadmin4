@@ -16,7 +16,7 @@ FROM
         E'\n);' ||
         CASE
             WHEN description IS NOT NULL THEN
-                E'\n\nCOMMENT ON TEXT SEARCH TEMPLATE ' || nspname || E'.' || dict.dictname ||
+                E'\n\nCOMMENT ON TEXT SEARCH DICTIONARY ' || nspname || E'.' || dict.dictname ||
                 E' IS ' || pg_catalog.quote_literal(description) || E';'
             ELSE ''  END as sql
     FROM
