@@ -81,11 +81,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       callbacks: {
         /* Connect the server */
         connect_server: function(args){
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -95,11 +95,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         /* Disconnect the server */
         disconnect_server: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = 'item' in input ? input.item : t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = 'item' in input ? input.item : t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
