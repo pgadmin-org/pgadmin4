@@ -469,12 +469,18 @@
 
       var optionText = null,
           optionValue = null,
+          self = this,
           model = this.model,
-          selectedValues = model.get(this.column.get("name"));
+          selectedValues = model.get(this.column.get("name")),
+          select2_opts = _.extend(
+            {openOnEnter: false, multiple:false}, self.defaults.select2,
+            (col.select2 || {})
+            ),
+          selectTpl = _.template('<select <%=multiple ? "multiple" : "" %>></select>');
 
-      delete this.$select;
-      self = this,
-      $select = self.$select = $('<select></select>').appendTo(this.$el);
+      $select = self.$select = $(selectTpl({
+        multiple: select2_opts.multiple
+      })).appendTo(self.$el);
 
       for (var i = 0; i < optionValues.length; i++) {
         var opt = optionValues[i];
@@ -499,11 +505,6 @@
           $select.append(self.template(opt));
         }
       }
-
-      var select2_opts = _.extend(
-            {openOnEnter: false},
-            col.select2, this.defaults.select2
-            );
 
       if(col && _.has(col.disabled)) {
         _.extend(select2_opts, {
