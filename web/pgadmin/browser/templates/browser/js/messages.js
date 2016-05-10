@@ -12,6 +12,7 @@ function(_, S, pgAdmin) {
     'CLICK_FOR_DETAILED_MSG': '%s<br><br>' + '{{ _('Click here for details.')|safe }}',
     'GENERAL_CATEGORY': '{{ _("General")|safe }}',
     'SQL_TAB': '{{ _('SQL') }}',
+    'SQL_INCOMPLETE': '{{ _('Incomplete definition') }}',
     'SQL_NO_CHANGE': '-- ' + '{{ _('Nothing changed')|safe }}',
     'MUST_BE_INT' : "{{ _("'%%s' must be an integer.")|safe }}",
     'MUST_BE_NUM' : "{{ _("'%%s' must be a numeric.")|safe }}",

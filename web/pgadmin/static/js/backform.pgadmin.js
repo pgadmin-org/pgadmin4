@@ -1394,38 +1394,43 @@
       // Fetch the information only if the SQL tab is visible at the moment.
       if (this.dialog && obj.shown == this.tabIndex) {
 
-        // We will send request to sever only if something is changed in model
+        // We will send a request to the sever only if something has changed
+        // in a model and also it does not contain any error.
         if(this.model.sessChanged()) {
+          if (_.size(this.model.errorModel.attributes) == 0) {
+            var self = this,
+                node = self.field.get('schema_node'),
+                msql_url = node.generate_url.apply(
+                  node, [
+                    null, 'msql', this.field.get('node_data'), !self.model.isNew(),
+                    this.field.get('node_info')
+                  ]);
 
-          var self = this,
-            node = self.field.get('schema_node'),
-            msql_url = node.generate_url.apply(
-                node, [
-                  null, 'msql', this.field.get('node_data'), !self.model.isNew(),
-                  this.field.get('node_info')
-                ]);
+                  // Fetching the modified SQL
+            self.model.trigger('pgadmin-view:msql:fetching', self.method, node);
 
-          // Fetching the modified SQL
-          self.model.trigger('pgadmin-view:msql:fetching', self.method, node);
-
-          $.ajax({
-            url: msql_url,
-            type: 'GET',
-            cache: false,
-            data: self.model.toJSON(true, 'GET'),
-            dataType: "json",
-            contentType: "application/json"
-          }).done(function(res) {
-            self.sqlCtrl.clearHistory();
-            self.sqlCtrl.setValue(res.data);
-          }).fail(function() {
-            self.model.trigger('pgadmin-view:msql:error', self.method, node, arguments);
-          }).always(function() {
-            self.model.trigger('pgadmin-view:msql:fetched', self.method, node, arguments);
-          });
+            $.ajax({
+              url: msql_url,
+              type: 'GET',
+              cache: false,
+              data: self.model.toJSON(true, 'GET'),
+              dataType: "json",
+              contentType: "application/json"
+            }).done(function(res) {
+              self.sqlCtrl.clearHistory();
+              self.sqlCtrl.setValue(res.data);
+            }).fail(function() {
+              self.model.trigger('pgadmin-view:msql:error', self.method, node, arguments);
+            }).always(function() {
+              self.model.trigger('pgadmin-view:msql:fetched', self.method, node, arguments);
+            });
+          } else {
+            this.sqlCtrl.clearHistory();
+            this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_INCOMPLETE);
+          }
         } else {
           this.sqlCtrl.clearHistory();
-          this.sqlCtrl.setValue(window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
+          this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }
