@@ -7,7 +7,7 @@ function(_, S, pgAdmin) {
   if (pgBrowser.messages)
     return pgBrowser.messages;
 
-  pgBrowser.messages = {
+  var messages = pgBrowser.messages = {
     'SERVER_LOST': '{{ _('Connection to the server has been lost!') }}',
     'CLICK_FOR_DETAILED_MSG': '%s<br><br>' + '{{ _('Click here for details.')|safe }}',
     'GENERAL_CATEGORY': '{{ _("General")|safe }}',
@@ -26,6 +26,9 @@ function(_, S, pgAdmin) {
     'FALSE': "{{ _("False") }}",
     'NOTE_CTRL_LABEL': "{{ _("Note") }}",
   };
+
+  {% for key, val in current_app.messages.iteritems() %}messages['{{ key|safe }}'] = '{{ val|safe }}';
+  {% endfor %}
 
   return pgBrowser.messages;
 

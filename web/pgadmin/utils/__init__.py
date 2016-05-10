@@ -66,6 +66,14 @@ class PgAdminModule(Blueprint):
         """
         return []
 
+    def get_own_messages(self):
+        """
+        Returns:
+            dict: the i18n messages used by this module, not including any
+                messages needed by the submodules.
+        """
+        return dict()
+
     def get_own_javascripts(self):
         """
         Returns:
@@ -95,6 +103,14 @@ class PgAdminModule(Blueprint):
         for module in self.submodules:
             stylesheets.extend(module.stylesheets)
         return stylesheets
+
+    @property
+    def messages(self):
+        res = self.get_own_messages()
+
+        for module in self.submodules:
+            res.update(module.messages)
+        return res
 
     @property
     def javascripts(self):

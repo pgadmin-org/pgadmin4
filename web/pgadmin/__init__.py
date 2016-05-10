@@ -60,6 +60,13 @@ class PgAdmin(Flask):
         return stylesheets
 
     @property
+    def messages(self):
+        messages = dict()
+        for module in self.submodules:
+            messages.update(getattr(module, "messages", dict()))
+        return messages
+
+    @property
     def javascripts(self):
         scripts = []
         scripts_names = []
