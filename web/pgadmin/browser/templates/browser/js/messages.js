@@ -8,7 +8,7 @@ function(_, S, pgAdmin) {
     return pgBrowser.messages;
 
   var messages = pgBrowser.messages = {
-    'SERVER_LOST': '{{ _('Connection to the server has been lost!') }}',
+    'SERVER_LOST': '{{ _('Connection to the server has been lost.') }}',
     'CLICK_FOR_DETAILED_MSG': '%s<br><br>' + '{{ _('Click here for details.')|safe }}',
     'GENERAL_CATEGORY': '{{ _("General")|safe }}',
     'SQL_TAB': '{{ _('SQL') }}',
@@ -27,8 +27,10 @@ function(_, S, pgAdmin) {
     'NOTE_CTRL_LABEL': "{{ _("Note") }}",
   };
 
-  {% for key, val in current_app.messages.iteritems() %}messages['{{ key|safe }}'] = '{{ val|safe }}';
-  {% endfor %}
+{% for key in current_app.messages.keys() %}
+  messages['{{ key|safe }}'] = '{{ current_app.messages[key]|safe }}';
+
+{% endfor %}
 
   return pgBrowser.messages;
 
