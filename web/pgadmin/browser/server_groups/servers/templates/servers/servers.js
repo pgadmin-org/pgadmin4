@@ -173,11 +173,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         /* Reload configuration */
         reload_configuration: function(args){
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -216,20 +216,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         /* Add restore point */
         restore_point: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
 
-          alertify.prompt('{{ _('Enter the name of the restore point') }}', '',
+          alertify.prompt('{{ _('Enter the name of the restore point to add') }}', '',
            // We will execute this function when user clicks on the OK button
            function(evt, value) {
              // If user has provided a value, send it to the server
-             if(!_.isUndefined(value) && !_.isNull(value) && value !== '') {
+             if(!_.isUndefined(value) && !_.isNull(value) && value !== ''
+                && String(value).replace(/^\s+|\s+$/g, '') !== '') {
               $.ajax({
                 url: obj.generate_url(i, 'restore_point', d, true),
                 method:'POST',
@@ -248,11 +249,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 }
               });
              } else {
+                evt.cancel = true;
                 alertify.error('{{ _('Please enter a valid name.') }}', 10);
              }
+           },
+           // We will execute this function when user clicks on the Cancel button
+           // Do nothing just close it
+           function(evt, value) {
+             evt.cancel = false;
            }
-          );
-
+          ).set({'title':'Restore point name'});
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({
