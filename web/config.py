@@ -160,6 +160,10 @@ SQLITE_PATH = os.path.join(
     os.path.realpath(os.path.expanduser('~/.pgadmin/')),
     'pgadmin4.db'
     )
+# SQLITE_TIMEOUT will define how long to wait before throwing the error -
+# OperationError due to database lock.
+# (Default: 500 milliseconds)
+SQLITE_TIMEOUT = 500
 
 ##########################################################################
 # Server-side session storage path

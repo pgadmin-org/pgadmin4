@@ -169,9 +169,10 @@ def create_app(app_name=config.APP_NAME):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}'.format(
-            config.SQLITE_PATH.replace('\\', '/')
-            )
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}'.format(
+        config.SQLITE_PATH.replace('\\', '/'),
+        getattr(config, 'SQLITE_TIMEOUT', 500)
+        )
 
     # Only enable password related functionality in server mode.
     if config.SERVER_MODE is True:
