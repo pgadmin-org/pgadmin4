@@ -22,7 +22,6 @@
     factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
   }
 } (this, function(root, _, $, Backbone, Backform, Alertify) {
-
   /*
      * Add mechanism in backgrid to render different types of cells in
      * same column;
@@ -803,6 +802,47 @@
         this.listenTo(this.collection, "remove", this.render);
     },
   });
+
+  /**
+   * DependentCell functions can be used with the different cell type in order
+   * to setup the callback for the depedent attribute change in the model.
+   *
+   * Please implement the 'dependentChanged' as the callback in the used cell.
+   *
+   * @class Backgrid.Extension.DependentCell
+   **/
+  var DependentCell = Backgrid.Extension.DependentCell = function() {};
+
+  _.extend(
+    DependentCell.prototype, {
+      initialize: function(){
+        // Listen to the dependent fields in the model for any change
+        var deps = this.column.get('deps');
+        var self = this;
+
+        if (deps && _.isArray(deps)) {
+          _.each(deps, function(d) {
+            attrArr = d.split('.');
+            name = attrArr.shift();
+            self.listenTo(self.model, "change:" + name, self.dependentChanged);
+          });
+        }
+      },
+      remove: function() {
+        // Remove the events for the dependent fields in the model
+        var self = this,
+          deps = self.column.get('deps');
+
+        if (deps && _.isArray(deps)) {
+          _.each(deps, function(d) {
+            attrArr = d.split('.');
+            name = attrArr.shift();
+
+            self.stopListening(self.model, "change:" + name, self.dependentChanged);
+          });
+        }
+      }
+    });
 
   return Backgrid;
 
