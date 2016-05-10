@@ -1101,3 +1101,7 @@ button.pg-alertify-button {
 div.backform_control_notes label.control-label {
   min-width: 0px;
 }
+
+form[name="change_password_form"] .help-block {
+    color: #A94442 !important;
+}
