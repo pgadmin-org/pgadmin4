@@ -294,6 +294,7 @@ font-size: 13px;
 
 .context-menu-list {
     padding: 2px 0;
+    width: initial !important;
 }
 
 .context-menu-list > .context-menu-item {
