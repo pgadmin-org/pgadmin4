@@ -23,7 +23,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: '{{ _('Server...') }}',
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
-        }, {
+        },{
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 3, label: '{{ _('Server...') }}',
@@ -33,18 +33,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['object', 'context'], callback: 'connect_server',
           category: 'connect', priority: 4, label: '{{ _('Connect Server...') }}',
           icon: 'fa fa-link', enable : 'is_not_connected'
-        },
-        {
+        },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: '{{ _('Disconnect Server...') }}',
           icon: 'fa fa-chain-broken', enable : 'is_connected'
-        },
-        {
+        },{
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 6, label: '{{ _('Reload Configuration...') }}',
           icon: 'fa fa-repeat', enable : 'enable_reload_config'
+        },{
+          name: 'restore_point', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'restore_point',
+          category: 'restore', priority: 7, label: '{{ _('Add named restore point') }}',
+          icon: 'fa fa-anchor', enable : 'is_applicable'
         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
@@ -59,7 +62,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         return (node && node.connected == true);
       },
       enable_reload_config: function(node) {
-        if (node && node._type == "server" && node.connected == true) {
+        // Must be connected & is Super user
+        if (node && node._type == "server" &&
+            node.connected && node.user.is_superuser) {
+          return true
+        }
+        return false;
+      },
+      is_applicable: function(node) {
+        // Must be connected & super user & not in recovery mode
+        if (node && node._type == "server" &&
+            node.connected && node.user.is_superuser
+            && node.in_recovery == false) {
             return true;
         }
         return false;
@@ -199,6 +213,46 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           });
 
           return false;
+        },
+        /* Add restore point */
+        restore_point: function(args) {
+          var input = args || {};
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          alertify.prompt('{{ _('Enter the name of the restore point') }}', '',
+           // We will execute this function when user clicks on the OK button
+           function(evt, value) {
+             // If user has provided a value, send it to the server
+             if(!_.isUndefined(value) && !_.isNull(value) && value !== '') {
+              $.ajax({
+                url: obj.generate_url(i, 'restore_point', d, true),
+                method:'POST',
+                data:{ 'value': JSON.stringify(value) },
+                success: function(res) {
+                    alertify.success(res.data.result, 10);
+                },
+                error: function(xhr, status, error) {
+                  try {
+                    var err = $.parseJSON(xhr.responseText);
+                    if (err.success == 0) {
+                      alertify.error(err.errormsg, 10);
+                    }
+                  } catch (e) {}
+                  t.unload(i);
+                }
+              });
+             } else {
+                alertify.error('{{ _('Please enter a valid name.') }}', 10);
+             }
+           }
+          );
+
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({

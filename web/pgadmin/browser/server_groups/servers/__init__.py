@@ -70,6 +70,13 @@ class ServerModule(sg.ServerGroupPluginModule):
             conn = manager.connection()
             connected = conn.connected()
 
+            status, in_recovery = conn.execute_scalar("""
+                SELECT CASE WHEN usesuper
+                       THEN pg_is_in_recovery()
+                       ELSE FALSE
+                       END as inrecovery
+                FROM pg_user WHERE usename=current_user""")
+
             yield self.generate_browser_node(
                     "%d" % (server.id),
                     gid,
@@ -82,7 +89,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                     server_type=manager.server_type if connected else "pg",
                     version=manager.version,
                     db=manager.db,
-                    user=manager.user_info if connected else None
+                    user=manager.user_info if connected else None,
+                    in_recovery=in_recovery
                     )
 
     @property
@@ -181,6 +189,8 @@ class ServerNode(PGChildNodeView):
         'module.js': [{}, {}, {'get': 'module_js'}],
         'reload':
             [{'get': 'reload_configuration'}],
+        'restore_point':
+            [{'post': 'create_restore_point'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
             }]
@@ -781,5 +791,49 @@ class ServerNode(PGChildNodeView):
             return make_json_response(data={'status': False,
                                             'result': gettext('Not connected to the server or the connection to the server has been closed.')})
 
+    def create_restore_point(self, gid, sid):
+        """
+        This method will creates named restore point
+
+        Args:
+            gid: Server group ID
+            sid: Server ID
+
+        Returns:
+            None
+        """
+        try:
+            data = request.form
+            restore_point_name = data['value'] if data else None
+            from pgadmin.utils.driver import get_driver
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection()
+
+            # Execute SQL to create named restore point
+            if conn.connected():
+                if restore_point_name:
+                    status, res = conn.execute_scalar(
+                        "SELECT pg_create_restore_point('{0}');".format(
+                            restore_point_name
+                        )
+                    )
+                if not status:
+                    return internal_server_error(
+                        errormsg=str(res)
+                    )
+
+                return make_json_response(
+                    data={
+                        'status': 1,
+                        'result': gettext(
+                            'Named restore point created: {0}'.format(
+                            restore_point_name))
+                    })
+
+        except Exception as e:
+            current_app.logger.error(
+                'Named restore point creation failed ({0})'.format(str(e))
+            )
+            return internal_server_error(errormsg=str(e))
 
 ServerNode.register_node_view(blueprint)
