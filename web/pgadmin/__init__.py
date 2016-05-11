@@ -57,7 +57,7 @@ class PgAdmin(Flask):
         stylesheets = []
         for module in self.submodules:
             stylesheets.extend(getattr(module, "stylesheets", []))
-        return stylesheets
+        return set(stylesheets)
 
     @property
     def messages(self):
