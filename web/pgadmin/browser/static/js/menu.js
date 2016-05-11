@@ -1,6 +1,6 @@
 define(
-   ['underscore', 'pgadmin', 'jquery'],
-function(_, pgAdmin, $) {
+   ['underscore', 'underscore.string', 'pgadmin', 'jquery'],
+function(_, S, pgAdmin, $) {
   'use strict';
 
   pgAdmin.Browser = pgAdmin.Browser || {};
