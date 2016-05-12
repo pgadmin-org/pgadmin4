@@ -139,7 +139,7 @@
       return this;
     },
     remove: function() {
-      this.$dialog.modal("hide").remove();
+      this.objectView.remove();
       Backgrid.CellEditor.prototype.remove.apply(this, arguments);
       if (this.tr) {
         this.tr.remove();
