@@ -191,8 +191,8 @@ def create_app(app_name=config.APP_NAME):
     db.init_app(app)
     Mail(app)
 
-    import pgadmin.utils.storage as storage
-    storage.init_app(app)
+    import pgadmin.utils.paths as paths
+    paths.init_app(app)
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
