@@ -2041,5 +2041,71 @@
     ].join("\n"))
   });
 
+  /*
+  * Input File Control: This control is used with Storage Manager Dialog,
+  * It allows user to perform following operations:
+  * - Select File
+  * - Select Folder
+  * - Create File
+  * - Opening Storage Manager Dialog itself.
+  */
+  var FileControl = Backform.FileControl = Backform.InputControl.extend({
+    defaults: {
+      type: "text",
+      label: "",
+      min: undefined,
+      max: undefined,
+      maxlength: 255,
+      extraClasses: [],
+      dialog_title: '',
+      btn_primary: '',
+      helpMessage: null,
+      dialog_type: 'select_file'
+    },
+    initialize: function(){
+      Backform.InputControl.prototype.initialize.apply(this, arguments);
+
+      // Listen click events of Storage Manager dialog buttons
+      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:'+this.field.get('dialog_type'), this.storage_dlg_hander, this);
+    },
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+        '<div class="file_selection_ctrl form-control">',
+          '<input type="<%=type%>" class="browse_file_input form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+          '<button class="btn fa fa-ellipsis-h select_item pull-right" <%=disabled ? "disabled" : ""%> ></button>',
+          '<% if (helpMessage && helpMessage.length) { %>',
+          '<span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+          '<% } %>',
+        '</div>',
+      '</div>'
+    ].join("\n")),
+    events: {
+      "click .select_item": "onSelect",
+    },
+    onSelect: function(e) {
+      var dialog_type = this.field.get('dialog_type');
+          supp_types = this.field.get('supp_types'),
+          btn_primary = this.field.get('btn_primary'),
+          dialog_title = this.field.get('dialog_title');
+      var params = {
+        supported_types: supp_types,
+        dialog_type: dialog_type,
+        dialog_title: dialog_title,
+        btn_primary: btn_primary
+      };
+      pgAdmin.FileManager.init();
+      pgAdmin.FileManager.show_dialog(params);
+    },
+    storage_dlg_hander: function(value) {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attrArr = this.field.get("name").split('.'),
+          name = attrArr.shift();
+
+      // Set selected value into the model
+      this.model.set(name, decodeURI(value));
+    }
+  });
+
   return Backform;
 }));

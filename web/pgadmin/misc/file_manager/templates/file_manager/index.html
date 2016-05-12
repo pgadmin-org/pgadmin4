@@ -1,0 +1,55 @@
+﻿<html>
+<head>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.dropzone/dropzone.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('file_manager.index') }}utility.js"></script>
+</head>
+<body>
+<div class="file_manager">
+  <form id="uploader" method="post" class='col-xs-12'>
+    <div class="btn-group filemanager-path-group col-sm-7 col-xs-12" role="group">
+      <button name="home" type="button" value="Home" title="Home" class="fa fa-home btn home"><span></span></button>
+      <button name="level-up" type="button" title="Back" value="LevelUp" class="btn fa fa-level-up level-up" disabled><span></span></button>
+      <h1 title=''></h1>
+    </div>
+    <div class="btn-group filemanager-btn-group" role="group">
+      <div class="uploadresponse"></div>
+      <input class="mode" name="mode" type="hidden" value="add" />
+      <input class="currentpath" name="currentpath" type="hidden" />
+      <button type="button" title="Refresh" class="btn fa fa-refresh refresh"></button>
+      <button type="submit" title="Upload File" value="Upload" class="btn fa fa-upload upload"><span></span></button>
+      <button type="button" title="Download File" class="btn fa fa-download download" disabled><span></span></button>
+      <button name="delete" type="button" title="Delete File/Folder" class="btn fa fa-trash delete" disabled><span></span></button>
+      <button name="rename" type="button" title="Rename File/Folder" class="btn fa fa-pencil-square-o rename"><span></span></button>
+      <button name="newfolder" type="button" title="Create new folder" value="New Folder" class="btn fa fa-folder-open create"><span></span></button>
+      <button class="ON fa fa-th btn grid" type="button" title="View as grid"><span></span></button>
+      <button type="button" class="btn fa fa-list list" title="View as Table"><span></span></button>
+    </div>
+  </form>
+  <div class="fileinfo">
+    <span class="activity">
+      <img src="{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}">
+    </span>
+    <div class='delete_item'>
+      <span>Are you sure you want to delete this item ?</span>
+        <span class="pull-right">
+          <button type='button' class='btn btn_yes'>YES</button>
+          <button type='button' class='btn btn_no'>NO</button>
+        </span>
+    </div>
+    <div class='replace_file'>
+      <span>Are you sure you want to replace this file ?</span>
+        <span class="pull-right">
+          <button type='button' class='btn btn_yes'>YES</button>
+          <button type='button' class='btn btn_no'>NO</button>
+        </span>
+    </div>
+    <div class="file_listing">
+    </div>
+    <div class="upload_file dropzone">
+    </div>
+    <div class="allowed_file_types">
+    </div>
+  </div>
+</div>
+</body>
+</html>

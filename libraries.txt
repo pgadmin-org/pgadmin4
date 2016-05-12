@@ -27,3 +27,4 @@ backgrid-filter     01b2b21     MIT          https://github.com/wyuenho/backgrid
 backbone.paginator  2.0.3       MIT          http://github.com/backbone-paginator/backbone.paginator
 backgrid-paginator  03632df     MIT          https://github.com/wyuenho/backgrid-paginator
 backgrid-select-all 1a00053     MIT          https://github.com/wyuenho/backgrid-select-all
+dropzone            4e20bd4     MIT          https://github.com/enyo/dropzone

@@ -1105,3 +1105,54 @@ div.backform_control_notes label.control-label {
 form[name="change_password_form"] .help-block {
     color: #A94442 !important;
 }
+
+
+.file_selection_ctrl .create_input span {
+  padding-right: 10px;
+  font-weight: bold;
+}
+
+.file_selection_ctrl .create_input input[type="text"] {
+  height: 23px;
+  padding: 2px;
+  width: 194px;
+  border-radius: 2px;
+}
+
+.file_selection_ctrl .browse_file_input {
+  display: inline-block;
+  width: 220px;
+  margin-right: 0;
+}
+
+.file_selection_ctrl button.select_item {
+  display: inline;
+  background: #777;
+  background: -webkit-linear-gradient(#777, #999999);
+  background: -o-linear-gradient(#777, #999);
+  background: -moz-linear-gradient(#777, #999);
+  background: linear-gradient(#777, #999);
+  color: #fff;
+  padding: 9px 0px 9px 0px;
+  margin-left: 0px;
+  margin-right: -7px;
+  margin-top: -4px;
+  min-width: 30px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.file_selection_ctrl button.select_item:focus,
+.file_selection_ctrl button.select_item:active {
+  outline: none;
+  box-shadow: none;
+}
+
+.file_selection_ctrl input[type="text"] {
+  width: calc(100% - 17px);
+  border: none;
+  margin-left: -6px;
+  margin-top: -3px;
+  height: 32px;
+  padding-left: 5px;
+}

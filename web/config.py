@@ -227,6 +227,22 @@ UPGRADE_CHECK_ENABLED = True
 UPGRADE_CHECK_URL = 'http://www.pgadmin.org/versions.json'
 
 ##########################################################################
+# Storage Manager storage url config settings
+# If user sets STORAGE_DIR to empty it will show all volumes if platform
+# is Windows, '/' if it is Linux, Mac or any other unix type system.
+
+# For example:
+# 1. STORAGE_DIR = get_drive("C") or get_drive() # return C:/ by default
+# where C can be any drive character such as "D", "E", "G" etc
+# 2. Set path manually like
+# STORAGE_DIR = "/path/to/directory/"
+##########################################################################
+STORAGE_DIR = os.path.join(
+    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    'storage'
+    )
+
+##########################################################################
 # Local config settings
 ##########################################################################
 

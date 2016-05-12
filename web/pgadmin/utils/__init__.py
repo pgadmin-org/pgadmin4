@@ -11,6 +11,7 @@ from flask import Blueprint
 from collections import defaultdict
 from operator import attrgetter
 from .preferences import Preferences
+from .paths import get_storage_directory
 
 
 class PgAdminModule(Blueprint):

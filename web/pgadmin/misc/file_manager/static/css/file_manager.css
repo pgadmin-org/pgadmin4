@@ -1,0 +1,660 @@
+/*
+ * CSS for Storage Manager Dialog
+ */
+
+.file_manager #uploader {
+  padding: 2px 4px;
+  border-width: 1px;
+  display: block;
+  text-align: right;
+  height: auto;
+  min-height:30px;
+  max-height: 80px;
+  overflow: hidden;
+  border-bottom: 1px;
+  top: 35px;
+}
+
+#uploader h1 {
+  font-size: 14px;
+  margin: 0;
+  margin-left: 5px;
+  padding: 0;
+  display: block;
+  float: left;
+  text-align: left;
+  line-height:1.9em;
+  text-shadow:1px 1px 0px #ffffff;
+}
+
+#uploader h1 b {
+  font-weight: normal;
+}
+
+.uploadresponse {
+  display: none;
+}
+
+.fileinfo {
+  min-width: 100px;
+  overflow: auto;
+  /* no margin or border allowed */
+}
+
+.fileinfo #contents li.selected, .fileinfo #contents tbody tr.selected {
+  background: #D9EDF7;
+}
+
+.fileinfo #contents li .fm_file_rename,
+.fileinfo table#contents tr td:first-child input.fm_file_rename {
+  display: none;
+  width: 80px;
+  margin: 0 auto;
+  text-align: center;
+  height: 17px;
+}
+
+.fileinfo table#contents tr td p {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.fileinfo table#contents tr td p {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.fileinfo > h1 {
+  font-size: 16px;
+  margin: 100px auto;
+}
+
+#toolbar {
+  display: block;
+  clear: left;
+  margin: 50px auto;
+}
+
+.fm_folder {
+  font-size: xx-large !important;
+  color: rgb(255, 204, 0);
+}
+
+.fm_drive {
+  font-size: xx-large !important;
+  color: darkgray;
+}
+
+.fm_file {
+  font-size: xx-large !important;
+}
+
+.file_manager button {
+  background-color: #C0C0C0;
+}
+
+.file_manager h1 {
+  font-size: medium;
+}
+
+/** Input file Replacement */
+.file-input-container {
+  margin:0;
+  position:relative;
+  top:0px;
+  width:215px;
+  height:32px;
+  overflow: hidden;
+}
+
+/** Firefox hack */
+@-moz-document url-prefix() {
+  .file-input-container  {
+    top:11px;
+    width:255px;
+  }
+}
+
+/** Opera hack */
+x:-o-prefocus, .file-input-container {top:16px;width:198px;}
+
+.newfile {
+  position: absolute;
+  top:0;
+  left: 3px;
+  right:0;
+  width: 152px;
+  height:23px;
+  opacity:0;  filter: alpha(opacity=0);
+  cursor: pointer;
+  border:1px solid blue;
+}
+
+.alt-fileinput {
+  display: inline;
+  wrap: no-wrap;
+}
+
+.filepath {
+  background-color: #F4F1ED;
+  border: 1px solid #dcdcdc;
+  margin: 0;
+  padding: 0.1em 0.3em;
+  line-height: 1.7em;
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-bottom-left-radius: 6px;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+@-moz-document url-prefix() {
+  .filepath {
+    padding:0.2em 0.3em;
+  }
+}
+
+/** Input file Replacement - end */
+.file_listing #contents.grid {
+  padding: 25px;
+  text-align: left;
+}
+
+.file_listing #contents.grid li {
+  display: block;
+  float: left;
+  width: 100px;
+  min-height: 80px;
+  text-align: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+
+div.clip {
+  width: 30px;
+  height: 30px;
+  margin: 10px auto;
+  overflow: hidden;
+}
+
+.file_listing #contents.grid p {
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.file_listing #contents.list {
+  width: 100%;
+}
+
+.file_listing #contents.list th,
+.file_listing #contents.list td {
+  text-align: left;
+  padding: 6px;
+  white-space: nowrap;
+}
+
+.file_listing #contents.list thead {
+  background: rgb(244,241,237); /* Old browsers */
+  background: -moz-linear-gradient(top, rgba(244,241,237,1) 0%, rgba(214,212,209,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(244,241,237,1)), color-stop(100%,rgba(214,212,209,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* W3C */
+  border-bottom: 1px solid #ccc;
+  display: inline-block;
+  width: 100%;
+}
+
+.file_listing #contents.list th {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.file_listing #contents.list th.tablesorter-headerAsc,
+.file_listing #contents.list th.tablesorter-headerDesc {
+  background: rgb(214,212,209); /* Old browsers */
+  background: -moz-linear-gradient(top, rgba(214,212,209,1) 0%, rgba(244,241,237,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(214,212,209,1)), color-stop(100%,rgba(244,241,237,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(214,212,209,1) 0%,rgba(244,241,237,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(214,212,209,1) 0%,rgba(244,241,237,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(214,212,209,1) 0%,rgba(244,241,237,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom, rgba(214,212,209,1) 0%,rgba(244,241,237,1) 100%); /* W3C */
+}
+
+.file_listing #contents.list td {
+  border-bottom: 1px dotted #ccc;
+}
+
+.file_listing #contents.list td:first-child {
+  display: table-cell;
+  padding-left: 0;
+  width: 100%;
+  padding-left: 22px;
+  background-repeat: no-repeat;
+  background-position: 3px center;
+}
+
+.file_listing #contents.list td.tbl_folder:first-child:before {
+  margin-right: 5px;
+  color: rgb(255, 204, 0);
+}
+
+.file_listing #contents.list td.tbl_file:first-child:before {
+  margin-right: 5px;
+}
+
+.file_listing #contents.list td.tbl_drive:first-child:before {
+  color: darkgray;
+  margin-right: 5px;
+}
+
+.file_listing #contents.list tbody tr:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.file_listing #contents.grid li:hover {
+  border: 1px solid #E5E5E5;
+  background-color: #F7F7F7;
+  cursor: pointer;
+  max-height: 78px;
+}
+
+.meta {
+  display: none;
+}
+
+#activity {
+  margin: 100px auto;
+}
+
+button.grid span,
+button.list span {
+  width: 20px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.file_listing #contents li {
+  position: relative;
+}
+
+#dropzone-container h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.pgadmin-storage-body {
+  min-width: 750px !important;
+  min-height: 380px !important;
+}
+
+.pgadmin-storage-body .ajs-content {
+  top: 0px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.storage_dialog {
+  height: 100%;
+  width: 100%;
+}
+
+.storage_content {
+  height: 100%;
+  width: 100%;
+}
+
+.file_manager {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.btn-group.filemanager-btn-group .btn:not(:first-child):not(:last-child) {
+  border-left: 1px solid #A9A9A9;
+}
+
+.file_manager #uploader .filemanager-path-group {
+  padding: 0;
+  display: block;
+  border: 1px solid darkgrey;
+  height: 30px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  float: left;
+  margin-right: 10px;
+}
+
+.file_manager #uploader .btn-group .btn[disabled] {
+  color: #888;
+  background-color: #ccc;
+}
+
+.file_manager #uploader .filemanager-btn-group {
+  border: 1px solid darkgrey;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  width: auto;
+  float: left;
+  overflow: hidden;
+}
+
+.file_manager .btn-group {
+  margin: 2px 3px;
+}
+
+.file_manager .fileinfo {
+  height: calc(100% - 109px);
+  overflow: hidden;
+  position: relative;
+  top: 35px;
+  font-size: 12px;
+}
+
+.file_manager .fileinfo #contents{
+  padding: 5px;
+  text-align: left;
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.file_manager .fileinfo #contents thead tr{
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.file_manager .fileinfo #contents thead tr th:nth-child(1),
+.file_manager .fileinfo #contents tbody tr td:nth-child(1) {
+  position: relative;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.file_manager .fileinfo #contents thead tr th:nth-child(2) {
+  width: 152px;
+  min-width: 152px;
+  max-width: 152px;
+}
+
+.file_manager .fileinfo #contents tbody tr td:nth-child(2) {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+.file_manager .fileinfo #contents thead tr th:nth-child(3) {
+  width: 197px;
+  min-width: 197px;
+  max-width: 197px;
+}
+
+.file_manager .fileinfo #contents tbody tr td:nth-child(3) {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+}
+
+.file_manager .fileinfo #contents tbody {
+  display: block;
+  overflow: auto;
+  width: 100%;
+  height: calc(100% - 30px);
+}
+.file_manager .fileinfo #contents tbody tr{
+  display: table;
+  max-width: 100%;
+  width: 100%;
+}
+
+.file_manager .upload_file {
+  display: none;
+  z-index: 1;
+  margin-bottom: auto;
+  top: 0;
+  margin-top: 0;
+  height: calc(100% - 5px);
+  width: 100%;
+  border: none;
+  position: absolute;
+  bottom: 0;
+  background-color: black;
+  padding: 0px;
+  padding-top: 22px;
+  padding-left: 10px;
+}
+
+.file_manager .upload_file #dropzone-container {
+  height: 100%;
+}
+
+.file_manager .upload_file #multiple-uploads {
+  background: black;
+  color: white;
+  padding: 0px !important;
+  height: calc(100% - 20px);
+  overflow: auto;
+  width: 100%;
+}
+
+.fileinfo .prompt-info {
+  text-align: center;
+  color: #fff;
+}
+
+.file_manager #uploader .btn-group .show_selected_file {
+  float: left;
+  text-align: left;
+  vertical-align: middle;
+  padding: 4px 0 0 5px;
+  height: 100%;
+}
+
+.fileinfo .file_listing {
+  display: block;
+  height: calc(100% - 35px);
+  border: 1px solid #ccc;
+  border-bottom: none;
+  font-size: 12px;
+}
+
+.fileinfo .allowed_file_types {
+  display: block;
+  height: 25px;
+  position: absolute;
+  right: 0;
+  border-top: 1px solid #ccc;
+  padding-top: 4px;
+  bottom: 4px;
+  width: 100%;
+  background: #fff;
+}
+
+.allowed_file_types .create_input {
+  position: absolute;
+  left: 5px;
+  width: 230px;
+}
+
+.allowed_file_types .create_input span {
+  padding-right: 5px;
+}
+
+.allowed_file_types .create_input input[type="text"] {
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  height: 22px;
+  width: 140px;
+  font-size: 13px;
+  display: inline;
+}
+
+.allowed_file_types .change_file_types {
+  position: absolute;
+  top: 4px;
+  right: 0;
+}
+
+.allowed_file_types .change_file_types select {
+  width: 75px;
+  margin-left: 10px;
+  float: right;
+  height: 22px;
+}
+
+.allowed_file_types .change_file_types label {
+  float: right;
+  padding-top: 3px;
+}
+
+.upload_file .file_upload_main {
+  position: relative;
+  height: 127px;;
+  width: 120px;
+  display: inline-block;
+  margin: 0 15px 15px 0 !important;
+  border: 1px solid white;
+  position: relative;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background: #fff;
+  margin: 2px;
+  opacity: 1;
+}
+
+.upload_file .file_upload_main .show_error {
+  padding: 10px 0 0 10px;
+  color: #000;
+}
+
+.upload_file .file_upload_main .show_error p.size {
+  text-align: center;
+}
+
+.upload_file .file_upload_main .show_error p.name {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.file_upload_main .dz-preview {
+  margin: 0;
+}
+
+.file_upload_main .dz-progress {
+  top: 83px !important;
+  border: 1px solid #8a6d3b;
+  border-radius: 0 !important;
+  -moz-border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+}
+
+.file_upload_main .dz-progress .dz-upload {
+  background: #d9edf7 !important;
+  text-align: center;
+}
+
+.file_upload_main .dz-progress .dz-upload.success {
+  background: green !important;
+}
+
+a.dz-remove {
+  display: none !important;
+}
+
+.upload_file .file_upload_main a.dz_file_remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #FF0000;
+  cursor: pointer;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  font-size: large;
+}
+
+.upload_file .file_upload_main a.dz_file_remove:hover {
+  border: 1px solid black;
+}
+
+.fileinfo .delete_item, .fileinfo .replace_file {
+  display: none;
+  padding: 7px 5px;
+  opacity: 0.8;
+  color: #fff;
+  border: 1px solid darkgrey;
+  background: #000;
+  box-shadow: 1px 0px 3px 1px red;
+}
+
+.fileinfo .delete_item span.pull-right .btn,
+.fileinfo .replace_file span.pull-right .btn {
+  padding: 0px 5px;
+  color: #000;
+  background: #fff;
+  font-size: 12px;
+}
+
+.fileinfo .delete_item span,
+.fileinfo .replace_file span {
+  margin-right: 10px;
+}
+
+.upload_file .dz_cross_btn {
+  color: #fff;
+  font-size: x-large;
+  right: -4px;
+  position: absolute;
+  top: -1px;
+  background: transparent;
+  border: none;
+}
+
+.file_manager .fileinfo #contents .fm_lock_icon {
+  color: red;
+  position: absolute;
+  top: 6px;
+  right: 0;
+  left: 19px;
+  font-size: 16px;
+}
+
+.file_manager .fileinfo #contents .fa-lock.tbl_lock_icon {
+  color: red;
+  position: absolute;
+  left: 29px;
+  top: 5px;
+  font-size: 10px;
+}
+
+.fileinfo .activity {
+  position: absolute;
+  left: 50%;
+  font-size: xx-large;
+  top: 30%;
+  z-index: 1;
+}
+
+.file_manager button.ON {
+  background: #F9F8F7;
+  border: 1px inset #ccc;
+}
