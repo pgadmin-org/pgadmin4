@@ -69,13 +69,15 @@ class ServerModule(sg.ServerGroupPluginModule):
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
-
-            status, in_recovery = conn.execute_scalar("""
-                SELECT CASE WHEN usesuper
-                       THEN pg_is_in_recovery()
-                       ELSE FALSE
-                       END as inrecovery
-                FROM pg_user WHERE usename=current_user""")
+            if connected:
+                status, in_recovery = conn.execute_scalar("""
+                    SELECT CASE WHEN usesuper
+                           THEN pg_is_in_recovery()
+                           ELSE FALSE
+                           END as inrecovery
+                    FROM pg_user WHERE usename=current_user""")
+            else:
+                in_recovery = None
 
             yield self.generate_browser_node(
                     "%d" % (server.id),
