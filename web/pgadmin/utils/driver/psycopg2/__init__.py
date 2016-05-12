@@ -342,7 +342,7 @@ WHERE
         return True, None
 
     def __cursor(self):
-        cur = getattr(g, self.conn_id, None)
+        cur = getattr(g, str(self.manager.sid) + '#' + self.conn_id, None)
 
         if self.connected() and cur and not cur.closed:
             return True, cur
@@ -408,7 +408,7 @@ Attempt to reconnect it failed with the error:
             else:
                 return False, errmsg
 
-        setattr(g, self.conn_id, cur)
+        setattr(g, str(self.manager.sid) + '#' + self.conn_id, cur)
 
         return True, cur
 
