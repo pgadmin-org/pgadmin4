@@ -1782,6 +1782,9 @@
    */
   var Select2Control = Backform.Select2Control = Backform.SelectControl.extend({
     render: function() {
+      if(this.$sel && this.$sel.select2) {
+        this.$sel.select2('destroy')
+      }
       Backform.SelectControl.prototype.render.apply(this, arguments);
 
       var opts = this.field.toJSON();
@@ -1795,7 +1798,7 @@
        */
       var $select = this.$el.find("select");
       $select.prepend($('<option></option>'));
-      $select.select2(select2Opts);
+      this.$sel = $select.select2(select2Opts);
 
       return this;
     }

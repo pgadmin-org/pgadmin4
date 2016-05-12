@@ -142,6 +142,11 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
       }
     },
     render: function() {
+
+      if(this.$sel && this.$sel.select2) {
+        this.$sel.select2('destroy')
+      }
+
       /*
        * Let SelectControl render it, we will do our magic on the
        * select control in it.
@@ -167,7 +172,7 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work and initialize select2 control.
        */
-      this.$el.find("select").select2(select2_opts);
+      this.$sel = this.$el.find("select").select2(select2_opts);
 
       return this;
     }
