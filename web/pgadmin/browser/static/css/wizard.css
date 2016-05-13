@@ -1,10 +1,10 @@
 /** CSS for Wizard **/
 .pgadmin_grant_wizard_body .ajs-content {
-  padding-top: 0px !important;
+  padding: 0px !important;
 }
 
 .wizard-header {
-   padding: 6px 10px!important;
+  padding: 6px 10px!important;
   min-height: 35px;
   max-height: 35px;
   border-bottom: 2px solid darkgray;
@@ -29,25 +29,18 @@
   width: 100%;
 }
 
-.grant_wizard_container {
-  position: relative;
-  overflow: hidden;
+.pgadmin-wizard {
   width: 100%;
   height: 100%;
 }
 
-.grant_wizard_container .pgadmin-wizard {
-  width: 100%;
-  height: 100%;
-}
-
-.grant_wizard_container .wizard-content {
+.wizard-content {
   position: relative;
   padding: 0;
-  height: 78%;
+  height: calc(100% - 97px);
 }
 
-.grant_wizard_container .wizard-right-panel {
+.wizard-right-panel {
   overflow-y: auto;
   height: 100%;
   top: 0;
@@ -56,7 +49,7 @@
   bottom: 0;
 }
 
-.grant_wizard_container .wizard-left-panel {
+.wizard-left-panel {
   position: absolute;
   top: 0;
   display: flex;
@@ -67,20 +60,16 @@
   right: 0;
 }
 
-.grant_wizard_container .wizard-left-panel img {
+.wizard-left-panel img {
   width: 140px;
 }
 
-.grant_wizard_container .wizard-right-panel_content {
-  height: 60%;
-}
-
-.grant_wizard_container {
-  height: 100%;
+.wizard-right-panel_content {
+  height: calc(100% - 113px);
 }
 
 /* Wizard Footer CSS */
-.grant_wizard_container .footer {
+.pgadmin-wizard .footer {
   background-color: #D2D2D2;
   border-width: 2px 0px 0px 0px;
   border-style: solid;
@@ -94,41 +83,41 @@
 }
 
 /* Wizard Button CSS */
-.grant_wizard_container .wizard-buttons {
+.pgadmin-wizard .wizard-buttons {
   float: right;
 }
 
-.grant_wizard_container .wizard-buttons button {
+.pgadmin-wizard .wizard-buttons button {
   float: left;
   font-size: 14px;
   margin: 3px 5px 0 0 !important;
 }
 
-.grant_wizard_container .wizard-buttons button.wizard-next i.fa {
+.pgadmin-wizard .wizard-buttons button.wizard-next i.fa {
   padding-left: 5px;
 }
 
-.grant_wizard_container .wizard-buttons button.wizard-back i.fa,
-.grant_wizard_container .wizard-buttons button.wizard-cancel i.fa {
+.pgadmin-wizard .wizard-buttons button.wizard-back i.fa,
+.pgadmin-wizard .wizard-buttons button.wizard-cancel i.fa {
   padding-right: 5px;
 }
 
-.grant_wizard_container .wizard-buttons .wizard-finish {
+.pgadmin-wizard .wizard-buttons .wizard-finish {
   margin-right: 0 !important;
 }
 
 /* Wizard Status bar CSS */
-.grant_wizard_container .wizard-description {
+.pgadmin-wizard .wizard-description {
   padding: 1.0em 0.1em;
 }
 
 /* Error message css */
-.grant_wizard_container .error_msg_div {
-  display: block;
+.pgadmin-wizard .error_msg_div {
   background: #fff;
+  font-size: 13px;
 }
 
-.grant_wizard_container .error_msg_div p {
+.pgadmin-wizard .error_msg_div p {
   background: #fff;
   color: #b92c28;
 }
@@ -142,8 +131,4 @@
  */
 .select2-container--open {
   z-index: 10000;
-}
-
-.alertify .ajs-body .ajs-content {
-  padding: 0px;
 }

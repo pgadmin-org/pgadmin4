@@ -93,7 +93,6 @@ define([
           var col = this.column.get('name');
           if (this.model && this.model.has(col)) {
             if (this.model.get(col)) {
-              this.checkbox().prop("checked", true);
               this.$el.parent().toggleClass("selected", true);
               this.model.trigger("backgrid:selected", this.model, true);
             }
@@ -142,7 +141,7 @@ define([
         var supported_nodes = [
               'schema', 'coll-function', 'coll-sequence',
               'coll-table', 'coll-view', 'coll-procedure',
-              'coll-materialized_view', 'database'
+              'coll-mview', 'database'
             ],
 
             /**
@@ -201,7 +200,6 @@ define([
               },
               setup:function() {
                 return {
-
                   // Set options for dialog
                   options: {
                     frameless: true,
@@ -946,8 +944,9 @@ define([
                             dataType: "json",
                             contentType: "application/json"
                           }).done(function(res) {
-                            self.sqlTab.clearHistory();
-                            self.sqlTab.setValue(res.data);
+                            self.sqlCtrl.clearHistory();
+                            self.sqlCtrl.setValue(res.data);
+                            self.sqlCtrl.refresh();
                           }).fail(function() {
                             self.model.trigger('pgadmin-view:msql:error');
                           }).always(function() {
@@ -959,9 +958,9 @@ define([
 
                           // Clear html dom elements of CodeMirror sql tab
                           self.sqlControl.unbind(); // Unbind all local event bindings
-                          var cmElem = self.sqlControl.sqlTab.getWrapperElement();
+                          var cmElem = self.sqlControl.sqlCtrl.getWrapperElement();
                           cmElem.remove();
-                          self.sqlControl.sqlTab = undefined;
+                          self.sqlControl.sqlCtrl = undefined;
                         }
 
                       })
@@ -987,9 +986,9 @@ define([
                   view: new(function() {
 
                     // Render SqlTab control to generate its html markup
-                    var sqlTabHtml = sqlControl.render().$el;
+                    var sqlCtrlHtml = sqlControl.render().$el;
                     this.render = function() {
-                        return { el: sqlTabHtml };
+                        return { el: sqlCtrlHtml };
                     };
                   }),
 
