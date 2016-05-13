@@ -123,7 +123,7 @@ class TablespaceView(PGChildNodeView):
                 "Using the template path: %s", self.template_path
                 )
             # Allowed ACL on tablespace
-            self.acls = ['C']
+            self.acl = ['C']
 
             return f(*args, **kwargs)
         return wrap
