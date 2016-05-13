@@ -57,6 +57,7 @@ individual features.
    :maxdepth: 2
    
    browser
+   object-dialogs
    debugger
    query-tool
 

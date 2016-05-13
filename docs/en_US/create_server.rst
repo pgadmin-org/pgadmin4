@@ -1,0 +1,34 @@
+.. _create_server:
+
+***************
+Create - Server  
+***************
+
+Use the *Create - Server* dialog to describe a connection to a server. Note: you must ensure the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client. 
+
+The *Create - Server* dialog organizes the connection of a server through the following dialog tabs: *General*, and *Connection*. 
+
+.. image:: images/create_server_general.png
+
+Use the fields in the *General* tab to identify the server:
+
+* Use the *Name* field to add a descriptive name for the server; the name specified will be displayed in the tree control of the client.
+* Provide a comment about the server in the *Comments* field.
+
+Click the *Connection* tab to continue.
+
+.. image:: images/create_server_connection.png
+
+Use the fields in the *Connection* tab to configure a connection:
+
+* Specify the IP address of the server host, or the fully qualified domain name in the *Host Name/Address* field. On Unix based systems, the address field may be left blank to use the default PostgreSQL Unix Domain Socket on the local machine, or may be set to an alternate path containing a PostgreSQL socket. If you enter a path, the path must begin with a "/".
+* Enter the listener port number of the server host in the *Port* field.
+* Use the *Maintenance Database* field to specify the name of the initial database to which the client will connect.  If you will be using pgAgent or adminpack objects, the :ref:`pgAgent <pgagent>` schema and :ref:`adminpack <extend>` objects should be installed on that database. 
+* Use the *User Name* field to specify the name of a role that will be used when authenticating with the server. 
+* Use the *Role* field to specify the name of a role that has privileges that will be conveyed to the client after authentication with the server. This selection allows you to connect as one role, and then assume the permissions of this specified role after the connection is established. Note that the connecting role must be a member of the role specified.
+* Use the drop-down list box in the SSL field to select the type of SSL connection the server should use. For more information about using SSL encryption, see Section 31.18 of the Postgres documentation:
+   
+   http://www.postgresql.org/docs/9.5/static/libpq-ssl.html
+
+
+  
