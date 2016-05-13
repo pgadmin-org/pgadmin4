@@ -14,7 +14,7 @@ from flask.ext.security import current_user
 from pgadmin.model import db, Server, ServerGroup, User
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
-    make_response as ajax_response, internal_server_error, unauthorized
+    make_response as ajax_response, internal_server_error, unauthorized, gone
 from pgadmin.browser.utils import PGChildNodeView
 import traceback
 from flask.ext.babel import gettext
@@ -70,14 +70,22 @@ class ServerModule(sg.ServerGroupPluginModule):
             conn = manager.connection()
             connected = conn.connected()
             if connected:
-                status, in_recovery = conn.execute_scalar("""
+                status, result = conn.execute_dict("""
                     SELECT CASE WHEN usesuper
                            THEN pg_is_in_recovery()
                            ELSE FALSE
-                           END as inrecovery
+                           END as inrecovery,
+                           CASE WHEN usesuper AND pg_is_in_recovery()
+                           THEN pg_is_xlog_replay_paused()
+                           ELSE FALSE
+                           END as isreplaypaused
                     FROM pg_user WHERE usename=current_user""")
+
+                in_recovery = result['rows'][0]['inrecovery'];
+                wal_paused = result['rows'][0]['isreplaypaused']
             else:
                 in_recovery = None
+                wal_paused = None
 
             yield self.generate_browser_node(
                     "%d" % (server.id),
@@ -92,7 +100,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                     version=manager.version,
                     db=manager.db,
                     user=manager.user_info if connected else None,
-                    in_recovery=in_recovery
+                    in_recovery=in_recovery,
+                    wal_pause=wal_paused
                     )
 
     @property
@@ -196,8 +205,10 @@ class ServerNode(PGChildNodeView):
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
             }],
-        'change_password': [{
-            'post': 'change_password'}]
+        'change_password': [{'post': 'change_password'}],
+        'wal_replay': [{
+            'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
+        }]
     })
 
     def nodes(self, gid):
@@ -217,6 +228,24 @@ class ServerNode(PGChildNodeView):
             conn = manager.connection()
             connected = conn.connected()
 
+            if connected:
+                status, result = conn.execute_dict("""
+                    SELECT CASE WHEN usesuper
+                           THEN pg_is_in_recovery()
+                           ELSE FALSE
+                           END as inrecovery,
+                           CASE WHEN usesuper AND pg_is_in_recovery()
+                           THEN pg_is_xlog_replay_paused()
+                           ELSE FALSE
+                           END as isreplaypaused
+                    FROM pg_user WHERE usename=current_user""")
+
+                in_recovery = result['rows'][0]['inrecovery'];
+                wal_paused = result['rows'][0]['isreplaypaused']
+            else:
+                in_recovery = None
+                wal_paused = None
+
             res.append(
                 self.blueprint.generate_browser_node(
                     "%d" % (server.id),
@@ -230,7 +259,9 @@ class ServerNode(PGChildNodeView):
                     server_type=manager.server_type if connected else 'pg',
                     version=manager.version,
                     db=manager.db,
-                    user=manager.user_info if connected else None
+                    user=manager.user_info if connected else None,
+                    in_recovery=in_recovery,
+                    wal_pause=wal_paused
                     )
                 )
         return make_json_response(result=res)
@@ -257,6 +288,24 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
         connected = conn.connected()
 
+        if connected:
+            status, result = conn.execute_dict("""
+                SELECT CASE WHEN usesuper
+                    THEN pg_is_in_recovery()
+                    ELSE FALSE
+                    END as inrecovery,
+                    CASE WHEN usesuper AND pg_is_in_recovery()
+                    THEN pg_is_xlog_replay_paused()
+                    ELSE FALSE
+                    END as isreplaypaused
+                FROM pg_user WHERE usename=current_user""")
+
+            in_recovery = result['rows'][0]['inrecovery'];
+            wal_paused = result['rows'][0]['isreplaypaused']
+        else:
+            in_recovery = None
+            wal_paused = None
+
         return make_json_response(
                 result=self.blueprint.generate_browser_node(
                     "%d" % (server.id),
@@ -270,7 +319,9 @@ class ServerNode(PGChildNodeView):
                     server_type=manager.server_type if connected else 'pg',
                     version=manager.version,
                     db=manager.db,
-                    user=manager.user_info if connected else None
+                    user=manager.user_info if connected else None,
+                    in_recovery=in_recovery,
+                    wal_pause=wal_paused
                     )
                 )
 
@@ -731,6 +782,24 @@ class ServerNode(PGChildNodeView):
 
             current_app.logger.info('Connection Established for server: \
                 %s - %s' % (server.id, server.name))
+            # Update the recovery and wal pause option for the server if connected successfully
+            status, result = conn.execute_dict("""
+                    SELECT CASE WHEN usesuper
+                           THEN pg_is_in_recovery()
+                           ELSE FALSE
+                           END as inrecovery,
+                           CASE WHEN usesuper AND pg_is_in_recovery()
+                           THEN pg_is_xlog_replay_paused()
+                           ELSE FALSE
+                           END as isreplaypaused
+                    FROM pg_user WHERE usename=current_user""")
+            if status:
+                in_recovery = result['rows'][0]['inrecovery'];
+                wal_paused = result['rows'][0]['isreplaypaused']
+            else:
+                in_recovery = None
+                wal_paused = None
+
             return make_json_response(
                         success=1,
                         info=gettext("Server connected."),
@@ -742,7 +811,9 @@ class ServerNode(PGChildNodeView):
                             'type': manager.server_type,
                             'version': manager.version,
                             'db': manager.db,
-                            'user': manager.user_info
+                            'user': manager.user_info,
+                            'in_recovery': in_recovery,
+                            'wal_pause': wal_paused
                             }
                         )
 
@@ -935,5 +1006,82 @@ class ServerNode(PGChildNodeView):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
+
+    def wal_replay(self, sid, pause=True):
+        """
+        Utility function for wal_replay for resume/pause.
+        """
+        server = Server.query.filter_by(
+            user_id=current_user.id, id=sid
+        ).first()
+
+        if server is None:
+            return make_json_response(
+                success=0,
+                errormsg=gettext("Could not find the required server.")
+            )
+
+        try:
+            from pgadmin.utils.driver import get_driver
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection()
+
+            # Execute SQL to pause or resume WAL replay
+            if conn.connected():
+                if pause:
+                    status, res = conn.execute_scalar(
+                        "SELECT pg_xlog_replay_pause();"
+                    )
+                    if not status:
+                        return internal_server_error(
+                            errormsg=str(res)
+                        )
+                else:
+                    status, res = conn.execute_scalar(
+                        "SELECT pg_xlog_replay_resume();"
+                    )
+                    if not status:
+                        return internal_server_error(
+                            errormsg=str(res)
+                        )
+                return make_json_response(
+                    success=1,
+                    info=gettext('WAL replay paused'),
+                    data={'in_recovery': True, 'wal_pause': pause}
+                )
+            return gone(errormsg=_('Please connect the server!'))
+        except Exception as e:
+            current_app.logger.error(
+                'WAL replay pause/resume failed'
+            )
+            return internal_server_error(errormsg=str(e))
+
+    def resume_wal_replay(self, gid, sid):
+        """
+        This method will resume WAL replay
+
+        Args:
+            gid: Server group ID
+            sid: Server ID
+
+        Returns:
+            None
+        """
+        return self.wal_replay(sid, False)
+
+    def pause_wal_replay(self, gid, sid):
+        """
+        This method will pause WAL replay
+
+        Args:
+            gid: Server group ID
+            sid: Server ID
+
+        Returns:
+            None
+        """
+        return self.wal_replay(sid, True)
+
+
 
 ServerNode.register_node_view(blueprint)

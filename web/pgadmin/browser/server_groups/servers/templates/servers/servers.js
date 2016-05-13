@@ -53,7 +53,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['file'], callback: 'change_password',
           label: '{{ _('Change Password...') }}',
           icon: 'fa fa-lock', enable : 'is_connected'
-        }]);
+        },{
+          name: 'wal_replay_pause', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'pause_wal_replay',
+          category: 'wal_replay_pause', priority: 8, label: '{{ _('Pause replay of WAL') }}',
+          icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled'
+        },{
+          name: 'wal_replay_resume', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'resume_wal_replay',
+          category: 'wal_replay_resume', priority: 9, label: '{{ _('Resume replay of WAL') }}',
+          icon: 'fa fa-play-circle', enable : 'wal_resume_enabled'
+         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
           '{{ _('A grantee must be selected.') }}';
@@ -79,6 +89,26 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         if (node && node._type == "server" &&
             node.connected && node.user.is_superuser
             && node.in_recovery == false) {
+            return true;
+        }
+        return false;
+      },
+      wal_pause_enabled: function(node) {
+        // Must be connected & is Super user & in Recovery mode
+        if (node && node._type == "server" &&
+            node.connected && node.user.is_superuser
+            && node.in_recovery == true
+            && node.wal_pause == false) {
+            return true;
+        }
+        return false;
+      },
+      wal_resume_enabled: function(node) {
+        // Must be connected & is Super user & in Recovery mode
+        if (node && node._type == "server" &&
+            node.connected && node.user.is_superuser
+            && node.in_recovery == true
+            && node.wal_pause == true) {
             return true;
         }
         return false;
@@ -421,6 +451,88 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           alertify.changeServerPassword(d).resizeTo('40%','52%');
           return false;
+        },
+        /* Pause WAL Replay */
+        pause_wal_replay: function(args) {
+          var input = args || {};
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          var data = d;
+          $.ajax({
+            url: obj.generate_url(i, 'wal_replay' , d, true),
+            type:'DELETE',
+            dataType: "json",
+            success: function(res) {
+              if (res.success == 1) {
+                alertify.success(res.info);
+                t.itemData(i).wal_pause=res.data.wal_pause;
+                t.unload(i);
+                t.setInode(i);
+                t.deselect(i);
+                // Fetch updated data from server
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+              }
+            },
+            error: function(xhr, status, error) {
+              try {
+                var err = $.parseJSON(xhr.responseText);
+                if (err.success == 0) {
+                  msg = S(err.errormsg).value();
+                  alertify.error(err.errormsg);
+                }
+              } catch (e) {}
+              t.unload(i);
+            }
+          })
+        },
+        /* Resume WAL Replay */
+        resume_wal_replay: function(args) {
+          var input = args || {};
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          var data = d;
+          $.ajax({
+            url: obj.generate_url(i, 'wal_replay' , d, true),
+            type:'PUT',
+            dataType: "json",
+            success: function(res) {
+              if (res.success == 1) {
+                alertify.success(res.info);
+                t.itemData(i).wal_pause=res.data.wal_pause;
+                t.unload(i);
+                t.setInode(i);
+                t.deselect(i);
+                // Fetch updated data from server
+                setTimeout(function() {
+                  t.select(i);
+                }, 10);
+              }
+            },
+            error: function(xhr, status, error) {
+              try {
+                var err = $.parseJSON(xhr.responseText);
+                if (err.success == 0) {
+                  msg = S(err.errormsg).value();
+                  alertify.error(err.errormsg);
+                }
+              } catch (e) {}
+              t.unload(i);
+            }
+          })
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({
@@ -555,6 +667,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             data.icon = res.data.icon;
             tree.addIcon(item, {icon: data.icon});
           }
+
+          // Update 'in_recovery' and 'wal_pause' options at server node
+          tree.itemData(item).in_recovery=res.data.in_recovery;
+          tree.itemData(item).wal_pause=res.data.wal_pause;
+
           _.extend(data, res.data);
 
           var serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
