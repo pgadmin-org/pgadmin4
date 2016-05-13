@@ -45,12 +45,12 @@ import codecs
 # SQLite3 needs all string as UTF-8
 # We need to make string for Python2/3 compatible
 if sys.version_info < (3,):
-    from io import StringIO
+    from StringIO import StringIO
 
     def u(x):
         return codecs.unicode_escape_decode(x)[0]
 else:
-    from cStringIO import StringIO
+    from io import StringIO
 
     def u(x):
         return x

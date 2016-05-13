@@ -32,7 +32,7 @@ from pgadmin.model import Process, db
 if sys.version_info < (3,):
     from StringIO import StringIO
 else:
-    from cStringIO import StringIO
+    from io import StringIO
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
