@@ -1049,7 +1049,7 @@ class ServerManager(object):
 
         res = dict()
         res['sid'] = self.sid
-        res['password'] = self.password
+        res['password'] = str(self.password)
 
         connections = res['connections'] = dict()
 
