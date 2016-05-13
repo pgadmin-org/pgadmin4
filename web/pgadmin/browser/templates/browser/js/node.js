@@ -89,7 +89,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           applies: ['object', 'context'], callback: 'delete_obj',
           priority: 3, label: '{{ _("Delete/Drop") }}',
           data: {'url': 'drop'}, icon: 'fa fa-trash',
-          enable: _.isFunction(self.canDrop) ? !!self.canDrop.apply(self, arguments) : (!!self.canDrop)
+          enable: _.isFunction(self.canDrop) ?
+            function() {
+              return !!(self.canDrop.apply(self, arguments));
+            } : (!!self.canDrop)
         }]);
         if (self.canDropCascade) {
           pgAdmin.Browser.add_menus([{
