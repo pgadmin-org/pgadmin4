@@ -28,12 +28,15 @@ def get_storage_directory():
             ), 'storage'
         )
     )
+
+    if storage_dir is None:
+        return None
+
     username = current_user.email.split('@')[0]
     if len(username) == 0 or username[0].isdigit():
         username = 'pga_user_' + username
 
     storage_dir = os.path.join(storage_dir, username)
-    print(storage_dir)
 
     if not os.path.exists(storage_dir):
         os.makedirs(storage_dir, int('700', 8))
@@ -55,7 +58,7 @@ def init_app(app):
         )
     )
 
-    if not os.path.isdir(storage_dir):
+    if storage_dir and not os.path.isdir(storage_dir):
         if os.path.exists(storage_dir):
             raise Exception(
                 'The value specified for as the storage directory is not a directory!'

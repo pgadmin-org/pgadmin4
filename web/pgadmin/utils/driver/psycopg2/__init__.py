@@ -335,6 +335,7 @@ WHERE
             for st in kwargs['server_types']:
                 if st.instanceOf(mgr.ver):
                     mgr.server_type = st.stype
+                    mgr.server_cls = st
                     break
 
         mgr.update_session()
@@ -1017,6 +1018,7 @@ class ServerManager(object):
         self.ver = None
         self.sversion = None
         self.server_type = None
+        self.server_cls = None
         self.password = None
 
         self.sid = server.id
@@ -1188,6 +1190,7 @@ WHERE db.oid = {0}""".format(did))
                     self.ver = None
                     self.sversion = None
                     self.server_type = None
+                    self.server_cls = None
                     self.password = None
 
                 self.update_session()
@@ -1203,6 +1206,7 @@ WHERE db.oid = {0}""".format(did))
         self.ver = None
         self.sversion = None
         self.server_type = None
+        self.server_cls = None
         self.password = None
 
         self.update_session()
@@ -1220,6 +1224,18 @@ WHERE db.oid = {0}""".format(did))
         else:
             managers[self.sid] = updated_mgr
         session['__pgsql_server_managers'] = managers
+
+    def utility(self, operation):
+        """
+        utility(operation)
+
+        Returns: name of the utility which used for the operation
+        """
+        if self.server_cls is not None:
+            return self.server_cls.utility(operation, self.sversion)
+
+        return None
+
 
 
 class Driver(BaseDriver):

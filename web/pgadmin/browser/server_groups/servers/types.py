@@ -7,13 +7,11 @@
 #
 ##########################################################################
 
-import six
-from abc import ABCMeta, abstractmethod, abstractproperty
 from flask import render_template
 from flask.ext.babel import gettext
 
 
-class ServerType:
+class ServerType(object):
     """
     Server Type
 
@@ -71,6 +69,18 @@ class ServerType:
                 key=lambda x: x.priority,
                 reverse=True
                 )
+
+    @classmethod
+    def utility(cls, operation, sverion):
+        if operation == 'backup':
+            return 'pg_dump'
+        if operation == 'backup_server':
+            return 'pg_dumpall'
+        if operation == 'restore':
+            return 'pg_restore'
+
+        return None
+
 
 # Default Server Type
 ServerType('pg', gettext("PostgreSQL"), -1)

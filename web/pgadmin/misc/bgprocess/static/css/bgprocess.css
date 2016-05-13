@@ -85,24 +85,24 @@
 
 .pg-panel-content div.bg-process-watcher.col-xs-12 {
   height: 100%;
-  padding: 0px;
+  padding: 0px 0px 0px 0px;
   WebkitTransition: all 1s;
   transition: all 1s;
+  background-color: rgb(255, 239, 217);
 }
 
 ol.pg-bg-process-logs {
-  padding: 15px 15px 15px 60px;
+  padding: 5px 10px 5px 60px;
   height: 100%;
   overflow: auto;
   width: 100%;
-  background: #000;
+  background: rgb(255, 239, 217);
 }
 
 .pg-bg-res-out, .pg-bg-res-err {
-  background-color: #000;
+  background-color: rgb(255, 239, 217);
   padding-left: 10px;
   white-space: pre-wrap;
-  font-size: 12px;
 }
 
 .pg-bg-res-out {
@@ -117,6 +117,7 @@ ol.pg-bg-process-logs {
   padding: 10px 15px;
   min-height: 70px;
   color: #000;
+  background-color: whitesmoke;
 }
 
 .pg-panel-content .bg-process-stats p{
@@ -131,7 +132,7 @@ ol.pg-bg-process-logs {
   padding: 10px 15px;
   position: absolute;
   bottom: 0;
-  background-color: white;
+  background-color: whitesmoke;
 }
 
 .pg-panel-content .bg-process-footer p {
