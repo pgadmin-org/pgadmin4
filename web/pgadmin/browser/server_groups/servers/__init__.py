@@ -19,7 +19,7 @@ from pgadmin.browser.utils import PGChildNodeView
 import traceback
 from flask.ext.babel import gettext
 import pgadmin.browser.server_groups as sg
-from pgadmin.utils.crypto import encrypt
+from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.types import ServerType
 import config
@@ -195,7 +195,9 @@ class ServerNode(PGChildNodeView):
             [{'post': 'create_restore_point'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
-            }]
+            }],
+        'change_password': [{
+            'post': 'change_password'}]
     })
 
     def nodes(self, gid):
@@ -836,6 +838,102 @@ class ServerNode(PGChildNodeView):
             current_app.logger.error(
                 'Named restore point creation failed ({0})'.format(str(e))
             )
+            return internal_server_error(errormsg=str(e))
+
+    def change_password(self, gid, sid):
+        """
+        This function is used to change the password of the
+        Database Server.
+
+        Args:
+            gid: Group id
+            sid: Server id
+        """
+        try:
+            data = json.loads(request.form['data'])
+            if data and ('password' not in data or
+                         data['password'] == '' or
+                         'newPassword' not in data or
+                         data['newPassword'] == '' or
+                         'confirmPassword' not in data or
+                         data['confirmPassword'] == ''):
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=gettext(
+                        "Couldn't find the required parameter(s)."
+                    )
+                )
+
+            if data['newPassword'] != data['confirmPassword']:
+                return make_json_response(
+                    status=200,
+                    success=0,
+                    errormsg=gettext(
+                        "Passwords do not match."
+                    )
+                )
+
+            # Fetch Server Details
+            server = Server.query.filter_by(id=sid).first()
+            if server is None:
+                return bad_request(gettext("Server not found."))
+
+            # Fetch User Details.
+            user = User.query.filter_by(id=current_user.id).first()
+            if user is None:
+                return unauthorized(gettext("Unauthorized request."))
+
+            from pgadmin.utils.driver import get_driver
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection()
+
+            decrypted_password = decrypt(manager.password, user.password)
+
+            if isinstance(decrypted_password, bytes):
+                decrypted_password = decrypted_password.decode()
+
+            password = data['password']
+
+            # Validate old password before setting new.
+            if password != decrypted_password:
+                return unauthorized(gettext("Incorrect password."))
+
+            # Hash new password before saving it.
+            password = pqencryptpassword(data['newPassword'], manager.user)
+
+            SQL = render_template("/".join([
+                        'servers/sql',
+                        '9.2_plus' if manager.version >= 90200 else '9.1_plus',
+                        'change_password.sql'
+                        ]),
+                conn=conn, _=gettext,
+                user=manager.user, encrypted_password=password)
+
+            status, res = conn.execute_scalar(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            password = encrypt(data['newPassword'], user.password)
+            # Check if old password was stored in pgadmin4 sqlite database.
+            # If yes then update that password.
+            if server.password is not None:
+                setattr(server, 'password', password)
+                db.session.commit()
+            # Also update password in connection manager.
+            manager.password = password
+            manager.update_session()
+
+            return make_json_response(
+                    status=200,
+                    success=1,
+                    info=gettext(
+                        "Password changed successfully."
+                    )
+                )
+
+        except Exception as e:
             return internal_server_error(errormsg=str(e))
 
 ServerNode.register_node_view(blueprint)

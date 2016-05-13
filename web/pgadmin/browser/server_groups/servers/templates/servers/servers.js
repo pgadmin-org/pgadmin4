@@ -48,6 +48,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           applies: ['tools', 'context'], callback: 'restore_point',
           category: 'restore', priority: 7, label: '{{ _('Add named restore point') }}',
           icon: 'fa fa-anchor', enable : 'is_applicable'
+        },{
+          name: 'change_password', node: 'server', module: this,
+          applies: ['file'], callback: 'change_password',
+          label: '{{ _('Change Password...') }}',
+          icon: 'fa fa-lock', enable : 'is_connected'
         }]);
 
         pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
@@ -259,6 +264,163 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
              evt.cancel = false;
            }
           ).set({'title':'Restore point name'});
+        },
+
+        /* Change password */
+        change_password: function(args){
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            node = d && pgBrowser.Nodes[d._type],
+            url = obj.generate_url(i, 'change_password', d, true);
+
+          if (!d)
+            return false;
+
+          if(!alertify.changeServerPassword) {
+            var newPasswordModel = Backbone.Model.extend({
+                defaults: {
+                  user_name: undefined,
+                  password: undefined,
+                  newPassword: undefined,
+                  confirmPassword: undefined
+                },
+                validate: function() {
+                  return null;
+                }
+              }),
+              passwordChangeFields = [{
+                  name: 'user_name', label: '{{ _('User') }}',
+                  type: 'text', disabled: true, control: 'input'
+                },{
+                  name: 'password', label: '{{ _('Current Password') }}',
+                  type: 'password', disabled: false, control: 'input',
+                  required: true
+                },{
+                  name: 'newPassword', label: '{{ _('New Password') }}',
+                  type: 'password', disabled: false, control: 'input',
+                  required: true
+                },{
+                  name: 'confirmPassword', label: '{{ _('Confirm Password') }}',
+                  type: 'password', disabled: false, control: 'input',
+                  required: true
+                }];
+
+
+            alertify.dialog('changeServerPassword' ,function factory() {
+              return {
+                 main: function(params) {
+                  var title = '{{ _('Change Password') }} ';
+                  this.set('title', title);
+                  this.user_name = params.user.name;
+                 },
+                 setup:function() {
+                  return {
+                    buttons: [{
+                      text: '{{ _('Ok') }}', key: 27, className: 'btn btn-primary', attrs:{name:'submit'}
+                      },{
+                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger', attrs:{name:'cancel'}
+                    }],
+                    // Set options for dialog
+                    options: {
+                      padding : !1,
+                      overflow: !1,
+                      model: 0,
+                      resizable: true,
+                      maximizable: true,
+                      pinnable: false,
+                      closableByDimmer: false
+                    }
+                  };
+                },
+                hooks: {
+                  // triggered when the dialog is closed
+                  onclose: function() {
+                    if (this.view) {
+                      this.view.remove({data: true, internal: true, silent: true});
+                    }
+                  }
+                },
+                prepare: function() {
+                    //console.log(this.get('server').user.name);
+                  var self = this;
+                  // Disable Backup button until user provides Filename
+                  this.__internal.buttons[0].element.disabled = true;
+                  var $container = $("<div class='change_password'></div>"),
+                    newpasswordmodel = new newPasswordModel({'user_name': self.user_name});
+
+                  var view = this.view = new Backform.Form({
+                    el: $container,
+                    model: newpasswordmodel,
+                    fields: passwordChangeFields});
+
+                  view.render();
+
+                  this.elements.content.appendChild($container.get(0));
+
+                  // Listen to model & if filename is provided then enable Backup button
+                  this.view.model.on('change', function() {
+                    var that = this,
+                        password = this.get('password'),
+                        newPassword = this.get('newPassword'),
+                        confirmPassword = this.get('confirmPassword');
+
+                    if (_.isUndefined(password) || _.isNull(password) || password == '' ||
+                        _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
+                        _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
+                      self.__internal.buttons[0].element.disabled = true;
+                    } else if (newPassword != confirmPassword) {
+                      self.__internal.buttons[0].element.disabled = true;
+
+                      this.errorTimeout && clearTimeout(this.errorTimeout);
+                      this.errorTimeout = setTimeout(function() {
+                        that.errorModel.set('confirmPassword', '{{ _('Passwords do not match.') }}');
+                        } ,400);
+                    }else {
+                      that.errorModel.clear();
+                      self.__internal.buttons[0].element.disabled = false;
+                    }
+                  });
+                },
+                // Callback functions when click on the buttons of the Alertify dialogs
+                callback: function(e) {
+                  if (e.button.element.name == "submit") {
+                    var self = this,
+                        args =  this.view.model.toJSON();
+
+                    e.cancel = true;
+
+                    $.ajax({
+                      url: url,
+                      method:'POST',
+                      data:{'data': JSON.stringify(args) },
+                      success: function(res) {
+                        if (res.success) {
+                          alertify.success(res.info);
+                          self.close();
+                        } else {
+                          alertify.error(res.errormsg);
+                        }
+                      },
+                      error: function(xhr, status, error) {
+                        try {
+                          var err = $.parseJSON(xhr.responseText);
+                          if (err.success == 0) {
+                            alertify.error(err.errormsg);
+                          }
+                        } catch (e) {}
+                      }
+                    });
+                  }
+               }
+              };
+            });
+          }
+
+          alertify.changeServerPassword(d).resizeTo('40%','52%');
+          return false;
         }
       },
       model: pgAdmin.Browser.Node.Model.extend({

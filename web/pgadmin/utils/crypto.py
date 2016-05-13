@@ -12,6 +12,7 @@
 from Crypto.Cipher import AES
 from Crypto import Random
 import base64
+import hashlib
 
 padding_string = b'}'
 
@@ -68,3 +69,39 @@ def pad(str):
 
     # Add padding to make key 32 bytes long
     return str + ((32 - len(str) % 32) * padding_string)
+
+
+def pqencryptpassword(password, user):
+
+    """
+    pqencryptpassword -- to encrypt a password
+    This is intended to be used by client applications that wish to send
+    commands like ALTER USER joe PASSWORD 'pwd'.  The password need not
+    be sent in cleartext if it is encrypted on the client side.  This is
+    good because it ensures the cleartext password won't end up in logs,
+    pg_stat displays, etc. We export the function so that clients won't
+    be dependent on low-level details like whether the enceyption is MD5
+    or something else.
+
+    Arguments are the cleartext password, and the SQL name of the user it
+    is for.
+
+    Return value is "md5" followed by a 32-hex-digit MD5 checksum..
+
+    Args:
+      password:
+      user:
+
+    Returns:
+
+    """
+
+    m = hashlib.md5()
+
+    # Place salt at the end because it may be known by users trying to crack
+    # the MD5 output.
+
+    m.update(password.encode())
+    m.update(user.encode())
+
+    return "md5" + m.hexdigest()
