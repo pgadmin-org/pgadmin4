@@ -451,9 +451,9 @@ define([
               };
             },
             replace_file: function() {
-                $('.replace_file').show();
+                $('.replace_file, .fm_dimmer').show();
                 $('.replace_file .btn_yes').click(function(self) {
-                  $('.replace_file').hide();
+                  $('.replace_file, .fm_dimmer').hide();
                   var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
                       newFile = $('.currentpath').val() + selected_item,
                       newFile = newFile.substr(1);
@@ -461,7 +461,7 @@ define([
                   $('.file_manager_create_cancel').trigger('click');
                 });
                 $('.replace_file .btn_no').click(function() {
-                  $('.replace_file').hide();
+                  $('.replace_file, .fm_dimmer').hide();
                 });
             },
             is_file_exist: function() {

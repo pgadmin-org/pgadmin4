@@ -37,5 +37,6 @@
     "successful_delete": "Delete successful.",
     "successful_rename": "Rename successful.",
     "upload": "Upload",
-    "yes": "Yes"
+    "yes": "Yes",
+    "could_not_retrieve_folder": "No files/folders found"
 }

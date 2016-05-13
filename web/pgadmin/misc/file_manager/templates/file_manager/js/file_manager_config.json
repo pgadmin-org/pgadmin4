@@ -1,25 +1,25 @@
 {
-    "options": {
-        "culture": "en",
-        "lang": "py",
-        "defaultViewMode": "grid",
-        "autoload": true,
-        "showFullPath": false,
-        "dialog_type": "{{data.dialog_type}}",
-        "fileRoot": "{{data.fileroot}}",
-        "capabilities": [{% for i in data.capabilities %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
-        "allowed_file_types": [{% for i in data.supported_types %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
-        "platform_type": "{{ data.platform_type }}",
-        "show_volumes":"{{data.show_volumes}}"
-    },
-    "security": {
-        "uploadPolicy": "{{ data.security.uploadPolicy }}",
-        "uploadRestrictions": [{% for i in data.security.uploadRestrictions %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}]
-    },
-    "upload": {
-        "multiple": "{{ data.upload.multiple }}",
-        "number": 20,
-        "fileSizeLimit": "{{ data.upload.fileSizeLimit }}",
-        "imagesOnly": false
-    }
+ "options": {
+  "culture": "en",
+  "lang": "py",
+  "defaultViewMode": "grid",
+  "autoload": true,
+  "showFullPath": false,
+  "dialog_type": "{{data.dialog_type}}",
+  "fileRoot": "{{data.fileroot}}",
+  "capabilities": [{% for i in data.capabilities %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
+  "allowed_file_types": [{% for i in data.supported_types %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
+  "platform_type": "{{ data.platform_type }}",
+  "show_volumes": {% if data.show_volumes %}true{% else %}false{% endif %}
+ },
+ "security": {
+  "uploadPolicy": "{{ data.security.uploadPolicy }}",
+  "uploadRestrictions": [{% for i in data.security.uploadRestrictions %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}]
+ },
+ "upload": {
+  "multiple": "{{ data.upload.multiple }}",
+  "number": 20,
+  "fileSizeLimit": "{{ data.upload.fileSizeLimit }}",
+  "imagesOnly": false
+ }
 }

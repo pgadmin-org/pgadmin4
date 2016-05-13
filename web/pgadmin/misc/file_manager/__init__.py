@@ -233,36 +233,6 @@ def delete_trans_id(trans_id):
         data={'status': True}
     )
 
-
-def __get_drives(drive_name=None):
-    """
-    This is a generic function which returns the default path for storage
-    manager dialog irrespective of any Platform type to list all
-    files and directories.
-    Platform windows:
-    if no path is given, it will list volumes, else list directory
-    Platform unix:
-    it returns path to root directory if no path is specified.
-    """
-    if _platform == "win32":
-        try:
-            drives = []
-            bitmask = ctypes.windll.kernel32.GetLogicalDrives()
-            for letter in letters:
-                if bitmask & 1:
-                    drives.append(letter)
-                bitmask >>= 1
-            if (drive_name != '' and drive_name is not None and
-               drive_name in drives):
-                return "{0}{1}".format(drive_name, ':/')
-            else:
-                return drives  # return drives if no argument is passed
-        except Exception:
-            return 'C:/'
-    else:
-        return '/'
-
-
 class Filemanager(object):
     """FileManager Class."""
     def __init__(self, trans_id):
@@ -295,8 +265,7 @@ class Filemanager(object):
 
         # It is used in utitlity js to decide to
         # show or hide select file type options
-        show_volumes = True if (isinstance(storage_dir, list) or
-                                not storage_dir) else False
+        show_volumes = isinstance(storage_dir, list) or not storage_dir
         supp_types = allow_upload_files = params['supported_types'] \
             if 'supported_types' in params else []
         if fm_type == 'select_file':
@@ -396,14 +365,43 @@ class Filemanager(object):
         return make_json_response(data={'status': True})
 
     @staticmethod
+    def _get_drives(drive_name=None):
+        """
+        This is a generic function which returns the default path for storage
+        manager dialog irrespective of any Platform type to list all
+        files and directories.
+        Platform windows:
+        if no path is given, it will list volumes, else list directory
+        Platform unix:
+        it returns path to root directory if no path is specified.
+        """
+        if _platform == "win32":
+            try:
+                drives = []
+                bitmask = ctypes.windll.kernel32.GetLogicalDrives()
+                for letter in letters:
+                    if bitmask & 1:
+                        drives.append(letter)
+                    bitmask >>= 1
+                if (drive_name != '' and drive_name is not None and
+                            drive_name in drives):
+                    return "{0}{1}".format(drive_name, ':/')
+                else:
+                    return drives  # return drives if no argument is passed
+            except Exception:
+                return ['C:/']
+        else:
+            return '/'
+
+    @staticmethod
     def list_filesystem(dir, path, trans_data, file_type):
         """
         It lists all file and folders within the given
         directory.
         """
         files = {}
-        if (_platform == "win32" and path == '/') and (not dir):
-            drives = __get_drives()
+        if (_platform == "win32" and path == '/') and dir is None:
+            drives = Filemanager._get_drives()
             for drive in drives:
                 protected = 0
                 path = file_name = "{0}:/".format(drive)
@@ -426,6 +424,8 @@ class Filemanager(object):
                 }
             return files
 
+        if dir is None:
+            dir = ""
         orig_path = "{0}{1}".format(dir, path)
         user_dir = path
         folders_only = trans_data['folders_only'] if 'folders_only' in \

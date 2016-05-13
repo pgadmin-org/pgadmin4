@@ -360,7 +360,6 @@ button.list span {
   overflow: hidden;
   position: relative;
   top: 35px;
-  font-size: 12px;
 }
 
 .file_manager .fileinfo #contents{
@@ -596,14 +595,33 @@ a.dz-remove {
   border: 1px solid black;
 }
 
+.fileinfo .fm_dimmer {
+  height: calc(100% - 32px);
+  display: none;
+  top: 0px;
+  background: black;
+  opacity: 0.5;
+  width: 100%;
+  position: absolute;
+  z-index: 3;
+}
+
 .fileinfo .delete_item, .fileinfo .replace_file {
   display: none;
-  padding: 7px 5px;
+  padding: 15px 15px;
   opacity: 0.8;
   color: #fff;
   border: 1px solid darkgrey;
+  border-left: 0;
+  border-right: 0;
   background: #000;
-  box-shadow: 1px 0px 3px 1px red;
+  box-shadow: 1px 0px 3px 1px white;
+  font-weight: bold;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
 }
 
 .fileinfo .delete_item span.pull-right .btn,
@@ -612,11 +630,7 @@ a.dz-remove {
   color: #000;
   background: #fff;
   font-size: 12px;
-}
-
-.fileinfo .delete_item span,
-.fileinfo .replace_file span {
-  margin-right: 10px;
+  margin-right: 4px;
 }
 
 .upload_file .dz_cross_btn {
@@ -657,4 +671,17 @@ a.dz-remove {
 .file_manager button.ON {
   background: #F9F8F7;
   border: 1px inset #ccc;
+}
+
+.file_listing .no_folder_found {
+  text-align: center;
+  position: absolute;
+  top: 35;
+  width: 100%;
+}
+
+.fileinfo .is_file_replace {
+  width: 100%;
+  height: 100%;
+  background: #ccc;
 }
