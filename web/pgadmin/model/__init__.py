@@ -168,3 +168,22 @@ class DebuggerFunctionArguments(db.Model):
                 nullable=False)
 
     value = db.Column(db.String(), nullable=True)
+
+
+class Process(db.Model):
+    """Define the Process table."""
+    __tablename__ = 'process'
+    pid = db.Column(db.String(), nullable=False, primary_key=True)
+    user_id = db.Column(
+            db.Integer,
+            db.ForeignKey('user.id'),
+            nullable=False
+            )
+    command = db.Column(db.String(), nullable=False)
+    desc = db.Column(db.String(), nullable=False)
+    arguments = db.Column(db.String(), nullable=True)
+    logdir = db.Column(db.String(), nullable=True)
+    start_time = db.Column(db.String(), nullable=True)
+    end_time = db.Column(db.String(), nullable=True)
+    exit_code = db.Column(db.Integer(), nullable=True)
+    acknowledge = db.Column(db.String(), nullable=True)

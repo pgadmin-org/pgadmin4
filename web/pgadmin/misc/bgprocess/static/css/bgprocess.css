@@ -1,0 +1,153 @@
+.ajs-bg-bgprocess.ajs-visible {
+  padding: 0px !important;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess {
+  background-color: #31708F;
+  color: #FFFFFF;
+  padding: 0px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.ajs-bg-bgprocess .col-xs-12 {
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-header {
+  background-color: #1B4A5A;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-weight: 900;
+  padding: 5px;
+  white-space: pre-wrap;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-body {
+  font-family: monospace;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status {
+  padding: 2px;
+  font-weight: 700;
+  margin: 5px;
+  width: calc(100% - 10px);
+  text-align: center;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+
+.pg-bg-process-logs {
+  width: 100%;
+}
+
+.pg-bg-etime {
+  width: 100%;
+  display: block;
+  font-size: 95%;
+  padding: 5px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+  background-color: #777;
+}
+
+.pg-bg-click {
+  color: rgb(221, 194, 174);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pg-bg-click:hover {
+  color: darkblue;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-success,
+.bg-process-status .bg-bgprocess-success {
+  color: green;
+}
+
+.bg-process-status .bg-bgprocess-failed {
+  color: red;
+}
+
+.ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-failed {
+  color: black;
+  background-color: #E99595;
+}
+
+.pg-panel-content div.bg-process-watcher.col-xs-12 {
+  height: 100%;
+  padding: 0px;
+  WebkitTransition: all 1s;
+  transition: all 1s;
+}
+
+ol.pg-bg-process-logs {
+  padding: 15px 15px 15px 60px;
+  height: 100%;
+  overflow: auto;
+  width: 100%;
+  background: #000;
+}
+
+.pg-bg-res-out, .pg-bg-res-err {
+  background-color: #000;
+  padding-left: 10px;
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+
+.pg-bg-res-out {
+  color: rgb(0, 157, 207);
+}
+
+.pg-bg-res-err {
+  color: rgba(212, 27, 57, 0.81);
+}
+
+.pg-panel-content .bg-process-details {
+  padding: 10px 15px;
+  min-height: 70px;
+  color: #000;
+}
+
+.pg-panel-content .bg-process-stats p{
+  display: inline;
+  padding-left: 5px;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.pg-panel-content .bg-process-footer {
+  border-top: 1px solid #ccc;
+  padding: 10px 15px;
+  position: absolute;
+  bottom: 0;
+  background-color: white;
+}
+
+.pg-panel-content .bg-process-footer p {
+  display: inline;
+  padding-left: 5px;
+  font-size: 13px;
+}
+
+.pg-panel-content .bg-process-footer b, .bg-process-stats span b {
+  color: #285173;
+}
+
+.bg-process-footer .bg-process-status {
+  padding-left: 0;
+}
+
+.bg-process-footer .bg-process-exec-time {
+  padding-right: 0;
+}

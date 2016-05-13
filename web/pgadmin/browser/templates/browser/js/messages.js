@@ -9,7 +9,7 @@ function(_, S, pgAdmin) {
 
   var messages = pgBrowser.messages = {
     'SERVER_LOST': '{{ _('Connection to the server has been lost.') }}',
-    'CLICK_FOR_DETAILED_MSG': '%s<br><br>' + '{{ _('Click here for details.')|safe }}',
+    'CLICK_FOR_DETAILED_MSG': '{{ _('Click here for details.')|safe }}',
     'GENERAL_CATEGORY': '{{ _("General")|safe }}',
     'SQL_TAB': '{{ _('SQL') }}',
     'SQL_INCOMPLETE': '{{ _('Incomplete definition') }}',
@@ -24,7 +24,7 @@ function(_, S, pgAdmin) {
     'NODE_HAS_NO_STATISTICS': "{{ _("No statistics are available for the selected object.") }}",
     'TRUE': "{{ _("True") }}",
     'FALSE': "{{ _("False") }}",
-    'NOTE_CTRL_LABEL': "{{ _("Note") }}",
+    'NOTE_CTRL_LABEL': "{{ _("Note") }}"
   };
 
 {% for key in current_app.messages.keys() %}

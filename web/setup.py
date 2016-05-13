@@ -62,7 +62,7 @@ account:\n""")
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
+    Security(app, user_datastore)
 
     with app.app_context():
         password = encrypt_password(p1)
@@ -230,6 +230,23 @@ CREATE TABLE IF NOT EXISTS debugger_function_arguments (
     use_default INTEGER NOT NULL CHECK (use_default >= 0 AND use_default <= 1) ,
     value TEXT,
     PRIMARY KEY (server_id, database_id, schema_id, function_id, arg_id)
+    )""")
+
+        if int(version.value) < 10:
+            db.engine.execute("""
+CREATE TABLE process(
+    user_id INTEGER NOT NULL,
+    pid TEXT NOT NULL,
+    desc TEXT NOT NULL,
+    command TEXT NOT NULL,
+    arguments TEXT,
+    start_time TEXT,
+    end_time TEXT,
+    logdir TEXT,
+    exit_code INTEGER,
+    acknowledge TEXT,
+    PRIMARY KEY(pid),
+    FOREIGN KEY(user_id) REFERENCES user (id)
     )""")
 
     # Finally, update the schema version

@@ -110,7 +110,7 @@ function(alertify, S) {
         if (contentType.indexOf('text/html') == 0) {
           alertify.notify(
               S(
-                window.pgAdmin.Browser.messages.CLICK_FOR_DETAILED_MSG
+                '%s<br><br>' + window.pgAdmin.Browser.messages.CLICK_FOR_DETAILED_MSG
                ).sprintf(promptmsg).value(), type, 0, function() {
                 alertify.pgIframeDialog().show().set({ frameless: false }).set('pg_msg', msg);
               });
