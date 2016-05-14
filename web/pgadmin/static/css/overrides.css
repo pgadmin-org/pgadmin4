@@ -1156,3 +1156,12 @@ form[name="change_password_form"] .help-block {
   height: 32px;
   padding-left: 5px;
 }
+
+/* Overriding the css for the dropzone */
+.dropzone .dz-preview .dz-progress {
+  height: initial;
+}
+
+.dropzone .dz-preview .dz-progress .dz-upload {
+  bottom: initial;
+}

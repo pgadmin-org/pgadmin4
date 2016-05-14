@@ -3,7 +3,7 @@ define(
    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection', 'codemirror/addon/selection/active-line',
    'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode', 'codemirror/addon/fold/pgadmin-sqlfoldcode',
    'backgrid.select.all', 'backbone.paginator', 'backgrid.paginator', 'backgrid.filter',
-   'bootstrap', 'pgadmin.browser', 'wcdocker'],
+   'bootstrap', 'pgadmin.browser', 'wcdocker', 'pgadmin.file_manager'],
   function($, _, alertify, pgAdmin, Backbone, Backgrid, CodeMirror) {
 
     // Some scripts do export their object in the window only.
@@ -143,6 +143,7 @@ define(
 
       // Bind all the events
       events: {
+        "click .btn-load-file": "on_file_load",
         "click #btn-save": "on_save",
         "click #btn-add-row": "on_add",
         "click #btn-filter": "on_show_filter",
@@ -641,7 +642,20 @@ define(
       },
       do_not_close_menu: function(ev) {
         ev.stopPropagation();
-      }
+      },
+
+      // callback function for load file button click.
+      on_file_load: function() {
+        var self = this;
+
+        // Trigger the save signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:load_file',
+            self,
+            self.handler
+        );
+      },
+
     });
 
     /* Defining controller class for data grid, which actually
@@ -683,11 +697,22 @@ define(
           self.transId = self.container.data('transId');
 
           self.gridView.editor_title = editor_title;
+          self.gridView.current_file = undefined;
 
           // Render the header
           self.gridView.render();
 
+          // Listen to the file manager button events
+          pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', self._select_file_handler, self);
+          pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', self._save_file_handler, self);
+
+          // Listen to the codemirror on text change event
+          // only in query editor tool
+          if (self.is_query_tool)
+            self.gridView.query_tool_obj.on('change', self._on_query_change, self);
+
           // Listen on events come from SQLEditorView for the button clicked.
+          self.on('pgadmin-sqleditor:button:load_file', self._load_file, self);
           self.on('pgadmin-sqleditor:button:save', self._save, self);
           self.on('pgadmin-sqleditor:button:addrow', self._add, self);
           self.on('pgadmin-sqleditor:button:show_filter', self._show_filter, self);
@@ -1297,11 +1322,33 @@ define(
 
         /* This function will fetch the list of changed models and make
          * the ajax call to save the data into the database server.
+         * and will open save file dialog conditionally.
          */
         _save: function() {
           var self = this,
               data = [],
               save_data = true;
+
+          // Open save file dialog if query tool
+          if (self.is_query_tool) {
+
+            var current_file = self.gridView.current_file;
+            if (!_.isUndefined(current_file)) {
+              self._save_file_handler(current_file);
+            }
+            else {
+              // provide custom option to save file dialog
+              var params = {
+                'supported_types': ["*", "sql"],
+                'dialog_type': 'create_file',
+                'dialog_title': 'Save File',
+                'btn_primary': 'Save'
+              }
+              pgAdmin.FileManager.init();
+              pgAdmin.FileManager.show_dialog(params);
+            }
+            return;
+          }
 
           $("#btn-save").prop('disabled', true);
           if (self.changedModels.length == 0)
@@ -1394,6 +1441,87 @@ define(
             });
           }
         },
+
+        // load select file dialog
+        _load_file: function() {
+          var params = {
+            'supported_types': ["sql"], // file types allowed
+            'dialog_type': 'select_file' // open select file dialog
+          }
+          pgAdmin.FileManager.init();
+          pgAdmin.FileManager.show_dialog(params);
+        },
+
+        // read file data and return as response
+        _select_file_handler: function(e) {
+          var self = this;
+
+          data = {
+            'file_name': e
+          }
+
+          // Make ajax call to load the data from file
+          $.ajax({
+            url: "{{ url_for('sqleditor.index') }}" + "load_file/",
+            method: 'POST',
+            async: false,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if (res.data.status) {
+                self.gridView.query_tool_obj.setValue(res.data.result);
+                self.gridView.current_file = e;
+              }
+            },
+            error: function(e) {
+              var errmsg = $.parseJSON(e.responseText).errormsg;
+              alertify.error(errmsg);
+            }
+          });
+        },
+
+        // read data from codemirror and write to file
+        _save_file_handler: function(e) {
+          var self = this;
+          data = {
+            'file_name': e,
+            'file_content': self.gridView.query_tool_obj.getValue()
+          }
+
+          // Make ajax call to save the data to file
+          $.ajax({
+            url: "{{ url_for('sqleditor.index') }}" + "save_file/",
+            method: 'POST',
+            async: false,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if (res.data.status) {
+                alertify.success('{{ _('File saved successfully.') }}');
+                self.gridView.current_file = e;
+
+                // disable save button on file save
+                $("#btn-save").prop('disabled', true);
+              }
+            },
+            error: function(e) {
+              var errmsg = $.parseJSON(e.responseText).errormsg;
+              alertify.error(errmsg);
+            }
+          });
+        },
+
+        // codemirror text change event
+        _on_query_change: function(query_tool_obj) {
+
+          if(query_tool_obj.getValue().length == 0) {
+            $("#btn-save").prop('disabled', true);
+          }
+          else {
+            $("#btn-save").prop('disabled', false);
+          }
+        },
+
 
         // This function will run the SQL query and refresh the data in the backgrid.
         _refresh: function() {
@@ -1696,6 +1824,7 @@ define(
           $("#btn-query-dropdown").prop('disabled', disabled);
           $("#btn-edit-dropdown").prop('disabled', disabled);
           $("#btn-edit").prop('disabled', disabled);
+          $('#btn-load-file').prop('disabled', disabled);
         },
 
         // This function will fetch the sql query from the text box

@@ -13,6 +13,7 @@ MODULE_NAME = 'sqleditor'
 import json
 import pickle
 import random
+import os
 from flask import Response, url_for, render_template, session, request
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
@@ -21,7 +22,13 @@ from pgadmin.utils.ajax import make_json_response, bad_request, success_return, 
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.sqleditor.command import QueryToolCommand
+from pgadmin.utils import get_storage_directory
 
+# import unquote from urlib for python2.x and python3.x
+try:
+    from urllib import unquote
+except Exception as e:
+    from urllib.parse import unquote
 
 # Async Constants
 ASYNC_OK = 1
@@ -44,7 +51,7 @@ class SqlEditorModule(PgAdminModule):
         A module class for SQL Grid derived from PgAdminModule.
     """
 
-    LABEL = "SQL Editor"
+    LABEL = gettext("SQL Editor")
 
     def get_own_menuitems(self):
         return {}
@@ -949,3 +956,87 @@ def is_begin_required(query):
         return True
 
     return True
+
+
+@blueprint.route('/load_file/', methods=["PUT", "POST"])
+@login_required
+def load_file():
+    """
+    This function gets name of file from request data
+    reads the data and sends back in reponse
+    """
+    if request.data:
+        file_data = json.loads(request.data.decode())
+
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory()
+
+    # generate full path of file
+    file_path = os.path.join(
+                    storage_manager_path,
+                    unquote(file_data['file_name'])
+                )
+    file_data = None
+
+    # read file
+    try:
+        with open(file_path, 'r') as myfile:
+            file_data = myfile.read()
+    except IOError as e:
+        # we don't want to expose real path of file
+        # so only show error message.
+        if e.strerror == 'Permission denied':
+            err_msg = "Error: {0}".format(e.strerror)
+        else:
+            err_msg = "Error: {0}".format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+    except Exception as e:
+        err_msg = "Error: {0}".format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+    return make_json_response(
+        data={
+            'status': True, 'result': file_data,
+        }
+    )
+
+
+@blueprint.route('/save_file/', methods=["PUT", "POST"])
+@login_required
+def save_file():
+    """
+    This function retrieves file_name and data from request.
+    and then save the data to the file
+    """
+    if request.data:
+        file_data = json.loads(request.data.decode())
+
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory()
+
+    # generate full path of file
+    file_path = os.path.join(
+                    storage_manager_path,
+                    unquote(file_data['file_name'])
+                )
+    file_content = file_data['file_content']
+    file_data = None
+
+    # write to file
+    try:
+        with open(file_path, 'w') as output_file:
+            output_file.write(file_content)
+    except IOError as e:
+        if e.strerror == 'Permission denied':
+            err_msg = "Error: {0}".format(e.strerror)
+        else:
+            err_msg = "Error: {0}".format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+    except Exception as e:
+        err_msg = "Error: {0}".format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+
+    return make_json_response(
+        data={
+            'status': True,
+        }
+    )
