@@ -154,9 +154,7 @@ function($, _, S, pgAdmin, pgBrowser) {
                     'version' : '',
                     'relocatable': (
                         (!_.isNull(d.relocatable[0]) && !_.isUndefined(d.relocatable[0])) ?
-                        d.relocatable[0]: ''),
-                    'schema': ((!_.isNull(d.schema[0]) &&
-                          !_.isUndefined(d.schema[0])) ? d.schema[0]: '')
+                        d.relocatable[0]: '')
                     };
                   this.model.set(changes);
                 }
