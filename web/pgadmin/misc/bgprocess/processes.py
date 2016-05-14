@@ -21,7 +21,6 @@ from pickle import dumps, loads
 import pytz
 from subprocess import Popen, PIPE
 import sys
-import types
 
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
@@ -203,7 +202,7 @@ class BatchProcess(object):
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
 
             p = Popen(
-                cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE, close_fds=True,
+                cmd, stdout=PIPE, stderr=None, stdin=None, close_fds=True,
                 shell=False, preexec_fn=preexec_function
             )
 
@@ -214,6 +213,7 @@ class BatchProcess(object):
 
 
     def status(self, out=0, err=0):
+        import codecs
         ctime = get_current_time(format='%Y%m%d%H%M%S%f')
 
         stdout = []
@@ -226,9 +226,9 @@ class BatchProcess(object):
             lines = 0
 
             if not os.path.isfile(logfile):
-                return 0
+                return 0, False
 
-            with open(logfile, 'r') as stream:
+            with codecs.open(logfile, 'r', 'utf-8') as stream:
                 stream.seek(pos)
                 for line in stream:
                     logtime = StringIO()
@@ -249,8 +249,8 @@ class BatchProcess(object):
                         break
 
                     lines += 1
-                    pos = stream.tell()
                     log.append([logtime, line[idx:]])
+                pos = stream.tell()
 
             return pos, completed
 
@@ -321,7 +321,7 @@ class BatchProcess(object):
             desc = loads(p.desc)
             details = desc
 
-            if not isinstance(desc, types.StringTypes):
+            if isinstance(desc, IProcessDesc):
                 details = desc.details
                 desc = desc.message
 

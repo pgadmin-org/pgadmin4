@@ -45,15 +45,15 @@ import codecs
 # SQLite3 needs all string as UTF-8
 # We need to make string for Python2/3 compatible
 if sys.version_info < (3,):
-    from StringIO import StringIO
+    from cStringIO import StringIO
 
     def u(x):
-        return codecs.unicode_escape_decode(x)[0]
+        return x
 else:
     from io import StringIO
 
     def u(x):
-        return x
+        return x.decode()
 
 
 def usage():
@@ -150,7 +150,7 @@ class ProcessLogger(Thread):
             if msg:
                 self.logger.write(
                     str('{0},{1}').format(
-                        get_current_time(format='%Y%m%d%H%M%S%f'), msg
+                        get_current_time(format='%Y%m%d%H%M%S%f'), u(msg)
                     )
                 )
             return True
@@ -268,8 +268,11 @@ def execute(configs):
             'db_file': configs['db_file']
         }
 
-        reload(sys)
-        sys.setdefaultencoding('utf8')
+        try:
+            reload(sys)
+            sys.setdefaultencoding('utf8')
+        except:
+            pass
 
         # Create seprate thread for stdout and stderr
         process_stdout = ProcessLogger('out', configs)
