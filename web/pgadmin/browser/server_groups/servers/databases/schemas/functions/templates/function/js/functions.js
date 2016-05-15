@@ -108,6 +108,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-function',
       hasSQL: true,
       hasDepends: true,
+      hasScriptTypes: ['create', 'select'],
       parent_type: ['schema', 'catalog'],
       Init: function(args) {
         /* Avoid mulitple registration of menus */

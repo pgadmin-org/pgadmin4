@@ -173,6 +173,12 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
     * types(gid, sid, did, scid, fnid=None):
       - Returns Data Types.
+
+    * select_sql(gid, sid, did, scid, fnid):
+      - Returns sql for Script
+
+    * exec_sql(gid, sid, did, scid, fnid):
+      - Returns sql for Script
     """
 
     node_type = blueprint.node_type
@@ -203,7 +209,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         'module.js': [{}, {}, {'get': 'module_js'}],
         'get_types': [{'get': 'types'}, {'get': 'types'}],
         'get_languages': [{'get': 'get_languages'}, {'get': 'get_languages'}],
-        'vopts': [{}, {'get': 'variable_options'}]
+        'vopts': [{}, {'get': 'variable_options'}],
+        'select_sql': [{'get': 'select_sql'}],
+        'exec_sql': [{'get': 'exec_sql'}]
     })
 
     @property
@@ -1197,6 +1205,74 @@ It may have been removed by another user or moved to another schema.
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition
+    def select_sql(self, gid, sid, did, scid, fnid):
+        """
+        This function returns sql for select script call.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            doid: Function Id
+        """
+        # Fetch the function definition.
+        SQL = render_template("/".join([self.sql_template_path,
+                              'get_definition.sql']), fnid=fnid, scid=scid)
+        status, res = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        func_def, name = res['rows'][0]
+
+        # Fetch only arguments
+        args = name[name.rfind('('):].strip('(').strip(')').split(',')
+        # Remove unwanted spaces from arguments
+        args = [arg.strip(' ') for arg in args]
+
+        # Remove duplicate and then format arguments
+        for arg in list(set(args)):
+            formatted_arg = '\n\t<' + arg + '>'
+            name = name.replace(arg, formatted_arg)
+
+        name = name.replace(')', '\n)')
+        sql = "SELECT {0}".format(name)
+
+        return ajax_response(response=sql)
+
+    @check_precondition
+    def exec_sql(self, gid, sid, did, scid, fnid):
+        """
+        This function returns sql for exec script call.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            doid: Function Id
+        """
+        resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+
+        name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
+
+        # Fetch only arguments
+        args = name[name.rfind('('):].strip('(').strip(')').split(',')
+        # Remove unwanted spaces from arguments
+        args = [arg.strip(' ') for arg in args]
+
+        # Remove duplicate and then format arguments
+        for arg in list(set(args)):
+            formatted_arg = '\n\t<' + arg + '>'
+            name = name.replace(arg, formatted_arg)
+
+        name = name.replace(')', '\n)')
+        sql = "EXEC {0}".format(name)
+
+        return ajax_response(response=sql)
+
 
 FunctionView.register_node_view(blueprint)
 

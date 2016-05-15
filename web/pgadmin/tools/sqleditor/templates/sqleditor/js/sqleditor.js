@@ -678,7 +678,7 @@ define(
          * call the render method of the grid view to render the backgrid
          * header and loading icon and start execution of the sql query.
          */
-        start: function(is_query_tool, editor_title) {
+        start: function(is_query_tool, editor_title, script_sql) {
           var self = this;
 
           self.is_query_tool = is_query_tool;
@@ -731,6 +731,9 @@ define(
 
           if (self.is_query_tool) {
             self.gridView.query_tool_obj.refresh();
+            if(script_sql && script_sql !== '') {
+              self.gridView.query_tool_obj.setValue(script_sql);
+            }
           }
           else {
             self.gridView.query_tool_obj.setOption("readOnly",true);

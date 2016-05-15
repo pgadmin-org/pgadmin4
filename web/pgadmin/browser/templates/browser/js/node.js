@@ -105,6 +105,60 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           }]);
         }
       }
+      // This will add options of scripts eg:'CREATE Script'
+      if (self.hasScriptTypes && _.isArray(self.hasScriptTypes)
+        &&  self.hasScriptTypes.length > 0) {
+          // For each script type create menu
+          _.each(self.hasScriptTypes, function(stype) {
+
+            var type_label = S(
+                "{{ _("%%s Script") }}"
+                ).sprintf(stype.toUpperCase()).value(),
+              stype = stype.toLowerCase();
+
+            // Adding menu for each script type
+            pgAdmin.Browser.add_menus([{
+              name: 'show_script_' + stype, node: self.type, module: self,
+              applies: ['object', 'context'], callback: 'show_script',
+              priority: 3, label: type_label, category: 'Scripts',
+              data: {'script': stype}, icon: 'fa fa-pencil',
+              enable: this.check_user_permission
+            }]);
+          });
+      // If node has hasSQL then provide CREATE Script by default
+      } else if(self.hasSQL) {
+          pgAdmin.Browser.add_menus([{
+            name: 'show_script_create', node: self.type, module: self,
+            applies: ['object', 'context'], callback: 'show_script',
+            priority: 3, label: 'CREATE Script', category: 'Scripts',
+            data: {'script': 'create'}, icon: 'fa fa-pencil',
+            enable: this.check_user_permission
+          }]);
+      }
+    },
+    ///////
+    // Checks if Script Type is allowed to user
+    // First check if role node & create role allowed
+    // Otherwise test rest of database objects
+    // if no permission matched then do not allow create script
+    ///////
+    check_user_permission: function(itemData, item, data) {
+      var node = pgBrowser.Nodes[itemData._type],
+        parentData = node.getTreeNodeHierarchy(item);
+      if ( _.indexOf(['create','insert','update', 'delete'], data.script) != -1) {
+        if (itemData.type == 'role' &&
+          parentData.server.user.can_create_role) {
+          return true;
+        } else if (parentData.server.user.is_superuser ||
+          parentData.server.user.can_create_db ||
+          (parentData.schema && parentData.schema.can_create)) {
+            return true;
+        } else {
+           return false;
+        }
+      } else {
+        return true;
+      }
     },
     ///////
     // Generate a Backform view using the node's model type
@@ -498,6 +552,43 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             });
           },
           null).show()
+      },
+      // Callback for creating script(s) & opening them in Query editor
+      show_script: function(args, item) {
+        var scriptType = args.script,
+          obj = this,
+          t = pgBrowser.tree,
+          i = item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+        if (!d)
+          return;
+
+        /*
+         * Make sure - we're using the correct version of node
+         */
+        obj = pgBrowser.Nodes[d._type];
+        var objName = d.label;
+
+        // URL for script type
+        if(scriptType == 'insert') {
+          sql_url = 'insert_sql';
+        } else if(scriptType == 'update') {
+          sql_url = 'update_sql';
+        } else if(scriptType == 'delete') {
+          sql_url = 'delete_sql';
+        } else if(scriptType == 'select') {
+          sql_url = 'select_sql';
+        } else if(scriptType == 'exec') {
+          sql_url = 'exec_sql';
+        } else {
+          // By Default get CREATE SQL
+          sql_url = 'sql';
+        }
+        // Open data grid & pass the URL for fetching
+        pgAdmin.DataGrid.show_query_tool.apply(
+          this, [obj.generate_url(i, sql_url, d, true), i]
+        );
       },
       // Callback called - when a node is selected in browser tree.
       selected: function(item, data, browser) {

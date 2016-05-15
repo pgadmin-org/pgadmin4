@@ -156,8 +156,36 @@ try {
             }
         });
 
+        // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
+        var script_sql = '';
+        {% if script_type_url%}
+        // Call AJAX only if script type url is present
+            $.ajax({
+              url: '{{ script_type_url }}',
+              type:'GET',
+              async: false,
+              success: function(res) {
+                    script_sql = res;
+              },
+              error: function(jqx) {
+                var msg = jqx.responseText;
+                /* Error from the server */
+                if (jqx.status == 410 || jqx.status == 500) {
+                  try {
+                    var data = $.parseJSON(jqx.responseText);
+                    msg = data.errormsg;
+                  } catch (e) {}
+                }
+                pgBrowser.report_error(
+                    S('{{ _('Error fetching sql for script: "%%s"') }}')
+                      .sprintf(msg)
+                        .value(), msg);
+              }
+            });
+        {% endif %}
+
         // Start the query tool.
-        sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}");
+        sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}", script_sql);
     });
 } catch (err) {
   /* Show proper error dialog */

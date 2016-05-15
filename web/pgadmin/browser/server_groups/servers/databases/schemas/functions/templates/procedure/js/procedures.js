@@ -28,6 +28,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
       collection_type: 'coll-procedure',
       hasSQL: true,
       hasDepends: true,
+      hasScriptTypes: ['create', 'exec'],
       parent_type: ['schema'],
       Init: function() {
         /* Avoid mulitple registration of menus */

@@ -18,8 +18,9 @@ from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.tools.sqleditor.command import *
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response, bad_request, internal_server_error
-
+from pgadmin.utils.ajax import make_json_response, bad_request,\
+    internal_server_error
+from config import PG_DEFAULT_DRIVER
 
 class DataGridModule(PgAdminModule):
     """
@@ -143,17 +144,26 @@ def panel(trans_id, is_query_tool, editor_title):
         is_query_tool: True if panel calls when query tool menu is clicked.
         editor_title: Title of the editor
     """
+    # Let's fetch Script type URL from request
+    if request.args and request.args['query_url'] != '':
+        sURL = request.args['query_url']
+    else:
+        sURL = None
 
     return render_template("datagrid/index.html", _=gettext, uniqueId=trans_id,
-                           is_query_tool=is_query_tool, editor_title=editor_title)
-
+                           is_query_tool=is_query_tool, editor_title=editor_title,
+                           script_type_url=sURL)
 
 @blueprint.route(
     '/initialize/query_tool/<int:sid>/<int:did>',
-    methods=["PUT", "POST"]
+    methods=["POST"]
+    )
+@blueprint.route(
+    '/initialize/query_tool/<int:sid>',
+    methods=["POST"]
     )
 @login_required
-def initialize_query_tool(sid, did):
+def initialize_query_tool(sid, did=None):
     """
     This method is responsible for instantiating and initializing
     the query tool object. It will also create a unique
@@ -163,6 +173,21 @@ def initialize_query_tool(sid, did):
         sid: Server Id
         did: Database Id
     """
+
+    if did is None:
+        # Use Maintenance database OID
+        from pgadmin.utils.driver import get_driver
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+        if conn.connected():
+            did = manager.did
+        else:
+            internal_server_error(
+                errormsg=gettext(
+                    'Server disconnected, Please connect and try again'
+                )
+            )
 
     try:
         command_obj = ObjectRegistry.get_object('query_tool', sid=sid, did=did)

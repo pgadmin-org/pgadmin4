@@ -346,9 +346,10 @@ define(
       },
 
       // This is a callback function to show query tool when user click on menu item.
-      show_query_tool: function(data, i) {
+      show_query_tool: function(url, i) {
         var self = this,
-            d = pgAdmin.Browser.tree.itemData(i);
+          sURL = url || '',
+          d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(
             'Query tool Error',
@@ -362,17 +363,32 @@ define(
           parentData = node.getTreeNodeHierarchy(i);
 
         // If server, database is undefined then return from the function.
-        if (parentData.server === undefined || parentData.database === undefined) {
+        if (parentData.server === undefined) {
           return;
         }
 
-        var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/query_tool/" + parentData.server._id +
-                "/" + parentData.database._id;
-        var grid_title = parentData.database.label + ' on ' + parentData.server.user.name + '@' +
+        var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/query_tool/" + parentData.server._id;
+
+        // If database not present then use Maintenance database
+        // We will handle this at server side
+        if (parentData.database) {
+          baseUrl += "/" + parentData.database._id;
+        }
+        // If Database is not available then use default db
+        var db_label = parentData.database ? parentData.database.label
+                                           : parentData.server.db;
+
+        var grid_title = db_label + ' on ' + parentData.server.user.name + '@' +
                 parentData.server.label ;
 
-        var panel_title = ' Query-' + self.title_index;
-        self.title_index += 1;
+        var panel_title = ' Query-';
+
+        if (!_.isUndefined(self.title_index) && !isNaN(self.title_index)) {
+          panel_title += self.title_index;
+          self.title_index += 1;
+        } else {
+          panel_title += "{{ _(' untitled') }}";
+        }
 
         $.ajax({
           url: baseUrl,
@@ -399,7 +415,8 @@ define(
             });
 
             // Open the panel if frame is initialized
-            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/" + grid_title;
+            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
+                        + grid_title + '?' + "query_url=" + encodeURI(sURL);
             var openQueryToolURL = function(j) {
                 setTimeout(function() {
                     var frameInitialized = j.data('frameInitialized');
@@ -417,7 +434,7 @@ define(
           },
           error: function(e) {
             alertify.alert(
-              'Query Tool Initialize Error',
+              "{{ _('Query Tool Initialize Error') }}",
               e.responseJSON.errormsg
             );
           }
