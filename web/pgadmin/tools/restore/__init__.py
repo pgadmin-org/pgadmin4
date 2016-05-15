@@ -120,9 +120,9 @@ class RestoreMessage(IProcessDesc):
             idx += 1
 
         if no_args > 1:
-            res += ' "' + cgi.escape(
-                os.path.join('<STORAGE_DIR>', self.bfile) + '"'
-            ).encode('ascii', 'xmlcharrefreplace')
+            res += ' "' + cgi.escape(self.bfile).encode(
+                'ascii', 'xmlcharrefreplace'
+            ) + '"'
 
         res += '</i></div>'
 
@@ -300,6 +300,7 @@ def create_restore_job(sid):
             desc=RestoreMessage(sid, data['file']),
             cmd=utility, args=args
         )
+        manager.export_password_env(p.id)
         p.start()
         jid = p.id
     except Exception as e:

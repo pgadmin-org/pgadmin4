@@ -174,7 +174,7 @@ class BackupMessage(IProcessDesc):
                 res += ' ' + arg
             elif replace_next:
                 res += ' "' + cgi.escape(
-                    os.path.join('<STORAGE_DIR>', self.bfile)
+                    self.bfile
                 ).encode('ascii', 'xmlcharrefreplace') + '"'
             else:
                 if arg == '--file':
@@ -299,6 +299,7 @@ def create_backup_job(sid):
             ),
             cmd=utility, args=args
         )
+        manager.export_password_env(p.id)
         p.start()
         jid = p.id
     except Exception as e:
@@ -443,6 +444,7 @@ def create_backup_objects_job(sid):
                 BACKUP.OBJECT, sid, data['file'], database=data['database']
             ),
             cmd=utility, args=args)
+        manager.export_password_env(p.id)
         p.start()
         jid = p.id
     except Exception as e:

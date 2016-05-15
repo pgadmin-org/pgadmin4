@@ -14,7 +14,9 @@ object.
 """
 
 import datetime
-import config
+import os
+import random
+import select
 
 import psycopg2
 import psycopg2.extras
@@ -24,12 +26,10 @@ from flask import g, current_app, session
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
 
-from ..abstract import BaseDriver, BaseConnection
+import config
 from pgadmin.model import Server, User
 from pgadmin.utils.crypto import decrypt
-import random
-import select
-
+from ..abstract import BaseDriver, BaseConnection
 from .keywords import ScanKeyword
 
 
@@ -1236,6 +1236,12 @@ WHERE db.oid = {0}""".format(did))
 
         return None
 
+    def export_password_env(self, env):
+        if self.password:
+            password = decrypt(
+                self.password, current_user.password
+            ).decode()
+            os.environ[str(env)] = password
 
 
 class Driver(BaseDriver):

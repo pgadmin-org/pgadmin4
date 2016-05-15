@@ -289,10 +289,17 @@ def execute(configs):
             # Update start time
             update_configs(args)
 
+            if args['pid'] in os.environ:
+                os.environ['PGPASSWORD'] = os.environ[args['pid']]
+
             process = Popen(
                 command, stdout=PIPE, stderr=PIPE, stdin=PIPE,
                 shell=(os.name == 'nt'), close_fds=(os.name != 'nt')
             )
+            try:
+                del(os.environ['PGPASSWORD'])
+            except:
+                pass
 
             # Attach the stream to the process logger, and start logging.
             process_stdout.attach_process_stream(process, process.stdout)
