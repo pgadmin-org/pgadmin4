@@ -483,8 +483,13 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.message('{{ _('Background process for taking backup has been created!') }}', 1);
+                        alertify.message(
+                          '{{ _('Background process for taking backup has been created!') }}',
+                          5
+                        );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
+                      } else {
+                        console.log(res);
                       }
                     },
                     error: function(xhr, status, error) {

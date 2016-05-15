@@ -9,17 +9,20 @@
 
 """Implements Backup Utility"""
 
+import cgi
 import json
 import os
+
 from flask import render_template, request, current_app, \
     url_for, Response
 from flask.ext.babel import gettext as _
-from pgadmin.utils.ajax import make_json_response, bad_request
-from pgadmin.utils import PgAdminModule, get_storage_directory
 from flask.ext.security import login_required, current_user
-from pgadmin.model import Server
+
 from config import PG_DEFAULT_DRIVER
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
+from pgadmin.model import Server
+from pgadmin.utils.ajax import make_json_response, bad_request
+from pgadmin.utils import PgAdminModule, get_storage_directory
 
 
 # set template path for sql scripts
@@ -77,9 +80,10 @@ class BackupMessage(IProcessDesc):
 
     Defines the message shown for the backup operation.
     """
-    def __init__(self, _type, _sid, **kwargs):
+    def __init__(self, _type, _sid, _bfile, **kwargs):
         self.backup_type = _type
         self.sid = _sid
+        self.bfile = _bfile
         self.database = None
 
         if 'database' in kwargs:
@@ -120,28 +124,36 @@ class BackupMessage(IProcessDesc):
         res = '<div class="h5">'
 
         if self.backup_type == BACKUP.OBJECT:
-            res += _(
-                "Backing up an object on the server - '{0}' on database '{1}'"
-            ).format(
-                "{0} ({1}:{2})".format(s.name, s.host, s.port),
-                self.database
+            res += cgi.escape(
+                _(
+                    "Backing up an object on the server - '{0}' on database '{1}'"
+                ).format(
+                    "{0} ({1}:{2})".format(s.name, s.host, s.port),
+                    self.database
+                )
             ).encode('ascii', 'xmlcharrefreplace')
         if self.backup_type == BACKUP.GLOBALS:
-            res += _("Backing up the globals for the server - '{0}'!").format(
-                "{0} ({1}:{2})".format(s.name, s.host, s.port)
+            res += cgi.escape(
+                _("Backing up the globals for the server - '{0}'").format(
+                    "{0} ({1}:{2})".format(s.name, s.host, s.port)
+                )
             ).encode('ascii', 'xmlcharrefreplace')
         elif self.backup_type == BACKUP.SERVER:
-            res += _("Backing up the server - '{0}'!").format(
-                "{0} ({1}:{2})".format(s.name, s.host, s.port)
+            res += cgi.escape(
+                _("Backing up the server - '{0}'").format(
+                    "{0} ({1}:{2})".format(s.name, s.host, s.port)
+                )
             ).encode('ascii', 'xmlcharrefreplace')
         else:
             # It should never reach here.
             res += "Backup"
 
         res += '</div><div class="h5">'
-        res += _("Running command:").encode('ascii', 'xmlcharrefreplace')
-        res += '<br>'
-        res += cmd.encode('ascii', 'xmlcharrefreplace')
+        res += cgi.escape(
+            _("Running command:")
+        ).encode('ascii', 'xmlcharrefreplace')
+        res += '</b><br><i>'
+        res += cgi.escape(cmd).encode('ascii', 'xmlcharrefreplace')
 
         replace_next = False
 
@@ -151,7 +163,9 @@ class BackupMessage(IProcessDesc):
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
 
-                return  ' "' + x.encode('ascii', 'xmlcharrefreplace') + '"'
+                return ' "' + cgi.escape(x).encode(
+                    'ascii', 'xmlcharrefreplace'
+                ) + '"'
 
             return ''
 
@@ -159,12 +173,14 @@ class BackupMessage(IProcessDesc):
             if arg and len(arg) >= 2 and arg[:2] == '--':
                 res += ' ' + arg
             elif replace_next:
-                res += ' XXX'
+                res += ' "' + cgi.escape(
+                    os.path.join('<STORAGE_DIR>', self.bfile)
+                ).encode('ascii', 'xmlcharrefreplace') + '"'
             else:
                 if arg == '--file':
                     replace_next = True
                 res += cmdArg(arg)
-        res += '</div>'
+        res += '</i></div>'
 
         return res
 
@@ -197,8 +213,12 @@ def filename_with_file_manager_path(file):
         Filename to use for backup with full path taken from preference
     """
     # Set file manager directory from preference
-    file_manager_dir = get_storage_directory()
-    return os.path.join(file_manager_dir, file)
+    storage_dir = get_storage_directory()
+
+    if storage_dir:
+        return os.path.join(storage_dir, file)
+
+    return file
 
 
 @blueprint.route('/create_job/<int:sid>', methods=['POST'])
@@ -220,7 +240,7 @@ def create_backup_job(sid):
     else:
         data = json.loads(request.data.decode())
 
-    data['file'] = filename_with_file_manager_path(data['file'])
+    backup_file = filename_with_file_manager_path(data['file'])
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
@@ -250,7 +270,7 @@ def create_backup_job(sid):
 
     args = [
         '--file',
-        data['file'],
+        backup_file,
         '--host',
         server.host,
         '--port',
@@ -275,7 +295,7 @@ def create_backup_job(sid):
         p = BatchProcess(
             desc=BackupMessage(
                 BACKUP.SERVER if data['type'] != 'global' else BACKUP.GLOBALS,
-                sid
+                sid, data['file']
             ),
             cmd=utility, args=args
         )
@@ -313,7 +333,7 @@ def create_backup_objects_job(sid):
     else:
         data = json.loads(request.data.decode())
 
-    data['file'] = filename_with_file_manager_path(data['file'])
+    backup_file = filename_with_file_manager_path(data['file'])
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
@@ -342,7 +362,7 @@ def create_backup_objects_job(sid):
     utility = manager.utility('backup')
     args = [
         '--file',
-        data['file'],
+        backup_file,
         '--host',
         server.host,
         '--port',
@@ -353,7 +373,7 @@ def create_backup_objects_job(sid):
     ]
 
     def set_param(key, param):
-        if key in data:
+        if key in data and data[key]:
             args.append(param)
 
     def set_value(key, param, value):
@@ -420,8 +440,7 @@ def create_backup_objects_job(sid):
     try:
         p = BatchProcess(
             desc=BackupMessage(
-                BACKUP.OBJECT,
-                sid, database=data['database']
+                BACKUP.OBJECT, sid, data['file'], database=data['database']
             ),
             cmd=utility, args=args)
         p.start()

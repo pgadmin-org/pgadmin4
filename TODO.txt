@@ -31,3 +31,9 @@ Backup Object
 -------------
 
 Allow to select/deselect objects under the object backup operation.
+
+Restore Object
+-------------
+
+List down the objects within the backup file, and allow the user to
+select/deselect the only objects, which user may want to restore.
