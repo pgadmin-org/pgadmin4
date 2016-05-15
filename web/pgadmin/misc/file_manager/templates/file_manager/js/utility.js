@@ -1436,7 +1436,7 @@ if (
       } else {
         select_box += '<option value="' + t +'">' +
           (t == '*' ? '{{ _('All Files') }}' : t) + "</option>";
-        have_all_types = (t == '*');
+        have_all_types = (have_all_types || (t == '*'));
       }
       i++;
     }
