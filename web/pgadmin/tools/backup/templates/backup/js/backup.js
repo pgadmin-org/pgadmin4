@@ -61,7 +61,7 @@ TODO LIST FOR BACKUP:
       schema: [{
         id: 'file', label: '{{ _('Filename') }}',
         type: 'text', disabled: false, control: Backform.FileControl,
-        dialog_type: 'create_file', supp_types: ['*', 'sql']
+        dialog_type: 'create_file', supp_types: ['*', 'sql', 'backup']
       },{
         id: 'role', label: '{{ _('Role name') }}',
         control: 'node-list-by-name', node: 'role',
@@ -114,7 +114,7 @@ TODO LIST FOR BACKUP:
       schema: [{
         id: 'file', label: '{{ _('Filename') }}',
         type: 'text', disabled: false, control: Backform.FileControl,
-        dialog_type: 'create_file', supp_types: ['*', 'sql']
+        dialog_type: 'create_file', supp_types: ['*', 'sql', 'backup']
       },{
         id: 'format', label: '{{ _('Format') }}',
         type: 'text', disabled: false,
