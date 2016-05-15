@@ -18,7 +18,8 @@ from flask import Response, url_for, render_template, session, request
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response, bad_request, success_return, internal_server_error
+from pgadmin.utils.ajax import make_json_response, bad_request, \
+     success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.sqleditor.command import QueryToolCommand
@@ -71,6 +72,42 @@ class SqlEditorModule(PgAdminModule):
             'display', 'items_per_page',
             gettext("Items per page in grid"), 'integer', 50,
             category_label=gettext('Display')
+            )
+
+        self.explain_verbose = self.preference.register(
+            'Explain Options', 'explain_verbose',
+            gettext("Verbose"), 'boolean', False,
+            category_label=gettext('Explain Options')
+            )
+
+        self.explain_costs = self.preference.register(
+            'Explain Options', 'explain_costs',
+            gettext("Costs"), 'boolean', False,
+            category_label=gettext('Explain Options')
+            )
+
+        self.explain_buffers = self.preference.register(
+            'Explain Options', 'explain_buffers',
+            gettext("Buffers"), 'boolean', False,
+            category_label=gettext('Explain Options')
+            )
+
+        self.explain_timing = self.preference.register(
+            'Explain Options', 'explain_timing',
+            gettext("Timing"), 'boolean', False,
+            category_label=gettext('Explain Options')
+            )
+
+        self.auto_commit = self.preference.register(
+            'Options', 'auto_commit',
+            gettext("Auto-Commit"), 'boolean', True,
+            category_label=gettext('Options')
+            )
+
+        self.auto_rollback = self.preference.register(
+            'Options', 'auto_rollback',
+            gettext("Auto-Rollback"), 'boolean', False,
+            category_label=gettext('Options')
             )
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
@@ -282,6 +319,43 @@ def start_query_tool(trans_id):
             'items_per_page': blueprint.items_per_page.get()
             }
         )
+
+
+@blueprint.route('/query_tool/preferences', methods=["GET", "PUT"])
+@login_required
+def get_preferences():
+    """
+        This method is used to get/put explain options from/to preferences
+    """
+    if request.method == 'GET':
+        return make_json_response(
+            data={
+                'explain_verbose': blueprint.explain_verbose.get(),
+                'explain_costs': blueprint.explain_costs.get(),
+                'explain_buffers': blueprint.explain_buffers.get(),
+                'explain_timing': blueprint.explain_timing.get(),
+                'auto_commit': blueprint.auto_commit.get(),
+                'auto_rollback': blueprint.auto_rollback.get()
+            }
+        )
+    else:
+        data = None
+        if request.data:
+            data = json.loads(request.data.decode())
+        else:
+            data = request.args or request.form
+        for k,v in data.items():
+            v = bool(v)
+            if k == 'explain_verbose':
+                blueprint.explain_verbose.set(v)
+            elif k == 'explain_costs':
+                blueprint.explain_costs.set(v)
+            elif k == 'explain_buffers':
+                blueprint.explain_buffers.set(v)
+            elif k == 'explain_timing':
+                blueprint.explain_timing.set(v)
+
+        return success_return()
 
 
 @blueprint.route('/poll/<int:trans_id>', methods=["GET"])
@@ -746,6 +820,9 @@ def set_auto_commit(trans_id):
         # Call the set_auto_commit method of transaction object
         trans_obj.set_auto_commit(auto_commit)
 
+        # Set Auto commit in preferences
+        blueprint.auto_commit.set(bool(auto_commit))
+
         # As we changed the transaction object we need to
         # restore it and update the session variable.
         session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
@@ -780,6 +857,9 @@ def set_auto_rollback(trans_id):
 
         # Call the set_auto_rollback method of transaction object
         trans_obj.set_auto_rollback(auto_rollback)
+
+        # Set Auto Rollback in preferences
+        blueprint.auto_rollback.set(bool(auto_rollback))
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.

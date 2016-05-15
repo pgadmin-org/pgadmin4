@@ -69,10 +69,53 @@ body {
             </button>
             <ul class="dropdown-menu dropdown-menu">
               <li>
+                <a id="btn-explain" href="#">
+                  <span>{{ _('Explain') }}</span>
+                </a>
+              </li>
+              <li>
+                <a id="btn-explain-analyze" href="#">
+                    <span>{{ _('Explain analyze') }}</span>
+                </a>
+              </li>
+              <li class="divider"></li>
+              <li class="dropdown-submenu dropdown-submenu">
+                <a href="#">{{ _('Explain Options') }}</a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a id="btn-explain-verbose" href="#" class="noclose">
+                      <i class="explain-verbose fa fa-check visibility-hidden" aria-hidden="true"></i>
+                      <span> {{ _('Verbose') }} </span>
+                    </a>
+                  </li>
+                  <li>
+                    <a id="btn-explain-costs" href="#" class="noclose">
+                      <i class="explain-costs fa fa-check visibility-hidden" aria-hidden="true"></i>
+                      <span> {{ _('Costs') }} </span>
+                    </a>
+                  </li>
+                  <li>
+                    <a id="btn-explain-buffers" href="#" class="noclose">
+                      <i class="explain-buffers fa fa-check visibility-hidden" aria-hidden="true"></i>
+                      <span> {{ _('Buffers') }} </span>
+                    </a>
+                  </li>
+                  <li>
+                    <a id="btn-explain-timing" href="#" class="noclose">
+                      <i class="explain-timing fa fa-check visibility-hidden" aria-hidden="true"></i>
+                      <span> {{ _('Timing') }} </span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="divider"></li>
+              <li>
                 <a id="btn-auto-commit" href="#">
                     <i class="auto-commit fa fa-check" aria-hidden="true"></i>
                     <span> {{ _('Auto-Commit') }} </span>
                 </a>
+              </li>
+              <li>
                 <a id="btn-auto-rollback" href="#">
                     <i class="auto-rollback fa fa-check visibility-hidden" aria-hidden="true"></i>
                     <span> {{ _('Auto-Rollback') }} </span>

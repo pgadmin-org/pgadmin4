@@ -37,3 +37,11 @@ Restore Object
 
 List down the objects within the backup file, and allow the user to
 select/deselect the only objects, which user may want to restore.
+
+Graphical Explain
+-----------------
+* A better zooming/scaling functionality. A minimap for the explain will be
+  very nice.
+* Explanation on the statistic for the graphical explain plan.
+* Arrow colouring based on the percentage of the cost, and time taken on each
+  explain node.

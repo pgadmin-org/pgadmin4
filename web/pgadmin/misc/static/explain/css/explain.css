@@ -1,0 +1,56 @@
+.pg-explain-zoom-area {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.pg-explain-zoom-btn {
+    top: 5px;
+    min-width: 25px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.pg-explain-zoom-area:hover {
+   opacity: 1;
+}
+
+.explain-tooltip {
+  display: table-cell;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 10px !important;
+  padding: 2px !important;
+  font-size: small;
+}
+
+td.explain-tooltip-val {
+  display: table-cell;
+  text-align: left;
+  white-space: pre-wrap;
+  font-size: smaller;
+}
+
+.pgadmin-explain-tooltip {
+  position: absolute;
+  padding:5px;
+  border: 1px solid white;
+  opacity:0;
+  color: cornsilk;
+  background-color: #010125;
+}
+
+.pgadmin-tooltip-table {
+  border-collapse: collapse;
+  border-spacing: 1px;
+  top: auto;
+  left: auto;
+}
+
+.pgadmin-explain-container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}

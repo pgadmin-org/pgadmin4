@@ -1,11 +1,17 @@
 define(
-  ['jquery', 'underscore', 'alertify', 'pgadmin', 'backbone', 'backgrid', 'codemirror',
-   'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection', 'codemirror/addon/selection/active-line',
-   'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode', 'codemirror/addon/fold/pgadmin-sqlfoldcode',
-   'backgrid.select.all', 'backbone.paginator', 'backgrid.paginator', 'backgrid.filter',
-   'bootstrap', 'pgadmin.browser', 'wcdocker', 'pgadmin.file_manager'],
-  function($, _, alertify, pgAdmin, Backbone, Backgrid, CodeMirror) {
-
+  [
+    'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
+    'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
+    'backgrid.select.all', 'backgrid.filter', 'bootstrap', 'pgadmin.browser',
+    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
+    'codemirror/addon/selection/active-line', 'backbone.paginator',
+    'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
+    'codemirror/addon/fold/pgadmin-sqlfoldcode', 'backgrid.paginator',
+    'wcdocker', 'pgadmin.file_manager'
+  ],
+  function(
+    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain
+  ) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
@@ -162,6 +168,12 @@ define(
         "click #btn-auto-rollback": "on_auto_rollback",
         "click #btn-clear-history": "on_clear_history",
         "click .noclose": 'do_not_close_menu',
+        "click #btn-explain": "on_explain",
+        "click #btn-explain-analyze": "on_explain_analyze",
+        "click #btn-explain-verbose": "on_explain_verbose",
+        "click #btn-explain-costs": "on_explain_costs",
+        "click #btn-explain-buffers": "on_explain_buffers",
+        "click #btn-explain-timing": "on_explain_timing",
         "change .limit": "on_limit_change"
       },
 
@@ -206,7 +218,6 @@ define(
           isPrivate: true
         });
 
-        //sql_panel.load(main_docker);
         sql_panel.load(main_docker);
         var sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
 
@@ -248,7 +259,7 @@ define(
           height:'100%',
           isCloseable: false,
           isPrivate: true,
-          content: '<div class="sql-editor-explian"></div>'
+          content: '<div class="sql-editor-explain"></div>'
         })
 
         var messages = new pgAdmin.Browser.Panel({
@@ -284,6 +295,87 @@ define(
         self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
 
         self.render_history_grid();
+
+        // Get auto-rollback/auto-commit and explain options from preferences
+        self.get_preferences();
+      },
+
+      /*
+       * This function get explain options and auto rollback/auto commit
+       * values from preferences
+       */
+      get_preferences: function() {
+        $.ajax({
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          method: 'GET',
+          async: false,
+          success: function(res) {
+            if (res.data) {
+              self.explain_verbose = res.data.explain_verbose;
+              self.explain_costs = res.data.explain_costs;
+              self.explain_buffers = res.data.explain_buffers;
+              self.explain_timing = res.data.explain_timing;
+              self.auto_commit = res.data.auto_commit;
+              self.auto_rollback = res.data.auto_rollback;
+            }
+            else {
+              self.explain_verbose = false;
+              self.explain_costs = false;
+              self.explain_buffers = false;
+              self.explain_timing = false;
+              self.auto_commit = true;
+              self.auto_rollback = false;
+            }
+          },
+          error: function(e) {
+            self.explain_verbose = false;
+            self.explain_costs = false;
+            self.explain_buffers = false;
+            self.explain_timing = false;
+            self.auto_commit = true;
+            self.auto_rollback = false;
+          }
+        });
+
+        // Set Auto-commit and auto-rollback on query editor
+        if (self.auto_commit &&
+            $('.auto-commit').hasClass('visibility-hidden') === true)
+          $('.auto-commit').removeClass('visibility-hidden');
+        else {
+          $('.auto-commit').addClass('visibility-hidden');
+        }
+        if (self.auto_rollback &&
+            $('.auto-rollback').hasClass('visibility-hidden') === true)
+          $('.auto-rollback').removeClass('visibility-hidden');
+        else {
+          $('.auto-rollback').addClass('visibility-hidden');
+        }
+
+        // Set explain options on query editor
+        if (self.explain_verbose &&
+            $('.explain-verbose').hasClass('visibility-hidden') === true)
+          $('.explain-verbose').removeClass('visibility-hidden');
+        else {
+          $('.explain-verbose').addClass('visibility-hidden');
+        }
+        if (self.explain_costs &&
+            $('.explain-costs').hasClass('visibility-hidden') === true)
+          $('.explain-costs').removeClass('visibility-hidden');
+        else {
+          $('.explain-costs').addClass('visibility-hidden');
+        }
+        if (self.explain_buffers &&
+            $('.explain-buffers').hasClass('visibility-hidden') === true)
+            $('.explain-buffers').removeClass('visibility-hidden');
+        else {
+            $('.explain-buffers').addClass('visibility-hidden');
+        }
+        if (self.explain_timing &&
+            $('.explain-timing').hasClass('visibility-hidden') === true)
+            $('.explain-timing').removeClass('visibility-hidden');
+        else {
+            $('.explain-timing').addClass('visibility-hidden');
+        }
       },
 
       /* This function is responsible to create and render the
@@ -640,6 +732,79 @@ define(
             self.handler
         );
       },
+
+      // Callback function for explain button click.
+      on_explain: function() {
+        var self = this;
+
+        // Trigger the explain signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for explain analyze button click.
+      on_explain_analyze: function() {
+        var self = this;
+
+        // Trigger the explain analyze signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain-analyze',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for explain option "verbose" button click
+      on_explain_verbose: function() {
+        var self = this;
+
+        // Trigger the explain "verbose" signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain-verbose',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for explain option "costs" button click
+      on_explain_costs: function() {
+        var self = this;
+
+        // Trigger the explain "costs" signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain-costs',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for explain option "buffers" button click
+      on_explain_buffers: function() {
+        var self = this;
+
+        // Trigger the explain "buffers" signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain-buffers',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for explain option "timing" button click
+      on_explain_timing: function() {
+        var self = this;
+
+        // Trigger the explain "timing" signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:explain-timing',
+            self,
+            self.handler
+        );
+      },
+
       do_not_close_menu: function(ev) {
         ev.stopPropagation();
       },
@@ -685,6 +850,10 @@ define(
           self.items_per_page = 25;
           self.rows_affected = 0;
           self.marked_line_no = 0;
+          self.explain_verbose = false;
+          self.explain_costs = false;
+          self.explain_buffers = false;
+          self.explain_timing = false;
 
           // We do not allow to call the start multiple times.
           if (self.gridView)
@@ -728,6 +897,12 @@ define(
           self.on('pgadmin-sqleditor:button:download', self._download, self);
           self.on('pgadmin-sqleditor:button:auto_rollback', self._auto_rollback, self);
           self.on('pgadmin-sqleditor:button:auto_commit', self._auto_commit, self);
+          self.on('pgadmin-sqleditor:button:explain', self._explain, self);
+          self.on('pgadmin-sqleditor:button:explain-analyze', self._explain_analyze, self);
+          self.on('pgadmin-sqleditor:button:explain-verbose', self._explain_verbose, self);
+          self.on('pgadmin-sqleditor:button:explain-costs', self._explain_costs, self);
+          self.on('pgadmin-sqleditor:button:explain-buffers', self._explain_buffers, self);
+          self.on('pgadmin-sqleditor:button:explain-timing', self._explain_timing, self);
 
           if (self.is_query_tool) {
             self.gridView.query_tool_obj.refresh();
@@ -770,6 +945,7 @@ define(
                 // Set the sql query to the SQL panel
                 self.gridView.query_tool_obj.setValue(res.data.sql);
                 self.query = res.data.sql;
+
 
                 /* If filter is applied then remove class 'btn-default'
                  * and add 'btn-warning' to change the colour of the button.
@@ -908,6 +1084,7 @@ define(
           self.cell_selected = false;
           self.selected_model = null;
           self.changedModels = [];
+          $('.sql-editor-explain').empty();
 
           // Stop listening to all the events
           if (self.collection) {
@@ -976,10 +1153,26 @@ define(
           var message = 'Total query runtime: ' + self.total_time + '\n' + self.rows_affected + ' rows retrieved.';
           $('.sql-editor-message').text(message);
 
-          // Add the data to the collection and render the grid.
-          self.collection.add(data.result, {parse: true});
-          self.gridView.render_grid(self.collection, self.columns);
-          self.gridView.data_output_panel.focus();
+          /* Add the data to the collection and render the grid.
+           * In case of Explain draw the graph on explain panel
+           * and add json formatted data to collection and render.
+           */
+          var explain_data_array = [];
+          if(data.result &&
+              'QUERY PLAN' in data.result[0] &&
+              _.isObject(data.result[0]['QUERY PLAN'])) {
+              var explain_data = {'QUERY PLAN' : JSON.stringify(data.result[0]['QUERY PLAN'], null, 2)};
+              explain_data_array.push(explain_data);
+              self.gridView.explain_panel.focus();
+              pgExplain.DrawJSONPlan($('.sql-editor-explain'), data.result[0]['QUERY PLAN']);
+              self.collection.add(explain_data_array, {parse: true});
+              self.gridView.render_grid(self.collection, self.columns);
+          }
+          else {
+            self.collection.add(data.result, {parse: true});
+            self.gridView.render_grid(self.collection, self.columns);
+            self.gridView.data_output_panel.focus();
+          }
 
           // Hide the loading icon
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
@@ -1832,15 +2025,10 @@ define(
 
         // This function will fetch the sql query from the text box
         // and execute the query.
-        _execute: function () {
+        _execute: function (explain_prefix) {
           var self = this,
               sql = '',
               history_msg = '';
-
-          self.trigger(
-            'pgadmin-sqleditor:loading-icon:show',
-            '{{ _('Initializing query execution.') }}'
-          );
 
           /* If code is selected in the code mirror then execute
            * the selected part else execute the complete code.
@@ -1850,6 +2038,17 @@ define(
             sql = selected_code;
           else
             sql = self.gridView.query_tool_obj.getValue();
+
+          // If it is an empty query, do nothing.
+          if (sql.length <= 0) return;
+
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Initializing the query execution!') }}'
+          );
+
+          if (explain_prefix != undefined)
+            sql = explain_prefix + ' ' + sql;
 
           self.query_start_time = new Date();
           self.query = sql;
@@ -2169,6 +2368,172 @@ define(
               alertify.alert('Auto Commit Error', msg);
             }
           });
+        },
+
+        // This function will
+        _explain: function() {
+          var self = this;
+          var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+          var costs = $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+
+          // No need to check for buffers and timing option value in explain
+          var explain_query = 'EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE %s, COSTS %s, BUFFERS OFF, TIMING OFF) ';
+          explain_query = S(explain_query).sprintf(verbose, costs).value();
+          self._execute(explain_query);
+        },
+
+        // This function will
+        _explain_analyze: function() {
+          var self = this;var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+          var costs = $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+          var buffers = $('.explain-buffers').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+          var timing = $('.explain-timing').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+
+          var explain_query = 'Explain (FORMAT JSON, ANALYZE ON, VERBOSE %s, COSTS %s, BUFFERS %s, TIMING %s) ';
+          explain_query = S(explain_query).sprintf(verbose, costs, buffers, timing).value();
+          self._execute(explain_query);
+        },
+
+        // This function will toggle "verbose" option in explain
+        _explain_verbose: function() {
+          if ($('.explain-verbose').hasClass('visibility-hidden') === true) {
+            $('.explain-verbose').removeClass('visibility-hidden');
+            self.explain_verbose = true;
+          }
+          else {
+            $('.explain-verbose').addClass('visibility-hidden');
+            self.explain_verbose = false;
+          }
+
+          // Set this option in preferences
+          var data = {
+            'explain_verbose': self.explain_verbose
+          };
+          $.ajax({
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          method: 'PUT',
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function(res) {
+            if(res.success == undefined || !res.success) {
+              alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting verbose option in explain') }}'
+              );
+            }
+          },
+          error: function(e) {
+            alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting verbose option in explain') }}'
+            );
+            return;
+          }
+        });
+        },
+
+        // This function will toggle "costs" option in explain
+        _explain_costs: function() {
+          if ($('.explain-costs').hasClass('visibility-hidden') === true) {
+            $('.explain-costs').removeClass('visibility-hidden');
+            self.explain_costs = true;
+          }
+          else {
+            $('.explain-costs').addClass('visibility-hidden');
+            self.explain_costs = false;
+          }
+
+          // Set this option in preferences
+          var data = {
+            'explain_costs': self.explain_costs
+          };
+          $.ajax({
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          method: 'PUT',
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function(res) {
+            if(res.success == undefined || !res.success) {
+              alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting costs option in explain') }}'
+              );
+            }
+          },
+          error: function(e) {
+            alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting costs option in explain') }}'
+              );
+          }
+        });
+        },
+
+        // This function will toggle "buffers" option in explain
+        _explain_buffers: function() {
+          if ($('.explain-buffers').hasClass('visibility-hidden') === true) {
+            $('.explain-buffers').removeClass('visibility-hidden');
+            self.explain_buffers = true;
+          }
+          else {
+            $('.explain-buffers').addClass('visibility-hidden');
+            self.explain_buffers = false;
+          }
+
+          // Set this option in preferences
+          var data = {
+            'explain_buffers': self.explain_buffers
+          };
+          $.ajax({
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          method: 'PUT',
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function(res) {
+            if(res.success == undefined || !res.success) {
+              alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting buffers option in explain') }}'
+              );
+            }
+          },
+          error: function(e) {
+            alertify.alert('Explain options error',
+              '{{ _('Error occurred while setting buffers option in explain') }}'
+            );
+          }
+        });
+
+        },
+
+        // This function will toggle "timing" option in explain
+        _explain_timing: function() {
+          if ($('.explain-timing').hasClass('visibility-hidden') === true) {
+            $('.explain-timing').removeClass('visibility-hidden');
+            self.explain_timing = true;
+          }
+          else {
+            $('.explain-timing').addClass('visibility-hidden');
+            self.explain_timing = true;
+          }
+          // Set this option in preferences
+          var data = {
+            'explain_timing': self.explain_timing
+          };
+          $.ajax({
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          method: 'PUT',
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function(res) {
+            if(res.success == undefined || !res.success) {
+              alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting timing option in explain') }}'
+              );
+            }
+          },
+          error: function(e) {
+            alertify.alert('Explain options error',
+                '{{ _('Error occurred while setting timing option in explain') }}'
+              );
+          }
+        });
+
         }
       }
     );

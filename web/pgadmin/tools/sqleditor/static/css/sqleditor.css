@@ -236,3 +236,10 @@
 .CodeMirror-foldgutter-folded:after {
   content: "\25B6";
 }
+
+
+.sql-editor-explain {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
