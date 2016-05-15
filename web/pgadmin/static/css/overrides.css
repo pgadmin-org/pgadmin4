@@ -483,7 +483,15 @@ fieldset[disabled] .form-control {
     width:25px;
 }
 
-.backgrid td.renderable:not(.editable):not(.delete-cell) {
+.backgrid.presentation {
+    background-color: #EEEEEE;
+}
+
+.backgrid.presentation td.renderable {
+    padding: 3px;
+}
+
+.backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {
     background-color: #F1F1F1;
 }
 
