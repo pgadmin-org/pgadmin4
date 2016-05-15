@@ -1098,6 +1098,7 @@ button.pg-alertify-button {
   word-break: break-all;
   word-wrap: break-word;
 }
+
 div.backform_control_notes label.control-label {
   min-width: 0px;
 }
@@ -1105,7 +1106,6 @@ div.backform_control_notes label.control-label {
 form[name="change_password_form"] .help-block {
     color: #A94442 !important;
 }
-
 
 .file_selection_ctrl .create_input span {
   padding-right: 10px;
@@ -1164,4 +1164,45 @@ form[name="change_password_form"] .help-block {
 
 .dropzone .dz-preview .dz-progress .dz-upload {
   bottom: initial;
+}
+
+/* Fix Alertify dialog alignment for Backform controls */
+.alertify_tools_dialog_properties {
+  bottom: 0 !important;
+  left: 0 !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 35px !important;
+}
+
+/* For Backup & Restore Dialog */
+.custom_switch_label_class {
+  min-width: 0px !important;
+  padding-bottom: 10px !important;
+  font-size: 13px !important;
+  font-weight: normal !important;
+}
+
+.custom_switch_control_class {
+  min-width: 0px !important;
+  padding-bottom: 10px !important;
+}
+
+/* animate blink */
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }

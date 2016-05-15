@@ -9,16 +9,15 @@
 
 """A blueprint module providing utility functions for the application."""
 
-import datetime
-from flask import session, current_app
 from pgadmin.utils import PgAdminModule
 import pgadmin.utils.driver as driver
 
 MODULE_NAME = 'misc'
 
 # Initialise the module
-blueprint = PgAdminModule(MODULE_NAME, __name__,
-                          url_prefix='')
+blueprint = PgAdminModule(
+    MODULE_NAME, __name__, url_prefix=''
+)
 
 ##########################################################################
 # A special URL used to "ping" the server

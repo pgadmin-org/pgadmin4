@@ -12,7 +12,7 @@
 Introduce a function to run the process executor in detached mode.
 """
 from __future__ import print_function, unicode_literals
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractproperty, abstractmethod
 import csv
 from datetime import datetime
 from dateutil import parser
@@ -50,8 +50,8 @@ class IProcessDesc(object):
     def message(self):
         pass
 
-    @abstractproperty
-    def details(self):
+    @abstractmethod
+    def details(self, cmd, args):
         pass
 
 
@@ -322,7 +322,12 @@ class BatchProcess(object):
             details = desc
 
             if isinstance(desc, IProcessDesc):
-                details = desc.details
+                args = []
+                args_csv = StringIO(p.arguments)
+                args_reader = csv.reader(args_csv, delimiter=str(','))
+                for arg in args_reader:
+                    args = args + arg
+                details = desc.details(p.command, args)
                 desc = desc.message
 
             res.append({

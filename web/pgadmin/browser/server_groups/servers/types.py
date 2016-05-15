@@ -7,8 +7,10 @@
 #
 ##########################################################################
 
+import os
 from flask import render_template
-from flask.ext.babel import gettext
+from flask.ext.babel import gettext as _
+from pgadmin.utils.preferences import Preferences
 
 
 class ServerType(object):
@@ -26,6 +28,7 @@ class ServerType(object):
         self.stype = server_type
         self.desc = description
         self.spriority = priority
+        self.utility_path = None
 
         assert(server_type not in ServerType.registry)
         ServerType.registry[server_type] = self
@@ -37,6 +40,24 @@ class ServerType(object):
     @property
     def description(self):
         return self.desc
+
+    @classmethod
+    def register_preferences(cls):
+        paths = Preferences('paths', _('Paths'))
+
+        for key in cls.registry:
+            st = cls.registry[key]
+
+            st.utility_path = paths.register(
+                'bin_paths', st.stype + '_bin_dir',
+                _("{0} bin path").format(st.stype.upper()),
+                'text', "", category_label=_('Binary paths'),
+                help_str=_(
+                    "Set the PATH where the {0} binary utilities can be found...".format(
+                        st.desc
+                    )
+                )
+            )
 
     @property
     def priority(self):
@@ -70,17 +91,29 @@ class ServerType(object):
                 reverse=True
                 )
 
-    @classmethod
-    def utility(cls, operation, sverion):
-        if operation == 'backup':
-            return 'pg_dump'
-        if operation == 'backup_server':
-            return 'pg_dumpall'
-        if operation == 'restore':
-            return 'pg_restore'
+    def utility(self, operation, sverion):
+        res = None
 
-        return None
+        if operation == 'backup':
+            res = 'pg_dump'
+        elif operation == 'backup_server':
+            res = 'pg_dumpall'
+        elif operation == 'restore':
+            res = 'pg_restore'
+        elif operation == 'sql':
+            res = 'psql'
+        else:
+            raise Exception(
+                _("Couldn't find the utility for the operation '%s'".format(
+                    operation
+                ))
+            )
+
+        return os.path.join(
+            self.utility_path.get(),
+            (res if os.name != 'nt' else (res + '.exe'))
+        )
 
 
 # Default Server Type
-ServerType('pg', gettext("PostgreSQL"), -1)
+ServerType('pg', _("PostgreSQL"), -1)

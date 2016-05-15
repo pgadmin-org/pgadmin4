@@ -170,7 +170,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         Override it so that - it does not register the show_node preference for
         server type.
         """
-        pass
+        ServerType.register_preferences()
 
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):

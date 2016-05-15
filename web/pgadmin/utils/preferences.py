@@ -264,7 +264,7 @@ class Preferences(object):
         self.mid = module.id
 
         if name in Preferences.modules:
-            m = Preferences.modules
+            m = Preferences.modules[name]
             self.categories = m.categories
         else:
             Preferences.modules[name] = self

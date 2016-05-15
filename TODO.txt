@@ -26,3 +26,8 @@ Query Tool updateable recordset support
 Add smarts to the Query Tool to allow it to recognise if a query produces a
 data set that would be updateable (e.g. from a single table, all primary key
 columns present), and if so, allow editing.
+
+Backup Object
+-------------
+
+Allow to select/deselect objects under the object backup operation.

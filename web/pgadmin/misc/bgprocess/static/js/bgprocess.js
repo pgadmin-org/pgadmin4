@@ -170,11 +170,6 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
             self.curr_status = pgMessages['running'];
           }
 
-          if ('execution_time' in data) {
-            self.execution_time = self.execution_time + ' ' +
-              pgMessages['seconds'];
-          }
-
           if (!_.isNull(self.exit_code)) {
             if (self.exit_code == 0) {
               self.curr_status = pgMessages['successfully_finished'];
@@ -238,12 +233,12 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
           if (!self.notifier) {
             var content = $('<div class="pg-bg-bgprocess row"></div>').append(
                   $('<div></div>', {
-                    class: "col-xs-12 h3 pg-bg-notify-header"
+                    class: "h5 pg-bg-notify-header"
                   }).text(
                     self.desc
                   )
                 ).append(
-                  $('<div></div>', {class: 'pg-bg-notify-body' }).append(
+                  $('<div></div>', {class: 'pg-bg-notify-body h6' }).append(
                     $('<div></div>', {class: 'pg-bg-start col-xs-12' }).append(
                       $('<div></div>').text(self.stime.toString())
                     ).append(
@@ -252,10 +247,10 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
                   )
                 ),
                 for_details = $('<div></div>', {
-                  class: "col-xs-12 text-center pg-bg-click"
+                  class: "col-xs-12 text-center pg-bg-click h6"
                 }).text(pgMessages.CLICK_FOR_DETAILED_MSG).appendTo(content),
                 status = $('<div></div>', {
-                  class: "pg-bg-status col-xs-12 " + ((self.exit_code === 0) ?
+                  class: "pg-bg-status col-xs-12 h5 " + ((self.exit_code === 0) ?
                       'bg-success': (self.exit_code == 1) ?
                       'bg-failed' : '')
                 }).appendTo(content);
@@ -287,22 +282,34 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
             });
           }
           // TODO:: Formatted execution time
-          self.container.find('.pg-bg-etime').empty().text(
-            String(self.execution_time)
+          self.container.find('.pg-bg-etime').empty().append(
+            $('<span></span>', {class: 'blink'}).text(
+              String(self.execution_time)
+            )
+          ).append(
+            $('<span></span>').text(' ' + pgMessages['seconds'])
           );
           self.container.find('.pg-bg-status').empty().append(
-             self.curr_status
-          )
+            self.curr_status
+          );
+        } else {
+          self.show_detailed_view.apply(self)
         }
       },
 
       show_detailed_view: function() {
         var self = this,
-            panel = this.panel =
+            panel = this.panel,
+            is_new = false;
+
+        if (!self.panel) {
+          is_new = true;
+          panel = this.panel =
               pgBrowser.BackgroundProcessObsorver.create_panel();
 
-        panel.title('Process Watcher - ' + self.desc);
-        panel.focus();
+          panel.title('Process Watcher - ' + self.desc);
+          panel.focus();
+        }
 
         var container = panel.$container,
             status_class = (
@@ -314,52 +321,61 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
             $header = container.find('.bg-process-details'),
             $footer = container.find('.bg-process-footer');
 
+        if (is_new) {
+          // set logs
+          $logs.html(self.logs);
 
-        // set logs
-        $logs.html(self.logs);
-
-        // set bgprocess detailed description
-        $header.find('.bg-detailed-desc').html(self.detailed_desc);
+          // set bgprocess detailed description
+          $header.find('.bg-detailed-desc').html(self.detailed_desc);
+        }
 
         // set bgprocess start time
-        $header.find('.bg-process-stats .bgprocess-start-time').html(self.stime);
+        $header.find('.bg-process-stats .bgprocess-start-time').html(
+          self.stime
+        );
 
         // set status
-        $footer.find('.bg-process-status p').addClass(
+        $footer.find('.bg-process-status p').removeClass().addClass(
           status_class
-        ).html(
-          self.curr_status
-        );
+        ).html(self.curr_status);
 
         // set bgprocess execution time
-        $footer.find('.bg-process-exec-time p').html(self.execution_time);
-
-        self.details = true;
-        setTimeout(
-          function() {
-            self.status.apply(self);
-          }, 1000
+        $footer.find('.bg-process-exec-time p').empty().append(
+          $('<span></span>', {class: 'blink'}).text(
+            String(self.execution_time)
+          )
+        ).append(
+          $('<span></span>').text(' ' + pgMessages['seconds'])
         );
 
-        var resize_log_container = function($logs, $header, $footer) {
-          var h = $header.outerHeight() + $footer.outerHeight();
-          $logs.css('padding-bottom', h);
-        }.bind(panel, $logs, $header, $footer);
+        if (is_new) {
+          self.details = true;
+          setTimeout(
+            function() {
+              self.status.apply(self);
+            }, 1000
+          );
 
-        panel.on(wcDocker.EVENT.RESIZED, resize_log_container);
-        panel.on(wcDocker.EVENT.ATTACHED, resize_log_container);
-        panel.on(wcDocker.EVENT.DETACHED, resize_log_container);
+          var resize_log_container = function($logs, $header, $footer) {
+            var h = $header.outerHeight() + $footer.outerHeight();
+            $logs.css('padding-bottom', h);
+          }.bind(panel, $logs, $header, $footer);
 
-        resize_log_container();
+          panel.on(wcDocker.EVENT.RESIZED, resize_log_container);
+          panel.on(wcDocker.EVENT.ATTACHED, resize_log_container);
+          panel.on(wcDocker.EVENT.DETACHED, resize_log_container);
 
-        panel.on(wcDocker.EVENT.CLOSED, function(process) {
-          process.panel = null;
+          resize_log_container();
 
-          process.details = false;
-          if (process.exit_code != null) {
-            process.acknowledge_server.apply(process);
-          }
-        }.bind(panel, this));
+          panel.on(wcDocker.EVENT.CLOSED, function(process) {
+            process.panel = null;
+
+            process.details = false;
+            if (process.exit_code != null) {
+              process.acknowledge_server.apply(process);
+            }
+          }.bind(panel, this));
+        }
       },
 
       acknowledge_server: function() {
@@ -472,9 +488,9 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
                 content: '<div class="bg-process-details col-xs-12">'+
                   '<p class="bg-detailed-desc"></p>'+
                   '<div class="bg-process-stats">'+
-                  '<span><b>' + pgMessages['START_TIME'] + ':</b></span>'+
-                  '<p class="bgprocess-start-time"></p>'+
-                  '</div>'+
+                  '<span><b>' + pgMessages['START_TIME'] + ': </b>'+
+                  '<span class="bgprocess-start-time"></span>'+
+                  '</span></div>'+
                   '</div>'+
                   '<div class="bg-process-watcher col-xs-12">'+
                   '</div>'+
