@@ -1370,7 +1370,8 @@ var enab_dis_level_up = function() {
 // Get transaction id to generate request url and
 // to generate config files on runtime
 var transId = getTransId(),
-    t_id = '';
+    t_id = '',
+    t_res;
 
 if (transId.readyState == 4) {
   t_res = JSON.parse(transId.responseText);

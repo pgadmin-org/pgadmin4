@@ -264,7 +264,7 @@ iframe {
 }
 
 .obj_properties fieldset > div > .pgadmin-control-group > label {
-    height: 30px;
+    min-height: 28px;
 }
 
 .obj_properties fieldset > .fieldset-content {

@@ -231,7 +231,7 @@ define(
                     method: 'POST',
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
-                      if (res.data.status) {
+                      if (res.data && res.data.status) {
                         //Do nothing as we are creating the job and exiting from the main dialog
                         Alertify.success(res.data.info);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
