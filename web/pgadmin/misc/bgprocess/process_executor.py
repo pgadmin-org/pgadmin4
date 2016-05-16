@@ -53,7 +53,9 @@ else:
     from io import StringIO
 
     def u(x):
-        return x.decode()
+        if hasattr(x, 'decode'):
+            return x.decode()
+        return x
 
 
 def usage():
