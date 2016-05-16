@@ -9,7 +9,8 @@
 
 """A blueprint module providing utility functions for the application."""
 
-from flask import url_for, render_template
+from flask import url_for, render_template, Response
+from flask.ext.babel import gettext as _
 
 import config
 from pgadmin.utils import PgAdminModule
@@ -73,4 +74,10 @@ def explain_js():
     Returns:
         javascript for the explain module
     """
-    return render_template("explain/js/explain.js")
+    return Response(
+        response=render_template(
+            "explain/js/explain.js", _=_
+        ),
+        status=200,
+        mimetype="application/javascript"
+    )
