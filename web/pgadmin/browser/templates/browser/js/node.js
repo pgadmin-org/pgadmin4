@@ -470,7 +470,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       delete_obj: function(args, item) {
           var input = args || {'url':'drop'};
           obj = this,
-          obj.canDrop = true
           t = pgBrowser.tree,
           i = input.item || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;
@@ -538,7 +537,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               error: function(jqx) {
                 var msg = jqx.responseText;
                 /* Error from the server */
-                if (jqx.status == 410 || jqx.status == 500) {
+                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
                   try {
                     var data = $.parseJSON(jqx.responseText);
                     msg = data.errormsg;

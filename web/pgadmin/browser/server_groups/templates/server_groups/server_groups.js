@@ -19,11 +19,6 @@ function($, _, pgAdmin, Backbone) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: '{{ _('Server Group...') }}',
           data: {'action': 'create'}, icon: 'wcTabIcon icon-server-group'
-        }, {
-          name: 'drop_server_group', node: 'server-group', module: this,
-          applies: ['object', 'context'], callback: 'delete_obj',
-          priority: 2, label: '{{ _('Drop Server Group...') }}',
-          icon: 'fa fa-trash'
         }]);
       },
       model: pgAdmin.Browser.Node.Model.extend({
@@ -50,6 +45,12 @@ function($, _, pgAdmin, Backbone) {
           return null;
         }
       }),
+      canDrop: function(itemData, item, data) {
+        if(itemData._id == 1) {
+          return false;
+        }
+        return true;
+      },
       canDelete: function(i) {
         var s = pgAdmin.Browser.tree.siblings(i, true);
 

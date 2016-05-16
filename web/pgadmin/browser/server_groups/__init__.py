@@ -107,6 +107,16 @@ class ServerGroupView(NodeView):
     def delete(self, gid):
         """Delete a server group node in the settings database"""
 
+        # if server group id is 1 we won't delete it.
+        if gid == 1:
+            return make_json_response(
+                    status=417,
+                    success=0,
+                    errormsg=gettext(
+                        'The specified server group cannot be deleted.'
+                        )
+                    )
+
         # There can be only one record at most
         servergroup = ServerGroup.query.filter_by(
                 user_id=current_user.id,
