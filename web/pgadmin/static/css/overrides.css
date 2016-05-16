@@ -152,7 +152,7 @@ iframe {
 
 .obj_properties .backform-tab {
     position: absolute;
-    margin: 0px 0px 110px;
+    margin: 0px 0px 75px;
     padding: 0px;
     top: 0px;
     bottom: 0px;
@@ -620,9 +620,18 @@ table.backgrid tr.new {
 .pg-prop-status-bar {
     left: 0px;
     right: 0px;
-    background-color: #d2d2d2;
-    color: #b92c28;
+    background-color: #8E1A17;
+    color: white;
     padding: 5px;
+    opacity: 0.8;
+}
+
+.pg-prop-status-bar:empty {
+  display: none;
+}
+
+.pg-prop-status-bar:hover {
+  opacity: 1;
 }
 
 .pg-prop-header {
@@ -637,6 +646,7 @@ table.backgrid tr.new {
     left: 0px;
     right: 0px;
     bottom : 0;
+    z-index: 4;
 }
 .subnode-header-form {
     background-color: #F5F5F5;
