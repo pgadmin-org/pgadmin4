@@ -50,9 +50,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
     type: undefined,
     // Label
     label: '',
-    // SQL help pages
+    // Help pages
     sqlAlterHelp: '',
     sqlCreateHelp: '',
+    dialogHelp: '',
 
     title: function(d) {
       return o.label + (d ? (' - ' + d.label) : '');
@@ -791,7 +792,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             buttons.push({
               label: '', type: 'help',
               tooltip: '{{ _("SQL help for this object type.") }}',
-              extraClasses: ['btn-default'],
+              extraClasses: ['btn-default', 'pull-right'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
@@ -850,6 +851,25 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           pnlSqlHelp.focus();
           iframe.openURL(url);
         }.bind(panel),
+
+        onDialogHelp = function() {
+          var panel = this;
+          // See if we can find an existing panel, if not, create one
+          pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
+
+          if (pnlDialogHelp == null) {
+            pnlProperties = pgBrowser.docker.findPanels('properties')[0];
+            pgBrowser.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+            pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
+          }
+
+          // Update the panel
+          iframe = $(pnlDialogHelp).data('embeddedFrame');
+
+          pnlDialogHelp.focus();
+          iframe.openURL(that.dialogHelp);
+        }.bind(panel),
+
         editFunc = function() {
           var panel = this;
           if (action && action == 'properties') {
@@ -916,12 +936,23 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             createButtons([{
               label: '', type: 'help',
               tooltip: '{{ _("SQL help for this object type.") }}',
-              extraClasses: ['btn-default'],
+              extraClasses: ['btn-default', 'pull-left'],
               icon: 'fa fa-lg fa-info',
-              disabled: that.sqlCreateHelp == '' ? true : false,
+              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
                 btn.click(function() {
                   onSqlHelp();
+                });
+              }
+            },{
+              label: '', type: 'help',
+              tooltip: '{{ _("Help for this dialog.") }}',
+              extraClasses: ['btn-default', 'pull-left'],
+              icon: 'fa fa-lg fa-question',
+              disabled: (that.dialogHelp == '') ? true : false,
+              register: function(btn) {
+                btn.click(function() {
+                  onDialogHelp();
                 });
               }
             },{

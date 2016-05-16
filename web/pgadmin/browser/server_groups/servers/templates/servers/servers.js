@@ -6,6 +6,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server-group',
       type: 'server',
+      dialogHelp: '{{ url_for('help.static', filename='create_server.html') }}',
       label: '{{ _('Server') }}',
       canDrop: true,
       hasStatistics: true,

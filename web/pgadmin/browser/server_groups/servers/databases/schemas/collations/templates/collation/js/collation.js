@@ -17,6 +17,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'collation',
       sqlAlterHelp: 'sql-altercollation.html',
       sqlCreateHelp: 'sql-createcollation.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_collation.html') }}',
       label: '{{ _('Collation') }}',
       collection_type: 'coll-collation',
       hasSQL: true,

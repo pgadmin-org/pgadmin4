@@ -50,27 +50,30 @@ class HelpModule(PgAdminModule):
             Panel(
                 name='pnl_online_help',
                 priority=100,
+                isPrivate=True,
                 title=gettext('Online Help'),
-                icon='fa fa-question',
-                content=url_for('help.static', filename='index.html')),
+                icon='fa fa-question'),
 
-            Panel(name='pnl_pgadmin_website',
-                  priority=200,
-                  title=gettext('pgAdmin Website'),
-                  icon='fa fa-external-link',
-                  content='http://www.pgadmin.org/'),
+            Panel(
+                name='pnl_pgadmin_website',
+                priority=200,
+                title=gettext('pgAdmin Website'),
+                icon='fa fa-external-link',
+                content='http://www.pgadmin.org/'),
 
-            Panel(name='pnl_postgresql_website',
-                  priority=300,
-                  title=gettext('PostgreSQL Website'),
-                  icon='fa fa-external-link',
-                  content='http://www.postgresql.org/'),
+            Panel(
+                name='pnl_postgresql_website',
+                priority=300,
+                title=gettext('PostgreSQL Website'),
+                icon='fa fa-external-link',
+                content='http://www.postgresql.org/'),
 
-            Panel(name='pnl_sql_help',
-                  priority=400,
-                  isPrivate=True,
-                  icon='fa fa-info',
-                  title=gettext('SQL Help'))]
+            Panel(
+                name='pnl_sql_help',
+                priority=400,
+                isPrivate=True,
+                icon='fa fa-info',
+                title=gettext('SQL Help'))]
 
     def register_preferences(self):
         """

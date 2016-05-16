@@ -49,6 +49,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'event_trigger',
       sqlAlterHelp: 'sql-altereventtrigger.html',
       sqlCreateHelp: 'sql-createeventtrigger.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_event_trigger.html') }}',
       label: '{{ _('Event Trigger') }}',
       hasSQL:  true,
       hasDepends: true,

@@ -54,6 +54,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'foreign_data_wrapper',
       sqlAlterHelp: 'sql-alterforeigndatawrapper.html',
       sqlCreateHelp: 'sql-createforeigndatawrapper.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_fdw.html') }}',
       label: '{{ _('Foreign Data Wrapper') }}',
       hasSQL:  true,
       hasDepends: true,

@@ -18,6 +18,7 @@ define(
     pgAdmin.Browser.Nodes['resource_group'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server',
       type: 'resource_group',
+      dialogHelp: '{{ url_for('help.static', filename='create_resource_group.html') }}',
       label: '{{ _('Resource Group') }}',
       hasSQL:  true,
       canDrop: true,

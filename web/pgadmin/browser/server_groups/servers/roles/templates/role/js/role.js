@@ -294,6 +294,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       type: 'role',
       sqlAlterHelp: 'sql-alterrole.html',
       sqlCreateHelp: 'sql-createrole.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_role.html') }}',
       label: '{{ _('Login/Group Role') }}',
       hasSQL: true,
       canDrop: true,

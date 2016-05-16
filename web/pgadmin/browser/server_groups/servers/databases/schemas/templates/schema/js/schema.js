@@ -53,6 +53,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       type: 'schema',
       sqlAlterHelp: 'sql-alterschema.html',
       sqlCreateHelp: 'sql-createschema.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_schema.html') }}',
       label: '{{ _('Schema') }}',
       hasSQL:  true,
       canDrop: true,

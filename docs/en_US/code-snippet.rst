@@ -36,7 +36,24 @@ This module defines a set of methods, properties and attributes, that every modu
             kwargs.setdefault('template_folder', 'templates')
             kwargs.setdefault('static_folder', 'static')
             self.submodules = []
+
             super(PgAdminModule, self).__init__(name, import_name, **kwargs)
+
+            def create_module_preference():
+                # Create preference for each module by default
+                if hasattr(self, 'LABEL'):
+                    self.preference = Preferences(self.name, self.LABEL)
+                else:
+                    self.preference = Preferences(self.name, None)
+
+                self.register_preferences()
+
+            # Create and register the module preference object and preferences for
+            # it just before the first request
+            self.before_app_first_request(create_module_preference)
+
+        def register_preferences(self):
+            pass
 
         def register(self, app, options, first_registration=False):
             """
@@ -45,7 +62,9 @@ This module defines a set of methods, properties and attributes, that every modu
             """
             if first_registration:
                 self.submodules = list(app.find_submodules(self.import_name))
+
             super(PgAdminModule, self).register(app, options, first_registration)
+
             for module in self.submodules:
                 app.register_blueprint(module)
 
@@ -56,6 +75,14 @@ This module defines a set of methods, properties and attributes, that every modu
                     stylesheet needed by the submodules.
             """
             return []
+
+        def get_own_messages(self):
+            """
+            Returns:
+                dict: the i18n messages used by this module, not including any
+                    messages needed by the submodules.
+            """
+            return dict()
 
         def get_own_javascripts(self):
             """
@@ -86,6 +113,14 @@ This module defines a set of methods, properties and attributes, that every modu
             for module in self.submodules:
                 stylesheets.extend(module.stylesheets)
             return stylesheets
+
+        @property
+        def messages(self):
+            res = self.get_own_messages()
+
+            for module in self.submodules:
+                res.update(module.messages)
+            return res
 
         @property
         def javascripts(self):
@@ -244,7 +279,7 @@ pgAdmin Browser. The basic idea has been taken from the `Flask's MethodView
                 meth = 'get'
 
             assert self.cmd in self.operations, \
-                    "Unimplemented Command ({0}) for {1}".format(
+                    "Unimplemented command ({0}) for {1}".format(
                         self.cmd,
                         str(self.__class__.__name__)
                         )
@@ -413,21 +448,21 @@ BaseConnection
           - Define this method to connect the server using that particular driver
             implementation.
 
-        * execute_scalar(query, params)
+        * execute_scalar(query, params, formatted_exception_msg)
           - Implement this method to execute the given query and returns single
             datum result.
 
-        * execute_async(query, params)
+        * execute_async(query, params, formatted_exception_msg)
           - Implement this method to execute the given query asynchronously and returns result.
 
-        * execute_void(query, params)
+        * execute_void(query, params, formatted_exception_msg)
           - Implement this method to execute the given query with no result.
 
-        * execute_2darray(query, params)
+        * execute_2darray(query, params, formatted_exception_msg)
           - Implement this method to execute the given query and returns the result
             as a 2 dimensional array.
 
-        * execute_dict(query, params)
+        * execute_dict(query, params, formatted_exception_msg)
           - Implement this method to execute the given query and returns the result
             as an array of dict (column name -> value) format.
 
@@ -463,7 +498,7 @@ BaseConnection
           - Implement this method to wait for asynchronous connection with timeout.
             This must be a non blocking call.
 
-        * poll()
+        * poll(formatted_exception_msg)
           - Implement this method to poll the data of query running on asynchronous
             connection.
 
@@ -473,35 +508,40 @@ BaseConnection
         * messages()
           - Implement this method to return the list of the messages/notices from
             the database server.
+
+        * rows_affected()
+          - Implement this method to get the rows affected by the last command
+            executed on the server.
         """
 
         ASYNC_OK = 1
         ASYNC_READ_TIMEOUT = 2
         ASYNC_WRITE_TIMEOUT = 3
         ASYNC_NOT_CONNECTED = 4
+        ASYNC_EXECUTION_ABORTED = 5
 
         @abstractmethod
         def connect(self, **kwargs):
             pass
 
         @abstractmethod
-        def execute_scalar(self, query, params=None):
+        def execute_scalar(self, query, params=None, formatted_exception_msg=False):
             pass
 
         @abstractmethod
-        def execute_async(self, query, params=None):
+        def execute_async(self, query, params=None, formatted_exception_msg=True):
             pass
 
         @abstractmethod
-        def execute_void(self, query, params=None):
+        def execute_void(self, query, params=None, formatted_exception_msg=False):
             pass
 
         @abstractmethod
-        def execute_2darray(self, query, params=None):
+        def execute_2darray(self, query, params=None, formatted_exception_msg=False):
             pass
 
         @abstractmethod
-        def execute_dict(self, query, params=None):
+        def execute_dict(self, query, params=None, formatted_exception_msg=False):
             pass
 
         @abstractmethod
@@ -533,7 +573,15 @@ BaseConnection
             pass
 
         @abstractmethod
-        def poll(self):
+        def poll(self, formatted_exception_msg=True):
+            pass
+
+        @abstractmethod
+        def status_message(self):
+            pass
+
+        @abstractmethod
+        def rows_affected(self):
             pass
 
         @abstractmethod

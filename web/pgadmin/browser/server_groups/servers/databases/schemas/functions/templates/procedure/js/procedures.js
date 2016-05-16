@@ -24,6 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
       type: 'procedure',
       sqlAlterHelp: 'sql-alterprocedure.html',
       sqlCreateHelp: 'sql-createprocedure.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_procedure.html') }}',
       label: '{{ _('Procedure') }}',
       collection_type: 'coll-procedure',
       hasSQL: true,

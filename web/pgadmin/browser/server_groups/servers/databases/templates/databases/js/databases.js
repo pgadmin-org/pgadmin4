@@ -50,6 +50,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       type: 'database',
       sqlAlterHelp: 'sql-alterdatabase.html',
       sqlCreateHelp: 'sql-createdatabase.html',
+      dialogHelp: '{{ url_for('help.static', filename='create_database.html') }}',
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
