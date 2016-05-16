@@ -9,7 +9,6 @@
 
 """Implements Backup Utility"""
 
-import cgi
 import json
 import os
 
@@ -22,7 +21,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.model import Server
 from pgadmin.utils.ajax import make_json_response, bad_request
-from pgadmin.utils import PgAdminModule, get_storage_directory
+from pgadmin.utils import PgAdminModule, get_storage_directory, html
 
 
 # set template path for sql scripts
@@ -124,36 +123,36 @@ class BackupMessage(IProcessDesc):
         res = '<div class="h5">'
 
         if self.backup_type == BACKUP.OBJECT:
-            res += cgi.escape(
+            res += html.safe_str(
                 _(
                     "Backing up an object on the server - '{0}' on database '{1}'"
                 ).format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port),
                     self.database
                 )
-            ).encode('ascii', 'xmlcharrefreplace')
+            )
         if self.backup_type == BACKUP.GLOBALS:
-            res += cgi.escape(
+            res += html.safe_str(
                 _("Backing up the globals for the server - '{0}'").format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port)
                 )
-            ).encode('ascii', 'xmlcharrefreplace')
+            )
         elif self.backup_type == BACKUP.SERVER:
-            res += cgi.escape(
+            res += html.safe_str(
                 _("Backing up the server - '{0}'").format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port)
                 )
-            ).encode('ascii', 'xmlcharrefreplace')
+            )
         else:
             # It should never reach here.
             res += "Backup"
 
         res += '</div><div class="h5">'
-        res += cgi.escape(
+        res += html.safe_str(
             _("Running command:")
-        ).encode('ascii', 'xmlcharrefreplace')
+        )
         res += '</b><br><i>'
-        res += cgi.escape(cmd).encode('ascii', 'xmlcharrefreplace')
+        res += html.safe_str(cmd)
 
         replace_next = False
 
@@ -163,9 +162,7 @@ class BackupMessage(IProcessDesc):
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
 
-                return ' "' + cgi.escape(x).encode(
-                    'ascii', 'xmlcharrefreplace'
-                ) + '"'
+                return ' "' + html.safe_str(x) + '"'
 
             return ''
 
@@ -173,9 +170,9 @@ class BackupMessage(IProcessDesc):
             if arg and len(arg) >= 2 and arg[:2] == '--':
                 res += ' ' + arg
             elif replace_next:
-                res += ' "' + cgi.escape(
+                res += ' "' + html.safe_str(
                     self.bfile
-                ).encode('ascii', 'xmlcharrefreplace') + '"'
+                ) + '"'
             else:
                 if arg == '--file':
                     replace_next = True

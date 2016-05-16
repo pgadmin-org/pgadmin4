@@ -9,7 +9,6 @@
 
 """A blueprint module implementing the maintenance tool for vacuum"""
 
-import cgi
 import json
 
 from flask import url_for, Response, render_template, request, current_app
@@ -19,7 +18,7 @@ from flask.ext.security import login_required
 from config import PG_DEFAULT_DRIVER
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.model import Server
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, html
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
 
@@ -119,16 +118,14 @@ class Message(IProcessDesc):
         if self.data['op'] == "CLUSTER":
             res = _('CLUSTER')
 
-        res = '<div class="h5">' + cgi.escape(res).encode(
-            'ascii', 'xmlcharrefreplace'
-        )
+        res = '<div class="h5">' + html.safe_str(res)
 
         res += '</div><div class="h5">'
-        res += cgi.escape(
+        res += html.safe_str(
             _("Running Query:")
-        ).encode('ascii', 'xmlcharrefreplace')
+        )
         res += '</b><br><i>'
-        res += cgi.escape(self.query).encode('ascii', 'xmlcharrefreplace')
+        res += html.safe_str(self.query)
         res += '</i></div>'
 
         return res

@@ -9,7 +9,6 @@
 
 """Implements Restore Utility"""
 
-import cgi
 import json
 import os
 
@@ -22,7 +21,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils.ajax import make_json_response, bad_request
-from pgadmin.utils import PgAdminModule, get_storage_directory
+from pgadmin.utils import PgAdminModule, get_storage_directory, html
 
 # set template path for sql scripts
 MODULE_NAME = 'restore'
@@ -82,20 +81,20 @@ class RestoreMessage(IProcessDesc):
 
         res = '<div class="h5">'
 
-        res += cgi.escape(
+        res += html.safe_str(
             _(
                 "Restoring the backup on the server - '{0}'"
             ).format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
-        ).encode('ascii', 'xmlcharrefreplace')
+        )
 
         res += '</div><div class="h5"><b>'
-        res += cgi.escape(
+        res += html.safe_str(
             _("Running command:")
-        ).encode('ascii', 'xmlcharrefreplace')
+        )
         res += '</b><br><i>'
-        res += cgi.escape(cmd).encode('ascii', 'xmlcharrefreplace')
+        res += html.safe_str(cmd)
 
         def cmdArg(x):
             if x:
@@ -103,9 +102,7 @@ class RestoreMessage(IProcessDesc):
                 x = x.replace('"', '\\"')
                 x = x.replace('""', '\\"')
 
-                return ' "' + cgi.escape(x).encode(
-                    'ascii', 'xmlcharrefreplace'
-                ) + '"'
+                return ' "' + html.safe_str(x) + '"'
 
             return ''
 
@@ -120,9 +117,7 @@ class RestoreMessage(IProcessDesc):
             idx += 1
 
         if no_args > 1:
-            res += ' "' + cgi.escape(self.bfile).encode(
-                'ascii', 'xmlcharrefreplace'
-            ) + '"'
+            res += ' "' + html.safe_str(self.bfile) + '"'
 
         res += '</i></div>'
 
