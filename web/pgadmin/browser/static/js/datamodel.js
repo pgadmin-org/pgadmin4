@@ -366,7 +366,7 @@ function(_, pgAdmin, $, Backbone) {
               if (session) {
                 if (res[k] instanceof Array) {
                   res[k] = JSON.stringify(res[k]);
-                } else if ((obj.sessChanged && obj.sessChanged()) || isNew) {
+                } else if ((obj && obj.sessChanged && obj.sessChanged()) || isNew) {
                   res[k] = obj && obj.toJSON(!isNew);
                   /*
                    * We will run JSON.stringify(..) only from the main object,
