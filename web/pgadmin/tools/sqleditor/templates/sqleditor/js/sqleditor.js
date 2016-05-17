@@ -295,89 +295,6 @@ define(
         self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
 
         self.render_history_grid();
-
-        // Get auto-rollback/auto-commit and explain options from preferences
-        self.get_preferences();
-      },
-
-      /*
-       * This function get explain options and auto rollback/auto commit
-       * values from preferences
-       */
-      get_preferences: function() {
-        var self = this;
-
-        $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
-          method: 'GET',
-          async: false,
-          success: function(res) {
-            if (res.data) {
-              self.explain_verbose = res.data.explain_verbose;
-              self.explain_costs = res.data.explain_costs;
-              self.explain_buffers = res.data.explain_buffers;
-              self.explain_timing = res.data.explain_timing;
-              self.auto_commit = res.data.auto_commit;
-              self.auto_rollback = res.data.auto_rollback;
-            }
-            else {
-              self.explain_verbose = false;
-              self.explain_costs = false;
-              self.explain_buffers = false;
-              self.explain_timing = false;
-              self.auto_commit = true;
-              self.auto_rollback = false;
-            }
-          },
-          error: function(e) {
-            self.explain_verbose = false;
-            self.explain_costs = false;
-            self.explain_buffers = false;
-            self.explain_timing = false;
-            self.auto_commit = true;
-            self.auto_rollback = false;
-          }
-        });
-
-        // Set Auto-commit and auto-rollback on query editor
-        if (self.auto_commit &&
-            $('.auto-commit').hasClass('visibility-hidden') === true)
-          $('.auto-commit').removeClass('visibility-hidden');
-        else {
-          $('.auto-commit').addClass('visibility-hidden');
-        }
-        if (self.auto_rollback &&
-            $('.auto-rollback').hasClass('visibility-hidden') === true)
-          $('.auto-rollback').removeClass('visibility-hidden');
-        else {
-          $('.auto-rollback').addClass('visibility-hidden');
-        }
-
-        // Set explain options on query editor
-        if (self.explain_verbose &&
-            $('.explain-verbose').hasClass('visibility-hidden') === true)
-          $('.explain-verbose').removeClass('visibility-hidden');
-        else {
-          $('.explain-verbose').addClass('visibility-hidden');
-        }
-        if (self.explain_costs &&
-            $('.explain-costs').hasClass('visibility-hidden') === true)
-          $('.explain-costs').removeClass('visibility-hidden');
-        else {
-          $('.explain-costs').addClass('visibility-hidden');
-        }
-        if (self.explain_buffers &&
-            $('.explain-buffers').hasClass('visibility-hidden') === true)
-            $('.explain-buffers').removeClass('visibility-hidden');
-        else {
-            $('.explain-buffers').addClass('visibility-hidden');
-        }
-        if (self.explain_timing &&
-            $('.explain-timing').hasClass('visibility-hidden') === true)
-            $('.explain-timing').removeClass('visibility-hidden');
-        else {
-            $('.explain-timing').addClass('visibility-hidden');
-        }
       },
 
       /* This function is responsible to create and render the
@@ -865,7 +782,7 @@ define(
             el: self.container,
             handler: self
           });
-          self.transId = self.gridView.transId = self.container.data('transId');
+          self.transId = self.container.data('transId');
 
           self.gridView.editor_title = editor_title;
           self.gridView.current_file = undefined;
@@ -879,8 +796,10 @@ define(
 
           // Listen to the codemirror on text change event
           // only in query editor tool
-          if (self.is_query_tool)
+          if (self.is_query_tool) {
+            self.get_preferences();
             self.gridView.query_tool_obj.on('change', self._on_query_change, self);
+          }
 
           // Listen on events come from SQLEditorView for the button clicked.
           self.on('pgadmin-sqleditor:button:load_file', self._load_file, self);
@@ -2386,7 +2305,8 @@ define(
 
         // This function will
         _explain_analyze: function() {
-          var self = this;var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
+          var self = this;
+          var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
           var costs = $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
           var buffers = $('.explain-buffers').hasClass('visibility-hidden') ? 'OFF' : 'ON';
           var timing = $('.explain-timing').hasClass('visibility-hidden') ? 'OFF' : 'ON';
@@ -2398,6 +2318,7 @@ define(
 
         // This function will toggle "verbose" option in explain
         _explain_verbose: function() {
+          var self = this;
           if ($('.explain-verbose').hasClass('visibility-hidden') === true) {
             $('.explain-verbose').removeClass('visibility-hidden');
             self.explain_verbose = true;
@@ -2413,7 +2334,7 @@ define(
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2435,6 +2356,7 @@ define(
 
         // This function will toggle "costs" option in explain
         _explain_costs: function() {
+          var self = this;
           if ($('.explain-costs').hasClass('visibility-hidden') === true) {
             $('.explain-costs').removeClass('visibility-hidden');
             self.explain_costs = true;
@@ -2450,7 +2372,7 @@ define(
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2471,6 +2393,7 @@ define(
 
         // This function will toggle "buffers" option in explain
         _explain_buffers: function() {
+          var self = this;
           if ($('.explain-buffers').hasClass('visibility-hidden') === true) {
             $('.explain-buffers').removeClass('visibility-hidden');
             self.explain_buffers = true;
@@ -2486,7 +2409,7 @@ define(
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2507,13 +2430,14 @@ define(
 
         // This function will toggle "timing" option in explain
         _explain_timing: function() {
+          var self = this;
           if ($('.explain-timing').hasClass('visibility-hidden') === true) {
             $('.explain-timing').removeClass('visibility-hidden');
             self.explain_timing = true;
           }
           else {
             $('.explain-timing').addClass('visibility-hidden');
-            self.explain_timing = true;
+            self.explain_timing = false;
           }
           // Set this option in preferences
           var data = {
@@ -2521,7 +2445,7 @@ define(
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2538,6 +2462,81 @@ define(
               );
             }
           });
+        },
+
+        /*
+         * This function get explain options and auto rollback/auto commit
+         * values from preferences
+         */
+        get_preferences: function() {
+          var self = this,
+              explain_verbose = false,
+              explain_costs = false,
+              explain_buffers = false,
+              explain_timing = false,
+              auto_commit = true,
+              auto_rollback = false;
+
+          $.ajax({
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            method: 'GET',
+            async: false,
+            success: function(res) {
+              if (res.data) {
+                explain_verbose = res.data.explain_verbose;
+                explain_costs = res.data.explain_costs;
+                explain_buffers = res.data.explain_buffers;
+                explain_timing = res.data.explain_timing;
+                auto_commit = res.data.auto_commit;
+                auto_rollback = res.data.auto_rollback;
+              }
+            },
+            error: function(e) {
+              alertify.alert('Get Preferences error',
+                '{{ _('Error occurred while getting query tool options ') }}'
+              );
+            }
+          });
+
+          // Set Auto-commit and auto-rollback on query editor
+          if (auto_commit &&
+              $('.auto-commit').hasClass('visibility-hidden') === true)
+            $('.auto-commit').removeClass('visibility-hidden');
+          else {
+            $('.auto-commit').addClass('visibility-hidden');
+          }
+          if (auto_rollback &&
+              $('.auto-rollback').hasClass('visibility-hidden') === true)
+            $('.auto-rollback').removeClass('visibility-hidden');
+          else {
+            $('.auto-rollback').addClass('visibility-hidden');
+          }
+
+          // Set explain options on query editor
+          if (explain_verbose &&
+              $('.explain-verbose').hasClass('visibility-hidden') === true)
+            $('.explain-verbose').removeClass('visibility-hidden');
+          else {
+            $('.explain-verbose').addClass('visibility-hidden');
+          }
+          if (explain_costs &&
+              $('.explain-costs').hasClass('visibility-hidden') === true)
+            $('.explain-costs').removeClass('visibility-hidden');
+          else {
+            $('.explain-costs').addClass('visibility-hidden');
+          }
+          if (explain_buffers &&
+              $('.explain-buffers').hasClass('visibility-hidden') === true)
+            $('.explain-buffers').removeClass('visibility-hidden');
+          else {
+            $('.explain-buffers').addClass('visibility-hidden');
+          }
+          if (explain_timing &&
+            $('.explain-timing').hasClass('visibility-hidden') === true)
+            $('.explain-timing').removeClass('visibility-hidden');
+          else {
+            $('.explain-timing').addClass('visibility-hidden');
+          }
         }
       }
     );
