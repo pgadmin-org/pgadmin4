@@ -305,8 +305,10 @@ define(
        * values from preferences
        */
       get_preferences: function() {
+        var self = this;
+
         $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
           method: 'GET',
           async: false,
           success: function(res) {
@@ -863,7 +865,7 @@ define(
             el: self.container,
             handler: self
           });
-          self.transId = self.container.data('transId');
+          self.transId = self.gridView.transId = self.container.data('transId');
 
           self.gridView.editor_title = editor_title;
           self.gridView.current_file = undefined;
@@ -2409,25 +2411,26 @@ define(
           var data = {
             'explain_verbose': self.explain_verbose
           };
+
           $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
-          method: 'PUT',
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function(res) {
-            if(res.success == undefined || !res.success) {
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            method: 'PUT',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if(res.success == undefined || !res.success) {
+                alertify.alert('Explain options error',
+                  '{{ _('Error occurred while setting verbose option in explain') }}'
+                );
+              }
+            },
+            error: function(e) {
               alertify.alert('Explain options error',
-                '{{ _('Error occurred while setting verbose option in explain') }}'
+                  '{{ _('Error occurred while setting verbose option in explain') }}'
               );
+              return;
             }
-          },
-          error: function(e) {
-            alertify.alert('Explain options error',
-                '{{ _('Error occurred while setting verbose option in explain') }}'
-            );
-            return;
-          }
-        });
+          });
         },
 
         // This function will toggle "costs" option in explain
@@ -2445,24 +2448,25 @@ define(
           var data = {
             'explain_costs': self.explain_costs
           };
+
           $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
-          method: 'PUT',
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function(res) {
-            if(res.success == undefined || !res.success) {
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            method: 'PUT',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if(res.success == undefined || !res.success) {
+                alertify.alert('Explain options error',
+                  '{{ _('Error occurred while setting costs option in explain') }}'
+                );
+              }
+            },
+            error: function(e) {
               alertify.alert('Explain options error',
-                '{{ _('Error occurred while setting costs option in explain') }}'
+                  '{{ _('Error occurred while setting costs option in explain') }}'
               );
             }
-          },
-          error: function(e) {
-            alertify.alert('Explain options error',
-                '{{ _('Error occurred while setting costs option in explain') }}'
-              );
-          }
-        });
+          });
         },
 
         // This function will toggle "buffers" option in explain
@@ -2480,25 +2484,25 @@ define(
           var data = {
             'explain_buffers': self.explain_buffers
           };
+
           $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
-          method: 'PUT',
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function(res) {
-            if(res.success == undefined || !res.success) {
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            method: 'PUT',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if(res.success == undefined || !res.success) {
+                alertify.alert('Explain options error',
+                  '{{ _('Error occurred while setting buffers option in explain') }}'
+                );
+              }
+            },
+            error: function(e) {
               alertify.alert('Explain options error',
                 '{{ _('Error occurred while setting buffers option in explain') }}'
               );
             }
-          },
-          error: function(e) {
-            alertify.alert('Explain options error',
-              '{{ _('Error occurred while setting buffers option in explain') }}'
-            );
-          }
-        });
-
+          });
         },
 
         // This function will toggle "timing" option in explain
@@ -2515,25 +2519,25 @@ define(
           var data = {
             'explain_timing': self.explain_timing
           };
+
           $.ajax({
-          url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
-          method: 'PUT',
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function(res) {
-            if(res.success == undefined || !res.success) {
+            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences" ,
+            method: 'PUT',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              if(res.success == undefined || !res.success) {
+                alertify.alert('Explain options error',
+                  '{{ _('Error occurred while setting timing option in explain') }}'
+                );
+              }
+            },
+            error: function(e) {
               alertify.alert('Explain options error',
                 '{{ _('Error occurred while setting timing option in explain') }}'
               );
             }
-          },
-          error: function(e) {
-            alertify.alert('Explain options error',
-                '{{ _('Error occurred while setting timing option in explain') }}'
-              );
-          }
-        });
-
+          });
         }
       }
     );

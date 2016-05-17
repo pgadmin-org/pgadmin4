@@ -321,13 +321,26 @@ def start_query_tool(trans_id):
         )
 
 
-@blueprint.route('/query_tool/preferences', methods=["GET", "PUT"])
+@blueprint.route('/query_tool/preferences/<int:trans_id>', methods=["GET", "PUT"])
 @login_required
-def get_preferences():
+def preferences(trans_id):
     """
         This method is used to get/put explain options from/to preferences
+
+        Args:
+            trans_id: unique transaction id
     """
     if request.method == 'GET':
+
+        # Check the transaction and connection status
+        status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+        if status and conn is not None \
+            and trans_obj is not None and session_obj is not None:
+
+            # Call the set_auto_commit method of transaction object
+            trans_obj.set_auto_commit(blueprint.auto_commit.get())
+            trans_obj.set_auto_rollback(blueprint.auto_rollback.get())
+
         return make_json_response(
             data={
                 'explain_verbose': blueprint.explain_verbose.get(),
