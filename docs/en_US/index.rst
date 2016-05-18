@@ -5,102 +5,195 @@ pgAdmin 4
     :align: right
     :alt: pgAdmin Logo
     
-Welcome to pgAdmin 4. pgAdmin is the leading Open Source management tool for 
-PostgreSQL, the world's most advanced Open Source database.
+Welcome to pgAdmin 4. pgAdmin is the leading Open Source management tool for Postgres, the world's most advanced Open Source database.  pgAdmin 4 is designed to meet the needs of both novice and experienced Postgres users alike, providing a powerful graphical interface that simplifies the creation, maintenance and use of database objects.
 
-pgAdmin 4 is built on the experiences learnt over two decades of developing it's 
-predecessors, pgAdmin, pgAdmin II and pgAdmin III. Its designed to meet the 
-needs of both novice and experienced PostgreSQL users alike.
+***************
+Client Features
+***************
+pgAdmin 4 has a highly-customizable display that features drag-and-drop panels that you can arrange to make the best use of your desktop environment.  The client features a tree control that provides an elegant overview of the managed servers, and the objects that reside on each server.  Tabbed dialogs provide quick access to statistical information about each object in the tree control.
 
-********
-Features
-********
+Use the *Preferences* dialog to customize the content and colors of the pgAdmin display.  To open the *Preferences* dialog, select *Preferences* from the *File* menu.
 
-pgAdmin is designed to allow users to manage and develop multiple Postgres 
-databases at once. It may be run either as a web application in which case it 
-supports multiple users, each with their own settings, or as a desktop 
-application for individual users.
+*Help* buttons in the lower-left corner of each dialog will open the online help for the dialog.  You can access additional Postgres help by navigating through the *Help* menu, and selecting the name of the resource that you wish to open. 
 
-The main application environment centres around a tree control on the left hand
-side. Users register one or more Postgres servers in the application which are 
-displayed in groups on the treeview. Through opening a server, the user is 
-connected to the selected database server and the tree is populated with high 
-level objects, under the server node, including databases, roles and 
-tablespaces. The user is then able to open a database node to see the schemas 
-within that database, and a schema node to see the tables and other objects in
-that schema and so on.
-
-Selecting a node in the tree will cause its Properties to be displayed in the 
-tab set to the right of the display. Additional tabs may be selected to view 
-statistics about the selected object, or lists of objects on which the selected 
-object is dependent on, or that are dependent upon the selected object. A 
-dashboard tab is also present which may be used to view high-level information 
-about the server that the selected object is on, such as the current sessions 
-and lock information.
-
-Right-clicking a node on the tree will display a context sensistive menu giving 
-options for different operations that may be executed on the object the node 
-represents.
-
-A third panel is show below the tabset. For any object within the database, 
-this will display the SQL that may be used to create or drop the object.
-
-Other features include a tool for developing executing arbitrary SQL queries and
-visually editing the results (where possible), and debugger for pl/pgsql 
-function development, and various tools for performing routine and bulk database
-maintenance activities.
-
-Please see the appropriate documentation sections for details on the usage of 
-individual features.
+Contents:
 
 .. toctree::
    :maxdepth: 2
    
-   browser
-   object-dialogs
-   debugger
-   query-tool
+   test
+   pgAdmin_index
+   using
+   tree_control
+   tabbed_browser
+   pgAdmin_menu_bar
+   preferences
+   help
 
-**********
-Deployment
-**********
+***************
+Getting Started
+***************
 
-pgAdmin is primarily written as a web application and may be deployed as a 
-multi-user application on a web server. It also includes a simple runtime
-that may be used to host the program as a desktop application.
+Before you can use the pgAdmin client to manage your Postgres installation, you must define a connection to the server.    
 
 .. toctree::
    :maxdepth: 1
+     
+   create_server_group
+   create_server
+   connecting   
+   error_messages
+   
+******************************
+Creating Cluster Level Objects  
+******************************
+   
+Some object definitions reside at the cluster level: 
+ 
+ *Resource Groups
+ *Roles
+ *Tablespaces
+ *Databases
+
+pgAdmin 4 provides dialogs that allow you to create these objects, manage them, and control their relationships to each other.  To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Databases* node, and select *Create Database...*    
+   
+.. toctree::
+   :maxdepth: 2
+
+   create_database
+   create_resource_group
+   create_role
+   create_tablespace
+   
+
+*************************
+Creating Database Objects
+*************************
+
+pgAdmin 4 provides simple but powerful dialogs that you can use to design and create database objects.  Each dialog contains a series of tabs that you use to describe the object that will be created by the dialog; the SQL tab displays the SQL command that the server will execute when creating the object.
+
+To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
+
+.. toctree::
+   :maxdepth: 2
+   
+   create_cast
+   create_event_trigger
+   create_extension
+   create_fdw
+   create_schema
+   create_collation
+   create_domain
+   create_domain_constraint
+   fts_dictionary
+   fts_parser
+   fts_template
+   create_function
+   create_procedure
+   create_sequence
+   create_type
+   
+   
+*****************************
+Creating or Modifying a Table  
+*****************************
+
+pgAdmin 4 provides dialogs that allow you to modify all table properties and attributes.
+
+To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
+
+.. toctree::
+   :maxdepth: 2
+   
+   create_table
+   create_column
+   create_constraint
+   create_index
+   create_rule
+   create_trigger
+
+
+*****************
+Management Basics      
+*****************
+
+pgAdmin provides a graphical interface that you can use to manage security issues related to your Postgres servers.  Point and click dialogs allow you to create login or group roles, administer object privileges, and control access to the server.  
+
+The configuration editor provides a graphical interface that allows a sufficiently-privileged user to set configuration parameters in the postgresql.conf, pg_hba.conf, and .pgpass.conf files:  
+
+* The postgresql.conf file contains parameters that you can use to control the server and server behaviors.
+* The pg_hba.conf file contains settings that specify client authentication behavior enforced by the server.
+* The .pgpass.conf file specifies passwords that can be used to satisfy authentication requirements.
+
+To modify the postgresql.conf or pg_hba.conf file, you must have sufficient privileges to modify and save files in the Postgres *data* directory.  Please note that incorrect configuration can slow performance, or prevent the server from restarting without reverting your changes.  Please consult the PostgreSQL core documentation for detailed information about configuring your server.
+
+.. toctree::
+   :maxdepth: 2
+   
+   managing_server
+   configuration_editor
+   maintenance "(vacuum, etc)"
+
+******************
+Backup and Restore
+******************
+
+A powerful, but user-friendly Backup and Restore tool provides an easy way to use pg_dump, pg_dumpall, and pg_restore to take backups and create copies of databases or database objects for use in a development environment.
+
+.. toctree::
+   :maxdepth: 2
+   
+   backup
+   restore
+   
+
+***************
+Developer Tools
+***************
+
+The pgAdmin *Tools* menu displays a list of powerful developer tools that you can use to execute and analyze complex SQL commands, manage data, and debug PL/SQL code.
+
+.. toctree::
+   :maxdepth: 2
+   
+   query_tool
+   data_editor
+   data_filter
+   debugger
+   
+   
+******************
+pgAdmin Deployment
+******************
+
+Pre-compiled and configured installation packages for pgAdmin 4 are available for a number of desktop environments; we recommend using an installer whenever possible.  If you are interested in learning more about the project, or if a pgAdmin installer is not available for your environment, the pages listed below will provide detailed information about creating a custom deployment.  
+
+.. toctree::
+   :maxdepth: 2
    
    desktop-deployment
    server-deployment
 
-***********
-Development
-***********
 
-pgAdmin is an Open Source project and accepts code contributions from anyone, 
-provided they implement desirable features and are written to the required 
-standard. Please read the development sections of the documentation carefully to
-learn how pgAdmin works, and how to develop improvements and new features.
+*****************************
+pgAdmin Project Contributions
+*****************************
+
+pgAdmin is an open-source project that invites you to get involved in the development process.  For more information about contributing to the pgAdmin project, contact the developers on the pgAdmin mailing list <mailto:pgadmin-hackers@postgresql.org> to discuss any ideas you might have for enhancements or bug fixes.
+
+In the sections listed below, you'll find detailed information about the development process used to develop, improve, and maintain the pgAdmin client.
+
+Contents:
 
 .. toctree::
    :maxdepth: 2
    
-   code-overview
-   code-snippet
-   translations
    submitting-patches
+   code-overview
    coding-standards
    code-review
+   
 
-*******
-Website
-*******
-
-The pgAdmin website can be found at `here <http://www.pgadmin.org>`_, and 
-downloads are hosted on the 
-`PostgreSQL Website <http://www.postgresql.org/download>`_.
 
 *******
 Licence
