@@ -309,27 +309,27 @@ TODO LIST FOR BACKUP:
         var menus = [{
           name: 'backup_global', module: this,
           applies: ['tools'], callback: 'start_backup_global',
-          priority: 10, label: '{{_("Backup Globals...") }}',
+          priority: 12, label: '{{_("Backup Globals...") }}',
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_server', module: this,
           applies: ['tools'], callback: 'start_backup_server',
-          priority: 10, label: '{{_("Backup Server...") }}',
+          priority: 12, label: '{{_("Backup Server...") }}',
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_global_ctx', module: this, node: 'server',
           applies: ['context'], callback: 'start_backup_global',
-          priority: 10, label: '{{_("Backup Globals...") }}',
+          priority: 12, label: '{{_("Backup Globals...") }}',
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_server_ctx', module: this, node: 'server',
           applies: ['context'], callback: 'start_backup_server',
-          priority: 10, label: '{{_("Backup Server...") }}',
+          priority: 12, label: '{{_("Backup Server...") }}',
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_object', module: this,
           applies: ['tools'], callback: 'backup_objects',
-          priority: 10, label: '{{_("Backup...") }}',
+          priority: 11, label: '{{_("Backup...") }}',
           icon: 'fa fa-floppy-o', enable: menu_enabled
         }];
 
@@ -338,7 +338,7 @@ TODO LIST FOR BACKUP:
             name: 'backup_' + backup_supported_nodes[idx],
             node: backup_supported_nodes[idx], module: this,
             applies: ['context'], callback: 'backup_objects',
-            priority: 10, label: '{{_("Backup...") }}',
+            priority: 11, label: '{{_("Backup...") }}',
             icon: 'fa fa-floppy-o', enable: menu_enabled
             });
         }

@@ -47,7 +47,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
-          category: 'restore', priority: 7, label: '{{ _('Add named restore point') }}',
+          category: 'restore', priority: 9, label: '{{ _('Add named restore point') }}',
           icon: 'fa fa-anchor', enable : 'is_applicable'
         },{
           name: 'change_password', node: 'server', module: this,
@@ -57,12 +57,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'pause_wal_replay',
-          category: 'wal_replay_pause', priority: 8, label: '{{ _('Pause replay of WAL') }}',
+          category: 'wal_replay_pause', priority: 7, label: '{{ _('Pause replay of WAL') }}',
           icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled'
         },{
           name: 'wal_replay_resume', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
-          category: 'wal_replay_resume', priority: 9, label: '{{ _('Resume replay of WAL') }}',
+          category: 'wal_replay_resume', priority: 8, label: '{{ _('Resume replay of WAL') }}',
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled'
          }]);
 

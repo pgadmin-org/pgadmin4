@@ -267,7 +267,7 @@ define([
         var menus = [{
           name: 'restore_object', module: this,
           applies: ['tools'], callback: 'restore_objects',
-          priority: 9, label: '{{_("Restore...") }}',
+          priority: 13, label: '{{_("Restore...") }}',
           icon: 'fa fa-upload', enable: menu_enabled
         }];
 
@@ -276,7 +276,7 @@ define([
             name: 'restore_' + restore_supported_nodes[idx],
             node: restore_supported_nodes[idx], module: this,
             applies: ['context'], callback: 'restore_objects',
-            priority: 9, label: '{{_("Restore...") }}',
+            priority: 13, label: '{{_("Restore...") }}',
             icon: 'fa fa-upload', enable: menu_enabled
             });
         }

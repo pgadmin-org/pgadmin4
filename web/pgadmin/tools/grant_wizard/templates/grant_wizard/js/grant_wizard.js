@@ -165,7 +165,7 @@ define([
         var menus = [{
           name: 'grant_wizard_schema', module: this,
           applies: ['tools'], callback: 'start_grant_wizard',
-          priority: 10, label: '{{_("Grant Wizard...") }}',
+          priority: 14, label: '{{_("Grant Wizard...") }}',
           icon: 'fa fa-unlock-alt', enable: menu_enabled
         }];
 
@@ -175,7 +175,7 @@ define([
             name: 'grant_wizard_schema_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this,
             applies: ['context'], callback: 'start_grant_wizard',
-            priority: 10, label: '{{_("Grant Wizard...") }}',
+            priority: 14, label: '{{_("Grant Wizard...") }}',
             icon: 'fa fa-unlock-alt', enable: menu_enabled
             });
         }
