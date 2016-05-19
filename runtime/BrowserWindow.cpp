@@ -57,6 +57,13 @@ BrowserWindow::BrowserWindow(QString url)
     m_tabGridLayout->setContentsMargins(0, 0, 0, 0);
     m_mainWebView = new WebViewWindow(m_pgAdminMainTab);
 
+#ifdef PGADMIN4_DEBUG
+    // If pgAdmin4 is run in debug mode, then we should enable the
+    // "Inspect" option, when the user right clicks on QWebView widget.
+    // This option is useful to debug the pgAdmin4 desktop application and open the developer tools.
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+#endif
+
     m_tabGridLayout->addWidget(m_mainWebView, 0, 0, 1, 1);
     m_tabWidget->addTab(m_pgAdminMainTab, QString());
     m_tabWidget->setCurrentIndex(0);

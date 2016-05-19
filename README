@@ -37,6 +37,14 @@ Project MESSAGE: Building for QT5+...
 $ make
 ...
 
+To build the runtime in debug mode, use the option below with qmake
+$ qmake CONFIG+=debug
+
+To build the runtime in release mode, use the option below with qmake
+$ qmake CONFIG+=release
+
+By default, the runtime application will be built in release mode.
+
 On Linux, an executable called 'pgAdmin4' will be built, and on Mac OS X, an
 app bundle called pgAdmin4.app will be created.
 

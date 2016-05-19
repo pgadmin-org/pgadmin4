@@ -7,6 +7,11 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += webkit network 
 }
 
+CONFIG(debug, debug|release) {
+  DEFINES += PGADMIN4_DEBUG
+  message(Configure pgAdmin4 to run in debug mode...)
+}
+
 win32 {
     message(Building for Windows...)
 
