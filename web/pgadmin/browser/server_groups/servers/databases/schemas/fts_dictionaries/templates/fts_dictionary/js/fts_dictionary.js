@@ -59,7 +59,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlCreateHelp: 'sql-createtsdictionary.html',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS dictionaries') }}',
+      label: '{{ _('FTS dictionary') }}',
       hasSQL: true,
       hasDepends: true,
       Init: function() {

@@ -504,6 +504,35 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
     })
   });
 
+    // Extend the browser's node model class to create a option/value pair
+  var MultiSelectAjaxCell = Backgrid.Extension.MultiSelectAjaxCell = Backgrid.Extension.NodeAjaxOptionsCell.extend({
+    defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
+      transform: undefined,
+      url_with_id: false,
+      select2: {
+        allowClear: true,
+        placeholder: 'Select from the list',
+        width: 'style',
+        multiple: true
+      },
+      opt: {
+        label: null,
+        value: null,
+        image: null,
+        selected: false
+       }
+    }),
+    getValueFromDOM: function() {
+      var res = [];
+
+      this.$el.find("select").find(':selected').each(function() {
+        res.push($(this).attr('value'));
+      });
+
+      return res;
+    },
+  });
+
   /*
    * Control to select multiple columns.
    */
