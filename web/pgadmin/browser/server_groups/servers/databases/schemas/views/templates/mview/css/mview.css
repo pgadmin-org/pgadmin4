@@ -1,0 +1,12 @@
+.icon-mview{
+  background-image: url('{{ url_for('NODE-mview.static', filename='img/mview.png') }}') !important;
+  border-radius: 10px;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.sql_field_width_full {
+  width: 100%;
+}

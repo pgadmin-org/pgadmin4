@@ -1665,13 +1665,18 @@
               (_.isUndefined(s.min_version) ? true :
                (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
-               (server_info.version <= s.max_version))));
+               (server_info.version <= s.max_version)))),
+              visible = true;
+
+          if (s.mode && _.isObject(s.mode))
+            visible = (_.indexOf(s.mode, mode) > -1);
+          if (visible)
+            visible = evalASFunc(s.visible);
+
           groupInfo[s.id] = {
             label: s.label || s.id,
             version_compatible: ver_in_limit,
-            visible: !s.mode || (
-              s && s.mode && _.isObject(s.mode) &&
-                _.indexOf(s.mode, mode) != -1) && evalASFunc(s.visible) || true
+            visible: visible
           };
           return;
         }
@@ -1768,9 +1773,13 @@
       // Create an array from the dictionary with proper required
       // structure.
       _.each(groups, function(val, key) {
-        fields.push(_.extend({
-          label: key, fields: val
-        }, (groupInfo[key] || {version_compatible: true, visible: true})));
+        fields.push(
+          _.extend(
+            _.defaults(
+              groupInfo[key] || {label: key},
+              {version_compatible: true, visible: true}
+            ), {fields: val})
+          );
       });
     }
 
@@ -2080,8 +2089,10 @@
         '</div>',
       '</div>'
     ].join("\n")),
-    events: {
-      "click .select_item": "onSelect",
+    events: function() {
+      return _.extend({}, Backform.InputControl.prototype.events, {
+            "click .select_item": "onSelect",
+          });
     },
     onSelect: function(e) {
       var dialog_type = this.field.get('dialog_type');
