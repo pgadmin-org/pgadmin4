@@ -28,3 +28,4 @@ backbone.paginator  2.0.3       MIT          http://github.com/backbone-paginato
 backgrid-paginator  03632df     MIT          https://github.com/wyuenho/backgrid-paginator
 backgrid-select-all 1a00053     MIT          https://github.com/wyuenho/backgrid-select-all
 dropzone            4e20bd4     MIT          https://github.com/enyo/dropzone
+Filemanager         7e060c2     MIT          https://github.com/simogeo/Filemanager
