@@ -1,0 +1,39 @@
+{# ===== Define name, label and column type of vacuum settings ===== #}
+{# Usage:
+
+  'Type":
+  {
+    "key": ["label", "column_type"
+  }
+
+  Where
+    -  "Type" either table/toast
+    -  "key" refers to the name of columns we fetch in properties.sql
+    -  "label" It is the name of properties to display in grid.
+    -  "column_type" Type of column, we have to provide the grid what type of value to rendered
+#}
+{# ===== Define name, label and column type of vacuum settings ===== #}
+{
+  "table":
+  {
+    "autovacuum_vacuum_threshold": ["autovacuum_vacuum_threshold", "VACCUM base threshold", "integer"],
+    "autovacuum_analyze_threshold": ["autovacuum_analyze_threshold", "ANALYZE base threshold", "integer"],
+    "autovacuum_vacuum_scale_factor": ["autovacuum_vacuum_scale_factor", "VACCUM scale factor", "number"],
+    "autovacuum_analyze_scale_factor": ["autovacuum_analyze_scale_factor", "ANALYZE scale factor", "number"],
+    "autovacuum_vacuum_cost_delay": ["autovacuum_vacuum_cost_delay", "VACCUM cost delay", "integer"],
+    "autovacuum_vacuum_cost_limit": ["autovacuum_vacuum_cost_limit", "VACCUM cost limit", "integer"],
+    "autovacuum_freeze_max_age": ["autovacuum_freeze_max_age", "FREEZE maximum age", "integer"],
+    "vacuum_freeze_min_age": ["autovacuum_freeze_min_age", "FREEZE minimum age", "integer"],
+    "vacuum_freeze_table_age": ["autovacuum_freeze_table_age", "FREEZE table age", "integer"]
+  },
+  "toast":
+  {
+    "autovacuum_vacuum_threshold": ["autovacuum_vacuum_threshold", "VACCUM base threshold", "integer"],
+    "autovacuum_vacuum_scale_factor": ["autovacuum_vacuum_scale_factor", "VACCUM scale factor", "number"],
+    "autovacuum_vacuum_cost_delay": ["autovacuum_vacuum_cost_delay", "VACCUM cost delay", "integer"],
+    "autovacuum_vacuum_cost_limit": ["autovacuum_vacuum_cost_limit", "VACCUM cost limit", "integer"],
+    "autovacuum_freeze_max_age": ["autovacuum_freeze_max_age", "FREEZE maximum age", "integer"],
+    "vacuum_freeze_min_age": ["autovacuum_freeze_min_age", "FREEZE minimum age", "integer"],
+    "vacuum_freeze_table_age": ["autovacuum_freeze_table_age", "FREEZE table age", "integer"]
+  }
+}

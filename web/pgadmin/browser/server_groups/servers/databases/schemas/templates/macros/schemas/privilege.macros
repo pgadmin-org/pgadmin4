@@ -6,6 +6,10 @@
 GRANT {{ privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }};
 {% endif %}
 {% if with_grant_privs %}
+{% if privs %}
+{# This empty if is to add new line in between #}
+
+{% endif %}
 GRANT {{ with_grant_privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ conn|qtIdent(role) }} WITH GRANT OPTION;
 {% endif %}
 {%- endmacro %}

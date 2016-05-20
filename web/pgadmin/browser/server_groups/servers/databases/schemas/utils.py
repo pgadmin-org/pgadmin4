@@ -134,7 +134,8 @@ class DataTypeReader:
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
                     'typval': typeval, 'precision': precision,
-                    'length': length, 'min_val': min_val, 'max_val': max_val
+                    'length': length, 'min_val': min_val, 'max_val': max_val,
+                    'is_collatable': row['is_collatable']
                 })
 
         except Exception as e:
@@ -339,3 +340,155 @@ def parse_rule_definition(res):
     except Exception as e:
         return internal_server_error(errormsg=str(e))
     return res_data
+
+
+class VacuumSettings:
+    """
+    VacuumSettings Class.
+
+    This class includes common utilities to fetch and parse
+    vacuum defaults settings.
+
+    Methods:
+    -------
+    * get_vacuum_table_settings(conn):
+      - Returns vacuum table defaults settings.
+
+    * get_vacuum_toast_settings(conn):
+      - Returns vacuum toast defaults settings.
+
+    * parse_vacuum_data(conn, result, type):
+      - Returns result of an associated array
+        of fields name, label, value and column_type.
+        It adds name, label, column_type properties of table/toast
+        vacuum into the array and returns it.
+        args:
+        * conn - It is db connection object
+        * result - Resultset of vacuum data
+        * type - table/toast vacuum type
+
+    """
+    def __init__(self):
+        pass
+
+    def get_vacuum_table_settings(self, conn):
+        """
+        Fetch the default values for autovacuum
+        fields, return an array of
+          - label
+          - name
+          - setting
+        values
+        """
+
+        # returns an array of name & label values
+        vacuum_fields = render_template("vacuum_settings/vacuum_fields.json")
+
+        vacuum_fields = json.loads(vacuum_fields)
+
+        # returns an array of setting & name values
+        vacuum_fields_keys = "'"+"','".join(
+            vacuum_fields['table'].keys())+"'"
+        SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
+                              columns=vacuum_fields_keys)
+        status, res = conn.execute_dict(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in res['rows']:
+            row_name = row['name']
+            row['name'] = vacuum_fields['table'][row_name][0]
+            row['label'] = vacuum_fields['table'][row_name][1]
+            row['column_type'] = vacuum_fields['table'][row_name][2]
+
+        return res
+
+    def get_vacuum_toast_settings(self, conn):
+        """
+        Fetch the default values for autovacuum
+        fields, return an array of
+          - label
+          - name
+          - setting
+        values
+        """
+
+        # returns an array of name & label values
+        vacuum_fields = render_template("vacuum_settings/vacuum_fields.json")
+
+        vacuum_fields = json.loads(vacuum_fields)
+
+        # returns an array of setting & name values
+        vacuum_fields_keys = "'"+"','".join(
+            vacuum_fields['toast'].keys())+"'"
+        SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
+                              columns=vacuum_fields_keys)
+        status, res = conn.execute_dict(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        for row in res['rows']:
+            row_name = row['name']
+            row['name'] = vacuum_fields['toast'][row_name][0]
+            row['label'] = vacuum_fields['toast'][row_name][1]
+            row['column_type'] = vacuum_fields['table'][row_name][2]
+
+        return res
+
+    def parse_vacuum_data(self, conn, result, type):
+        """
+        This function returns result of an associated array
+        of fields name, label, value and column_type.
+        It adds name, label, column_type properties of table/toast
+        vacuum into the array and returns it.
+        args:
+        * conn - It is db connection object
+        * result - Resultset of vacuum data
+        * type - table/toast vacuum type
+        """
+
+        # returns an array of name & label values
+        vacuum_fields = render_template("vacuum_settings/vacuum_fields.json")
+
+        vacuum_fields = json.loads(vacuum_fields)
+
+        # returns an array of setting & name values
+        vacuum_fields_keys = "'"+"','".join(
+            vacuum_fields[type].keys()) + "'"
+        SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
+                              columns=vacuum_fields_keys)
+        status, res = conn.execute_dict(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if type is 'table':
+            for row in res['rows']:
+                row_name = row['name']
+                row['name'] = vacuum_fields[type][row_name][0]
+                row['label'] = vacuum_fields[type][row_name][1]
+                row['column_type'] = vacuum_fields[type][row_name][2]
+                if result[row['name']] is not None:
+                    if row['column_type'] == 'number':
+                        value = float(result[row['name']])
+                    else:
+                        value = int(result[row['name']])
+                    row['value'] = row['setting'] = value
+
+        elif type is 'toast':
+            for row in res['rows']:
+                row_old_name = row['name']
+                row_name = 'toast_{0}'.format(vacuum_fields[type][row_old_name][0])
+                row['name'] = vacuum_fields[type][row_old_name][0]
+                row['label'] = vacuum_fields[type][row_old_name][1]
+                row['column_type'] = vacuum_fields[type][row_old_name][2]
+                if result[row_name] and result[row_name] is not None:
+                    if row['column_type'] == 'number':
+                        value = float(result[row_name])
+                    else:
+                        value = int(result[row_name])
+                    row['value'] = row['setting'] = value
+
+        return res['rows']

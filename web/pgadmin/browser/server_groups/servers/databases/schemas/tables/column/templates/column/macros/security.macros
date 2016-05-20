@@ -1,0 +1,6 @@
+{% macro APPLY(conn, type, schema_name, parent_object, child_object, provider, label) -%}
+SECURITY LABEL FOR {{ conn|qtIdent(provider) }} ON {{ type }} {{ conn|qtIdent(schema_name, parent_object, child_object) }} IS {{ label|qtLiteral }};
+{%- endmacro %}
+{% macro DROP(conn, type, schema_name, parent_object, child_object, provider) -%}
+SECURITY LABEL FOR {{ conn|qtIdent(provider) }} ON {{ type }} {{ conn|qtIdent(schema_name, parent_object, child_object) }} IS NULL;
+{%- endmacro %}

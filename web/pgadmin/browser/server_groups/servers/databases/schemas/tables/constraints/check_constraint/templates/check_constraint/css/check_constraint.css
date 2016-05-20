@@ -1,0 +1,15 @@
+.icon-check_bad, .icon-check_constraints_bad {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/check-constraints-bad.png' )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-check, .icon-check_constraints {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/check-constraints.png' )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
