@@ -53,7 +53,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'sequence',
       sqlAlterHelp: 'sql-altersequence.html',
       sqlCreateHelp: 'sql-createsequence.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_sequence.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='sequence_dialog.html') }}',
       label: '{{ _('Sequence') }}',
       collection_type: 'coll-sequence',
       hasSQL: true,

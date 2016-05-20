@@ -1,11 +1,12 @@
+****************
 Coding Standards
-================
+****************
 
 pgAdmin uses multiple technologies and multiple languages, each of which have 
 their own coding standards.
 
 General
--------
+=======
 
 In all languages, indentations should be made with 4 spaces, and excessively long
 lines wrapped where appropriate to ensure they can be read on smaller displays
@@ -17,7 +18,7 @@ Comments should be included in all code where required to explain its
 purpose or how it works if not obvious from a quick review of the code itself.
 
 CSS 3
------
+=====
 
 CSS3 is used for styling and layout throughout the application. Extensive use is
 made of the Bootstrap Framework to aid in that process, however additional 
@@ -51,7 +52,7 @@ Styles should be specified clearly, one per line. For example:
 All stylesheets must be CSS3 compliant.
 
 HTML 5
-------
+======
 
 HTML 5 is used for page structure throughout the application, in most cases 
 being rendered from templates by the Jinja2 template engine in Flask. 
@@ -59,7 +60,7 @@ being rendered from templates by the Jinja2 template engine in Flask.
 All HTML must be HTML 5 compliant.
 
 Javascript
-----------
+==========
 
 Client-side code is written in Javascript using jQuery and various plugins.
 Whilst much of the code is rendered from static files, there is also code that
@@ -152,7 +153,7 @@ which may be omitted if on a single statement is present:
     }
 
 Python
-------
+======
 
 Python is used for the backend web server. All code must be compatible with 
 Python 2.7 and should include PyDoc comments whilst following the official

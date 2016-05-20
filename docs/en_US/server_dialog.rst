@@ -1,14 +1,12 @@
-.. _create_server:
+*************
+Server Dialog
+*************
 
-***************
-Create - Server  
-***************
+Use the *Server* dialog to describe a connection to a server. Note: you must ensure the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client.
 
-Use the *Create - Server* dialog to describe a connection to a server. Note: you must ensure the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client. 
+The *Server* dialog organizes the connection of a server through the following dialog tabs: *General*, and *Connection*.
 
-The *Create - Server* dialog organizes the connection of a server through the following dialog tabs: *General*, and *Connection*. 
-
-.. image:: images/create_server_general.png
+.. image:: images/server_general.png
 
 Use the fields in the *General* tab to identify the server:
 
@@ -17,7 +15,7 @@ Use the fields in the *General* tab to identify the server:
 
 Click the *Connection* tab to continue.
 
-.. image:: images/create_server_connection.png
+.. image:: images/server_connection.png
 
 Use the fields in the *Connection* tab to configure a connection:
 

@@ -1,5 +1,6 @@
+******************
 Desktop Deployment
-==================
+******************
 
 pgAdmin may be deployed as a desktop application by configuring the application
 to run in desktop mode and then utilising the desktop runtime to host and

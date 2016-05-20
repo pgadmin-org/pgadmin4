@@ -6,7 +6,7 @@ function($, _, pgAdmin, Backbone) {
     pgAdmin.Browser.Nodes['server-group'] = pgAdmin.Browser.Node.extend({
       parent_type: null,
       type: 'server-group',
-      dialogHelp: '{{ url_for('help.static', filename='create_server_group.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='server_group_dialog.html') }}',
       label: '{{ _('Server Group') }}',
       Init: function() {
         /* Avoid multiple registration of menus */

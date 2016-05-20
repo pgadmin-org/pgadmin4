@@ -21,7 +21,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'fts_parser',
       sqlAlterHelp: 'sql-altertsparser.html',
       sqlCreateHelp: 'sql-createtsparser.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_fts_parser.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='fts_parser_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS Parser') }}',

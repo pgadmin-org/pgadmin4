@@ -1,5 +1,6 @@
+*****************
 Code Review Notes
-=================
+*****************
 
 This document lists a number of standard items that will be checked during the
 review process for any patches submitted for inclusion in pgAdmin.

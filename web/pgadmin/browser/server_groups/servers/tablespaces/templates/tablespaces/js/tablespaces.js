@@ -49,7 +49,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'tablespace',
       sqlAlterHelp: 'sql-altertablespace.html',
       sqlCreateHelp: 'sql-createtablespace.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_tablespace.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='tablespace_dialog.html') }}',
       label: '{{ _('Tablespace') }}',
       hasSQL:  true,
       canDrop: true,

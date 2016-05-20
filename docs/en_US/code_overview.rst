@@ -1,5 +1,6 @@
+*************
 Code Overview
-=============
+*************
 
 The bulk of pgAdmin is a Python web application written using the Flask framework
 on the backend, and HTML5 with CSS3, Bootstrap and jQuery on the front end. A
@@ -7,14 +8,14 @@ desktop runtime is also included for users that prefer a desktop application to
 a web application, which is written in C++ using the QT framework.
 
 Runtime
--------
+=======
 
 The runtime is essentially a Python webserver and browser in a box. Found in the
 **/runtime** directory in the source tree, it is a relatively simple QT
 application that is most easily modified using the **QT Creator** application.
 
 Web Application
----------------
+===============
 
 The web application forms the bulk of pgAdmin and can be found in the **/web**
 directory in the source tree. The main file is **pgAdmin4.py** which can be used
@@ -22,7 +23,7 @@ to run the built-in standalone web server, or as a WSGI application for producti
 use.
 
 Configuration
-*************
+-------------
 
 The core application configuration is found in **config.py**. This file includes
 all configurable settings for the application, along with descriptions of their
@@ -31,7 +32,7 @@ a web server; these can be overriden in **config_local.py** to avoid modifying
 the main configuration file.
 
 User Settings
-*************
+-------------
 
 When running in desktop mode, pgAdmin has a single, default user account that is
 used for the desktop user. When running in server mode, there may be unlimited
@@ -54,7 +55,7 @@ The local configuration will determine how the script sets up the database,
 particularly with regard to desktop vs. server mode.
 
 pgAdmin Core
-************
+============
 
 The heart of pgAdmin is the **pgadmin** package. This contains the globally
 available HTML templates used by the Jinja engine, as well as any global static
@@ -65,7 +66,7 @@ is responsible for setting up logging and authentication, dynamically loading
 other modules, and a few other tasks.
 
 Modules
-*******
+=======
 
 Units of functionality are added to pgAdmin through the addition of modules.
 Theses are Python object instance of classes, inherits the
@@ -187,7 +188,7 @@ loaded modules, but must use the defined hook points and fail gracefully in the
 event that a particular module is not present.
 
 Nodes
-*****
+=====
 
 Nodes are very similar to modules, it represents an individual node or,
 collection object on the browser treeview. To recognised as a node module, a
@@ -199,7 +200,7 @@ Python package (along with javascript modules) must be created. This must:
 3) An instance of the class object
 
 Front End
-*********
+=========
 
 pgAdmin uses javascript extensively for the front-end implementation. It uses
 require.js to allow the lazy loading (or, say load only when required),

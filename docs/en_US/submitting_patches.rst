@@ -1,5 +1,6 @@
+******************
 Submitting Patches
-==================
+******************
 
 Before developing a patch for pgAdmin you should always contact the developers 
 on the `mailing list <mailto:pgadmin-hackers@postgresql.org>` to discuss your 

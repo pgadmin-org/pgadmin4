@@ -20,7 +20,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'domain-constraints',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-alterdomain.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_domain_constraint.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='domain_constraint_dialog.html') }}',
       label: '{{ _('Domain Constraints') }}',
       collection_type: 'coll-domain-constraints',
       hasSQL: true,

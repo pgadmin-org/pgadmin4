@@ -1,5 +1,6 @@
-Code Snippet
-------------
+*************
+Code Snippets
+*************
 
 
 This document contains code for some of the important classes, listed as

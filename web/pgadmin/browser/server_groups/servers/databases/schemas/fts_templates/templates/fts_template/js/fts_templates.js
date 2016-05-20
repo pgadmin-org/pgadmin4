@@ -20,7 +20,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'fts_template',
       sqlAlterHelp: 'sql-altertstemplate.html',
       sqlCreateHelp: 'sql-createtstemplate.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_fts_template.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='fts_template_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS Template') }}',

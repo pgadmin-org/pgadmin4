@@ -20,7 +20,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         type: 'cast',
         sqlAlterHelp: 'sql-altercast.html',
         sqlCreateHelp: 'sql-createcast.html',
-        dialogHelp: '{{ url_for('help.static', filename='create_cast.html') }}',
+        dialogHelp: '{{ url_for('help.static', filename='cast_dialog.html') }}',
         canDrop: true,
         canDropCascade: true,
         label: '{{ _('Cast') }}',

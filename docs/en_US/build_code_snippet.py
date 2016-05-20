@@ -13,11 +13,12 @@ if sys.path[0] != root:
 
 from pgadmin.utils import PgAdminModule
 
-target = open('code-snippet.rst', 'w')
+target = open('code_snippets.rst', 'w')
 target.truncate()
 
-target.write("Code Snippet\n")
-target.write("------------\n\n")
+target.write("*************\n")
+target.write("Code Snippets\n")
+target.write("*************\n\n")
 target.write("""
 This document contains code for some of the important classes, listed as
 below:\n\n""")

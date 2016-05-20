@@ -40,7 +40,7 @@ function($, _, S, pgAdmin, pgBrowser) {
       type: 'extension',
       sqlAlterHelp: 'sql-alterextension.html',
       sqlCreateHelp: 'sql-createextension.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_extension.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='extension_dialog.html') }}',
       hasSQL: true,
       hasDepends: true,
       canDrop: true,

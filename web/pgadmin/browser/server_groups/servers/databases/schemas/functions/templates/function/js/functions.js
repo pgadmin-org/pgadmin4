@@ -104,7 +104,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'function',
       sqlAlterHelp: 'sql-alterfunction.html',
       sqlCreateHelp: 'sql-createfunction.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_function.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='function_dialog.html') }}',
       label: '{{ _('Function') }}',
       collection_type: 'coll-function',
       hasSQL: true,

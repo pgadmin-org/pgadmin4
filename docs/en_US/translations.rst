@@ -1,5 +1,6 @@
+************
 Translations
-============
+************
 
 pgAdmin supports multiple languages using the `Flask-Babel 
 <https://pythonhosted.org/Flask-Babel/>`_ Python module. A list of supported 
@@ -7,7 +8,7 @@ languages is included in the **web/config.py** configuration file and must be
 updated whenever langauges are added or removed.
 
 Translation Marking
--------------------
+===================
 
 Strings can be marked for translation in either Python code (using **gettext()**)
 or Jinja templates (using **_()**). Here are some examples that show how this 
@@ -37,7 +38,7 @@ Jinja:
     )
     
 Updating and Merging
---------------------
+====================
 
 Whenever new strings are added to the application, the template catalogues
 (**web/pgadmin/messages.pot**) must be updated and the existing catalogues 
@@ -112,7 +113,7 @@ Finally, the message catalogues can be compiled for use:
     compiling catalog 'pgadmin/translations/fr/LC_MESSAGES/messages.po' to 'pgadmin/translations/fr/LC_MESSAGES/messages.mo'
 
 Adding a new Language
----------------------
+=====================
 
 Adding a new language is simple. First, add the language name and identifier to
 **web/config.py**::
