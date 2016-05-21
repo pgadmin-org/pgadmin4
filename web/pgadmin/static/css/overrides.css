@@ -263,6 +263,10 @@ iframe {
     padding: 3px 6px !important;
 }
 
+.pgadmin-controls > span.select2 {
+    width: 100%;
+}
+
 .obj_properties fieldset > div > .pgadmin-control-group > label {
     min-height: 28px;
 }
@@ -820,6 +824,7 @@ td.edit-cell.editable.sortable.renderable.editor {
 .subnode > table.backgrid > thead > tr > th:last-child{
   border-right-color: #2C76B4;
 }
+
 .select2-container .select2-selection--single .select2-selection__rendered{
   padding-left: 5px;
 }

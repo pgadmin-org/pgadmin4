@@ -4,23 +4,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var pgBrowser = pgAdmin.Browser;
 
-  // Store value in DOM as stringified JSON.
-  var StringOrJSONFormatter = function() {};
-  _.extend(StringOrJSONFormatter.prototype, {
-    fromRaw: function(rawData, model) {
-      return JSON.stringify(_.escape(rawData));
-    },
-    toRaw: function(formattedData, model) {
-      if (typeof(formattedData) == 'string') {
-        return _.unescape(formattedData);
-      }
-      if (formattedData instanceof Array) {
-        return JSON.stringify(JSON.parse(JSON.stringify(formattedData)));
-      }
-      return JSON.parse(formattedData);
-    }
-  });
-
   /*
    * NodeAjaxOptionsControl
    *   This control will fetch the options required to render the select
@@ -34,38 +17,22 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
    *   data to proper 'label', 'value' format.
    */
   var NodeAjaxOptionsControl = Backform.NodeAjaxOptionsControl =
-      Backform.SelectControl.extend({
-    defaults: _.extend(Backform.SelectControl.prototype.defaults, {
+      Backform.Select2Control.extend({
+    defaults: _.extend(Backform.Select2Control.prototype.defaults, {
       url: undefined,
       transform: undefined,
       url_with_id: false,
-      first_empty: false,
-      empty_value: '-- None --',
       select2: {
         allowClear: true,
         placeholder: 'Select from the list',
         width: 'style'
       }
     }),
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-      '    <% if (first_empty) { %>',
-      '    <option value="" <%="" === rawValue ? "selected" : "" %>><%- empty_value %></option>',
-      '    <% } %>',
-      '    <% for (var i=0; i < options.length; i++) { %>',
-      '    <% var option = options[i]; %>',
-      '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
-      '    <% } %>',
-      '  </select>',
-      '</div>'].join("\n")),
-    formatter: StringOrJSONFormatter,
     initialize: function() {
       /*
        * Initialization from the original control.
        */
-      Backform.SelectControl.prototype.initialize.apply(this, arguments);
+      Backform.Select2Control.prototype.initialize.apply(this, arguments);
 
       /*
        * We're about to fetch the options required for this control.
@@ -140,41 +107,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           self.field.set('options', data);
         }
       }
-    },
-    render: function() {
-
-      if(this.$sel && this.$sel.select2) {
-        this.$sel.select2('destroy')
-      }
-
-      /*
-       * Let SelectControl render it, we will do our magic on the
-       * select control in it.
-       */
-      Backform.SelectControl.prototype.render.apply(this, arguments);
-
-      var d = this.field.toJSON(),
-          select2_opts = _.defaults({}, d.select2, this.defaults.select2),
-          evalF = function(f, d, m) {
-            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-          };
-
-      /*
-       * If select2 options do not have any disabled property on this field
-       * and schema has disabled property then we need to apply it
-       */
-      if(!_.has(select2_opts, 'disabled') && (d && d.disabled)) {
-        _.extend(select2_opts, {disabled: evalF(d.disabled, d, this.model)
-        });
-      }
-
-      /*
-       * Add empty option as Select2 requires any empty '<option><option>' for
-       * some of its functionality to work and initialize select2 control.
-       */
-      this.$sel = this.$el.find("select").select2(select2_opts);
-
-      return this;
     }
   });
 
@@ -199,8 +131,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
   var NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
     controlClassName: 'pgadmin-node-select form-control',
     defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
-      first_empty: true,
-      empty_value: '-- None --',
       url: 'nodes',
       filter: undefined,
       transform: function(rows) {
@@ -537,34 +467,6 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
    * Control to select multiple columns.
    */
   var MultiSelectAjaxControl = Backform.MultiSelectAjaxControl = NodeAjaxOptionsControl.extend({
-    formatter: {
-      fromRaw: function (rawData, model) {
-        return (_.isUndefined(rawData) || _.isObject(rawData)) ? rawData : JSON.parse(rawData);
-      },
-      toRaw: function (formattedData, model) {
-        return formattedData;
-      }
-    },
-    template: _.template([
-      '<label class="control-label col-sm-4"><%=label%></label>',
-      '<div class="pgadmin-controls col-sm-8">',
-      '  <select multiple="multiple" style="width:100%;" class="pgadmin-controls <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-JSON.stringify(value)%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>>',
-      '    <% for (var i=0; i < options.length; i++) { %>',
-      '      <% var option = options[i]; %>',
-      '      <option value=<%-option.value%> <%=value != null && _.indexOf(value, option.value) != -1 ? "selected" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
-      '    <% } %>',
-      '  </select>',
-      '</div>'
-      ].join("\n")),
-    getValueFromDOM: function() {
-      var res = [];
-
-      this.$el.find("select").find(':selected').each(function() {
-        res.push($(this).attr('value'));
-      });
-
-      return res;
-    },
     defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
       select2: {
         multiple: true,

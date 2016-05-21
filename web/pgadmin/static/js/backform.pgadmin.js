@@ -600,13 +600,13 @@
       if (opts && opts.data) {
         if (this.model) {
           if (this.model.reset) {
-            this.model.reset();
+            this.model.reset({validate: false, silent: true, stop: true});
           }
-          this.model.clear({silent: true});
+          this.model.clear({validate: false, silent: true, stop: true});
           delete (this.model);
         }
         if (this.errorModel) {
-          this.errorModel.clear({silent: true});
+          this.errorModel.clear({validate: false, silent: true, stop: true});
           delete (this.errorModel);
         }
       }
@@ -1786,30 +1786,125 @@
     return fields;
   };
 
+  var Select2Formatter = function() {};
+  _.extend(Select2Formatter.prototype, {
+    fromRaw: function(rawData, model) {
+      return JSON.stringify(_.escape(rawData));
+    },
+    toRaw: function(formattedData, model) {
+      return formattedData;
+    }
+  });
+
   /*
    *  Backform Select2 control.
    */
   var Select2Control = Backform.Select2Control = Backform.SelectControl.extend({
+    defaults: _.extend({}, Backform.SelectControl.prototype.defaults, {
+      select2: {
+        first_empty: true,
+        multiple: false
+      }
+    }),
+    formatter: Select2Formatter,
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
+      ' <select class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
+      '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
+      '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
+      '  <%=select2.first_empty ? " <option></option>" : ""%>',
+      '  <% for (var i=0; i < options.length; i++) {%>',
+      '   <% var option = options[i]; %>',
+      '   <option ',
+      '    <% if (option.image) { %> data-image=<%=option.image%> <%}%>',
+      '    value=<%= formatter.fromRaw(option.value) %>',
+      '    <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
+      '    <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',
+      '    <%= disabled ? "disabled" : ""%>><%-option.label%></option>',
+      '  <%}%>',
+      ' </select>',
+      ' <% if (helpMessage && helpMessage.length) { %>',
+      ' <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      ' <% } %>',
+      '</div>'
+    ].join("\n")),
     render: function() {
+
       if(this.$sel && this.$sel.select2) {
         this.$sel.select2('destroy')
       }
-      Backform.SelectControl.prototype.render.apply(this, arguments);
 
-      var opts = this.field.toJSON();
-      var select2Opts = _.defaults(
-        {}, opts.select2, (this.defaults && this.defaults.select2) || {}
-      );
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+          }),
+          evalF = function(f, d, m) {
+            return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          };
+
+      data.select2 = data.select2 || {};
+      _.defaults(data.select2, this.defaults.select2, {
+        first_empty: true,
+        multiple: false
+      });
+
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(data.disabled, data, this.model),
+        visible:  evalF(data.visible, data, this.model),
+        required: evalF(data.required, data, this.model)
+      });
+
+      // Evaluation the options
+      if (_.isFunction(data.options)) {
+        try {
+          data.options = data.options(this)
+        } catch(e) {
+          // Do nothing
+          data.options = []
+          this.model.trigger(
+            'pgadmin-view:transform:error', this.model, this.field, e
+          );
+        }
+      }
+
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassname);
+
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassname);
+
+      this.$el.html(this.template(data)).addClass(field.name);
+
+      var select2Opts = _.extend({
+              disabled: data.disabled
+            }, field.select2, {
+                options: (this.field.get('options') || this.defaults.options)
+            });
 
       /*
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work and initialize select2 control.
        */
-      var $select = this.$el.find("select");
-      $select.prepend($('<option></option>'));
-      this.$sel = $select.select2(select2Opts);
+      this.$sel = this.$el.find("select").select2(select2Opts);
+
+      this.updateInvalid();
 
       return this;
+    },
+    getValueFromDOM: function() {
+      return Backform.SelectControl.prototype.getValueFromDOM.apply(
+        this, arguments
+      );
     }
   });
 
