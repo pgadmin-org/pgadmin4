@@ -1044,12 +1044,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           // Update the item lable (if label is modified.)
           if (view.model.tnode) {
             var itemData = tree.itemData(item),
-                icon = itemData.icon;
+                icon = itemData.icon,
+                newNodeData = view.model.tnode;
 
-            tree.removeIcon(item);
-            _.extend(itemData, {icon: icon}, view.model.tnode);
-            tree.setLabel(item, {label: itemData.label});
-            tree.addIcon(item, {icon: itemData.icon});
+            tree.addIcon(item, {icon: newNodeData.icon});
+            tree.setLabel(item, {label: newNodeData.label});
+            _.extend(itemData, newNodeData);
           } else if (view.model.get('name')) {
             tree.setLabel(item, {label: view.model.get("name")});
             if (
