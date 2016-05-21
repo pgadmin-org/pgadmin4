@@ -36,7 +36,7 @@ class HelpModule(PgAdminModule):
                      priority= 200,
                      target= '_blank',
                      icon='fa fa-external-link',
-                     url= 'http://www.pgadmin.org/' ),
+                     url= 'https://www.pgadmin.org/' ),
 
             MenuItem(name= 'mnu_postgresql_website',
                      label= gettext('PostgreSQL Website'),
@@ -59,7 +59,7 @@ class HelpModule(PgAdminModule):
                 priority=200,
                 title=gettext('pgAdmin Website'),
                 icon='fa fa-external-link',
-                content='http://www.pgadmin.org/'),
+                content='https://www.pgadmin.org/'),
 
             Panel(
                 name='pnl_postgresql_website',

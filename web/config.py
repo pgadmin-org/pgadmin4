@@ -223,7 +223,7 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
 UPGRADE_CHECK_ENABLED = True
 
 # Where should we get the data from?
-UPGRADE_CHECK_URL = 'http://www.pgadmin.org/versions.json'
+UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 
 ##########################################################################
 # Storage Manager storage url config settings

@@ -463,7 +463,7 @@ def index():
                                       product_name=config.APP_NAME,
                                       download_url=data['pgadmin4']['download_url'])
 
-            flash(msg, 'warning')
+                flash(msg, 'warning')
 
     return render_template(
             MODULE_NAME + "/index.html",

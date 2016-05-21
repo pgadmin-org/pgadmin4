@@ -34,7 +34,7 @@ setup(
     description='PostgreSQL Tools',
     long_description='Administration and management tools for the PostgreSQL database.',
 
-    url='http://www.pgadmin.org/',
+    url='https://www.pgadmin.org/',
 
     # Author details
     author='The pgAdmin Development Team',
