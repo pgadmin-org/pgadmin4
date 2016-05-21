@@ -6,6 +6,7 @@ define(
     'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
     'codemirror/addon/selection/active-line', 'backbone.paginator',
     'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
+    'codemirror/addon/hint/show-hint', 'codemirror/addon/hint/sql-hint',
     'codemirror/addon/fold/pgadmin-sqlfoldcode', 'backgrid.paginator',
     'wcdocker', 'pgadmin.file_manager'
   ],
@@ -238,7 +239,8 @@ define(
               rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
             },
-            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            extraKeys: {"Ctrl-Space": "autocomplete"}
         });
 
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'
@@ -295,6 +297,107 @@ define(
         self.history_panel = main_docker.addPanel('history', wcDocker.DOCK.STACKED, self.data_output_panel);
 
         self.render_history_grid();
+
+        /* We have override/register the hint function of CodeMirror
+         * to provide our own hint logic.
+         */
+        CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+          var data = [],
+              result = [];
+          var doc = editor.getDoc();
+          var cur = doc.getCursor();
+          var current_line = cur.line; // gets the line number in the cursor position
+          var current_cur = cur.ch;  // get the current cursor position
+
+          /* Render function for hint to add our own class
+           * and icon as per the object type.
+           */
+          var hint_render = function(elt, data, cur) {
+             var el = document.createElement('span');
+
+             switch(cur.type) {
+               case 'database':
+                 el.className = 'sqleditor-hint pg-icon-' + cur.type;
+                 break;
+               case 'datatype':
+                 el.className = 'sqleditor-hint icon-type';
+                 break;
+               case 'keyword':
+                 el.className = 'fa fa-key';
+                 break;
+               case 'table alias':
+                 el.className = 'fa fa-at';
+                 break;
+               default:
+                 el.className = 'sqleditor-hint icon-' + cur.type;
+             }
+
+             el.appendChild(document.createTextNode(cur.text));
+             elt.appendChild(el);
+          };
+
+          var full_text = doc.getValue();
+          // Get the text from start to the current cursor position.
+          var text_before_cursor = doc.getRange({ line: 0, ch: 0 },
+                    { line: current_line, ch: current_cur });
+
+          data.push(full_text);
+          data.push(text_before_cursor);
+
+          // Make ajax call to find the autocomplete data
+          $.ajax({
+            url: "{{ url_for('sqleditor.index') }}" + "autocomplete/" + self.transId,
+            method: 'POST',
+            async: false,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(res) {
+              _.each(res.data.result, function(obj, key) {
+                 result.push({
+                     text: key, type: obj.object_type,
+                     render: hint_render
+                 });
+              });
+
+              // Sort function to sort the suggestion's alphabetically.
+              result.sort(function(a, b){
+                var textA = a.text.toLowerCase(), textB = b.text.toLowerCase()
+                if (textA < textB) //sort string ascending
+                    return -1
+                if (textA > textB)
+                    return 1
+                return 0 //default return value (no sorting)
+              })
+            }
+          });
+
+          /* Below logic find the start and end point
+           * to replace the selected auto complete suggestion.
+           */
+          var token = editor.getTokenAt(cur), start, end, search;
+          if (token.end > cur.ch) {
+            token.end = cur.ch;
+            token.string = token.string.slice(0, cur.ch - token.start);
+          }
+
+          if (token.string.match(/^[.`\w@]\w*$/)) {
+            search = token.string;
+            start = token.start;
+            end = token.end;
+          } else {
+            start = end = cur.ch;
+            search = "";
+          }
+
+          /* Added 1 in the start position if search string
+           * started with "." or "`" else auto complete of code mirror
+           * will remove the "." when user select any suggestion.
+           */
+          if (search.charAt(0) == "." || search.charAt(0) == "``")
+            start += 1;
+
+          return {list: result, from: {line: current_line, ch: start }, to: { line: current_line, ch: end }};
+        });
       },
 
       /* This function is responsible to create and render the
@@ -782,7 +885,7 @@ define(
             el: self.container,
             handler: self
           });
-          self.transId = self.container.data('transId');
+          self.transId = self.gridView.transId = self.container.data('transId');
 
           self.gridView.editor_title = editor_title;
           self.gridView.current_file = undefined;

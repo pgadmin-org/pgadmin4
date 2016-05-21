@@ -24,6 +24,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.utils import get_storage_directory
+from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 
 # import unquote from urlib for python2.x and python3.x
 try:
@@ -883,6 +884,44 @@ def set_auto_rollback(trans_id):
         # restore it and update the session variable.
         session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
         update_session_grid_transaction(trans_id, session_obj)
+    else:
+        status = False
+        res = error_msg
+
+    return make_json_response(data={'status': status, 'result': res})
+
+
+@blueprint.route('/autocomplete/<int:trans_id>', methods=["PUT", "POST"])
+@login_required
+def auto_complete(trans_id):
+    """
+    This method implements the autocomplete feature.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    full_sql = ''
+    text_before_cursor = ''
+
+    if request.data:
+        data = json.loads(request.data.decode())
+    else:
+        data = request.args or request.form
+
+    if len(data) > 0:
+        full_sql = data[0]
+        text_before_cursor = data[1]
+
+    # Check the transaction and connection status
+    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    if status and conn is not None \
+            and trans_obj is not None and session_obj is not None:
+
+        # Create object of SQLAutoComplete class and pass connection object
+        auto_complete_obj = SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did, conn=conn)
+
+        # Get the auto completion suggestions.
+        res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
     else:
         status = False
         res = error_msg
