@@ -72,15 +72,22 @@
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-success,
 .bg-process-status .bg-bgprocess-success {
   color: green;
+  font-weight: bold;
 }
 
 .bg-process-status .bg-bgprocess-failed {
   color: red;
+  font-weight: bold;
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-failed {
   color: black;
   background-color: #E99595;
+}
+
+.pg-bg-cmd {
+  color: #4156CC;
+  font-style: italic;
 }
 
 .pg-panel-content div.bg-process-watcher.col-xs-12 {
@@ -96,17 +103,17 @@ ol.pg-bg-process-logs {
   height: 100%;
   overflow: auto;
   width: 100%;
-  background: rgb(255, 239, 217);
+  font-style: italic;
+  font-size: small;
 }
 
 .pg-bg-res-out, .pg-bg-res-err {
-  background-color: rgb(255, 239, 217);
   padding-left: 10px;
   white-space: pre-wrap;
 }
 
 .pg-bg-res-out {
-  color: rgb(0, 157, 207);
+  color: rgb(12, 116, 149);
 }
 
 .pg-bg-res-err {
