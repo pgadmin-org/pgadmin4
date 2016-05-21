@@ -833,20 +833,30 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
         try:
             if SQL and SQL.strip('\n') and SQL.strip(' '):
+
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Function Updated.",
-                    data={
-                        'id': fnid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+                resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+
+                if self.node_type == 'procedure':
+                    obj_name = resp_data['name_with_args']
+                elif self.node_type == 'function':
+                    args = resp_data['proargs'] if resp_data['proargs'] else ''
+                    obj_name = resp_data['name'] + '({0})'.format(args)
+                else:
+                    obj_name = resp_data['name'] + '()'
+
+                return jsonify(
+                    node=self.blueprint.generate_browser_node(
+                        fnid,
+                        resp_data['pronamespace'],
+                        obj_name,
+                        icon="icon-" + self.node_type,
+                        language=resp_data['lanname'],
+                        funcowner=resp_data['funcowner']
+                    )
                 )
             else:
                 return make_json_response(
@@ -878,6 +888,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         if self.node_type == 'procedure':
+            object_type = 'procedure'
             resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
 
             # Get SQL to create Function
@@ -888,6 +899,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
         else:
+            object_type = 'function'
             # Fetch the function definition.
             SQL = render_template("/".join([self.sql_template_path,
                                   'get_definition.sql']), fnid=fnid, scid=scid)
@@ -901,9 +913,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
 -- DROP {0} {1};
 
-""".format(self.node_type.upper(), name)
+""".format(object_type.upper(), name)
 
         SQL = sql_header + func_def
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
 
         return ajax_response(response=SQL)
 
@@ -924,12 +937,15 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         status, SQL = self._get_sql(gid, sid, did, scid, self.request, fnid)
+
         if status:
+            SQL = re.sub('\n{2,}', '\n\n', SQL)
             return make_json_response(
                 data=SQL,
                 status=200
             )
         else:
+            SQL = re.sub('\n{2,}', '\n\n', SQL)
             return SQL
 
     def _get_sql(self, gid, sid, did, scid, data, fnid=None, is_sql=False):
@@ -1386,3 +1402,113 @@ class ProcedureView(FunctionView):
         )
 
 ProcedureView.register_node_view(procedure_blueprint)
+
+
+class TriggerFunctionModule(SchemaChildModule):
+    """
+    class TriggerFunctionModule(SchemaChildModule):
+
+        This class represents The Trigger function Module.
+
+    Methods:
+    -------
+    * __init__(*args, **kwargs)
+      - Initialize the Trigger function Module.
+
+    * get_nodes(gid, sid, did, scid)
+      - Generate the Trigger function collection node.
+
+    * node_inode():
+      - Returns Trigger function node as leaf node.
+
+    * script_load()
+      - Load the module script for Trigger function, when schema node is
+        initialized.
+
+    """
+
+    NODE_TYPE = 'trigger_function'
+    COLLECTION_LABEL = gettext("Trigger function")
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the Trigger function Module.
+        Args:
+            *args:
+            **kwargs:
+        """
+        super(TriggerFunctionModule, self).__init__(*args, **kwargs)
+
+        self.min_ver = 90100
+        self.max_ver = None
+
+    def get_nodes(self, gid, sid, did, scid):
+        """
+        Generate Trigger function collection node.
+        """
+        yield self.generate_browser_collection_node(scid)
+
+    @property
+    def node_inode(self):
+        """
+        Make the node as leaf node.
+        Returns:
+            False as this node doesn't have child nodes.
+        """
+        return False
+
+    @property
+    def script_load(self):
+        """
+        Load the module script for Trigger function, when the
+        schema node is initialized.
+        """
+        return schemas.SchemaModule.NODE_TYPE
+
+
+trigger_function_blueprint = TriggerFunctionModule(__name__)
+
+
+class TriggerFunctionView(FunctionView):
+
+    node_type = trigger_function_blueprint.node_type
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the Function Module.
+        Args:
+            *args:
+            **kwargs:
+        """
+        super(TriggerFunctionView, self).__init__(*args, **kwargs)
+
+    @property
+    def required_args(self):
+        """
+        Returns Required arguments for trigger function node.
+        Where
+            Required Args:
+                name:           Name of the Trigger function
+                pronamespace:   Trigger function Namespace
+                lanname:        Trigger function Language Name
+                prosrc:         Trigger function Code
+        """
+        return ['name',
+                'pronamespace',
+                'lanname',
+                'prosrc']
+
+    def module_js(self):
+        """
+        Load JS file (trigger_function.js) for this module.
+        """
+
+        return make_response(
+            render_template(
+                "trigger_function/js/trigger_functions.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
+
+TriggerFunctionView.register_node_view(trigger_function_blueprint)
