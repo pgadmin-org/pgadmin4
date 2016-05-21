@@ -8,6 +8,8 @@ function($, _, pgAdmin, Backbone) {
       type: 'server-group',
       dialogHelp: '{{ url_for('help.static', filename='server_group_dialog.html') }}',
       label: '{{ _('Server Group') }}',
+      width: '350px',
+      height: '250px',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

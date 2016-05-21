@@ -27,6 +27,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlCreateHelp: 'sql-createtable.html',
       parent_type: ['schema', 'catalog'],
       hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
+      height: '95%',
+      width: '85%',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

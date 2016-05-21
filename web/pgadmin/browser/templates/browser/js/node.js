@@ -355,7 +355,31 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 return (_.indexOf(self.parent_type, d._type) != -1);
               } : function(d) {
                 return (self.parent_type == d._type);
-              });
+              }),
+            addPanel = function() {
+              var d = window.document,
+                  b = d.body,
+                  el = d.createElement('div');
+
+              d.body.insertBefore(el, d.body.firstChild);
+
+              var pW = screen.width < 800 ? '95%' : '70%',
+                  pH = screen.height < 600 ? '95%' : '70%';
+                  w = pgAdmin.toPx(el, self.width || pW, 'width', true),
+                  h = pgAdmin.toPx(el, self.height|| pH, 'height', true),
+                  x = (b.offsetWidth - w) / 2,
+                  y = (b.offsetHeight - h) / 2;
+
+              p = pgBrowser.docker.addPanel(
+                'node_props', wcDocker.DOCK.FLOAT, undefined,
+                {w: w + 'px', h: h + 'px', x: x + 'px', y: y + 'px'}
+              );
+
+              b.removeChild(el);
+              delete(el);
+
+              return p;
+            };
 
         if (args.action == 'create') {
           // If we've parent, we will get the information of it for
@@ -401,15 +425,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
           l = S('{{ _("Create - %%s") }}').sprintf(
               [this.label]).value();
-          p = pgBrowser.docker.addPanel('node_props',
-              wcDocker.DOCK.FLOAT, undefined, {
-                  w: (screen.width < 700 ?
-                      screen.width * 0.95 : screen.width * 0.5),
-                  h: (screen.height < 500 ?
-                    screen.height * 0.95 : screen.height * 0.5),
-                  x: (screen.width < 700 ? '2%' : '25%'),
-                  y: (screen.height < 500 ? '2%' : '25%')
-                });
+          p = addPanel();
+
           setTimeout(function() {
             o.showProperties(i, d, p, args.action);
           }, 10);
@@ -443,17 +460,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }, 10);
             }
           } else {
-            p = pgBrowser.docker.addPanel('node_props',
-                wcDocker.DOCK.FLOAT, undefined, {
-                  w: (screen.width < 700 ?
-                      screen.width * 0.95 : screen.width * 0.5),
-                  h: (screen.height < 500 ?
-                    screen.height * 0.95 : screen.height * 0.5),
-                  x: (screen.width < 700 ? '2%' : '25%'),
-                  y: (screen.height < 500 ? '2%' : '25%')
-                });
             pgBrowser.Node.panels = pgBrowser.Node.panels || {};
-            pgBrowser.Node.panels[d.id] = p;
+            p = pgBrowser.Node.panels[d.id] = addPanel();
 
             setTimeout(function() {
               o.showProperties(i, d, p, args.action);

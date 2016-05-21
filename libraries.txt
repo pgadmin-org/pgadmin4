@@ -29,3 +29,4 @@ backgrid-paginator  03632df     MIT          https://github.com/wyuenho/backgrid
 backgrid-select-all 1a00053     MIT          https://github.com/wyuenho/backgrid-select-all
 dropzone            4e20bd4     MIT          https://github.com/enyo/dropzone
 Filemanager         7e060c2     MIT          https://github.com/simogeo/Filemanager
+Unit (Length)       d8e6237     MIT          https://github.com/heygrady/Units/blob/master/Length.min.js
