@@ -212,7 +212,7 @@ function(_, pgAdmin, $, Backbone) {
 
           if (obj) {
             if (obj instanceof pgBrowser.DataModel) {
-              obj.reset();
+              obj.reset(opts);
               delete obj;
             } else if (obj instanceof Backbone.Model) {
               obj.clear(opts);
@@ -233,7 +233,7 @@ function(_, pgAdmin, $, Backbone) {
             }
           }
         }
-        this.clear({silent: true});
+        this.clear(opts);
       },
       sessChanged: function() {
         var self = this;

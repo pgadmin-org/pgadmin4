@@ -655,6 +655,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
         return true;
       },
+      removed: function(item) {
+        var self = this;
+        setTimeout(function() { self.clear_cache.apply(self, item); }, 0);
+      },
       refresh: function(n, i) {
         var self = this,
             t = pgBrowser.tree,
