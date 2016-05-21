@@ -2090,23 +2090,32 @@
       '</div>'
     ].join("\n")),
     events: function() {
+      // Inherit all default events of InputControl
       return _.extend({}, Backform.InputControl.prototype.events, {
-            "click .select_item": "onSelect",
-          });
+        "click .select_item": "onSelect"
+      });
     },
-    onSelect: function(e) {
+    onSelect: function(ev) {
       var dialog_type = this.field.get('dialog_type');
           supp_types = this.field.get('supp_types'),
           btn_primary = this.field.get('btn_primary'),
-          dialog_title = this.field.get('dialog_title');
-      var params = {
-        supported_types: supp_types,
-        dialog_type: dialog_type,
-        dialog_title: dialog_title,
-        btn_primary: btn_primary
-      };
+          dialog_title = this.field.get('dialog_title'),
+          params = {
+            supported_types: supp_types,
+            dialog_type: dialog_type,
+            dialog_title: dialog_title,
+            btn_primary: btn_primary
+          };
+
       pgAdmin.FileManager.init();
       pgAdmin.FileManager.show_dialog(params);
+
+      // Stop prograting the event further
+      ev = ev || window.event;
+      if (ev) {
+        ev.cancelBubble = true;
+        ev.stopPropagation();
+      }
     },
     storage_dlg_hander: function(value) {
       var field = _.defaults(this.field.toJSON(), this.defaults),

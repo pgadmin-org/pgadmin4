@@ -12,106 +12,52 @@
 (function($) {
 "use strict";
 
-// User alertify object
-var alertify = require("alertify");
-
+// use alertify and underscore js
+var alertify = require("alertify"),
+    _ = require("underscore");
 
 /*---------------------------------------------------------
   Define functions used for various operations
 ---------------------------------------------------------*/
 
-// function to retrieve GET params
-$.urlParam = function(name) {
-  var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-  if (results) {
-    return results[1];
-  } else {
-    return 0;
-  }
-};
-
+// return file extension
 var getFileExtension = function(name) {
-    var found = name.lastIndexOf('.') + 1;
-    return (found > 0 ? name.substr(found) : "");
+  var found = name.lastIndexOf('.') + 1;
+  return (found > 0 ? name.substr(found) : "");
 };
 
+// returns filename without extension
 var getFileName = function(name) {
   var fm_filename = name;
   if (fm_filename.length > 15 ) {
-      fm_filename = name.substr(0, 10) +'...';
+    fm_filename = name.substr(0, 10) +'...';
   }
   return fm_filename;
 };
 
-// send a request to get transaction id
-var getTransId = function() {
+/* Common function to load:
+ * en.js language file
+ * file_manager_config.js config file
+ * return transaction id
+ */
+var loadData = function(url) {
   return $.ajax({
     async: false,
-    url: "{{ url_for('file_manager.index') }}get_trans_id",
-    dataType: "jsonp"
-  });
-};
-
-// Load language file
-var loadLangFile = function(enjs) {
-  if ($.urlParam('langCode') !== 0 && file_exists (enjs)) {
-    culture = $.urlParam('langCode');
-  }
-  return $.ajax({
-    async: false,
-    url: enjs,
+    url: url,
     dataType: 'jsonp',
     contentType: "application/json; charset=utf-8"
   });
 };
 
-var userconfig = file_manager_config_json;
-
-// We retrieve config settings from filemanager.config.js
-var loadConfigFile = function (type) {
-  type = (typeof type === "undefined") ? "user" : type;
-  var url;
-  if (type == 'user') {
-    url = file_manager_config_json;
-  }
-  return $.ajax({
-    async: false,
-    url: url,
-    dataType: "jsonp",
-    contentType: "application/json; charset=utf-8"
-  });
-};
-
-/*
- * Forces columns to fill the layout vertically.
- * Called on initial page load and on resize.
- */
-var setDimensions = function() {
-  var main_container_height = ( $(window).height() ) / 2 + 35;
-  var newH = main_container_height - $('#uploader').height() - 30;
-};
-
-// Display Min Path
-var displayPath = function(path) {
-  if (config.options.showFullPath === false) {
-    // if a "displayPathDecorator" function is defined, use it to decorate path
-    return 'function' === (typeof displayPathDecorator)
-         ? displayPathDecorator(path)
-         : path.replace(fileRoot, "/");
-  } else {
-    return path;
-  }
-};
-
-// Set the view buttons state
+// Set enable/disable state of list and grid view
 var setViewButtonsFor = function(viewMode) {
-    if (viewMode == 'grid') {
-        $('.grid').addClass('ON');
-        $('.list').removeClass('ON');
-    } else {
-        $('.list').addClass('ON');
-        $('.grid').removeClass('ON');
-    }
+  if (viewMode == 'grid') {
+      $('.grid').addClass('ON');
+      $('.list').removeClass('ON');
+  } else {
+      $('.list').addClass('ON');
+      $('.grid').removeClass('ON');
+  }
 };
 
 /*
@@ -193,10 +139,7 @@ var formatBytes = function(bytes) {
   }
 };
 
-/*
- * Handle Error. Freeze interactive buttons and display
- * error message. Also called when auth() function return false (Code == "-1")
- */
+// Freeze toolbar buttons and display errors
 var handleError = function(errMsg) {
   $('.storage_dialog .newfile').attr("disabled", "disabled");
   $('.storage_dialog .upload').attr("disabled", "disabled");
@@ -207,27 +150,12 @@ var handleError = function(errMsg) {
  * Test if Data structure has the 'cap' capability
  * 'cap' is one of 'select', 'rename', 'delete', 'download'
  */
-function has_capability(data, cap) {
+var has_capability = function(data, cap) {
   if (typeof(data.Capabilities) == "undefined") {
     return true;
   } else {
     return ($.inArray(cap, data.Capabilities) > -1);
   }
-}
-
-// Test if file is authorized
-var isAuthorizedFile = function(filename) {
-  return ((
-    config.security.uploadPolicy == 'DISALLOW_ALL' &&
-    $.inArray(
-      getExtension(filename), config.security.uploadRestrictions
-    ) != -1
-  ) || (
-    config.security.uploadPolicy == 'ALLOW_ALL' &&
-    $.inArray(
-      getExtension(filename), config.security.uploadRestrictions
-    ) == -1
-  ));
 };
 
 // return filename extension
@@ -238,7 +166,7 @@ var getExtension = function(filename) {
   return filename.split('.').pop();
 };
 
-// return filename without extension {
+// return filename without extension
 var getFilename = function(filename) {
   if (filename.lastIndexOf('.') != -1) {
     return filename.substring(0, filename.lastIndexOf('.'));
@@ -250,7 +178,8 @@ var getFilename = function(filename) {
 // helpful in show/hide toolbar button for Windows
 var hideButtons = function() {
     return (
-      config.options.platform_type == 'win32' && $('.currentpath').val() == ''
+      config.options.platform_type == 'win32' &&
+      $('.currentpath').val() === ''
     );
 };
 
@@ -265,7 +194,7 @@ var setUploader = function(path) {
 
   path = decodeURI(path);
 
-  var display_string = displayPath(path),
+  var display_string = path,
       mypath = '';
 
   // split path
@@ -401,7 +330,7 @@ var setUploader = function(path) {
       if (fname != '') {
         foldername = cleanString(fname);
         var d = new Date(); // to prevent IE cache issues
-        $.getJSON(fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername + '&time=' + d.getMilliseconds(), function(resp) {
+        $.getJSON(fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername, function(resp) {
           var result = resp.data.result;
           if (result.Code === 0) {
             alertify.success(lg.successful_added_folder);
@@ -423,16 +352,18 @@ var setUploader = function(path) {
  * and show/hide buttons
  */
 var bindToolbar = function(data) {
-  if (!has_capability(data, 'upload') || hideButtons()) {
-    $('.file_manager').find('button.upload').hide();
-  } else {
-    $('.file_manager').find('button.upload').show();
-  }
 
-  if (!has_capability(data, 'create') || hideButtons()) {
-    $('.file_manager').find('button.create').hide();
-  } else {
-      $('.file_manager').find('button.create').show();
+  // hide/show rename, upload and create button
+  if(_.has(data, 'Capabilities')) {
+    _.each(data.Capabilities, function(cap) {
+      var target_btn = 'button.' + cap,
+          $target_el = $('.file_manager').find(target_btn);
+      if (!has_capability(data, cap) || hideButtons()) {
+        $target_el.hide();
+      } else {
+        $target_el.show();
+      }
+    });
   }
 
   if (!has_capability(data, 'delete') || hideButtons()) {
@@ -484,12 +415,6 @@ var bindToolbar = function(data) {
       }
     });
   }
-
-  if (!has_capability(data, 'rename') || hideButtons()) {
-    $('.file_manager').find('button.rename').hide();
-  } else {
-      $('.file_manager').find('button.rename').show();
-  }
 };
 
 // enable/disable button when files/folder are loaded
@@ -521,26 +446,6 @@ var enable_disable_btn = function() {
   $('.file_manager #uploader h1').show();
   $('.file_manager #uploader .show_selected_file').remove();
 };
-
-// switch to folder view
-$('.file_manager .fileinfo').on('click', function(e) {
-  enable_disable_btn();
-});
-
-
-// refresh current directory
-$('.file_manager .refresh').on('click', function(e) {
-  enable_disable_btn();
-  var curr_path = $('.currentpath').val(),
-      path = curr_path.substring(
-        0, curr_path.lastIndexOf("/")
-      ) + "/";
-  getFolderInfo(path);
-});
-
-/*---------------------------------------------------------
-  Item Actions
----------------------------------------------------------*/
 
 /*
  * Rename the current item and returns the new name.
@@ -660,12 +565,6 @@ var deleteItem = function(data) {
   return isDeleted;
 };
 
-
-// hide message prompt and dimmer if clicked no
-$('.delete_item button.btn_no').on('click', function() {
-  $('.delete_item, .fileinfo .fm_dimmer').hide();
-});
-
 /*---------------------------------------------------------
   Functions to Retrieve File and Folder Details
 ---------------------------------------------------------*/
@@ -771,12 +670,6 @@ var getFolderInfo = function(path, file_type) {
     "<img src='{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}'>"
   );
 
-  // Retrieve the data and generate the markup.
-  var d = new Date(); // to prevent IE cache issues
-  if ($.urlParam('type')) {
-    url += '&type=' + $.urlParam('type');
-  }
-
   var post_data = {
     'path': path,
     'mode': 'getfolder',
@@ -848,7 +741,7 @@ var getFolderInfo = function(path, file_type) {
             } else {
               result +=
                 '<p><input type="text" class="fm_file_rename" />' +
-                '<span title="' + file_name_original+'">' + fm_filename +
+                '<span class="less_text" title="' + file_name_original+'">' + fm_filename +
                 '</span></p>';
             }
             if (props.Width && props.Width != '') {
@@ -919,7 +812,7 @@ var getFolderInfo = function(path, file_type) {
               result += '<span title="' + (data[key]).Filename + '">' +
                 fm_filename + '</span></td>';
             } else {
-              result += '<p><input type="text" class="fm_file_rename"/><span title="' +
+              result += '<p><input type="text" class="fm_file_rename"/><span class="less_text" title="' +
                 file_name_original + '">' + fm_filename + '</span></p></td>';
             }
             if (props.Size && props.Size != '') {
@@ -994,11 +887,12 @@ var getFolderInfo = function(path, file_type) {
                 'table#contents tbody tr.selected td:first-child p'
               ),
               orig_value = decodeURI($this.find('span').html()),
-              newvalue = orig_value.substring(0, orig_value.indexOf('.'));
+              newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
 
-          if (newvalue === '') {
-           newvalue = orig_value;
+          if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {
+            newvalue = decodeURI(orig_value);
           }
+
           $this.find('input').toggle().val(newvalue).focus();
           $this.find('span').toggle();
 
@@ -1116,14 +1010,13 @@ var getFolderInfo = function(path, file_type) {
 
       $('.fileinfo table#contents tr td p').on('dblclick', function(e) {
         e.stopPropagation();
-        // Prompt to rename file/folder
         var $this = $(this),
             orig_value = decodeURI(
               $this.find('span').attr('title')
-            ),
-            newvalue = orig_value.substring(0, orig_value.indexOf('.'));
+            );
 
-        if (newvalue === '') {
+        var newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
+        if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {
           newvalue = orig_value;
         }
 
@@ -1181,6 +1074,7 @@ var getFolderInfo = function(path, file_type) {
       });
 
       var data_cap = {};
+      data_cap.Capabilities = capabilities;
       /*
        * Bind click events
        * Select items - afolder dblclick
@@ -1212,7 +1106,6 @@ var getFolderInfo = function(path, file_type) {
           }
         });
 
-        data_cap.Capabilities = capabilities;
         $('.fileinfo').find('#contents li').click(function(e) {
           e.stopPropagation();
           var path = decodeURI($(this).find('.clip span').attr('data-alt')),
@@ -1243,7 +1136,6 @@ var getFolderInfo = function(path, file_type) {
                 '.file_manager #uploader .filemanager-path-group'
               );
             }
-              //getFolderInfo(path);
           } else {
             if (
               has_capability(data_cap, 'select_file') &&
@@ -1291,12 +1183,14 @@ var getFolderInfo = function(path, file_type) {
               $('.file_manager_ok').removeClass('disabled');
               $('.file_manager button.download').attr('disabled', 'disabled');
               $('.file_manager button.delete, .file_manager button.rename').removeAttr('disabled');
+
               // set selected folder name in breadcrums
               $('.file_manager #uploader h1').hide();
               $('.file_manager #uploader .show_selected_file').remove();
-              $('<span class="show_selected_file">'+path+'</span>').appendTo('.file_manager #uploader .filemanager-path-group');
+              $('<span class="show_selected_file">'+path+'</span>').appendTo(
+                '.file_manager #uploader .filemanager-path-group'
+              );
             }
-            //getFolderInfo(path);
           } else {
             if (has_capability(data_cap, 'select_file') && is_protected == undefined) {
               $(this).parent().find('tr.selected').removeClass('selected');
@@ -1348,7 +1242,6 @@ var getFolderInfo = function(path, file_type) {
 
 // Enable/Disable level up button
 var enab_dis_level_up = function() {
-
   $('.file_manager #uploader h1').show();
   $('.show_selected_file').remove();
 
@@ -1367,11 +1260,16 @@ var enab_dis_level_up = function() {
   }, 100);
 };
 
-// Get transaction id to generate request url and
-// to generate config files on runtime
-var transId = getTransId(),
-    t_id = '',
-    t_res;
+/*---------------------------------------------------------
+  Initialization - Entry point
+---------------------------------------------------------*/
+/*
+ * get transaction id to generate request url and
+ * to generate config files on runtime
+ */
+var fm_url = "{{ url_for('file_manager.index') }}get_trans_id",
+    transId = loadData(fm_url),
+    t_id = '';
 
 if (transId.readyState == 4) {
   t_res = JSON.parse(transId.responseText);
@@ -1382,7 +1280,7 @@ var root_url = '{{ url_for("file_manager.index") }}',
     file_manager_config_json = root_url+t_id+'/file_manager_config.json',
     file_manager_config_js = root_url+'file_manager_config.js',
     fileConnector = root_url+'filemanager/'+t_id+'/',
-    cfg = loadConfigFile(),
+    cfg = loadData(file_manager_config_json),
     config;
 
 // load user configuration file
@@ -1390,6 +1288,7 @@ if (cfg.readyState == 4) {
   config = JSON.parse(cfg.responseText);
 }
 
+// set main url to filemanager and its capabilites
 var fileRoot = config.options.fileRoot,
     capabilities = config.options.capabilities;
 
@@ -1399,16 +1298,13 @@ var fileRoot = config.options.fileRoot,
  */
 var lg = [],
     enjs = '{{ url_for("file_manager.index") }}' + "en.js",
-    lgf = loadLangFile(enjs);
+    lgf = loadData(enjs);
 
 if (lgf.readyState == 4) {
   lg = JSON.parse(lgf.responseText);
 }
 
-// Disable home button on load
-$('.file_manager').find('button.home').attr('disabled', 'disabled');
-$('.file_manager').find('button.rename').attr('disabled', 'disabled');
-
+// create and enable user to create new file
 if (
   config.options.dialog_type == 'select_file' ||
   config.options.dialog_type == 'create_file' ||
@@ -1436,14 +1332,14 @@ if (
         have_all_types = (have_all_types || (t == '*'));
       } else {
         select_box += '<option value="' + t +'">' +
-          (t == '*' ? '{{ _('All Files') }}' : t) + "</option>";
+          (t == '*' ? '{{ _("All Files") }}' : t) + "</option>";
         have_all_types = (have_all_types || (t == '*'));
       }
       i++;
     }
 
     if (!have_all_types) {
-      select_box += '<option value="*">{{ _('All Files') }}</option>';
+      select_box += '<option value="*">{{ _("All Files") }}</option>';
     }
     select_box += "</select><label>{{ _('Format') }}: </label></div>";
   }
@@ -1464,7 +1360,6 @@ if (config.options.dialog_type == 'create_file') {
     '</div>';
 
   $('.create_mode_dlg').find('.allowed_file_types').prepend(create_file_html);
-
   $('.create_input input[type="text"]').on('keypress, keydown', function() {
     var input_text_len = $(this).val().length;
     if (input_text_len > 0 ) {
@@ -1474,258 +1369,218 @@ if (config.options.dialog_type == 'create_file') {
     }
   });
 }
+
 /*---------------------------------------------------------
-  Initialization
+  Item Actions - Object events
 ---------------------------------------------------------*/
 
-$(function() {
-  var expandedFolder = '';
-
-  if (config.extra_js) {
-    for(var i=0; i< config.extra_js.length; i++) {
-      $.ajax({
-        url: config.extra_js[i],
-        dataType: "script",
-        async: extra_js_async
-      });
-    }
-  }
-
-  if ($.urlParam('expandedFolder') != 0) {
-    expandedFolder = $.urlParam('expandedFolder');
-  }
-
-  // Adjust layout.
-  setDimensions();
-
-  // we finalize the FileManager UI initialization
-  // with localized text if necessary
-  if (config.autoload == true) {
-    $('.upload').append(lg.upload);
-    $('.create').append(lg.new_folder);
-    $('.grid').attr('title', lg.grid_view);
-    $('.list').attr('title', lg.list_view);
-    $('.fileinfo h1').append(lg.select_from_left);
-    $('#itemOptions a[href$="#select"]').append(lg.select);
-    $('#itemOptions a[href$=".download"]').append(lg.download);
-    $('#itemOptions a[href$=".rename"]').append(lg.rename);
-    $('#itemOptions a[href$=".delete"]').append(lg.del);
-    /** Input file Replacement */
-    $('.browse').append('+');
-
-    $('.browse').attr('title', lg.browse);
-
-    $(".newfile").change(function() {
-      $(".filepath").val($(this).val());
-    });
-    /** Input file Replacement - end */
-  }
-
-  // stop click event on dimmer click
-  $('.fileinfo .fm_dimmer').on('click', function(e) {
-    e.stopPropagation();
-  });
-
-  $('.fileinfo .replace_file').not(
-    $(this).find('span.pull-right')
-  ).on(
-  'click', function(e) {
-    $('#uploader .filemanager-btn-group').unbind().on(
-      'click', function() {
-        $('.fileinfo .delete_item, .fileinfo .replace_file, .fileinfo .fm_dimmer').hide();
-      });
-    e.stopPropagation();
-  });
-
-  // Set initial view state.
-  $('.fileinfo').data('view', config.options.defaultViewMode);
-  setViewButtonsFor(config.options.defaultViewMode);
-
-  // Upload click event
-  $('.file_manager .uploader').on('click', 'a', function(e) {
-    e.preventDefault();
-    var b = $('.currentpath').val();
-    var node_val = $(this).next().text();
-    parent = b.substring(0, b.slice(0, -1).lastIndexOf(node_val));
-    getFolderInfo(parent);
-  });
-
-  // re-render the home view
-  $('.file_manager .home').click(function() {
-    var currentViewMode = $('.fileinfo').data('view');
-    $('.fileinfo').data('view', currentViewMode);
-    getFolderInfo(fileRoot);
-    enab_dis_level_up();
-  });
-
-  // Go one directory back
-  $(".file_manager .level-up").click(function() {
-    var b = $('.currentpath').val();
-
-    // Enable/Disable level up button
-    enab_dis_level_up();
-
-    if (b != fileRoot) {
-        parent = b.substring(0, b.slice(0, -1).lastIndexOf("/")) + "/";
-        var d = $(".fileinfo").data("view");
-        $(".fileinfo").data("view", d);
-        getFolderInfo(parent);
-    }
-  });
-
-  // set buttons to switch between grid and list views.
-  $('.file_manager .grid').click(function() {
-    setViewButtonsFor('grid');
-    $('.fileinfo').data('view', 'grid');
-    enable_disable_btn();
-    getFolderInfo($('.currentpath').val());
-  });
-
-  // Show list mode
-  $('.file_manager .list').click(function() {
-    setViewButtonsFor('list');
-    $('.fileinfo').data('view', 'list');
-    enable_disable_btn();
-    getFolderInfo($('.currentpath').val());
-  });
-
-  // Provide initial values for upload form, status, etc.
-  setUploader(fileRoot);
-
-  $('#uploader').attr('action', fileConnector);
-
-  var data = {
-    'Capabilities': capabilities
-  };
-
-  if (has_capability(data, 'upload')) {
-    Dropzone.autoDiscover = false;
-    // we remove simple file upload element
-    $('.file-input-container').remove();
-    $('.upload').remove();
-    $( ".create" ).before( '<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload"><span></span></button> ' );
-
-    $('.upload').unbind().click(function() {
-      // we create prompt
-      var msg  = '<div id="dropzone-container">' +
-            '<button class="fa fa-times dz_cross_btn"></button>' +
-            '<div id="multiple-uploads" class="dropzone"></div>' +
-            '<div class="prompt-info">' + lg.file_size_limit +
-            config.upload.fileSizeLimit + ' ' + lg.mb + '.</div>',
-            error_flag = false,
-            path = $('.currentpath').val(),
-            filesizelimit = config.upload.fileSizeLimit,
-            // default dropzone value
-            fileSize = (filesizelimit != 'auto') ? filesizelimit : 256,
-            acceptFiles;
-
-      if (config.security.uploadPolicy == 'DISALLOW_ALL') {
-        acceptFiles = '.' + config.security.uploadRestrictions.join(',.');
-      } else {
-        // We allow any extension since we have no easy way to handle the the
-        // built-in `acceptedFiles` params would be handled later by the
-        // connector.
-        acceptFiles = null;
-      }
-
-      if ($.urlParam('type').toString().toLowerCase() == 'images' || config.upload.imagesOnly) {
-        acceptFiles = '.' + config.images.imagesExt.join(',.');
-      }
-
-      $('.file_manager .upload_file').toggle();
-      $('.file_manager .upload_file').html(msg);
-
-      //var previewTemplate = '<div id="dropzone-container">';
-      var previewTemplate = '<div class="file_upload_main dz-preview dz-file-preview">'+
-            '<div class="show_error">' +
-            '<p class="size dz-size" data-dz-size></p>' +
-            '<p class="name dz-filename" data-dz-name></p>' +
-            '</div>' +
-            '<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>' +
-            '<div class="dz-success-mark"><span></span></div>' +
-            '<div class="dz-error-mark"><span></span></div>' +
-            '<div class="dz-error-message"><span data-dz-errormessage></span></div>' +
-            '<a href="javascript:void(0);" class="fa fa-trash dz_file_remove" data-dz-remove></a>' +
-            '</div>';
-
-      $("div#multiple-uploads").dropzone({
-        paramName: "newfile",
-        url: fileConnector + '?config=' + userconfig,
-        maxFilesize: fileSize,
-        maxFiles: config.upload.number,
-        addRemoveLinks: true,
-        previewTemplate: previewTemplate,
-        parallelUploads: config.upload.number,
-        dictMaxFilesExceeded: lg.dz_dictMaxFilesExceeded.replace(
-          "%s", config.upload.number
-        ),
-        dictDefaultMessage: lg.dz_dictDefaultMessage,
-        dictInvalidFileType: lg.dz_dictInvalidFileType,
-        dictFileTooBig: lg.file_too_big + ' ' + lg.file_size_limit +
-          config.upload.fileSizeLimit + ' ' + lg.mb,
-        acceptedFiles: acceptFiles,
-        autoProcessQueue: true,
-        init: function() {
-          var dropzone = this;
-
-          $('.dz_cross_btn').unbind().on('click', function() {
-            $('.file_manager .upload_file').toggle();
-          });
-        },
-        sending: function(file, xhr, formData) {
-          formData.append("mode", "add");
-          formData.append("currentpath", path);
-          $('.upload_file .dz_cross_btn').attr('disabled', 'disabled');
-          setTimeout(function() {}, 10000);
-        },
-        success: function(file, response) {
-          var response = jQuery.parseJSON(response),
-              data = response.data.result,
-              $this = $(file.previewTemplate);
-
-          if (data.Code == 0) {
-            setTimeout(function() {
-              $this.find(".dz-upload").addClass("success");
-            }, 1000);
-            $this.find(".dz-upload").css('width', "100%").html("100%");
-            alertify.success(lg.upload_success);
-          } else {
-            $this.find(".dz-upload").addClass("error");
-            $this.find(".dz-upload").css('width', "0%").html("0%");
-            alertify.error(data.Error);
-          }
-          getFolderInfo(path);
-        },
-        totaluploadprogress: function(progress) {},
-        complete: function(file) {
-          if (
-            this.getUploadingFiles().length === 0 &&
-            this.getQueuedFiles().length === 0
-          ) {}
-          if (file.status == "error") {
-            alertify.error(lg.ERROR_UPLOADING_FILE);
-          }
-          $('.upload_file .dz_cross_btn').removeAttr('disabled');
-          getFolderInfo(path);
-        }
-      });
-    });
-  }
-
-  // Disable select function if no window.opener
-  if (! (window.opener || window.tinyMCEPopup) ) {
-    $('#itemOptions a[href$="#select"]').remove();
-  }
-  // Keep only browseOnly features if needed
-  if (config.options.browseOnly == true) {
-    $('.newfile').remove();
-    $('.upload').remove();
-    $('.create').remove();
-    $('#toolbar').remove('.rename');
-    $('.contextMenu .rename').remove();
-    $('.contextMenu .delete').remove();
-  }
-  getDetailView(fileRoot + expandedFolder);
+// switch to folder view
+$('.file_manager .fileinfo').on('click', function(e) {
+  enable_disable_btn();
 });
 
+// refresh current directory
+$('.file_manager .refresh').on('click', function(e) {
+  enable_disable_btn();
+  var curr_path = $('.currentpath').val(),
+      path = curr_path.substring(
+        0, curr_path.lastIndexOf("/")
+      ) + "/";
+  getFolderInfo(path);
+});
+
+// hide message prompt and dimmer if clicked no
+$('.delete_item button.btn_no').on('click', function() {
+  $('.delete_item, .fileinfo .fm_dimmer').hide();
+});
+
+// Disable home button on load
+$('.file_manager').find('button.home').attr('disabled', 'disabled');
+$('.file_manager').find('button.rename').attr('disabled', 'disabled');
+
+// stop click event on dimmer click
+$('.fileinfo .fm_dimmer').on('click', function(e) {
+  e.stopPropagation();
+});
+
+$('.fileinfo .replace_file').not(
+  $(this).find('span.pull-right')
+).on(
+'click', function(e) {
+  $('#uploader .filemanager-btn-group').unbind().on(
+    'click', function() {
+      $('.fileinfo .delete_item, .fileinfo .replace_file, .fileinfo .fm_dimmer').hide();
+    });
+  e.stopPropagation();
+});
+
+// Set initial view state.
+$('.fileinfo').data('view', config.options.defaultViewMode);
+setViewButtonsFor(config.options.defaultViewMode);
+
+// Upload click event
+$('.file_manager .uploader').on('click', 'a', function(e) {
+  e.preventDefault();
+  var b = $('.currentpath').val();
+  var node_val = $(this).next().text();
+  parent = b.substring(0, b.slice(0, -1).lastIndexOf(node_val));
+  getFolderInfo(parent);
+});
+
+// re-render the home view
+$('.file_manager .home').click(function() {
+  var currentViewMode = $('.fileinfo').data('view');
+  $('.fileinfo').data('view', currentViewMode);
+  getFolderInfo(fileRoot);
+  enab_dis_level_up();
+});
+
+// Go one directory back
+$(".file_manager .level-up").click(function() {
+  var b = $('.currentpath').val();
+
+  // Enable/Disable level up button
+  enab_dis_level_up();
+
+  if (b != fileRoot) {
+      parent = b.substring(0, b.slice(0, -1).lastIndexOf("/")) + "/";
+      var d = $(".fileinfo").data("view");
+      $(".fileinfo").data("view", d);
+      getFolderInfo(parent);
+  }
+});
+
+// set buttons to switch between grid and list views.
+$('.file_manager .grid').click(function() {
+  setViewButtonsFor('grid');
+  $('.fileinfo').data('view', 'grid');
+  enable_disable_btn();
+  getFolderInfo($('.currentpath').val());
+});
+
+// Show list mode
+$('.file_manager .list').click(function() {
+  setViewButtonsFor('list');
+  $('.fileinfo').data('view', 'list');
+  enable_disable_btn();
+  getFolderInfo($('.currentpath').val());
+});
+
+// Provide initial values for upload form, status, etc.
+setUploader(fileRoot);
+
+$('#uploader').attr('action', fileConnector);
+
+var data = {
+  'Capabilities': capabilities
+};
+
+// Upload file
+if (has_capability(data, 'upload')) {
+  Dropzone.autoDiscover = false;
+  // we remove simple file upload element
+  $('.file-input-container').remove();
+  $('.upload').remove();
+  $( ".create" ).before( '<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload"><span></span></button> ' );
+
+  $('.upload').unbind().click(function() {
+    // we create prompt
+    var msg  = '<div id="dropzone-container">' +
+          '<button class="fa fa-times dz_cross_btn"></button>' +
+          '<div id="multiple-uploads" class="dropzone"></div>' +
+          '<div class="prompt-info">' + lg.file_size_limit +
+          config.upload.fileSizeLimit + ' ' + lg.mb + '.</div>',
+          error_flag = false,
+          path = $('.currentpath').val(),
+          filesizelimit = config.upload.fileSizeLimit,
+          // default dropzone value
+          fileSize = (filesizelimit != 'auto') ? filesizelimit : 256,
+          acceptFiles;
+
+    if (config.security.uploadPolicy == 'DISALLOW_ALL') {
+      acceptFiles = '.' + config.security.uploadRestrictions.join(',.');
+    } else {
+      // We allow any extension since we have no easy way to handle the the
+      // built-in `acceptedFiles` params would be handled later by the
+      // connector.
+      acceptFiles = null;
+    }
+
+    $('.file_manager .upload_file').toggle();
+    $('.file_manager .upload_file').html(msg);
+
+    //var previewTemplate = '<div id="dropzone-container">';
+    var previewTemplate = '<div class="file_upload_main dz-preview dz-file-preview">'+
+          '<div class="show_error">' +
+          '<p class="size dz-size" data-dz-size></p>' +
+          '<p class="name dz-filename" data-dz-name></p>' +
+          '</div>' +
+          '<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>' +
+          '<div class="dz-success-mark"><span></span></div>' +
+          '<div class="dz-error-mark"><span></span></div>' +
+          '<div class="dz-error-message"><span data-dz-errormessage></span></div>' +
+          '<a href="javascript:void(0);" class="fa fa-trash dz_file_remove" data-dz-remove></a>' +
+          '</div>';
+
+    $("div#multiple-uploads").dropzone({
+      paramName: "newfile",
+      url: fileConnector,
+      maxFilesize: fileSize,
+      maxFiles: config.upload.number,
+      addRemoveLinks: true,
+      previewTemplate: previewTemplate,
+      parallelUploads: config.upload.number,
+      dictMaxFilesExceeded: lg.dz_dictMaxFilesExceeded.replace(
+        "%s", config.upload.number
+      ),
+      dictDefaultMessage: lg.dz_dictDefaultMessage,
+      dictInvalidFileType: lg.dz_dictInvalidFileType,
+      dictFileTooBig: lg.file_too_big + ' ' + lg.file_size_limit +
+        config.upload.fileSizeLimit + ' ' + lg.mb,
+      acceptedFiles: acceptFiles,
+      autoProcessQueue: true,
+      init: function() {
+        var dropzone = this;
+
+        $('.dz_cross_btn').unbind().on('click', function() {
+          $('.file_manager .upload_file').toggle();
+        });
+      },
+      sending: function(file, xhr, formData) {
+        formData.append("mode", "add");
+        formData.append("currentpath", path);
+        $('.upload_file .dz_cross_btn').attr('disabled', 'disabled');
+        setTimeout(function() {}, 10000);
+      },
+      success: function(file, response) {
+        var response = jQuery.parseJSON(response),
+            data = response.data.result,
+            $this = $(file.previewTemplate);
+
+        if (data.Code == 0) {
+          setTimeout(function() {
+            $this.find(".dz-upload").addClass("success");
+          }, 1000);
+          $this.find(".dz-upload").css('width', "100%").html("100%");
+          alertify.success(lg.upload_success);
+        } else {
+          $this.find(".dz-upload").addClass("error");
+          $this.find(".dz-upload").css('width', "0%").html("0%");
+          alertify.error(data.Error);
+        }
+        getFolderInfo(path);
+      },
+      totaluploadprogress: function(progress) {},
+      complete: function(file) {
+        if (file.status == "error") {
+          alertify.error(lg.ERROR_UPLOADING_FILE);
+        }
+        $('.upload_file .dz_cross_btn').removeAttr('disabled');
+        getFolderInfo(path);
+      }
+    });
+  });
+}
+getDetailView(fileRoot);
 })(jQuery);
+//@ sourceURL=utility.js

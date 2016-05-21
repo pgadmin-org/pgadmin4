@@ -677,6 +677,7 @@ class Filemanager(object):
         dir = self.dir
         err_msg = ''
         code = 1
+        name = unquote(name)
         try:
             orig_path = "{0}{1}".format(dir, path)
             newName = '{0}{1}'.format(orig_path, name)
@@ -689,40 +690,7 @@ class Filemanager(object):
 
         result = {
             'Path': path,
-            'Name': newName,
-            'Error': err_msg,
-            'Code': code
-        }
-
-        return result
-
-    def create_file(self, path, name, req=None):
-        """
-        Create new file functionality
-        """
-        if not self.validate_request('create'):
-            return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
-            }
-
-        dir = self.dir
-        err_msg = ''
-        code = 1
-        try:
-            orig_path = "{0}{1}".format(dir, path)
-            newName = '{0}{1}'.format(orig_path, name)
-            if not os.path.exists(newName):
-                open(newName, 'w')
-                code = 0
-            else:
-                err_msg = gettext("Error: File already exists")
-        except Exception as e:
-            err_msg = "Error: {0}".format(e.strerror)
-
-        result = {
-            'Path': path,
-            'Name': newName,
+            'Name': name,
             'Error': err_msg,
             'Code': code
         }

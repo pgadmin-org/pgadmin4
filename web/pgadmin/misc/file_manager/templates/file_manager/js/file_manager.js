@@ -131,7 +131,7 @@ define([
                 //closeEvent.cancel = true;
               }
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid'){
+                if($('.fileinfo').data('view') == 'grid') {
                   sel_file = $('.fileinfo').find('#contents li.selected p span').attr('title');
                 } else {
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
@@ -239,7 +239,7 @@ define([
             },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid'){
+                if($('.fileinfo').data('view') == 'grid') {
                   sel_file = $('.fileinfo').find('#contents li.selected  p span').attr('title');
                 } else {
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
@@ -346,7 +346,7 @@ define([
             },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid'){
+                if($('.fileinfo').data('view') == 'grid') {
                   sel_file = $('.fileinfo').find('#contents li.selected p span').attr('title');
                 } else {
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
@@ -481,9 +481,9 @@ define([
                 dataType: 'json',
                 contentType: "application/x-download; charset=utf-8",
                 async: false,
-                success: function(resp){
+                success: function(resp) {
                   data = resp.data.result;
-                  if(data['Code'] === 0){
+                  if(data['Code'] === 0) {
                     is_exist = true;
                   } else {
                     is_exist = false;
@@ -492,39 +492,8 @@ define([
               });
               return is_exist;
             },
-            create_file: function() {
-              var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
-                  is_exist = false,
-                  is_created = false;
-
-              var post_data = {
-                'path': $('.currentpath').val(),
-                'name': selected_item,
-                'mode': 'create_file'
-              };
-
-              $.ajax({
-                type: 'POST',
-                data: JSON.stringify(post_data),
-                url: fileConnector + trans_id+'/',
-                dataType: 'json',
-                contentType: "application/x-download; charset=utf-8",
-                async: false,
-                success: function(resp){
-                  data = resp.data.result;
-                  if(data['Code'] === 0){
-                    alertify.success("New File created successfully.");
-                    is_created = true;
-                  } else {
-                    alertify.error(data['Error']);
-                    return false;
-                  }
-                }
-              });
-              return is_created;
-            },
             callback: function(closeEvent) {
-              if (closeEvent.button.text == "{{ _('Create') }}"){
+              if (closeEvent.button.text == "{{ _('Create') }}") {
                 var selected_item = $('.allowed_file_types .create_input input[type="text"]').val();
                 var newFile = $('.currentpath').val() + selected_item;
                 newFile = newFile.substr(1);
@@ -533,17 +502,11 @@ define([
                   closeEvent.cancel = true;
                 }
                 else {
-                  var is_created = this.create_file();
-                  if (is_created) {
-                    pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
-                    removeTransId(trans_id);
-                  }
-                  else {
-                    closeEvent.cancel = true;
-                  }
+                  pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
+                  removeTransId(trans_id);
                 }
               }
-              if (closeEvent.button.text == "{{ _('Cancel') }}"){
+              if (closeEvent.button.text == "{{ _('Cancel') }}") {
                 removeTransId(trans_id);
               }
             },

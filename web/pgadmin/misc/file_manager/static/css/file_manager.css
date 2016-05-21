@@ -40,9 +40,12 @@
   overflow: auto;
   /* no margin or border allowed */
 }
+.file_listing #contents.grid li.selected {
+  border: 1px solid #D9EDF7;
+}
 
-.fileinfo #contents li.selected, .fileinfo #contents tbody tr.selected {
-  background: #D9EDF7;
+.file_listing #contents.grid li.selected, .fileinfo #contents tbody tr.selected {
+  background: #D9EDF7 !important;
 }
 
 .fileinfo #contents li .fm_file_rename,
@@ -52,6 +55,17 @@
   margin: 0 auto;
   text-align: center;
   height: 17px;
+}
+
+.fileinfo #contents li p > span.less_text,
+.fileinfo table#contents tr td:first-child p span.less_text {
+  width: 100%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  padding: 0 10px;
 }
 
 .fileinfo table#contents tr td p {
@@ -164,13 +178,14 @@ x:-o-prefocus, .file-input-container {top:16px;width:198px;}
   display: block;
   float: left;
   width: 100px;
-  min-height: 80px;
+  height: 80px;
   text-align: center;
   overflow: hidden;
   margin-bottom: 10px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
+  border: 1px solid #fff;
 }
 
 div.clip {
@@ -199,12 +214,12 @@ div.clip {
 
 .file_listing #contents.list thead {
   background: rgb(244,241,237); /* Old browsers */
-  background: -moz-linear-gradient(top, rgba(244,241,237,1) 0%, rgba(214,212,209,1) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(244,241,237,1)), color-stop(100%,rgba(214,212,209,1))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* IE10+ */
-  background: linear-gradient(to bottom, rgba(244,241,237,1) 0%,rgba(214,212,209,1) 100%); /* W3C */
+  background: -moz-linear-gradient(top, rgba(44, 118, 180, 0.71) 0%, rgba(44, 118, 180, 0.98) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(44, 118, 180, 0.71)), color-stop(100%,rgba(44, 118, 180, 0.98))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(44, 118, 180, 0.71) 0%,rgba(44, 118, 180, 0.98) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(44, 118, 180, 0.71) 0%,rgba(44, 118, 180, 0.98) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(44, 118, 180, 0.71) 0%,rgba(44, 118, 180, 0.98) 100%); /* IE10+ */
+  background: linear-gradient(to bottom, rgba(44, 118, 180, 0.71) 0%,rgba(44, 118, 180, 0.98) 100%)
   border-bottom: 1px solid #ccc;
   display: inline-block;
   width: 100%;
@@ -213,6 +228,7 @@ div.clip {
 .file_listing #contents.list th {
   font-weight: bold;
   cursor: pointer;
+  color: #fff;
 }
 
 .file_listing #contents.list th.tablesorter-headerAsc,
@@ -226,15 +242,11 @@ div.clip {
   background: linear-gradient(to bottom, rgba(214,212,209,1) 0%,rgba(244,241,237,1) 100%); /* W3C */
 }
 
-.file_listing #contents.list td {
-  border-bottom: 1px dotted #ccc;
-}
-
 .file_listing #contents.list td:first-child {
   display: table-cell;
   padding-left: 0;
   width: 100%;
-  padding-left: 22px;
+  padding-left: 12px;
   background-repeat: no-repeat;
   background-position: 3px center;
 }
@@ -253,16 +265,15 @@ div.clip {
   margin-right: 5px;
 }
 
-.file_listing #contents.list tbody tr:hover {
-  background-color: #eee;
-  cursor: pointer;
+.file_listing #contents.list tbody tr:nth-child(even):hover {
+  background-color: #f5f5f5 !important;
 }
 
 .file_listing #contents.grid li:hover {
   border: 1px solid #E5E5E5;
   background-color: #F7F7F7;
   cursor: pointer;
-  max-height: 78px;
+  height: 80px;
 }
 
 .meta {
@@ -320,7 +331,8 @@ button.list span {
   top: 0;
 }
 
-.btn-group.filemanager-btn-group .btn:not(:first-child):not(:last-child) {
+.btn-group.filemanager-btn-group .btn:not(:first-child):not(:last-child),
+.btn-group.filemanager-path-group .btn:not(:first-child):not(:last-child) {
   border-left: 1px solid #A9A9A9;
 }
 
@@ -377,6 +389,14 @@ button.list span {
   width: 100%;
 }
 
+.file_manager .fileinfo #contents tbody tr:nth-child(even) {
+  background: #eee;
+}
+
+.file_manager .fileinfo #contents thead tr th:not(:first-child) {
+  border-left: 1px solid #fff;
+}
+
 .file_manager .fileinfo #contents thead tr th:nth-child(1),
 .file_manager .fileinfo #contents tbody tr td:nth-child(1) {
   position: relative;
@@ -389,6 +409,7 @@ button.list span {
   width: 152px;
   min-width: 152px;
   max-width: 152px;
+  padding-left: 10px;
 }
 
 .file_manager .fileinfo #contents tbody tr td:nth-child(2) {
@@ -401,12 +422,13 @@ button.list span {
   width: 197px;
   min-width: 197px;
   max-width: 197px;
+  padding-left: 10px;
 }
 
 .file_manager .fileinfo #contents tbody tr td:nth-child(3) {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
+  width: 177px;
+  min-width: 177px;
+  max-width: 177px;
 }
 
 .file_manager .fileinfo #contents tbody {
@@ -415,10 +437,12 @@ button.list span {
   width: 100%;
   height: calc(100% - 30px);
 }
+
 .file_manager .fileinfo #contents tbody tr{
-  display: table;
+  /*display: table;*/
   max-width: 100%;
   width: 100%;
+  cursor: pointer;
 }
 
 .file_manager .upload_file {
@@ -457,11 +481,14 @@ button.list span {
 }
 
 .file_manager #uploader .btn-group .show_selected_file {
-  float: left;
-  text-align: left;
   vertical-align: middle;
+  text-align: left;
   padding: 4px 0 0 5px;
-  height: 100%;
+  display: inline-block;
+  overflow: hidden;
+  width: calc(100% - 73px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fileinfo .file_listing {
@@ -559,6 +586,7 @@ button.list span {
 }
 
 .file_upload_main .dz-progress {
+  height: 21px !important;
   top: 83px !important;
   border: 1px solid #8a6d3b;
   border-radius: 0 !important;
@@ -655,7 +683,7 @@ a.dz-remove {
 .file_manager .fileinfo #contents .fa-lock.tbl_lock_icon {
   color: red;
   position: absolute;
-  left: 29px;
+  left: 19px;
   top: 5px;
   font-size: 10px;
 }
@@ -676,8 +704,9 @@ a.dz-remove {
 .file_listing .no_folder_found {
   text-align: center;
   position: absolute;
-  top: 35;
+  top: 35px;
   width: 100%;
+  font-size: 14px;
 }
 
 .fileinfo .is_file_replace {
