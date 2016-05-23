@@ -486,7 +486,7 @@
   var Dialog = Backform.Dialog = Backform.Form.extend({
     /* Array of objects having attributes [label, fields] */
     schema: undefined,
-    tagName: "form",
+    tagName: "div",
     legend: true,
     className: function() {
       return 'col-sm-12 col-md-12 col-lg-12 col-xs-12';
@@ -2204,13 +2204,6 @@
 
       pgAdmin.FileManager.init();
       pgAdmin.FileManager.show_dialog(params);
-
-      // Stop prograting the event further
-      ev = ev || window.event;
-      if (ev) {
-        ev.cancelBubble = true;
-        ev.stopPropagation();
-      }
     },
     storage_dlg_hander: function(value) {
       var field = _.defaults(this.field.toJSON(), this.defaults),
