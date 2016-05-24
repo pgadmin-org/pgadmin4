@@ -591,7 +591,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                 target: m.target, icon: m.icon,
                 enable: (m.enable == '' ? true : (_.isString(m.enable) &&
                    m.enable.toLowerCase() == 'false') ?
-                  false : m.enable)
+                  false : m.enable),
+                node: m.node
               });
             }
           } else  {

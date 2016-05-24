@@ -9,7 +9,7 @@ function(_, S, pgAdmin, $) {
   var MenuItem = pgAdmin.Browser.MenuItem = function(opts) {
     var menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
-      'category', 'target', 'url', 'icon'
+      'category', 'target', 'url', 'icon', 'node'
     ],
     defaults = {
       url: '#',
@@ -119,8 +119,20 @@ function(_, S, pgAdmin, $) {
      * Checks this menu enable/disable state based on the selection.
      */
     disabled: function(node, item) {
-      if (this.enable == undefined)
-          return false;
+      if (this.enable == undefined) {
+        return false;
+      }
+
+      if (this.node) {
+        if (!node) {
+          return true;
+        }
+        if (_.isArray(this.node) ? (
+          _.indexOf(this.node, node) == -1
+        ) : (this.node != node._type)) {
+          return true;
+        }
+      }
 
       if (_.isBoolean(this.enable)) return !this.enable;
       if (_.isFunction(this.enable)) return !this.enable.apply(this.module, [node, item, this.data]);
