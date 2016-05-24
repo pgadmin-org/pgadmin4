@@ -41,6 +41,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       label: '{{ _("View") }}',
       hasSQL:  true,
       hasDepends: true,
+      hasScriptTypes: ['create', 'select', 'insert'],
       collection_type: 'coll-view',
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,

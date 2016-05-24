@@ -41,6 +41,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
       label: '{{ _("Materialized View") }}',
       hasSQL:  true,
       hasDepends: true,
+      hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,

@@ -164,7 +164,9 @@ def check_precondition(f):
 
         # Here args[0] will hold self & kwargs will hold gid,sid,did
         self = args[0]
-        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+        pg_driver = get_driver(PG_DEFAULT_DRIVER)
+        self.qtIdent = pg_driver.qtIdent
+        self.manager = pg_driver.connection_manager(
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
@@ -182,6 +184,12 @@ def check_precondition(f):
             if self.manager.server_type == 'ppas' else
             self.pg_template_path(self.manager.version)
             )
+
+        ver = self.manager.version
+        if ver >= 90200:
+            self.column_template_path = 'column/sql/9.2_plus'
+        else:
+            self.column_template_path = 'column/sql/9.1_plus'
 
         return f(*args, **kwargs)
 
@@ -232,6 +240,15 @@ class ViewNode(PGChildNodeView, VacuumSettings):
       - This function will generate sql to show it in sql pane for the view
         node.
 
+    * refresh_data(gid, sid, did, scid, vid):
+      - This function will refresh view object
+
+    * select_sql(gid, sid, did, scid, vid):
+      - Returns select sql for Object
+
+    * insert_sql(gid, sid, did, scid, vid):
+      - Returns INSERT Script sql for the object
+
     * dependency(gid, sid, did, scid):
       - This function will generate dependency list show it in dependency
         pane for the selected view node.
@@ -271,6 +288,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         'module.js': [{}, {}, {'get': 'module_js'}],
         'configs': [{'get': 'configs'}],
         'get_tblspc': [{'get': 'get_tblspc'}, {'get': 'get_tblspc'}],
+        'select_sql': [{'get': 'select_sql'}, {'get': 'select_sql'}],
+        'insert_sql': [{'get': 'insert_sql'}, {'get': 'insert_sql'}],
         'get_table_vacuum': [
           {'get': 'get_table_vacuum'},
           {'get': 'get_table_vacuum'}],
@@ -848,6 +867,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         generate their sql and render
         into sql tab
         """
+        from pgadmin.browser.server_groups.servers.databases.schemas.utils \
+            import trigger_definition
 
         # Define template path
         self.trigger_temp_path = 'trigger'
@@ -1046,6 +1067,124 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             response=dependencies_result,
             status=200
             )
+
+    @check_precondition
+    def select_sql(self, gid, sid, did, scid, vid):
+        """
+        SELECT script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            vid: View Id
+
+        Returns:
+            SELECT Script sql for the object
+        """
+        SQL = render_template(
+            "/".join([
+                self.template_path, 'sql/properties.sql'
+            ]),
+            scid=scid, vid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        data_view = res['rows'][0]
+
+        SQL = render_template(
+            "/".join([
+                self.column_template_path, 'properties.sql'
+            ]),
+            scid=scid, tid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, data = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        columns = []
+
+        # Now we have all list of columns which we need
+        data = data['rows']
+        for c in data:
+            columns.append(self.qtIdent(self.conn, c['name']))
+
+        if len(columns) > 0:
+            columns = ", ".join(columns)
+        else:
+            columns = '*'
+
+        sql = "SELECT {0}\n\tFROM {1};".format(
+            columns,
+            self.qtIdent(self.conn, data_view['schema'], data_view['name'])
+        )
+
+        return ajax_response(response=sql)
+
+    @check_precondition
+    def insert_sql(self, gid, sid, did, scid, vid):
+        """
+        INSERT script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+
+        Returns:
+            INSERT Script sql for the object
+        """
+        SQL = render_template(
+            "/".join([
+                self.template_path, 'sql/properties.sql'
+            ]),
+            scid=scid, vid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        data_view = res['rows'][0]
+
+        SQL = render_template(
+            "/".join([
+                self.column_template_path, 'properties.sql'
+            ]),
+            scid=scid, tid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, data = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=data)
+
+        columns = []
+        values = []
+
+        # Now we have all list of columns which we need
+        data = data['rows']
+        for c in data:
+            columns.append(self.qtIdent(self.conn, c['name']))
+            values.append('?')
+
+        if len(columns) > 0:
+            columns = ", ".join(columns)
+            values = ", ".join(values)
+            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+                self.qtIdent(
+                    self.conn, data_view['schema'], data_view['name']
+                ),
+                columns, values
+            )
+        else:
+            sql = gettext('-- Please create column(s) first...')
+
+        return ajax_response(response=sql)
 
 
 class MaterializedViewNode(ViewNode, VacuumSettings):
