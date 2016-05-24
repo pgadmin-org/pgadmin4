@@ -5,7 +5,7 @@ Code Review Notes
 This document lists a number of standard items that will be checked during the
 review process for any patches submitted for inclusion in pgAdmin.
 
-* Ensure all code follows the pgAdmin :doc:`coding-standards`.
+* Ensure all code follows the pgAdmin :doc:`coding_standards`.
 
 * Copyright years must be correct and properly formatted (to make it easy to make
   bulk updates every year). The start date should always be 2013, and the end year
