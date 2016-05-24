@@ -512,6 +512,16 @@ class ViewCommand(GridCommand):
         return True
 
 
+class MViewCommand(ViewCommand):
+    """
+    class MViewCommand(ViewCommand)
+
+        It is a derived class for View type has
+        same functionality of View
+    """
+    object_type = 'mview'
+
+
 class ForeignTableCommand(GridCommand):
     """
     class ForeignTableCommand(GridCommand)

@@ -20,7 +20,7 @@ define(
 
         // Define list of nodes on which view data option appears
         var supported_nodes = [
-           'table', 'view',
+           'table', 'view', 'mview',
            'foreign-table', 'catalog_object'
         ],
 
