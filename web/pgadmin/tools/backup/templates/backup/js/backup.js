@@ -631,11 +631,9 @@ TODO LIST FOR BACKUP:
                   // If selected node is Table then add it in model along with
                   // its schema
                   if(d._type == 'table') {
-                    var tables = [],
-                      selected_table = [];
-                    selected_table.push(treeInfo.schema.label)
-                    selected_table.push(d.label);
-                    this.view.model.set('tables', selected_table);
+                    this.view.model.set(
+                      'tables', [[treeInfo.schema.label, d.label]]
+                    );
                   }
 
                   var self = this,
@@ -664,11 +662,11 @@ TODO LIST FOR BACKUP:
                     }
                   });
                 }
-             }
-          };
-        });
-      }
-      alertify.backup_objects(title).resizeTo('65%','60%');
+              }
+            };
+          });
+        }
+        alertify.backup_objects(title).resizeTo('65%','60%');
       }
     };
     return pgBrowser.Backup;

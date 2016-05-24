@@ -430,7 +430,7 @@ def create_backup_objects_job(sid):
 
     for s, t in data['tables']:
         args.extend([
-            '--table', driver.qtIdent(conn, s) + '.' + driver.qtIdent(conn, t)
+            '--table', driver.qtIdent(conn, s, t)
         ])
 
     args.append(driver.qtIdent(conn, data['database']))
