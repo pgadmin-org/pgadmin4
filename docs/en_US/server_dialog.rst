@@ -1,16 +1,19 @@
-*************
-Server Dialog
-*************
+.. _server:
 
-Use the *Server* dialog to describe a connection to a server. Note: you must ensure the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client.
+*****************
+The Server Dialog 
+*****************
 
-The *Server* dialog organizes the connection of a server through the following dialog tabs: *General*, and *Connection*.
+Use the *Server* dialog to describe a connection to a server. Note: you must ensure the pg_hba.conf file of the server from which you are connecting allows connections from the host of the client. 
+
+The *Server* dialog organizes the connection of a server through the following dialog tabs: *General*, and *Connection*. 
 
 .. image:: images/server_general.png
 
 Use the fields in the *General* tab to identify the server:
 
-* Use the *Name* field to add a descriptive name for the server; the name specified will be displayed in the tree control of the client.
+* Use the drop-down list box in the *Server Group* field to specify the *pgAdmin* tree control parent node for the server.
+* Use the *Name* field to add a descriptive name for the server; the name specified will be displayed in the *pgAdmin* tree control of the client. 
 * Provide a comment about the server in the *Comments* field.
 
 Click the *Connection* tab to continue.
@@ -26,7 +29,9 @@ Use the fields in the *Connection* tab to configure a connection:
 * Use the *Role* field to specify the name of a role that has privileges that will be conveyed to the client after authentication with the server. This selection allows you to connect as one role, and then assume the permissions of this specified role after the connection is established. Note that the connecting role must be a member of the role specified.
 * Use the drop-down list box in the SSL field to select the type of SSL connection the server should use. For more information about using SSL encryption, see Section 31.18 of the Postgres documentation:
    
-   http://www.postgresql.org/docs/9.5/static/libpq-ssl.html
+   http://www.postgresql.org/docs/9.5/static/libpq-ssl.html  
 
-
+* Click the *Save* button to save work.
+* Click the *Cancel* button to exit without saving work.
+* Click the *Reset* button to restore configuration parameters.
   
