@@ -427,14 +427,17 @@ class BrowserPluginModule(PgAdminModule):
 def index():
     """Render and process the main browser window."""
     # Get the Gravatar
-    Gravatar(current_app,
-             size=100,
-             rating='g',
-             default='retro',
-             force_default=False,
-             use_ssl=False,
-             base_url=None)
+    Gravatar(
+        current_app,
+        size=100,
+        rating='g',
+        default='retro',
+        force_default=False,
+        use_ssl=False,
+        base_url=None
+    )
 
+    msg = None
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
     if config.UPGRADE_CHECK_ENABLED:
@@ -447,7 +450,9 @@ def index():
             # It stuck on rendering the browser.html, while working in the
             # broken network.
             response = urlreq.urlopen(url, data, 5)
-            current_app.logger.debug('Version check HTTP response code: %d' % response.getcode())
+            current_app.logger.debug(
+                'Version check HTTP response code: %d' % response.getcode()
+            )
 
             if response.getcode() == 200:
                 data = json.load(response)
@@ -455,13 +460,15 @@ def index():
         except:
             pass
 
-        if data != None:
+        if data is not None:
             if data['pgadmin4']['version'] != config.APP_VERSION:
-                msg = render_template(MODULE_NAME + "/upgrade.html",
-                                      current_version=config.APP_VERSION,
-                                      upgrade_version=data['pgadmin4']['version'],
-                                      product_name=config.APP_NAME,
-                                      download_url=data['pgadmin4']['download_url'])
+                msg = render_template(
+                    MODULE_NAME + "/upgrade.html",
+                    current_version=config.APP_VERSION,
+                    upgrade_version=data['pgadmin4']['version'],
+                    product_name=config.APP_NAME,
+                    download_url=data['pgadmin4']['download_url']
+                )
 
                 flash(msg, 'warning')
 
