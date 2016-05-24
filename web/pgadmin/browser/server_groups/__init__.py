@@ -198,6 +198,18 @@ class ServerGroupView(NodeView):
         data = request.form if request.form else json.loads(request.data.decode())
         if data[u'name'] != '':
             try:
+                check_sg = ServerGroup.query.filter_by(
+                    user_id=current_user.id,
+                    name=data[u'name']).first()
+
+                # Throw error if server group already exists...
+                if check_sg is not None:
+                    return make_json_response(
+                        status=409,
+                        success=0,
+                        errormsg=gettext('Server group already exists')
+                    )
+
                 sg = ServerGroup(
                     user_id=current_user.id,
                     name=data[u'name'])
