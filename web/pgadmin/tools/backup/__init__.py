@@ -400,7 +400,7 @@ def create_backup_objects_job(sid):
 
         elif data['format'] == 'plain':
             args.extend(['--format', 'plain'])
-            if data['only_data']:
+            if 'only_data' in data and data['only_data']:
                 args.append('--data-only')
                 set_param('disable_trigger', '--disable-triggers')
             else:
