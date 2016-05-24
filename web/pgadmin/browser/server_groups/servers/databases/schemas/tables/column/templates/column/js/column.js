@@ -140,9 +140,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           cellHeaderClasses:'width_percent_30',
           editable: 'editable_check_for_table'
         },{
-          // Need to show this field only when creating new table [in SubNode control]
-          id: 'is_primary_key', label: '{{ _('Is primary key?') }}', cell: SwitchDepCell,
-          type: 'switch', deps:['name'],
+          // Need to show this field only when creating new table
+          // [in SubNode control]
+          id: 'is_primary_key', label: '{{ _('Is primary key?') }}',
+          cell: Backgrid.Extension.SwitchDepCell, type: 'switch', deps:['name'],
           options: {
             onText: 'Yes', offText: 'No', onColor: 'success',
             offColor: 'primary', size: 'small'},

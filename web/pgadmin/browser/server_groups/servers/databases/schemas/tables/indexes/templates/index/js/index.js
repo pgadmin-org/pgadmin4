@@ -99,8 +99,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              return options;
             }
           },{
-            id: 'sort_order', label:'{{ _('Sort order') }}', cell: SwitchDepCell,
-            type: 'switch', disabled: 'checkAccessMethod',
+            id: 'sort_order', label:'{{ _('Sort order') }}',
+            cell: Backgrid.ExtensionSwitchDepCell, type: 'switch',
+            disabled: 'checkAccessMethod',
             editable: function(m) {
                 // Header cell then skip
                 if (m instanceof Backbone.Collection) {
@@ -115,8 +116,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              'size': 'small'
             }
           },{
-            id: 'nulls', label:'{{ _('NULLs') }}', cell: SwitchDepCell,
-            type: 'switch', disabled: 'checkAccessMethod',
+            id: 'nulls', label:'{{ _('NULLs') }}',
+            cell: Backgrid.Extension.SwitchDepCell, type: 'switch',
+            disabled: 'checkAccessMethod',
             editable: function(m) {
                 // Header cell then skip
                 if (m instanceof Backbone.Collection) {

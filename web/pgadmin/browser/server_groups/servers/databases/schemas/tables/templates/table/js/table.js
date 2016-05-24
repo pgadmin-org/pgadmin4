@@ -16,33 +16,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       });
   };
 
-  // Switch Cell with Deps
-  var SwitchDepCell = Backgrid.Extension.SwitchCell.extend({
-      initialize: function() {
-        Backgrid.Extension.SwitchCell.prototype.initialize.apply(this, arguments);
-        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-      },
-      dependentChanged: function () {
-        var model = this.model,
-          column = this.column,
-          editable = this.column.get("editable"),
-          input = this.$el.find('input[type=checkbox]').first();
-
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-        if (is_editable) {
-           this.$el.addClass("editable");
-           input.prop('disabled', false);
-         } else {
-           this.$el.removeClass("editable");
-           input.prop('disabled', true);
-         }
-
-        this.delegateEvents();
-        return this;
-      },
-      remove: Backgrid.Extension.DependentCell.prototype.remove
-    });
-
   if (!pgBrowser.Nodes['table']) {
     pgAdmin.Browser.Nodes['table'] = pgBrowser.Node.extend({
       type: 'table',
