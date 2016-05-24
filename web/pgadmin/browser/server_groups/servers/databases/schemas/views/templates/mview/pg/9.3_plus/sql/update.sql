@@ -156,7 +156,6 @@ SET(
 {% endif %}
 {% endfor %}
 );
-
 {% endif %}
 {% if data['vacuum_data']['reset']|length > 0 %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
@@ -166,7 +165,6 @@ RESET(
 {% endfor %}
 );
 {% endif %}
-
 {% endif %}{# ===== End check for custom autovaccum ===== #}
 {% endif %}{# ===== End block for check data definition ===== #}
 {% set old_comment = o_data.comment|default('', true) %}

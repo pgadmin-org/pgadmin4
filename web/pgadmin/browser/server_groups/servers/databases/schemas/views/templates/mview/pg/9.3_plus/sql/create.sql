@@ -14,10 +14,9 @@ WITH (
 {% endif %}
 {% for field in data['vacuum_data'] %}
 {% if field.value is defined and field.value != '' and field.value != none %}
-{% if loop.index > 1%},
+{% if loop.index > 1 %},
 {% endif %}    {{ field.name }} = {{ field.value|lower }}{% endif %}
-{% endfor %}
-
+{% endfor %}{{ '\r' }}
 )
 {% endif %}
 {% if data.spcname %}TABLESPACE {{ data.spcname }}
@@ -35,7 +34,7 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
 {% endif %}
 {% if data.comment %}
 
-COMMENT ON VIEW {{ conn|qtIdent(data.schema, data.name) }}
+COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
     IS {{ data.comment|qtLiteral }};
 {% endif %}
 {% endif %}

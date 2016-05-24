@@ -1,6 +1,6 @@
 {# ===== fetch schema name =====#}
 SELECT
-   nspname
+    nspname
 FROM
     pg_namespace
 WHERE

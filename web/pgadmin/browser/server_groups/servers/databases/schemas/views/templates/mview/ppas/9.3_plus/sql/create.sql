@@ -7,23 +7,16 @@
 {% endif %}
 {% if data.name and data.schema and data.definition %}
 CREATE MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
-{% if(data.fillfactor or data['autovacuum_enabled'] or data['toast_autovacuum_enabled']) %}
+{% if(data.fillfactor or data['vacuum_data']|length > 0) %}
 WITH (
 {% if data.fillfactor %}
     FILLFACTOR = {{ data.fillfactor }}{% if data['autovacuum_enabled'] or data['toast_autovacuum_enabled'] or data['vacuum_data']|length > 0 %},{{ '\r' }}{% endif %}
 {% endif %}
-{% if data['autovacuum_enabled'] %}
-    autovacuum_enabled = {{ data['autovacuum_enabled']|lower }}{% if data['toast_autovacuum_enabled'] or data['vacuum_data']|length > 0 %},{{ '\r' }}{% endif %}
-{% endif %}
-{% if data['toast_autovacuum_enabled'] %}
-    {{ 'toast.autovacuum_enabled' }} = {{ data['toast_autovacuum_enabled']|lower }}{% if data['vacuum_data']|length > 0 %},{{ '\r' }}{% endif %}
-{% endif %}
 {% for field in data['vacuum_data'] %}
 {% if field.value is defined and field.value != '' and field.value != none %}
-{% if loop.index > 1%},
+{% if loop.index > 1 %},
 {% endif %}    {{ field.name }} = {{ field.value|lower }}{% endif %}
-{% endfor %}
-
+{% endfor %}{{ '\r' }}
 )
 {% endif %}
 {% if data.spcname %}TABLESPACE {{ data.spcname }}
@@ -41,7 +34,7 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
 {% endif %}
 {% if data.comment %}
 
-COMMENT ON VIEW {{ conn|qtIdent(data.schema, data.name) }}
+COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
     IS {{ data.comment|qtLiteral }};
 {% endif %}
 {% endif %}
