@@ -564,20 +564,26 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         cascade = True if self.cmd == 'delete' else False
 
         try:
-
-            # Get name for view from did
-            SQL = render_template("/".join(
-              [self.template_path, 'sql/delete.sql']), vid=vid)
+            # Get name for view from vid
+            SQL = render_template(
+                "/".join([
+                    self.template_path, 'sql/properties.sql'
+                ]),
+                vid=vid,
+                datlastsysoid=self.datlastsysoid
+            )
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res_data)
 
             # drop view
-            SQL = render_template("/".join(
-              [self.template_path, 'sql/delete.sql']),
-                nspname=res_data['rows'][0]['nspname'],
+            SQL = render_template(
+                "/".join([
+                    self.template_path, 'sql/delete.sql'
+                ]),
+                nspname=res_data['rows'][0]['schema'],
                 name=res_data['rows'][0]['name'], cascade=cascade
-              )
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
