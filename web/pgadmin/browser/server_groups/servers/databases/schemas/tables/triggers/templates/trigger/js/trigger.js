@@ -3,6 +3,26 @@ define(
         'backform', 'alertify', 'pgadmin.browser.collection'],
 function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
+
+  var CustomSwitchControl = Backform.CustomSwitchControl = Backform.SwitchControl.extend({
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%> custom_switch_label_class"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%> custom_switch_control_class">',
+      '  <div class="checkbox">',
+      '    <label>',
+      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>"',
+      '        name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%>',
+      '        <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    </label>',
+      '  </div>',
+      '</div>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '<% } %>'
+    ].join("\n")),
+    className: 'pgadmin-control-group form-group col-xs-6'
+  });
+
   if (!pgBrowser.Nodes['coll-trigger']) {
     var triggers = pgAdmin.Browser.Nodes['coll-trigger'] =
       pgAdmin.Browser.Collection.extend({
@@ -162,7 +182,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,
-					is_row_trigger: true
+          is_row_trigger: true,
+          fires: 'BEFORE'
         },
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -172,14 +193,15 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           type: 'int', disabled: true, mode: ['properties']
         },{
           id: 'is_enable_trigger', label:'{{ _('Enable trigger?') }}',
-          type: 'switch', disabled: 'inSchema', mode: ['properties']
+          type: 'switch', disabled: 'inSchema', mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
-          id: 'is_row_trigger', label:'{{ _('Row trigger') }}',
+          id: 'is_row_trigger', label:'{{ _('Row trigger?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           mode: ['create','edit', 'properties'],
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
-            // If contraint trigger is set to True then row trigger will
+            // If constraint trigger is set to True then row trigger will
             // automatically set to True and becomes disable
             var is_constraint_trigger = m.get('is_constraint_trigger');
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
@@ -192,54 +214,61 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                     return false;
                 }
             } else {
-                // Disbale it
+                // Disable it
                 return true;
             }
           }
         },{
-          id: 'is_constraint_trigger', label:'{{ _('Constraint trigger') }}',
+          id: 'is_constraint_trigger', label:'{{ _('Constraint trigger?') }}',
           type: 'switch', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'],
           group: '{{ _('Definition') }}'
         },{
-          id: 'tgdeferrable', label:'{{ _('Deferrable') }}',
+          id: 'tgdeferrable', label:'{{ _('Deferrable?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           mode: ['create','edit', 'properties'],
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
-            // If contraint trigger is set to True then only enable it
+            // If constraint trigger is set to True then only enable it
             var is_constraint_trigger = m.get('is_constraint_trigger');
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
                 if(!_.isUndefined(is_constraint_trigger) &&
                 is_constraint_trigger === true) {
                     return false;
                 } else {
-                    setTimeout(function() { m.set('tgdeferrable', false) }, 10);
+                    // If value is already set then reset it to false
+                    if(m.get('tgdeferrable')) {
+                      setTimeout(function() { m.set('tgdeferrable', false) }, 10);
+                    }
                     return true;
                 }
             } else {
-                // Disbale it
+                // Disable it
                 return true;
             }
           }
         },{
-          id: 'tginitdeferred', label:'{{ _('Deferred') }}',
+          id: 'tginitdeferred', label:'{{ _('Deferred?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           mode: ['create','edit', 'properties'],
-          deps: ['tgdeferrable'],
+          deps: ['tgdeferrable', 'is_constraint_trigger'],
           disabled: function(m) {
-            // If contraint trigger is set to True then only enable it
-            var is_constraint_trigger = m.get('tgdeferrable');
+            // If Deferrable is set to True then only enable it
+            var tgdeferrable = m.get('tgdeferrable');
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
-                if(!_.isUndefined(is_constraint_trigger) &&
-                is_constraint_trigger === true) {
+                if(!_.isUndefined(tgdeferrable) &&
+                tgdeferrable) {
                     return false;
                 } else {
-                    setTimeout(function() { m.set('tginitdeferred', false) }, 10);
-                    return true;
+                    // If value is already set then reset it to false
+                    if(m.get('tginitdeferred')) {
+                      setTimeout(function() { m.set('tginitdeferred', false) }, 10);
+                    }
+                    // If constraint trigger is set then do not disable
+                    return m.get('is_constraint_trigger') ? false : true;
                 }
             } else {
-                // Disbale it
+                // Disable it
                 return true;
             }
           }
@@ -261,20 +290,20 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 if(server_type === 'ppas' &&
                     !_.isUndefined(tfunction) &&
                 tfunction === 'Inline EDB-SPL') {
-                    // Disbale and clear its value
+                    // Disable and clear its value
                     m.set('tgargs', undefined)
                     return true;
                 } else {
                     return false;
                 }
             } else {
-                // Disbale it
+                // Disable it
                 return true;
             }
           }
         },{
         id: 'fires', label:'{{ _('Fires') }}', deps: ['is_constraint_trigger'],
-        mode: ['create','edit', 'properties'], group: '{{ _('Definition') }}',
+        mode: ['create','edit', 'properties'], group: '{{ _('Events') }}',
         options: function(control) {
             var table_options = [
                 {label: "BEFORE", value: "BEFORE"},
@@ -291,18 +320,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
         },
         // If create mode then by default open composite type
-        control: Backform.Select2Control.extend({
-            render: function(){
-                // Initialize parent's render method
-                Backform.Select2Control.prototype.render.apply(this, arguments);
-                if(this.model.isNew() &&
-                        this.model.get('is_constraint_trigger') !== true ) {
-                    this.model.set({'fires': 'BEFORE'}, {silent: true});
-                }
-                return this;
-            }
-        }),
-        select2: { allowClear: false, width: "100%" },
+        control: 'select2', select2: { allowClear: false, width: "100%" },
         disabled: function(m) {
         // If contraint trigger is set to True then only enable it
         var is_constraint_trigger = m.get('is_constraint_trigger');
@@ -315,17 +333,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return false;
             }
         } else {
-            // Disbale it
+            // Disable it
             return true;
         }
        }
       },{
         type: 'nested', control: 'fieldset', mode: ['create','edit', 'properties'],
-        label: '{{ _('Events') }}', group: '{{ _('Definition') }}',
+        label: '{{ _('Events') }}', group: '{{ _('Events') }}',
         schema:[{
             id: 'evnt_insert', label:'{{ _('INSERT') }}',
             type: 'switch', mode: ['create','edit', 'properties'],
             group: '{{ _('Events') }}',
+            control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
@@ -333,6 +352,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             id: 'evnt_update', label:'{{ _('UPDATE') }}',
             type: 'switch', mode: ['create','edit', 'properties'],
             group: '{{ _('Events') }}',
+            control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
@@ -340,12 +360,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             id: 'evnt_delete', label:'{{ _('DELETE') }}',
             type: 'switch', mode: ['create','edit', 'properties'],
             group: '{{ _('Events') }}',
+            control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
             id: 'evnt_turncate', label:'{{ _('TRUNCATE') }}',
             type: 'switch', group: '{{ _('Events') }}',
+            control: Backform.CustomSwitchControl,
             disabled: function(m) {
             var is_constraint_trigger = m.get('is_constraint_trigger'),
                 is_row_trigger = m.get('is_row_trigger'),
@@ -363,7 +385,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                     return true;
                 }
             } else {
-                // Disbale it
+                // Disable it
                 return true;
             }
         }
@@ -372,11 +394,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             id: 'whenclause', label:'{{ _('When') }}',
             type: 'text', disabled: 'inSchemaWithModelCheck',
             mode: ['create', 'edit', 'properties'],
-            control: 'sql-field', visible: true, group: '{{ _('Definition') }}'
+            control: 'sql-field', visible: true, group: '{{ _('Events') }}'
         },{
             id: 'columns', label: '{{ _('Columns') }}', url: 'nodes',
             type: 'collection', control: 'multi-select-ajax',
-            deps: ['evnt_update'], node: 'column', group: '{{ _('Definition') }}',
+            deps: ['evnt_update'], node: 'column', group: '{{ _('Events') }}',
             model: pgBrowser.Node.Model.extend({
                 keys: ['column'], defaults: { column: undefined }
             }),
@@ -384,7 +406,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 if(this.node_info &&  'catalog' in this.node_info) {
                     return true;
                 }
-                //Disbale in edit mode
+                //Disable in edit mode
                 if (!m.isNew()) {
                     return true;
                 }
@@ -414,7 +436,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                         return true;
                     }
                 } else {
-                    // Disbale it
+                    // Disable it
                       return true;
                 }
             }
@@ -423,16 +445,22 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties']
         },{
           id: 'is_constarint', label:'{{ _('Constraint?') }}', cell: 'string',
-          type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties']
+          type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
     }],
-        validate: function() {
+        validate: function(keys) {
           var err = {},
               msg = undefined;
           this.errorModel.clear();
+
+          // If nothing to validate
+          if (keys && keys.length == 0) {
+            return null;
+          }
 
           if(_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {

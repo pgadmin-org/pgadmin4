@@ -113,7 +113,7 @@ class TriggerModule(CollectionNodeModule):
         """
         Load the module node as a leaf node
         """
-        return True
+        return False
 
     @property
     def csssnippets(self):

@@ -101,7 +101,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
-                m.set('comment', null);
+               if(m.get('comment') && m.get('comment') !== '') {
+                 m.set('comment', null);
+               }
               },10);
               return true;
             } else {
@@ -207,17 +209,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }),
           canDelete: true, canAdd: true,
           control: Backform.MultiSelectAjaxControl.extend({
-            formatter: {
-              fromRaw: function (rawData, model) {
-                var res = _.isObject(rawData) ?
-                      rawData : JSON.parse(rawData);
-
-                return _.pluck(res, 'column');
-              },
-              toRaw: function (formattedData, model) {
-                return formattedData;
-              }
-            },
             defaults: _.extend(
               {},
               Backform.NodeListByNameControl.prototype.defaults,
@@ -454,7 +445,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               }
             }
         },{
-          id: 'condeferrable', label: '{{ _('Deferrable') }}',
+          id: 'condeferrable', label: '{{ _('Deferrable?') }}',
           type: 'switch', group: '{{ _('Definition') }}', deps: ['index'],
           disabled: function(m) {
             // If we are in table edit mode then
@@ -475,13 +466,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
             } else {
               setTimeout(function(){
-                m.set('condeferrable', false);
+                if(m.get('condeferrable'))
+                  m.set('condeferrable', false);
               },10);
               return true;
             }
           }
         },{
-          id: 'condeferred', label: '{{ _('Deferred') }}',
+          id: 'condeferred', label: '{{ _('Deferred?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           deps: ['condeferrable'],
           disabled: function(m) {
@@ -502,7 +494,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
             } else {
               setTimeout(function(){
-                m.set('condeferred', false);
+               if(m.get('condeferred'))
+                  m.set('condeferred', false);
               },10);
               return true;
             }

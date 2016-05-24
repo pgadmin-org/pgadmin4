@@ -148,24 +148,6 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           type: 'text', mode: ['create', 'edit'], group: 'Definition',
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full']
         },
-        // Add Privilege Control
-        {
-          id: 'datacl', label: '{{ _("Privileges") }}',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), uniqueCol : ['grantee'],
-          editable: false, type: 'collection', group: '{{ _("Security") }}',
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          control: 'unique-col-collection', priority: 3
-        },
-
-        // Add Security Labels Control
-        {
-          id: 'seclabels', label: '{{ _("Security Labels") }}',
-          model: Backform.SecurityModel, editable: false, type: 'collection',
-          canEdit: false, group: '{{ _("Security") }}', canDelete: true,
-          mode: ['edit', 'create'], canAdd: true,
-          control: 'unique-col-collection', uniqueCol : ['provider']
-        },
         {
           id: 'with_data', label: '{{ _("With Data") }}',
           group: '{{ _("Storage") }}', mode: ['edit', 'create'],
@@ -187,10 +169,28 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         },
         {
           type: 'nested', control: 'tab', id: 'materialization',
-          label: '{{ _("Materialization") }}', mode: ['edit', 'create'],
-          group: '{{ _("Storage") }}',
+          label: '{{ _("Auto vacuum") }}', mode: ['edit', 'create'],
+          group: '{{ _("Auto vacuum") }}',
           schema: Backform.VacuumSettingsSchema
         },
+        // Add Privilege Control
+        {
+          id: 'datacl', label: '{{ _("Privileges") }}',
+          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
+            {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), uniqueCol : ['grantee'],
+          editable: false, type: 'collection', group: '{{ _("Security") }}',
+          mode: ['edit', 'create'], canAdd: true, canDelete: true,
+          control: 'unique-col-collection', priority: 3
+        },
+
+        // Add Security Labels Control
+        {
+          id: 'seclabels', label: '{{ _("Security Labels") }}',
+          model: Backform.SecurityModel, editable: false, type: 'collection',
+          canEdit: false, group: '{{ _("Security") }}', canDelete: true,
+          mode: ['edit', 'create'], canAdd: true,
+          control: 'unique-col-collection', uniqueCol : ['provider']
+        }
         ],
         validate: function(keys) {
 

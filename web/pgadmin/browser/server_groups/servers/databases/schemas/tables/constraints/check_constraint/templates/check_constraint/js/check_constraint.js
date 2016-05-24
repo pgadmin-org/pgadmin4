@@ -111,7 +111,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             var name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
-                m.set('comment', null);
+                if(m.get('comment') && m.get('comment') !== '')
+                  m.set('comment', null);
               },10);
               return true;
             } else {
@@ -127,7 +128,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }, editable: false
         },{
-          id: 'connoinherit', label: '{{ _('No Inherit') }}', type:
+          id: 'connoinherit', label: '{{ _('No Inherit?') }}', type:
           'switch', cell: 'boolean', group: '{{ _('Definition') }}', mode:
           ['properties', 'create', 'edit'], min_version: 90200,
           disabled: function(m) {
@@ -136,7 +137,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }
         },{
-          id: 'convalidated', label: "{{ _("Don't validate") }}", type: 'switch', cell:
+          id: 'convalidated', label: "{{ _("Don't validate?") }}", type: 'switch', cell:
           'boolean', group: '{{ _('Definition') }}', min_version: 90200,
           disabled: function(m) {
             if ((_.isFunction(m.isNew) && !m.isNew()) ||

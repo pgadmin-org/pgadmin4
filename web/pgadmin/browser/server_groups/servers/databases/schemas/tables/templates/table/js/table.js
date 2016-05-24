@@ -16,6 +16,33 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       });
   };
 
+  // Switch Cell with Deps
+  var SwitchDepCell = Backgrid.Extension.SwitchCell.extend({
+      initialize: function() {
+        Backgrid.Extension.SwitchCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        var model = this.model,
+          column = this.column,
+          editable = this.column.get("editable"),
+          input = this.$el.find('input[type=checkbox]').first();
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        if (is_editable) {
+           this.$el.addClass("editable");
+           input.prop('disabled', false);
+         } else {
+           this.$el.removeClass("editable");
+           input.prop('disabled', true);
+         }
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
   if (!pgBrowser.Nodes['table']) {
     pgAdmin.Browser.Nodes['table'] = pgBrowser.Node.extend({
       type: 'table',
@@ -385,29 +412,30 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           disabled: 'inSchemaWithModelCheck',
           group: '{{ _('Advanced') }}'
         },{
-          id: 'conname', label:'{{ _('Primary Key') }}', cell: 'string',
-          type: 'text', mode: ['properties'],
+          id: 'conname', label:'{{ _('Primary key') }}', cell: 'string',
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
           id: 'reltuples', label:'{{ _('Rows (estimated)') }}', cell: 'string',
-          type: 'text', mode: ['properties'],
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
           id: 'rows_cnt', label:'{{ _('Rows (counted)') }}', cell: 'string',
-          type: 'text', mode: ['properties'],
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
           id: 'relhassubclass', label:'{{ _('Inherits tables?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties'],
+          type: 'switch', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
-          id: 'is_sys_table', label:'{{ _('System tabel?') }}', cell: 'switch',
+          id: 'is_sys_table', label:'{{ _('System table?') }}', cell: 'switch',
           type: 'switch', mode: ['properties'],
           disabled: 'inSchema'
         },{
           id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
-          url: 'get_inherits', type: 'array',
+          url: 'get_inherits', type: 'array', group: '{{ _('Columns') }}',
           disabled: 'checkInheritance', deps: ['typname'],
+          mode: ['create', 'edit'],
           select2: { multiple: true, allowClear: true,
           placeholder: '{{ _('Select to inherit from...') }}'},
           transform: function(data, cell) {
@@ -490,193 +518,192 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               }
             })
         },{
+          id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
+          url: 'get_inherits', type: 'text', group: '{{ _('Advanced') }}',
+          disabled: 'checkInheritance',
+          mode: ['properties'],
+        },{
           id: 'inherited_tables_cnt', label:'{{ _('Inherited tables count') }}', cell: 'string',
-          type: 'text', mode: ['properties'],
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
-          type: 'nested', control: 'fieldset', mode: ['edit', 'create'],
-          schema:[{
-            // Here we will create tab control for columns
-              id: 'columns', label:'{{ _('Columns') }}', type: 'collection',
-              group: '{{ _('Columns') }}',
-              model: pgBrowser.Nodes['column'].model,
-              subnode: pgBrowser.Nodes['column'].model,
-              mode: ['create', 'edit'],
-              disabled: 'inSchema',
-              canAdd: 'check_grid_add_condition',
-              canEdit: true, canDelete: true,
-              // For each row edit/delete button enable/disable
-              canEditRow: 'check_grid_row_edit_delete',
-              canDeleteRow: 'check_grid_row_edit_delete',
-              uniqueCol : ['name'],
-              columns : ['name' , 'cltype', 'is_primary_key', 'inheritedfrom'],
-              control: Backform.UniqueColCollectionControl.extend({
-                initialize: function() {
-                  Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
-                  var self = this,
-                      collection = self.model.get(self.field.get('name'));
+        // Here we will create tab control for columns
+          id: 'columns', label:'{{ _('Columns') }}', type: 'collection',
+          group: '{{ _('Columns') }}',
+          model: pgBrowser.Nodes['column'].model,
+          subnode: pgBrowser.Nodes['column'].model,
+          mode: ['create', 'edit'],
+          disabled: 'inSchema',
+          canAdd: 'check_grid_add_condition',
+          canEdit: true, canDelete: true,
+          // For each row edit/delete button enable/disable
+          canEditRow: 'check_grid_row_edit_delete',
+          canDeleteRow: 'check_grid_row_edit_delete',
+          uniqueCol : ['name'],
+          columns : ['name' , 'cltype', 'is_primary_key', 'inheritedfrom'],
+          control: Backform.UniqueColCollectionControl.extend({
+            initialize: function() {
+              Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
+              var self = this,
+                  collection = self.model.get(self.field.get('name'));
 
-                  collection.on("change:is_primary_key", function(m) {
-                    var primary_key_coll = self.model.get('primary_key'),
-                        column_name = m.get('name'),
-                        primary_key;
+              collection.on("change:is_primary_key", function(m) {
+                var primary_key_coll = self.model.get('primary_key'),
+                    column_name = m.get('name'),
+                    primary_key;
 
-                    if(m.get('is_primary_key')) {
-                    // Add column to primary key.
-                      if (primary_key_coll.length < 1) {
-                        primary_key = new (primary_key_coll.model)({}, {
+                if(m.get('is_primary_key')) {
+                // Add column to primary key.
+                  if (primary_key_coll.length < 1) {
+                    primary_key = new (primary_key_coll.model)({}, {
+                      top: self.model,
+                      collection: primary_key_coll,
+                      handler: primary_key_coll
+                    });
+                    primary_key_coll.add(primary_key);
+                  } else {
+                    primary_key = primary_key_coll.first();
+                  }
+                  // Do not alter existing primary key columns.
+                  if (_.isUndefined(primary_key.get('oid'))) {
+                    var primary_key_column_coll = primary_key.get('columns'),
+                      primary_key_column_exist = primary_key_column_coll.where({column:column_name});
+
+                    if (primary_key_column_exist.length == 0) {
+                      var primary_key_column = new (primary_key_column_coll.model)(
+                          {column: column_name}, { silent: true,
                           top: self.model,
                           collection: primary_key_coll,
                           handler: primary_key_coll
                         });
-                        primary_key_coll.add(primary_key);
-                      } else {
-                        primary_key = primary_key_coll.first();
-                      }
-                      // Do not alter existing primary key columns.
-                      if (_.isUndefined(primary_key.get('oid'))) {
-                        var primary_key_column_coll = primary_key.get('columns'),
-                          primary_key_column_exist = primary_key_column_coll.where({column:column_name});
 
-                        if (primary_key_column_exist.length == 0) {
-                          var primary_key_column = new (primary_key_column_coll.model)(
-                              {column: column_name}, { silent: true,
-                              top: self.model,
-                              collection: primary_key_coll,
-                              handler: primary_key_coll
-                            });
+                      primary_key_column_coll.add(primary_key_column);
+                    }
 
-                          primary_key_column_coll.add(primary_key_column);
-                        }
+                    primary_key_column_coll.trigger('pgadmin:multicolumn:updated', primary_key_column_coll);
+                  }
 
-                        primary_key_column_coll.trigger('pgadmin:multicolumn:updated', primary_key_column_coll);
-                      }
+                } else {
+                // remove column from primary key.
+                  if (primary_key_coll.length > 0) {
+                    var primary_key = primary_key_coll.first();
+                    // Do not alter existing primary key columns.
+                    if (!_.isUndefined(primary_key.get('oid'))) {
+                      return;
+                    }
 
-                    } else {
-                    // remove column from primary key.
-                      if (primary_key_coll.length > 0) {
-                        var primary_key = primary_key_coll.first();
-                        // Do not alter existing primary key columns.
-                        if (!_.isUndefined(primary_key.get('oid'))) {
-                          return;
-                        }
-
-                        var  primary_key_column_coll = primary_key.get('columns'),
-                            removedCols = primary_key_column_coll.where({column:column_name});
-                        if (removedCols.length > 0) {
-                          primary_key_column_coll.remove(removedCols);
-                          _.each(removedCols, function(m) {
-                            m.destroy();
-                          })
-                          if (primary_key_column_coll.length == 0) {
-                            setTimeout(function () {
-                              // There will be only on primary key so remove the first one.
-                              primary_key_coll.remove(primary_key_coll.first());
-                              /* Ideally above line of code should be "primary_key_coll.reset()".
-                               * But our custom DataCollection (extended from Backbone collection in datamodel.js)
-                               * does not respond to reset event, it only supports add, remove, change events.
-                               * And hence no custom event listeners/validators get called for reset event.
-                               */
-                            }, 10);
-                          }
-                        }
-                        primary_key_column_coll.trigger('pgadmin:multicolumn:updated', primary_key_column_coll);
+                    var  primary_key_column_coll = primary_key.get('columns'),
+                        removedCols = primary_key_column_coll.where({column:column_name});
+                    if (removedCols.length > 0) {
+                      primary_key_column_coll.remove(removedCols);
+                      _.each(removedCols, function(m) {
+                        m.destroy();
+                      })
+                      if (primary_key_column_coll.length == 0) {
+                        setTimeout(function () {
+                          // There will be only on primary key so remove the first one.
+                          primary_key_coll.remove(primary_key_coll.first());
+                          /* Ideally above line of code should be "primary_key_coll.reset()".
+                           * But our custom DataCollection (extended from Backbone collection in datamodel.js)
+                           * does not respond to reset event, it only supports add, remove, change events.
+                           * And hence no custom event listeners/validators get called for reset event.
+                           */
+                        }, 10);
                       }
                     }
-                  })
-                },
-                remove: function() {
-                  var collection = this.model.get(this.field.get('name'));
-                  if (collection) {
-                    collection.off("change:is_primary_key");
+                    primary_key_column_coll.trigger('pgadmin:multicolumn:updated', primary_key_column_coll);
                   }
-
-                  Backform.UniqueColCollectionControl.prototype.remove.apply(this, arguments);
                 }
-              }),
-              allowMultipleEmptyRow: false
-          }]
-        },{
-          type: 'nested', control: 'fieldset',
-          schema:[{
-              // Here we will create tab control for constraints
-              type: 'nested', control: 'tab', group: '{{ _('Constraints') }}',
-              mode: ['edit', 'create'],
-              schema: [{
-                  id: 'primary_key', label: '{{ _('Primary Key') }}',
-                  model: pgBrowser.Nodes['primary_key'].model,
-                  subnode: pgBrowser.Nodes['primary_key'].model,
-                  editable: false, type: 'collection',
-                  group: '{{ _('Primary Key') }}', mode: ['edit', 'create'],
-                  canEdit: true, canDelete: true,
-                  control: 'unique-col-collection',
-                  columns : ['name', 'columns'],
-                  canAdd: true,
-                  canAddRow: function(m) {
-                   // User can only add one primary key
-                   var columns = m.get('columns');
+              })
+            },
+            remove: function() {
+              var collection = this.model.get(this.field.get('name'));
+              if (collection) {
+                collection.off("change:is_primary_key");
+              }
 
-                   return (m.get('primary_key') &&
-                            m.get('primary_key').length < 1 &&
-                            _.some(columns.pluck('name')));
-                  }
-                },{
-                  id: 'foreign_key', label: '{{ _('Foreign Key') }}',
-                  model: pgBrowser.Nodes['foreign_key'].model,
-                  subnode: pgBrowser.Nodes['foreign_key'].model,
-                  editable: false, type: 'collection',
-                  group: '{{ _('Foreign Key') }}', mode: ['edit', 'create'],
-                  canEdit: true, canDelete: true,
-                  control: 'unique-col-collection',
-                  canAdd: true,
-                  columns : ['name', 'columns'],
-                  canAddRow: function(m) {
-                   // User can only add if there is at least one column with name.
-                   var columns = m.get('columns');
-                   return _.some(columns.pluck('name'));
-                  }
-                },{
-                  id: 'check_constraint', label: '{{ _('Check Constraint') }}',
-                  model: pgBrowser.Nodes['check_constraints'].model,
-                  subnode: pgBrowser.Nodes['check_constraints'].model,
-                  editable: false, type: 'collection',
-                  group: '{{ _('Check') }}', mode: ['edit', 'create'],
-                  canEdit: true, canDelete: true,
-                  control: 'unique-col-collection',
-                  canAdd: true,
-                  columns : ['name', 'consrc']
-                },{
-                  id: 'unique_constraint', label: '{{ _('Unique Constraint') }}',
-                  model: pgBrowser.Nodes['unique_constraint'].model,
-                  subnode: pgBrowser.Nodes['unique_constraint'].model,
-                  editable: false, type: 'collection',
-                  group: '{{ _('Unique') }}', mode: ['edit', 'create'],
-                  canEdit: true, canDelete: true,
-                  control: 'unique-col-collection',
-                  columns : ['name', 'columns'],
-                  canAdd: true,
-                  canAddRow: function(m) {
-                   // User can only add if there is at least one column with name.
-                   var columns = m.get('columns');
-                   return _.some(columns.pluck('name'));
-                  }
-                },{
-                  id: 'exclude_constraint', label: '{{ _('Exclude Constraint') }}',
-                  model: pgBrowser.Nodes['exclusion_constraint'].model,
-                  subnode: pgBrowser.Nodes['exclusion_constraint'].model,
-                  editable: false, type: 'collection',
-                  group: '{{ _('Exclude') }}', mode: ['edit', 'create'],
-                  canEdit: true, canDelete: true,
-                  control: 'unique-col-collection',
-                  columns : ['name', 'columns', 'constraint'],
-                  canAdd: true,
-                  canAddRow: function(m) {
-                   // User can only add if there is at least one column with name.
-                   var columns = m.get('columns');
-                   return _.some(columns.pluck('name'));
-                  }
-            }]
-          }]
+              Backform.UniqueColCollectionControl.prototype.remove.apply(this, arguments);
+            }
+          }),
+          allowMultipleEmptyRow: false
+        },{
+          // Here we will create tab control for constraints
+          type: 'nested', control: 'tab', group: '{{ _('Constraints') }}',
+          mode: ['edit', 'create'],
+          schema: [{
+              id: 'primary_key', label: '{{ _('Primary key') }}',
+              model: pgBrowser.Nodes['primary_key'].model,
+              subnode: pgBrowser.Nodes['primary_key'].model,
+              editable: false, type: 'collection',
+              group: '{{ _('Primary Key') }}', mode: ['edit', 'create'],
+              canEdit: true, canDelete: true,
+              control: 'unique-col-collection',
+              columns : ['name', 'columns'],
+              canAdd: true,
+              canAddRow: function(m) {
+               // User can only add one primary key
+               var columns = m.get('columns');
+
+               return (m.get('primary_key') &&
+                        m.get('primary_key').length < 1 &&
+                        _.some(columns.pluck('name')));
+              }
+            },{
+              id: 'foreign_key', label: '{{ _('Foreign key') }}',
+              model: pgBrowser.Nodes['foreign_key'].model,
+              subnode: pgBrowser.Nodes['foreign_key'].model,
+              editable: false, type: 'collection',
+              group: '{{ _('Foreign Key') }}', mode: ['edit', 'create'],
+              canEdit: true, canDelete: true,
+              control: 'unique-col-collection',
+              canAdd: true,
+              columns : ['name', 'columns'],
+              canAddRow: function(m) {
+               // User can only add if there is at least one column with name.
+               var columns = m.get('columns');
+               return _.some(columns.pluck('name'));
+              }
+            },{
+              id: 'check_constraint', label: '{{ _('Check constraint') }}',
+              model: pgBrowser.Nodes['check_constraints'].model,
+              subnode: pgBrowser.Nodes['check_constraints'].model,
+              editable: false, type: 'collection',
+              group: '{{ _('Check') }}', mode: ['edit', 'create'],
+              canEdit: true, canDelete: true,
+              control: 'unique-col-collection',
+              canAdd: true,
+              columns : ['name', 'consrc']
+            },{
+              id: 'unique_constraint', label: '{{ _('Unique constraint') }}',
+              model: pgBrowser.Nodes['unique_constraint'].model,
+              subnode: pgBrowser.Nodes['unique_constraint'].model,
+              editable: false, type: 'collection',
+              group: '{{ _('Unique') }}', mode: ['edit', 'create'],
+              canEdit: true, canDelete: true,
+              control: 'unique-col-collection',
+              columns : ['name', 'columns'],
+              canAdd: true,
+              canAddRow: function(m) {
+               // User can only add if there is at least one column with name.
+               var columns = m.get('columns');
+               return _.some(columns.pluck('name'));
+              }
+            },{
+              id: 'exclude_constraint', label: '{{ _('Exclude constraint') }}',
+              model: pgBrowser.Nodes['exclusion_constraint'].model,
+              subnode: pgBrowser.Nodes['exclusion_constraint'].model,
+              editable: false, type: 'collection',
+              group: '{{ _('Exclude') }}', mode: ['edit', 'create'],
+              canEdit: true, canDelete: true,
+              control: 'unique-col-collection',
+              columns : ['name', 'columns', 'constraint'],
+              canAdd: true,
+              canAddRow: function(m) {
+               // User can only add if there is at least one column with name.
+               var columns = m.get('columns');
+               return _.some(columns.pluck('name'));
+              }
+        }]
         },{
           type: 'nested', control: 'fieldset', label: '{{ _('Like') }}',
           group: '{{ _('Advanced') }}',
@@ -686,23 +713,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             control: 'node-ajax-options', url: 'get_relations',
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           },{
-            id: 'like_default_value', label:'{{ _('With Default values?') }}', cell: 'switch',
+            id: 'like_default_value', label:'{{ _('With default values?') }}', cell: 'switch',
             type: 'switch', mode: ['create', 'edit'],
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           },{
-            id: 'like_constraints', label:'{{ _('With Constraints?') }}', cell: 'switch',
+            id: 'like_constraints', label:'{{ _('With constraints?') }}', cell: 'switch',
             type: 'switch', mode: ['create', 'edit'],
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           },{
-            id: 'like_indexes', label:'{{ _('With Indexes?') }}', cell: 'switch',
+            id: 'like_indexes', label:'{{ _('With indexes?') }}', cell: 'switch',
             type: 'switch', mode: ['create', 'edit'],
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           },{
-            id: 'like_storage', label:'{{ _('With Storage?') }}', cell: 'switch',
+            id: 'like_storage', label:'{{ _('With storage?') }}', cell: 'switch',
             type: 'switch', mode: ['create', 'edit'],
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           },{
-            id: 'like_comments', label:'{{ _('With Comments?') }}', cell: 'switch',
+            id: 'like_comments', label:'{{ _('With comments?') }}', cell: 'switch',
             type: 'switch', mode: ['create', 'edit'],
             disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
           }]
@@ -723,17 +750,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: '{{ _('Security labels') }}',
           model: pgAdmin.Browser.SecurityModel, editable: false, type: 'collection',
           group: '{{ _('Security') }}', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
         },{
-          id: 'vacuum_settings_str', label: '{{ _('Storage Settings') }}',
+          id: 'vacuum_settings_str', label: '{{ _('Storage settings') }}',
           type: 'multiline', group: '{{ _('Advanced') }}', mode: ['properties']
         }
         ],
-        validate: function() {
+        validate: function(keys) {
           var err = {},
               changedAttrs = this.changed,
               msg = undefined,
@@ -742,6 +769,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               relowner = this.get('relowner');
 
           this.errorModel.clear();
+
+          // If nothing to validate or VacuumSetting keys then
+          // return from here
+          if ( keys && (keys.length == 0
+                        || _.indexOf(keys, 'autovacuum_enabled') != -1
+                        || _.indexOf(keys, 'toast_autovacuum_enabled') != -1) ) {
+            return null;
+          }
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {

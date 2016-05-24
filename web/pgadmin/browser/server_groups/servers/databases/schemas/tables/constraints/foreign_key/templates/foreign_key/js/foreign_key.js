@@ -21,9 +21,6 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       headerSelectControlTemplate =  _.template([
                               '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
                               '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-                              '    <% if (first_empty) { %>',
-                              '    <option value="" <%="" === rawValue ? "selected" : "" %>><%- empty_value %></option>',
-                              '    <% } %>',
                               '    <% for (var i=0; i < options.length; i++) { %>',
                               '    <% var option = options[i]; %>',
                               '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
@@ -702,7 +699,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             var name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
-                m.set('comment', null);
+              if(m.get('comment') && m.get('comment') !== '')
+                 m.set('comment', null);
               },10);
               return true;
             } else {
@@ -710,7 +708,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'condeferrable', label: '{{ _('Deferrable') }}',
+          id: 'condeferrable', label: '{{ _('Deferrable?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           disabled: function(m) {
             // If we are in table edit mode then
@@ -723,7 +721,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !m.isNew();
           }
         },{
-          id: 'condeferred', label: '{{ _('Deferred') }}',
+          id: 'condeferred', label: '{{ _('Deferred?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           deps: ['condeferrable'],
           disabled: function(m) {
@@ -740,7 +738,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               return false;
             } else {
               setTimeout(function(){
-                m.set('condeferred', false);
+                if(m.get('condeferred'))
+                  m.set('condeferred', false);
               },10);
               return true;
             }
@@ -778,7 +777,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !(m.isNew() || m.get("convalidated"));
           }
         },{
-          id: 'autoindex', label: '{{ _('Auto FK index') }}',
+          id: 'autoindex', label: '{{ _('Auto FK index?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           deps: ['name', 'hasindex'],
           options: {
@@ -809,7 +808,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                 // new constraint which should allowed for Unique
                 if(_.isUndefined(m.get('oid')) && _.isUndefined(m.handler.get('oid'))) {
                   setTimeout(function () {
-                    m.set('autoindex', false);
+                    if(m.get('autoindex'))
+                      m.set('autoindex', false);
                   }, 10);
                   return true;
                 } else {

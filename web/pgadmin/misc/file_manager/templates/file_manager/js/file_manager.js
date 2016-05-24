@@ -9,13 +9,15 @@ define([
      * Hmm... this module is already been initialized, we can refer to the old
      * object from here.
      */
-    if (pgAdmin.FileManager)
-        return pgAdmin.FileManager;
+    if (pgAdmin.FileManager) {
+      return pgAdmin.FileManager;
+    }
 
     pgAdmin.FileManager = {
       init: function() {
-        if (this.initialized)
+        if (this.initialized) {
           return;
+        }
 
         this.initialized = true;
 
@@ -35,7 +37,7 @@ define([
           };
 
           // Function to remove trans id from session
-          var removeTransId = function() {
+          var removeTransId = function(trans_id) {
             return $.ajax({
               type: "GET",
               async: false,
@@ -68,25 +70,25 @@ define([
             });
 
             transId = getTransId(params);
-            if (transId.readyState == 4)
+            var t_res;
+            if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
+            }
             trans_id = t_res.data.fileTransId;
-
           };
 
           // Dialog property
           return {
             main: function(params) {
               // Set title and button name
-              if (_.isUndefined(params['dialog_title']))
+              if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Storage manager';
+              }
               this.set('title', params['dialog_title']);
-              if (_.isUndefined(params['btn_primary']))
+              if (_.isUndefined(params['btn_primary'])) {
                 params['btn_primary'] = 'Select';
+              }
               this.set('label', params['btn_primary']);
-
-              var trans_id;
-              this.title = params.dialog_title;
 
               params = JSON.stringify(params);
               $container.find('.storage_content').remove();
@@ -106,6 +108,8 @@ define([
                   if (this.__internal.buttons[0].element) {
                       this.__internal.buttons[0].element.innerHTML = newValue;
                   }
+                  break;
+              default:
                   break;
               }
             },
@@ -127,9 +131,6 @@ define([
               };
             },
             callback: function(closeEvent) {
-              if (closeEvent.button.key == 13) {
-                //closeEvent.cancel = true;
-              }
               if (closeEvent.button.text == "{{ _('Select') }}") {
                 if($('.fileinfo').data('view') == 'grid') {
                   sel_file = $('.fileinfo').find('#contents li.selected p span').attr('title');
@@ -178,8 +179,10 @@ define([
             });
 
             transId = getTransId(configs);
-            if (transId.readyState == 4)
+            var t_res;
+            if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
+            }
             trans_id = t_res.data.fileTransId;
           };
 
@@ -187,15 +190,14 @@ define([
           return {
             main: function(params) {
               // Set title and button name
-              if (_.isUndefined(params['dialog_title']))
+              if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Select file';
+              }
               this.set('title', params['dialog_title']);
-              if (_.isUndefined(params['btn_primary']))
+              if (_.isUndefined(params['btn_primary'])) {
                 params['btn_primary'] = 'Select';
+              }
               this.set('label', params['btn_primary']);
-
-              var trans_id;
-              this.title = params.dialog_title;
 
               params = JSON.stringify(params);
               $container.find('.storage_content').remove();
@@ -215,6 +217,8 @@ define([
                   if (this.__internal.buttons[0].element) {
                       this.__internal.buttons[0].element.innerHTML = newValue;
                   }
+                  break;
+              default:
                   break;
               }
             },
@@ -286,24 +290,26 @@ define([
             });
 
             transId = getTransId(params);
-            if (transId.readyState == 4)
+            var t_res;
+            if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
+            }
             trans_id = t_res.data.fileTransId;
-
           };
 
           // Dialog property
           return {
             main: function(params) {
               // Set title and button name
-              if (_.isUndefined(params['dialog_title']))
+              if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Select folder';
+              }
               this.set('title', params['dialog_title']);
-              if (_.isUndefined(params['btn_primary']))
+              if (_.isUndefined(params['btn_primary'])) {
                 params['btn_primary'] = 'Select';
+              }
               this.set('label', params['btn_primary']);
 
-              var trans_id;
               params = JSON.stringify(params);
               $container.find('.storage_content').remove();
               $container.append("<div class='storage_content'></div>");
@@ -322,6 +328,8 @@ define([
                   if (this.__internal.buttons[0].element) {
                       this.__internal.buttons[0].element.innerHTML = newValue;
                   }
+                  break;
+              default:
                   break;
               }
             },
@@ -392,10 +400,11 @@ define([
             });
 
             transId = getTransId(params);
-            if (transId.readyState == 4)
+            var t_res;
+            if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
+            }
             trans_id = t_res.data.fileTransId;
-
           };
 
           // Dialog property
@@ -403,11 +412,13 @@ define([
             main: function(params) {
               var trans_id;
               // Set title and button name
-              if (_.isUndefined(params['dialog_title']))
+              if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Create file';
+              }
               this.set('title', params['dialog_title']);
-              if (_.isUndefined(params['btn_primary']))
+              if (_.isUndefined(params['btn_primary'])) {
                 params['btn_primary'] = 'Create';
+              }
               this.set('label', params['btn_primary']);
 
               params = JSON.stringify(params);
@@ -428,6 +439,8 @@ define([
                   if (this.__internal.buttons[0].element) {
                       this.__internal.buttons[0].element.innerHTML = newValue;
                   }
+                  break;
+              default:
                   break;
               }
             },
@@ -455,8 +468,8 @@ define([
                 $('.replace_file .btn_yes').click(function(self) {
                   $('.replace_file, .fm_dimmer').hide();
                   var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
-                      newFile = $('.currentpath').val() + selected_item,
-                      newFile = newFile.substr(1);
+                      sel_item = $('.currentpath').val() + selected_item,
+                      newFile = sel_item.substr(1);
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
                   $('.file_manager_create_cancel').trigger('click');
                 });

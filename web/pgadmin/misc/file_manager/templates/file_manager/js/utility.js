@@ -1269,7 +1269,8 @@ var enab_dis_level_up = function() {
  */
 var fm_url = "{{ url_for('file_manager.index') }}get_trans_id",
     transId = loadData(fm_url),
-    t_id = '';
+    t_res,
+    t_id;
 
 if (transId.readyState == 4) {
   t_res = JSON.parse(transId.responseText);

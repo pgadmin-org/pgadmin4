@@ -15,6 +15,34 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       });
   };
 
+  // Node-Ajax-Cell with Deps
+  var NodeAjaxOptionsDepsCell = Backgrid.Extension.NodeAjaxOptionsCell.extend({
+      initialize: function() {
+        Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        var model = this.model,
+          column = this.column,
+          editable = this.column.get("editable"),
+          input = this.$el.find('select').first();
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        if (is_editable) {
+           this.$el.addClass("editable");
+           input.prop('disabled', false);
+         } else {
+           this.$el.removeClass("editable");
+           input.prop('disabled', true);
+         }
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
+
     // Model to create column collection control
     var ColumnModel = pgAdmin.Browser.Node.Model.extend({
         defaults: {
@@ -26,23 +54,38 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },
         schema: [
           {
-            id: 'colname', label:'{{ _('Column') }}', cell: 'string',
-            type: 'text', disabled: 'inSchema', editable: false,
+            id: 'colname', label:'{{ _('Column') }}', cell: 'node-list-by-name',
+            type: 'text', disabled: 'inSchema', editable: true,
             control: 'node-list-by-name', node: 'column'
           },{
-            id: 'collspcname', label:'{{ _('Collation') }}', cell: 'string',
-            type: 'text', disabled: 'inSchema', editable: false,
+            id: 'collspcname', label:'{{ _('Collation') }}',
+            cell: NodeAjaxOptionsDepsCell,
+            type: 'text', disabled: 'inSchema', editable: function(m) {
+                // Header cell then skip
+                if (m instanceof Backbone.Collection) {
+                    return false;
+                }
+                return !(m.inSchema.apply(this, arguments));
+            },
             control: 'node-ajax-options', url: 'get_collations', node: 'index'
           },{
-            id: 'op_class', label:'{{ _('Operator class') }}', cell: 'string',
-            type: 'text', disabled: 'checkAccessMethod', editable: false,
+            id: 'op_class', label:'{{ _('Operator class') }}',
+            cell: NodeAjaxOptionsDepsCell,
+            type: 'text', disabled: 'checkAccessMethod',
+            editable: function(m) {
+                // Header cell then skip
+                if (m instanceof Backbone.Collection) {
+                    return false;
+                }
+                return !(m.checkAccessMethod.apply(this, arguments));
+            },
             control: 'node-ajax-options', url: 'get_op_class', node: 'index',
-            deps: ['amname'], transform: function(data) {
+            deps: ['amname'], transform: function(data, control) {
              /* We need to extract data from collection according
               * to access method selected by user if not selected
               * send btree related op_class options
               */
-             var amname = this.model.handler.get('amname'),
+             var amname = control.model.top.get('amname'),
                  options = data['btree'];
 
              if(_.isUndefined(amname))
@@ -56,21 +99,35 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              return options;
             }
           },{
-            id: 'sort_order', label:'{{ _('Sort order') }}', cell: 'switch',
-            type: 'switch', disabled: 'checkAccessMethod', editable: false,
+            id: 'sort_order', label:'{{ _('Sort order') }}', cell: SwitchDepCell,
+            type: 'switch', disabled: 'checkAccessMethod',
+            editable: function(m) {
+                // Header cell then skip
+                if (m instanceof Backbone.Collection) {
+                    return false;
+                }
+                return !(m.checkAccessMethod.apply(this, arguments));
+            },
             deps: ['amname'],
             options: {
              'onText': 'DESC', 'offText': 'ASC',
-             'onColor': 'success', 'offColor': 'default',
+             'onColor': 'success', 'offColor': 'primary',
              'size': 'small'
             }
           },{
-            id: 'nulls', label:'{{ _('NULLs') }}', cell: 'switch',
-            type: 'switch', disabled: 'checkAccessMethod', editable: false,
+            id: 'nulls', label:'{{ _('NULLs') }}', cell: SwitchDepCell,
+            type: 'switch', disabled: 'checkAccessMethod',
+            editable: function(m) {
+                // Header cell then skip
+                if (m instanceof Backbone.Collection) {
+                    return true;
+                }
+                return !(m.checkAccessMethod.apply(this, arguments));
+            },
             deps: ['amname', 'sort_order'],
             options: {
              'onText': 'FIRST', 'offText': 'LAST',
-             'onColor': 'success', 'offColor': 'default',
+             'onColor': 'success', 'offColor': 'primary',
              'size': 'small'
             }
           }
@@ -107,7 +164,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         // We will check if we are under schema node and added condition
         checkAccessMethod: function(m) {
         //Access method is empty or btree then do not disable field
-          var parent_model = m.handler;
+          var parent_model = m.top;
           if(!m.inSchema.apply(this, [m]) &&
               (_.isUndefined(parent_model.get('amname')) ||
                _.isNull(parent_model.get('amname')) ||
@@ -115,10 +172,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                parent_model.get('amname') === 'btree')) {
             // We need to set nulls to true if sort_order is set to desc
             // nulls first is default for desc
-            if(m.get('sort_order') == true) {
+            if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
                setTimeout(function() { m.set('nulls', true) }, 10);
-            } else {
-               setTimeout(function() { m.set('nulls', false) }, 10);
             }
             return false;
           }
@@ -130,6 +185,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     pgAdmin.Browser.Nodes['index'] = pgAdmin.Browser.Node.extend({
       parent_type: ['table', 'view', 'mview'],
       collection_type: ['coll-table', 'coll-view'],
+      sqlAlterHelp: 'sql-alterindex.html',
+      sqlCreateHelp: 'sql-createindex.html',
       type: 'index',
       label: '{{ _('Index') }}',
       hasSQL:  true,
@@ -228,7 +285,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           })
         },{
           id: 'cols', label:'{{ _('Columns') }}', cell: 'string',
-          type: 'text', disabled: 'inSchema', mode: ['properties']
+          type: 'text', disabled: 'inSchema', mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
           id: 'fillfactor', label:'{{ _('Fill factor') }}', cell: 'string',
           type: 'int', disabled: 'inSchema', mode: ['create', 'edit', 'properties'],
@@ -244,15 +302,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },{
           id: 'indisvalid', label:'{{ _('Valid?') }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-
+          group: '{{ _('Definition') }}'
         },{
           id: 'indisprimary', label:'{{ _('Primary?') }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-
+          group: '{{ _('Definition') }}'
         },{
           id: 'is_sys_idx', label:'{{ _('System index?') }}', cell: 'string',
-          type: 'switch', disabled: true, mode: ['properties'],
-
+          type: 'switch', disabled: true, mode: ['properties']
         },{
           id: 'isconcurrent', label:'{{ _('Concurrent build?') }}', cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck',
@@ -262,7 +319,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           type: 'text', disabled: 'inSchemaWithModelCheck', mode: ['create', 'edit'],
           control: 'sql-field', visible: true, group: '{{ _('Definition') }}'
         },{
-          id: 'columns', label: 'Columns', type: 'collection',
+          id: 'columns', label: 'Columns', type: 'collection', deps: ['amname'],
           group: '{{ _('Definition') }}', model: ColumnModel, mode: ['edit', 'create'],
           canAdd: function(m) {
             // We will disable it if it's in 'edit' mode
@@ -272,14 +329,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               return false;
             }
           },
-          canEdit: function(m) {
-            // We will disable it if it's in 'edit' mode
-            if (m.isNew()) {
-              return true;
-            } else {
-              return false;
-            }
-          },
+          canEdit: false,
           canDelete: function(m) {
             // We will disable it if it's in 'edit' mode
             if (m.isNew()) {
@@ -288,7 +338,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               return false;
             }
           },
-          control: 'unique-col-collection', uniqueCol : ['colname']
+          control: 'unique-col-collection', uniqueCol : ['colname'],
+          columns: ['colname', 'op_class', 'sort_order', 'nulls', 'collspcname']
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

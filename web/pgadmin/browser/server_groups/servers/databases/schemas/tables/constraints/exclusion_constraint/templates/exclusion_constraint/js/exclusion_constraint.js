@@ -653,7 +653,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             var name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
-                m.set('comment', null);
+              if(m.get('comment') && m.get('comment') !== '')
+                 m.set('comment', null);
               },10);
               return true;
             } else {
@@ -713,7 +714,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'fillfactor', label: '{{ _('Fill factor') }}',
           type: 'int', group: '{{ _('Definition') }}', allowNull: true
         },{
-          id: 'condeferrable', label: '{{ _('Deferrable') }}',
+          id: 'condeferrable', label: '{{ _('Deferrable?') }}',
           type: 'switch', group: '{{ _('Definition') }}', deps: ['index'],
           disabled: function(m) {
             return ((_.has(m, 'handler') &&
@@ -721,7 +722,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }
         },{
-          id: 'condeferred', label: '{{ _('Deferred') }}',
+          id: 'condeferred', label: '{{ _('Deferred?') }}',
           type: 'switch', group: '{{ _('Definition') }}',
           deps: ['condeferrable'],
           disabled: function(m) {
@@ -736,7 +737,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               return false;
             } else {
               setTimeout(function(){
-                m.set('condeferred', false);
+                if(m.get('condeferred'))
+                  m.set('condeferred', false);
               },10);
               return true;
             }

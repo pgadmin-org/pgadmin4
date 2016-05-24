@@ -14,6 +14,55 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       });
   };
 
+  // Integer Cell for Columns Length and Precision
+  var IntegerDepCell = Backgrid.IntegerCell.extend({
+      initialize: function() {
+        Backgrid.NumberCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        this.$el.empty();
+        var model = this.model;
+        var column = this.column;
+        editable = this.column.get("editable");
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        if (is_editable){ this.$el.addClass("editable"); }
+        else { this.$el.removeClass("editable"); }
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
+  // Node-Ajax-Cell with Deps
+  var NodeAjaxOptionsDepsCell = Backgrid.Extension.NodeAjaxOptionsCell.extend({
+      initialize: function() {
+        Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        var model = this.model,
+          column = this.column,
+          editable = this.column.get("editable"),
+          input = this.$el.find('select').first();
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        if (is_editable) {
+           this.$el.addClass("editable");
+           input.prop('disabled', false);
+         } else {
+           this.$el.removeClass("editable");
+           input.prop('disabled', true);
+         }
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
   // Security label model declaration
   var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
     defaults: {
@@ -64,13 +113,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
     subtypes: undefined,
     schema: [{
       id: 'member_name', label: '{{ _('Member Name') }}',
-      type: 'text',  disabled: false, editable: false
+      type: 'text',  disabled: false, editable: true
     },{
       id: 'type', label: '{{ _('Type') }}', control: 'node-ajax-options',
       type: 'text', url: 'get_types', disabled: false, node: 'type',
-      editable: false,
-      transform: function(d){
-        this.model.type_options =  d;
+      cell: 'node-ajax-options',
+      editable: true,
+      transform: function(d, control){
+        control.model.type_options =  d;
         return d;
       }
     },{
@@ -78,8 +128,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       // precision and scale. In the UI, we try to follow the docs as
       // closely as possible, therefore we use Length/Precision and Scale
       id: 'tlength', label: '{{ _('Length/precision') }}', deps: ['type'], type: 'text',
-      editable: false,
-      disabled: function(m) {
+      disabled: false, cell: IntegerDepCell,
+      editable: function(m) {
         // We will store type from selected from combobox
         var of_type = m.get('type');
         if(m.type_options) {
@@ -98,15 +148,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
           });
         }
-        return !m.get('is_tlength');
+        return m.get('is_tlength');
       }
     },{
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
       // closely as possible, therefore we use Length/Precision and Scale
       id: 'precision', label: '{{ _('Scale') }}', deps: ['type'],
-      type: 'text', editable: false,
-      disabled: function(m) {
+      type: 'text', disabled: false, cell: IntegerDepCell,
+      editable: function(m) {
         // We will store type from selected from combobox
         var of_type = m.get('type');
         if(m.type_options) {
@@ -125,11 +175,32 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
           });
         }
-        return !m.get('is_precision');
+        return m.get('is_precision');
       }
     },{
       id: 'collation', label: '{{ _('Collation') }}',
-      control: 'node-ajax-options', editable: false,
+      cell: NodeAjaxOptionsDepsCell, deps: ['type'],
+      control: 'node-ajax-options', editable: function(m) {
+         var of_type = m.get('type'),
+           flag = false;
+         if(m.type_options) {
+          _.each(m.type_options, function(o) {
+            if ( of_type == o.value ) {
+                if(o.is_collatable)
+                {
+                  flag = true;
+                }
+            }
+          });
+         }
+
+         if (flag) {
+           setTimeout(function(){
+             m.set('collspcname', "");
+           }, 10);
+         }
+         return flag;
+      },
       type: 'text', disabled: false, url: 'get_collations', node: 'type'
     }],
     validate: function() {
@@ -323,7 +394,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           model: CompositeModel, editable: true, type: 'collection',
           group: '{{ _('Definition') }}', mode: ['edit', 'create'],
           control: 'unique-col-collection', uniqueCol : ['member_name'],
-          canAdd: true, canEdit: true, canDelete: true, disabled: 'inSchema',
+          canAdd: true, canEdit: false, canDelete: true, disabled: 'inSchema',
           deps: ['typtype'], deps: ['typtype'],
           visible: function(m) {
            return m.get('typtype') === 'c';
@@ -358,8 +429,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             select2: { allowClear: true, placeholder: "", width: "100%" },
             url: 'get_stypes', type: 'text', mode: ['properties', 'create', 'edit'],
             group: '{{ _('Range Type') }}', disabled: 'inSchemaWithModelCheck',
-            transform: function(d){
-              this.model.subtypes =  d;
+            transform: function(d, self){
+              self.model.subtypes =  d;
               return d;
             }
           },{

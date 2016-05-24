@@ -552,7 +552,8 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 res.append(
                             {'label': row['typname'], 'value': row['typname'],
                              'typval': typeval, 'precision': precision,
-                             'length': length, 'min_val': min_val, 'max_val': max_val
+                             'length': length, 'min_val': min_val, 'max_val': max_val,
+                             'is_collatable': row['is_collatable']
                              }
                         )
 

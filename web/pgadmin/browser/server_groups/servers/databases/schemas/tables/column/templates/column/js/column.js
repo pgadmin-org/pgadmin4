@@ -15,33 +15,6 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       });
   };
 
-  // Switch Cell for Primary Key selection
-  var SwitchDepCell = Backgrid.BooleanCell.extend({
-      initialize: function() {
-        Backgrid.BooleanCell.prototype.initialize.apply(this, arguments);
-        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-      },
-      dependentChanged: function () {
-        var model = this.model,
-          column = this.column,
-          editable = this.column.get("editable"),
-          input = this.$el.find('input[type=checkbox]').first();
-
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-        if (is_editable) {
-           this.$el.addClass("editable");
-           input.prop('disabled', false);
-         } else {
-           this.$el.removeClass("editable");
-           input.prop('disabled', true);
-         }
-
-        this.delegateEvents();
-        return this;
-      },
-      remove: Backgrid.Extension.DependentCell.prototype.remove
-    });
-
    // This Node model will be used for variable control for column
    var VariablesModel = Backform.VariablesModel = pgAdmin.Browser.Node.Model.extend({
     defaults: {
@@ -84,6 +57,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       type: 'column',
       label: '{{ _('Column') }}',
       hasSQL:  true,
+      sqlAlterHelp: 'sql-altertable.html',
+      sqlCreateHelp: 'sql-altertable.html',
       canDrop: function(itemData, item, data){
         if (pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data])) {
           var t = pgBrowser.tree, i = item, d = itemData, parents = [];
@@ -294,7 +269,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               });
 
               flag && setTimeout(function() {
-                  m.set('attlen', null);
+                  if(m.get('attlen')) {
+                    m.set('attlen', null);
+                  }
                 },10);
 
               return flag;
@@ -317,8 +294,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               });
 
               flag && setTimeout(function() {
+                if(m.get('attprecision')) {
                   m.set('attprecision', null);
-                },10);
+                }
+              },10);
               return flag;
            }
          },{
@@ -338,7 +317,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               });
               if (flag) {
                 setTimeout(function(){
-                  m.set('collspcname', "");
+                  if(m.get('collspcname') && m.get('collspcname') !== '') {
+                    m.set('collspcname', "");
+                  }
                 }, 10);
               }
               return flag;
@@ -371,16 +352,20 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
            ]
         },{
           id: 'is_pk', label:'{{ _('Primary key?') }}',
-          type: 'switch', disabled: true, mode: ['properties']
+          type: 'switch', disabled: true, mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
           id: 'is_fk', label:'{{ _('Foreign key?') }}',
-          type: 'switch', disabled: true, mode: ['properties']
+          type: 'switch', disabled: true, mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
           id: 'is_inherited', label:'{{ _('Inherited?') }}',
-          type: 'switch', disabled: true, mode: ['properties']
+          type: 'switch', disabled: true, mode: ['properties'],
+          group: '{{ _('Definition') }}'
         },{
           id: 'tbls_inherited', label:'{{ _('Inherited from table(s)') }}',
           type: 'text', disabled: true, mode: ['properties'], deps: ['is_inherited'],
+          group: '{{ _('Definition') }}',
           visible: function(m) {
               if (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited')) {
                 return true;
@@ -389,12 +374,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               }
           }
         },{
-          id: 'is_sys_column', label:'{{ _('System Column?') }}', cell: 'string',
+          id: 'is_sys_column', label:'{{ _('System column?') }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties']
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
+        },{
+          id: 'attoptions', label: 'Variables', type: 'collection',
+          group: '{{ _('Variables') }}', control: 'unique-col-collection',
+          model: VariablesModel, uniqueCol : ['name'],
+          mode: ['edit', 'create'], canAdd: true, canEdit: false,
+          canDelete: true
         },{
           id: 'attacl', label: 'Privileges', type: 'collection',
           group: '{{ _('Security') }}', control: 'unique-col-collection',
@@ -402,12 +393,6 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           privileges: ['a','r','w','x']}),
           mode: ['edit'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
-        },{
-          id: 'attoptions', label: 'Variables', type: 'collection',
-          group: '{{ _('Security') }}', control: 'unique-col-collection',
-          model: VariablesModel, uniqueCol : ['name'],
-          mode: ['edit', 'create'], canAdd: true, canEdit: false,
-          canDelete: true
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
           model: pgAdmin.Browser.SecurityModel,
@@ -506,7 +491,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           var node_info = this.node_info || m.node_info || m.top.node_info;
 
           // disable all fields if column is listed under view or mview
-          if ('view' in node_info || 'mview' in node_info) {
+          if (node_info && ('view' in node_info || 'mview' in node_info)) {
             if (this && _.has(this, 'name') && (this.name != 'defval')) {
               return true;
             }
