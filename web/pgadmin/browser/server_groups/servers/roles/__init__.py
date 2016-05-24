@@ -429,6 +429,9 @@ rolmembership:{
                                 )
                 self.conn = self.manager.connection()
 
+                driver = get_driver(PG_DEFAULT_DRIVER)
+                self.qtIdent = driver.qtIdent
+
                 if not self.conn.connected():
                     return precondition_required(
                             _("Connection to the server has been lost!")
@@ -660,7 +663,7 @@ rolmembership:{
     def drop(self, gid, sid, rid):
 
         status, res = self.conn.execute_2darray(
-                "DROP ROLE {0};".format(self.role)
+                "DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
                 )
         if not status:
             return internal_server_error(
