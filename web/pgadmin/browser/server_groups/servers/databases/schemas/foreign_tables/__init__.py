@@ -157,6 +157,19 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
     * dependencies(gid, sid, did, scid, foid):
       - Returns the dependencies for the Foreign Table object.
+
+    * select_sql(gid, sid, did, scid, foid):
+      - Returns sql for Script
+
+    * insert_sql(gid, sid, did, scid, foid):
+      - Returns sql for Script
+
+    * update_sql(gid, sid, did, scid, foid):
+      - Returns sql for Script
+
+    * delete_sql(gid, sid, did, scid, foid):
+      - Returns sql for Script
+
     """
 
     node_type = blueprint.node_type
@@ -193,7 +206,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         'get_foreign_servers': [{'get': 'get_foreign_servers'},
                                 {'get': 'get_foreign_servers'}],
         'get_tables': [{'get': 'get_tables'}, {'get': 'get_tables'}],
-        'get_columns': [{'get': 'get_columns'}, {'get': 'get_columns'}]
+        'get_columns': [{'get': 'get_columns'}, {'get': 'get_columns'}],
+        'select_sql': [{'get': 'select_sql'}],
+        'insert_sql': [{'get': 'insert_sql'}],
+        'update_sql': [{'get': 'update_sql'}],
+        'delete_sql': [{'get': 'delete_sql'}]
     })
 
     def validate_request(f):
@@ -1117,5 +1134,142 @@ AND relkind != 'c'))"""
                 variables_lst.append(var_dict)
 
         return {"ftoptions": variables_lst}
+
+
+    @check_precondition
+    def select_sql(self, gid, sid, did, scid, foid):
+        """
+        SELECT script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+
+        Returns:
+            SELECT Script sql for the object
+        """
+        data = self._fetch_properties(gid, sid, did, scid, foid)
+
+        columns = []
+        for c in data['columns']:
+            columns.append(self.qtIdent(self.conn, c['attname']))
+
+        if len(columns) > 0:
+            columns = ", ".join(columns)
+        else:
+            columns = '*'
+
+        sql = "SELECT {0}\n\tFROM {1};".format(
+            columns,
+            self.qtIdent(self.conn, data['basensp'], data['name'])
+        )
+
+        return ajax_response(response=sql)
+
+    @check_precondition
+    def insert_sql(self, gid, sid, did, scid, foid):
+        """
+        INSERT script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+
+        Returns:
+            INSERT Script sql for the object
+        """
+        data = self._fetch_properties(gid, sid, did, scid, foid)
+
+        columns = []
+        values = []
+
+        # Now we have all list of columns which we need
+        if 'columns' in data:
+            for c in data['columns']:
+                columns.append(self.qtIdent(self.conn, c['attname']))
+                values.append('?')
+
+        if len(columns) > 0:
+            columns = ", ".join(columns)
+            values = ", ".join(values)
+            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+                self.qtIdent(self.conn, data['basensp'], data['name']),
+                columns, values
+            )
+        else:
+            sql = gettext('-- Please create column(s) first...')
+
+        return ajax_response(response=sql)
+
+    @check_precondition
+    def update_sql(self, gid, sid, did, scid, foid):
+        """
+        UPDATE script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+
+        Returns:
+            UPDATE Script sql for the object
+        """
+        data = self._fetch_properties(gid, sid, did, scid, foid)
+
+        columns = []
+
+        # Now we have all list of columns which we need
+        if 'columns' in data:
+            for c in data['columns']:
+                columns.append(self.qtIdent(self.conn, c['attname']))
+
+        if len(columns) > 0:
+            if len(columns) == 1:
+                columns = columns[0]
+                columns += "=?"
+            else:
+                columns = "=?, ".join(columns)
+                columns += "=?"
+
+            sql = "UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+                self.qtIdent(self.conn, data['basensp'], data['name']),
+                columns
+            )
+        else:
+            sql = gettext('-- Please create column(s) first...')
+
+        return ajax_response(response=sql)
+
+    @check_precondition
+    def delete_sql(self, gid, sid, did, scid, foid):
+        """
+        DELETE script sql for the object
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+
+        Returns:
+            DELETE Script sql for the object
+        """
+        data = self._fetch_properties(gid, sid, did, scid, foid)
+
+        sql = "DELETE FROM {0}\n\tWHERE <condition>;".format(
+            self.qtIdent(self.conn, data['basensp'], data['name'])
+        )
+
+        return ajax_response(response=sql)
+
 
 ForeignTableView.register_node_view(blueprint)

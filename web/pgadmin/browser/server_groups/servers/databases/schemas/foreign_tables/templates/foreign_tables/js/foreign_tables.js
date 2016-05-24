@@ -534,6 +534,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-foreign-table',
       hasSQL: true,
       hasDepends: true,
+      hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
       parent_type: ['schema'],
       Init: function() {
         /* Avoid multiple registration of menus */
