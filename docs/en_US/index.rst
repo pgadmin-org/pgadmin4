@@ -34,6 +34,8 @@ Getting Started
 
 Before you can use the pgAdmin client to manage your Postgres installation, you must define a connection to the server.    
 
+Contents:
+
 .. toctree::
    :maxdepth: 1
 
@@ -45,15 +47,10 @@ Before you can use the pgAdmin client to manage your Postgres installation, you 
 Creating Cluster Level Objects  
 ==============================
    
-Some object definitions reside at the cluster level: 
- 
-* Resource Groups
-* Roles
-* Tablespaces
-* Databases
-
-pgAdmin 4 provides dialogs that allow you to create these objects, manage them, and control their relationships to each other.  To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Databases* node, and select *Create Database...*    
+Some object definitions reside at the cluster level; pgAdmin 4 provides dialogs that allow you to create these objects, manage them, and control their relationships to each other.  To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Databases* node, and select *Create Database...*    
    
+Contents:
+
 .. toctree::
    :maxdepth: 2
 
@@ -70,6 +67,8 @@ pgAdmin 4 provides simple but powerful dialogs that you can use to design and cr
 
 To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
 
+Contents:
+
 .. toctree::
    :maxdepth: 2
    
@@ -79,6 +78,7 @@ To access a dialog that allows you to create a database object, right-click on t
    event_trigger_dialog
    extension_dialog
    foreign_data_wrapper_dialog
+   foreign_table_dialog
    fts_parser_dialog
    fts_template_dialog
    function_dialog
@@ -92,6 +92,8 @@ Creating or Modifying a Table
 pgAdmin 4 provides dialogs that allow you to modify all table properties and attributes.
 
 To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
+
+Contents:
 
 .. toctree::
    :maxdepth: 2
@@ -117,6 +119,8 @@ The configuration editor provides a graphical interface that allows a sufficient
 
 To modify the postgresql.conf or pg_hba.conf file, you must have sufficient privileges to modify and save files in the Postgres *data* directory.  Please note that incorrect configuration can slow performance, or prevent the server from restarting without reverting your changes.  Please consult the PostgreSQL core documentation for detailed information about configuring your server.
 
+Contents:
+
 .. toctree::
    :maxdepth: 2
    
@@ -129,6 +133,8 @@ Backup and Restore
 
 A powerful, but user-friendly Backup and Restore tool provides an easy way to use pg_dump, pg_dumpall, and pg_restore to take backups and create copies of databases or database objects for use in a development environment.
 
+Contents:
+
 .. toctree::
    :maxdepth: 2
    
@@ -140,6 +146,8 @@ Developer Tools
 ===============
 
 The pgAdmin *Tools* menu displays a list of powerful developer tools that you can use to execute and analyze complex SQL commands, manage data, and debug PL/SQL code.
+
+Contents:
 
 .. toctree::
    :maxdepth: 2
@@ -154,6 +162,8 @@ pgAdmin Deployment
 ==================
 
 Pre-compiled and configured installation packages for pgAdmin 4 are available for a number of desktop environments; we recommend using an installer whenever possible.  If you are interested in learning more about the project, or if a pgAdmin installer is not available for your environment, the pages listed below will provide detailed information about creating a custom deployment.  
+
+Contents:
 
 .. toctree::
    :maxdepth: 2
