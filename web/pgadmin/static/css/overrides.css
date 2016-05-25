@@ -599,6 +599,12 @@ table.backgrid tr.new {
     height: 0px; width: 0px;
 }
 
+/* Center align the switch in backgrid */
+td.switch-cell > div.bootstrap-switch {
+  display: block;
+  margin: auto;
+}
+
 .width_percent_5 { width: 5%; }
 .width_percent_10 { width: 10%; }
 .width_percent_15 { width: 15%; }
