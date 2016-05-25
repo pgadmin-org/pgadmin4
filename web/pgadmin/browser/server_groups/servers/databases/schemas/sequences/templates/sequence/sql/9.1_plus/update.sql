@@ -48,7 +48,7 @@ ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
 {% set seqname = conn|qtIdent(o_data.schema, data.name) %}
 {% set schema = o_data.schema %}
 {% endif %}
-{% if data.comment and data.comment != o_data.comment %}
+{% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON SEQUENCE {{ seqname }}
     IS {{ data.comment|qtLiteral }};
     
