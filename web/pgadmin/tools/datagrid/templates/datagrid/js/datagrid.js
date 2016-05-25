@@ -207,9 +207,11 @@ define(
         if (!alertify.filterDialog) {
           alertify.dialog('filterDialog', function factory() {
             return {
-              main: function(title, message) {
+              main: function(title, message, baseUrl, validateUrl) {
                 this.set('title', title);
                 this.message = message;
+                this.baseUrl = baseUrl;
+                this.validateUrl = validateUrl;
               },
 
               setup:function() {
@@ -243,10 +245,11 @@ define(
 
                 if (closeEvent.button.text == "{{ _('OK') }}") {
                   var sql = this.filter_obj.getValue();
+                  var that = this;
 
                   // Make ajax call to include the filter by selection
                   $.ajax({
-                    url: validateUrl,
+                    url: that.validateUrl,
                     method: 'POST',
                     async: false,
                     contentType: "application/json",
@@ -254,7 +257,7 @@ define(
                     success: function(res) {
                       if (res.data.status) {
                         // Initialize the data grid.
-                        self.initialize_data_grid(baseUrl, grid_title, sql);
+                        self.initialize_data_grid(that.baseUrl, grid_title, sql);
                       }
                       else {
                         alertify.alert(
@@ -279,7 +282,7 @@ define(
         var content = '';
         $.get("{{ url_for('datagrid.index') }}" + "filter",
           function(data) {
-            alertify.filterDialog('Data Filter', data).resizeTo(600, 400);
+            alertify.filterDialog('Data Filter', data, baseUrl, validateUrl).resizeTo(600, 400);
           }
         );
       },
