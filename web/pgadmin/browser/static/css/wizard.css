@@ -106,6 +106,12 @@
   margin-right: 0 !important;
 }
 
+.wizard-header .wizard-cancel-event {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAdklEQVQ4jd2SwQnAIAxF36GH0pOTFHEgF3IkR5LO0F4SCGJVEHroAy/f/E+igV+yAa6hO7nrcgAZuIBg9CBalppXEnDL0RA1q556ASdQqhBrLlLTxVch1uxHZiU2AuKs2Vdt23GGHSy/wfIvzOzBPhpjaRO/5wG/szevJ+ZXzAAAAABJRU5ErkJggg==) no-repeat center center;
+  padding: 10px;
+  margin-top: -1px;
+}
+
 /* Wizard Status bar CSS */
 .pgadmin-wizard .wizard-description {
   padding: 1.0em 0.1em;

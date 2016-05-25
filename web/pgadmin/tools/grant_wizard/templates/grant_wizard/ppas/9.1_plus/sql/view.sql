@@ -1,9 +1,11 @@
 {# ===== Fetch list of Database object types(View) ===== #}
-{% if node_id %}
+{% if node_id and node_type %}
+{% set ntype = "View" if node_type == 'v' else "Materialized View" %}
+{% set view_icon = "icon-view" if node_type == 'v' else "icon-mview" %}
 SELECT
     c.relname AS name,
-    'View' AS object_type,
-    'icon-view' AS icon,
+    '{{ ntype }}' AS object_type,
+    '{{ view_icon }}' AS icon,
     '{{ nspname }}' AS nspname
 FROM
     pg_class c
@@ -20,7 +22,7 @@ WHERE
           ((r.ev_class = c.oid)
           AND (bpchar(r.ev_type) = '1'::bpchar))
       ))
-     ) OR (c.relkind = 'v'::char)
+     ) AND (c.relkind = '{{ node_type }}'::char)
     )
     AND c.relnamespace = {{ node_id }}::oid
 ORDER BY

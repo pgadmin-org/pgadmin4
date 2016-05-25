@@ -15,10 +15,6 @@
         "type": "TABLE",
         "acl": ["a", "w", "d", "D", "x", "t"]
     },
-    "view": {
-        "type": "VIEW",
-        "acl": ["a", "w", "d", "D", "x", "t"]
-    },
     "sequence": {
         "type": "SEQUENCE",
         "acl": ["w", "U"]

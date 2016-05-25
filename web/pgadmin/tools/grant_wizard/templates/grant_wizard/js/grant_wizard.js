@@ -206,6 +206,7 @@ define([
                     resizable: true,
                     autoReset: false,
                     maximizable: false,
+                    closable: false,
                     closableByDimmer: false
                   }
                 };
@@ -219,7 +220,7 @@ define([
 
                   // Add pgadmin_grant_wizard_body class to dialog
                   $(this.elements.body).addClass('pgadmin_grant_wizard_body');
-                },
+                }
               },
 
               /**
@@ -520,6 +521,11 @@ define([
                       break;
                     case 'View':
                       object_type = 'table';
+                      break;
+                    case 'Materialized View':
+                      object_type = 'table';
+                      break;
+                    default:
                       break;
                   }
 
@@ -1041,6 +1047,7 @@ define([
                     height: '',
                     curr_page: 0,
                     show_left_panel: false,
+                    show_header_cancel_btn: true,
                     disable_finish: true
                   },
 

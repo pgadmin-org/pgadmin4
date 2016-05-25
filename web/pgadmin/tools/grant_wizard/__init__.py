@@ -281,7 +281,19 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'view']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/view.sql']),
-                node_id=node_id, nspname=nspname)
+                node_id=node_id, node_type='v', nspname=nspname)
+
+            status, res = conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            res_data.extend(res['rows'])
+
+        # Fetch Materialzed Views against schema
+        if ntype in ['schema', 'mview']:
+            SQL = render_template("/".join(
+                [server_prop['template_path'], '/sql/view.sql']),
+                node_id=node_id, node_type='m', nspname=nspname)
 
             status, res = conn.execute_dict(SQL)
             if not status:

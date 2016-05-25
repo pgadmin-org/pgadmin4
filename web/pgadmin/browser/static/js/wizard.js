@@ -42,6 +42,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       disable_prev: false,
       disable_finish: false,
       disable_cancel: false,
+      show_header_cancel_btn: false, /* show cancel button at wizard header */
       height: 400,
       width: 650,
       show_left_panel: true
@@ -55,16 +56,21 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "              <h3><span id='main-title'><%= this.options.title %></span> -"
        + "              <span id='step-title'><%= page_title %></span></h3>"
        + "          </div>"
+       + "          <% if (this.options.show_header_cancel_btn) { %>"
+       + "            <div class='col-sm-3'>"
+       + "              <button class='ajs-close wizard-cancel-event pull-right'></button>"
+       + "            </div>"
+       + "          <% } %>"
        + "        </div>"
        + "      </div>"
        + "      <div class='wizard-content col-sm-12'>"
-       + "        <% if(this.options.show_left_panel) { %>"
+       + "        <% if (this.options.show_left_panel) { %>"
        + "          <div class='col-sm-3 wizard-left-panel'>"
        + "              <img src='<%= this.options.image %>'></div>"
        + "        <% } %>"
-       + "        <div class='col-sm-<% if(this.options.show_left_panel){ %>9<% }"
+       + "        <div class='col-sm-<% if (this.options.show_left_panel) { %>9<% }"
        + "          else { %>12<% } %> wizard-right-panel'>"
-       + "          <% if( typeof show_description !=  'undefined'){ %>"
+       + "          <% if ( typeof show_description !=  'undefined'){ %>"
        + "            <div class='wizard-description'>"
        + "              <%= show_description %>"
        + "            </div>"
@@ -79,7 +85,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "      <div class='footer col-sm-12'>"
        + "        <div class='row'>"
        + "          <div class='col-sm-4 wizard-progress-bar'>"
-       + "             <p><% if(show_progress_bar){ %><%= show_progress_bar %><% } %></p>"
+       + "             <p><% if (show_progress_bar) { %><%= show_progress_bar %><% } %></p>"
        + "          </div>"
        + "          <div class='col-sm-8'>"
        + "            <div class='wizard-buttons'>"
@@ -100,6 +106,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       "click button.wizard-next" : "nextPage",
       "click button.wizard-back" : "prevPage",
       "click button.wizard-cancel" : "onCancel",
+      "click button.wizard-cancel-event" : "onCancel",
       "click button.wizard-finish" : "finishWizard",
     },
     initialize: function(options) {
