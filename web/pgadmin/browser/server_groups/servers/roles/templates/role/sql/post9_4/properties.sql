@@ -1,5 +1,5 @@
 SELECT
-	r.oid, r.*,
+	r.oid, r.*, r.rolsuper as rolcatupdate,
 	pg_catalog.shobj_description(r.oid, 'pg_authid') AS description,
 	ARRAY(
 		SELECT
