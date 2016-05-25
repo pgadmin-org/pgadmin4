@@ -1115,10 +1115,27 @@ def load_file():
                 )
     file_data = None
 
+    # check if file type is text or binary
+    textchars = bytearray(
+        {7, 8, 9, 10, 12, 13, 27} | set(
+            range(0x20, 0x100)
+        ) - {0x7f})
+
+    is_binary_string = lambda bytes: bool(
+        bytes.translate(None, textchars)
+    )
+
     # read file
     try:
-        with open(file_path, 'r') as myfile:
-            file_data = myfile.read()
+        with open(file_path, 'rb') as fileObj:
+            is_binary = is_binary_string(fileObj.read(1024))
+            if not is_binary:
+                fileObj.seek(0)
+                file_data = fileObj.read()
+            else:
+                return internal_server_error(
+                    errormsg=gettext("File type not supported")
+                )
     except IOError as e:
         # we don't want to expose real path of file
         # so only show error message.
