@@ -144,6 +144,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 1) {
+                    var prv_i = t.parent(i);
                     Alertify.success("{{ _('" + res.info + "') }}");
                     t.removeIcon(i);
                     data.connected = false;
@@ -151,6 +152,10 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                     t.addIcon(i, {icon: data.icon});
                     t.unload(i);
                     t.setInode(i);
+                    setTimeout(function() {
+                        t.select(prv_i);
+                    }, 10);
+
                   }
                   else {
                     try {
