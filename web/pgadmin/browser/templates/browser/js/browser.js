@@ -68,6 +68,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         width: 500,
         isCloseable: false,
         isPrivate: true,
+        elContainer: true,
         content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>',
         events: panelEvents,
         onCreate: function(myPanel, $container) {

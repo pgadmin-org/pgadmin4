@@ -7,7 +7,8 @@ function(_, pgAdmin) {
   pgAdmin.Browser.Panel = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'content', 'icon', 'events', 'onCreate'];
+      'isPrivate', 'content', 'icon', 'events', 'onCreate', 'elContainer'
+    ];
     _.extend(this, _.pick(options, defaults));
   }
 
@@ -23,6 +24,7 @@ function(_, pgAdmin) {
     icon: '',
     panel: null,
     onCreate: null,
+    elContainer: false,
     load: function(docker, title) {
       var that = this;
       if (!that.panel) {
@@ -71,6 +73,18 @@ function(_, pgAdmin) {
             if (that.onCreate && _.isFunction(that.onCreate)) {
               that.onCreate.apply(that, [myPanel, $container]);
             }
+
+            if (that.elContainer) {
+              myPanel.pgElContainer = $container;
+              $container.addClass('pg-el-container');
+              _.each([
+                wcDocker.EVENT.RESIZED, wcDocker.EVENT.ATTACHED,
+                wcDocker.EVENT.DETACHED, wcDocker.EVENT.VISIBILITY_CHANGED
+              ], function(ev) {
+                myPanel.on(ev, that.resizedContainer.bind(myPanel));
+              });
+              that.resizedContainer.apply(myPanel);
+            }
           }
         });
       }
@@ -88,6 +102,37 @@ function(_, pgAdmin) {
         }
       } catch (e) {
         console.log(e);
+      }
+    },
+    resizedContainer: function() {
+      var p = this;
+
+      if (p.pgElContainer && !p.pgResizeTimeout) {
+        if (!p.isVisible()) {
+          clearTimeout(p.pgResizeTimeout);
+          p.pgResizeTimeout = null;
+
+          return;
+        }
+        p.pgResizeTimeout = setTimeout(
+          function() {
+            var w = p.width();
+            p.pgResizeTimeout = null;
+
+            if (w <= 480) {
+              w = 'xs';
+            } else if (w < 600) {
+              w = 'sm';
+            } else if (w < 768) {
+              w = 'md';
+            } else {
+              w = 'lg';
+            }
+
+            p.pgElContainer.attr('el', w);
+          },
+          100
+        );
       }
     }
   });

@@ -299,10 +299,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
+          elContainer: true,
           content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please wait while we fetch information about the node from the server!') }}</div></div>',
-            onCreate: function(myPanel, $container) {
-              $container.addClass('pg-no-overflow');
-            }
+          onCreate: function(myPanel, $container) {
+            $container.addClass('pg-no-overflow');
+          }
         });
       p.load(pgBrowser.docker);
     },
@@ -363,8 +364,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
               d.body.insertBefore(el, d.body.firstChild);
 
-              var pW = screen.width < 800 ? '95%' : '70%',
-                  pH = screen.height < 600 ? '95%' : '70%';
+              var pW = screen.width < 800 ? '95%' : '500px',
+                  pH = screen.height < 600 ? '95%' : '550px';
                   w = pgAdmin.toPx(el, self.width || pW, 'width', true),
                   h = pgAdmin.toPx(el, self.height|| pH, 'height', true),
                   x = (b.offsetWidth - w) / 2,

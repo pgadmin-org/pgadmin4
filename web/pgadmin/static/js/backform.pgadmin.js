@@ -48,12 +48,12 @@
   // HTML markup global class names. More can be added by individual controls
   // using _.extend. Look at RadioControl as an example.
   _.extend(Backform, {
-    controlLabelClassName: "control-label col-sm-4",
-    controlsClassName: "pgadmin-controls col-sm-8",
-    groupClassName: "pgadmin-control-group form-group col-xs-12",
-    setGroupClassName: "set-group col-xs-12",
-    tabClassName: "backform-tab col-xs-12",
-    setGroupContentClassName: "fieldset-content col-xs-12"
+    controlLabelClassName: "control-label pg-el-sm-3 pg-el-xs-12",
+    controlsClassName: "pgadmin-controls pg-el-sm-9 pg-el-xs-12",
+    groupClassName: "pgadmin-control-group form-group pg-el-xs-12",
+    setGroupClassName: "set-group pg-el-xs-12",
+    tabClassName: "backform-tab pg-el-xs-12",
+    setGroupContentClassName: "fieldset-content pg-el-xs-12"
     });
 
   var controlMapper = Backform.controlMapper = {
@@ -196,7 +196,7 @@
       if (_.isEmpty(error)) return;
 
       self.$el.addClass(Backform.errorClassName).append(
-        $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
+        $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
         );
       });
     },
@@ -414,7 +414,7 @@
             '[type="radio"]'
           ).append(
           $("<div></div>").addClass(
-            'pgadmin-control-error-message col-xs-offset-4 col-xs-8 col-xs-8 help-block'
+            'pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 pg-el-xs-8 help-block'
           ).text(error));
         });
       }
@@ -489,7 +489,7 @@
     tagName: "div",
     legend: true,
     className: function() {
-      return 'col-sm-12 col-md-12 col-lg-12 col-xs-12';
+      return 'pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12';
     },
     tabPanelClassName: function() {
       return Backform.tabClassName;
@@ -520,7 +520,7 @@
         '  id="<%=hId%>" aria-controls="<%=cId%>">',
         '<%=label%></a></li>'].join(" ")),
       'panel': _.template(
-        '<div role="tabpanel" class="tab-pane <%=label%> col-sm-12 col-md-12 col-lg-12 col-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
+        '<div role="tabpanel" class="tab-pane <%=label%> pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12 fade" id="<%=cId%>" aria-labelledby="<%=hId%>"></div>'
       )},
     render: function() {
       this.cleanup();
@@ -545,7 +545,7 @@
 
       var tabHead = $('<ul class="nav nav-tabs" role="tablist"></ul>')
         .appendTo(this.$el);
-      var tabContent = $('<ul class="tab-content col-sm-12 col-md-12 col-lg-12 col-xs-12"></ul>')
+      var tabContent = $('<ul class="tab-content pg-el-sm-12 pg-el-md-12 pg-el-lg-12 pg-el-xs-12"></ul>')
         .appendTo(this.$el);
 
       _.each(this.schema, function(o) {
@@ -617,7 +617,7 @@
 
   var Fieldset = Backform.Fieldset = Backform.Dialog.extend({
     className: function() {
-      return 'set-group col-xs-12';
+      return 'set-group pg-el-xs-12';
     },
     tabPanelClassName: function() {
       return Backform.tabClassName;
@@ -972,10 +972,10 @@
     showGridControl: function(data) {
       var gridHeader = _.template([
           '<div class="subnode-header">',
-          '  <label class="control-label col-sm-4"><%-label%></label>',
+          '  <label class="control-label pg-el-sm-4"><%-label%></label>',
           '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
           '</div>'].join("\n")),
-        gridBody = $('<div class="pgadmin-control-group backgrid form-group col-xs-12 object subnode"></div>').append(
+        gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
             gridHeader(data)
             );
 
@@ -1138,7 +1138,7 @@
         if (_.isEmpty(error)) return;
 
         self.$el.addClass("subnode-error").append(
-          $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
+          $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
           );
       });
     }
@@ -1195,7 +1195,7 @@
       if (_.isEmpty(error)) return;
 
       self.$el.addClass('subnode-error').append(
-        $("<div></div>").addClass('pgadmin-control-error-message col-xs-offset-4 col-xs-8 help-block').text(error)
+        $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
         );
     },
     clearInvalid: function() {
@@ -1205,10 +1205,10 @@
     },
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
-          "  <label class='control-label col-sm-4'>" + data.label + "</label>" ,
+          "  <label class='control-label pg-el-sm-4'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add'>ADD</buttton>",
           "</div>"].join("\n");
-        gridBody = $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(gridHeader);
+        gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
@@ -1339,7 +1339,7 @@
   var SqlTabControl = Backform.SqlTabControl = Backform.Control.extend({
     defaults: {
       label: "",
-      controlsClassName: "pgadmin-controls col-sm-12 SQL",
+      controlsClassName: "pgadmin-controls pg-el-sm-12 SQL",
       extraClasses: [],
       helpMessage: null
     },
@@ -2139,7 +2139,7 @@
       noteClass: 'backform_control_notes'
     },
     template: _.template([
-      '<div class="<%=noteClass%> col-xs-12 <%=extraClasses.join(\' \')%>">',
+      '<div class="<%=noteClass%> pg-el-xs-12 <%=extraClasses.join(\' \')%>">',
       '<label class="control-label"><%=label%>:</label>',
       '<span><%=text%></span></div>'
     ].join("\n"))

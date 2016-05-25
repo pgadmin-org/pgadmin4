@@ -227,7 +227,6 @@ iframe {
 }
 
 .control-label {
-    min-width: 250px;
     margin: 0px;
     padding: 5px;
     display: inline-block;
@@ -235,12 +234,10 @@ iframe {
 }
 
 .pgadmin-controls {
-    min-width: 290px;
     padding-right: 3px;
     padding-left: 3px;
 }
 .pgadmin-controls.SQL {
-  min-width: 290px;
   padding-right: 3px;
   padding-left: 1px;
 }
