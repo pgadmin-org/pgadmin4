@@ -108,7 +108,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
             // Set schema default value to its parent Schema
             if(this.model.isNew()){
-            this.model.set({'schema': this.model.node_info.schema.label});
+              this.model.set({'schema': this.model.node_info.schema.label});
             }
             return this;
             }

@@ -30,7 +30,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
       hasSQL: true,
       hasDepends: true,
       hasScriptTypes: ['create', 'exec'],
-      parent_type: ['schema'],
+      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.proc_initialized)

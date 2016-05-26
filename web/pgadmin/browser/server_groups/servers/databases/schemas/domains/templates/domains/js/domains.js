@@ -115,7 +115,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-domain',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema'],
+      parent_type: ['schema', 'catalog'],
       Init: function() {
         // Avoid mulitple registration of menus
         if (this.initialized)

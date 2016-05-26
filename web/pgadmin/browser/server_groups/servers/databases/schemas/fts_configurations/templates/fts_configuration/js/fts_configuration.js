@@ -459,16 +459,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           copy_config: undefined, // FTS configuration list to copy from
           tokens: undefined      // token/dictionary pair list for node
         },
-        initialize: function(attrs, args) {
+        initialize: function(attrs, opts) {
           var isNew = (_.size(attrs) === 0);
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
 
           if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'owner': userInfo.name}, {silent: true});
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-          if (_.isUndefined(this.get('schema'))) {
-              this.set('schema', this.node_info.schema._id);
+            var user = pgBrowser.serverInfo[opts.node_info.server._id].user;
+            this.set({
+              'owner': user.name,
+              'schema': opts.node_info.schema._id
+            }, {silent: true});
           }
         },
         // Defining schema for FTS Configuration

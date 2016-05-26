@@ -68,13 +68,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           prslextype: undefined,    // Lextype function for fts parser
           prsheadline: undefined    // Headline function for fts parse
         },
-        initialize: function() {
-            pgAdmin.Browser.Node.Model.prototype.initialize.apply(this,
-                                                                arguments
-                                                            );
-            if (_.isUndefined(this.get('schema'))) {
-                this.set('schema', this.node_info.schema._id);
-            }
+        initialize: function(attrs, args) {
+          var isNew = (_.size(attrs) === 0);
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(
+            this, arguments
+          );
+          if (isNew) {
+            this.set('schema', args.node_info.schema._id);
+          }
         },
         // Defining schema for fts parser
         schema: [{
