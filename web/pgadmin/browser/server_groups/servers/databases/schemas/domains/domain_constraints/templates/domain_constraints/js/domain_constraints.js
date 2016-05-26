@@ -4,25 +4,25 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Define Domain Constraint Collection Node
-  if (!pgBrowser.Nodes['coll-domain-constraints']) {
-    var domain_constraints = pgAdmin.Browser.Nodes['coll-domain-constraints'] =
+  if (!pgBrowser.Nodes['coll-domain_constraints']) {
+    var domain_constraints = pgAdmin.Browser.Nodes['coll-domain_constraints'] =
       pgAdmin.Browser.Collection.extend({
-        node: 'domain-constraints',
+        node: 'domain_constraints',
         label: '{{ _('Domain Constraints') }}',
-        type: 'coll-domain-constraints',
+        type: 'coll-domain_constraints',
         columns: ['name', 'description']
       });
   };
 
   // Domain Constraint Node
-  if (!pgBrowser.Nodes['domain-constraints']) {
-    pgAdmin.Browser.Nodes['domain-constraints'] = pgBrowser.Node.extend({
-      type: 'domain-constraints',
+  if (!pgBrowser.Nodes['domain_constraints']) {
+    pgAdmin.Browser.Nodes['domain_constraints'] = pgBrowser.Node.extend({
+      type: 'domain_constraints',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-alterdomain.html',
       dialogHelp: '{{ url_for('help.static', filename='domain_constraint_dialog.html') }}',
       label: '{{ _('Domain Constraints') }}',
-      collection_type: 'coll-domain-constraints',
+      collection_type: 'coll-domain_constraints',
       hasSQL: true,
       hasDepends: true,
       parent_type: ['domain'],
@@ -34,22 +34,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         this.initialized = true;
 
         pgBrowser.add_menus([{
-          name: 'create_domain_on_coll', node: 'coll-domain-constraints', module: this,
+          name: 'create_domain_on_coll', node: 'coll-domain_constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: '{{ _('Domain Constraint...') }}',
-          icon: 'wcTabIcon icon-domain-constraints', data: {action: 'create', check: true},
+          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
-          name: 'create_domain-constraints', node: 'domain-constraints', module: this,
+          name: 'create_domain_constraints', node: 'domain_constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: '{{ _('Domain Constraint...') }}',
-          icon: 'wcTabIcon icon-domain-constraints', data: {action: 'create', check: true},
+          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
-          name: 'create_domain-constraints', node: 'domain', module: this,
+          name: 'create_domain_constraints', node: 'domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: '{{ _('Domain Constraint...') }}',
-          icon: 'wcTabIcon icon-domain-constraints', data: {action: 'create', check: false},
+          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
         ]);

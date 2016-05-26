@@ -45,7 +45,7 @@ class DomainConstraintModule(CollectionNodeModule):
       - Load the module script for the Domain Constraint, when any of the
         Domain node is initialized.
     """
-    NODE_TYPE = 'domain-constraints'
+    NODE_TYPE = 'domain_constraints'
     COLLECTION_LABEL = gettext("Domain Constraints")
 
     def __init__(self, *args, **kwargs):
@@ -81,7 +81,7 @@ class DomainConstraintModule(CollectionNodeModule):
         """
         return [
                 render_template(
-                    "domain-constraints/css/domain-constraints.css",
+                    "domain_constraints/css/domain_constraints.css",
                     node_type=self.node_type
                     )
                 ]
@@ -105,7 +105,7 @@ class DomainConstraintView(PGChildNodeView):
     -------
 
     * module_js():
-      - Load JS file (domain-constraints.js) for this module.
+      - Load JS file (domain_constraints.js) for this module.
 
     * check_precondition(f):
       - Works as a decorator.
@@ -230,11 +230,11 @@ class DomainConstraintView(PGChildNodeView):
 
     def module_js(self):
         """
-        Load JS file (domain-constraints.js) for this module.
+        Load JS file (domain_constraints.js) for this module.
         """
         return make_response(
             render_template(
-                "domain-constraints/js/domain-constraints.js",
+                "domain_constraints/js/domain_constraints.js",
                 _=gettext
             ),
             200, {'Content-Type': 'application/x-javascript'}
@@ -264,9 +264,9 @@ class DomainConstraintView(PGChildNodeView):
 
             # we will set template path for sql scripts
             if ver >= 90200:
-                self.template_path = 'domain-constraints/sql/9.2_plus'
+                self.template_path = 'domain_constraints/sql/9.2_plus'
             elif ver >= 90100:
-                self.template_path = 'domain-constraints/sql/9.1_plus'
+                self.template_path = 'domain_constraints/sql/9.1_plus'
 
             return f(*args, **kwargs)
 
@@ -319,11 +319,11 @@ class DomainConstraintView(PGChildNodeView):
 
         for row in rset['rows']:
             if 'convalidated' not in row:
-                icon = 'icon-domain-constraints'
+                icon = 'icon-domain_constraints'
             elif row['convalidated']:
-                icon = 'icon-domain-constraints'
+                icon = 'icon-domain_constraints'
             else:
-                icon = 'icon-domain-constraints-bad'
+                icon = 'icon-domain_constraints-bad'
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
@@ -400,11 +400,11 @@ class DomainConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=coid)
 
             if 'convalidated' not in data:
-                icon = 'icon-domain-constraints'
+                icon = 'icon-domain_constraints'
             elif 'convalidated' in data and data['convalidated']:
-                icon = 'icon-domain-constraints'
+                icon = 'icon-domain_constraints'
             else:
-                icon = 'icon-domain-constraints-bad'
+                icon = 'icon-domain_constraints-bad'
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -487,9 +487,9 @@ class DomainConstraintView(PGChildNodeView):
                     return internal_server_error(errormsg=res)
 
                 if 'convalidated' in data and data['convalidated']:
-                    icon = 'icon-domain-constraints'
+                    icon = 'icon-domain_constraints'
                 elif 'convalidated' in data and not data['convalidated']:
-                    icon = 'icon-domain-constraints-bad'
+                    icon = 'icon-domain_constraints-bad'
                 else:
                     icon = ''
 

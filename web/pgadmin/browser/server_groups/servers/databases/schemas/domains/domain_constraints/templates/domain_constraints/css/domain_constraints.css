@@ -1,0 +1,23 @@
+.icon-coll-domain_constraints {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/coll-domain_constraints.png' )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-check-bad, .icon-domain_constraints-bad {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/domain_constraints-bad.png' )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-check, .icon-domain_constraints {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/domain_constraints.png' )}}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
