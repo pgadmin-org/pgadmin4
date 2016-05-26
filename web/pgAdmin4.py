@@ -39,14 +39,11 @@ if config.SERVER_MODE is True:
         print("settings. Exiting...")
         sys.exit(1)
 
-# Check if the database exists. If it does not, tell the user and exit.
+# Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
-    print("The configuration database %s does not exist.\n" \
-            % config.SQLITE_PATH)
-    print("Please run 'python %s' to create it.\nExiting..." % os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'setup.py'
-            ))
-    sys.exit(1)
+    setupfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                'setup.py')
+    execfile(setupfile)
 
 ##########################################################################
 # Server starup
