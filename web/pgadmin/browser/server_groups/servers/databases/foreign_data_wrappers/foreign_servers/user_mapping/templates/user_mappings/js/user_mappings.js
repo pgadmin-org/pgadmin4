@@ -52,6 +52,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'user_mapping',
       sqlAlterHelp: 'sql-alterusermapping.html',
       sqlCreateHelp: 'sql-createusermapping.html',
+      dialogHelp: '{{ url_for('help.static', filename='user_mapping_dialog.html') }}',
       label: '{{ _('User Mapping') }}',
       hasSQL:  true,
       hasDepends: true,

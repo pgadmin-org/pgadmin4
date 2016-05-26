@@ -279,6 +279,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       type: 'type',
       sqlAlterHelp: 'sql-altertype.html',
       sqlCreateHelp: 'sql-createtype.html',
+      dialogHelp: '{{ url_for('help.static', filename='type_dialog.html') }}',
       label: '{{ _('Type') }}',
       collection_type: 'coll-type',
       hasSQL: true,

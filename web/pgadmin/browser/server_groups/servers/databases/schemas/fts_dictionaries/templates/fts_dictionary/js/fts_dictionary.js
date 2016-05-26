@@ -57,6 +57,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'fts_dictionary',
       sqlAlterHelp: 'sql-altertsdictionary.html',
       sqlCreateHelp: 'sql-createtsdictionary.html',
+      dialogHelp: '{{ url_for('help.static', filename='fts_dictionary_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS dictionary') }}',

@@ -29,6 +29,7 @@ Contents:
    preferences
    help
 
+
 Getting Started
 ===============
 
@@ -44,6 +45,7 @@ Contents:
    connecting   
    error_messages
 
+
 Creating Cluster Level Objects  
 ==============================
    
@@ -58,8 +60,8 @@ Contents:
    resource_group_dialog
    role_dialog
    tablespace_dialog
+  
    
-
 Creating Database Objects
 =========================
 
@@ -74,17 +76,26 @@ Contents:
    
    cast_dialog
    collation_dialog
+   domain_dialog
    domain_constraint_dialog
    event_trigger_dialog
    extension_dialog
    foreign_data_wrapper_dialog
+   foreign_server_dialog
    foreign_table_dialog
+   fts_configuration_dialog
+   fts_dictionary_dialog
    fts_parser_dialog
    fts_template_dialog
    function_dialog
+   materialized_view_dialog
    procedure_dialog
    schema_dialog
    sequence_dialog
+   type_dialog
+   user_mapping_dialog
+   view_dialog
+
 
 Creating or Modifying a Table  
 =============================
@@ -128,6 +139,7 @@ Contents:
    configuration_editor
    maintenance
 
+
 Backup and Restore
 ==================
 
@@ -140,8 +152,8 @@ Contents:
    
    backup
    restore
+  
    
-
 Developer Tools
 ===============
 
@@ -157,7 +169,7 @@ Contents:
    data_filter
    debugger
    
-
+   
 pgAdmin Deployment
 ==================
 

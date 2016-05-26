@@ -38,6 +38,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       type: 'view',
       sqlAlterHelp: 'sql-alterview.html',
       sqlCreateHelp: 'sql-createview.html',
+      dialogHelp: '{{ url_for('help.static', filename='view_dialog.html') }}',
       label: '{{ _("View") }}',
       hasSQL:  true,
       hasDepends: true,

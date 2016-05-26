@@ -38,6 +38,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
       type: 'mview',
       sqlAlterHelp: 'sql-altermaterializedview.html',
       sqlCreateHelp: 'sql-creatematerializedview.html',
+      dialogHelp: '{{ url_for('help.static', filename='materialized_view_dialog.html') }}',
       label: '{{ _("Materialized View") }}',
       hasSQL:  true,
       hasDepends: true,

@@ -111,6 +111,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'domain',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-createdomain.html',
+        dialogHelp: '{{ url_for('help.static', filename='domain_dialog.html') }}',
       label: '{{ _('Domain') }}',
       collection_type: 'coll-domain',
       hasSQL: true,

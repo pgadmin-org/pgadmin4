@@ -413,6 +413,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'fts_configuration',
       sqlAlterHelp: 'sql-altertsconfig.html',
       sqlCreateHelp: 'sql-createtsconfig.html',
+      dialogHelp: '{{ url_for('help.static', filename='fts_configuration_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
       label: '{{ _('FTS Configuration') }}',
