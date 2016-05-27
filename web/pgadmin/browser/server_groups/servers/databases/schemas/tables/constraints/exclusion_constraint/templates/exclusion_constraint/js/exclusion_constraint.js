@@ -602,6 +602,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
+      dialogHelp: '{{ url_for('help.static', filename='exclusion_constraint_dialog.html') }}',
       hasSQL: true,
       parent_type: 'table',
       canDrop: true,

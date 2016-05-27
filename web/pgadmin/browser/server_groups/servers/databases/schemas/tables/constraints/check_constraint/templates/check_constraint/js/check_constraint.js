@@ -14,6 +14,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
+      dialogHelp: '{{ url_for('help.static', filename='check_dialog.html') }}',
       hasSQL: true,
       hasDepends: true,
       parent_type: ['table'],

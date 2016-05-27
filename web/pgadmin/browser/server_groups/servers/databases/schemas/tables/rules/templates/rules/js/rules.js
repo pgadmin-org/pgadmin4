@@ -39,6 +39,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       type: 'rule',
       sqlAlterHelp: 'sql-alterrule.html',
       sqlCreateHelp: 'sql-createrule.html',
+      dialogHelp: '{{ url_for('help.static', filename='rule_dialog.html') }}',
       label: '{{ _("rule") }}',
       collection_type: 'coll-table',
       hasSQL:  true,

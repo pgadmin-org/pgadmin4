@@ -1,4 +1,4 @@
-.. _function:
+.. _function_dialog:
 
 *******************
 The Function Dialog
@@ -34,14 +34,18 @@ Click the *Options* tab to continue.
 Use the fields in the *Options* tab to describe or modify the action of the function:
 
 * Use the drop-down listbox next to *Volatility* to select one of the following. *VOLATILE* is the default value.
-   *VOLATILE* indicates that the function value can change even within a single table scan, so no optimizations can be made. 
-   *STABLE* indicates that the function cannot modify the database, and that within a single table scan it will consistently return the same result for the same argument values.
-   *IMMUTABLE* indicates that the function cannot modify the database and always returns the same result when given the same argument values.
+
+    * *VOLATILE* indicates that the function value can change even within a single table scan, so no optimizations can be made. 
+    * *STABLE* indicates that the function cannot modify the database, and that within a single table scan it will consistently return the same result for the same argument values.
+    * *IMMUTABLE* indicates that the function cannot modify the database and always returns the same result when given the same argument values.
+    
 * Move the *Returns a Set?* switch to indicate if the function returns a set that includes multiple rows. The default is *No*. 
 * Move the *Strict?* switch to indicate if the function always returns NULL whenever any of its arguments are NULL. If *Yes*, the function is not executed when there are NULL arguments; instead a NULL result is assumed automatically. The default is *No*.
 * Move the *Security of definer?* switch to specify that the function is to be executed with the privileges of the user that created it. The default is *No*.
 * Move the *Window?* switch to indicate that the function is a window function rather than a plain function. The default is *No*. This is currently only useful for functions written in C. The WINDOW attribute cannot be changed when replacing an existing function definition. For more information about the CREATE FUNCTION command, see the PostgreSQL core documentation available at:
+
    http://www.postgresql.org/docs/9.5/static/functions-window.html
+   
 * Use the *Estimated cost* field to specify a positive number representing the estimated execution cost for the function, in units of cpu_operator_cost. If the function returns a set, this is the cost per returned row. 
 * Use the *Estimated rows* field to specify a positive number giving the estimated number of rows that the query planner should expect the function to return. This is only allowed when the function is declared to return a set. The default assumption is 1000 rows. 
 * Move the *Leak proof?* switch to indicate whether the function has side effects. The default is *No*. This option can only be set by the superuser.

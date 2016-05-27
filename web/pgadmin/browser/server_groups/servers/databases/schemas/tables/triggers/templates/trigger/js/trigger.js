@@ -43,6 +43,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       hasDepends: true,
       sqlAlterHelp: 'sql-altertrigger.html',
       sqlCreateHelp: 'sql-createtrigger.html',
+      dialogHelp: '{{ url_for('help.static', filename='trigger_dialog.html') }}',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

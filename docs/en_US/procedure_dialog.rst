@@ -1,4 +1,4 @@
-.. _procedure:
+.. _procedure_dialog:
 
 ********************
 The Procedure Dialog
@@ -35,9 +35,11 @@ Click the *Options* tab to continue.
 Use the fields in the *Options* tab to describe or modify the behavior of the procedure:
 
 * Use the drop-down listbox under *Volatility* to select one of the following. *VOLATILE* is the default value.
-   *VOLATILE* indicates that the value can change even within a single table scan, so no optimizations can be made. 
-   *STABLE* indicates that the procedure cannot modify the database, and that within a single table scan it will consistently return the same result for the same argument values, but that its result could change across SQL statements. 
-   *IMMUTABLE* indicates that the procedure cannot modify the database and always returns the same result when given the same argument values.
+
+    * *VOLATILE* indicates that the value can change even within a single table scan, so no optimizations can be made. 
+    * *STABLE* indicates that the procedure cannot modify the database, and that within a single table scan it will consistently return the same result for the same argument values, but that its result could change across SQL statements. 
+    * *IMMUTABLE* indicates that the procedure cannot modify the database and always returns the same result when given the same argument values.
+
 * Move the *Strict?* switch to indicate if the procedure always returns NULL whenever any of its arguments are NULL. If *Yes*, the procedure is not executed when there are NULL arguments; instead a NULL result is assumed automatically. The default is *No*.
 * Move the *Security of definer?* switch to specify that the procedure is to be executed with the privileges of the user that created it. The default is *No*.
 * Use the *Estimated cost* field to specify a positive number representing the estimated execution cost for the procedure, in units of cpu_operator_cost. If the procedure returns a set, this is the cost per returned row. 

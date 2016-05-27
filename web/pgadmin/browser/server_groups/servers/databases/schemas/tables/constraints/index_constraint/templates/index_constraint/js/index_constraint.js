@@ -11,6 +11,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
+      {% if node_type == 'primary_key' %}
+      dialogHelp: '{{ url_for('help.static', filename='primary_key_dialog.html') }}',
+      {% else %}
+      dialogHelp: '{{ url_for('help.static', filename='unique_constraint_dialog.html') }}',
+      {% endif %}
       hasSQL: true,
       hasDepends: false,
       parent_type: 'table',

@@ -9,8 +9,6 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         node: 'column',
         label: '{{ _('Columns') }}',
         type: 'coll-column',
-        sqlAlterHelp: 'sql-altertable.html',
-        sqlCreateHelp: 'sql-altertable.html',
         columns: ['name', 'atttypid', 'description']
       });
   };
@@ -59,6 +57,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       hasSQL:  true,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
+      dialogHelp: '{{ url_for('help.static', filename='column_dialog.html') }}',
       canDrop: function(itemData, item, data){
         if (pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data])) {
           var t = pgBrowser.tree, i = item, d = itemData, parents = [];

@@ -109,12 +109,16 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   table_dialog
+   check_dialog
    column_dialog
-   constraint_dialog
+   exclusion_constraint_dialog
+   foreign_key_dialog
    index_dialog
+   primary_key_dialog
    rule_dialog
+   table_dialog
    trigger_dialog
+   unique_constraint_dialog
 
 
 Management Basics      
@@ -137,6 +141,7 @@ Contents:
    
    managing_server
    configuration_editor
+   grant_wizard
    maintenance
 
 
