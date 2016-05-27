@@ -1,7 +1,7 @@
 /**
- * alertifyjs 1.4.1 http://alertifyjs.com
+ * alertifyjs 1.7.0 http://alertifyjs.com
  * AlertifyJS is a javascript framework for developing pretty browser dialogs and notifications.
- * Copyright 2015 Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com)
+ * Copyright 2016 Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com)
  * Licensed under MIT <http://opensource.org/licenses/mit-license.php>*/
 ( function ( window ) {
     'use strict';
@@ -27,6 +27,7 @@
         basic:false,
         frameless:false,
         movable:true,
+        moveBounded:false,
         resizable:true,
         closable:true,
         closableByDimmer:true,
@@ -85,11 +86,16 @@
      *
      * @return {undefined}
      */
-    function removeClass(element,classNames){
-        var classes = classNames.split(' ');
-        for(var x=0;x<classes.length;x+=1){
-            element.className = element.className.replace(' ' + classes[x], '');
+    function removeClass(element, classNames) {
+        var original = element.className.split(' ');
+        var toBeRemoved = classNames.split(' ');
+        for (var x = 0; x < toBeRemoved.length; x += 1) {
+            var index = original.indexOf(toBeRemoved[x]);
+            if (index > -1){
+                original.splice(index,1);
+            }
         }
+        element.className = original.join(' ');
     }
 
     /**
@@ -127,7 +133,68 @@
             element.removeChild(element.lastChild);
         }
     }
+    /**
+     * Extends a given prototype by merging properties from base into sub.
+     *
+     * @sub {Object} sub The prototype being overwritten.
+     * @base {Object} base The prototype being written.
+     *
+     * @return {Object} The extended prototype.
+     */
+    function copy(src) {
+        if(null === src){
+            return src;
+        }
+        var cpy;
+        if(Array.isArray(src)){
+            cpy = [];
+            for(var x=0;x<src.length;x+=1){
+                cpy.push(copy(src[x]));
+            }
+            return cpy;
+        }
 
+        if(src instanceof Date){
+            return new Date(src.getTime());
+        }
+
+        if(src instanceof RegExp){
+            cpy = new RegExp(src.source);
+            cpy.global = src.global;
+            cpy.ignoreCase = src.ignoreCase;
+            cpy.multiline = src.multiline;
+            cpy.lastIndex = src.lastIndex;
+            return cpy;
+        }
+
+        if(typeof src === 'object'){
+            cpy = {};
+            // copy dialog pototype over definition.
+            for (var prop in src) {
+                if (src.hasOwnProperty(prop)) {
+                    cpy[prop] = copy(src[prop]);
+                }
+            }
+            return cpy;
+        }
+        return src;
+    }
+    /**
+      * Helper: destruct the dialog
+      *
+      */
+    function destruct(instance, initialize){
+        //delete the dom and it's references.
+        var root = instance.elements.root;
+        root.parentNode.removeChild(root);
+        delete instance.elements;
+        //copy back initial settings.
+        instance.settings = copy(instance.__settings);
+        //re-reference init function.
+        instance.__init = initialize;
+        //delete __internal variable to allow re-initialization.
+        delete instance.__internal;
+    }
 
     /**
      * Use a closure to return proper event listener method. Try to use
@@ -246,6 +313,19 @@
             cancel: false
         };
     }
+    /**
+    * Helper for dispatching events.
+    *
+    * @param  {string} evenType The type of the event to disptach.
+    * @param  {object} instance The dialog instance disptaching the event.
+    *
+    * @return {object}
+    */
+    function dispatchEvent(eventType, instance) {
+        if ( typeof instance.get(eventType) === 'function' ) {
+            instance.get(eventType).call(instance);
+        }
+    }
 
 
     /**
@@ -316,6 +396,10 @@
                 //no need to expose init after this.
                 delete instance.__init;
 
+                //keep a copy of initial dialog settings
+                if(!instance.__settings){
+                    instance.__settings = copy(instance.settings);
+                }
                 //in case the script was included before body.
                 //after first dialog gets initialized, it won't be null anymore!
                 if(null === reflow){
@@ -352,13 +436,13 @@
                 if(Array.isArray(setup.buttons)){
                     for(var b=0;b<setup.buttons.length;b+=1){
                         var ref  = setup.buttons[b],
-                            copy = {};
+                            cpy = {};
                         for (var i in ref) {
                             if (ref.hasOwnProperty(i)) {
-                                copy[i] = ref[i];
+                                cpy[i] = ref[i];
                             }
                         }
-                        buttonsDefinition.push(copy);
+                        buttonsDefinition.push(cpy);
                     }
                 }
 
@@ -388,6 +472,7 @@
                         frameless:undefined,
                         pinned: undefined,
                         movable: undefined,
+                        moveBounded:undefined,
                         resizable: undefined,
                         autoReset: undefined,
                         closable: undefined,
@@ -401,6 +486,14 @@
                         onshow:undefined,
                         onclose:undefined,
                         onfocus:undefined,
+                        onmove:undefined,
+                        onmoved:undefined,
+                        onresize:undefined,
+                        onresized:undefined,
+                        onmaximize:undefined,
+                        onmaximized:undefined,
+                        onrestore:undefined,
+                        onrestored:undefined
                     },
                     resetHandler:undefined,
                     beginMoveHandler:undefined,
@@ -410,7 +503,8 @@
                     buttonsClickHandler:undefined,
                     commandsClickHandler:undefined,
                     transitionInHandler:undefined,
-                    transitionOutHandler:undefined
+                    transitionOutHandler:undefined,
+                    destroy:undefined
                 };
 
 
@@ -514,6 +608,7 @@
                 instance.set('frameless', setup.options.frameless === undefined ? alertify.defaults.frameless : setup.options.frameless);
 
                 instance.set('movable', setup.options.movable === undefined ? alertify.defaults.movable : setup.options.movable);
+                instance.set('moveBounded', setup.options.moveBounded === undefined ? alertify.defaults.moveBounded : setup.options.moveBounded);
                 instance.set('resizable', setup.options.resizable === undefined ? alertify.defaults.resizable : setup.options.resizable);
                 instance.set('autoReset', setup.options.autoReset === undefined ? alertify.defaults.autoReset : setup.options.autoReset);
 
@@ -547,8 +642,8 @@
          */
         var scrollX, scrollY;
         function saveScrollPosition(){
-            scrollX = window.scrollX;
-            scrollY = window.scrollY;
+            scrollX = getScrollLeft();
+            scrollY = getScrollTop();
         }
         function restoreScrollPosition(){
             window.scrollTo(scrollX, scrollY);
@@ -920,11 +1015,15 @@
          * @return {undefined}
          */
         function maximize(instance) {
+            // allow custom `onmaximize` method
+            dispatchEvent('onmaximize', instance);
             //maximize the dialog
             addClass(instance.elements.root, classes.maximized);
             if (instance.isOpen()) {
                 ensureNoOverflow();
             }
+            // allow custom `onmaximized` method
+            dispatchEvent('onmaximized', instance);
         }
 
         /**
@@ -935,11 +1034,15 @@
          * @return {undefined}
          */
         function restore(instance) {
+            // allow custom `onrestore` method
+            dispatchEvent('onrestore', instance);
             //maximize the dialog
             removeClass(instance.elements.root, classes.maximized);
             if (instance.isOpen()) {
                 ensureNoOverflow();
             }
+            // allow custom `onrestored` method
+            dispatchEvent('onrestored', instance);
         }
 
         /**
@@ -1337,9 +1440,7 @@
             cancelKeyup = false;
 
             // allow custom `onfocus` method
-            if (typeof instance.get('onfocus') === 'function') {
-                instance.get('onfocus').call(instance);
-            }
+            dispatchEvent('onfocus', instance);
 
             // unbind the event
             off(instance.elements.dialog, transition.type, instance.__internal.transitionInHandler);
@@ -1376,6 +1477,11 @@
                 instance.__internal.activeElement.focus();
                 instance.__internal.activeElement = null;
             }
+
+            //destory the instance
+            if (typeof instance.__internal.destroy === 'function') {
+                instance.__internal.destroy.apply(instance);
+            }
         }
         /* Controls moving a dialog around */
         //holde the current moving instance
@@ -1385,7 +1491,10 @@
             //holds the current Y offset when move starts
             offsetY = 0,
             xProp = 'pageX',
-            yProp = 'pageY'
+            yProp = 'pageY',
+            bounds = null,
+            refreshTop = false,
+            moveDelegate = null
         ;
 
         /**
@@ -1397,9 +1506,41 @@
          * @return {undefined}
          */
         function moveElement(event, element) {
-            element.style.left = (event[xProp] - offsetX) + 'px';
-            element.style.top = (event[yProp] - offsetY) + 'px';
+            var left = (event[xProp] - offsetX),
+                top  = (event[yProp] - offsetY);
+
+            if(refreshTop){
+                top -= document.body.scrollTop;
+            }
+
+            element.style.left = left + 'px';
+            element.style.top = top + 'px';
+
         }
+        /**
+         * Helper: sets the element top/left coordinates within screen bounds
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Node} element The element being moved.
+         *
+         * @return {undefined}
+         */
+        function moveElementBounded(event, element) {
+            var left = (event[xProp] - offsetX),
+                top  = (event[yProp] - offsetY);
+
+            if(refreshTop){
+                top -= document.body.scrollTop;
+            }
+
+            element.style.left = Math.min(bounds.maxLeft, Math.max(bounds.minLeft, left)) + 'px';
+            if(refreshTop){
+                element.style.top = Math.min(bounds.maxTop, Math.max(bounds.minTop, top)) + 'px';
+            }else{
+                element.style.top = Math.max(bounds.minTop, top) + 'px';
+            }
+        }
+
 
         /**
          * Triggers the start of a move event, attached to the header element mouse down event.
@@ -1412,7 +1553,7 @@
          */
         function beginMove(event, instance) {
             if (resizable === null && !instance.isMaximized() && instance.get('movable')) {
-                var eventSrc;
+                var eventSrc, left=0, top=0;
                 if (event.type === 'touchstart') {
                     event.preventDefault();
                     eventSrc = event.targetTouches[0];
@@ -1424,22 +1565,55 @@
 
                 if (eventSrc) {
 
-                    movable = instance;
-                    offsetX = eventSrc[xProp];
-                    offsetY = eventSrc[yProp];
-
                     var element = instance.elements.dialog;
                     addClass(element, classes.capture);
 
                     if (element.style.left) {
-                        offsetX -= parseInt(element.style.left, 10);
+                        left = parseInt(element.style.left, 10);
                     }
 
                     if (element.style.top) {
-                        offsetY -= parseInt(element.style.top, 10);
+                        top = parseInt(element.style.top, 10);
                     }
-                    moveElement(eventSrc, element);
 
+                    offsetX = eventSrc[xProp] - left;
+                    offsetY = eventSrc[yProp] - top;
+
+                    if(instance.isModal()){
+                        offsetY += instance.elements.modal.scrollTop;
+                    }else if(instance.isPinned()){
+                        offsetY -= document.body.scrollTop;
+                    }
+
+                    if(instance.get('moveBounded')){
+                        var current = element,
+                            offsetLeft = -left,
+                            offsetTop = -top;
+
+                        //calc offset
+                        do {
+                            offsetLeft += current.offsetLeft;
+                            offsetTop += current.offsetTop;
+                        } while (current = current.offsetParent);
+
+                        bounds = {
+                            maxLeft : offsetLeft,
+                            minLeft : -offsetLeft,
+                            maxTop  : document.documentElement.clientHeight - element.clientHeight - offsetTop,
+                            minTop  : -offsetTop
+                        };
+                        moveDelegate = moveElementBounded;
+                    }else{
+                        bounds = null;
+                        moveDelegate = moveElement;
+                    }
+
+                    // allow custom `onmove` method
+                    dispatchEvent('onmove', instance);
+
+                    refreshTop = !instance.isModal() && instance.isPinned();
+                    movable = instance;
+                    moveDelegate(eventSrc, element);
                     addClass(document.body, classes.noSelection);
                     return false;
                 }
@@ -1463,7 +1637,7 @@
                     eventSrc = event;
                 }
                 if (eventSrc) {
-                    moveElement(eventSrc, movable.elements.dialog);
+                    moveDelegate(eventSrc, movable.elements.dialog);
                 }
             }
         }
@@ -1476,10 +1650,12 @@
          */
         function endMove() {
             if (movable) {
-                var element = movable.elements.dialog;
-                movable = null;
+                var instance = movable;
+                movable = bounds = null;
                 removeClass(document.body, classes.noSelection);
-                removeClass(element, classes.capture);
+                removeClass(instance.elements.dialog, classes.capture);
+                // allow custom `onmoved` method
+                dispatchEvent('onmoved', instance);
             }
         }
 
@@ -1619,6 +1795,9 @@
                     eventSrc = event;
                 }
                 if (eventSrc) {
+                    // allow custom `onresize` method
+                    dispatchEvent('onresize', instance);
+
                     resizable = instance;
                     handleOffset = instance.elements.resizeHandle.offsetHeight / 2;
                     var element = instance.elements.dialog;
@@ -1668,11 +1847,13 @@
          */
         function endResize() {
             if (resizable) {
-                var element = resizable.elements.dialog;
+                var instance = resizable;
                 resizable = null;
                 removeClass(document.body, classes.noSelection);
-                removeClass(element, classes.capture);
+                removeClass(instance.elements.dialog, classes.capture);
                 cancelClick = true;
+                // allow custom `onresized` method
+                dispatchEvent('onresized', instance);
             }
         }
 
@@ -1981,6 +2162,10 @@
                 }
                 return this;
             },
+            bringToFront:function(){
+                bringToFront(null, this);
+                return this;
+            },
             /**
              * Move the dialog to a specific x/y coordinates
              *
@@ -1991,6 +2176,9 @@
              */
             moveTo:function(x,y){
                 if(!isNaN(x) && !isNaN(y)){
+                    // allow custom `onmove` method
+                    dispatchEvent('onmove', this);
+
                     var element = this.elements.dialog,
                         current = element,
                         offsetLeft = 0,
@@ -2020,6 +2208,9 @@
 
                     element.style.left = left + 'px';
                     element.style.top = top + 'px';
+
+                    // allow custom `onmoved` method
+                    dispatchEvent('onmoved', this);
                 }
                 return this;
             },
@@ -2043,6 +2234,9 @@
 
                 if(!isNaN(w) && !isNaN(h) && this.get('resizable') === true){
 
+                    // allow custom `onresize` method
+                    dispatchEvent('onresize', this);
+
                     if(('' + width).match(regex)){
                         w = w / 100 * document.documentElement.clientWidth ;
                     }
@@ -2059,6 +2253,9 @@
                     element.style.minHeight = this.elements.header.offsetHeight + this.elements.footer.offsetHeight + 'px';
                     element.style.width = w + 'px';
                     element.style.height = h + 'px';
+
+                    // allow custom `onresized` method
+                    dispatchEvent('onresized', this);
                 }
                 return this;
             },
@@ -2225,9 +2422,7 @@
                     }
 
                     // allow custom `onshow` method
-                    if ( typeof this.get('onshow') === 'function' ) {
-                        this.get('onshow').call(this);
-                    }
+                    dispatchEvent('onshow', this);
 
                 }else{
                     // reset move updates
@@ -2275,9 +2470,7 @@
                     }
 
                     // allow custom `onclose` method
-                    if ( typeof this.get('onclose') === 'function' ) {
-                        this.get('onclose').call(this);
-                    }
+                    dispatchEvent('onclose', this);
 
                     //remove from open dialogs
                     openDialogs.splice(openDialogs.indexOf(this),1);
@@ -2296,7 +2489,25 @@
             closeOthers:function(){
                 alertify.closeAll(this);
                 return this;
-            }
+            },
+            /**
+             * Destroys this dialog instance
+             *
+             * @return {undefined}
+             */
+            destroy:function(){
+                if (this.__internal.isOpen ) {
+                    //mark dialog for destruction, this will be called on tranistionOut event.
+                    this.__internal.destroy = function(){
+                        destruct(this, initialize);
+                    };
+                    //close the dialog to unbind all events.
+                    this.close();
+                }else{
+                    destruct(this, initialize);
+                }
+                return this;
+            },
         };
 	} () );
     var notifier = (function () {
