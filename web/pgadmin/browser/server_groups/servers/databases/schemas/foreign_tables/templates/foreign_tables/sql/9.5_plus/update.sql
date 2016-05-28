@@ -147,7 +147,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {{ SECLABLE.SET(conn, 'FOREIGN TABLE', name, r.provider, r.security_label, o_data.basensp) }}
 {% endfor %}
 {% endif -%}
-{% if data.description %}
+{% if data.description is defined and data.description != o_data.description%}
 
 COMMENT ON FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 IS {{ data.description|qtLiteral }};

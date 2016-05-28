@@ -19,7 +19,7 @@ ALTER SERVER {{ conn|qtIdent(data.name) }}
 
 {% endif %}
 {# ============= Update foreign server comments ============= #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON SERVER {{ conn|qtIdent(data.name) }}
     IS {{ data.description|qtLiteral }};
 

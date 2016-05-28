@@ -35,7 +35,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 
 {% endif %}
 {# ============= Update foreign data wrapper comments ============= #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     IS {{ data.description|qtLiteral }};
 
