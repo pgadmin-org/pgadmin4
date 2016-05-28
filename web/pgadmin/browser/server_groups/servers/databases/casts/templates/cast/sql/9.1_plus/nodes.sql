@@ -21,3 +21,4 @@
         {% endif %}
         ca.oid > {{datlastsysoid}}::OID
     {% endif %}
+    ORDER BY st.typname, tt.typname
