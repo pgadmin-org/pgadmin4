@@ -99,7 +99,7 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtype
 {{ SECLABEL.SET(conn, 'FUNCTION', name, r.provider, r.security_label, o_data.pronamespace, o_data.proargtypenames) }}
 {% endfor %}
 {% endif -%}
-{% if data.description %}
+{% if data.description is defined and data.description != o_data.description%}
 
 COMMENT ON FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtypenames }})
     IS {{ data.description|qtLiteral }};

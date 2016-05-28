@@ -88,7 +88,7 @@ ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proarg
 {{ SECLABEL.SET(conn, 'PROCEDURE', name, r.provider, r.security_label, o_data.pronamespace, o_data.proargtypenames) }}
 {% endfor %}
 {% endif -%}
-{% if data.description %}
+{% if data.description is defined and data.description != o_data.description%}
 
 COMMENT ON PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}
     IS {{ data.description|qtLiteral }};
