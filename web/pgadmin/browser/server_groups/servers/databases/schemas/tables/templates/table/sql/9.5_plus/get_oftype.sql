@@ -1,6 +1,6 @@
-SELECT t.oid,
-  quote_ident(n.nspname)||'.'||quote_ident(t.typname) AS typname
-  FROM pg_type t, pg_namespace n
-WHERE t.typtype='c' AND t.typnamespace=n.oid
+SELECT c.oid,
+  quote_ident(n.nspname)||'.'||quote_ident(c.relname) AS typname
+  FROM pg_namespace n, pg_class c
+WHERE c.relkind = 'c' AND c.relnamespace=n.oid
   AND NOT (n.nspname like 'pg_%' OR n.nspname='information_schema')
 ORDER BY typname;

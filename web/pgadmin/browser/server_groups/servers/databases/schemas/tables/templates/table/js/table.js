@@ -287,21 +287,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema'
+          id: 'name', label: '{{ _('Name') }}', type: 'text',
+          mode: ['properties', 'create', 'edit'], disabled: 'inSchema'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
-          type: 'text' , mode: ['properties']
+          id: 'oid', label:'{{ _('OID') }}', type: 'text', mode: ['properties']
         },{
-          id: 'relowner', label:'{{ _('Owner') }}', cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', control: 'node-list-by-name',
-          node: 'role', select2: { allowClear: false }
+          id: 'relowner', label:'{{ _('Owner') }}', type: 'text', node: 'role',
+          mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
+          disabled: 'inSchema', control: 'node-list-by-name'
         },{
-          id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
-          control: 'node-list-by-name',
-          type: 'text', mode: ['create', 'edit'], node: 'schema',
+          id: 'schema', label:'{{_('Schema')}}', type: 'text', node: 'schema',
+          control: 'node-list-by-name', mode: ['create', 'edit'],
           disabled: 'inSchema', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
             if(d && d.label.match(/^pg_/))
@@ -311,99 +307,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return true;
           }
         },{
-          id: 'spcname', label:'{{ _('Tablespace') }}', cell: 'string', control: 'node-list-by-name',
-          type: 'text', mode: ['properties', 'create', 'edit'], node: 'tablespace',
-          disabled: 'inSchema', select2:{allowClear:false},
+          id: 'spcname', label:'{{ _('Tablespace') }}', node: 'tablespace',
+          type: 'text', control: 'node-list-by-name', disabled: 'inSchema',
+          mode: ['properties', 'create', 'edit'], select2:{allowClear:false},
           filter: function(d) {
             // If tablespace name is not "pg_global" then we need to exclude them
-            if(d && d.label.match(/pg_global/))
-            {
-              return false;
-            }
-            return true;
+            return (!(d && d.label.match(/pg_global/)))
           }
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema'
-        },{
-          id: 'typname', label:'{{ _('Of type') }}', cell: 'string', control: 'node-ajax-options',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'checkOfType', url: 'get_oftype', group: '{{ _('Advanced') }}', deps: ['coll_inherits'],
-          transform: function(data, cell) {
-            var control = cell || this,
-              m = control.model;
-              m.of_types_tables = data;
-              return data;
-          },
-          control: Backform.NodeAjaxOptionsControl.extend({
-            // When of_types changes we need to clear columns collection
-            onChange: function() {
-              Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
-              var self = this,
-                tbl_oid = undefined,
-                tbl_name = self.model.get('typname'),
-                data = undefined,
-                arg = undefined,
-                column_collection = self.model.get('columns');
-
-              if (!_.isUndefined(tbl_name) &&
-                  tbl_name !== '' && column_collection.length !== 0) {
-                var msg = '{{ _('Changing of type table will clear columns collection') }}';
-                alertify.confirm(msg, function (e) {
-                  if (e) {
-                    // User clicks Ok, lets clear columns collection
-                    column_collection.reset();
-                  } else {
-                    return this;
-                  }
-                });
-              } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
-                column_collection.reset();
-              }
-
-              // Run Ajax now to fetch columns
-              if (!_.isUndefined(tbl_name) && tbl_name !== '') {
-                arg = { 'tname': tbl_name }
-                data = self.model.fetch_columns_ajax.apply(self, [arg]);
-                // Add into column collection
-                column_collection.set(data, { merge:false,remove:false });
-              }
-            }
-          })
-        },{
-          id: 'fillfactor', label:'{{ _('Fill factor') }}', cell: 'integer',
-          type: 'int', mode: ['create', 'edit'], min: 10, max: 100,
-          disabled: 'inSchema',group: '{{ _('Advanced') }}'
-        },{
-          id: 'relhasoids', label:'{{ _('Has OIDs?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', group: '{{ _('Advanced') }}'
-        },{
-          id: 'relpersistence', label:'{{ _('Unlogged?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchemaWithModelCheck',
-          group: '{{ _('Advanced') }}'
-        },{
-          id: 'conname', label:'{{ _('Primary key') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
-          disabled: 'inSchema'
-        },{
-          id: 'reltuples', label:'{{ _('Rows (estimated)') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
-          disabled: 'inSchema'
-        },{
-          id: 'rows_cnt', label:'{{ _('Rows (counted)') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
-          disabled: 'inSchema'
-        },{
-          id: 'relhassubclass', label:'{{ _('Inherits tables?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties'], group: '{{ _('Advanced') }}',
-          disabled: 'inSchema'
-        },{
-          id: 'is_sys_table', label:'{{ _('System table?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties'],
-          disabled: 'inSchema'
+          id: 'description', label:'{{ _('Comment') }}', type: 'multiline',
+          mode: ['properties', 'create', 'edit'], disabled: 'inSchema'
         },{
           id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
           url: 'get_inherits', type: 'array', group: '{{ _('Columns') }}',
@@ -492,11 +405,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           })
         },{
           id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
-          url: 'get_inherits', type: 'text', group: '{{ _('Advanced') }}',
-          disabled: 'checkInheritance',
-          mode: ['properties'],
+          type: 'text', group: '{{ _('Advanced') }}', mode: ['properties']
         },{
-          id: 'inherited_tables_cnt', label:'{{ _('Inherited tables count') }}', cell: 'string',
+          id: 'inherited_tables_cnt', label:'{{ _('Inherited tables count') }}',
           type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
@@ -506,7 +417,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           model: pgBrowser.Nodes['column'].model,
           subnode: pgBrowser.Nodes['column'].model,
           mode: ['create', 'edit'],
-          disabled: 'inSchema',
+          disabled: 'inSchema', deps: ['typname'],
           canAdd: 'check_grid_add_condition',
           canEdit: true, canDelete: true,
           // For each row edit/delete button enable/disable
@@ -678,33 +589,111 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               }
           }]
         },{
+          id: 'typname', label:'{{ _('Of type') }}', type: 'text',
+          control: 'node-ajax-options', mode: ['properties', 'create', 'edit'],
+          disabled: 'checkOfType', url: 'get_oftype', group: '{{ _('Advanced') }}',
+          deps: ['coll_inherits'], transform: function(data, cell) {
+            var control = cell || this,
+              m = control.model;
+              m.of_types_tables = data;
+              return data;
+          },
+          control: Backform.NodeAjaxOptionsControl.extend({
+              // When of_types changes we need to clear columns collection
+              onChange: function() {
+                Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
+                var self = this,
+                  tbl_oid = undefined,
+                  tbl_name = self.model.get('typname'),
+                  data = undefined,
+                  arg = undefined,
+                  column_collection = self.model.get('columns');
+
+                if (!_.isUndefined(tbl_name) &&
+                    tbl_name !== '' && column_collection.length !== 0) {
+                  var msg = '{{ _('Changing of type table will clear columns collection') }}';
+                  alertify.confirm(msg, function (e) {
+                    if (e) {
+                      // User clicks Ok, lets clear columns collection
+                      column_collection.reset();
+                    } else {
+                      return this;
+                    }
+                  });
+                } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
+                  column_collection.reset();
+                }
+
+                // Run Ajax now to fetch columns
+                if (!_.isUndefined(tbl_name) && tbl_name !== '') {
+                  arg = { 'tname': tbl_name }
+                  data = self.model.fetch_columns_ajax.apply(self, [arg]);
+                  // Add into column collection
+                  column_collection.set(data, { merge:false,remove:false });
+                }
+              }
+            })
+        },{
+          id: 'fillfactor', label:'{{ _('Fill factor') }}', type: 'int',
+          mode: ['create', 'edit'], min: 10, max: 100,
+          disabled: 'inSchema',group: '{{ _('Advanced') }}'
+        },{
+          id: 'relhasoids', label:'{{ _('Has OIDs?') }}', cell: 'switch',
+          type: 'switch', mode: ['properties', 'create', 'edit'],
+          disabled: 'inSchema', group: '{{ _('Advanced') }}'
+        },{
+          id: 'relpersistence', label:'{{ _('Unlogged?') }}', cell: 'switch',
+          type: 'switch', mode: ['properties', 'create', 'edit'],
+          disabled: 'inSchemaWithModelCheck',
+          group: '{{ _('Advanced') }}'
+        },{
+          id: 'conname', label:'{{ _('Primary key') }}', cell: 'string',
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          disabled: 'inSchema'
+        },{
+          id: 'reltuples', label:'{{ _('Rows (estimated)') }}', cell: 'string',
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          disabled: 'inSchema'
+        },{
+          id: 'rows_cnt', label:'{{ _('Rows (counted)') }}', cell: 'string',
+          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          disabled: 'inSchema'
+        },{
+          id: 'relhassubclass', label:'{{ _('Inherits tables?') }}', cell: 'switch',
+          type: 'switch', mode: ['properties'], group: '{{ _('Advanced') }}',
+          disabled: 'inSchema'
+        },{
+          id: 'is_sys_table', label:'{{ _('System table?') }}', cell: 'switch',
+          type: 'switch', mode: ['properties'],
+          disabled: 'inSchema'
+        },{
           type: 'nested', control: 'fieldset', label: '{{ _('Like') }}',
           group: '{{ _('Advanced') }}',
           schema:[{
-            id: 'like_relation', label:'{{ _('Relation') }}', cell: 'string',
-            type: 'text', mode: ['create', 'edit'],
+            id: 'like_relation', label:'{{ _('Relation') }}',
+            type: 'text', mode: ['create', 'edit'], deps: ['typname'],
             control: 'node-ajax-options', url: 'get_relations',
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           },{
-            id: 'like_default_value', label:'{{ _('With default values?') }}', cell: 'switch',
-            type: 'switch', mode: ['create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            id: 'like_default_value', label:'{{ _('With default values?') }}',
+            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           },{
-            id: 'like_constraints', label:'{{ _('With constraints?') }}', cell: 'switch',
-            type: 'switch', mode: ['create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            id: 'like_constraints', label:'{{ _('With constraints?') }}',
+            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           },{
-            id: 'like_indexes', label:'{{ _('With indexes?') }}', cell: 'switch',
-            type: 'switch', mode: ['create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            id: 'like_indexes', label:'{{ _('With indexes?') }}',
+            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           },{
-            id: 'like_storage', label:'{{ _('With storage?') }}', cell: 'switch',
-            type: 'switch', mode: ['create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            id: 'like_storage', label:'{{ _('With storage?') }}',
+            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           },{
-            id: 'like_comments', label:'{{ _('With comments?') }}', cell: 'switch',
-            type: 'switch', mode: ['create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: '{{ _('Like') }}'
+            id: 'like_comments', label:'{{ _('With comments?') }}',
+            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
+            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           }]
         },{
           // Here we will create tab control for auto-vacuum
@@ -712,9 +701,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['edit', 'create'],
           schema: Backform.VacuumSettingsSchema
         },{
-          id: 'relacl_str', label:'{{ _('Privileges') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Security') }}',
-          disabled: 'inSchema'
+          id: 'relacl_str', label:'{{ _('Privileges') }}', disabled: 'inSchema',
+          type: 'text', mode: ['properties'], group: '{{ _('Security') }}'
         }, pgBrowser.SecurityGroupUnderSchema,{
           id: 'relacl', label: '{{ _('Privileges') }}', type: 'collection',
           group: 'security', control: 'unique-col-collection',
@@ -801,12 +789,24 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
           return true;
         },
+        // We will disable Like if ofType is defined
+        isLikeDisable: function(m) {
+          if(!m.inSchemaWithModelCheck.apply(this, [m]) &&
+              ( _.isUndefined(m.get('typname')) ||
+                _.isNull(m.get('typname')) ||
+                String(m.get('typname')).replace(/^\s+|\s+$/g, '') == '')) {
+            return false;
+          }
+          return true;
+        },
         // Check for column grid when to Add
         check_grid_add_condition: function(m) {
           var enable_flag = true;
           if(!m.inSchema.apply(this, [m])) {
             // if of_type then disable add in grid
-            if (!_.isUndefined(m.get('typname')) && !_.isNull(m.get('typname'))) {
+            if (!_.isUndefined(m.get('typname')) &&
+                !_.isNull(m.get('typname')) &&
+                m.get('typname') !== '') {
                     enable_flag = false;
                 }
           }
