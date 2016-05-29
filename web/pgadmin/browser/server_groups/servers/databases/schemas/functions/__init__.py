@@ -1272,6 +1272,12 @@ It may have been removed by another user or moved to another schema.
         """
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
 
+        # Fetch the schema name from OID
+        if 'pronamespace' in resp_data:
+            resp_data['pronamespace'] = self._get_schema(
+                resp_data['pronamespace']
+            )
+
         name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
 
         # Fetch only arguments

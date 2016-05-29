@@ -20,7 +20,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
 
   // Inherit Functions Node
   if (!pgBrowser.Nodes['procedure']) {
-    pgAdmin.Browser.Nodes['procedure'] = Function.extend({
+    pgAdmin.Browser.Nodes['procedure'] = pgBrowser.Node.extend({
       type: 'procedure',
       sqlAlterHelp: 'sql-alterprocedure.html',
       sqlCreateHelp: 'sql-createprocedure.html',
@@ -61,7 +61,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
         ]);
       },
       canDrop: pgSchemaNode.canChildDrop,
-      canDropCascade: pgSchemaNode.canChildDrop,
+      canDropCascade: false,
       model: Function.model.extend({
         defaults: _.extend({},
           Function.model.prototype.defaults,
