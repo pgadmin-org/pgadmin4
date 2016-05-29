@@ -191,7 +191,7 @@ class TablespaceView(PGChildNodeView):
             seclabels = []
             for seclbls in data['seclabels']:
                 k, v = seclbls.split('=')
-                seclabels.append({'provider': k, 'security_label': v})
+                seclabels.append({'provider': k, 'label': v})
 
             data['seclabels'] = seclabels
 

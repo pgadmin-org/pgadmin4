@@ -3,46 +3,10 @@ define(
     'alertify', 'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'],
   function($, _, S, pgAdmin, pgBrowser, alertify) {
 
-  // Extend the browser's node model class to create a security model
-  var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      security_label: null
-    },
-
-    // Define the schema for the Security Label
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    }],
-    /* validate function is used to validate the input given by
-     * the user. In case of error, message will be displayed on
-     * the GUI for the respective control.
-     */
-    validate: function() {
-      var errmsg = null;
-      if (_.isUndefined(this.get('security_label')) ||
-        _.isNull(this.get('security_label')) ||
-        String(this.get('security_label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg =  '{{ _('Please specify the value for all the security providers.')}}';
-            this.errorModel.set('security_label', errmsg);
-            return errmsg;
-      } else {
-        this.errorModel.unset('security_label');
-      }
-      return null;
-    }
-  });
-
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {
-    var languages = pgAdmin.Browser.Nodes['coll-language'] =
-      pgAdmin.Browser.Collection.extend({
+    var languages = pgBrowser.Nodes['coll-language'] =
+      pgBrowser.Collection.extend({
         node: 'language',
         label: '{{ _('Languages') }}',
         type: 'coll-language',
@@ -52,7 +16,7 @@ define(
 
   // Extend the browser's node class for language node
   if (!pgBrowser.Nodes['language']) {
-    pgAdmin.Browser.Nodes['language'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['language'] = pgBrowser.Node.extend({
       parent_type: 'database',
       type: 'language',
       sqlAlterHelp: 'sql-alterlanguage.html',
@@ -70,7 +34,7 @@ define(
       },
 
       // Define the model for language node
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           lanowner: undefined,
@@ -97,7 +61,7 @@ define(
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'trusted', label:'{{ _('Trusted?') }}', type: 'switch', 
+          id: 'trusted', label:'{{ _('Trusted?') }}', type: 'switch',
           options: {
             'onText': 'Yes', 'offText': 'No',
             'onColor': 'success', 'offColor': 'primary',
@@ -167,16 +131,18 @@ define(
           }, disabled: function(m) {
             return !(m.isNew());
           }
-        },{
-          id: 'lanacl', label: '{{ _('Privileges') }}', type: 'collection', group: '{{ _('Security') }}',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
-          mode: ['edit'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
+        }, pgBrowser.SecurityGroupUnderSchema, {
+          id: 'lanacl', label: '{{ _('Privileges') }}', type: 'collection',
+          group: 'security', control: 'unique-col-collection', mode: ['edit'],
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['U']
+          }), canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit'],
-          min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
+          id: 'seclabels', label: '{{ _('Security Labels') }}', mode: ['edit'],
+          model: pgBrowser.SecLabelModel, editable: false,
+          type: 'collection', group: 'security', min_version: 90200,
+          canAdd: true, canEdit: false, canDelete: true,
+          control: 'unique-col-collection'
         }
         ],
         /* validate function is used to validate the input given by

@@ -4,41 +4,14 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-foreign-table']) {
-    var foreigntable = pgAdmin.Browser.Nodes['coll-foreign-table'] =
-      pgAdmin.Browser.Collection.extend({
+    var foreigntable = pgBrowser.Nodes['coll-foreign-table'] =
+      pgBrowser.Collection.extend({
         node: 'foreign-table',
         label: '{{ _('Foreign Tables') }}',
         type: 'coll-foreign-table',
         columns: ['name', 'owner', 'description']
       });
   };
-
-  // Security Model
-  var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      label: null
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
-
-      if (_.isUndefined(data.security_label) ||
-        _.isNull(data.security_label) ||
-        String(data.security_label).replace(/^\s+|\s+$/g, '') == '') {
-        return _("Please specify the value for all the security providers.");
-      }
-      return null;
-    }
-  });
 
   // Integer Cell for Columns Length and Precision
   var IntegerDepCell = Backgrid.IntegerCell.extend({
@@ -64,7 +37,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
 
   // Columns Model
-  var ColumnsModel = pgAdmin.Browser.Node.Model.extend({
+  var ColumnsModel = pgBrowser.Node.Model.extend({
     idAttribute: 'attnum',
     defaults: {
       attname: undefined,
@@ -395,7 +368,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             cache_level = this.field.get('cache_level') || node.type,
             cache_node = this.field.get('cache_node');
 
-        cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+        cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
 
         m.trigger('pgadmin:view:fetching', m, self.field);
         data = {attrelid: table_id}
@@ -431,14 +404,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
 
   // Constraints Model
-  var ConstraintModel = pgAdmin.Browser.Node.Model.extend({
+  var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
     initialize: function(attrs, args) {
       var isNew = (_.size(attrs) === 0);
       if (!isNew) {
         this.convalidated_default = this.get('convalidated')
       }
-      pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+      pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
     },
     defaults: {
       conoid: undefined,
@@ -505,7 +478,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
 
   // Options Model
-  var OptionsModel = pgAdmin.Browser.Node.Model.extend({
+  var OptionsModel = pgBrowser.Node.Model.extend({
     defaults: {
       option: undefined,
       value: undefined
@@ -526,7 +499,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
 
   if (!pgBrowser.Nodes['foreign-table']) {
-    pgAdmin.Browser.Nodes['foreign-table'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['foreign-table'] = pgBrowser.Node.extend({
       type: 'foreign-table',
       sqlAlterHelp: 'sql-alterforeigntable.html',
       sqlCreateHelp: 'sql-createforeigntable.html',
@@ -567,7 +540,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -579,7 +552,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'owner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         defaults: {
           name: undefined,
@@ -672,18 +645,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'relacl', label: '{{ _('Privileges') }}', cell: 'string',
           type: 'text', group: '{{ _('Security') }}',
           mode: ['properties'], min_version: 90200
-        },{
+        }, pgBrowser.SecurityGroupUnderSchema, {
           id: 'acl', label: '{{ _('Privileges') }}', model: pgAdmin
           .Browser.Node.PrivilegeRoleModel.extend(
           {privileges: ['a','r','w','x']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: '{{ _('Security') }}',
+          editable: false, type: 'collection', group: 'security',
           mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
           min_version: 90200
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          model: pgBrowser.SecLabelModel, type: 'collection',
+          group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
           canEdit: false, canDelete: true,
           control: 'unique-col-collection', uniqueCol : ['provider']

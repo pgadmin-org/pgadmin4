@@ -15,7 +15,7 @@ COMMENT ON SEQUENCE {{ seqname }}
 {% if data.securities %}
 
 {% for r in data.securities %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.security_label, data.schema) }}
+{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if data.relacl %}

@@ -3,6 +3,35 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['server']) {
+
+    var SecurityModel = pgBrowser.SecLabelModel = pgBrowser.Node.Model.extend({
+      defaults: {
+        provider: undefined,
+        label: undefined
+      },
+      schema: [{
+        id: 'provider', label: '{{ _('Provider') }}',
+        type: 'text', editable: true,
+        cellHeaderClasses:'width_percent_50'
+      },{
+        id: 'label', label: '{{ _('Security Label') }}',
+        type: 'text', editable: true,
+        cellHeaderClasses:'width_percent_50'
+      }],
+      validate: function() {
+        var err = {},
+          errmsg = null,
+            data = this.toJSON();
+
+            if (_.isUndefined(data.label) ||
+                _.isNull(data.label) ||
+                String(data.label).replace(/^\s+|\s+$/g, '') == '') {
+                  return _("Please specify the value for all the security providers.");
+                }
+                return null;
+      }
+    });
+
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server-group',
       type: 'server',

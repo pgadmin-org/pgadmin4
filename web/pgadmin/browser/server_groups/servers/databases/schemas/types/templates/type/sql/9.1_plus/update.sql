@@ -90,12 +90,12 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.security_label, o_data.schema) }}
+{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.security_label, o_data.schema) }}
+{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
 {% endfor %}
 {% endif %}
 

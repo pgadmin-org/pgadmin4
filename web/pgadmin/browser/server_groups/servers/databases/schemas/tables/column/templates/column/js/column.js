@@ -4,8 +4,8 @@ define(
 function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   if (!pgBrowser.Nodes['coll-column']) {
-    var databases = pgAdmin.Browser.Nodes['coll-column'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-column'] =
+      pgBrowser.Collection.extend({
         node: 'column',
         label: '{{ _('Columns') }}',
         type: 'coll-column',
@@ -14,7 +14,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
   };
 
    // This Node model will be used for variable control for column
-   var VariablesModel = Backform.VariablesModel = pgAdmin.Browser.Node.Model.extend({
+   var VariablesModel = Backform.VariablesModel = pgBrowser.Node.Model.extend({
     defaults: {
       name: null,
       value: null
@@ -49,7 +49,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
   });
 
   if (!pgBrowser.Nodes['column']) {
-    pgAdmin.Browser.Nodes['column'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['column'] = pgBrowser.Node.extend({
       parent_type: ['table', 'view', 'mview'],
       collection_type: ['coll-table', 'coll-view', 'coll-mview'],
       type: 'column',
@@ -115,7 +115,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         }
         ]);
       },
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           attowner: undefined,
@@ -190,7 +190,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           }
         },{
           id: 'attnum', label:'{{ _('Position') }}', cell: 'string',
-          type: 'text', disabled: 'inSchema', mode: ['properties']
+          type: 'text', disabled: 'notInSchema', mode: ['properties']
         },{
           id: 'cltype', label:'{{ _('Data type') }}', cell: 'node-ajax-options',
           type: 'text', disabled: 'inSchemaWithColumnCheck',
@@ -379,29 +379,27 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema'
+          disabled: 'notInSchema'
         },{
           id: 'attoptions', label: 'Variables', type: 'collection',
           group: '{{ _('Variables') }}', control: 'unique-col-collection',
           model: VariablesModel, uniqueCol : ['name'],
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
-        },{
+        }, pgBrowser.SecurityGroupUnderSchema, {
           id: 'attacl', label: 'Privileges', type: 'collection',
-          group: '{{ _('Security') }}', control: 'unique-col-collection',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({
+          group: 'security', control: 'unique-col-collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
           privileges: ['a','r','w','x']}),
           mode: ['edit'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: pgAdmin.Browser.SecurityModel,
-          editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
-          min_version: 90100, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
-        }
-        ],
+          id: 'seclabels', label: '{{ _('Security Labels') }}', canAdd: true,
+          model: pgBrowser.SecLabelModel, group: 'security',
+          mode: ['edit', 'create'], editable: false, type: 'collection',
+          min_version: 90100, canEdit: false, canDelete: true,
+          control: 'unique-col-collection'
+        }],
         validate: function(keys) {
           var err = {},
               changedAttrs = this.changed,
@@ -463,10 +461,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           return null;
         },
-        isInhertedColumn: function() {
-        },
         // We will check if we are under schema node & in 'create' mode
-        inSchema: function() {
+        notInSchema: function() {
           if(this.node_info &&  'catalog' in this.node_info)
           {
             return true;
@@ -564,8 +560,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             return true;
           }
       }
-  });
- }
+    });
+  }
 
   return pgBrowser.Nodes['column'];
 });

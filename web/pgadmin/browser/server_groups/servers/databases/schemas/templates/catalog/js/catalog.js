@@ -2,42 +2,11 @@
         ['jquery', 'underscore', 'underscore.string', 'pgadmin',
         'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'],
 function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
-   // Extend the browser's collection class for SecurityLabel control
-    var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      security_label: null
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null;
-
-      if (_.isUndefined(this.get('security_label')) ||
-        _.isNull(this.get('security_label')) ||
-        String(this.get('security_label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg =  '{{ _('Please specify the value for all the security providers.')}}';
-            this.errorModel.set('security_label', errmsg);
-            return errmsg;
-          } else {
-            this.errorModel.unset('security_label');
-          }
-      return null;
-    }
-  });
 
   // Extend the browser's collection class for catalog collection
   if (!pgBrowser.Nodes['coll-catalog']) {
-    var databases = pgAdmin.Browser.Nodes['coll-catalog'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-catalog'] =
+      pgBrowser.Collection.extend({
         node: 'catalog',
         label: '{{ _('Catalogs') }}',
         type: 'coll-catalog',
@@ -46,7 +15,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
   };
   // Extend the browser's node class for catalog node
   if (!pgBrowser.Nodes['catalog']) {
-    pgAdmin.Browser.Nodes['catalog'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['catalog'] = pgBrowser.Node.extend({
       parent_type: 'database',
       type: 'catalog',
       label: '{{ _('Catalog') }}',
@@ -60,7 +29,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         this.initialized = true;
 
       },
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           namespaceowner: undefined,
@@ -76,7 +45,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
             this.set({'namespaceowner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -95,7 +64,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           type: 'multiline'
        },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, editable: false, type: 'collection',
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: '{{ _('Security') }}', mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'

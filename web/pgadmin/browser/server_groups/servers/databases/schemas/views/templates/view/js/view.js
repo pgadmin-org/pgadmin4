@@ -12,8 +12,8 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       display under under properties.
    */
   if (!pgBrowser.Nodes['coll-view']) {
-    var views= pgAdmin.Browser.Nodes['coll-view'] =
-      pgAdmin.Browser.Collection.extend({
+    var views= pgBrowser.Nodes['coll-view'] =
+      pgBrowser.Collection.extend({
         node: 'view',
         label: '{{ _("Views") }}',
         type: 'coll-view',
@@ -33,7 +33,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
     view option in the context menu
    */
   if (!pgBrowser.Nodes['view']) {
-    pgAdmin.Browser.Nodes['view'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['view'] = pgBrowser.Node.extend({
       parent_type: ['schema', 'catalog'],
       type: 'view',
       sqlAlterHelp: 'sql-alterview.html',
@@ -87,7 +87,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
         Define model for the view node and specify the
         properties of the model in schema.
        */
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -99,96 +99,71 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'owner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
           id: 'name', label: '{{ _("Name") }}', cell: 'string',
-          type: 'text', disabled: 'inSchema'
-        },
-        {
+          type: 'text', disabled: 'notInSchema'
+        },{
           id: 'oid', label:'{{ _("OID") }}', cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
-        },
-        {
+        },{
           id: 'owner', label:'{{ _("Owner") }}', cell: 'string', control: 'node-list-by-name',
-          node: 'role', disabled: 'inSchema', select2: { allowClear: false }
-        },
-        {
+          node: 'role', disabled: 'notInSchema', select2: { allowClear: false }
+        },{
           id: 'schema', label:'{{ _("Schema") }}', cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
-          node: 'schema', disabled: 'inSchema', mode: ['create', 'edit'], select2: { allowClear: false }
-        },
-        {
+          node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'], select2: { allowClear: false }
+        },{
           id: 'system_view', label:'{{ _("System view?") }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties']
-        },
-        {
+        },{
           id: 'acl', label: '{{ _("Privileges") }}',
-          mode: ['properties'], type: 'text'
-        },
-        {
+          mode: ['properties'], type: 'text', group: '{{ _("Security") }}'
+        },{
           id: 'comment', label:'{{ _("Comment") }}', cell: 'string',
-          type: 'multiline', disabled: 'inSchema'
-        },
-        {
-          id: 'security_barrier', label:'{{ _("Security barrier") }}', cell: 'string',
-          type: 'switch', min_version: '90200',
-          group: 'Definition', disabled: 'inSchema'
-        },
-        {
+          type: 'multiline', disabled: 'notInSchema'
+        },{
+          id: 'security_barrier', label:'{{ _("Security barrier") }}',
+          type: 'switch', min_version: '90200', group: 'Definition',
+          disabled: 'notInSchema'
+        },{
           id: 'check_option', label:'{{ _("Check options") }}',
           control: 'select2', group: 'Definition', type: 'text',
           min_version: '90400', mode:['properties', 'create', 'edit'],
           select2: {
-
-            // set select2 option width to 100%
+            // Set select2 option width to 100%
             allowClear: false,
-            width: '100%'
-          },
-          options:[
-            {label: "No", value: "no"},
-            {label: "Local", value: "local"},
-            {label: "Cascaded", value: "cascaded"}
-          ], disabled: 'inSchema'
-        },
-        {
+          }, disabled: 'notInSchema',
+          options:[{
+            label: "{{ _('No') }}", value: "no"
+          },{
+            label: "{{ _('Local') }}", value: "local"
+          },{
+            label: "{{ _('Cascaded') }}", value: "cascaded"
+          }]
+        },{
           id: 'definition', label:'{{ _("Definition") }}', cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: 'Definition',
           control: Backform.SqlFieldControl,
-          disabled: 'inSchema'
-        },
-        {
-          id: 'security', label: '{{ _("Security") }}',
-          type: 'group',
-          visible: function(m) {
-            if (m.top && 'catalog' in m.top.node_info) {
-              return false;
-            }
-            return true;
-          }
-        },
-
-        // Add Privilege Control
-        {
-          id: 'datacl', label: '{{ _("Privileges") }}',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), uniqueCol : ['grantee'],
-          editable: false, type: 'collection', group: 'security',
+          disabled: 'notInSchema'
+        }, pgBrowser.SecurityGroupUnderSchema, {
+          // Add Privilege Control
+          id: 'datacl', label: '{{ _("Privileges") }}', type: 'collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']
+          }), uniqueCol : ['grantee'], editable: false, group: 'security',
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          control: 'unique-col-collection', disabled: 'inSchema'
-        },
-
-        // Add Security Labels Control
-        {
+          control: 'unique-col-collection', disabled: 'notInSchema'
+        },{
+          // Add Security Labels Control
           id: 'seclabels', label: '{{ _("Security labels") }}',
-          model: Backform.SecurityModel, editable: false, type: 'collection',
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           canEdit: false, group: 'security', canDelete: true,
-          mode: ['edit', 'create'], canAdd: true, disabled: 'inSchema',
+          mode: ['edit', 'create'], canAdd: true, disabled: 'notInSchema',
           control: 'unique-col-collection', uniqueCol : ['provider']
-        },
-        ],
+        }],
         validate: function() {
-
           // Triggers specific error messages for fields
           var err = {},
             errmsg,
@@ -215,9 +190,8 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           return null;
         },
         // We will disable everything if we are under catalog node
-        inSchema: function() {
-          if(this.node_info && 'catalog' in this.node_info)
-          {
+        notInSchema: function() {
+          if(this.node_info && 'catalog' in this.node_info) {
             return true;
           }
           return false;
@@ -265,5 +239,5 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
   });
   }
 
-  return pgBrowser.Nodes['coll-view'];
+  return pgBrowser.Nodes['view'];
 });

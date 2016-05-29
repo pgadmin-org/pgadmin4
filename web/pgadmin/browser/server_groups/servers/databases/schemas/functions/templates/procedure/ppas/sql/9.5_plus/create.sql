@@ -3,8 +3,8 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.arguments %}
-({% for p in data.arguments %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{p.argtype}}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.args %}
+({% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
 {% endfor -%}){% endif %}
 
@@ -33,9 +33,9 @@ COMMENT ON PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
-{% if r.security_label and r.provider %}
+{% if r.label and r.provider %}
 
-{{ SECLABEL.SET(conn, 'PROCEDURE', data.name, r.provider, r.security_label, data.pronamespace, data.func_args) }}
+{{ SECLABEL.SET(conn, 'PROCEDURE', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
 {% endif %}
 {% endfor %}
 {% endif -%}

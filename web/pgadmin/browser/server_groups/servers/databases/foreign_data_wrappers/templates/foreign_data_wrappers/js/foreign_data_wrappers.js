@@ -5,18 +5,19 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
-    var OptionsModel = pgAdmin.Browser.Node.Model.extend({
+    var OptionsModel = pgBrowser.Node.Model.extend({
         defaults: {
           fdwoption: undefined,
           fdwvalue: undefined
         },
-
         // Defining schema for the Options model
-        schema: [
-          {id: 'fdwoption', label:'Options', type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
-          {id: 'fdwvalue', label:'Value', type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
-        ],
-
+        schema: [{
+          id: 'fdwoption', label: '{{ _('Option') }}', type:'text',
+          cellHeaderClasses:'width_percent_50', editable: true
+        },{
+          id: 'fdwvalue', label:'{{ _('Value') }}', type: 'text',
+          cellHeaderClasses:'width_percent_50', group:null, editable: true
+        }],
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
          * the browser for the respective control.
@@ -38,8 +39,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for foreign data wrapper collection
   if (!pgBrowser.Nodes['coll-foreign_data_wrapper']) {
-    var foreign_data_wrappers = pgAdmin.Browser.Nodes['coll-foreign_data_wrapper'] =
-      pgAdmin.Browser.Collection.extend({
+    var foreign_data_wrappers = pgBrowser.Nodes['coll-foreign_data_wrapper'] =
+      pgBrowser.Collection.extend({
         node: 'foreign_data_wrapper',
         label: '{{ _('Foreign Data Wrappers') }}',
         type: 'coll-foreign_data_wrapper',
@@ -49,7 +50,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node class for foreign data wrapper node
   if (!pgBrowser.Nodes['foreign_data_wrapper']) {
-    pgAdmin.Browser.Nodes['foreign_data_wrapper'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['foreign_data_wrapper'] = pgBrowser.Node.extend({
       parent_type: 'database',
       type: 'foreign_data_wrapper',
       sqlAlterHelp: 'sql-alterforeigndatawrapper.html',
@@ -91,7 +92,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },
 
       // Defining model for foreign data wrapper node
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           fdwowner: undefined,
@@ -111,7 +112,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
             this.set({'fdwowner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         // Defining schema for the foreign data wrapper node
@@ -148,36 +149,38 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'fdwvalue', label:'{{ _('Validator') }}', type: 'text', control: 'node-ajax-options',
           group: '{{ _('Definition') }}', mode: ['edit', 'create', 'properties'], url:'get_validators'
         },{
-            id: 'fdwacl', label: 'Privileges', type: 'collection', group: '{{ _('Security') }}',
-            model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
-            mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
+          id: 'security', label: '{{ _("Security")  }}', type: 'group'
+        },{
+            id: 'fdwacl', label: 'Privileges', type: 'collection',
+            group: 'security', mode: ['edit', 'create'], canAdd: true,
+            canDelete: true, uniqueCol : ['grantee'],
+            model: pgBrowser.Node.PrivilegeRoleModel.extend({
+              privileges: ['U']
+            }), control: 'unique-col-collection'
          },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+         }],
+         /* validate function is used to validate the input given by
+          * the user. In case of error, message will be displayed on
+          * the browser for the respective control.
+          */
+         validate: function() {
+           var name = this.get('name');
+
+           if (_.isUndefined(name) || _.isNull(name) ||
+               String(name).replace(/^\s+|\s+$/g, '') == '') {
+                 var msg = '{{ _('Name cannot be empty.') }}';
+                 this.errorModel.set('name', msg);
+                 return msg;
+               } else {
+                 this.errorModel.unset('name');
+               }
+               return null;
          }
-        ],
-
-        /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the browser for the respective control.
-         */
-        validate: function() {
-          var name = this.get('name');
-
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
-            this.errorModel.set('name', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('name');
-          }
-          return null;
-        }
       })
-  });
-
+    });
   }
 
-  return pgBrowser.Nodes['coll-foreign_data_wrapper'];
+  return pgBrowser.Nodes['foreign_data_wrapper'];
 });

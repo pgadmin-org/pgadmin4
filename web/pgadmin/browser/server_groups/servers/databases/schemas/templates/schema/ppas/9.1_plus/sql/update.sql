@@ -31,12 +31,12 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.security_label) }}
+{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.security_label) }}
+{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 

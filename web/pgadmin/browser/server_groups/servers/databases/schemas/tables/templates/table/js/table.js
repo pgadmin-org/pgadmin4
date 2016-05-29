@@ -7,8 +7,8 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-table']) {
-    var databases = pgAdmin.Browser.Nodes['coll-table'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-table'] =
+      pgBrowser.Collection.extend({
         node: 'table',
         label: '{{ _('Tables') }}',
         type: 'coll-table',
@@ -17,7 +17,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   };
 
   if (!pgBrowser.Nodes['table']) {
-    pgAdmin.Browser.Nodes['table'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['table'] = pgBrowser.Node.extend({
       type: 'table',
       label: '{{ _('Table') }}',
       collection_type: 'coll-table',
@@ -242,7 +242,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
          });
        }
       },
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           oid: undefined,
@@ -270,7 +270,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           toast_autovacuum_enabled: false,
           autovacuum_enabled: false,
           primary_key: []
-       },
+        },
         // Default values!
         initialize: function(attrs, args) {
           var self = this,
@@ -283,7 +283,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             this.set({'relowner': userInfo.name}, {silent: true});
             this.set({'schema': schemaInfo.label}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
 
         },
         schema: [{
@@ -337,40 +337,40 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return data;
           },
           control: Backform.NodeAjaxOptionsControl.extend({
-              // When of_types changes we need to clear columns collection
-              onChange: function() {
-                Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
-                var self = this,
-                  tbl_oid = undefined,
-                  tbl_name = self.model.get('typname'),
-                  data = undefined,
-                  arg = undefined,
-                  column_collection = self.model.get('columns');
+            // When of_types changes we need to clear columns collection
+            onChange: function() {
+              Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
+              var self = this,
+                tbl_oid = undefined,
+                tbl_name = self.model.get('typname'),
+                data = undefined,
+                arg = undefined,
+                column_collection = self.model.get('columns');
 
-                if (!_.isUndefined(tbl_name) &&
-                    tbl_name !== '' && column_collection.length !== 0) {
-                  var msg = '{{ _('Changing of type table will clear columns collection') }}';
-                  alertify.confirm(msg, function (e) {
-                    if (e) {
-                      // User clicks Ok, lets clear columns collection
-                      column_collection.reset();
-                    } else {
-                      return this;
-                    }
-                  });
-                } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
-                  column_collection.reset();
-                }
-
-                // Run Ajax now to fetch columns
-                if (!_.isUndefined(tbl_name) && tbl_name !== '') {
-                  arg = { 'tname': tbl_name }
-                  data = self.model.fetch_columns_ajax.apply(self, [arg]);
-                  // Add into column collection
-                  column_collection.set(data, { merge:false,remove:false });
-                }
+              if (!_.isUndefined(tbl_name) &&
+                  tbl_name !== '' && column_collection.length !== 0) {
+                var msg = '{{ _('Changing of type table will clear columns collection') }}';
+                alertify.confirm(msg, function (e) {
+                  if (e) {
+                    // User clicks Ok, lets clear columns collection
+                    column_collection.reset();
+                  } else {
+                    return this;
+                  }
+                });
+              } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
+                column_collection.reset();
               }
-            })
+
+              // Run Ajax now to fetch columns
+              if (!_.isUndefined(tbl_name) && tbl_name !== '') {
+                arg = { 'tname': tbl_name }
+                data = self.model.fetch_columns_ajax.apply(self, [arg]);
+                // Add into column collection
+                column_collection.set(data, { merge:false,remove:false });
+              }
+            }
+          })
         },{
           id: 'fillfactor', label:'{{ _('Fill factor') }}', cell: 'integer',
           type: 'int', mode: ['create', 'edit'], min: 10, max: 100,
@@ -418,78 +418,78 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return data;
           },
           control: Backform.MultiSelectAjaxControl.extend({
-              // When changes we need to add/clear columns collection
-              onChange: function() {
-                Backform.MultiSelectAjaxControl.prototype.onChange.apply(this, arguments);
-                var self = this,
-                // current table list and previous table list
-                cTbl_list = self.model.get('coll_inherits') || [],
-                pTbl_list = self.model.previous('coll_inherits') || [];
+            // When changes we need to add/clear columns collection
+            onChange: function() {
+              Backform.MultiSelectAjaxControl.prototype.onChange.apply(this, arguments);
+              var self = this,
+              // current table list and previous table list
+              cTbl_list = self.model.get('coll_inherits') || [],
+              pTbl_list = self.model.previous('coll_inherits') || [];
 
-                if (!_.isUndefined(cTbl_list)) {
-                  var tbl_name = undefined,
-                    tid = undefined;
+              if (!_.isUndefined(cTbl_list)) {
+                var tbl_name = undefined,
+                  tid = undefined;
 
-                  // Add columns logic
-                  // If new table is added in list
-                  if(cTbl_list.length > 1 && cTbl_list.length > pTbl_list.length) {
-                    // Find newly added table from current list
-                    tbl_name = _.difference(cTbl_list, pTbl_list);
-                    tid = this.get_table_oid(tbl_name[0]);
-                    this.add_columns(tid);
-                  } else if (cTbl_list.length == 1) {
-                    // First table added
-                    tid = this.get_table_oid(cTbl_list[0]);
-                    this.add_columns(tid);
-                  }
-
-                  // Remove columns logic
-                  if(cTbl_list.length > 0 && cTbl_list.length < pTbl_list.length) {
-                    // Find deleted table from previous list
-                    tbl_name = _.difference(pTbl_list, cTbl_list);
-                    this.remove_columns(tbl_name[0]);
-                  } else if (pTbl_list.length === 1 && cTbl_list.length < 1) {
-                    // We got last table from list
-                    tbl_name = pTbl_list[0];
-                    this.remove_columns(tbl_name);
-                  }
-
+                // Add columns logic
+                // If new table is added in list
+                if(cTbl_list.length > 1 && cTbl_list.length > pTbl_list.length) {
+                  // Find newly added table from current list
+                  tbl_name = _.difference(cTbl_list, pTbl_list);
+                  tid = this.get_table_oid(tbl_name[0]);
+                  this.add_columns(tid);
+                } else if (cTbl_list.length == 1) {
+                  // First table added
+                  tid = this.get_table_oid(cTbl_list[0]);
+                  this.add_columns(tid);
                 }
-              },
-              add_columns: function(tid) {
-                // Create copy of old model if anything goes wrong at-least we have backup
-                // Then send AJAX request to fetch table specific columns
-                var self = this,
-                  url = 'get_columns',
-                  m = self.model.top || self.model,
-                  data = undefined,
-                  old_columns = _.clone(m.get('columns')),
-                  column_collection = m.get('columns');
 
-                var arg = {'tid': tid}
-                data = self.model.fetch_columns_ajax.apply(self, [arg]);
+                // Remove columns logic
+                if(cTbl_list.length > 0 && cTbl_list.length < pTbl_list.length) {
+                  // Find deleted table from previous list
+                  tbl_name = _.difference(pTbl_list, cTbl_list);
+                  this.remove_columns(tbl_name[0]);
+                } else if (pTbl_list.length === 1 && cTbl_list.length < 1) {
+                  // We got last table from list
+                  tbl_name = pTbl_list[0];
+                  this.remove_columns(tbl_name);
+                }
 
-                // Update existing column collection
-                column_collection.set(data, { merge:false,remove:false });
-              },
-              remove_columns: function(tblname) {
-                // Remove all the column models for deleted table
-                var tid = this.get_table_oid(tblname),
-                  column_collection = this.model.get('columns');
-                column_collection.remove(column_collection.where({'inheritedid': tid }));
-              },
-              get_table_oid: function(tblname) {
-                // Here we will fetch the table oid from table name
-                var tbl_oid = undefined;
-                // iterate over list to find table oid
-                _.each(this.model.inherited_tables_list, function(obj) {
-                    if(obj.label === tblname) {
-                      tbl_oid = obj.tid;
-                    }
-                });
-                return tbl_oid;
               }
-            })
+            },
+            add_columns: function(tid) {
+              // Create copy of old model if anything goes wrong at-least we have backup
+              // Then send AJAX request to fetch table specific columns
+              var self = this,
+                url = 'get_columns',
+                m = self.model.top || self.model,
+                data = undefined,
+                old_columns = _.clone(m.get('columns')),
+                column_collection = m.get('columns');
+
+              var arg = {'tid': tid}
+              data = self.model.fetch_columns_ajax.apply(self, [arg]);
+
+              // Update existing column collection
+              column_collection.set(data, { merge:false,remove:false });
+            },
+            remove_columns: function(tblname) {
+              // Remove all the column models for deleted table
+              var tid = this.get_table_oid(tblname),
+                column_collection = this.model.get('columns');
+              column_collection.remove(column_collection.where({'inheritedid': tid }));
+            },
+            get_table_oid: function(tblname) {
+              // Here we will fetch the table oid from table name
+              var tbl_oid = undefined;
+              // iterate over list to find table oid
+              _.each(this.model.inherited_tables_list, function(obj) {
+                  if(obj.label === tblname) {
+                    tbl_oid = obj.tid;
+                  }
+              });
+              return tbl_oid;
+            }
+          })
         },{
           id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
           url: 'get_inherits', type: 'text', group: '{{ _('Advanced') }}',
@@ -500,7 +500,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
           disabled: 'inSchema'
         },{
-        // Here we will create tab control for columns
+          // Tab control for columns
           id: 'columns', label:'{{ _('Columns') }}', type: 'collection',
           group: '{{ _('Columns') }}',
           model: pgBrowser.Nodes['column'].model,
@@ -676,7 +676,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                var columns = m.get('columns');
                return _.some(columns.pluck('name'));
               }
-        }]
+          }]
         },{
           type: 'nested', control: 'fieldset', label: '{{ _('Like') }}',
           group: '{{ _('Advanced') }}',
@@ -715,24 +715,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'relacl_str', label:'{{ _('Privileges') }}', cell: 'string',
           type: 'text', mode: ['properties'], group: '{{ _('Security') }}',
           disabled: 'inSchema'
-        },{
-          id: 'relacl', label: 'Privileges', type: 'collection',
-          group: '{{ _('Security') }}', control: 'unique-col-collection',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({
+        }, pgBrowser.SecurityGroupUnderSchema,{
+          id: 'relacl', label: '{{ _('Privileges') }}', type: 'collection',
+          group: 'security', control: 'unique-col-collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
           privileges: ['a','r','w','d','D','x','t']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
         },{
-          id: 'seclabels', label: '{{ _('Security labels') }}',
-          model: pgAdmin.Browser.SecurityModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
-          min_version: 90100, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection'
+          id: 'seclabels', label: '{{ _('Security labels') }}', canEdit: false,
+          model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
+          type: 'collection', min_version: 90100, mode: ['edit', 'create'],
+          group: 'security', canDelete: true, control: 'unique-col-collection'
         },{
           id: 'vacuum_settings_str', label: '{{ _('Storage settings') }}',
           type: 'multiline', group: '{{ _('Advanced') }}', mode: ['properties']
-        }
-        ],
+        }],
         validate: function(keys) {
           var err = {},
               changedAttrs = this.changed,
@@ -777,25 +775,24 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
           return false;
         },
-       isInheritedTable: function(m) {
-         if(!m.inSchema.apply(this, [m])) {
-          if(
-               (!_.isUndefined(m.get('coll_inherits')) && m.get('coll_inherits').length != 0)
-             ||
-               (!_.isUndefined(m.get('typname')) && String(m.get('typname')).replace(/^\s+|\s+$/g, '') !== '')
-             ) {
-            // Either of_types or coll_inherits has value
-            return false;
-          } else {
-            return true;
+        isInheritedTable: function(m) {
+          if(!m.inSchema.apply(this, [m])) {
+            if(
+              (!_.isUndefined(m.get('coll_inherits')) && m.get('coll_inherits').length != 0)
+                ||
+                  (!_.isUndefined(m.get('typname')) && String(m.get('typname')).replace(/^\s+|\s+$/g, '') !== '')
+            ) {
+              // Either of_types or coll_inherits has value
+              return false;
+            } else {
+              return true;
+            }
           }
-         } else {
-           return false;
-         }
+          return false;
         },
-        // We will disable it if Oftype is defined
+        // Oftype is defined?
         checkInheritance: function(m) {
-        //coll_inherits || typname
+         // coll_inherits || typname
           if(!m.inSchema.apply(this, [m]) &&
               ( _.isUndefined(m.get('typname')) ||
                 _.isNull(m.get('typname')) ||
@@ -868,42 +865,40 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return true;
         },
         fetch_columns_ajax: function(arg) {
-        var self = this,
-          url = 'get_columns',
-          m = self.model.top || self.model,
-          old_columns = _.clone(m.get('columns'))
-          data = undefined;
-
-          if (url) {
-            var node = this.field.get('schema_node'),
+          var self = this,
+              url = 'get_columns',
+              m = self.model.top || self.model,
+              old_columns = _.clone(m.get('columns'))
+              data = undefined,
+              node = this.field.get('schema_node'),
               node_info = this.field.get('node_info'),
               full_url = node.generate_url.apply(
                 node, [
                   null, url, this.field.get('node_data'),
                   this.field.get('url_with_id') || false, node_info
-                ]),
+                ]
+              ),
               cache_level = this.field.get('cache_level') || node.type,
               cache_node = this.field.get('cache_node');
 
-            cache_node = (cache_node && pgAdmin.Browser.Nodes['cache_node']) || node;
+          cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
 
-            m.trigger('pgadmin:view:fetching', m, self.field);
-            // Fetching Columns data for the selected table.
-            $.ajax({
-              async: false,
-              url: full_url,
-              data: arg,
-              success: function(res) {
-                data = cache_node.cache(url, node_info, cache_level, res.data);
-              },
-              error: function() {
-                m.trigger('pgadmin:view:fetch:error', m, self.field);
-              }
-            });
-            m.trigger('pgadmin:view:fetched', m, self.field);
-            data = (data && data.data) || [];
-            return data;
-          }
+          m.trigger('pgadmin:view:fetching', m, self.field);
+          // Fetching Columns data for the selected table.
+          $.ajax({
+            async: false,
+            url: full_url,
+            data: arg,
+            success: function(res) {
+              data = cache_node.cache(url, node_info, cache_level, res.data);
+            },
+            error: function() {
+              m.trigger('pgadmin:view:fetch:error', m, self.field);
+            }
+          });
+          m.trigger('pgadmin:view:fetched', m, self.field);
+          data = (data && data.data) || [];
+          return data;
         }
       }),
       canCreate: function(itemData, item, data) {
@@ -956,8 +951,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
         }
       }
-  });
-
+    });
   }
 
   return pgBrowser.Nodes['table'];

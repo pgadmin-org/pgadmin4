@@ -41,7 +41,7 @@ ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }} {{ defquery }};
 {% if data.schema and data.schema != o_data.schema %}
 ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
-    
+
 {% set seqname = conn|qtIdent(data.schema, data.name) %}
 {% set schema = data.schema %}
 {% else %}
@@ -51,7 +51,7 @@ ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON SEQUENCE {{ seqname }}
     IS {{ data.comment|qtLiteral }};
-    
+
 {% endif %}
 {% if data.securities and data.securities|length > 0 %}
 
@@ -63,12 +63,12 @@ COMMENT ON SEQUENCE {{ seqname }}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.security_label, schema) }}
+{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.security_label, schema) }}
+{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
 {% endfor %}
 {% endif %}
 {% endif %}

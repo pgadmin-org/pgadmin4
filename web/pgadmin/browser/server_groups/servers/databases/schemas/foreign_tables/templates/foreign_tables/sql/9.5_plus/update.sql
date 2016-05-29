@@ -138,13 +138,13 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
 
-{{ SECLABLE.SET(conn, 'FOREIGN TABLE', name, r.provider, r.security_label, o_data.basensp) }}
+{{ SECLABLE.SET(conn, 'FOREIGN TABLE', name, r.provider, r.label, o_data.basensp) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
 
-{{ SECLABLE.SET(conn, 'FOREIGN TABLE', name, r.provider, r.security_label, o_data.basensp) }}
+{{ SECLABLE.SET(conn, 'FOREIGN TABLE', name, r.provider, r.label, o_data.basensp) }}
 {% endfor %}
 {% endif -%}
 {% if data.description is defined and data.description != o_data.description%}

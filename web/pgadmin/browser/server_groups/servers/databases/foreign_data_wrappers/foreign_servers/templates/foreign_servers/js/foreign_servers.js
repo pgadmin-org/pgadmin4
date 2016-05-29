@@ -146,8 +146,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fsrvoption'],
           columns: ['fsrvoption','fsrvvalue']
-         },{
-            id: 'fsrvacl', label: 'Privileges', type: 'collection', group: '{{ _('Security') }}',
+         }, pgBrowser.SecurityGroupUnderSchema, {
+            id: 'fsrvacl', label: 'Privileges', type: 'collection', group: 'security',
             model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
             mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{

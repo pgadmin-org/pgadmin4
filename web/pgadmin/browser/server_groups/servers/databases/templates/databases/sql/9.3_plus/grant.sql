@@ -15,7 +15,7 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
 {# Change the security labels #}
 {% if data.securities %}
 {% for r in data.securities %}
-{{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.securitylabel) }}
+{{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {# Variables/options #}

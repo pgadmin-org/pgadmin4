@@ -18,7 +18,7 @@ COMMENT ON TABLESPACE {{ conn|qtIdent(data.name) }}
 {### Security Labels on tablespace ###}
 {% if data.seclabels and data.seclabels|length > 0 %}
 {% for r in data.seclabels %}
-{{ SECLABEL.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'TABLESPACE', data.name, r.provider, r.label) }}
 {% endfor %}
 
 {% endif %}

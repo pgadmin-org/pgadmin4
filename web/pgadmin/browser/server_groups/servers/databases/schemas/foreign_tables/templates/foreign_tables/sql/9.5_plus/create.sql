@@ -52,9 +52,9 @@ COMMENT ON FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
-{% if r.security_label and r.provider %}
+{% if r.label and r.provider %}
 
-{{ SECLABLE.SET(conn, 'FOREIGN TABLE', data.name, r.provider, r.security_label, data.basensp) }}
+{{ SECLABLE.SET(conn, 'FOREIGN TABLE', data.name, r.provider, r.label, data.basensp) }}
 {% endif %}
 {% endfor %}
 {% endif %}

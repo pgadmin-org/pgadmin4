@@ -72,12 +72,12 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.security_label) }}
+{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endif %}

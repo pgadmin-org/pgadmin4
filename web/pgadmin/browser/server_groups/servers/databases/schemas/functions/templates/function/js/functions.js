@@ -6,8 +6,8 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-function']) {
-    var functions = pgAdmin.Browser.Nodes['coll-function'] =
-      pgAdmin.Browser.Collection.extend({
+    var functions = pgBrowser.Nodes['coll-function'] =
+      pgBrowser.Collection.extend({
         node: 'function',
         label: '{{ _('Functions') }}',
         type: 'coll-function',
@@ -15,35 +15,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       });
   };
 
-  // Security Model
-  var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      label: null
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
-
-      if (_.isUndefined(data.label) ||
-        _.isNull(data.label) ||
-        String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-        return _("Please specify the value for all the security providers.");
-      }
-      return null;
-    }
-  });
-
   // Argument Model
-  var ArgumentModel = pgAdmin.Browser.Node.Model.extend({
+  var ArgumentModel = pgBrowser.Node.Model.extend({
     idAttribute: 'argid',
     defaults: {
       argid: undefined,
@@ -100,7 +73,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   });
 
   if (!pgBrowser.Nodes['function']) {
-    pgAdmin.Browser.Nodes['function'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['function'] = pgBrowser.Node.extend({
       type: 'function',
       sqlAlterHelp: 'sql-alterfunction.html',
       sqlCreateHelp: 'sql-createfunction.html',
@@ -142,7 +115,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -154,7 +127,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'funcowner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         defaults: {
           name: undefined,
@@ -176,7 +149,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           procost: undefined, /* Estimated execution Cost */
           prorows: undefined, /* Estimated number of rows */
           proleakproof: undefined,
-          arguments: [],
+          args: [],
           prosrc: undefined,
           prosrc_c: undefined,
           probin: '$libdir/',
@@ -273,13 +246,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             {'label': 'IMMUTABLE', 'value': 'i'},
           ], disabled: 'isDisabled'
         },{
-          id: 'proretset', label: '{{ _('Returns a set?') }}', group: '{{ _('Options') }}',
-          cell:'boolean', type: 'switch',  disabled: 'isDisabled',
+          id: 'proretset', label: '{{ _('Returns a set?') }}', type: 'switch',
+          disabled: 'isDisabled', group: '{{ _('Options') }}',
           visible: 'isVisible'
         },{
-          id: 'proisstrict', label: '{{ _('Strict?') }}', group: '{{ _
-          ('Options') }}',
-          cell:'boolean', type: 'switch', disabled: 'isDisabled',
+          id: 'proisstrict', label: '{{ _('Strict?') }}', type: 'switch',
+          group: '{{ _('Options') }}', disabled: 'isDisabled',
           options: {
             'onText': 'Yes', 'offText': 'No',
             'onColor': 'success', 'offColor': 'primary',
@@ -287,7 +259,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
            }
         },{
           id: 'prosecdef', label: '{{ _('Security of definer?') }}',
-           group: '{{ _('Options') }}', cell:'boolean', type: 'switch',
+           group: '{{ _('Options') }}', type: 'switch',
            disabled: 'isDisabled'
         },{
           id: 'proiswindow', label: '{{ _('Window?') }}',
@@ -297,20 +269,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'procost', label: '{{ _('Estimated cost') }}', group: '{{ _('Options') }}',
           cell:'string', type: 'text', disabled: 'isDisabled'
         },{
-          id: 'prorows', label: '{{ _('Estimated rows') }}', group: '{{ _
-          ('Options') }}',
-          cell:'string', type: 'text', disabled: 'isDisabled',
-          deps: ['proretset'], visible: 'isVisible'
+          id: 'prorows', label: '{{ _('Estimated rows') }}', type: 'text',
+          deps: ['proretset'], visible: 'isVisible', disabled: 'isDisabled',
+          group: '{{ _('Options') }}'
         },{
           id: 'proleakproof', label: '{{ _('Leak proof?') }}',
           group: '{{ _('Options') }}', cell:'boolean', type: 'switch', min_version: 90200,
           disabled: 'isDisabled'
         },{
-          id: 'proacl', label: '{{ _('Privileges') }}',
-           group: '{{ _('Security') }}', cell:'boolean', type: 'text', cell: 'string',
-           mode: ['properties']
+          id: 'proacl', label: '{{ _('Privileges') }}', type: 'text',
+          mode: ['properties'], group: '{{ _('Security') }}'
         },{
-          id: 'arguments', label: '{{ _('Arguments') }}', cell: 'string',
+          id: 'args', label: '{{ _('Arguments') }}', cell: 'string',
           group: '{{ _('Arguments') }}', type: 'collection', canAdd: function(m){
             return m.isNew();
           },
@@ -320,26 +290,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
           group: '{{ _('Parameters') }}', control: 'variable-collection',
-          model: pgAdmin.Browser.Node.VariableModel,
+          model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
           canDelete: true, disabled: 'isDisabled'
-         },{
-          id: 'acl', label: '{{ _('Privileges') }}', model: pgAdmin
-          .Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['X']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: '{{ _('Security') }}',
-          mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, control: 'unique-col-collection',
+        }, pgBrowser.SecurityGroupUnderSchema, {
+          id: 'acl', label: '{{ _('Privileges') }}', editable: false,
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['X']
+          }), uniqueCol : ['grantee', 'grantor'], type: 'collection',
+          group: 'security', mode: ['edit', 'create'], canAdd: true,
+          canDelete: true, control: 'unique-col-collection',
           disabled: 'isDisabled'
-        },
-        {
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
-          min_version: 90100, canAdd: true,
-          canEdit: true, canDelete: true,
-          control: 'unique-col-collection', uniqueCol : ['provider'],
-          disabled: 'isDisabled'
+        },{
+          id: 'seclabels', label: '{{ _('Security Labels') }}', canAdd: true,
+          model: pgBrowser.SecLabelModel, type: 'collection',
+          min_version: 90100, group: 'security', mode: ['edit', 'create'],
+          canEdit: true, canDelete: true, uniqueCol : ['provider'],
+          disabled: 'isDisabled', control: 'unique-col-collection'
         }
         ],
         validate: function()

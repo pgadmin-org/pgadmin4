@@ -12,8 +12,8 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
       display under under properties.
    */
   if (!pgBrowser.Nodes['coll-mview']) {
-    var mviews= pgAdmin.Browser.Nodes['coll-mview'] =
-      pgAdmin.Browser.Collection.extend({
+    var mviews= pgBrowser.Nodes['coll-mview'] =
+      pgBrowser.Collection.extend({
         node: 'mview',
         label: '{{ _("Materialized Views") }}',
         type: 'coll-mview',
@@ -33,7 +33,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
     view option in the context menu
    */
   if (!pgBrowser.Nodes['mview']) {
-    pgAdmin.Browser.Nodes['mview'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['mview'] = pgBrowser.Node.extend({
       parent_type: ['schema', 'catalog'],
       type: 'mview',
       sqlAlterHelp: 'sql-altermaterializedview.html',
@@ -96,7 +96,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         Define model for the view node and specify the
         properties of the model in schema.
        */
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -108,7 +108,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'owner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         defaults: {
           spcname: 'pg_default',
@@ -118,44 +118,35 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         schema: [{
           id: 'name', label: '{{ _("Name") }}', cell: 'string',
           type: 'text', disabled: 'inSchema'
-        },
-        {
+        },{
           id: 'oid', label:'{{ _("OID") }}', cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
-        },
-        {
+        },{
           id: 'owner', label:'{{ _("Owner") }}', cell: 'string',
           control: 'node-list-by-name', select2: { allowClear: false },
           node: 'role', disabled: 'inSchema'
-        },
-        {
+        },{
           id: 'schema', label:'{{ _("Schema") }}', cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', mode: ['create', 'edit'], disabled: 'inSchema', select2: { allowClear: false }
-        },
-        {
+        },{
           id: 'system_view', label:'{{ _("System view?") }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-        },
-        {
-          id: 'acl', label: '{{ _("ACL") }}',
-          mode: ['properties'], type: 'text'
-        },
-        {
+        }, pgBrowser.SecurityGroupUnderSchema, {
+          id: 'acl', label: '{{ _("Privileges") }}',
+          mode: ['properties'], type: 'text', group: '{{ _("Security") }}'
+        },{
           id: 'comment', label:'{{ _("Comment") }}', cell: 'string',
           type: 'multiline'
-        },
-        {
+        },{
           id: 'definition', label:'{{ _("") }}', cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: 'Definition',
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full']
-        },
-        {
+        },{
           id: 'with_data', label: '{{ _("With Data") }}',
           group: '{{ _("Storage") }}', mode: ['edit', 'create'],
           type: 'switch',
-        },
-        {
+        },{
           id: 'spcname', label: '{{ _("Tablespace") }}', cell: 'string',
           type: 'text', group: '{{ _("Storage") }}', first_empty: false,
           control: 'node-list-by-name', node: 'tablespace', select2: { allowClear: false },
@@ -163,37 +154,31 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
             if (m.label == "pg_global") return false;
             else return true;
           }
-        },
-        {
+        },{
           id: 'fillfactor', label: '{{ _("Fill Factor") }}',
           group: '{{ _("Storage") }}', mode: ['edit', 'create'],
           type: 'integer'
-        },
-        {
+        },{
           type: 'nested', control: 'tab', id: 'materialization',
           label: '{{ _("Auto vacuum") }}', mode: ['edit', 'create'],
           group: '{{ _("Auto vacuum") }}',
           schema: Backform.VacuumSettingsSchema
-        },
-        // Add Privilege Control
-        {
-          id: 'datacl', label: '{{ _("Privileges") }}',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), uniqueCol : ['grantee'],
-          editable: false, type: 'collection', group: '{{ _("Security") }}',
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          control: 'unique-col-collection', priority: 3
-        },
-
+        },{
+          // Add Privilege Control
+          id: 'datacl', label: '{{ _("Privileges") }}', type: 'collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']
+          }), uniqueCol : ['grantee'], editable: false,
+          group: "security", canAdd: true, canDelete: true,
+          mode: ['edit', 'create'], control: 'unique-col-collection'
+        },{
         // Add Security Labels Control
-        {
           id: 'seclabels', label: '{{ _("Security Labels") }}',
-          model: Backform.SecurityModel, editable: false, type: 'collection',
-          canEdit: false, group: '{{ _("Security") }}', canDelete: true,
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
+          canEdit: false, group: "security", canDelete: true,
           mode: ['edit', 'create'], canAdd: true,
           control: 'unique-col-collection', uniqueCol : ['provider']
-        }
-        ],
+        }],
         validate: function(keys) {
 
           // Triggers specific error messages for fields
@@ -308,8 +293,8 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         });
 
       }
-  });
+    });
   }
 
-  return pgBrowser.Nodes['coll-mview'];
+  return pgBrowser.Nodes['mview'];
 });

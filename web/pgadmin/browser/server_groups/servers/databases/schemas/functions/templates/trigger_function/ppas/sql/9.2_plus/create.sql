@@ -42,9 +42,9 @@ COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
-{% if r.security_label and r.provider %}
+{% if r.label and r.provider %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.security_label, data.pronamespace, data.func_args) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
 {% endif %}
 {% endfor %}
 {% endif -%}

@@ -5,8 +5,8 @@ define(
 function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-type']) {
-    var databases = pgAdmin.Browser.Nodes['coll-type'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-type'] =
+      pgBrowser.Collection.extend({
         node: 'type',
         label: '{{ _('Types') }}',
         type: 'coll-type',
@@ -63,39 +63,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       remove: Backgrid.Extension.DependentCell.prototype.remove
     });
 
-  // Security label model declaration
-  var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: undefined,
-      security_label: undefined
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false, cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false, cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
-
-      if (_.isUndefined(this.get('security_label')) ||
-        _.isNull(this.get('security_label')) ||
-        String(this.get('security_label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = '{{ _('Please provide the value for security label.') }}';
-            this.errorModel.set('security_label', errmsg);
-            return errmsg;
-          } else {
-            this.errorModel.unset('security_label');
-          }
-      return null;
-    }
-  });
-
   // Composite type model declaration
-  var CompositeModel = Backform.CompositeModel = pgAdmin.Browser.Node.Model.extend({
+  var CompositeModel = Backform.CompositeModel = pgBrowser.Node.Model.extend({
     idAttribute: 'attnum',
     defaults: {
       attnum: undefined,
@@ -247,7 +216,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
     }
   });
 
-  var EnumModel = Backform.EnumModel = pgAdmin.Browser.Node.Model.extend({
+  var EnumModel = Backform.EnumModel = pgBrowser.Node.Model.extend({
     defaults: {
       label: undefined,
     },
@@ -275,7 +244,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
   });
 
   if (!pgBrowser.Nodes['type']) {
-    pgAdmin.Browser.Nodes['type'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['type'] = pgBrowser.Node.extend({
       type: 'type',
       sqlAlterHelp: 'sql-altertype.html',
       sqlCreateHelp: 'sql-createtype.html',
@@ -317,7 +286,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       ext_funcs: undefined,
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           oid: undefined,
@@ -336,7 +305,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             this.set({'typeowner': userInfo.name}, {silent: true});
             this.set({'schema': schemaInfo.label}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         schema: [{
@@ -747,9 +716,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           id: 'alias', label:'{{ _('Alias') }}', cell: 'string',
           type: 'text', mode: ['properties'],
           disabled: 'inSchema'
-        },{
+        }, pgBrowser.SecurityGroupUnderSchema,{
           id: 'type_acl', label:'{{ _('Privileges') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Security') }}',
+          type: 'text', mode: ['properties'], group: 'security',
           disabled: 'inSchema'
         },{
           id: 'member_list', label:'{{ _('Members') }}', cell: 'string',
@@ -778,9 +747,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
         },{
-          id: 'typacl', label: 'Privileges', type: 'collection',
-          group: '{{ _('Security') }}', control: 'unique-col-collection',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}),
+          id: 'typacl', label:'{{ _('Privileges') }}', type: 'collection',
+          group: 'security', control: 'unique-col-collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['U']
+          }),
           mode: ['edit', 'create'], canDelete: true,
           uniqueCol : ['grantee'], deps: ['typtype'],
           canAdd: function(m) {
@@ -789,15 +760,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           }
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          model: pgBrowser.SecLabglModel, editable: false, type: 'collection',
+          group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canEdit: false, canDelete: true,
           control: 'unique-col-collection', deps: ['typtype'],
           canAdd: function(m) {
             // Do not allow to add when shell type is selected
             return !(m.get('typtype') === 'p');
           }
-
         }],
         validate: function() {
         // Validation code for required fields

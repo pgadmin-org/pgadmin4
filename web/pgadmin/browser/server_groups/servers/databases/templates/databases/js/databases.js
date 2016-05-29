@@ -6,8 +6,8 @@ define([
 function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-database']) {
-    var databases = pgAdmin.Browser.Nodes['coll-database'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-database'] =
+      pgBrowser.Collection.extend({
         node: 'database',
         label: '{{ _('Databases') }}',
         type: 'coll-database',
@@ -16,36 +16,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       });
   };
 
-  var SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: undefined,
-      securitylabel: undefined
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true,
-      cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
-
-      if (_.isUndefined(data.label) ||
-        _.isNull(data.label) ||
-        String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-        return _("Please specify the value for all the security providers.");
-      }
-      return null;
-    }
-  });
-
   if (!pgBrowser.Nodes['database']) {
-    pgAdmin.Browser.Nodes['database'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['database'] = pgBrowser.Node.extend({
       parent_type: 'server',
       type: 'database',
       sqlAlterHelp: 'sql-alterdatabase.html',
@@ -210,7 +182,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           return pgBrowser.Node.callbacks.selected.apply(this, arguments);
         },
       },
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           owner: undefined,
@@ -240,7 +212,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'datowner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         schema: [{
@@ -300,18 +272,21 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             'size': 'small'
           }
         },{
-          id: 'datacl', label: '{{ _('Privileges') }}', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['C', 'T', 'c']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          id: 'datacl', label: '{{ _('Privileges') }}', type: 'collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['C', 'T', 'c']
+          }), uniqueCol : ['grantee', 'grantor'], editable: false,
+          group: '{{ _('Security') }}', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
           id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
-          model: pgAdmin.Browser.Node.VariableModel, editable: false,
+          model: pgBrowser.Node.VariableModel, editable: false,
           group: '{{ _('Parameters') }}', mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
         },{
-          id: 'securities', label: '{{ _('Security Labels') }}', model: SecurityModel,
+          id: 'securities', label: '{{ _('Security Labels') }}',
+          model: pgBrowser.SecLabelModel,
           editable: false, type: 'collection', canEdit: false,
           group: '{{ _('Security') }}', canDelete: true,
           mode: ['edit', 'create'], canAdd: true,
@@ -321,25 +296,25 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           type: 'nested', control: 'tab', group: '{{ _('Default Privileges') }}',
           mode: ['edit'],
           schema:[{
-              id: 'deftblacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
+              id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '{{ _('Default Privileges: Tables') }}',
               editable: false, type: 'collection', group: '{{ _('Tables') }}',
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
-              id: 'defseqacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
+              id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['r', 'w', 'U']}), label: '{{ _('Default Privileges: Sequences') }}',
               editable: false, type: 'collection', group: '{{ _('Sequences') }}',
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
-              id: 'deffuncacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
+              id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['X']}), label: '{{ _('Default Privileges: Functions') }}',
               editable: false, type: 'collection', group: '{{ _('Functions') }}',
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
-              id: 'deftypeacl', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
+              id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['U']}),  label: '{{ _('Default Privileges: Types') }}',
               editable: false, type: 'collection', group: 'deftypesacl_group',
               mode: ['edit', 'create'], control: 'unique-col-collection',

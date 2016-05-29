@@ -60,11 +60,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', disabled: true
-        }
-        ]
+        }]
       })
-  });
-
+    });
   }
 
   return pgBrowser.Nodes['catalog_object_column'];

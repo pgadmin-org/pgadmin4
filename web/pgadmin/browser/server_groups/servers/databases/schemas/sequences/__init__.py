@@ -241,7 +241,7 @@ class SequenceView(PGChildNodeView):
                 sec = re.search(r'([^=]+)=(.*$)', sec)
                 sec_lbls.append({
                     'provider': sec.group(1),
-                    'security_label': sec.group(2)
+                    'label': sec.group(2)
                     })
         res['securities'] = sec_lbls
 
@@ -599,7 +599,7 @@ class SequenceView(PGChildNodeView):
             seclabels = []
             for seclbls in data['securities']:
                 k, v = seclbls.split('=')
-                seclabels.append({'provider': k, 'security_label': v})
+                seclabels.append({'provider': k, 'label': v})
 
             data['securities'] = seclabels
 

@@ -49,13 +49,13 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.security_label, o_data.basensp) }}
+{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
 
 {% endfor -%}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.security_label, o_data.basensp) }}
+{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
 
 {% endfor -%}
 {% endif -%}{% if data.description %}

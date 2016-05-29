@@ -319,7 +319,7 @@ class SchemaView(PGChildNodeView):
                 sec = re.search(r'([^=]+)=(.*$)', sec)
                 seclabels.append({
                     'provider': sec.group(1),
-                    'security_label': sec.group(2)
+                    'label': sec.group(2)
                     })
 
         data['seclabels'] = seclabels

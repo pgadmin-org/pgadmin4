@@ -18,8 +18,8 @@ def parse_sec_labels_from_db(db_sec_labels):
 
     Returns:
         Security Label Object in below format:
-            {'seclabels': [{'provider': 'provider_name', 'security_label':
-            'security_label'},...]}
+            {'seclabels': [{'provider': 'provider_name', 'label':
+            'label'},...]}
     """
     sec_lbls = []
 
@@ -28,7 +28,7 @@ def parse_sec_labels_from_db(db_sec_labels):
             sec = re.search(r'([^=]+)=(.*$)', sec)
             sec_lbls.append({
                 'provider': sec.group(1),
-                'security_label': sec.group(2)
+                'label': sec.group(2)
                 })
 
     return {"seclabels": sec_lbls}

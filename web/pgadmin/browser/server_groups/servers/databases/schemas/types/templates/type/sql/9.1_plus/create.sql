@@ -76,8 +76,8 @@ COMMENT ON TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{%
 {% if data.seclabels %}
 
 {% for r in data.seclabels %}
-{% if r.provider and r.security_label %}
-{{ SECLABLE.SET(conn, 'TYPE', data.name, r.provider, r.security_label, data.schema) }}
+{% if r.provider and r.label %}
+{{ SECLABLE.SET(conn, 'TYPE', data.name, r.provider, r.label, data.schema) }}
 {% endif %}
 {% endfor %}
 {% endif %}

@@ -20,10 +20,10 @@ ALTER DOMAIN {{ conn|qtIdent(data.basensp, data.name) }} OWNER TO {{ conn|qtIden
 COMMENT ON DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
     IS '{{ data.description }}';{% endif -%}{% if data.seclabels %}
 {% for r in data.seclabels %}
-{% if r.security_label and r.provider %}
+{% if r.label and r.provider %}
 
 
-{{ SECLABLE.SET(conn, 'DOMAIN', data.name, r.provider, r.security_label, data.basensp) }}{% endif -%}
+{{ SECLABLE.SET(conn, 'DOMAIN', data.name, r.provider, r.label, data.basensp) }}{% endif -%}
 {% endfor -%}
 {% endif -%}
 

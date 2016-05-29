@@ -11,8 +11,8 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, o_data.name) }}({{o_data.pro
 {% endif -%}
 {% if data.change_func  %}
 
-CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if data.arguments %}
-{% for p in data.arguments %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{p.argtype}}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if data.args %}
+{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
 {% endfor %}
 {% endif -%}
@@ -91,13 +91,13 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtyp
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', name, r.provider, r.security_label, o_data.pronamespace, o_data.proargtypenames) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', name, r.provider, r.label, o_data.pronamespace, o_data.proargtypenames) }}
 {% endfor %}
 {% endif -%}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', name, r.provider, r.security_label, o_data.pronamespace, o_data.proargtypenames) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', name, r.provider, r.label, o_data.pronamespace, o_data.proargtypenames) }}
 {% endfor %}
 {% endif -%}
 {% if data.description is defined and data.description != o_data.description%}

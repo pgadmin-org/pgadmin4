@@ -2,40 +2,9 @@ define(
         ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui', 'pgadmin.browser.server.privilege'],
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
-   var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      security_label: null
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null;
-
-      if (_.isUndefined(this.get('security_label')) ||
-        _.isNull(this.get('security_label')) ||
-        String(this.get('security_label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg =  '{{ _('Please specify the value for all the security providers.')}}';
-            this.errorModel.set('security_label', errmsg);
-            return errmsg;
-          } else {
-            this.errorModel.unset('security_label');
-          }
-      return null;
-    }
-  });
-
   if (!pgBrowser.Nodes['coll-tablespace']) {
-    var databases = pgAdmin.Browser.Nodes['coll-tablespace'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-tablespace'] =
+      pgBrowser.Collection.extend({
         node: 'tablespace',
         label: '{{ _('Tablespaces') }}',
         type: 'coll-tablespace',
@@ -44,7 +13,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   };
 
   if (!pgBrowser.Nodes['tablespace']) {
-    pgAdmin.Browser.Nodes['tablespace'] = pgAdmin.Browser.Node.extend({
+    pgBrowser.Nodes['tablespace'] = pgBrowser.Node.extend({
       parent_type: 'server',
       type: 'tablespace',
       sqlAlterHelp: 'sql-altertablespace.html',
@@ -88,7 +57,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         return server.connected && server.user.is_superuser;
       },
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           owner: undefined,
@@ -107,7 +76,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'spcuser': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         schema: [{
@@ -136,19 +105,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'spcoptions', label: '{{ _('Parameters') }}', type: 'collection',
           group: "Parameters", control: 'variable-collection',
-          model: pgAdmin.Browser.Node.VariableModel,
+          model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
          },{
           id: 'spcacl', label: '{{ _('Privileges') }}', type: 'collection',
           group: '{{ _('Security') }}', control: 'unique-col-collection',
-          model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee'],
           columns: ['grantee', 'grantor', 'privileges']
          },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, editable: false, type: 'collection',
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: '{{ _('Security') }}', mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'

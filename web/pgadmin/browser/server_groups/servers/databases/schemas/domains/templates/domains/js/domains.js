@@ -6,8 +6,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Define Domain Collection Node
   if (!pgBrowser.Nodes['coll-domain']) {
-    var domains = pgAdmin.Browser.Nodes['coll-domain'] =
-      pgAdmin.Browser.Collection.extend({
+    var domains = pgBrowser.Nodes['coll-domain'] =
+      pgBrowser.Collection.extend({
         node: 'domain',
         label: '{{ _('Domains') }}',
         type: 'coll-domain',
@@ -15,45 +15,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       });
   };
 
-  // Security Model
-  var SecurityModel = Backform.SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: null,
-      security_label: null
-    },
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true, cellHeaderClasses:'width_percent_50'
-    }],
-    validate: function() {
-      var err = {},
-          errmsg = null;
-
-      if (_.isUndefined(this.get('security_label')) ||
-        _.isNull(this.get('security_label')) ||
-        String(this.get('security_label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg =  '{{ _('Please specify the value for all the security providers.')}}';
-            this.errorModel.set('security_label', errmsg);
-            return errmsg;
-          } else {
-            this.errorModel.unset('security_label');
-          }
-      return null;
-    }
-  });
-
   // Constraint Model
-  var ConstraintModel = pgAdmin.Browser.Node.Model.extend({
+  var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
     initialize: function(attrs, args) {
       var isNew = (_.size(attrs) === 0);
       if (!isNew) {
         this.convalidated_default = this.get('convalidated')
       }
-      pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+      pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
     },
     defaults: {
       conoid: undefined,
@@ -107,7 +77,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Domain Node
   if (!pgBrowser.Nodes['domain']) {
-    pgAdmin.Browser.Nodes['domain'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['domain'] = pgBrowser.Node.extend({
       type: 'domain',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-createdomain.html',
@@ -149,7 +119,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       // Domain Node Model
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -161,7 +131,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
             this.set({'owner': userInfo.name}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         defaults: {
           name: undefined,
@@ -293,17 +263,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           type: 'collection', group: '{{ _('Constraints') }}', mode: ['edit', 'create'],
           model: ConstraintModel, canAdd: true, canDelete: true,
           canEdit: false, columns: ['conname','consrc', 'convalidated']
-         },{
+        },
+        pgBrowser.SecurityGroupUnderSchema,
+        {
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: SecurityModel, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          model: pgBrowser.SecLabelModel, type: 'collection',
+          group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
           canEdit: false, canDelete: true,
           control: 'unique-col-collection', uniqueCol : ['provider']
-        }
-        ],
-        validate: function() // Client Side Validation
-        {
+        }],
+        validate: function() { // Client Side Validation
           var err = {},
               errmsg,
               seclabels = this.get('seclabels');

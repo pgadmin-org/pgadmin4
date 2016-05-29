@@ -2,44 +2,10 @@ define(
         ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
-  // Extend the browser's node model class to create a security model
-  var SecurityModel = pgAdmin.Browser.Node.Model.extend({
-    defaults: {
-      provider: undefined,
-      securitylabel: undefined
-    },
-    // Define the schema for the Security Label
-    schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
-      type: 'text', editable: true,
-      cellHeaderClasses:'width_percent_50'
-    },{
-      id: 'security_label', label: '{{ _('Security Label') }}',
-      type: 'text', editable: true,
-      cellHeaderClasses:'width_percent_50'
-    }],
-    /* validate function is used to validate the input given by
-     * the user. In case of error, message will be displayed on
-     * the GUI for the respective control.
-     */
-    validate: function() {
-      var err = {},
-          errmsg = null,
-          data = this.toJSON();
-
-      if (_.isUndefined(data.label) ||
-        _.isNull(data.label) ||
-        String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-        return _("Please specify the value for all the security providers.");
-      }
-      return null;
-    }
-  });
-
   // Extend the browser's collection class for sequence collection
   if (!pgBrowser.Nodes['coll-sequence']) {
-    var databases = pgAdmin.Browser.Nodes['coll-sequence'] =
-      pgAdmin.Browser.Collection.extend({
+    var databases = pgBrowser.Nodes['coll-sequence'] =
+      pgBrowser.Collection.extend({
         node: 'sequence',
         label: '{{ _('Sequences') }}',
         type: 'coll-sequence',
@@ -49,7 +15,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node class for sequence node
   if (!pgBrowser.Nodes['sequence']) {
-    pgAdmin.Browser.Nodes['sequence'] = pgBrowser.Node.extend({
+    pgBrowser.Nodes['sequence'] = pgBrowser.Node.extend({
       type: 'sequence',
       sqlAlterHelp: 'sql-altersequence.html',
       sqlCreateHelp: 'sql-createsequence.html',
@@ -58,7 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-sequence',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema'],
+      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -119,7 +85,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return true;
       },
       // Define the model for sequence node.
-      model: pgAdmin.Browser.Node.Model.extend({
+      model: pgBrowser.Node.Model.extend({
         defaults: {
           name: undefined,
           oid: undefined,
@@ -136,7 +102,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           relacl: [],
           securities: []
         },
-        
+
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -148,9 +114,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             this.set({'seqowner': userInfo.name}, {silent: true});
             this.set({'schema': schemaInfo.label}, {silent: true});
           }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
-        
+
         // Define the schema for sequence node.
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -202,21 +168,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
-        },{
+        }, pgBrowser.SecurityGroupUnderSchema,{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          group: '{{ _("Security") }}', mode: ['properties'], disabled: true
         },{
-          id: 'relacl', label: '{{ _('Privileges') }}', model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['r', 'w', 'U']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: '{{ _('Security') }}', mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, control: 'unique-col-collection',
+          id: 'relacl', label: '{{ _('Privileges') }}', group: 'security',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['r', 'w', 'U']
+          }), uniqueCol : ['grantee', 'grantor'], mode: ['edit', 'create'],
+          editable: false, type: 'collection', canAdd: true, canDelete: true,
+          control: 'unique-col-collection',
         },{
-          id: 'securities', label: '{{ _('Securitiy Labels') }}', model: SecurityModel,
-          editable: false, type: 'collection', canEdit: false,
-          group: '{{ _('Security') }}', canDelete: true,
-          mode: ['edit', 'create'], canAdd: true,
-          control: 'unique-col-collection', uniqueCol : ['provider'],
-          min_version: 90200
+          id: 'securities', label: '{{ _('Securitiy Labels') }}', canAdd: true,
+          model: pgBrowser.SecLabelModel, editable: false,
+          type: 'collection', canEdit: false, group: 'security',
+          mode: ['edit', 'create'], canDelete: true,
+          control: 'unique-col-collection',
+          min_version: 90200, uniqueCol : ['provider']
         }],
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
