@@ -619,7 +619,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'port', label:'{{ _('Port') }}', type: 'int', group: "{{ 'Connection' }}",
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65534
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535
         },{
           id: 'db', label:'{{ _('Maintenance Database') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
