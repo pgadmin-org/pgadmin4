@@ -17,7 +17,7 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
-import pgadmin.browser.server_groups.servers.databases.schemas as schemas
+import pgadmin.browser.server_groups.servers.databases as databases
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
@@ -79,7 +79,7 @@ class FtsConfigurationModule(SchemaChildModule):
         Load the module script for fts template, when any of the schema
         node is initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
 blueprint = FtsConfigurationModule(__name__)
 

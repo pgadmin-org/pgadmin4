@@ -22,7 +22,7 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, gone
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
-import pgadmin.browser.server_groups.servers.databases.schemas as schemas
+import pgadmin.browser.server_groups.servers.databases as databases
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -95,7 +95,7 @@ class FunctionModule(SchemaChildModule):
         Load the module script for Functions, when the
         schema node is initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
     @property
     def csssnippets(self):
@@ -1357,9 +1357,9 @@ class ProcedureModule(SchemaChildModule):
     def script_load(self):
         """
         Load the module script for Procedures, when the
-        schema node is initialized.
+        database node is initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
 
 procedure_blueprint = ProcedureModule(__name__)
@@ -1469,7 +1469,7 @@ class TriggerFunctionModule(SchemaChildModule):
         Load the module script for Trigger function, when the
         schema node is initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
 
 trigger_function_blueprint = TriggerFunctionModule(__name__)
