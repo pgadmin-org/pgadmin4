@@ -1653,7 +1653,8 @@
       };
       var groups = {},
           server_info = node_info && ('server' in node_info) &&
-            pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id];
+            pgBrowser.serverInfo && pgBrowser.serverInfo[node_info.server._id],
+          in_catalog = node_info && ('catalog' in node_info);
 
       _.each(schema, function(s) {
         // Do we understand - what control, we're creating
@@ -1702,7 +1703,7 @@
                  (server_info.version >= s.min_version)) &&
                 (_.isUndefined(s.max_version) ? true :
                  (server_info.version <= s.max_version)))),
-              disabled = ((mode == 'properties') || !ver_in_limit),
+              disabled = ((mode == 'properties') || !ver_in_limit || in_catalog),
               schema_node = (s.node && _.isString(s.node) &&
                   s.node in pgBrowser.Nodes &&  pgBrowser.Nodes[s.node]) || node;
 
