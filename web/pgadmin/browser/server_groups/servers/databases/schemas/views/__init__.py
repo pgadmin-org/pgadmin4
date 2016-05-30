@@ -36,7 +36,7 @@ from functools import wraps
 
     This modules uses separate template paths for each respective node
     - templates/view for View node
-    - templates/materialized_view for MaterializedView node
+    - templates/materialized_view for the materialized view node
 
     [Each path contains node specific js files as well as sql template files.]
 """
@@ -122,11 +122,10 @@ class ViewModule(SchemaChildModule):
         return snippets
 
 
-class MaterializedViewModule(ViewModule):
+class MViewModule(ViewModule):
     """
-     class MaterializedViewModule(ViewModule)
-        A module class for the materialized view and view node derived
-        from ViewModule.
+     class MViewModule(ViewModule)
+        A module class for the materialized view node derived from ViewModule.
     """
 
     NODE_TYPE = 'mview'
@@ -134,20 +133,20 @@ class MaterializedViewModule(ViewModule):
 
     def __init__(self, *args, **kwargs):
         """
-        Method is used to initialize the MaterializedViewModule and
+        Method is used to initialize the MViewModule and
         it's base module.
 
         Args:
             *args:
             **kwargs:
         """
-        super(MaterializedViewModule, self).__init__(*args, **kwargs)
+        super(MViewModule, self).__init__(*args, **kwargs)
         self.min_ver = 90300
         self.max_ver = None
 
+
 view_blueprint = ViewModule(__name__)
-mview_blueprint = MaterializedViewModule(
-        __name__)
+mview_blueprint = MViewModule(__name__)
 
 
 def check_precondition(f):
@@ -240,9 +239,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
       - This function will generate sql to show it in sql pane for the view
         node.
 
-    * refresh_data(gid, sid, did, scid, vid):
-      - This function will refresh view object
-
     * select_sql(gid, sid, did, scid, vid):
       - Returns select sql for Object
 
@@ -278,7 +274,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             'get': 'children'
         }],
         'delete': [{'delete': 'delete'}],
-        'refresh_data': [{'put': 'refresh_data'}, {'put': 'refresh_data'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -315,22 +310,24 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         Returns the template path for PPAS servers.
         """
-        return 'ppas/9.3_plus'
+        return 'ppas/{0}'.format(
+            '9.4_plus' if ver >= 90400 else
+            '9.3_plus' if ver >= 90300 else
+            '9.2_plus' if ver >= 90200 else
+            '9.1_plus'
+        )
 
     @staticmethod
     def pg_template_path(ver):
         """
         Returns the template path for PostgreSQL servers.
         """
-        if ver >= 90400:
-            return 'pg/9.4_plus'
-        elif ver >= 90300:
-            return 'pg/9.3_plus'
-        elif ver >= 90200:
-            return 'pg/9.2_plus'
-        elif ver >= 90100:
-            return 'pg/9.1_plus'
-        return 'pg/9.1_plus'
+        return 'pg/{0}'.format(
+            '9.4_plus' if ver >= 90400 else
+            '9.3_plus' if ver >= 90300 else
+            '9.2_plus' if ver >= 90200 else
+            '9.1_plus'
+        )
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -1193,7 +1190,14 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         return ajax_response(response=sql)
 
 
-class MaterializedViewNode(ViewNode, VacuumSettings):
+# Override the operations for materialized view
+mview_operations = {
+    'refresh_data': [{'put': 'refresh_data'}, {}]
+}
+mview_operations.update(ViewNode.operations)
+
+
+class MViewNode(ViewNode, VacuumSettings):
     """
     This class is responsible for generating routes for
     materialized view node.
@@ -1201,8 +1205,7 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
     Methods:
     -------
     * __init__(**kwargs)
-      - Method is used to initialize the MaterializedView
-      and it's base view.
+      - Method is used to initialize the MView and it's base view.
 
     * module_js()
       - This property defines (if javascript) exists for this node.
@@ -1220,27 +1223,40 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
     * get_sql(data, scid)
       - This function will generate sql from model data
 
+    * refresh_data(gid, sid, did, scid, vid):
+      - This function will refresh view object
     """
-
     node_type = mview_blueprint.node_type
+    operations = mview_operations
 
     def __init__(self, *args, **kwargs):
         """
         Initialize the variables used by methods of ViewNode.
         """
 
-        super(MaterializedViewNode, self).__init__(*args, **kwargs)
+        super(MViewNode, self).__init__(*args, **kwargs)
 
         self.template_initial = 'mview'
+
+    @staticmethod
+    def ppas_template_path(ver):
+        """
+        Returns the template path for PostgreSQL servers.
+        """
+        return 'ppas/{0}'.format(
+            '9.4_plus' if ver >= 90400 else
+            '9.3_plus'
+        )
 
     @staticmethod
     def pg_template_path(ver):
         """
         Returns the template path for PostgreSQL servers.
         """
-        if ver >= 90300:
-            return 'pg/9.3_plus'
-        return 'pg/9.3_plus'
+        return 'pg/{0}'.format(
+            '9.4_plus' if ver >= 90400 else
+            '9.3_plus'
+        )
 
     def get_sql(self, gid, sid, data, scid, vid=None):
         """
@@ -1249,8 +1265,7 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
         if scid is None:
             return bad_request('Cannot create a View!')
 
-        return super(MaterializedViewNode, self).get_sql(
-                gid, sid, data, scid, vid)
+        return super(MViewNode, self).get_sql(gid, sid, data, scid, vid)
 
     def getSQL(self, gid, sid, data, vid=None):
         """
@@ -1577,8 +1592,11 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
         """
 
         # Below will decide if it's refresh data or refresh concurrently
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else \
+            json.loads(request.data.decode())
+
         is_concurrent = json.loads(data['concurrent'])
+        with_data = json.loads(data['with_data'])
 
         try:
 
@@ -1590,10 +1608,13 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
                 return internal_server_error(errormsg=res)
 
             # Refresh view
-            SQL = render_template("/".join(
-              [self.template_path, 'sql/refresh.sql']),
+            SQL = render_template(
+                "/".join([self.template_path, 'sql/refresh.sql']),
               name=res['rows'][0]['name'],
-              nspname=res['rows'][0]['schema'], is_concurrent=is_concurrent)
+              nspname=res['rows'][0]['schema'],
+              is_concurrent=is_concurrent,
+              with_data=with_data
+            )
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res_data)
@@ -1613,4 +1634,4 @@ class MaterializedViewNode(ViewNode, VacuumSettings):
             return internal_server_error(errormsg=str(e))
 
 ViewNode.register_node_view(view_blueprint)
-MaterializedViewNode.register_node_view(mview_blueprint)
+MViewNode.register_node_view(mview_blueprint)

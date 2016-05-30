@@ -61,35 +61,52 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           @property {data} - Allow create view option on schema node or
           system view nodes.
          */
+        pgAdmin.Browser.add_menu_category(
+          'refresh_mview', '{{ _('Refresh View') }}', 18, 'fa fa-recycle');
         pgBrowser.add_menus([{
-          name: 'create_mview_on_coll', node: 'coll-mview',
-          module: this, applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("Materialized View...") }}',
-          icon: 'wcTabIcon icon-mview', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          name: 'create_mview_on_coll', node: 'coll-mview', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: 'canCreate',
+          label: '{{ _("Materialized View...") }}'
         },{
           name: 'create_mview', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("Materialized View...") }}',
-          icon: 'wcTabIcon icon-mview', data: {action: 'create', check: true},
-          enable: 'canCreate'
+          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: 'canCreate',
+          label: '{{ _("Materialized View...") }}',
         },{
           name: 'create_mview', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 18, label: '{{ _("Materialized View...") }}',
-          icon: 'wcTabIcon icon-mview', data: {action: 'create', check: false},
-          enable: 'canCreate'
+          category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: false}, enable: 'canCreate',
+          label: '{{ _("Materialized View...") }}'
         },{
-          name: 'refresh_mview', node: 'mview', module: this, category: 'Refresh view',
-          applies: ['object', 'context'], callback: 'refresh_mview', icon: 'fa fa-refresh',
-          priority: 1, label: '{{ _("Refresh data") }}', data: {concurrent: false}
+          name: 'refresh_mview_data', node: 'mview', module: this,
+          priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
+          applies: ['object', 'context'], label: '{{ _("With data") }}',
+          data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle'
+        },{
+          name: 'refresh_mview_nodata', node: 'mview',
+          callback: 'refresh_mview', priority: 2, module: this,
+          category: 'refresh_mview', applies: ['object', 'context'],
+          label: '{{ _("With no data") }}', data: {
+            concurrent: false, with_data: false
+          }, icon: 'fa fa-refresh'
         },{
           name: 'refresh_mview_concurrent', node: 'mview', module: this,
-          category: 'Refresh view',
-          applies: ['object', 'context'], callback: 'refresh_mview', icon: 'fa fa-refresh',
-          priority: 2, label: '{{ _("Refresh concurrently") }}', data: {concurrent: true}
-        }
-        ]);
+          category: 'refresh_mview', enable: 'is_version_supported',
+          data: {concurrent: true, with_data: true}, priority: 3,
+          applies: ['object', 'context'], callback: 'refresh_mview',
+          label: '{{ _("With data (concurrently)") }}', icon: 'fa fa-recycle'
+        },{
+          name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
+          category: 'refresh_mview', enable: 'is_version_supported',
+          data: {concurrent: true, with_data: false}, priority: 4,
+          applies: ['object', 'context'], callback: 'refresh_mview',
+          label: '{{ _("With no data (concurrently)") }}',
+          icon: 'fa fa-refresh'
+        }]);
       },
 
       /**
@@ -257,14 +274,13 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 
         // by default we do not want to allow create menu
         return true;
-
       },
       refresh_mview: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -273,7 +289,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         $.ajax({
           url: obj.generate_url(i, 'refresh_data' , d, true),
           type: 'PUT',
-          data: {'concurrent': args.concurrent},
+          data: {'concurrent': args.concurrent, 'with_data': args.with_data},
           dataType: "json",
           success: function(res) {
             if (res.success == 1) {
@@ -292,6 +308,17 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           }
         });
 
+      },
+      is_version_supported: function(data, item, args) {
+        var t = pgAdmin.Browser.tree,
+            i = item || t.selected(),
+            d = data || (i && i.length == 1 ? t.itemData(i): undefined),
+            node = this || (d && pgAdmin.Browser.Nodes[d._type]),
+            info = node.getTreeNodeHierarchy.apply(node, [i]),
+            version = info.server.version;
+
+        // disable refresh concurrently if server version is 9.3
+        return (version >= 90400);
       }
     });
   }
