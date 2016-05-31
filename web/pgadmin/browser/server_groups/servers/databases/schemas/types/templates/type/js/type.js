@@ -760,7 +760,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           }
         },{
           id: 'seclabels', label: '{{ _('Security Labels') }}',
-          model: pgBrowser.SecLabglModel, editable: false, type: 'collection',
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canEdit: false, canDelete: true,
           control: 'unique-col-collection', deps: ['typtype'],
