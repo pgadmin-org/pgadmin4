@@ -16,7 +16,7 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.collection import CollectionNodeModule
-import pgadmin.browser.server_groups.servers as servers
+import pgadmin.browser.server_groups.servers.databases as databases
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
@@ -80,7 +80,7 @@ class ForeignServerModule(CollectionNodeModule):
 
         Returns: node type of the server module.
         """
-        return servers.ServerModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
 blueprint = ForeignServerModule(__name__)
 
