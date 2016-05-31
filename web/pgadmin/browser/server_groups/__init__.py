@@ -27,14 +27,17 @@ class ServerGroupModule(BrowserPluginModule):
 
     def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""
-        groups = ServerGroup.query.filter_by(user_id=current_user.id)
-        for group in groups:
+        groups = ServerGroup.query.filter_by(
+            user_id=current_user.id
+        ).order_by("id")
+        for idx, group in enumerate(groups):
             yield self.generate_browser_node(
                     "%d" % (group.id), None,
                     group.name,
                     "icon-%s" % self.node_type,
                     True,
-                    self.node_type
+                    self.node_type,
+                    can_delete=True if idx > 0 else False
                     )
 
     @property
@@ -107,8 +110,14 @@ class ServerGroupView(NodeView):
     def delete(self, gid):
         """Delete a server group node in the settings database"""
 
+        groups = ServerGroup.query.filter_by(
+            user_id=current_user.id
+        ).order_by("id")
+
         # if server group id is 1 we won't delete it.
-        if gid == 1:
+        sg = groups.first()
+
+        if sg.id == gid:
             return make_json_response(
                     status=417,
                     success=0,
@@ -118,11 +127,9 @@ class ServerGroupView(NodeView):
                     )
 
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(
-                user_id=current_user.id,
-                id=gid)
+        sg = groups.filter_by(id=gid).first()
 
-        if servergroup is None:
+        if sg is None:
             return make_json_response(
                     status=417,
                     success=0,
@@ -132,8 +139,7 @@ class ServerGroupView(NodeView):
                     )
         else:
             try:
-                for sg in servergroup:
-                    db.session.delete(sg)
+                db.session.delete(sg)
                 db.session.commit()
             except Exception as e:
                 return make_json_response(
@@ -225,7 +231,8 @@ class ServerGroupView(NodeView):
                             sg.name,
                             "icon-%s" % self.node_type,
                             True,
-                            self.node_type
+                            self.node_type,
+                            can_delete=True     # This is user created hence can deleted
                             )
                         )
             except Exception as e:

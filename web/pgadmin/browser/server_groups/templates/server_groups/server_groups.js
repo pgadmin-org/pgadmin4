@@ -49,10 +49,10 @@ function($, _, pgAdmin, Backbone) {
         }
       }),
       canDrop: function(itemData, item, data) {
-        if(itemData._id == 1) {
-          return false;
+        if(itemData.can_delete) {
+          return true;
         }
-        return true;
+        return false;
       },
       canDelete: function(i) {
         var s = pgAdmin.Browser.tree.siblings(i, true);
