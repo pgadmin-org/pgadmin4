@@ -129,7 +129,7 @@ TODO LIST FOR BACKUP:
           {label: "Directory", value: "directory"}
         ]
       },{
-        id: 'ratio', label: '{{ _('Compresion ratio') }}',
+        id: 'ratio', label: '{{ _('Compression ratio') }}',
         type: 'int', min: 0, max:9, disabled: false
       },{
         id: 'encoding', label: '{{ _('Encoding') }}',
