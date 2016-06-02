@@ -444,7 +444,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             //Check if we are not child of catalog
             prev_i = t.hasParent(i) ? t.parent(i) : null;
             prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d._type == 'catalog') {
+            if( prev_d && prev_d._type == 'catalog') {
               return false;
             }
           i = t.hasParent(i) ? t.parent(i) : null;

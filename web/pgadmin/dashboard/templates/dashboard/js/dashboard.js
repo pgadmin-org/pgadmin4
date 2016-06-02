@@ -305,6 +305,10 @@ function(r, $, pgAdmin, _, Backbone) {
             grid = $(container).data('grid');
             filter = $(container).data('filter');
 
+            if(_.isUndefined(data)){
+              return null;
+            }
+
             data.fetch({
                 reset: true,
                 success: function() {
