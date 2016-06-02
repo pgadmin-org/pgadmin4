@@ -24,4 +24,5 @@ pgadmin4.log
 /pgadmin4.egg-info
 /MANIFEST.in
 /build
+/mac-build
 /dist

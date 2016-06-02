@@ -13,9 +13,9 @@ SHELL = /bin/sh
 # High-level targets
 #########################################################################
 
-all: install-pip-requirements pip
+all: docs install-pip-requirements pip appbundle
 
-clean: clean-pip
+clean: clean-pip clean-docs clean-appbundle
 
 #########################################################################
 # Python PIP package
@@ -34,6 +34,7 @@ PIP_CHECK_CMD = which pip &> /dev/null && pip show pip | grep Metadata-Version 2
 PGADMIN_SRC_DIR = pgadmin4
 PGADMIN_EGG = ${PGADMIN_SRC_DIR}.egg-info
 PGADMIN_BUILD = build
+PGADMIN_MACBUILD = mac-build
 PGADMIN_DIST = dist
 PGADMIN_MANIFEST = MANIFEST.in
 PGADMIN_INSTALL_CMD = pip install --use-wheel --find-links=${PGADMIN_DIST} ${PGADMIN_SRC_DIR}
@@ -83,9 +84,24 @@ endif
 install-pip:
 	${PGADMIN_INSTALL_CMD}
 
+appbundle: docs
+	./pkg/mac/build.sh
+
+docs:
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
+
+clean-docs:
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx clean
+
 clean-pip:
 	rm -rf ${PGADMIN_SRC_DIR}
 	rm -rf ${PGADMIN_EGG}
 	rm -rf ${PGADMIN_BUILD}
 	rm -rf ${PGADMIN_DIST}
 	rm -f ${PGADMIN_MANIFEST}
+
+clean-appbundle:
+	rm -rf ${PGADMIN_MACBUILD}
+	rm -rf ${PGADMIN_DIST}/pgadmin4*.dmg*
+
+.PHONY: docs

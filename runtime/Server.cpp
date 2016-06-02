@@ -23,7 +23,7 @@
 #include "Server.h"
 
 Server::Server(quint16 port)
-{    
+{
     // Appserver port
     m_port = port;
     m_wcAppName = NULL;
@@ -48,6 +48,26 @@ Server::Server(quint16 port)
     QSettings settings;
     QString python_path = settings.value("PythonPath").toString();
 
+#ifdef Q_OS_MAC
+
+    // In the case we're running in a release appbundle, we need to ensure the
+    // bundled virtual env is included in the Python path. We include it at the
+    // end, so expert users can override the path, but we do not save it, because
+    // if users move the app bundle, we'll end up with dead entries
+
+    // Get the application directory
+    QString app_dir = qApp->applicationDirPath();
+
+    // Build (and canonicalise) the virtual environment path
+    QString get_pymodules_path = (app_dir + "/../Resources/venv/lib/python/site-packages");
+    QFileInfo fi(get_pymodules_path);
+    QString pymodules_path = fi.canonicalFilePath();
+
+    // Append the path, if it's not already there
+    if (!python_path.contains(pymodules_path))
+        python_path.append(pymodules_path);
+#endif
+
     if (python_path.length() > 0)
     {
         // Split the path setting into individual entries
@@ -66,6 +86,8 @@ Server::Server(quint16 port)
 #endif
         }
     }
+    python_path = settings.value("PythonPath").toString();
+    qDebug() << "Python path: " << python_path;
 }
 
 Server::~Server()
@@ -86,7 +108,9 @@ bool Server::Init()
     paths.append("../web/"); // Linux source tree
     paths.append("../../web/"); // Windows source tree
     paths.append("../../../../web/"); // Mac source tree (in a dev env)
+#ifdef Q_OS_MAC
     paths.append("../Resources/web/"); // Mac source tree (in a release app bundle)
+#endif
     paths.append(settings.value("ApplicationPath").toString()); // System configured value
     paths.append(""); // Should be last!
 
@@ -124,6 +148,7 @@ void Server::run()
     // Set the port number
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
 
+    // Run the app!
 #ifdef PYTHON2
     PyObject* PyFileObject = PyFile_FromString(m_appfile.toUtf8().data(), (char *)"r");
     if (PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile.toUtf8().data()) != 0)

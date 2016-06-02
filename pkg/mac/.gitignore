@@ -1,0 +1,3 @@
+# Global excludes across all subdirectories
+debug.pgadmin.Info.plist
+pgadmin.Info.plist
