@@ -177,8 +177,8 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           type: 'integer'
         },{
           type: 'nested', control: 'tab', id: 'materialization',
-          label: '{{ _("Auto vacuum") }}', mode: ['edit', 'create'],
-          group: '{{ _("Auto vacuum") }}',
+          label: '{{ _("Parameter") }}', mode: ['edit', 'create'],
+          group: '{{ _("Parameter") }}',
           schema: Backform.VacuumSettingsSchema
         },{
           // Add Privilege Control

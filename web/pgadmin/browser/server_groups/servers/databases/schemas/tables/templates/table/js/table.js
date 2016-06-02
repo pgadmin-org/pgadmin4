@@ -696,8 +696,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             disabled: 'isLikeDisable', group: '{{ _('Like') }}'
           }]
         },{
-          // Here we will create tab control for auto-vacuum
-          type: 'nested', control: 'tab', group: '{{ _('Auto vacuum') }}',
+          // Here - we will create tab control for storage parameters
+          // (auto vacuum).
+          type: 'nested', control: 'tab', group: '{{ _('Parameter') }}',
           mode: ['edit', 'create'],
           schema: Backform.VacuumSettingsSchema
         },{
