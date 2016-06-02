@@ -141,7 +141,7 @@ define([
         var supported_nodes = [
               'schema', 'coll-function', 'coll-sequence',
               'coll-table', 'coll-view', 'coll-procedure',
-              'coll-mview', 'database'
+              'coll-mview', 'database', 'coll-trigger_function'
             ],
 
             /**
