@@ -565,9 +565,27 @@ define(
         );
       },
 
+      _stopEventPropogation: function(ev) {
+        ev = ev || window.event;
+        ev.cancelBubble = true;
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        ev.preventDefault();
+      },
+
+      _closeDropDown: function(ev) {
+          var target = ev && (ev.currentTarget || ev.target);
+          if (target) {
+            $(target).closest('.open').removeClass('open').find('.dropdown-backdrop').remove();
+          }
+      },
+
       // Callback function for Save button click.
-      on_save: function() {
+      on_save: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the save signal to the SqlEditorController class
         self.handler.trigger(
@@ -590,8 +608,11 @@ define(
       },
 
       // Callback function for include filter button click.
-      on_include_filter: function() {
+      on_include_filter: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the include_filter signal to the SqlEditorController class
         self.handler.trigger(
@@ -602,8 +623,11 @@ define(
       },
 
       // Callback function for exclude filter button click.
-      on_exclude_filter: function() {
+      on_exclude_filter: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the exclude_filter signal to the SqlEditorController class
         self.handler.trigger(
@@ -614,8 +638,11 @@ define(
       },
 
       // Callback function for remove filter button click.
-      on_remove_filter: function() {
+      on_remove_filter: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the remove_filter signal to the SqlEditorController class
         self.handler.trigger(
@@ -716,24 +743,30 @@ define(
       },
 
       // Callback function for the clear button click.
-      on_clear: function() {
-        var self = this;
-        self.query_tool_obj.setValue('');
+      on_clear: function(ev) {
+        ev = ev || window.event;
+        ev.cancelBubble = true;
+        ev.stopPropagation();
+
+        this.query_tool_obj.setValue('');
       },
 
       // Callback function for the clear history button click.
-      on_clear_history: function() {
-        var self = this;
+      on_clear_history: function(ev) {
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Remove any existing grid first
-        if (self.history_grid) {
-            self.history_collection.reset();
+        if (this.history_grid) {
+            this.history_collection.reset();
         }
       },
 
       // Callback function for the auto commit button click.
-      on_auto_commit: function() {
+      on_auto_commit: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the auto-commit signal to the SqlEditorController class
         self.handler.trigger(
@@ -744,8 +777,10 @@ define(
       },
 
       // Callback function for the auto rollback button click.
-      on_auto_rollback: function() {
+      on_auto_rollback: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the download signal to the SqlEditorController class
         self.handler.trigger(
@@ -756,8 +791,11 @@ define(
       },
 
       // Callback function for explain button click.
-      on_explain: function() {
+      on_explain: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the explain signal to the SqlEditorController class
         self.handler.trigger(
@@ -768,8 +806,11 @@ define(
       },
 
       // Callback function for explain analyze button click.
-      on_explain_analyze: function() {
+      on_explain_analyze: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the explain analyze signal to the SqlEditorController class
         self.handler.trigger(
@@ -780,8 +821,10 @@ define(
       },
 
       // Callback function for explain option "verbose" button click
-      on_explain_verbose: function() {
+      on_explain_verbose: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the explain "verbose" signal to the SqlEditorController class
         self.handler.trigger(
@@ -792,8 +835,10 @@ define(
       },
 
       // Callback function for explain option "costs" button click
-      on_explain_costs: function() {
+      on_explain_costs: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the explain "costs" signal to the SqlEditorController class
         self.handler.trigger(
@@ -804,8 +849,10 @@ define(
       },
 
       // Callback function for explain option "buffers" button click
-      on_explain_buffers: function() {
+      on_explain_buffers: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the explain "buffers" signal to the SqlEditorController class
         self.handler.trigger(
@@ -816,8 +863,10 @@ define(
       },
 
       // Callback function for explain option "timing" button click
-      on_explain_timing: function() {
+      on_explain_timing: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
 
         // Trigger the explain "timing" signal to the SqlEditorController class
         self.handler.trigger(
@@ -832,8 +881,11 @@ define(
       },
 
       // callback function for load file button click.
-      on_file_load: function() {
+      on_file_load: function(ev) {
         var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         // Trigger the save signal to the SqlEditorController class
         self.handler.trigger(
@@ -841,8 +893,7 @@ define(
             self,
             self.handler
         );
-      },
-
+      }
     });
 
     /* Defining controller class for data grid, which actually

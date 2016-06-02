@@ -392,7 +392,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           mode: ['edit', 'create'],
           visible: function(m) {
             return m.get('typtype') === 'r';
-          }, deps: ['typtype'], label: '{{ _('') }}',
+          }, deps: ['typtype'], label: '',
           schema:[{
             id: 'typname', label:'{{ _('Sub-type') }}', cell: 'string',
             control: 'node-ajax-options',

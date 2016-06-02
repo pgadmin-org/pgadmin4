@@ -156,7 +156,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           id: 'comment', label:'{{ _("Comment") }}', cell: 'string',
           type: 'multiline'
         },{
-          id: 'definition', label:'{{ _("") }}', cell: 'string',
+          id: 'definition', label:'', cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: 'Definition',
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full']
         },{

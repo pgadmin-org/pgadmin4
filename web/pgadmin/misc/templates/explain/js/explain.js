@@ -170,12 +170,12 @@ var imageMapper = {
       command = data['Command'];
 
   if(strategy == "Hashed") {
-    if(command.startsWith("Intersect")) {
+    if(S.startsWith(command, "Intersect")) {
       if(command == "Intersect All")
         return {"image":"ex_hash_setop_intersect_all.png","image_text":"Hashed Intersect All"};
       return {"image":"ex_hash_setop_intersect.png","image_text":"Hashed Intersect"};
     }
-    else if (command.startsWith("Except")) {
+    else if (S.startsWith(command, "Except")) {
       if(command == "Except All")
         return {"image":"ex_hash_setop_except_all.png","image_text":"Hashed Except All"};
       return {"image":"ex_hash_setop_except.png","image_text":"Hash Except"};
@@ -254,7 +254,7 @@ var PlanModel = Backbone.Model.extend({
             ypos += yMargin;
         }
 
-        if(node_type.startsWith("(slice"))
+        if(S.startsWith(node_type, "(slice"))
             node_type = node_type.substring(0,7);
 
         // Get the image information for current node

@@ -128,14 +128,14 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           type: 'text', disabled: true, mode: ['properties']
         },
         {
-          id: 'schema', label:'{{ _("") }}',
+          id: 'schema', label:'',
           type: 'text', visible: false, disabled: function(m) {
             // It is used while generating sql
             m.set('schema', m.node_info.schema.label);
           }
         },
         {
-          id: 'view', label:'{{ _("") }}',
+          id: 'view', label:'',
           type: 'text', visible: false, disabled: function(m){
 
             // It is used while generating sql
