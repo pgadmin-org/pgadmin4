@@ -86,7 +86,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
     },{
       id: 'type', label: '{{ _('Type') }}', control: 'node-ajax-options',
       type: 'text', url: 'get_types', disabled: false, node: 'type',
-      cell: 'node-ajax-options',
+      cell: 'node-ajax-options', select2: {allowClear: false},
       editable: true,
       transform: function(d, control){
         control.model.type_options =  d;
@@ -149,6 +149,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
     },{
       id: 'collation', label: '{{ _('Collation') }}',
       cell: NodeAjaxOptionsDepsCell, deps: ['type'],
+      select2: {allowClear: false},
       control: 'node-ajax-options', editable: function(m) {
          var of_type = m.get('type'),
            flag = false;
@@ -319,7 +320,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           id: 'typeowner', label:'{{ _('Owner') }}', cell: 'string',
           control: 'node-list-by-name',
           type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
-          disabled: 'inSchema'
+          disabled: 'inSchema', select2: {allowClear: false}
         },{
           id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
           type: 'text', mode: ['create', 'edit'], node: 'schema',
@@ -331,13 +332,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
             return true;
           },
-          control: 'node-list-by-name'
+          control: 'node-list-by-name', select2: {allowClear: false}
         },{
           id: 'typtype', label:'{{ _('Type') }}',
           mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
           group: '{{ _('Definition') }}',
           mode: ['edit', 'create'],
-          select2: { width: "50%" },
+          select2: { width: "50%", allowClear: false },
           options: function(obj) {
               return [
                 {label: "Composite", value: "c"},
@@ -365,7 +366,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           group: '{{ _('Definition') }}', mode: ['edit', 'create'],
           control: 'unique-col-collection', uniqueCol : ['member_name'],
           canAdd: true, canEdit: false, canDelete: true, disabled: 'inSchema',
-          deps: ['typtype'], deps: ['typtype'],
+          deps: ['typtype'],
           visible: function(m) {
            return m.get('typtype') === 'c';
           }
