@@ -25,6 +25,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       hasDepends: true,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
+      dialogHelp: '{{ url_for('help.static', filename='table_dialog.html') }}',
       parent_type: ['schema', 'catalog'],
       hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
       height: '95%',

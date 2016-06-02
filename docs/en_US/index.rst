@@ -155,7 +155,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   backup
+   backup_dialog
    restore
   
    
