@@ -56,6 +56,7 @@ else {
 
     QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
     QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
+    LIBS += $$system($$PYTHON_CONFIG --libs)
 }
 
 # Source code
