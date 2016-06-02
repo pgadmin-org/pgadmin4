@@ -71,8 +71,11 @@ else:
     server_port = config.DEFAULT_SERVER_PORT
 
 try:
-    app.run(host=config.DEFAULT_SERVER,
+    app.run(
+        host=config.DEFAULT_SERVER,
         port=server_port,
-        use_reloader=(config.SERVER_MODE and app.debug))
+        use_reloader=(config.SERVER_MODE and app.debug),
+        threaded=config.THREADED_MODE
+    )
 except IOError:
     app.logger.error("Error starting the app server: %s", sys.exc_info())
