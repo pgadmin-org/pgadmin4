@@ -75,12 +75,12 @@ function(_, S, pgAdmin, $) {
      */
     update: function(node, item) {
 
-      if (!this.$el.hasClass('disabled')) {
+      if (this.$el && !this.$el.hasClass('disabled')) {
         this.$el.addClass('disabled');
       }
 
       this.is_disabled = this.disabled(node, item);
-      if (!this.is_disabled) {
+      if (this.$el && !this.is_disabled) {
         this.$el.removeClass('disabled');
       }
 
