@@ -64,6 +64,10 @@ BrowserWindow::BrowserWindow(QString url)
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 #endif
 
+#ifdef __APPLE__
+    m_mainWebView->setStyle(QStyleFactory::create("Fusion"));
+#endif
+
     m_tabGridLayout->addWidget(m_mainWebView, 0, 0, 1, 1);
     m_tabWidget->addTab(m_pgAdminMainTab, QString());
     m_tabWidget->setCurrentIndex(0);
