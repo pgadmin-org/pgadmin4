@@ -1,0 +1,35 @@
+/*
+ backgrid-sizeable-columns
+ https://github.com/WRidder/backgrid-sizeable-columns
+
+ Copyright (c) 2014 Wilbert van de Ridder
+ Licensed under the MIT @license.
+ */
+table.backgrid {
+    overflow: hidden;
+    position: relative;
+}
+
+.backgrid .resizeHandler {
+    width: 16px;
+    height: 100%;
+    margin-left: -8px;
+    top: 0;
+    position: absolute;
+    cursor: col-resize;
+    z-index: 2;
+}
+
+.backgrid .resizeHandler.grid-draggable {
+    opacity: 1;
+    width: 1px;
+    margin-left: 0px;
+    background-color: #000;
+}
+
+.backgrid .resizeHandler .grid-draggable-cursor {
+    cursor: col-resize;
+    width: 100px;
+    margin-left: -50px;
+    height: 100%;
+}

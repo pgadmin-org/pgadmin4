@@ -8,7 +8,7 @@ define(
     'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
     'codemirror/addon/hint/show-hint', 'codemirror/addon/hint/sql-hint',
     'codemirror/addon/fold/pgadmin-sqlfoldcode', 'backgrid.paginator',
-    'wcdocker', 'pgadmin.file_manager'
+    'backgrid.sizeable.columns', 'wcdocker', 'pgadmin.file_manager'
   ],
   function(
     $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain
@@ -427,8 +427,12 @@ define(
             filter_array.push(c.name);
         });
 
+        // Create Collection of Backgrid columns
+        var columnsColl = new Backgrid.Columns(columns);
+        var $data_grid = self.$el.find('#datagrid');
+
         var grid = self.grid = new Backgrid.Grid({
-            columns: columns,
+            columns: columnsColl,
             collection: collection,
             className: "backgrid table-bordered",
             row: SqlEditorCustomRow
@@ -447,13 +451,58 @@ define(
           });
 
         // Render the grid
-        self.$el.find('#datagrid').append(self.grid.render().$el);
+        $data_grid.append(self.grid.render().$el);
 
         // Render the paginator
         self.$el.find('#datagrid-paginator').append(paginator.render().el);
 
         // Render the client side filter
         self.$el.find('.pg-prop-btn-group').append(clientSideFilter.render().el);
+
+        var sizeAbleCol = new Backgrid.Extension.SizeAbleColumns({
+          collection: collection,
+          columns: columnsColl,
+          grid: self.grid
+        });
+
+        $data_grid.find('thead').before(sizeAbleCol.render().el);
+
+        // Add resize handlers
+        var sizeHandler = new Backgrid.Extension.SizeAbleColumnsHandlers({
+          sizeAbleColumns: sizeAbleCol,
+          grid: self.grid,
+          saveColumnWidth: true
+        });
+
+        // sizeHandler should render only when table grid loaded completely.
+        setTimeout(function() {
+          $data_grid.find('thead').before(sizeHandler.render().el);
+        }, 1000);
+
+        // Initialized table width 0 still not calculated
+        var table_width = 0;
+        // Listen to resize events
+        columnsColl.on('resize',
+          function(columnModel, newWidth, oldWidth, offset) {
+            var $grid_el = $data_grid.find('table'),
+                tbl_orig_width = $grid_el.width(),
+                offset = oldWidth - newWidth,
+                tbl_new_width = tbl_orig_width - offset;
+
+            if (table_width == 0) {
+              table_width = tbl_orig_width
+            }
+            // Table new width cannot be less than original width
+            if (tbl_new_width >= table_width) {
+              $($grid_el).css('width', tbl_new_width + 'px');
+            }
+            else {
+              // reset if calculated tbl_new_width is less than original
+              // table width
+              tbl_new_width = table_width;
+              $($grid_el).css('width', tbl_new_width + 'px');
+            }
+        });
 
         // Forcefully sorting by the first column.
         if (columns.length > 1) {
@@ -520,37 +569,97 @@ define(
             name: "start_time",
             label: "Date",
             cell: "string",
-            editable: false
+            editable: false,
+            resizeable: true
           }, {
             name: "query",
             label: "Query",
             cell: "string",
-            editable: false
+            editable: false,
+            resizeable: true
           }, {
             name: "row_affected",
             label: "Rows affected",
             cell: "integer",
-            editable: false
+            editable: false,
+            resizeable: true
           }, {
             name: "total_time",
             label: "Total Time",
             cell: "string",
-            editable: false
+            editable: false,
+            resizeable: true
           }, {
             name: "message",
             label: "Message",
             cell: "string",
-            editable: false
+            editable: false,
+            resizeable: true
         }];
 
+
+        // Create Collection of Backgrid columns
+        var columnsColl = new Backgrid.Columns(columns);
+        var $history_grid = self.$el.find('#history_grid');
+
         var grid = self.history_grid = new Backgrid.Grid({
-            columns: columns,
+            columns: columnsColl,
             collection: history_collection,
             className: "backgrid table-bordered"
         });
 
         // Render the grid
-        self.$el.find('#history_grid').append(self.history_grid.render().$el);
+        $history_grid.append(grid.render().$el);
+
+        var sizeAbleCol = new Backgrid.Extension.SizeAbleColumns({
+          collection: history_collection,
+          columns: columnsColl,
+          grid: self.history_grid
+        });
+
+        $history_grid.find('thead').before(sizeAbleCol.render().el);
+
+        // Add resize handlers
+        var sizeHandler = new Backgrid.Extension.SizeAbleColumnsHandlers({
+          sizeAbleColumns: sizeAbleCol,
+          grid: self.history_grid,
+          saveColumnWidth: true
+        });
+
+        // sizeHandler should render only when table grid loaded completely.
+        setTimeout(function() {
+          $history_grid.find('thead').before(sizeHandler.render().el);
+        }, 1000);
+
+        // re render sizeHandler whenever history panel tab becomes visible
+        self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function(ev) {
+          $history_grid.find('thead').before(sizeHandler.render().el);
+        });
+
+        // Initialized table width 0 still not calculated
+        var table_width = 0;
+        // Listen to resize events
+        columnsColl.on('resize',
+          function(columnModel, newWidth, oldWidth, offset) {
+            var $grid_el = $history_grid.find('table'),
+                tbl_orig_width = $grid_el.width(),
+                offset = oldWidth - newWidth,
+                tbl_new_width = tbl_orig_width - offset;
+
+            if (table_width == 0) {
+              table_width = tbl_orig_width
+            }
+            // Table new width cannot be less than original width
+            if (tbl_new_width >= table_width) {
+              $($grid_el).css('width', tbl_new_width + 'px');
+            }
+            else {
+              // reset if calculated tbl_new_width is less than original
+              // table width
+              tbl_new_width = table_width;
+              $($grid_el).css('width', tbl_new_width + 'px');
+            }
+        });
       },
 
       // Callback function for Add New Row button click.
@@ -1358,20 +1467,34 @@ define(
                     });
                   }
 
-                  // Create column label.
+                  // To show column label and data type in multiline,
+                  // The elements should be put inside the div.
+                  // Create column label and type.
+                  var column_label = document.createElement('div'),
+                      label_text = document.createElement('div'),
+                      column_type = document.createElement('span'),
+                      col_label = '',
+                      col_type = '';
+                  label_text.innerText = c.name;
+
                   var type = pg_types[c.type_code][0];
-                  var col_label = c.name;
                   if (!is_primary_key)
-                    col_label += ' ' + type;
+                    col_type += ' ' + type;
                   else
-                    col_label += ' [PK] ' + type;
+                    col_type += ' [PK] ' + type;
 
                   if (c.precision == null) {
                     if (c.internal_size > 0)
-                      col_label += '(' + c.internal_size + ')';
+                      col_type += ' (' + c.internal_size + ')';
                   }
                   else
-                    col_label += '(' + c.precision + ',' + c.scale + ')';
+                    col_type += ' (' + c.precision + ',' + c.scale + ')';
+
+                  column_type.innerText = col_type;
+
+                  // Set values of column label and its type
+                  column_label.appendChild(label_text);
+                  column_label.appendChild(column_type);
 
                   // Identify cell type of column.
                   switch(type) {
@@ -1394,12 +1517,33 @@ define(
 
                   var col = {
                     name : c.name,
-                    label: col_label,
+                    label: column_label.innerHTML,
                     cell: col_cell,
                     can_edit: self.can_edit,
-                    editable: self.is_editable
-                  };
+                    editable: self.is_editable,
+                    resizeable: true,
+                    headerCell: Backgrid.HeaderCell.extend({
+                      render: function () {
+                        // Add support for HTML element in column title
+                        this.$el.empty();
+                        var column = this.column,
+                            sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),
+                            label;
+                        if(sortable){
+                          label = $("<a>").append(column.get("label")).append("<b class='sort-caret'></b>");
+                        } else {
+                          var header_column = document.createElement('div');
+                          label = header_column.appendChild(column.get("label"));
+                        }
 
+                        this.$el.append(label);
+                        this.$el.addClass(column.get("name"));
+                        this.$el.addClass(column.get("direction"));
+                        this.delegateEvents();
+                        return this;
+                      }
+                    })
+                  };
                   columns.push(col);
                 });
               }

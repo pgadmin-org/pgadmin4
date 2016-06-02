@@ -27,6 +27,7 @@
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-select-all.css' if config.DEBUG else 'css/backgrid/backgrid-select-all.min.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-paginator.css' if config.DEBUG else 'css/backgrid/backgrid-paginator.min.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-filter.css' if config.DEBUG else 'css/backgrid/backgrid-filter.min.css')}}"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-sizeable-columns.css')}}"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
 
         <!-- View specified stylesheets -->
@@ -71,6 +72,9 @@
                         "deps": ['backgrid', 'backbone.paginator']
                     },
                     "backgrid.filter": {
+                        "deps": ['backgrid']
+                    },
+                    "backgrid.sizeable.columns": {
                         "deps": ['backgrid']
                     },
                     "bootstrap.switch": {
@@ -122,6 +126,7 @@
                     "backgrid.select.all": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-select-all' if config.DEBUG else 'backgrid-select-all.min')) }}",
                     "backgrid.paginator": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-paginator' if config.DEBUG else 'backgrid-paginator.min')) }}",
                     "backgrid.filter": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-filter' if config.DEBUG else 'backgrid-filter.min')) }}",
+                    "backgrid.sizeable.columns": "{{ url_for('static', filename='js/backgrid/backgrid-sizeable-columns') }}",
                     "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
