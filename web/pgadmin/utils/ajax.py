@@ -18,7 +18,8 @@ import decimal
 
 class DataTypeJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime.datetime) \
+                or hasattr(obj, 'isoformat'):
             return obj.isoformat()
         if isinstance(obj, decimal.Decimal):
             return float(obj)
