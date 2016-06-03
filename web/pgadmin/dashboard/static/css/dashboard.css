@@ -10,6 +10,10 @@
     text-align: center;
 }
 
+.dashboard-link a {
+    cursor: pointer;
+}
+
 .dashboard-icon {
     color: black;
 }
