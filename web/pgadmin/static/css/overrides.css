@@ -1232,3 +1232,12 @@ form[name="change_password_form"] .help-block {
     visibility: hidden;
   }
 }
+
+/* Override Backgrid's default z-index */
+.dashboard-tab-container .backgrid-filter .search {
+  z-index: 10 !important;
+}
+
+.dashboard-tab-container .backgrid-filter .clear {
+  z-index: 10 !important;
+}
