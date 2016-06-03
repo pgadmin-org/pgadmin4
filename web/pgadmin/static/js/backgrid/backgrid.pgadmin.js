@@ -845,6 +845,45 @@
       }
     });
 
+  /**
+   Formatter for PasswordCell.
+
+   @class Backgrid.PasswordFormatter
+   @extends Backgrid.CellFormatter
+   @constructor
+  */
+  var PasswordFormatter = Backgrid.PasswordFormatter = function () {};
+  PasswordFormatter.prototype = new Backgrid.CellFormatter();
+  _.extend(PasswordFormatter.prototype, {
+    fromRaw: function (rawValue, model) {
+
+      if (_.isUndefined(rawValue) || _.isNull(rawValue)) return '';
+
+      var pass = '';
+      for(var i = 0; i < rawValue.length; i++) {
+        pass += '*';
+      }
+      return pass;
+    }
+  });
+
+  var PasswordCell = Backgrid.Extension.PasswordCell  = Backgrid.StringCell.extend({
+
+    formatter: PasswordFormatter,
+
+    editor: Backgrid.InputCellEditor.extend({
+      attributes: {
+        type: "password"
+      },
+
+      render: function () {
+        var model = this.model;
+        this.$el.val(model.get(this.column.get("name")));
+        return this;
+      }
+    })
+  });
+
   return Backgrid;
 
 }));
