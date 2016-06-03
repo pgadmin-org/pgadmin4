@@ -55,17 +55,23 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         schema: [
           {
             id: 'colname', label:'{{ _('Column') }}', cell: 'node-list-by-name',
-            type: 'text', disabled: 'inSchema', editable: true,
-            control: 'node-list-by-name', node: 'column'
-          },{
-            id: 'collspcname', label:'{{ _('Collation') }}',
-            cell: NodeAjaxOptionsDepsCell,
-            type: 'text', disabled: 'inSchema', editable: function(m) {
+            type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
                 // Header cell then skip
                 if (m instanceof Backbone.Collection) {
                     return false;
                 }
-                return !(m.inSchema.apply(this, arguments));
+                return !(m.inSchemaWithModelCheck.apply(this, arguments));
+            },
+            control: 'node-list-by-name', node: 'column'
+          },{
+            id: 'collspcname', label:'{{ _('Collation') }}',
+            cell: NodeAjaxOptionsDepsCell,
+            type: 'text', disabled: 'inSchemaWithModelCheck', editable: function(m) {
+                // Header cell then skip
+                if (m instanceof Backbone.Collection) {
+                    return false;
+                }
+                return !(m.inSchemaWithModelCheck.apply(this, arguments));
             },
             control: 'node-ajax-options', url: 'get_collations', node: 'index'
           },{
@@ -153,9 +159,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },
         // We will check if we are under schema node & in 'create' mode
         inSchemaWithModelCheck: function(m) {
-          if(this.node_info &&  'schema' in this.node_info) {
+          if(m.top.node_info &&  'schema' in m.top.node_info) {
             // We will disable control if it's in 'edit' mode
-            if (m.isNew()) {
+            if (m.top.isNew()) {
               return false;
             } else {
               return true;
@@ -167,7 +173,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         checkAccessMethod: function(m) {
         //Access method is empty or btree then do not disable field
           var parent_model = m.top;
-          if(!m.inSchema.apply(this, [m]) &&
+          if(!m.inSchemaWithModelCheck.apply(this, [m]) &&
               (_.isUndefined(parent_model.get('amname')) ||
                _.isNull(parent_model.get('amname')) ||
                String(parent_model.get('amname')).replace(/^\s+|\s+$/g, '') == '' ||

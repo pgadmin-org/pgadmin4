@@ -559,7 +559,7 @@ class IndexesView(PGChildNodeView):
         try:
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),
-                                  data=data, conn=self.conn)
+                                  data=data, conn=self.conn, mode='create')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -719,7 +719,7 @@ class IndexesView(PGChildNodeView):
         data['table'] = self.table
 
         try:
-            SQL = self.get_sql(scid, tid, idx, data)
+            SQL = self.get_sql(scid, tid, idx, data, mode='create')
 
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
@@ -729,7 +729,7 @@ class IndexesView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, scid, tid, idx, data):
+    def get_sql(self, scid, tid, idx, data, mode=None):
         """
         This function will genrate sql from model data
         """
@@ -772,7 +772,7 @@ class IndexesView(PGChildNodeView):
 
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn)
+                                  data=data, conn=self.conn, mode=mode)
             SQL += "\n"
             SQL += render_template("/".join([self.template_path, 'alter.sql']),
                                    data=data, conn=self.conn)
