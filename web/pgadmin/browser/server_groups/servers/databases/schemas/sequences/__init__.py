@@ -150,7 +150,7 @@ class SequenceView(PGChildNodeView):
                     )
 
                 self.template_path = 'sequence/sql/9.1_plus'
-
+                self.acl = ['r', 'w', 'U']
                 return f(self, *args, **kwargs)
             return wrapped
         return wrap
@@ -524,11 +524,11 @@ class SequenceView(PGChildNodeView):
             for key in ['relacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                      data[key]['added'] = parse_priv_to_db(data[key]['added'], 'SEQUENCE')
+                      data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], 'SEQUENCE')
+                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], 'SEQUENCE')
+                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -540,7 +540,7 @@ class SequenceView(PGChildNodeView):
         else:
             # To format privileges coming from client
             if 'relacl' in data:
-                data['relacl'] = parse_priv_to_db(data['relacl'], 'SEQUENCE')
+                data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
             SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             SQL += render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
