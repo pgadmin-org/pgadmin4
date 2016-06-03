@@ -569,9 +569,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         defaults: {
           gid: undefined,
           id: undefined,
-          name: null,
+          name: '',
           sslmode: 'prefer',
-          host: null,
+          host: '',
           port: 5432,
           db: 'postgres',
           username: '{{ username }}',
@@ -643,21 +643,37 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         }],
         validate: function() {
           var err = {},
-              errmsg;
+              errmsg,
+              self = this;
 
-          if (!this.isNew() && 'id' in this.sessAttrs) {
+          var check_for_empty = function(id, msg) {
+            var v = self.get(id);
+            if (
+              _.isUndefined(v) || String(v).replace(/^\s+|\s+$/g, '') == ''
+            ) {
+              err[id] = msg;
+              errmsg = errmsg || msg;
+            } else {
+              self.errorModel.unset(id);
+            }
+          }
+
+          if (!self.isNew() && 'id' in self.sessAttrs) {
             err['id'] = '{{ _('The ID can not be changed.') }}';;
             errmsg = err['id'];
+          } else {
+            self.errorModel.unset('id');
           }
-          if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name must be specified.') }}';
-            errmsg = errmsg || err['name'];
-          }
-          if (_.isUndefined(this.get('host')) || this.get('host') == null || String(this.get('host')).replace(/^\s+|\s+$/g, '') == '') {
-            err['host'] = '{{ _('Hostname or address must be specified.') }}';
-            errmsg = errmsg || err['host'];
-          }
-
+          check_for_empty('name', '{{ _('Name must be specified.') }}');
+          check_for_empty(
+            'host', '{{ _('Hostname or address must be specified.') }}'
+          );
+          check_for_empty(
+            'db', '{{ _('Maintenance database must be specified.') }}'
+          );
+          check_for_empty(
+            'username', '{{ _('Username must be specified.') }}'
+          );
           this.errorModel.set(err);
 
           if (_.size(err)) {
