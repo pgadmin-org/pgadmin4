@@ -254,6 +254,11 @@
 
       var privileges = [];
 
+      if (this.attributes &&
+            this.attributes['privileges']) {
+        return null;
+      }
+
       this.attributes['privileges'].each(
         function(p) {
           if (p.get('privilege')) {
@@ -282,20 +287,24 @@
          this.errorModel.unset('grantee');
       }
 
-      var anyPrivSelected = false;
-      this.attributes['privileges'].each(
-        function(p) {
-          if (p.get('privilege')) {
-            anyPrivSelected = true;
-          }
-        });
 
-      if (!anyPrivSelected) {
-        msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
-        this.errorModel.set('privileges', msg);
-        errmsg = errmsg || msg;
-      } else {
-        this.errorModel.unset('privileges');
+      if (this.attributes &&
+            this.attributes['privileges']) {
+          var anyPrivSelected = false;
+          this.attributes['privileges'].each(
+            function(p) {
+              if (p.get('privilege')) {
+                anyPrivSelected = true;
+              }
+            });
+
+          if (!anyPrivSelected) {
+            msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
+            this.errorModel.set('privileges', msg);
+            errmsg = errmsg || msg;
+          } else {
+            this.errorModel.unset('privileges');
+          }
       }
 
       return errmsg;

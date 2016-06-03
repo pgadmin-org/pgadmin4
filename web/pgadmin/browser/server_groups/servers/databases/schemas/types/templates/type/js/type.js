@@ -180,15 +180,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       // Clearing previous errors first.
       this.errorModel.clear();
       // Validation for member name
-      if ( _.has(changedAttrs, 'member_name') && _.isUndefined(this.get('member_name')) ||
+      if ( _.isUndefined(this.get('member_name')) ||
         _.isNull(this.get('member_name')) ||
         String(this.get('member_name')).replace(/^\s+|\s+$/g, '') == '') {
           errmsg = '{{ _('Please specify the value for member name.') }}';
           this.errorModel.set('member_name', errmsg)
           return errmsg;
       }
+      else if ( _.isUndefined(this.get('type')) ||
+        _.isNull(this.get('type')) ||
+        String(this.get('type')).replace(/^\s+|\s+$/g, '') == '') {
+          errmsg = '{{ _('Please specify the type.') }}';
+          this.errorModel.set('type', errmsg)
+          return errmsg;
+      }
       // Validation for Length/precision field (see comments above if confused about the naming!)
-      else if (_.has(changedAttrs, 'tlength') && this.get('is_tlength')
+      else if (this.get('is_tlength')
         && !_.isUndefined(this.get('tlength'))) {
         if (this.get('tlength') < this.get('min_val'))
           errmsg = '{{ _('Length/precision should not be less than ') }}'  + this.get('min_val');
@@ -201,7 +208,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         }
       }
       // Validation for scale field (see comments above if confused about the naming!)
-      else if (_.has(changedAttrs, 'precision') && this.get('is_precision')
+      else if (this.get('is_precision')
         && !_.isUndefined(this.get('precision'))) {
         if (this.get('precision') < this.get('min_val'))
           errmsg = '{{ _('Scale should not be less than ') }}' + this.get('min_val');
@@ -757,6 +764,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           uniqueCol : ['grantee'], deps: ['typtype'],
           canAdd: function(m) {
             // Do not allow to add when shell type is selected
+            // Clear acl & security label collections as well
+            if (m.get('typtype') === 'p') {
+                var acl = m.get('typacl');
+                  if(acl.length > 0)
+                    acl.reset();
+            }
             return !(m.get('typtype') === 'p');
           }
         },{
@@ -767,6 +780,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           control: 'unique-col-collection', deps: ['typtype'],
           canAdd: function(m) {
             // Do not allow to add when shell type is selected
+            // Clear acl & security label collections as well
+            if (m.get('typtype') === 'p') {
+                var secLabs = m.get('seclabels');
+                  if(secLabs.length > 0)
+                    secLabs.reset();
+            }
             return !(m.get('typtype') === 'p');
           }
         }],
@@ -811,7 +830,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             msg = '{{ _('Output function can not be empty.') }}';
             this.errorModel.set('typoutput', msg);
           }
-          return null;
+
+          return msg ? msg : null;
         },
         // We will disable everything if we are under catalog node
         inSchema: function() {
