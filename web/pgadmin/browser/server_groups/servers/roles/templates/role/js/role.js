@@ -297,7 +297,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       dialogHelp: '{{ url_for('help.static', filename='role_dialog.html') }}',
       label: '{{ _('Login/Group Role') }}',
       hasSQL: true,
-      canDrop: true,
+      canDrop: function(node, item) {
+        var treeData = this.getTreeNodeHierarchy(item),
+            server = treeData['server'];
+        /*
+        To Drop a role:
+          1) If Role we are deleting is superuser then User must be superuser
+          2) And for non-superuser roles User must have Create Role permission
+        */
+
+        // Role you are trying to drop is Superuser ?
+        if(node.is_superuser) {
+            return server.connected && server.user.is_superuser;
+        }
+        // For non super users
+        return server.connected && server.user.can_create_role;
+      },
       hasDepends: true,
       node_label: function(r) {
         return r.label;

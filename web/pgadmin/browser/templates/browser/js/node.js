@@ -478,11 +478,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       },
       // Delete the selected object
       delete_obj: function(args, item) {
-          var input = args || {'url':'drop'};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {'url':'drop'},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
 
         if (!d)
           return;
