@@ -503,12 +503,6 @@ define(
               $($grid_el).css('width', tbl_new_width + 'px');
             }
         });
-
-        // Forcefully sorting by the first column.
-        if (columns.length > 1) {
-            collection.setSorting(columns[1].name);
-            collection.fullCollection.sort();
-        }
       },
 
       /* This function is responsible to create and render the
