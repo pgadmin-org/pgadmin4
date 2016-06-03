@@ -535,8 +535,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   pgBrowser.report_error(res.errormsg, res.info);
                 } else {
                   var n = t.next(i);
-                  if (!n || !n.length)
+                  if (!n || !n.length) {
                     n = t.prev(i);
+                    if (!n || !n.length) {
+                      n = t.parent(i);
+                      t.setInode(n, true);
+                    }
+                  }
                   t.remove(i);
                   if (n.length) {
                     t.select(n);
