@@ -1093,6 +1093,42 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             delete view.model.tnode;
 
             if (that.parent_type) {
+              var cdata = tree.itemData(item),
+                  p =  that._find_parent_node.apply(
+                    that, [tree, item, cdata]
+                  );
+
+              // Fixes# 1104
+              // Adding 1st database server connection does not
+              // show up in tree view.
+
+              // If the parent do not have any children, I won't care to add it
+              // manually.
+              if (p && !tree.hasChildren(p)) {
+                // It is most likely a top level node, which has no children.
+                tree.close(p);
+                tree.unload(p);
+                tree.setInode(p, false);
+                tree.open(p, {
+                  success: function() {
+                    var children = tree.children(p, false, false);
+
+                    for (var idx in children) {
+                      var c = $(children[idx]),
+                          cdata = tree.itemData(c);
+
+                      if (cdata._id == d._id) {
+                        tree.select(c);
+                        break;
+                      }
+                    }
+                  }
+                });
+                func(null);
+
+                return;
+              }
+
               if (tree.wasLoad(item)) {
                 var first = tree.first(item, false),
                     data = first && first.length && tree.itemData(first);
@@ -1323,6 +1359,36 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         panel.on(wcDocker.EVENT.CLOSED, onCloseFunc);
       }
     },
+    _find_parent_node: function(t, i, d) {
+      if (this.parent_type) {
+        d = d || t.itemData(i);
+
+        if (_.isString(this.parent_type)) {
+          if (this.parent_type == d._type) {
+            return i;
+          }
+          while(t.hasParent(i)) {
+            i = t.parent(i);
+            d = t.itemData(i);
+
+            if (this.parent_type == d._type)
+              return i;
+          }
+        } else {
+          if (_.indexOf(this.parent_type, d._type) >= 0) {
+            return i;
+          }
+          while(t.hasParent(i)) {
+            i = t.parent(i);
+            d = t.itemData(i);
+
+            if (_.indexOf(this.parent_type, d._type) >= 0)
+              return i;
+          }
+        }
+      }
+      return null;
+    },
     /**********************************************************************
      * Generate the URL for different operations
      *
@@ -1335,7 +1401,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
      * depends, statistics
      */
     generate_url: function(item, type, d, with_id, info) {
-      var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
+      var url = pgBrowser.URL + '{TYPE}/{REDIRECT}{REF}',
         opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'statistics': 'stats'
