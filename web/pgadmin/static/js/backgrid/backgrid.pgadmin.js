@@ -442,9 +442,9 @@
           model = this.model, column = this.column,
           editable = Backgrid.callByNeed(col.editable, column, model),
           optionValues = _.clone(this.optionValues ||
-                _.isFunction(this.column.get('options')) ?
+                (_.isFunction(this.column.get('options')) ?
                     (this.column.get('options'))(this) :
-                    this.column.get('options'));
+                    this.column.get('options')));
 
       this.undelegateEvents();
 
