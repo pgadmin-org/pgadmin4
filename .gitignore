@@ -25,4 +25,5 @@ pgadmin4.log
 /MANIFEST.in
 /build
 /mac-build
+/src-build
 /dist

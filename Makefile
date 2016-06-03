@@ -13,9 +13,11 @@ SHELL = /bin/sh
 # High-level targets
 #########################################################################
 
-all: docs install-pip-requirements pip appbundle
+# Include only platform-independent builds in all
+all: docs install-pip-requirements pip src
 
-clean: clean-pip clean-docs clean-appbundle
+# Include all clean sub-targets in clean
+clean: clean-dist clean-docs clean-pip clean-appbundle clean-src
 
 #########################################################################
 # Python PIP package
@@ -35,6 +37,7 @@ PGADMIN_SRC_DIR = pgadmin4
 PGADMIN_EGG = ${PGADMIN_SRC_DIR}.egg-info
 PGADMIN_BUILD = build
 PGADMIN_MACBUILD = mac-build
+PGADMIN_SRCBUILD = src-build
 PGADMIN_DIST = dist
 PGADMIN_MANIFEST = MANIFEST.in
 PGADMIN_INSTALL_CMD = pip install --use-wheel --find-links=${PGADMIN_DIST} ${PGADMIN_SRC_DIR}
@@ -97,11 +100,19 @@ clean-pip:
 	rm -rf ${PGADMIN_SRC_DIR}
 	rm -rf ${PGADMIN_EGG}
 	rm -rf ${PGADMIN_BUILD}
-	rm -rf ${PGADMIN_DIST}
 	rm -f ${PGADMIN_MANIFEST}
 
 clean-appbundle:
 	rm -rf ${PGADMIN_MACBUILD}
 	rm -rf ${PGADMIN_DIST}/pgadmin4*.dmg*
 
+src:
+	./pkg/src/build.sh
+
+clean-src:
+	rm -rf ${PGADMIN_SRCBUILD}
+	rm -rf ${PGADMIN_DIST}/pgadmin4*.tar.gz
+
+clean-dist:
+	rm -rf ${PGADMIN_DIST}
 .PHONY: docs
