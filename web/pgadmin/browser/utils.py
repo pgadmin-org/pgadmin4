@@ -280,8 +280,12 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
         for module in self.blueprint.submodules:
             children.extend(module.get_nodes(*args, **kwargs))
-
-        return make_json_response(data=children)
+        # Return sorted nodes based on label
+        return make_json_response(
+            data=sorted(
+                children, key=lambda c: c['label']
+            )
+        )
 
 
 class PGChildNodeView(NodeView):
@@ -321,7 +325,12 @@ class PGChildNodeView(NodeView):
             else:
                 nodes.extend(module.get_nodes(**kwargs))
 
-        return make_json_response(data=nodes)
+        # Return sorted nodes based on label
+        return make_json_response(
+            data=sorted(
+                nodes, key=lambda c: c['label']
+            )
+        )
 
     def get_dependencies(self, conn, object_id, where=None):
         """
