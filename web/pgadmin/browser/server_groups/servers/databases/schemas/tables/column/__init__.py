@@ -820,7 +820,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                                           data=data, conn=self.conn)
             SQL = sql_header + '\n\n' + SQL
 
-            return SQL
+            return ajax_response(response=SQL.strip('\n'))
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
