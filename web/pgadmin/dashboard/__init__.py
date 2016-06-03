@@ -13,7 +13,7 @@ MODULE_NAME = 'dashboard'
 from functools import wraps
 
 from config import PG_DEFAULT_DRIVER
-from flask import render_template, url_for, Response
+from flask import render_template, url_for, Response, g
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.utils import PgAdminModule
@@ -22,8 +22,6 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
-
-server_info = {}
 
 
 class DashboardModule(PgAdminModule):
@@ -126,23 +124,22 @@ def check_precondition(f):
     def wrap(*args, **kwargs):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
 
-        server_info.clear()
-        server_info['manager'] = get_driver(
+        g.manager = get_driver(
             PG_DEFAULT_DRIVER).connection_manager(
             kwargs['sid']
         )
-        server_info['conn'] = server_info['manager'].connection()
+        g.conn = g.manager.connection()
 
         # If DB not connected then return error to browser
-        if not server_info['conn'].connected():
+        if not g.conn.connected():
             return precondition_required(
                 gettext("Connection to the server has been lost!")
             )
 
         # Set template path for sql scripts
-        server_info['server_type'] = server_info['manager'].server_type
-        server_info['version'] = server_info['manager'].version
-        server_info['template_path'] = 'dashboard/sql/9.1_plus'
+        g.server_type = g.manager.server_type
+        g.version = g.manager.version
+        g.template_path = 'dashboard/sql/9.1_plus'
 
         return f(*args, **kwargs)
 
@@ -212,14 +209,10 @@ def get_data(sid, did, template):
     if not sid:
         return internal_server_error(errormsg='Server ID not specified.')
 
-    # Get the db connection
-    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-    conn = manager.connection()
-
     sql = render_template(
-        "/".join([server_info['template_path'], template]), did=did
+        "/".join([g.template_path, template]), did=did
     )
-    status, res = conn.execute_dict(sql)
+    status, res = g.conn.execute_dict(sql)
 
     if not status:
         return internal_server_error(errormsg=res)
