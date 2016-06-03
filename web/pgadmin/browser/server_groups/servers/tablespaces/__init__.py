@@ -412,7 +412,7 @@ class TablespaceView(PGChildNodeView):
 
         if SQL and SQL.strip('\n') and SQL.strip(' '):
             return make_json_response(
-                data=SQL,
+                data=SQL.strip('\n'),
                 status=200
             )
 
@@ -518,7 +518,7 @@ class TablespaceView(PGChildNodeView):
 
         SQL = sql_header + SQL
 
-        return ajax_response(response=SQL)
+        return ajax_response(response=SQL.strip('\n'))
 
 
     @check_precondition

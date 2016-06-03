@@ -15,7 +15,7 @@ ALTER TABLESPACE {{ conn|qtIdent(data.name) }}
 
 {% endif %}
 {# ==== To update tablespace comments ==== #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON TABLESPACE {{ conn|qtIdent(data.name) }}
   IS {{ data.description|qtLiteral }};
 
