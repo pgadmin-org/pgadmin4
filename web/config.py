@@ -28,7 +28,7 @@ APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
-APP_SUFFIX = 'dev'
+APP_SUFFIX = 'beta1'
 
 # Copyright string for display in the app
 APP_COPYRIGHT = 'Copyright 2013 - 2016, The pgAdmin Development Team'
