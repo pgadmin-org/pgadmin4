@@ -1247,7 +1247,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         """
         res = [{'label': '', 'value': ''}]
         try:
-            SQL = render_template("/".join([self.template_path, 'get_relations.sql']))
+            SQL = render_template("/".join([self.template_path, 'get_relations.sql']),
+                                  show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
