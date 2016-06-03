@@ -432,6 +432,16 @@ def poll(trans_id):
     else:
         if result is None:
             result = conn.status_message()
+            additional_result = conn.messages()
+            """
+            'Procedure/Function output may comes in the form of Notices from the
+            database server, so we need to append those outputs with the original
+            result.
+            """
+            if isinstance(additional_result, list) \
+                    and len(additional_result) > 0:
+                result = str(additional_result[-1]) + result
+
             rows_affected = conn.rows_affected()
 
     return make_json_response(data={'status': status, 'result': result,
