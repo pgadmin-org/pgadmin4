@@ -1049,7 +1049,7 @@ class ServerManager(object):
 
         res = dict()
         res['sid'] = self.sid
-        res['password'] = str(self.password)
+        res['password'] = self.password.decode('utf-8')
 
         connections = res['connections'] = dict()
 
@@ -1151,6 +1151,10 @@ WHERE db.oid = {0}""".format(did))
         # first connection for identifications.
         from pgadmin.browser.server_groups.servers.types import ServerType
         self.pinged = datetime.datetime.now()
+        try:
+            data['password'] = data['password'].encode('utf-8')
+        except:
+            pass
 
         connections = data['connections']
         for conn_id in connections:
