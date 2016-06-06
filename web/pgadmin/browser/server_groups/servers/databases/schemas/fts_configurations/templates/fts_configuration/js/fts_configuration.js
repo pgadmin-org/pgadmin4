@@ -147,7 +147,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             // Select2 control for adding new tokens
             select2: {
               allowClear: true, width: 'style',
-              placeholder: 'Select token'
+              placeholder: '{{ _('Select token') }}'
             },
             first_empty: true,
             disabled: function(m) {
@@ -386,6 +386,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       this.listenTo(this.headerData, "select2", this.headerDataChanged);
       this.listenTo(this.collection, "remove", this.onAddorRemoveTokens);
 
+      // Remove header controls.
+      _.each(this.controls, function(control) {
+        control.remove();
+      });
       TokenControl.__super__.remove.apply(this, arguments);
 
       // Remove the header model

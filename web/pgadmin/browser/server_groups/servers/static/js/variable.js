@@ -570,6 +570,11 @@
       this.listenTo(this.headerData, "select2", this.headerDataChanged);
       this.listenTo(this.collection, "remove", this.onRemoveVariable);
 
+      // Remove header controls.
+      _.each(this.controls, function(control) {
+        control.remove();
+      });
+
       VariableCollectionControl.__super__.remove.apply(this, arguments);
 
       // Remove the header model
