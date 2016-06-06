@@ -95,7 +95,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
         },{
           id: 'spcuser', label:'{{ _('Owner') }}', cell: 'string',
-          type: 'text', control: 'node-list-by-name', node: 'role'
+          type: 'text', control: 'node-list-by-name', node: 'role',
+          select2: {allowClear: false}
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
@@ -128,14 +129,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             errmsg = null,
             changedAttrs = this.sessAttrs,
             msg = undefined;
-          if (_.has(changedAttrs, 'name') &&
-                (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
+          if (_.isUndefined(this.get('name'))
+              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
-          } else if (_.has(changedAttrs, 'spclocation') &&
-                (_.isUndefined(this.get('spclocation'))
-              || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '')) {
+          } else if (_.isUndefined(this.get('spclocation'))
+              || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '') {
             msg = '{{ _('Location cannot be empty.') }}';
             this.errorModel.set('spclocation', msg);
           } else {

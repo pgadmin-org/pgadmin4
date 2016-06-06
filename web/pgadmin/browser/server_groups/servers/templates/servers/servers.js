@@ -20,15 +20,26 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       }],
       validate: function() {
         var err = {},
-          errmsg = null,
-            data = this.toJSON();
+          errmsg = null;
+        this.errorModel.clear();
 
-            if (_.isUndefined(data.label) ||
-                _.isNull(data.label) ||
-                String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-                  return _("Please specify the value for all the security providers.");
-                }
-                return null;
+        if (_.isUndefined(this.get('provider')) ||
+          _.isNull(this.get('provider')) ||
+          String(this.get('provider')).replace(/^\s+|\s+$/g, '') == '') {
+            errmsg = '{{ _('Provider must be specified.') }}';
+            this.errorModel.set('provider', errmsg);
+            return errmsg;
+        }
+
+        if (_.isUndefined(this.get('label')) ||
+          _.isNull(this.get('label')) ||
+          String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
+            errmsg = '{{ _('Label must be specified.') }}';
+            this.errorModel.set('label', errmsg);
+            return errmsg;
+        }
+
+        return null;
       }
     });
 
