@@ -1103,7 +1103,7 @@ span.button-label {
 }
 button.pg-alertify-button {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: initial;
+  font-size: 15px;
 }
 .fa.pg-alertify-button:before {
   font: normal normal normal 18px/1 FontAwesome;
@@ -1233,6 +1233,7 @@ form[name="change_password_form"] .help-block {
   }
 }
 
+
 /* Override Backgrid's default z-index */
 .dashboard-tab-container .backgrid-filter .search {
   z-index: 10 !important;
@@ -1263,4 +1264,65 @@ form[name="change_password_form"] .help-block {
           box-sizing: border-box;
   -webkit-appearance: none;
      -moz-appearance: none;
+}
+
+.subnode-footer {
+  text-align: right;
+  border-color: #a9a9a9;
+  border-style: inset inset inset solid;
+  border-width: 2px 1px 0;
+  margin-top: -10px;
+}
+
+.subnode-footer .ajs-button {
+  margin: 2px 2px 0;
+}
+
+.user_management {
+  margin: 0 10px !important;
+  width: calc(100% - 20px);
+  height: 100%;
+  overflow: hidden;
+}
+
+.user_management .search_users form {
+  margin: 0;
+}
+
+.user_management table {
+  display: block;
+  height: 100%;
+  overflow: auto;
+  border: 0 none;
+}
+
+.user_management .backform-tab {
+  height: calc(100% - 75px);
+}
+
+.user_management .search_users {
+  float:right;
+  margin-right: 5px;
+  padding:0 !important;
+}
+
+.user_management .search_users input{
+  height:15px;
+  margin-top: 3px;
+}
+
+.user_management .user_container {
+height: calc(100% - 35px);
+}
+
+.user_management input[placeholder] {
+  font-size: 12px;
+}
+
+.user_management-pg-alertify-button {
+  font-size: 14px !important;
+}
+
+.alertify_tools_dialog_backgrid_properties {
+  top: 43px !important;
 }

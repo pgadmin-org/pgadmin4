@@ -475,6 +475,7 @@ def index():
     return render_template(
             MODULE_NAME + "/index.html",
             username=current_user.email,
+            is_admin=current_user.has_role("Administrator"),
             _=gettext
             )
 

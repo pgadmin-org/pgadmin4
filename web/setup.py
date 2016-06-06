@@ -69,12 +69,17 @@ account:\n""")
 
         db.create_all()
         user_datastore.create_role(
-                name='Administrators',
-                description='pgAdmin Administrators Role'
+                name='Administrator',
+                description='pgAdmin Administrator Role'
                 )
+        user_datastore.create_role(
+                name='User',
+                description='pgAdmin User Role'
+                )
+
         user_datastore.create_user(email=email, password=password)
         db.session.flush()
-        user_datastore.add_role_to_user(email, 'Administrators')
+        user_datastore.add_role_to_user(email, 'Administrator')
 
         # Get the user's ID and create the default server group
         user = User.query.filter_by(email=email).first()
@@ -248,6 +253,19 @@ CREATE TABLE process(
     PRIMARY KEY(pid),
     FOREIGN KEY(user_id) REFERENCES user (id)
     )""")
+
+        if int(version.value) < 11:
+            db.engine.execute("""
+UPDATE role
+    SET name = 'Administrator',
+    description = 'pgAdmin Administrator Role'
+    WHERE name = 'Administrators'
+    """)
+
+            db.engine.execute("""
+INSERT INTO role ( name, description )
+            VALUES ('User', 'pgAdmin User Role')
+    """)
 
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION

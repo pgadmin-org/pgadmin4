@@ -68,6 +68,10 @@ try {
           <ul class="dropdown-menu navbar-inverse">
             <li><a href="{{ url_for('security.change_password') }}">{{ _('Change Password') }}</a></li>
             <li class="divider"></li>
+            {% if is_admin %}
+            <li><a onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
+            <li class="divider"></li>
+            {% endif %}
             <li><a href="{{ url_for('security.logout') }}">{{ _('Logout') }}</a></li>
           </ul>
         </li>
