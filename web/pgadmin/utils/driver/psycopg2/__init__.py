@@ -1049,7 +1049,10 @@ class ServerManager(object):
 
         res = dict()
         res['sid'] = self.sid
-        res['password'] = self.password.decode('utf-8')
+        if hasattr(self.password, 'decode'):
+            res['password'] = self.password.decode('utf-8')
+        else:
+            res['password'] = str(self.password)
 
         connections = res['connections'] = dict()
 
