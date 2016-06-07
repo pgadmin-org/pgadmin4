@@ -255,7 +255,7 @@
       var privileges = [];
 
       if (this.attributes &&
-            this.attributes['privileges']) {
+            !this.attributes['privileges']) {
         return null;
       }
 
