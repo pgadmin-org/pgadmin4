@@ -25,6 +25,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-trigger_function',
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       parent_type: ['schema', 'catalog'],
       Init: function(args) {
         /* Avoid mulitple registration of menus */

@@ -1295,6 +1295,35 @@ It may have been removed by another user or moved to another schema.
 
         return ajax_response(response=sql)
 
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, fnid):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            tid: Function/Procedure/Trigger Function Id
+
+        Returns the statistics for a particular object if fnid is specified
+        """
+        status, res = self.conn.execute_dict(
+            render_template(
+                "/".join([self.sql_template_path, 'stats.sql']),
+                conn=self.conn, fnid=fnid
+                )
+            )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
+                status=200
+                )
+
 
 FunctionView.register_node_view(blueprint)
 

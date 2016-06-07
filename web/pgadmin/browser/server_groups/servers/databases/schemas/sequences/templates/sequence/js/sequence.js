@@ -24,6 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-sequence',
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */

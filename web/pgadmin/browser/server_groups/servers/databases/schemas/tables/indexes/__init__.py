@@ -200,7 +200,7 @@ class IndexesView(PGChildNodeView):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
@@ -868,6 +868,76 @@ class IndexesView(PGChildNodeView):
 
         return ajax_response(
                 response=dependencies_result,
+                status=200
+                )
+
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, tid, idx=None):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            tid: Table Id
+            idx: Index Id
+
+        Returns the statistics for a particular object if idx is specified
+        else return all indexes
+        """
+
+        if idx is not None:
+            # Individual index
+
+            # Check if pgstattuple extension is already created?
+            # if created then only add extended stats
+            status, is_pgstattuple = self.conn.execute_scalar("""
+            SELECT (count(extname) > 0) AS is_pgstattuple
+            FROM pg_extension
+            WHERE extname='pgstattuple'
+            """)
+            if not status:
+                return internal_server_error(errormsg=is_pgstattuple)
+
+            if is_pgstattuple:
+                # Fetch index details only if extended stats available
+                SQL = render_template("/".join([self.template_path,
+                                                'properties.sql']),
+                                      tid=tid, idx=idx,
+                                      datlastsysoid=self.datlastsysoid)
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+                data = dict(res['rows'][0])
+                index = data['name']
+            else:
+                index = None
+
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'stats.sql']),
+                    conn=self.conn, schema=self.schema,
+                    index=index, idx=idx, is_pgstattuple=is_pgstattuple
+                    )
+                )
+
+        else:
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'coll_stats.sql']),
+                    conn=self.conn, schema=self.schema,
+                    table=self.table
+                    )
+                )
+
+        if not status:
+                return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
                 status=200
                 )
 

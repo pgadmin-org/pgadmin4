@@ -12,7 +12,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'table',
         label: '{{ _('Tables') }}',
         type: 'coll-table',
-        columns: ['name', 'relowner', 'description']
+        columns: ['name', 'relowner', 'description'],
+        hasStatistics: true
       });
   };
 
@@ -23,6 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-table',
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
       dialogHelp: '{{ url_for('help.static', filename='table_dialog.html') }}',

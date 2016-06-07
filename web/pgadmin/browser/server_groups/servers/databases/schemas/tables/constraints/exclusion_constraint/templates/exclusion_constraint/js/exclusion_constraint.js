@@ -608,6 +608,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       canDrop: true,
       canDropCascade: true,
       hasDepends: true,
+      hasStatistics: true,
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

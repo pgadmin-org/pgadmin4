@@ -11,7 +11,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         type: 'coll-index',
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
-        columns: ['name', 'description']
+        columns: ['name', 'description'],
+        hasStatistics: true
       });
   };
 
@@ -199,6 +200,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       label: '{{ _('Index') }}',
       hasSQL:  true,
       hasDepends: true,
+      hasStatistics: true,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

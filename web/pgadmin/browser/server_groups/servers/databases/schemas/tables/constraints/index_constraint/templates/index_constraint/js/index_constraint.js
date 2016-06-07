@@ -18,6 +18,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       {% endif %}
       hasSQL: true,
       hasDepends: false,
+      hasStatistics: true,
       parent_type: 'table',
       canDrop: true,
       canDropCascade: true,

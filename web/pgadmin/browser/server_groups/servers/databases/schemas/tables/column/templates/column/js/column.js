@@ -81,6 +81,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         }
       },
       hasDepends: true,
+      hasStatistics: true,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

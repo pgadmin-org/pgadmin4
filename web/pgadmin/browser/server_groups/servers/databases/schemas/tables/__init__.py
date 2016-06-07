@@ -233,7 +233,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
@@ -2806,5 +2806,78 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         return ajax_response(response=sql)
 
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, tid=None):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            tid: Table Id
+
+        Returns the statistics for a particular table if tid is specified,
+        otherwise it will return statistics for all the tables in that
+        schema.
+        """
+
+        # Fetch schema name
+        status, schema_name = self.conn.execute_scalar(
+            render_template(
+                "/".join([self.template_path, 'get_schema.sql']),
+                conn=self.conn, scid=scid
+                )
+            )
+        if not status:
+            return internal_server_error(errormsg=schema_name)
+
+        if tid is None:
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'coll_table_stats.sql']),
+                    conn=self.conn, schema_name=schema_name
+                    )
+                )
+        else:
+            # For Individual table stats
+
+            # Check if pgstattuple extension is already created?
+            # if created then only add extended stats
+            status, is_pgstattuple = self.conn.execute_scalar("""
+            SELECT (count(extname) > 0) AS is_pgstattuple
+            FROM pg_extension
+            WHERE extname='pgstattuple'
+            """)
+            if not status:
+                return internal_server_error(errormsg=is_pgstattuple)
+
+            # Fetch Table name
+            status, table_name = self.conn.execute_scalar(
+                render_template(
+                    "/".join([self.template_path, 'get_table.sql']),
+                    conn=self.conn, scid=scid, tid=tid
+                    )
+                )
+            if not status:
+                return internal_server_error(errormsg=table_name)
+
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'stats.sql']),
+                    conn=self.conn, schema_name=schema_name,
+                    table_name=table_name,
+                    is_pgstattuple=is_pgstattuple, tid=tid
+                    )
+                )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
+                status=200
+                )
 
 TableView.register_node_view(blueprint)

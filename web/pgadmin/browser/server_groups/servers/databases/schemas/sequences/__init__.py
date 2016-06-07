@@ -688,5 +688,33 @@ class SequenceView(PGChildNodeView):
                 status=200
                 )
 
+    @check_precondition(action="stats")
+    def statistics(self, gid, sid, did, scid, seid):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            seid: Sequence Id
+
+        Returns the statistics for a particular object if seid is specified
+        """
+        status, res = self.conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'stats.sql']),
+                conn=self.conn, seid=seid
+                )
+            )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
+                status=200
+                )
 
 SequenceView.register_node_view(blueprint)

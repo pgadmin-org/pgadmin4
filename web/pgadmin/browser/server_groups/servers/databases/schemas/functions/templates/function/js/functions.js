@@ -82,6 +82,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-function',
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       hasScriptTypes: ['create', 'select'],
       parent_type: ['schema', 'catalog'],
       Init: function(args) {

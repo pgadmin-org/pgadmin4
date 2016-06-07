@@ -814,6 +814,62 @@ class ExclusionConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, tid, exid):
+        """
+        Statistics
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          tid: Table ID
+          cid: Exclusion constraint ID
+
+        Returns the statistics for a particular object if cid is specified
+        """
+
+        # Check if pgstattuple extension is already created?
+        # if created then only add extended stats
+        status, is_pgstattuple = self.conn.execute_scalar("""
+        SELECT (count(extname) > 0) AS is_pgstattuple
+        FROM pg_extension
+        WHERE extname='pgstattuple'
+        """)
+        if not status:
+            return internal_server_error(errormsg=is_pgstattuple)
+
+        if is_pgstattuple:
+            # Fetch index details only if extended stats available
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tid=tid, conn=self.conn, cid=exid)
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=result)
+
+            data = result['rows'][0]
+            name = data['name']
+        else:
+            name = None
+
+        status, res = self.conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'stats.sql']),
+                conn=self.conn, schema=self.schema,
+                name=name, exid=exid, is_pgstattuple=is_pgstattuple
+                )
+            )
+        if not status:
+                return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
+                status=200
+                )
+
+
 constraint = ConstraintRegistry(
     'exclusion_constraint', ExclusionConstraintModule, ExclusionConstraintView
     )

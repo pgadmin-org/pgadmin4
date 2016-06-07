@@ -902,5 +902,47 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 status=200
                 )
 
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, tid, clid):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            seid: Sequence Id
+
+        Returns the statistics for a particular object if seid is specified
+        """
+        # Fetch column name
+        SQL = render_template("/".join([self.template_path,
+                                        'properties.sql']), tid=tid, clid=clid
+                              , show_sys_objects=self.blueprint.show_system_objects)
+
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        data = dict(res['rows'][0])
+        column = data['name']
+
+        status, res = self.conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'stats.sql']),
+                conn=self.conn, schema=self.schema,
+                table=self.table, column=column
+                )
+            )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+                data=res,
+                status=200
+                )
+
 
 ColumnsView.register_node_view(blueprint)
