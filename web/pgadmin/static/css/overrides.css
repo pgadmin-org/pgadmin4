@@ -1103,7 +1103,8 @@ span.button-label {
 }
 button.pg-alertify-button {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 15px;
+  font-size: 14px;
+  -webkit-font-smoothing: auto;
 }
 .fa.pg-alertify-button:before {
   font: normal normal normal 18px/1 FontAwesome;
@@ -1319,10 +1320,10 @@ height: calc(100% - 35px);
   font-size: 12px;
 }
 
-.user_management-pg-alertify-button {
-  font-size: 14px !important;
-}
-
 .alertify_tools_dialog_backgrid_properties {
   top: 43px !important;
+}
+
+.user_management_pg-alertify-button {
+  line-height: 16px;
 }
