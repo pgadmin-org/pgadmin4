@@ -65,7 +65,12 @@ Server::Server(quint16 port)
 
     // Append the path, if it's not already there
     if (!python_path.contains(pymodules_path))
+    {
+        if (!python_path.isEmpty())
+            python_path.append(";");
+
         python_path.append(pymodules_path);
+    }
 #endif
 
     if (python_path.length() > 0)
