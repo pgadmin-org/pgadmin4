@@ -23,9 +23,10 @@ Contents:
    :maxdepth: 2
 
    pgadmin_index
-   using
    browser
    pgadmin_menu_bar
+   pgadmin_tabbed_browser
+   pgadmin_tree_control
    preferences
    help
 
@@ -42,8 +43,8 @@ Contents:
 
    server_group_dialog
    server_dialog
-   connecting   
-   error_messages
+   connect_to_server   
+   connect_error
 
 
 Creating Cluster Level Objects  
@@ -140,6 +141,7 @@ Contents:
    :maxdepth: 2
    
    managing_server
+   change_password_dialog
    configuration_editor
    grant_wizard
    maintenance
