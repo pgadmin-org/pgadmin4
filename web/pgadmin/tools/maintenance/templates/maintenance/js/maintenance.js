@@ -77,7 +77,7 @@ define(
           control: Backform.CustomSwitchControl, label: '{{ _('FREEZE') }}', group: '{{ _('Vacuum') }}'
         },{
           id: 'vacuum_analyze', disabled: false, deps: ['op'], disabled: 'isDisabled',
-          control: Backform.CustomSwitchControl, label: '{{ _('ALALYZE') }}', group: '{{ _('Vacuum') }}'
+          control: Backform.CustomSwitchControl, label: '{{ _('ANALYZE') }}', group: '{{ _('Vacuum') }}'
         }]
       },
       {
