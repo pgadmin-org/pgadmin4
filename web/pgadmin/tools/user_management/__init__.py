@@ -66,7 +66,10 @@ blueprint = UserManagementModule(
 
 def validate_user(data):
     new_data = dict()
-    email_filter = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
+    email_filter = re.compile("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
+                              "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
+                              "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
     if ('newPassword' in data and data['newPassword'] != "" and
             'confirmPassword' in data and data['confirmPassword'] != ""):
 
@@ -76,7 +79,7 @@ def validate_user(data):
             raise Exception(_("Passwords do not match."))
 
     if 'email' in data and data['email'] != "":
-        if re.match(email_filter, data['email']):
+        if email_filter.match(data['email']):
             new_data['email'] = data['email']
         else:
             raise Exception(_("Invalid email address."))

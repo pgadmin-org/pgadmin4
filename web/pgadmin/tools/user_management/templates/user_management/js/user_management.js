@@ -157,7 +157,7 @@ define([
               var err = {},
                   errmsg = null,
                   changedAttrs = this.changed || {},
-                  email_filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                  email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
               if (('email' in changedAttrs || !this.isNew()) && (_.isUndefined(this.get('email')) ||
                     _.isNull(this.get('email')) ||
@@ -377,8 +377,8 @@ define([
               setup:function() {
                 return {
                   buttons: [{
-                    text: '{{ _('Close') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
-                    attrs:{name:'close'}
+                    text: '{{ _('Close') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
+                    attrs:{name:'close', type:'button'}
                   }],
                   // Set options for dialog
                   options: {
