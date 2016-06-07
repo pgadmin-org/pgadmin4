@@ -264,7 +264,8 @@ function(_, $, pgBrowser, Backgrid) {
         name = (columns[idx])['name'];
         res.push({
           'statistics': name,
-          'value': row[name]
+          // Check if row is undefined?
+          'value': row && row[name] ? row[name] : null
         });
       }
 
