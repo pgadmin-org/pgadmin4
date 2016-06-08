@@ -140,11 +140,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
+   add_restore_point_dialog
    managing_server
    change_password_dialog
    configuration_editor
    grant_wizard
-   maintenance
+   import_export_data
+   maintenance_dialog
 
 
 Backup and Restore
@@ -158,7 +160,9 @@ Contents:
    :maxdepth: 2
    
    backup_dialog
-   restore
+   backup_globals_dialog
+   backup_server_dialog
+   restore_dialog
   
    
 Developer Tools
