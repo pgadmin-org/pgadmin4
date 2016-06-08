@@ -47,7 +47,7 @@ class ExclusionConstraintModule(ConstraintTypeModule):
     """
 
     NODE_TYPE = 'exclusion_constraint'
-    COLLECTION_LABEL = _("Foreign Keys")
+    COLLECTION_LABEL = _("Exclusion Constraints")
 
     def __init__(self, *args, **kwargs):
         """

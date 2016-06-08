@@ -364,7 +364,8 @@ define(
                 options: {
                   padding: !1,
                   overflow: !1,
-                  title: '{{ _('Preferences')|safe }}'
+                  title: '{{ _('Preferences')|safe }}',
+                  closableByDimmer: false
                 }
               };
             },

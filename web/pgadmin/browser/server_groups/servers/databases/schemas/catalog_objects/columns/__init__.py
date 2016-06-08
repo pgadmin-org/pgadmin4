@@ -20,6 +20,7 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from functools import wraps
+from pgadmin.utils.preferences import Preferences
 
 
 class CatalogObjectColumnsModule(CollectionNodeModule):
@@ -79,6 +80,17 @@ class CatalogObjectColumnsModule(CollectionNodeModule):
         Load the module node as a leaf node
         """
         return False
+
+    def register_preferences(self):
+        """
+        Register preferences for this module.
+        """
+        # Add the node informaton for browser, not in respective
+        # node preferences
+        self.browser_preference = Preferences.module('browser')
+        self.pref_show_system_objects = self.browser_preference.preference(
+                'show_system_objects'
+                )
 
 blueprint = CatalogObjectColumnsModule(__name__)
 

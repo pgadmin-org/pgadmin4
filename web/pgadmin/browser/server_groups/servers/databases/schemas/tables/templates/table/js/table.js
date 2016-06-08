@@ -561,7 +561,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               canAdd: true,
               columns : ['name', 'consrc']
             },{
-              id: 'unique_constraint', label: '{{ _('Unique constraint') }}',
+              id: 'unique_constraint', label: '{{ _('Unique Constraint') }}',
               model: pgBrowser.Nodes['unique_constraint'].model,
               subnode: pgBrowser.Nodes['unique_constraint'].model,
               editable: false, type: 'collection',

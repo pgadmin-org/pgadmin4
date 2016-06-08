@@ -98,7 +98,7 @@ class PrimaryKeyConstraintModule(IndexConstraintModule):
     """
 
     NODE_TYPE = 'primary_key'
-    COLLECTION_LABEL = _("Primary key")
+    COLLECTION_LABEL = _("Primary Key")
 
 
 primary_key_blueprint = PrimaryKeyConstraintModule(__name__)
@@ -112,7 +112,7 @@ class UniqueConstraintModule(IndexConstraintModule):
     """
 
     NODE_TYPE = 'unique_constraint'
-    COLLECTION_LABEL = _("Unique constraint")
+    COLLECTION_LABEL = _("Unique Constraint")
 
 
 unique_constraint_blueprint = UniqueConstraintModule(__name__)
