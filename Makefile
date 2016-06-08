@@ -44,7 +44,7 @@ PGADMIN_INSTALL_CMD = pip install --use-wheel --find-links=${PGADMIN_DIST} ${PGA
 
 
 define create_manifest
-@printf 'recursive-include ${PGADMIN_SRC_DIR} *\nglobal-exclude pgadmin4.db *.pyc' > ${PGADMIN_MANIFEST}
+@printf 'recursive-include ${PGADMIN_SRC_DIR} *\nglobal-exclude config_local.py\nglobal-exclude *.pyc' > ${PGADMIN_MANIFEST}
 endef
 
 define build
