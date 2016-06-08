@@ -601,6 +601,7 @@ define([
                 coll.fetch({
                   success: function(collection, data) {
                     $('.wizard-progress-bar p').html('');
+                    $('.wizard-progress-bar').hide();
                   },
                   reset: true
                 }, this);
@@ -654,7 +655,7 @@ define([
 
                         // Create a grid container
                         var gridBody =
-                              $('<div class="db_objects_container"></div>');
+                              $('<div class="db_objects_container col-xs-12"></div>');
 
                         // Remove grid if exits before render
                         if (this.grid) {
@@ -665,7 +666,7 @@ define([
                         this.grid = new Backgrid.Grid({
                           columns: _.clone(columns),
                           collection: coll,
-                          className: "backgrid table-bordered object_type_table"
+                          className: "backgrid table-bordered object_type_table col-xs-12"
                           });
 
                         // Render selection Type grid and paginator
@@ -784,21 +785,25 @@ define([
                           if (privModel) {
                             data = privModel.toJSON();
                             var rolePrivs = data['acl'];
+                            if (!_.isUndefined(rolePrivs) && rolePrivs.length > 0) {
+                              for (var idx in rolePrivs) {
+                                var rolePriv = (rolePrivs[idx])['privileges'],
+                                    removeIdx = [], j;
 
-                            for (var idx in rolePrivs) {
-                              var rolePriv = (rolePrivs[idx])['privileges'],
-                                  removeIdx = [], j;
+                                for (j in rolePriv) {
+                                  var p = rolePriv[j];
+                                  if (_.indexOf(obj_priv, p['privilege_type']) == -1) {
+                                    removeIdx.push(j);
+                                  }
+                                }
 
-                              for (j in rolePriv) {
-                                var p = rolePriv[j];
-                                if (_.indexOf(obj_priv, p['privilege_type']) == -1) {
-                                  removeIdx.push(j);
+                                for (j in removeIdx) {
+                                  rolePriv.splice(j, 1);
                                 }
                               }
-
-                              for (j in removeIdx) {
-                                rolePriv.splice(j, 1);
-                              }
+                            } else {
+                              console.log('Acls are not defined');
+                              return;
                             }
                           }
 
@@ -1048,7 +1053,8 @@ define([
                     curr_page: 0,
                     show_left_panel: false,
                     show_header_cancel_btn: true,
-                    disable_finish: true
+                    disable_finish: true,
+                    wizard_help: "{{ url_for('help.static', filename='grant_wizard.html') }}"
                   },
 
                   // Callback for finish button

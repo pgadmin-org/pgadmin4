@@ -65,7 +65,8 @@
 }
 
 .wizard-right-panel_content {
-  height: calc(100% - 113px);
+  height: calc(100% - 86px);
+  padding: 0;
 }
 
 /* Wizard Footer CSS */
@@ -80,6 +81,10 @@
   bottom: 0;
   margin: 0;
   padding: 0;
+}
+
+.pgadmin-wizard .footer .row {
+  margin: 0 -6px 3px -6px;
 }
 
 /* Wizard Button CSS */

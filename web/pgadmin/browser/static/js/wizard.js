@@ -45,7 +45,8 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       show_header_cancel_btn: false, /* show cancel button at wizard header */
       height: 400,
       width: 650,
-      show_left_panel: true
+      show_left_panel: true,
+      wizard_help: ''
     },
     tmpl: _.template(
        "    <div class='pgadmin-wizard' style='height: <%= this.options.height %>px;"
@@ -75,7 +76,10 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "              <%= show_description %>"
        + "            </div>"
        + "          <% } %>"
-       + "          <div class='wizard-right-panel_content'>"
+       + "          <div class='wizard-progress-bar'><% if (show_progress_bar) { %>"
+       + "            <p class='alert alert-info col-sm-12'><%= show_progress_bar %></p><% } %>"
+       + "          </div>"
+       + "          <div class='wizard-right-panel_content col-xs-12'>"
        + "          </div>"
        + "        </div>"
        + "      </div>"
@@ -84,8 +88,9 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "      </div>"
        + "      <div class='footer col-sm-12'>"
        + "        <div class='row'>"
-       + "          <div class='col-sm-4 wizard-progress-bar'>"
-       + "             <p><% if (show_progress_bar) { %><%= show_progress_bar %><% } %></p>"
+       + "          <div class='col-sm-4 wizard-buttons pull-left'>"
+       + "            <button title = 'Help for this dialog.' class='btn btn-default pull-left wizard-help' <%=this.options.wizard_help ? '' : 'disabled' %>>"
+       + "              <span class='fa fa-lg fa-question'></span></button>"
        + "          </div>"
        + "          <div class='col-sm-8'>"
        + "            <div class='wizard-buttons'>"
@@ -108,6 +113,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       "click button.wizard-cancel" : "onCancel",
       "click button.wizard-cancel-event" : "onCancel",
       "click button.wizard-finish" : "finishWizard",
+      "click button.wizard-help" : "onDialogHelp",
     },
     initialize: function(options) {
       this.options = _.extend({}, this.options, options.options);
@@ -232,6 +238,22 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       ctx = ctx || self.currPage;
 
       return (_.isFunction(func) ? func.apply(ctx, [self]) : func);
+    },
+    onDialogHelp: function() {
+      // See if we can find an existing panel, if not, create one
+      pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
+
+      if (pnlDialogHelp == null) {
+        pnlProperties = pgBrowser.docker.findPanels('properties')[0];
+        pgBrowser.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+        pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
+      }
+
+      // Update the panel
+      iframe = $(pnlDialogHelp).data('embeddedFrame');
+
+      pnlDialogHelp.focus();
+      iframe.openURL(this.options.wizard_help);
     }
   });
 
