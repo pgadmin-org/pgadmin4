@@ -75,12 +75,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       pgAdmin.Browser.add_menus([{
         name: 'show_obj_properties', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'show_obj_properties',
-        priority: 3, label: '{{ _("Properties...") }}',
+        priority: 999, label: '{{ _("Properties...") }}',
         data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
       }, {
         name: 'refresh', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'refresh',
-        priority: 2, label: '{{ _("Refresh...") }}',
+        priority: 1, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);
 
@@ -88,7 +88,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         pgAdmin.Browser.add_menus([{
           name: 'delete_object', node: self.type, module: self,
           applies: ['object', 'context'], callback: 'delete_obj',
-          priority: 3, label: '{{ _("Delete/Drop") }}',
+          priority: 2, label: '{{ _("Delete/Drop") }}',
           data: {'url': 'drop'}, icon: 'fa fa-trash',
           enable: _.isFunction(self.canDrop) ?
             function() {
@@ -106,6 +106,19 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           }]);
         }
       }
+
+      // show query tool in context & object menu of supported nodes.
+      if (pgAdmin.DataGrid && pgAdmin.unsupported_nodes) {
+        if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
+          pgAdmin.Browser.add_menus([{
+            name: 'show_query_tool', node: self.type, module: self,
+            applies: ['object', 'context'], callback: 'show_query_tool',
+            priority: 998, label: '{{ _("Query tool") }}',
+            icon: 'fa fa-bolt'
+          }]);
+        }
+      }
+
       // This will add options of scripts eg:'CREATE Script'
       if (self.hasScriptTypes && _.isArray(self.hasScriptTypes)
         &&  self.hasScriptTypes.length > 0) {
@@ -121,7 +134,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             pgAdmin.Browser.add_menus([{
               name: 'show_script_' + stype, node: self.type, module: self,
               applies: ['object', 'context'], callback: 'show_script',
-              priority: 3, label: type_label, category: 'Scripts',
+              priority: 4, label: type_label, category: 'Scripts',
               data: {'script': stype}, icon: 'fa fa-pencil',
               enable: this.check_user_permission
             }]);
@@ -131,7 +144,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           pgAdmin.Browser.add_menus([{
             name: 'show_script_create', node: self.type, module: self,
             applies: ['object', 'context'], callback: 'show_script',
-            priority: 3, label: 'CREATE Script', category: 'Scripts',
+            priority: 4, label: 'CREATE Script', category: 'Scripts',
             data: {'script': 'create'}, icon: 'fa fa-pencil',
             enable: this.check_user_permission
           }]);
@@ -602,6 +615,22 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         // Open data grid & pass the URL for fetching
         pgAdmin.DataGrid.show_query_tool.apply(
           this, [obj.generate_url(i, sql_url, d, true), i]
+        );
+      },
+
+      // Callback to render query editor
+      show_query_tool: function(args, item) {
+        var obj = this,
+          t = pgBrowser.tree,
+          i = item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+        if (!d)
+          return;
+
+        // Here call data grid method to render query tool
+        pgAdmin.DataGrid.show_query_tool.apply(
+          this, [undefined, i]
         );
       },
       // Callback called - when a node is selected in browser tree.

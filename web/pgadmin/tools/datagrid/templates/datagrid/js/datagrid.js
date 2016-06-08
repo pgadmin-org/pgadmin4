@@ -37,7 +37,7 @@ define(
         };
 
         // Define list of nodes on which Query tool option doesn't appears
-        var unsupported_nodes = [
+        var unsupported_nodes = pgAdmin.unsupported_nodes = [
            'server-group', 'server', 'coll-tablespace', 'tablespace',
            'coll-role', 'role', 'coll-resource_group', 'resource_group',
            'coll-database'

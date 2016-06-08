@@ -33,9 +33,21 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       pgAdmin.Browser.add_menus([{
         name: 'refresh', node: this.type, module: this,
         applies: ['object', 'context'], callback: 'refresh',
-        priority: 2, label: '{{ _("Refresh...") }}',
+        priority: 1, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);
+
+      // show query tool in context & object menu of supported nodes.
+      if (pgAdmin.DataGrid && pgAdmin.unsupported_nodes) {
+        if (_.indexOf(pgAdmin.unsupported_nodes, this.type) == -1) {
+          pgAdmin.Browser.add_menus([{
+            name: 'show_query_tool', node: this.type, module: this,
+            applies: ['object', 'context'], callback: 'show_query_tool',
+            priority: 998, label: '{{ _("Query tool") }}',
+            icon: 'fa fa-bolt'
+          }]);
+        }
+      }
     },
     hasId: false,
     // A collection will always have a collection of statistics, when the node
