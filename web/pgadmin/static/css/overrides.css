@@ -1327,3 +1327,20 @@ height: calc(100% - 35px);
 .user_management_pg-alertify-button {
   line-height: 16px;
 }
+
+.pg-panel-statistics-container >table.backgrid.table-bordered {
+  border: 0px;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th {
+  padding: 2px;
+  border: 1px solid #ddd;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th:first-child {
+  border-left: 0px;
+}
+
+.pg-panel-statistics-container > table > thead > tr > th:last-child {
+  border-right: 0px;
+}
