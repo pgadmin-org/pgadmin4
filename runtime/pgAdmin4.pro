@@ -2,9 +2,15 @@
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
     QT += webkitwidgets network widgets
+    win32 {
+      RC_ICONS += pgAdmin4.ico
+    }
 } else { 
     message(Building for QT4...)
-    QT += webkit network 
+    QT += webkit network
+    win32 {
+      RC_FILE += pgAdmin4.rc
+    }
 }
 
 CONFIG(debug, debug|release) {
