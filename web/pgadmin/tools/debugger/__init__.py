@@ -541,7 +541,8 @@ def start_debugger_listener(trans_id):
         )
     obj = debugger_data[str(trans_id)]
 
-    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
+    driver = get_driver(PG_DEFAULT_DRIVER)
+    manager = driver.connection_manager(obj['server_id'])
     conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
 
     ver = manager.version
@@ -572,7 +573,7 @@ def start_debugger_listener(trans_id):
             str_query = ''
 
             # Form the function name with schema name
-            func_name = session['functionData'][str(trans_id)]['schema'] + '.' + session['functionData'][str(trans_id)]['name']
+            func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + driver.qtIdent(conn, session['functionData'][str(trans_id)]['name'])
 
             if obj['restart_debug'] == 0:
                 # render the SQL template and send the query to server
