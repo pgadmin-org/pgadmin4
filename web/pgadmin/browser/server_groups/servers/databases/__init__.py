@@ -10,6 +10,7 @@
 """Implements the Database Node"""
 
 import json
+import re
 from flask import render_template, make_response, current_app, request, jsonify
 from flask.ext.babel import gettext as _
 from pgadmin.utils.ajax import make_json_response, \
@@ -635,6 +636,7 @@ class DatabaseView(PGChildNodeView):
             if not status:
                 return res
 
+            res = re.sub('\n{2,}', '\n\n', res)
             SQL = res.strip('\n').strip(' ')
 
             return make_json_response(
@@ -854,7 +856,8 @@ class DatabaseView(PGChildNodeView):
         result.update(frmtd_variables)
 
         SQL = self.get_new_sql(gid, sid, result, did)
-
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
+        SQL = SQL.strip('\n')
         return ajax_response(response=SQL)
 
     @check_precondition()
