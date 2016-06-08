@@ -27,7 +27,8 @@ pgadmin4.log
 /mac-build
 /src-build
 /dist
-/win-build
+pkg/win32/win-build
+pkg/win32/installer.iss
 runtime/Makefile.Debug
 runtime/Makefile.Release
 runtime/release/
