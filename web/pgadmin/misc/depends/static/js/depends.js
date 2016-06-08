@@ -236,6 +236,9 @@ define(
        * through. We will wait for some time before fetching the Dependents
        **/
       var self = this;
+      if (!node) {
+        return;
+      }
       self.dependent = true;
       if (self.timeout) {
         clearTimeout(self.timeout);
@@ -275,6 +278,9 @@ define(
        * through. We will wait for some time before fetching the Dependencies
        **/
       var self = this;
+      if (!node) {
+        return;
+      }
       self.dependent = false;
       if (self.timeout) {
         clearTimeout(self.timeout);

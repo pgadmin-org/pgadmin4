@@ -218,6 +218,9 @@ function(_, $, pgBrowser, Backgrid) {
 
     showStatistics: function(item, data, node) {
       var self = this;
+      if (!node) {
+        return;
+      }
       /**
        * We can't start fetching the statistics immediately, it is possible -
        * the user is just using keyboards to select the node, and just
