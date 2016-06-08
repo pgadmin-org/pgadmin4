@@ -27,3 +27,7 @@ pgadmin4.log
 /mac-build
 /src-build
 /dist
+/win-build
+runtime/Makefile.Debug
+runtime/Makefile.Release
+runtime/release/
