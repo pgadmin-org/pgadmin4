@@ -207,16 +207,14 @@ define([
                     autoReset: false,
                     maximizable: false,
                     closable: false,
-                    closableByDimmer: false
+                    closableByDimmer: false,
+                    modal: false,
+                    pinnable: false
                   }
                 };
               },
               hooks:{
                 onshow: function() {
-
-                  // Set dimensions for wizard
-                  this.elements.dialog.style.width = '100%';
-                  this.elements.dialog.style.height = '68%';
 
                   // Add pgadmin_grant_wizard_body class to dialog
                   $(this.elements.body).addClass('pgadmin_grant_wizard_body');
@@ -1110,8 +1108,8 @@ define([
           });
         }
 
-        // Call Grant Wizard Dialog
-        alertify.wizardDialog(true);
+        // Call Grant Wizard Dialog and set dimensions for wizard
+        alertify.wizardDialog(true).resizeTo('40%', '60%');
       }
     };
 
