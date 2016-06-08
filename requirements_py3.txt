@@ -35,6 +35,5 @@ testtools==2.0.0
 traceback2==1.4.0
 unittest2==1.1.0
 Werkzeug==0.9.6
-wheel==0.24.0
 WTForms==2.0.2
 sqlparse==0.1.19
