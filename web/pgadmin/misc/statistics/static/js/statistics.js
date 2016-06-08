@@ -229,15 +229,17 @@ function(_, $, pgBrowser, Backgrid) {
        * We will wait for some time before fetching the statistics for the
        * selected node.
        **/
-      if (self.timeout) {
-        clearTimeout(self.timeout);
-      }
-      self.timeout =  setTimeout(
-        function() {
-          self.__updateCollection.call(
-            self, node.generate_url(item, 'stats', data, true), node
-          );
-        }, 400);
+      if (node) {
+        if (self.timeout) {
+          clearTimeout(self.timeout);
+        }
+        self.timeout =  setTimeout(
+          function() {
+            self.__updateCollection.call(
+              self, node.generate_url(item, 'stats', data, true), node
+            );
+          }, 400);
+        }
     },
 
     __createMultiLineStatistics: function(data) {
