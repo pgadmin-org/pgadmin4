@@ -15,6 +15,7 @@ import sys
 import getpass
 import random
 import string
+import re
 
 from flask import Flask
 from flask.ext.security import Security, SQLAlchemyUserDatastore
@@ -48,8 +49,15 @@ def do_setup(app):
         print("""
 Enter the email address and password to use for the initial pgAdmin user \
 account:\n""")
+        email_filter = re.compile(
+            "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
+            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
+            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
         email = ''
-        while email == '':
+        input("Email address: ")
+        while email == '' or not email_filter.match(email):
+            print('Invalid email address. Please try again.')
             email = input("Email address: ")
 
         def pprompt():
@@ -57,7 +65,7 @@ account:\n""")
 
         p1, p2 = pprompt()
         while p1 != p2:
-            print('Passwords do not match. Try again')
+            print('Passwords do not match. Please try again.')
             p1, p2 = pprompt()
 
     # Setup Flask-Security
