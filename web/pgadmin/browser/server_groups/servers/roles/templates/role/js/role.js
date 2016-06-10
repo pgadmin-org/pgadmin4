@@ -406,7 +406,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
           group: '{{ _('Definition') }}', label: '{{ _('Account Expires') }}',
           cell: 'string', mode: ['properties', 'edit', 'create'], retype: true,
-          deps: ['rolcanlogin'], options: {}, control: 'datepicker'
+          deps: ['rolcanlogin'], options: { autoclose: true }, control: 'datepicker'
         },{
           id: 'rolconnlimit',  type: 'int', group: '{{ _('Definition') }}',
           label: '{{ _('Connection Limit') }}', cell: 'number',
