@@ -120,8 +120,6 @@ To use autocomplete, start typing your query, and press the Control+Space shortc
 
 .. image:: images/query_autocomplete.png
 
-The autocomplete system is based on code from *psql*, the PostgreSQL command line interpreter and will usually be able to offer autocomplete options in the same places that it can in *psql*.
-
 After entering a query, select the *Execute/Refresh* icon from the toolbar. The complete contents of the SQL editor panel will be sent to the database server for execution. To execute a section of the code that is displayed in the SQL editor, highlight the text that you want the server to execute, and click the *Execute/Refresh* icon. 
 
 .. image:: images/query_execute_section.png
