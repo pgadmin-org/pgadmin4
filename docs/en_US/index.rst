@@ -22,13 +22,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   pgadmin_index
    browser
    pgadmin_menu_bar
    pgadmin_tabbed_browser
    pgadmin_tree_control
    preferences
-   help
 
 
 Getting Started
@@ -141,9 +139,7 @@ Contents:
    :maxdepth: 2
    
    add_restore_point_dialog
-   managing_server
    change_password_dialog
-   configuration_editor
    grant_wizard
    import_export_data
    maintenance_dialog
@@ -175,10 +171,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   query_tool
-   data_editor
-   data_filter
    debugger
+   query_tool
    
    
 pgAdmin Deployment
