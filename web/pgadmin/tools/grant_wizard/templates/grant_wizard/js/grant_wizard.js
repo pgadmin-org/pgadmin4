@@ -801,7 +801,6 @@ define([
                               }
                             } else {
                               console.log('Acls are not defined');
-                              return;
                             }
                           }
 
