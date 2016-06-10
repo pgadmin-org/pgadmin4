@@ -245,7 +245,7 @@ class Filemanager(object):
             )
         self.dir = get_storage_directory()
 
-        if isinstance(self.dir, list):
+        if self.dir is not None and isinstance(self.dir, list):
             self.dir = ""
 
     @staticmethod
@@ -507,6 +507,8 @@ class Filemanager(object):
         """
 
         path = unquote(path)
+        if self.dir is None:
+            self.dir = ""
         orig_path = "{0}{1}".format(self.dir, path)
         user_dir = path
         thefile = {

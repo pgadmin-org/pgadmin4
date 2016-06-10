@@ -61,11 +61,11 @@ def init_app(app):
     if storage_dir and not os.path.isdir(storage_dir):
         if os.path.exists(storage_dir):
             raise Exception(
-                'The value specified for as the storage directory is not a directory!'
+                'The path specified for the storage directory is not a directory.'
             )
         os.makedirs(storage_dir, int('700', 8))
 
-    if not os.access(storage_dir, os.W_OK | os.R_OK):
+    if storage_dir and not os.access(storage_dir, os.W_OK | os.R_OK):
         raise Exception(
-            'The user does not have permission to read, write on the specified storage directory!'
+            'The user does not have permission to read and write to the specified storage directory.'
         )
