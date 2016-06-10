@@ -547,15 +547,6 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 icon = "icon-foreign_key"
                 valid = True
 
-            sql = render_template("/".join([self.template_path, 'alter.sql']), data=data, conn=self.conn)
-            sql = sql.strip('\n').strip(' ')
-
-            if sql != '':
-                status, result = self.conn.execute_scalar(sql)
-                if not status:
-                    self.end_transaction()
-                    return internal_server_error(errormsg=result)
-
             if data['autoindex']:
                 sql = render_template(
                     "/".join([self.template_path, 'create_index.sql']),
@@ -827,9 +818,6 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             sql = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
-            sql += "\n"
-            sql += render_template("/".join([self.template_path, 'alter.sql']),
-                                   data=data, conn=self.conn)
 
             if data['autoindex']:
                 sql += render_template(
@@ -898,10 +886,6 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']), data=data)
-            SQL += "\n"
-            SQL += render_template(
-                "/".join([self.template_path, 'alter.sql']),
-                data=data, conn=self.conn)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

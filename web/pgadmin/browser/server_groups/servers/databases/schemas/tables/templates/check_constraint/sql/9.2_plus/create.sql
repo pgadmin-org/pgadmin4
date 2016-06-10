@@ -4,3 +4,8 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
 
     NOT VALID{% endif %}{% if data.connoinherit %} NO INHERIT{% endif %};
 {% endif %}
+{% if data.comment %}
+
+COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
+    IS {{ data.comment|qtLiteral }};
+{% endif %}

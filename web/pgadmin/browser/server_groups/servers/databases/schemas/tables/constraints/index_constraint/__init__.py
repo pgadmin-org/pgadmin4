@@ -526,17 +526,6 @@ class IndexConstraintView(PGChildNodeView):
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'alter.sql']),
-                                  data=data,
-                                  conn=self.conn)
-            sql = sql.strip('\n').strip(' ')
-
-            if sql != '':
-                status, result = self.conn.execute_scalar(sql)
-                if not status:
-                    self.end_transaction()
-                    return internal_server_error(errormsg=result)
-
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     res['rows'][0]['oid'],
@@ -768,10 +757,6 @@ class IndexConstraintView(PGChildNodeView):
                                   data=data,
                                   conn=self.conn,
                                   constraint_name=self.constraint_name)
-            sql += "\n"
-            sql += render_template("/".join([self.template_path, 'alter.sql']),
-                                   data=data,
-                                   conn=self.conn)
 
         return sql
 
@@ -826,10 +811,6 @@ class IndexConstraintView(PGChildNodeView):
                 "/".join([self.template_path, 'create.sql']),
                 data=data,
                 constraint_name=self.constraint_name)
-            SQL += "\n"
-            SQL += render_template(
-                "/".join([self.template_path, 'alter.sql']),
-                data=data, conn=self.conn)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

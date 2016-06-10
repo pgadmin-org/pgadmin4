@@ -1,7 +1,7 @@
 {#
-# CREATE DATABSE does not allow us to run any
-# other sql statments along with it, so we wrote
-# seprate sql for rest alter sql statments here
+# CREATE DATABASE does not allow us to run any
+# other sql statements along with it, so we wrote
+# separate sql for rest alter sql statements here
 #}
 {% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}

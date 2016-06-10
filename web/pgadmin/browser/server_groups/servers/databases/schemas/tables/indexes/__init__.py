@@ -557,15 +557,19 @@ class IndexesView(PGChildNodeView):
         data['table'] = self.table
 
         try:
+            # Start transaction.
+            self.conn.execute_scalar("BEGIN;")
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),
                                   data=data, conn=self.conn, mode='create')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
+                # End transaction.
+                self.conn.execute_scalar("END;")
                 return internal_server_error(errormsg=res)
 
             # If user chooses concurrent index then we can not run it along
-            # with other alter statments so we will separate alter index part
+            # with other alter statements so we will separate alter index part
             SQL = render_template("/".join([self.template_path,
                                             'alter.sql']),
                                   data=data, conn=self.conn)
@@ -573,6 +577,8 @@ class IndexesView(PGChildNodeView):
             if SQL != '':
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
+                    # End transaction.
+                    self.conn.execute_scalar("END;")
                     return internal_server_error(errormsg=res)
 
             # we need oid to to add object in tree at browser
@@ -581,8 +587,12 @@ class IndexesView(PGChildNodeView):
                                   tid=tid, data=data)
             status, idx = self.conn.execute_scalar(SQL)
             if not status:
+                # End transaction.
+                self.conn.execute_scalar("END;")
                 return internal_server_error(errormsg=tid)
 
+            # End transaction.
+            self.conn.execute_scalar("END;")
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     idx,
@@ -592,6 +602,8 @@ class IndexesView(PGChildNodeView):
                 )
             )
         except Exception as e:
+            # End transaction.
+            self.conn.execute_scalar("END;")
             return internal_server_error(errormsg=str(e))
 
     @check_precondition

@@ -10,3 +10,8 @@ ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
     DEFERRABLE{% if data.condeferred %}
  INITIALLY DEFERRED{% endif%}
 {% endif%}{% if data.constraint %} WHERE ({{data.constraint}}){% endif%};
+{% if data.comment and data.name %}
+
+COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
+    IS {{ data.comment|qtLiteral }};
+{% endif %}

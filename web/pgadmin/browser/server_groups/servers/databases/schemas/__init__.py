@@ -506,6 +506,7 @@ It may have been removed by another user.
                     )
                 )
         try:
+            self.format_request_acls(data, specific=['nspacl'])
             SQL = render_template(
                 "/".join([self.template_path, 'sql/create.sql']),
                 data=data, conn=self.conn, _=gettext
@@ -518,22 +519,6 @@ It may have been removed by another user.
                     errormsg=res + '\n' +
                     'Operation failed while running create statement'
                     )
-            self.format_request_acls(data, specific=['nspacl'])
-
-            SQL = render_template(
-                "/".join([self.template_path, 'sql/alter.sql']),
-                data=data, conn=self.conn, _=gettext
-                )
-            # Checking if we are not executing empty query
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=res + '\n' +
-                        'Operation failed while running alter statement'
-                        )
 
             # we need oid to to add object in tree at browser,
             # below sql will gives the same
@@ -727,11 +712,6 @@ It may have been removed by another user.
                 "/".join([self.template_path, 'sql/create.sql']),
                 data=data, conn=self.conn, _=gettext
                 )
-            SQL += "\n"
-            SQL += render_template(
-                "/".join([self.template_path, 'sql/alter.sql']),
-                _=gettext, data=data, conn=self.conn
-                )
 
         return SQL
 
@@ -772,11 +752,6 @@ It may have been removed by another user.
         SQL = ''
         SQL = render_template(
             "/".join([self.template_path, 'sql/create.sql']),
-            _=gettext, data=data, conn=self.conn
-            )
-        SQL += "\n"
-        SQL += render_template(
-            "/".join([self.template_path, 'sql/alter.sql']),
             _=gettext, data=data, conn=self.conn
             )
 
@@ -865,7 +840,6 @@ It may have been removed by another user.
                 nodes.extend(module.get_nodes(**kwargs))
 
         return make_json_response(data=nodes)
-
 
 
 class CatalogView(SchemaView):
@@ -963,11 +937,6 @@ It may have been removed by another user.
         SQL = ''
         SQL = render_template(
             "/".join([self.template_path, 'sql/create.sql']),
-            _=gettext, data=old_data, conn=self.conn
-            )
-        SQL += "\n"
-        SQL += render_template(
-            "/".join([self.template_path, 'sql/alter.sql']),
             _=gettext, data=old_data, conn=self.conn
             )
 

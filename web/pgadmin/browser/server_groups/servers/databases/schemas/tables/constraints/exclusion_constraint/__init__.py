@@ -506,15 +506,6 @@ class ExclusionConstraintView(PGChildNodeView):
                 if not status:
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
-            if 'name' in data and data['name'] != '':
-                sql = render_template("/".join([self.template_path, 'alter.sql']), data=data, conn=self.conn)
-                sql = sql.strip('\n').strip(' ')
-
-                if sql != '':
-                    status, result = self.conn.execute_scalar(sql)
-                    if not status:
-                        self.end_transaction()
-                        return internal_server_error(errormsg=result)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -728,9 +719,6 @@ class ExclusionConstraintView(PGChildNodeView):
 
             sql = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
-            sql += "\n"
-            sql += render_template("/".join([self.template_path, 'alter.sql']),
-                                   data=data, conn=self.conn)
 
         return sql
 
@@ -795,10 +783,6 @@ class ExclusionConstraintView(PGChildNodeView):
 
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']), data=data)
-            SQL += "\n"
-            SQL += render_template(
-                "/".join([self.template_path, 'alter.sql']),
-                data=data, conn=self.conn)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

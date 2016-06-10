@@ -1747,14 +1747,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                                     if ctype == 'p' else 'UNIQUE'
                                     ).strip('\n')
                             )
-                            # sql to update comments
-                            sql.append(
-                                render_template(
-                                    "/".join([self.index_constraint_template_path,
-                                              'alter.sql']),
-                                    data=c, conn=self.conn
-                                    ).strip('\n')
-                            )
                         else:
                             sql.append(
                                 gettext(
@@ -1871,14 +1863,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             data=c, conn=self.conn
                             ).strip('\n')
                     )
-                    # sql to update comments
-                    sql.append(
-                        render_template(
-                            "/".join([self.foreign_key_template_path,
-                                      'alter.sql']),
-                            data=c, conn=self.conn
-                            ).strip('\n')
-                    )
 
                     if c['autoindex']:
                         sql.append(
@@ -1963,14 +1947,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             data=c, conn=self.conn
                             ).strip('\n')
                     )
-                    # sql to update comments
-                    sql.append(
-                        render_template(
-                            "/".join([self.check_constraint_template_path,
-                                      'alter.sql']),
-                            data=c, conn=self.conn
-                            ).strip('\n')
-                    )
 
         if len(sql) > 0:
             # Join all the sql(s) as single string
@@ -2044,14 +2020,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         render_template(
                             "/".join([self.exclusion_constraint_template_path,
                                       'create.sql']),
-                            data=c, conn=self.conn
-                            ).strip('\n')
-                    )
-                    # sql to update comments
-                    sql.append(
-                        render_template(
-                            "/".join([self.exclusion_constraint_template_path,
-                                      'alter.sql']),
                             data=c, conn=self.conn
                             ).strip('\n')
                     )
