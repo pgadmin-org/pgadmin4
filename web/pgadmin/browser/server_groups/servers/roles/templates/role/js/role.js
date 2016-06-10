@@ -403,10 +403,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
             return false;
           }
         },{
-          id: 'rolvaliduntil', disabled: 'readonly', type: 'date',
+          id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
           group: '{{ _('Definition') }}', label: '{{ _('Account Expires') }}',
           cell: 'string', mode: ['properties', 'edit', 'create'], retype: true,
-          deps: ['rolcanlogin'], options: {}
+          deps: ['rolcanlogin'], options: {}, control: 'datepicker'
         },{
           id: 'rolconnlimit',  type: 'int', group: '{{ _('Definition') }}',
           label: '{{ _('Connection Limit') }}', cell: 'number',

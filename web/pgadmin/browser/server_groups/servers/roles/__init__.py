@@ -133,6 +133,20 @@ class RoleView(PGChildNodeView):
                             _("Name must be specified.")
                             )
 
+            if u'rolvaliduntil' in data:
+                # Make date explicit so that it works with every
+                # postgres database datestyle format
+                try:
+                    if data[u'rolvaliduntil'] is not None:
+                        date = datetime.datetime.strptime(
+                            data[u'rolvaliduntil'], '%m/%d/%Y'
+                        )
+                        data[u'rolvaliduntil'] = date.strftime("%d-%B-%Y")
+                except Exception as e:
+                    return precondition_required(
+                        _("Date format is invalid.")
+                        )
+
             if u'rolconnlimit' in data:
                 if data[u'rolconnlimit'] is not None:
                     data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
