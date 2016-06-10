@@ -110,3 +110,23 @@ def get(setting=None, default=None):
                               errormsg=errormsg,
                               info=info,
                               result=request.form)
+
+
+@blueprint.route("/reset_layout", methods=['DELETE'])
+@login_required
+def reset_layout():
+    """Reset configuration setting"""
+    if request.method == 'DELETE':
+        # There can be only one record at most
+        data = Setting.query.filter_by(user_id=current_user.id).first()
+        try:
+            if data is not None:
+                db.session.delete(data)
+                db.session.commit()
+        except Exception as e:
+            return make_json_response(
+                    status=410, success=0, errormsg=str(e)
+                    )
+
+    return make_json_response(result=request.form)
+
