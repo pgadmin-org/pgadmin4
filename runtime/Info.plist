@@ -3,6 +3,18 @@
 <plist version="0.9">
 <dict>
     <!-- start of standard entries -->
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>pgAdmin 4</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.9</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright (C) 2013 - 2016, The pgAdmin Development Team</string>
     <key>CFBundleIconFile</key>
     <string>@ICON@</string>
     <key>CFBundlePackageType</key>
@@ -15,5 +27,7 @@
     <string>@EXECUTABLE@</string>
     <key>CFBundleIdentifier</key>
     <string>org.pgadmin.@EXECUTABLE@</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
 </dict>
 </plist>
