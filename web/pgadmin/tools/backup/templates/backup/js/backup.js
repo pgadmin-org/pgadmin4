@@ -385,6 +385,14 @@ TODO LIST FOR BACKUP:
                setup:function() {
                 return {
                   buttons: [{
+                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Backup') }}'}
+                    },{
+                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                      attrs:{name:'dialog_help', type:'button', label: '{{ _('Backup') }}',
+                      url: '{{ url_for('help.static', filename='backup_dialog.html') }}'
+                      }
+                    },{
                     text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
                     },{
                     text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
@@ -414,7 +422,7 @@ TODO LIST FOR BACKUP:
               prepare: function() {
                 var self = this;
                 // Disable Backup button until user provides Filename
-                this.__internal.buttons[0].element.disabled = true;
+                this.__internal.buttons[2].element.disabled = true;
 
                 var $container = $("<div class='backup_dialog'></div>");
                 // Find current/selected node
@@ -451,21 +459,29 @@ TODO LIST FOR BACKUP:
                 this.view.model.on('change', function() {
                     if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
                       this.errorModel.clear();
-                      self.__internal.buttons[0].element.disabled = false;
+                      self.__internal.buttons[2].element.disabled = false;
                     } else {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[2].element.disabled = true;
                       this.errorModel.set('file', '{{ _('Please provide filename') }}')
                     }
                 });
               },
               // Callback functions when click on the buttons of the Alertify dialogs
               callback: function(e) {
-                if (e.button.text === '{{ _('Backup') }}') {
-                  // Fetch current server id
+                // Fetch current server id
                   var t = pgBrowser.tree,
                     i = t.selected(),
                     d = i && i.length == 1 ? t.itemData(i) : undefined,
                     node = d && pgBrowser.Nodes[d._type];
+
+                if (e.button.element.name == "dialog_help" || e.button.element.name == "object_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    node, i, e.button.element.getAttribute('label'));
+                  return;
+                }
+
+                if (e.button.text === '{{ _('Backup') }}') {
 
                   if (!d)
                     return;
@@ -533,6 +549,13 @@ TODO LIST FOR BACKUP:
                setup:function() {
                 return {
                   buttons: [{
+                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Backup') }}'}
+                    },{
+                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                      attrs:{name:'dialog_help', type:'button', label: '{{ _('Backup') }}',
+                      url: '{{ url_for('help.static', filename='backup_dialog.html') }}'}
+                    },{
                     text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
                     },{
                     text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
@@ -561,7 +584,7 @@ TODO LIST FOR BACKUP:
               prepare: function() {
                 var self = this;
                 // Disable Backup button until user provides Filename
-                this.__internal.buttons[0].element.disabled = true;
+                this.__internal.buttons[2].element.disabled = true;
                 var $container = $("<div class='backup_dialog'></div>");
                 var t = pgBrowser.tree,
                   i = t.selected(),
@@ -596,9 +619,9 @@ TODO LIST FOR BACKUP:
                 this.view.model.on('change', function() {
                     if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
                       this.errorModel.clear();
-                      self.__internal.buttons[0].element.disabled = false;
+                      self.__internal.buttons[2].element.disabled = false;
                     } else {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[2].element.disabled = true;
                       this.errorModel.set('file', '{{ _('Please provide filename') }}')
                     }
                 });
@@ -606,13 +629,20 @@ TODO LIST FOR BACKUP:
               },
               // Callback functions when click on the buttons of the Alertify dialogs
               callback: function(e) {
-                if (e.button.text === "Backup") {
-                  // Fetch current server id
+                // Fetch current server id
                   var t = pgBrowser.tree,
                     i = t.selected(),
                     d = i && i.length == 1 ? t.itemData(i) : undefined,
                     node = d && pgBrowser.Nodes[d._type];
 
+                if (e.button.element.name == "dialog_help" || e.button.element.name == "object_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    node, i, e.button.element.getAttribute('label'));
+                  return;
+                }
+
+                if (e.button.text === "Backup") {
                   if (!d)
                     return;
 

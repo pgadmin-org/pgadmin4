@@ -191,20 +191,39 @@ define(
               },
               setup:function() {
                 return {
-                  buttons:[{ text: "{{ _('OK') }}", key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button" },
-                       { text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button" }],
+                  buttons:[{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                    attrs:{name:'object_help', type:'button', url: 'maintenance.html', label: '{{ _('Maintenance') }}'}
+                  },{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Maintenance') }}',
+                    url: '{{ url_for('help.static', filename='maintenance_dialog.html') }}'}
+                  },{
+                    text: "{{ _('OK') }}", key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+                  },{
+                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                  }],
                   options: { modal: 0}
                 };
               },
               // Callback functions when click on the buttons of the Alertify dialogs
               callback: function(e) {
+                var i = pgBrowser.tree.selected(),
+                  d = i && i.length == 1 ? pgBrowser.tree.itemData(i) : undefined,
+                  node = d && pgBrowser.Nodes[d._type];
+
+                if (e.button.element.name == "dialog_help" || e.button.element.name == "object_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    node, i, e.button.element.getAttribute('label'));
+                  return;
+                }
+
                 if (e.button.text === "{{ _('OK') }}") {
 
                   var schema = '';
                   var table = '';
-                  var i = pgBrowser.tree.selected(),
-                  d = i && i.length == 1 ? pgBrowser.tree.itemData(i) : undefined,
-                  node = d && pgBrowser.Nodes[d._type];
+
 
                   if (!d)
                     return;

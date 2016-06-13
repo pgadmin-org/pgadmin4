@@ -308,6 +308,13 @@ define([
                setup:function() {
                 return {
                   buttons: [{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                    attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Restore') }}'}
+                  },{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Restore') }}',
+                    url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
+                  },{
                     text: '{{ _('Restore') }}', key: 27,
                     className: 'btn btn-primary', restore: true
                   },{
@@ -344,7 +351,7 @@ define([
 
                 var self = this;
                 // Disable Backup button until user provides Filename
-                this.__internal.buttons[0].element.disabled = true;
+                this.__internal.buttons[2].element.disabled = true;
                 var $container = $("<div class='restore_dialog'></div>");
                 var t = pgBrowser.tree,
                   i = t.selected(),
@@ -367,7 +374,7 @@ define([
                   el: $container, model: newModel, schema: fields
                 });
 
-                $(this.elements.body.childNodes[0]).addClass(
+                $(this.elements.body.childNodes[2]).addClass(
                   'alertify_tools_dialog_properties obj_properties'
                 );
 
@@ -379,9 +386,9 @@ define([
                 this.view.model.on('change', function() {
                     if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {
                       this.errorModel.clear();
-                      self.__internal.buttons[0].element.disabled = false;
+                      self.__internal.buttons[2].element.disabled = false;
                     } else {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[2].element.disabled = true;
                       this.errorModel.set('file', '{{ _('Please provide filename') }}')
                     }
                 });
@@ -389,17 +396,24 @@ define([
               },
               // Callback functions when click on the buttons of the Alertify dialogs
               callback: function(e) {
-                if (e.button.restore) {
-                  // Fetch current server id
-                  var t = pgBrowser.tree,
-                    i = this.settings['pg_item'] || t.selected(),
-                    d = this.settings['pg_item_data'] || (
-                      i && i.length == 1 ? t.itemData(i) : undefined
-                    ),
-                    node = this.settings['pg_node'] || (
-                      d && pgBrowser.Nodes[d._type]
-                    );
+                // Fetch current server id
+                var t = pgBrowser.tree,
+                  i = this.settings['pg_item'] || t.selected(),
+                  d = this.settings['pg_item_data'] || (
+                    i && i.length == 1 ? t.itemData(i) : undefined
+                  ),
+                  node = this.settings['pg_node'] || (
+                    d && pgBrowser.Nodes[d._type]
+                  );
 
+                if (e.button.element.name == "dialog_help" || e.button.element.name == "object_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    node, i, e.button.element.getAttribute('label'));
+                  return;
+                }
+
+                if (e.button.restore) {
                   if (!d)
                     return;
 

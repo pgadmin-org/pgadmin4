@@ -485,6 +485,15 @@ def index():
 def browser_js():
     layout = get_setting('Browser/Layout', default='')
     snippets = []
+
+    prefs = Preferences.module('paths')
+
+    pg_help_path_pref = prefs.preference('pg_help_path')
+    pg_help_path = pg_help_path_pref.get()
+
+    edbas_help_path_pref = prefs.preference('edbas_help_path')
+    edbas_help_path = edbas_help_path_pref.get()
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -492,6 +501,8 @@ def browser_js():
                 'browser/js/browser.js',
                 layout=layout,
                 jssnippets=snippets,
+                pg_help_path=pg_help_path,
+                edbas_help_path=edbas_help_path,
                 _=gettext
                 ),
             200, {'Content-Type': 'application/x-javascript'})

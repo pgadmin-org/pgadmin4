@@ -681,9 +681,59 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           // Do nothing as user cancel the operation
         }
       );
+    },
+    // General function to handle callbacks for object or dialog help.
+    showHelp: function(type, url, node, item, label) {
+      if (type == "object_help") {
+        // See if we can find an existing panel, if not, create one
+        pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
+
+        if (pnlSqlHelp == null) {
+          pnlProperties = this.docker.findPanels('properties')[0];
+          this.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
+          pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
+        }
+
+        // Construct the URL
+        server = node.getTreeNodeHierarchy(item).server;
+
+        baseUrl = '{{ pg_help_path }}'
+        if (server.server_type == 'ppas') {
+          baseUrl = '{{ edbas_help_path }}'
+        }
+
+        major = Math.floor(server.version / 10000)
+        minor = Math.floor(server.version / 100) - (major * 100)
+
+        baseUrl = baseUrl.replace('$VERSION$', major + '.' + minor)
+        if (!S(baseUrl).endsWith('/')) {
+          baseUrl = baseUrl + '/'
+        }
+        fullUrl = baseUrl+ url;
+        // Update the panel
+        iframe = $(pnlSqlHelp).data('embeddedFrame');
+        pnlSqlHelp.title('Help: '+ label);
+
+        pnlSqlHelp.focus();
+        iframe.openURL(fullUrl);
+      } else if(type == "dialog_help") {
+        // See if we can find an existing panel, if not, create one
+        pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+
+        if (pnlDialogHelp == null) {
+          pnlProperties = this.docker.findPanels('properties')[0];
+          this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+          pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+        }
+
+        // Update the panel
+        iframe = $(pnlDialogHelp).data('embeddedFrame');
+
+        pnlDialogHelp.focus();
+        iframe.openURL(url);
+      }
     }
   });
-
 
   window.onbeforeunload = function(ev) {
     var e = ev || window.event;

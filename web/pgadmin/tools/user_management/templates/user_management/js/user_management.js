@@ -377,6 +377,10 @@ define([
               setup:function() {
                 return {
                   buttons: [{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
+                    url: '{{ url_for('help.static', filename='user_management_dialog.html') }}'}
+                  },{
                     text: '{{ _('Close') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
                     attrs:{name:'close', type:'button'}
                   }],
@@ -621,6 +625,12 @@ define([
                 });
               },
               callback: function(e) {
+                if (e.button.element.name == "dialog_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    null, null, e.button.element.getAttribute('label'));
+                  return;
+                }
                 if (e.button.element.name == "close") {
                   var self = this;
                   if (!_.all(this.userCollection.pluck('id')) || !_.isEmpty(this.userCollection.invalidUsers)) {
