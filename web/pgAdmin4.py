@@ -43,7 +43,7 @@ if config.SERVER_MODE is True:
 if not os.path.isfile(config.SQLITE_PATH):
     setupfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'setup.py')
-    execfile(setupfile)
+    exec(open(setupfile).read())
 
 ##########################################################################
 # Server starup
