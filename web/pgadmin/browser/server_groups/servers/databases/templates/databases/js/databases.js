@@ -224,7 +224,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },{
           id: 'datowner', label:'{{ _('Owner') }}',
           editable: false, type: 'text', node: 'role',
-          control: Backform.NodeListByNameControl
+          control: Backform.NodeListByNameControl, select2: { allowClear: false }
         },{
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
@@ -240,11 +240,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'template', label: '{{ _('Template') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); },
-          control: 'node-list-by-name', node: 'database', cache_level: 'server'
+          control: 'node-list-by-name', node: 'database', cache_level: 'server',
+          select2: { allowClear: false }
         },{
           id: 'spcname', label: '{{ _('Tablespace') }}',
           editable: false, type: 'text', group: 'Definition',
           control: 'node-list-by-name', node: 'tablespace',
+          select2: { allowClear: false },
           filter: function(m) {
             if (m.label == "pg_global") return false;
             else return true;

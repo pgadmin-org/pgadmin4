@@ -18,7 +18,7 @@ ALTER EVENT TRIGGER {{ conn|qtIdent(o_data.name) }}
 {% endif %}
 {% endif %}
 
-{% if data.comment and data.comment != o_data.comment %}
+{% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON EVENT TRIGGER {{ conn|qtIdent(data.name) }}
     IS '{{ data.comment }}';
 {% endif %}

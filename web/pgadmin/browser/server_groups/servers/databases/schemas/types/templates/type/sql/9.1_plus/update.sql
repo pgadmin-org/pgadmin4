@@ -10,7 +10,7 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% endif %}
 {#======================================#}
 {# Below will change objects comment  #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
     IS {{ data.description|qtLiteral }};
 

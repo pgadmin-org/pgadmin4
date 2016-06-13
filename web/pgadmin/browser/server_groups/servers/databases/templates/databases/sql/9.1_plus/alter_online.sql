@@ -7,7 +7,7 @@
 ALTER DATABASE {{ conn|qtIdent(data.name) }} OWNER TO {{ conn|qtIdent(data.datowner) }};
 {% endif %}
 {# Change the comments/description #}
-{% if data.comments %}
+{% if data.comments is defined %}
 COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
     IS {{ data.comments|qtLiteral }};
 {% endif %}

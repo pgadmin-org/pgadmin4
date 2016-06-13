@@ -3,7 +3,7 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% if data %}
 {# ==== To update tablespace name ==== #}
-{% if data.name != o_data.name %}
+{% if data.name and data.name != o_data.name %}
 ALTER TABLESPACE {{ conn|qtIdent(o_data.name) }}
   RENAME TO {{ conn|qtIdent(data.name) }};
 

@@ -6,7 +6,7 @@ ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
 
 {% endif %}
 {# Change object's comment  #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
     IS {{ data.description|qtLiteral }};
 

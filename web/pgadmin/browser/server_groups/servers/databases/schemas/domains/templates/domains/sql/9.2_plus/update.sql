@@ -69,7 +69,7 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 
 {{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
 {% endfor %}
-{% endif -%}{% if data.description %}
+{% endif -%}{% if data.description is defined and data.description != o_data.description %}
 
 COMMENT ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
     IS {{ data.description|qtLiteral }};

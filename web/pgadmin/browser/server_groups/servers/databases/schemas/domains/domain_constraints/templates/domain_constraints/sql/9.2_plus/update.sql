@@ -6,8 +6,8 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
 
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    VALIDATE CONSTRAINT {{ conn|qtIdent(name) }};{% endif -%}{% if data.description %}
+    VALIDATE CONSTRAINT {{ conn|qtIdent(name) }};{% endif -%}{% if data.description is defined %}
 
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(name) }} ON DOMAIN {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    IS '{{ data.description }}';{% endif %}
+    IS {{ data.description|qtLiteral }};{% endif %}
