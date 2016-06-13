@@ -1129,9 +1129,8 @@ def load_file():
 
     # check if file type is text or binary
     textchars = bytearray(
-        {7, 8, 9, 10, 12, 13, 27} | set(
-            range(0x20, 0x100)
-        ) - {0x7f})
+        [7, 8, 9, 10, 12, 13, 27]) + bytearray(
+            range(0x20, 0x7f)) + bytearray(range(0x80, 0x100))
 
     is_binary_string = lambda bytes: bool(
         bytes.translate(None, textchars)
