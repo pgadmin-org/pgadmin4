@@ -21,6 +21,8 @@ class DataTypeJSONEncoder(json.JSONEncoder):
         if isinstance(obj, datetime.datetime) \
                 or hasattr(obj, 'isoformat'):
             return obj.isoformat()
+        elif isinstance(obj, datetime.timedelta):
+            return (datetime.datetime.min + obj).time().isoformat()
         if isinstance(obj, decimal.Decimal):
             return float(obj)
 

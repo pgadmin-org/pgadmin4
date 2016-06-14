@@ -38,6 +38,25 @@ _ = gettext
 ASYNC_WAIT_TIMEOUT = 0.01  # in seconds or 10 milliseconds
 
 
+def register_date_typecasters(connection):
+    """
+    Casts date and timestamp values to string, resolves issues
+    with out of range dates (e.g. BC) which psycopg2 can't handle
+    """
+    def cast_date(value, cursor):
+        return value
+    cursor = connection.cursor()
+    cursor.execute('SELECT NULL::date')
+    date_oid = cursor.description[0][1]
+    cursor.execute('SELECT NULL::timestamp')
+    timestamp_oid = cursor.description[0][1]
+    cursor.execute('SELECT NULL::timestamptz')
+    timestamptz_oid = cursor.description[0][1]
+    oids = (date_oid, timestamp_oid, timestamptz_oid)
+    new_type = psycopg2.extensions.new_type(oids, 'DATE', cast_date)
+    psycopg2.extensions.register_type(new_type)
+
+
 class Connection(BaseConnection):
     """
     class Connection(object)
@@ -244,6 +263,7 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
         # By default asynchronous connection runs in autocommit mode.
         if self.async == 0:
             self.conn.autocommit = True
+            register_date_typecasters(self.conn)
 
         status, res = self.execute_scalar("""
 SET DateStyle=ISO;
