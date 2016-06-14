@@ -377,7 +377,7 @@ class ServerNode(PGChildNodeView):
             'port': 'port',
             'db': 'maintenance_db',
             'username': 'username',
-            'sslmode': 'sslmode',
+            'sslmode': 'ssl_mode',
             'gid': 'servergroup_id',
             'comment': 'comment',
             'role': 'role'
@@ -532,6 +532,7 @@ class ServerNode(PGChildNodeView):
                 'role': server.role,
                 'connected': connected,
                 'version': manager.ver,
+                'sslmode': server.ssl_mode,
                 'server_type': manager.server_type if connected else 'pg'
             }
         )
