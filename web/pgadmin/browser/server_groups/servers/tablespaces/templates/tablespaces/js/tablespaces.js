@@ -48,6 +48,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
           icon: 'wcTabIcon pg-icon-tablespace', data: {action: 'create'},
           enable: 'can_create_tablespace'
+        },{
+          name: 'move_tablespace', node: 'tablespace', module: this,
+          applies: ['object', 'context'], callback: 'move_objects',
+          category: 'move_tablespace', priority: 5,
+          label: '{{ _('Move objects to...') }}',
+          icon: 'fa fa-exchange', data: {action: 'create'},
+          enable: 'can_create_tablespace'
         }
         ]);
       },
@@ -56,6 +63,184 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             server = treeData['server'];
 
         return server.connected && server.user.is_superuser;
+      },
+      callbacks: {
+        /* Move objects from one tablespace to another */
+        move_objects: function(args){
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            node = d && pgBrowser.Nodes[d._type],
+            url = obj.generate_url(i, 'move_objects', d, true);
+
+          if (!d)
+            return false;
+
+          // Object model
+          var objModel = Backbone.Model.extend({
+              idAttribute: 'id',
+              defaults: {
+                new_tblspc: undefined,
+                obj_type: 'all',
+                user: undefined
+              },
+              schema: [{
+                  id: 'tblspc', label: '{{ _('New tablespace') }}',
+                  type: 'text', disabled: false, control: 'node-list-by-name',
+                  node: 'tablespace', select2: {allowClear: false},
+                  filter: function(o) {
+                    return o && (o.label != d.label);
+                  }
+              },{
+                  id: 'obj_type', label: '{{ _('Object type') }}',
+                  type: 'text', disabled: false, control: 'select2',
+                  select2: { allowClear: false, width: "100%" },
+                  options: [
+                    {label: "All", value: 'all'},
+                    {label: "Tables", value: 'tables'},
+                    {label: "Indexes", value: 'indexes'},
+                    {label: "Materialized views", value: 'materialized_views'},
+                  ]
+              },{
+                  id: 'user', label: '{{ _('Object owner') }}',
+                  type: 'text', disabled: false, control: 'node-list-by-name',
+                  node: 'role', select2: {allowClear: false}
+              }],
+              validate: function() {
+                  return null;
+              }
+          });
+
+          if(!alertify.move_objects_dlg) {
+            alertify.dialog('move_objects_dlg' ,function factory() {
+              return {
+                 main: function() {
+                  var title = '{{ _('Move objects to another tablespace') }} ';
+                  this.set('title', title);
+                 },
+                 setup:function() {
+                   return {
+                      buttons: [{
+                        text: '{{ _('Ok') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                        },{
+                        text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
+                      }],
+                      // Set options for dialog
+                      options: {
+                        //disable both padding and overflow control.
+                        padding : !1,
+                        overflow: !1,
+                        model: 0,
+                        resizable: true,
+                        maximizable: true,
+                        pinnable: false,
+                        closableByDimmer: false
+                      }
+                    };
+                 },
+                 hooks: {
+                   // Triggered when the dialog is closed
+                   onclose: function() {
+                     if (this.view) {
+                       // clear our backform model/view
+                       this.view.remove({data: true, internal: true, silent: true});
+                     }
+                   }
+                 },
+                 prepare: function() {
+                   var self = this,
+                     $container = $("<div class='move_objects'></div>");
+                   //Disbale Okay button
+                   this.__internal.buttons[0].element.disabled = true;
+                   // Find current/selected node
+                   var t = pgBrowser.tree,
+                     i = t.selected(),
+                     d = i && i.length == 1 ? t.itemData(i) : undefined,
+                     node = d && pgBrowser.Nodes[d._type];
+
+                   if (!d)
+                     return;
+                   // Create treeInfo
+                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+                   // Instance of backbone model
+                   var newModel = new objModel(
+                   {}, {node_info: treeInfo}
+                   ),
+                   fields = Backform.generateViewSchema(
+                     treeInfo, newModel, 'create', node, treeInfo.server, true
+                   );
+
+                  var view = this.view = new Backform.Dialog({
+                    el: $container, model: newModel, schema: fields
+                  });
+                  // Add our class to alertify
+                  $(this.elements.body.childNodes[0]).addClass(
+                    'alertify_tools_dialog_properties obj_properties'
+                  );
+                  // Render dialog
+                  view.render();
+
+                  this.elements.content.appendChild($container.get(0));
+
+                  // Listen to model & if filename is provided then enable Backup button
+                  this.view.model.on('change', function() {
+                    if (!_.isUndefined(this.get('tblspc')) && this.get('tblspc') !== '') {
+                      this.errorModel.clear();
+                      self.__internal.buttons[0].element.disabled = false;
+                    } else {
+                      self.__internal.buttons[0].element.disabled = true;
+                      this.errorModel.set('tblspc', '{{ _('Please select tablespace') }}')
+                    }
+                  });
+                },
+                // Callback functions when click on the buttons of the Alertify dialogs
+                callback: function(e) {
+                  if (e.button.text === '{{ _('Ok') }}') {
+                    var self = this,
+                        args =  this.view.model.toJSON();
+                        args.old_tblspc = d.label;
+                    e.cancel = true;
+                    alertify.confirm('{{ _('Move objects...') }}',
+                      '{{ _('Are you sure you wish to move objects ') }}'
+                      + '"' + args.old_tblspc + '"'
+                      + '{{ _(' to ') }}'
+                      + '"' + args.tblspc + '"?',
+                      function() {
+                        $.ajax({
+                          url: url,
+                          method:'PUT',
+                          data:{'data': JSON.stringify(args) },
+                          success: function(res) {
+                            if (res.success) {
+                              alertify.success(res.info);
+                              self.close();
+                            } else {
+                              alertify.error(res.errormsg);
+                            }
+                          },
+                          error: function(xhr, status, error) {
+                            try {
+                              var err = $.parseJSON(xhr.responseText);
+                              if (err.success == 0) {
+                                alertify.error(err.errormsg);
+                              }
+                            } catch (e) {}
+                          }
+                        });
+                      },
+                      function() {
+                        // Do nothing as user cancel the operation
+                      }
+                    );
+                  }
+                }
+              }
+            });
+          }
+          alertify.move_objects_dlg(true).resizeTo('40%','50%');;
+        }
       },
       model: pgBrowser.Node.Model.extend({
         defaults: {

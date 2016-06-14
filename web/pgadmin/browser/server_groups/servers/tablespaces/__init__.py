@@ -7,6 +7,7 @@
 #
 ##########################################################################
 import json
+import re
 from flask import render_template, make_response, request, jsonify, current_app
 from flask.ext.babel import gettext
 from pgadmin.utils.ajax import make_json_response, \
@@ -72,7 +73,8 @@ class TablespaceView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
-        'vopts': [{}, {'get': 'variable_options'}]
+        'vopts': [{}, {'get': 'variable_options'}],
+        'move_objects': [{'put': 'move_objects'}]
     })
 
     def module_js(self):
@@ -115,10 +117,8 @@ class TablespaceView(PGChildNodeView):
             ver = self.manager.version
             if ver >= 90200:
                 self.template_path = 'tablespaces/sql/9.2_plus'
-            elif 90100 >= ver < 90200:
-                self.template_path = 'tablespaces/sql/9.1_plus'
             else:
-                self.template_path = 'tablespaces/sql/pre_9.1'
+                self.template_path = 'tablespaces/sql/9.1_plus'
             current_app.logger.debug(
                 "Using the template path: %s", self.template_path
                 )
@@ -471,7 +471,7 @@ class TablespaceView(PGChildNodeView):
                 "/".join([self.template_path, 'alter.sql']),
                 data=data, conn=self.conn
                 )
-
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
         return SQL
 
     @check_precondition
@@ -517,7 +517,7 @@ class TablespaceView(PGChildNodeView):
 """.format(old_data['name'])
 
         SQL = sql_header + SQL
-
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
         return ajax_response(response=SQL.strip('\n'))
 
 
@@ -709,5 +709,39 @@ class TablespaceView(PGChildNodeView):
                     manager.release(db_row['datname'])
 
         return dependents
+
+    @check_precondition
+    def move_objects(self, gid, sid, tsid):
+        """
+        This function moves objects from current tablespace to another
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            tsid: Tablespace ID
+        """
+        data = json.loads(request.form['data'])
+
+        try:
+            SQL = render_template("/".join(
+                [self.template_path, 'move_objects.sql']),
+                data=data, conn=self.conn
+            )
+            status, res = self.conn.execute_scalar(SQL.strip('\n'))
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info="Tablespace updated",
+                data={
+                    'id': tsid,
+                    'sid': sid,
+                    'gid': gid
+                }
+            )
+        except Exception as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
 
 TablespaceView.register_node_view(blueprint)
