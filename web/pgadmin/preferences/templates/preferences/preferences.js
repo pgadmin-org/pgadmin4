@@ -1,8 +1,8 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.backform'],
+  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.browser', 'pgadmin.backform'],
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform) {
+  function($, alertify, pgAdmin, _, Backform, pgBrowser) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -351,12 +351,13 @@ define(
             },
             setup:function(){
               return {
-                buttons:[
-                  {
+                buttons:[{
+                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Preferences') }}',
+                    url: '{{ url_for('help.static', filename='preferences_dialog.html') }}'}
+                  },{
                     text: "{{ _('OK') }}", key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
-
-                  },
-                  {
+                  },{
                     text: "{{ _('Cancel') }}", className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }
                 ],
@@ -365,12 +366,20 @@ define(
                   padding: !1,
                   overflow: !1,
                   title: '{{ _('Preferences')|safe }}',
-                  closableByDimmer: false
+                  closableByDimmer: false,
+                  modal:false
                 }
               };
             },
-            callback: function(closeEvent){
-              if (closeEvent.button.text == "{{ _('OK') }}"){
+            callback: function(e){
+              if (e.button.element.name == "dialog_help") {
+                  e.cancel = true;
+                  pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                    null, null, e.button.element.getAttribute('label'));
+                  return;
+               }
+
+              if (e.button.text == "{{ _('OK') }}"){
                 preferences.updateAll();
               }
             },

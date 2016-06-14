@@ -390,7 +390,7 @@ define([
                     //disable both padding and overflow control.
                     padding : !1,
                     overflow: !1,
-                    model: 0,
+                    modal: false,
                     resizable: true,
                     maximizable: true,
                     pinnable: false,
