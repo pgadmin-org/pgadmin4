@@ -13,13 +13,40 @@ from flask.ext.login import current_user
 
 from pgadmin.model import db, Setting
 import traceback
-from flask import Response, request, render_template
+from flask import Response, request, render_template, url_for
 from flask.ext.security import login_required
 
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, bad_request
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.menu import MenuItem
+from flask.ext.babel import gettext
 
 MODULE_NAME = 'settings'
+
+
+class SettingsModule(PgAdminModule):
+
+    def get_own_javascripts(self):
+        return [{
+            'name': 'pgadmin.settings',
+            'path': url_for('settings.index') + 'settings',
+            'when': None
+        }]
+
+    def get_own_menuitems(self):
+        return {
+            'file_items': [
+                MenuItem(name='mnu_resetlayout',
+                         priority=999,
+                         module="pgAdmin.Settings",
+                         callback='show',
+                         icon='fa fa-retweet',
+                         label=gettext('Reset Layout'))
+            ]
+        }
+
+blueprint = SettingsModule(MODULE_NAME, __name__)
+
 
 def store_setting(setting, value):
     """Set a configuration setting for the current user."""
@@ -27,6 +54,7 @@ def store_setting(setting, value):
 
     db.session.merge(data)
     db.session.commit()
+
 
 def get_setting(setting, default=None):
     """Retrieve a configuration setting for the current user, or return the
@@ -38,8 +66,11 @@ def get_setting(setting, default=None):
     else:
         return data.value
 
-# Initialise the module
-blueprint = PgAdminModule(MODULE_NAME, __name__, template_folder='templates', url_prefix='/' + MODULE_NAME)
+
+@blueprint.route("/")
+@login_required
+def index():
+    return bad_request(errormsg=_("This URL can not be called directly."))
 
 @blueprint.route("/settings.js")
 @login_required
@@ -116,17 +147,17 @@ def get(setting=None, default=None):
 @login_required
 def reset_layout():
     """Reset configuration setting"""
-    if request.method == 'DELETE':
-        # There can be only one record at most
-        data = Setting.query.filter_by(user_id=current_user.id).first()
-        try:
-            if data is not None:
-                db.session.delete(data)
-                db.session.commit()
-        except Exception as e:
-            return make_json_response(
-                    status=410, success=0, errormsg=str(e)
-                    )
+
+    # There can be only one record at most
+    data = Setting.query.filter_by(user_id=current_user.id).first()
+    try:
+        if data is not None:
+            db.session.delete(data)
+            db.session.commit()
+    except Exception as e:
+        return make_json_response(
+                status=410, success=0, errormsg=str(e)
+                )
 
     return make_json_response(result=request.form)
 

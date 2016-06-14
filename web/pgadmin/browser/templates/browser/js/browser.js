@@ -12,8 +12,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
-  var wcDocker = window.wcDocker,
-    onbeforeunload_flag = true;
+  var wcDocker = window.wcDocker;
   $ = $ || window.jQuery || window.$;
   Bootstrap = Bootstrap || window.Bootstrap;
 
@@ -256,19 +255,9 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           }], false);
         $obj_mnu.append(create_submenu.$el);
       }
-      // Drop down menu for reset layout
-      var $file_mnu = navbar.find('li#mnu_file > ul.dropdown-menu').first();
-      if($file_mnu) {
-        $file_mnu.append('<li class="menu-item"><a href="#" onclick="pgAdmin.Browser.reset_current_layout()">' +
-                         '<i class="fa fa-retweet"></i>' +
-                         '<span>{{ _('Reset Layout') }}</span>' +
-                         '</a></li>'
-                        );
-      }
     },
     init: function() {
       var obj=this;
-      obj.save_layout = true;
       if (obj.initialized) {
         return;
       }
@@ -276,7 +265,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
       // Store the main browser layout
       $(window).bind('unload', function() {
-          if(obj.docker && obj.save_layout) {
+          if(obj.docker) {
             state = obj.docker.save();
             settings = { setting: "Browser/Layout", value: state };
             $.ajax({
@@ -650,38 +639,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       navbar.children('#mnu_obj').removeClass('hide');
        obj.enable_disable_menus();
     },
-    // We will force unload method to not to save current layout
-    // and reload the window
-    reset_current_layout: function() {
-      var obj = this;
-      alertify.confirm('{{ _('Reset layout') }}',
-        '{{ _('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.') }}',
-        function() {
-          // User clicked OK button...
-          var current_url = document.URL;
-
-          // Delete the record from database as well, then only reload page
-          $.ajax({
-            url: '{{ url_for('settings.reset_layout') }}',
-            type: 'DELETE',
-            async: false,
-            error: function() {
-              console.log('Something went wrong on server while resetting layout');
-            }
-          });
-
-          // Toggle flag which will prevents save again
-          obj.save_layout = false;
-          // Flag will prevent onbeforeunload function to be called
-          onbeforeunload_flag = false;
-          // Now reload page
-          location.reload(true);
-        },
-        function() {
-          // Do nothing as user cancel the operation
-        }
-      );
-    },
     // General function to handle callbacks for object or dialog help.
     showHelp: function(type, url, node, item, label) {
       if (type == "object_help") {
@@ -736,18 +693,16 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
   });
 
   window.onbeforeunload = function(ev) {
-    var e = ev || window.event;
-    if(onbeforeunload_flag) {
-      var msg = '{{ _('Do you really want to leave the page?') }}';
+    var e = ev || window.event,
+        msg = '{{ _('Do you really want to leave the page?') }}';
 
-      // For IE and Firefox prior to version 4
-      if (e) {
-        e.returnValue = msg;
-      }
-
-      // For Safari
-      return msg;
+    // For IE and Firefox prior to version 4
+    if (e) {
+      e.returnValue = msg;
     }
+
+    // For Safari
+    return msg;
   };
 
   return pgAdmin.Browser;
