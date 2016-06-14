@@ -42,8 +42,8 @@ if config.SERVER_MODE is True:
 # Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
     setupfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'setup.py')
-    exec(open(setupfile).read())
+                             'setup.py')
+    exec (open(setupfile).read())
 
 ##########################################################################
 # Server starup
@@ -69,6 +69,10 @@ else:
         'PGADMIN_PORT is not set in the runtime environment, using default of %s',
         config.DEFAULT_SERVER_PORT)
     server_port = config.DEFAULT_SERVER_PORT
+
+print("Starting %s. Please navigate to http://localhost:%d in your browser." %
+      (config.APP_NAME, server_port))
+sys.stdout.flush()
 
 try:
     app.run(
