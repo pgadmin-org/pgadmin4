@@ -586,7 +586,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           port: 5432,
           db: 'postgres',
           username: '{{ username }}',
-          role: null
+          role: null,
+          connect_now: true,
+          password: undefined
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -623,6 +625,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'version', label:'{{ _('Version') }}', type: 'text', group: null,
           mode: ['properties'], visible: 'isConnected'
         },{
+          id: 'connect_now', controlLabel:'{{ _('Connect now?') }}', type: 'checkbox',
+          group: null, mode: ['create']
+        },{
           id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create']
         },{
@@ -637,6 +642,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'username', label:'{{ _('User Name') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
+        },{
+          id: 'password', label:'{{ _('Password') }}', type: 'password',
+          group: "{{ 'Connection' }}", control: 'input', mode: ['create'], deps: ['connect_now'],
+          visible: function(m) {
+            return m.get('connect_now') && m.isNew();
+          }
         },{
           id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
@@ -676,6 +687,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             self.errorModel.unset('id');
           }
           check_for_empty('name', '{{ _('Name must be specified.') }}');
+
           check_for_empty(
             'host', '{{ _('Hostname or address must be specified.') }}'
           );

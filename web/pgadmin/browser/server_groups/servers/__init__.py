@@ -577,14 +577,50 @@ class ServerNode(PGChildNodeView):
             db.session.add(server)
             db.session.commit()
 
+            connected = False
+            icon = "icon-server-not-connected"
+            user = None
+
+            if 'connect_now' in data and data['connect_now']:
+                if 'password' not in data or data["password"] == '':
+                    db.session.delete(server)
+                    db.session.commit()
+                    raise Exception("No password provided.")
+
+                password = data['password']
+                password = encrypt(password, current_user.password)
+
+                from pgadmin.utils.driver import get_driver
+                manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
+                conn = manager.connection()
+
+                status, errmsg = conn.connect(
+                        password=password,
+                        server_types=ServerType.types()
+                        )
+
+                if not status:
+                    db.session.delete(server)
+                    db.session.commit()
+                    return make_json_response(
+                        status=401,
+                        success=0,
+                        errormsg=gettext("Unable to connect to server.")
+                    )
+                else:
+                    user = manager.user_info
+                    connected = True
+                    icon = "icon-pg"
+
             return jsonify(
                     node=self.blueprint.generate_browser_node(
-                        "%d" % (server.id), server.servergroup_id,
+                        "%d" % server.id, server.servergroup_id,
                         server.name,
-                        "icon-server-not-connected",
+                        icon,
                         True,
                         self.node_type,
-                        connected=False,
+                        user=user,
+                        connected=connected,
                         server_type='pg'  # Default server type
                         )
                     )
@@ -594,7 +630,7 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 status=410,
                 success=0,
-                errormsg=e.message
+                errormsg=str(e)
             )
 
     def sql(self, gid, sid):

@@ -1344,3 +1344,8 @@ height: calc(100% - 35px);
 .pg-panel-statistics-container > table > thead > tr > th:last-child {
   border-right: 0px;
 }
+
+.pgadmin-controls input[type="checkbox"]{
+  margin-left: 0 !important;
+  margin-top: 10px !important;
+}
