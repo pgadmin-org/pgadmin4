@@ -194,10 +194,7 @@
         error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
 
       if (_.isEmpty(error)) return;
-
-      self.$el.addClass(Backform.errorClassName).append(
-        $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
-        );
+      self.$el.addClass(Backform.errorClassName);
       });
     },
 
