@@ -59,7 +59,7 @@ The main debugger window consists of two panels and a context-sensitive toolbar.
 | *Step into*             | Click the *Step into* icon to execute the currently highlighted line of code.                             |
 +-------------------------+-----------------------------------------------------------------------------------------------------------+
 | *Step over*             | Click the *Step over* icon to execute a line of code, stepping over any sub-functions invoked by the code.|
-|                         | The sub-function executes, but is not debugged unless it contains a breakpoint.                             |
+|                         | The sub-function executes, but is not debugged unless it contains a breakpoint.                           |
 +-------------------------+-----------------------------------------------------------------------------------------------------------+
 | *Continue/Start*        | Click the *Continue/Start* icon to execute the highlighted code, and continue until the program           |
 |                         | encounters a breakpoint or completes.                                                                     |

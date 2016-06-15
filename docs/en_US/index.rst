@@ -8,6 +8,20 @@ pgAdmin 4
     
 Welcome to pgAdmin 4. pgAdmin is the leading Open Source management tool for Postgres, the world's most advanced Open Source database.  pgAdmin 4 is designed to meet the needs of both novice and experienced Postgres users alike, providing a powerful graphical interface that simplifies the creation, maintenance and use of database objects.
 
+Getting Started
+===============
+
+If running on a web server, pgAdmin supports multiple users with per-user authentication. These features are hidden in desktop mode.
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   pgadmin_login
+   pgadmin_user
+
+
 Client Features
 ===============
 
@@ -29,8 +43,8 @@ Contents:
    preferences
 
 
-Getting Started
-===============
+Connecting to a Server
+======================
 
 Before you can use the pgAdmin client to manage your Postgres installation, you must define a connection to the server.    
 
@@ -45,7 +59,7 @@ Contents:
    connect_error
 
 
-Creating Cluster Level Objects  
+Managing Cluster Level Objects  
 ==============================
    
 Some object definitions reside at the cluster level; pgAdmin 4 provides dialogs that allow you to create these objects, manage them, and control their relationships to each other.  To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Databases* node, and select *Create Database...*    
@@ -56,12 +70,13 @@ Contents:
    :maxdepth: 2
 
    database_dialog
+   move_objects
    resource_group_dialog
    role_dialog
    tablespace_dialog
   
    
-Creating Database Objects
+Managing Database Objects
 =========================
 
 pgAdmin 4 provides simple but powerful dialogs that you can use to design and create database objects.  Each dialog contains a series of tabs that you use to describe the object that will be created by the dialog; the SQL tab displays the SQL command that the server will execute when creating the object.
