@@ -1075,7 +1075,7 @@ define([
                           alertify.pgNotifier(
                             "error", jqxhr,
                             S(
-                              "{{ _('Error during saving properties - %%s!') }}"
+                              "{{ _('Error saving properties: %%s') }}"
                               ).sprintf(jqxhr.statusText).value()
                             );
 

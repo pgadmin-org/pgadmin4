@@ -1025,7 +1025,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                         Alertify.pgNotifier(
                           "error", jqxhr,
                           S(
-                            "{{ _("Error during saving properties: %%s!") }}"
+                            "{{ _("Error saving properties: %%s") }}"
                             ).sprintf(jqxhr.statusText).value()
                           );
                       }
