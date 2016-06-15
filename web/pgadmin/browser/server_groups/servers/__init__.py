@@ -526,7 +526,7 @@ class ServerNode(PGChildNodeView):
                 'port': server.port,
                 'db': server.maintenance_db,
                 'username': server.username,
-                'gid': server.servergroup_id,
+                'gid': str(server.servergroup_id),
                 'group-name': sg.name,
                 'comment': server.comment,
                 'role': server.role,
@@ -582,22 +582,23 @@ class ServerNode(PGChildNodeView):
             user = None
 
             if 'connect_now' in data and data['connect_now']:
-                if 'password' not in data or data["password"] == '':
-                    db.session.delete(server)
-                    db.session.commit()
-                    raise Exception("No password provided.")
-
-                password = data['password']
-                password = encrypt(password, current_user.password)
-
                 from pgadmin.utils.driver import get_driver
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
+                manager.update(server)
                 conn = manager.connection()
 
+                if 'password' in data and data["password"] != '':
+                    # login with password
+                    password = data['password']
+                    password = encrypt(password, current_user.password)
+                else:
+                    # Attempt password less login
+                    password = None
+
                 status, errmsg = conn.connect(
-                        password=password,
-                        server_types=ServerType.types()
-                        )
+                            password=password,
+                            server_types=ServerType.types()
+                            )
 
                 if not status:
                     db.session.delete(server)
@@ -605,7 +606,7 @@ class ServerNode(PGChildNodeView):
                     return make_json_response(
                         status=401,
                         success=0,
-                        errormsg=gettext("Unable to connect to server.")
+                        errormsg=gettext("Unable to connect to server:\n\n%s" % errmsg)
                     )
                 else:
                     user = manager.user_info
@@ -626,6 +627,10 @@ class ServerNode(PGChildNodeView):
                     )
 
         except Exception as e:
+            if server:
+                db.session.delete(server)
+                db.session.commit()
+
             current_app.logger.exception(e)
             return make_json_response(
                 status=410,
