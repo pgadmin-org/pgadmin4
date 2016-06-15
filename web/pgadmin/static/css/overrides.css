@@ -1349,3 +1349,8 @@ height: calc(100% - 35px);
   margin-left: 0 !important;
   margin-top: 10px !important;
 }
+
+/* Ensure query tool results can horizontal scroll */
+table.backgrid {
+  overflow: auto;
+}
