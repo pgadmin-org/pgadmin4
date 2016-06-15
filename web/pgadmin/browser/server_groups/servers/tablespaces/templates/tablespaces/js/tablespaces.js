@@ -54,7 +54,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           category: 'move_tablespace', priority: 5,
           label: '{{ _('Move objects to...') }}',
           icon: 'fa fa-exchange', data: {action: 'create'},
-          enable: 'can_create_tablespace'
+          enable: 'can_move_objects'
         }
         ]);
       },
@@ -63,6 +63,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             server = treeData['server'];
 
         return server.connected && server.user.is_superuser;
+      },
+      can_move_objects: function(node, item) {
+        var treeData = this.getTreeNodeHierarchy(item),
+            server = treeData['server'];
+        // Only supported PG9.4 and above version
+        return server.connected &&
+                server.user.is_superuser &&
+                server.version >= 90400;
       },
       callbacks: {
         /* Move objects from one tablespace to another */
@@ -73,7 +81,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
             node = d && pgBrowser.Nodes[d._type],
-            url = obj.generate_url(i, 'move_objects', d, true);
+            url = obj.generate_url(i, 'move_objects', d, true),
+            msql_url = obj.generate_url(i, 'move_objects_sql', d, true);
 
           if (!d)
             return false;
@@ -107,6 +116,41 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   id: 'user', label: '{{ _('Object owner') }}',
                   type: 'text', disabled: false, control: 'node-list-by-name',
                   node: 'role', select2: {allowClear: false}
+              },{
+                  id: 'sqltab', label: '{{ _('SQL') }}', group: '{{ _('SQL') }}',
+                  type: 'text', disabled: false, control: Backform.SqlTabControl.extend({
+                    initialize: function() {
+                      // Initialize parent class
+                      Backform.SqlTabControl.prototype.initialize.apply(this, arguments);
+                    },
+                    onTabChange: function(obj) {
+                      // Fetch the information only if the SQL tab is visible at the moment.
+                      if (this.dialog && obj.shown == this.tabIndex) {
+                            var self = this,
+                            args = self.model.toJSON();
+                            // Add existing tablespace
+                            args.old_tblspc = d.label;
+
+                            // Fetches modified SQL
+                            $.ajax({
+                              url: msql_url,
+                              type: 'GET',
+                              cache: false,
+                              data: args,
+                              dataType: "json",
+                              contentType: "application/json"
+                            }).done(function(res) {
+                              self.sqlCtrl.clearHistory();
+                              self.sqlCtrl.setValue(res.data);
+                              self.sqlCtrl.refresh();
+                            }).fail(function() {
+                              self.model.trigger('pgadmin-view:msql:error');
+                            }).always(function() {
+                              self.model.trigger('pgadmin-view:msql:fetched');
+                            });
+                      }
+                    }
+                  })
               }],
               validate: function() {
                   return null;
@@ -123,7 +167,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                  setup:function() {
                    return {
                       buttons: [{
-                        text: '{{ _('Ok') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                        text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                        attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
+                        url: '{{ url_for('help.static', filename='move_objects.html') }}'}
+                        },{
+                        text: '{{ _('OK') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
                         },{
                         text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
                       }],
@@ -132,7 +180,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                         //disable both padding and overflow control.
                         padding : !1,
                         overflow: !1,
-                        model: 0,
+                        modal: false,
                         resizable: true,
                         maximizable: true,
                         pinnable: false,
@@ -153,7 +201,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                    var self = this,
                      $container = $("<div class='move_objects'></div>");
                    //Disbale Okay button
-                   this.__internal.buttons[0].element.disabled = true;
+                   this.__internal.buttons[1].element.disabled = true;
                    // Find current/selected node
                    var t = pgBrowser.tree,
                      i = t.selected(),
@@ -188,16 +236,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   this.view.model.on('change', function() {
                     if (!_.isUndefined(this.get('tblspc')) && this.get('tblspc') !== '') {
                       this.errorModel.clear();
-                      self.__internal.buttons[0].element.disabled = false;
+                      self.__internal.buttons[1].element.disabled = false;
                     } else {
-                      self.__internal.buttons[0].element.disabled = true;
+                      self.__internal.buttons[1].element.disabled = true;
                       this.errorModel.set('tblspc', '{{ _('Please select tablespace') }}')
                     }
                   });
                 },
                 // Callback functions when click on the buttons of the Alertify dialogs
                 callback: function(e) {
-                  if (e.button.text === '{{ _('Ok') }}') {
+                  if (e.button.element.name == "dialog_help") {
+                    e.cancel = true;
+                    pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
+                      null, null, e.button.element.getAttribute('label'));
+                    return;
+                  }
+                  if (e.button.text === '{{ _('OK') }}') {
                     var self = this,
                         args =  this.view.model.toJSON();
                         args.old_tblspc = d.label;

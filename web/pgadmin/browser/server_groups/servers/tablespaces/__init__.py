@@ -74,7 +74,8 @@ class TablespaceView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
         'vopts': [{}, {'get': 'variable_options'}],
-        'move_objects': [{'put': 'move_objects'}]
+        'move_objects': [{'put': 'move_objects'}],
+        'move_objects_sql': [{'get': 'move_objects_sql'}],
     })
 
     def module_js(self):
@@ -744,4 +745,40 @@ class TablespaceView(PGChildNodeView):
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
+    @check_precondition
+    def move_objects_sql(self, gid, sid, tsid):
+        """
+        This function returns sql for Move Objects.. dialog
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            tsid: Tablespace ID
+        """
+        required_args = ['old_tblspc', 'tblspc', 'obj_type']
+
+        data = dict()
+        for k, v in request.args.items():
+            try:
+                data[k] = json.loads(v)
+            except ValueError as ve:
+                current_app.logger.exception(ve)
+                data[k] = v
+
+        for arg in required_args:
+            if arg not in data:
+                return make_json_response(
+                    data=gettext("-- Incomplete definition"),
+                    status=200
+                )
+
+        sql = render_template("/".join(
+            [self.template_path, 'move_objects.sql']),
+            data=data, conn=self.conn
+        )
+
+        return make_json_response(
+                data=sql.strip('\n'),
+                status=200
+            )
 TablespaceView.register_node_view(blueprint)
