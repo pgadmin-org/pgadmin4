@@ -250,6 +250,12 @@ THREADED_MODE = True
 # Local config settings
 ##########################################################################
 
+# Load distribution-specific config overrides
+try:
+    from config_distro import *
+except ImportError:
+    pass
+
 # Load local config overrides
 try:
     from config_local import *

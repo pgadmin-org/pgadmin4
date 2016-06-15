@@ -46,6 +46,7 @@ if [ -d pip-build/pgadmin4 ]; then
 fi
 
 mkdir pip-build/pgadmin4
+mkdir pip-build/pgadmin4/docs
 
 # Build the clean tree
 cd web
@@ -56,6 +57,22 @@ do
     tar cf - $FILE | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+cd ../docs
+for FILE in `git ls-files`
+do
+    echo Adding $FILE
+    # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
+    tar cf - $FILE | (cd ../pip-build/pgadmin4/docs; tar xf -)
+done
+
+for DIR in `ls -d ??_??/`
+do
+    if [ -d $DIR/_build/html ]; then
+        mkdir -p ../pip-build/pgadmin4/docs/$DIR/_build
+        cp -R $DIR/_build/html ../pip-build/pgadmin4/docs/$DIR/_build
+    fi
+done
+
 cd ../
 for FILE in LICENSE README libraries.txt
 do
@@ -63,6 +80,11 @@ do
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
     tar cf - $FILE | (cd pip-build/pgadmin4; tar xf -)
 done
+
+# Create the distro config
+echo Creating distro config...
+echo HELP_PATH = \'../../docs/en_US/_build/html/\' > pip-build/pgadmin4/config_distro.py
+echo MINIFY_HTML = False >> pip-build/pgadmin4/config_distro.py
 
 # Create the manifest
 echo Creating manifest...
