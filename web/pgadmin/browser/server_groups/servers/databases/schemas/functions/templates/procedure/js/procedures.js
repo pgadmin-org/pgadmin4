@@ -12,7 +12,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
         node: 'procedure',
         label: '{{ _('Procedures') }}',
         type: 'coll-procedure',
-        columns: ['name', 'funcowner', 'description']
+        columns: ['name', 'funcowner', 'description'],
+        hasStatistics: true
       });
   };
 

@@ -203,7 +203,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
@@ -1296,7 +1296,7 @@ It may have been removed by another user or moved to another schema.
         return ajax_response(response=sql)
 
     @check_precondition
-    def statistics(self, gid, sid, did, scid, fnid):
+    def statistics(self, gid, sid, did, scid, fnid=None):
         """
         Statistics
 
@@ -1309,10 +1309,27 @@ It may have been removed by another user or moved to another schema.
 
         Returns the statistics for a particular object if fnid is specified
         """
+
+        if fnid is not None:
+            sql = 'stats.sql'
+            schema_name = None
+        else:
+            sql = 'coll_stats.sql'
+            # Get schema name
+            status, schema_name = self.conn.execute_scalar(
+                render_template(
+                    'schema/pg/9.1_plus/sql/get_name.sql',
+                    scid=scid
+                )
+            )
+            if not status:
+                return internal_server_error(errormsg=schema_name)
+
         status, res = self.conn.execute_dict(
             render_template(
-                "/".join([self.sql_template_path, 'stats.sql']),
-                conn=self.conn, fnid=fnid
+                "/".join([self.sql_template_path, sql]),
+                conn=self.conn, fnid=fnid,
+                scid=scid, schema_name=schema_name
                 )
             )
 

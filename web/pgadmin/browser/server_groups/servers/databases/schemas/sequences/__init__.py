@@ -106,7 +106,7 @@ class SequenceView(PGChildNodeView):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}]
@@ -689,7 +689,7 @@ class SequenceView(PGChildNodeView):
                 )
 
     @check_precondition(action="stats")
-    def statistics(self, gid, sid, did, scid, seid):
+    def statistics(self, gid, sid, did, scid, seid=None):
         """
         Statistics
 
@@ -702,10 +702,26 @@ class SequenceView(PGChildNodeView):
 
         Returns the statistics for a particular object if seid is specified
         """
+        if seid is not None:
+            sql = 'stats.sql'
+            schema_name = None
+        else:
+            sql = 'coll_stats.sql'
+            # Get schema name
+            status, schema_name = self.conn.execute_scalar(
+                render_template(
+                    'schema/pg/9.1_plus/sql/get_name.sql',
+                    scid=scid
+                )
+            )
+            if not status:
+                return internal_server_error(errormsg=schema_name)
+
         status, res = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'stats.sql']),
-                conn=self.conn, seid=seid
+                "/".join([self.template_path, sql]),
+                conn=self.conn, seid=seid,
+                schema_name=schema_name
                 )
             )
 

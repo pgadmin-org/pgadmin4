@@ -11,7 +11,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'trigger_function',
         label: '{{ _('Trigger functions') }}',
         type: 'coll-trigger_function',
-        columns: ['name', 'funcowner', 'description']
+        columns: ['name', 'funcowner', 'description'],
+        hasStatistics: true
       });
   };
 

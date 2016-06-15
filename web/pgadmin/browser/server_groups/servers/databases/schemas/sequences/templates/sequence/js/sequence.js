@@ -9,7 +9,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'sequence',
         label: '{{ _('Sequences') }}',
         type: 'coll-sequence',
-        columns: ['name', 'seqowner', 'comment']
+        columns: ['name', 'seqowner', 'comment'],
+        hasStatistics: true
       });
   };
 
