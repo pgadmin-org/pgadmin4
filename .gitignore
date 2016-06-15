@@ -20,12 +20,9 @@ web/regression/test_config.json
 pgadmin4.log
 *.swp
 *.swo
-/pgadmin4
-/pgadmin4.egg-info
-/MANIFEST.in
-/build
 /mac-build
 /src-build
+/pip-build
 /dist
 pkg/win32/win-build
 pkg/win32/installer.iss

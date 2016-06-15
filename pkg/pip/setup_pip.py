@@ -18,13 +18,13 @@ from os import path
 """This script is used to help generate PIP packages"""
 
 # Get the requirements list for the current version of Python
-req_file='requirements_py' + str(sys.version_info[0]) + '.txt'
+req_file='../requirements_py' + str(sys.version_info[0]) + '.txt'
 
 with open(req_file) as reqf:
     required = reqf.read().decode("utf-8").splitlines()
 
 # Get the app version
-modl = imp.load_source('APP_VERSION', 'web/config.py')
+modl = imp.load_source('APP_VERSION', '../web/config.py')
 
 setup(
     name='pgadmin4',
