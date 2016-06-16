@@ -70,9 +70,10 @@ else:
         config.DEFAULT_SERVER_PORT)
     server_port = config.DEFAULT_SERVER_PORT
 
-print("Starting %s. Please navigate to http://localhost:%d in your browser." %
-      (config.APP_NAME, server_port))
-sys.stdout.flush()
+if config.SERVER_MODE == True:
+    print("Starting %s. Please navigate to http://localhost:%d in your browser." %
+          (config.APP_NAME, server_port))
+    sys.stdout.flush()
 
 try:
     app.run(
