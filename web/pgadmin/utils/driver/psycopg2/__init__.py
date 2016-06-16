@@ -37,6 +37,23 @@ _ = gettext
 
 ASYNC_WAIT_TIMEOUT = 0.01  # in seconds or 10 milliseconds
 
+# This registers a unicode type caster for datatype 'RECORD'.
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type((2249,), "RECORD",
+                                 psycopg2.extensions.UNICODE)
+)
+
+# Cast bytea fields to text. By default, this will render as hex strings with
+# Postgres 9+ and as escaped binary in earlier versions.
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type((17,), 'BYTEA_TEXT', psycopg2.STRING)
+)
+
+# This registers a type caster for datatype 'NaN'.
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type((701,), 'NaN_TEXT', psycopg2.STRING)
+)
+
 
 def register_date_typecasters(connection):
     """
