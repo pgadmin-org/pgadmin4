@@ -48,9 +48,8 @@ def decrypt(ciphertext, key):
     iv = ciphertext[:AES.block_size]
     cipher = AES.new(pad(key), AES.MODE_CFB, iv)
     decrypted = cipher.decrypt(ciphertext[AES.block_size:])
-    l = decrypted.count(padding_string)
 
-    return decrypted[:len(decrypted)-l]
+    return decrypted
 
 
 def pad(str):
