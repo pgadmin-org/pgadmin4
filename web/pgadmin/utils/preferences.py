@@ -523,6 +523,10 @@ Did you forget to register it?"""
             )
 
         try:
+            if pref.min_val is not None and int(value) < int(pref.min_val):
+                value = pref.min_val
+            if pref.max_val is not None and int(value) > int(pref.max_val):
+                value = pref.max_val
             pref.set(value)
         except Exception as e:
             current_app.logger.exeception(e)

@@ -437,10 +437,6 @@ define(
             className: "backgrid table-bordered",
             row: SqlEditorCustomRow
           }),
-          paginator = self.paginator = new Backgrid.Extension.Paginator({
-            goBackFirstOnSort: false,
-            collection: collection
-          }),
           clientSideFilter = self.clientSideFilter = new Backgrid.Extension.ClientSideFilter({
                  collection: collection,
                  placeholder: _('Search'),
@@ -450,11 +446,29 @@ define(
                  wait: 150
           });
 
-        // Render the grid
-        $data_grid.append(self.grid.render().$el);
+        // Render the paginator if items_per_page is greater than zero.
+        if (self.items_per_page > 0) {
+          if ($data_grid.hasClass('sql-editor-grid-container') === false)
+            $data_grid.addClass('sql-editor-grid-container');
 
-        // Render the paginator
-        self.$el.find('#datagrid-paginator').append(paginator.render().el);
+          // Render the grid
+          $data_grid.append(self.grid.render().$el);
+
+          var paginator = self.paginator = new Backgrid.Extension.Paginator({
+            goBackFirstOnSort: false,
+            collection: collection
+          })
+
+          // Render the paginator
+          self.$el.find('#datagrid-paginator').append(paginator.render().el);
+        }
+        else {
+          if ($data_grid.hasClass('sql-editor-grid-container'))
+            $data_grid.removeClass('sql-editor-grid-container');
+
+          // Render the grid
+          $data_grid.append(self.grid.render().$el);
+        }
 
         // Render the client side filter
         self.$el.find('.pg-prop-btn-group').append(clientSideFilter.render().el);
@@ -1043,6 +1057,7 @@ define(
 
           self.gridView.editor_title = editor_title;
           self.gridView.current_file = undefined;
+          self.gridView.items_per_page = self.items_per_page
 
           // Render the header
           self.gridView.render();
@@ -1068,7 +1083,7 @@ define(
           self.on('pgadmin-sqleditor:button:remove_filter', self._remove_filter, self);
           self.on('pgadmin-sqleditor:button:apply_filter', self._apply_filter, self);
           self.on('pgadmin-sqleditor:button:copy_row', self._copy_row, self);
-          self.on('pgadmin-sqleditor:button:paste_row', self._paste_row, self);
+          self.on('pgadmin-sqleditor:button:paste_row', self._paste_row_callback, self);
           self.on('pgadmin-sqleditor:button:limit', self._set_limit, self);
           self.on('pgadmin-sqleditor:button:flash', self._refresh, self);
           self.on('pgadmin-sqleditor:button:cancel-query', self._cancel_query, self);
@@ -1106,6 +1121,8 @@ define(
             '{{ _('Initializing query execution.') }}'
           );
 
+          $("#btn-flash").prop('disabled', true);
+
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "view_data/start/" + self.transId,
             method: 'GET',
@@ -1119,6 +1136,7 @@ define(
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
                 self.items_per_page = res.data.items_per_page;
+                self.gridView.items_per_page = self.items_per_page
 
                 // Set the sql query to the SQL panel
                 self.gridView.query_tool_obj.setValue(res.data.sql);
@@ -1140,6 +1158,10 @@ define(
                   $('#btn-filter').addClass('btn-default');
                   $('#btn-filter-dropdown').addClass('btn-default');
                 }
+
+                $("#btn-save").prop('disabled', true);
+                $("#btn-copy-row").prop('disabled', true);
+                $("#btn-paste-row").prop('disabled', true);
 
                 // Set the combo box value
                 $(".limit").val(res.data.limit);
@@ -1290,6 +1312,19 @@ define(
             $("#btn-filter-dropdown").prop('disabled', false);
           }
 
+          /* If user can edit the data then we should enabled
+           * add row, copy row and paste row buttons.
+           */
+          if (self.can_edit) {
+            $("#btn-add-row").prop('disabled', false);
+          }
+          else {
+            $("#btn-save").prop('disabled', true);
+            $("#btn-add-row").prop('disabled', true);
+            $("#btn-copy-row").prop('disabled', true);
+            $("#btn-paste-row").prop('disabled', true);
+          }
+
           // Fetch the columns metadata
           self.columns = self._fetch_column_metadata(data);
 
@@ -1299,23 +1334,40 @@ define(
             self
           );
 
-          // Defining backbone's pageable collection.
-          self.collection = new (Backbone.PageableCollection.extend({
-            mode: "client",
-            state: {
-              pageSize: self.items_per_page,
-              order: -1
-            },
-            model: sqlEditorViewModel.extend({
-              primary_keys: self.primary_keys,
+          /* Defining backbone's pageable collection if items per page
+           * is greater than zero else define backbone collection.
+           */
+          if (self.items_per_page > 0) {
+            self.collection = new (Backbone.PageableCollection.extend({
+              mode: "client",
+              state: {
+                pageSize: self.items_per_page,
+                order: -1
+              },
+              model: sqlEditorViewModel.extend({
+                primary_keys: self.primary_keys,
 
-              /* Change the idAttribute to random string
-               * so that it won't clash with id column of
-               * the table.
-               */
-              idAttribute: epicRandomString(10)
-            })
-          }));
+                /* Change the idAttribute to random string
+                 * so that it won't clash with id column of
+                 * the table.
+                 */
+                idAttribute: epicRandomString(10)
+              })
+            }));
+          }
+          else {
+            self.collection = new (Backbone.Collection.extend({
+              model: sqlEditorViewModel.extend({
+                primary_keys: self.primary_keys,
+
+                /* Change the idAttribute to random string
+                 * so that it won't clash with id column of
+                 * the table.
+                 */
+                idAttribute: epicRandomString(10)
+              })
+            }));
+          }
 
           // Listen on backgrid events
           self.collection.on('change', self.on_model_change, self);
@@ -1323,7 +1375,6 @@ define(
           self.collection.on('backgrid:editing', self.on_cell_editing, self);
           self.collection.on('backgrid:row:selected', self.on_row_selected, self);
           self.collection.on('backgrid:row:deselected', self.on_row_deselected, self);
-          self.listenTo(self.collection, "reset", self.collection_reset_callback);
 
           // Show message in message and history tab in case of query tool
           self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
@@ -1354,29 +1405,7 @@ define(
 
           // Hide the loading icon
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
-        },
-
-        collection_reset_callback: function() {
-          var self = this
-
-          /* If user can edit the data and current page is the
-           * last page of the paginator then we should enabled
-           * Copy Row, Paste Row and 'Add New Row' buttons.
-           */
-           if (self.can_edit &&
-               self.collection.state.currentPage != undefined &&
-               self.collection.state.lastPage != undefined &&
-               self.collection.state.currentPage == self.collection.state.lastPage)
-           {
-             $("#btn-add-row").prop('disabled', false);
-             $("#btn-copy-row").prop('disabled', false);
-             $("#btn-paste-row").prop('disabled', false);
-           }
-           else {
-             $("#btn-add-row").prop('disabled', true);
-             $("#btn-copy-row").prop('disabled', true);
-             $("#btn-paste-row").prop('disabled', true);
-           }
+          $("#btn-flash").prop('disabled', false);
         },
 
         // This function creates the columns as required by the backgrid
@@ -1558,6 +1587,8 @@ define(
             clear_grid = true;
 
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
+          $("#btn-flash").prop('disabled', false);
+
           $('.sql-editor-message').text(msg);
           self.gridView.messages_panel.focus();
 
@@ -1703,6 +1734,10 @@ define(
           }
           self.selected_row = row;
           self.selected_model = row.model;
+
+          if (self.can_edit) {
+            $("#btn-copy-row").prop('disabled', false);
+          }
         },
 
         /* This is a callback function when backgrid row
@@ -1726,7 +1761,36 @@ define(
         _add: function() {
           var self = this,
               empty_model = new (self.collection.model);
-          self.collection.add(empty_model);
+
+          // If items_per_page is zero then no pagination.
+          if (self.items_per_page === 0) {
+            self.collection.add(empty_model);
+          }
+          else {
+            // If current page is not the last page then confirm from the user
+            if (self.collection.state.currentPage != self.collection.state.lastPage) {
+              alertify.confirm('{{ _('Add New Row') }}',
+                '{{ _('The result set display will move to the last page. Do you wish to continue?') }}',
+                function() {
+                  self.collection.getLastPage();
+                  self.collection.add(empty_model);
+                },
+                function() {
+                  // Do nothing as user canceled the operation.
+                }
+              ).set('labels', {ok:'Yes', cancel:'No'});
+            }
+            else {
+              self.collection.add(empty_model);
+
+              /* If no of items on the page exceeds the page size limit then
+               * advanced to the next page.
+               */
+              var current_page = self.collection.getPage(self.collection.state.currentPage);
+              if (current_page.length >= current_page.state.pageSize)
+                self.collection.getLastPage();
+            }
+          }
         },
 
         /* This function will fetch the list of changed models and make
@@ -1818,6 +1882,7 @@ define(
                 }
                 else {
                   self.trigger('pgadmin-sqleditor:loading-icon:hide');
+                  $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
                   self.gridView.messages_panel.focus();
                 }
@@ -2156,6 +2221,8 @@ define(
         _copy_row: function() {
           var self = this;
 
+          $("#btn-paste-row").prop('disabled', false);
+
           // Save the selected model as copied model for future use
           if ('selected_model' in self)
             self.copied_model = self.selected_model;
@@ -2168,11 +2235,14 @@ define(
           if ('copied_model' in self && self.copied_model != null) {
             $("#btn-save").prop('disabled', false);
 
+            // fullCollection is part of pageable collection
+            var coll = self.collection.fullCollection === undefined ? self.collection : self.collection.fullCollection;
+
             /* Find the model to be copied in the collection
              * if found then we need to clone the object, so
              * that it's cid/id gets changed.
              */
-            if (self.collection.get(self.copied_model.cid) === undefined)
+            if (coll.get(self.copied_model.cid) === undefined)
               new_model = self.copied_model;
             else
               new_model = self.copied_model.clone();
@@ -2186,6 +2256,41 @@ define(
 
             // Add the copied model to collection
             self.collection.add(new_model);
+          }
+        },
+
+        // This function is callback function for paste row.
+        _paste_row_callback: function() {
+          var self = this;
+
+          // If items_per_page is zero then no pagination.
+          if (self.items_per_page == 0) {
+            self._paste_row();
+          }
+          else {
+            // If current page is not the last page then confirm from the user
+            if (self.collection.state.currentPage != self.collection.state.lastPage) {
+              alertify.confirm('{{ _('Paste Row') }}',
+                '{{ _('The result set display will move to the last page. Do you wish to continue?') }}',
+                function() {
+                  self.collection.getLastPage();
+                  self._paste_row();
+                },
+                function() {
+                  // Do nothing as user canceled the operation.
+                }
+              ).set('labels', {ok:'Yes', cancel:'No'});
+            }
+            else {
+              self._paste_row();
+
+              /* If no of items on the page exceeds the page size limit then
+               * advanced to the next page.
+               */
+              var current_page = self.collection.getPage(self.collection.state.currentPage);
+              if (current_page.length >= current_page.state.pageSize)
+                self.collection.getLastPage();
+            }
           }
         },
 
@@ -2260,6 +2365,8 @@ define(
             '{{ _('Initializing the query execution!') }}'
           );
 
+          $("#btn-flash").prop('disabled', true);
+
           if (explain_prefix != undefined)
             sql = explain_prefix + ' ' + sql;
 
@@ -2296,6 +2403,7 @@ define(
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
                 self.items_per_page = res.data.items_per_page;
+                self.gridView.items_per_page = self.items_per_page
 
                 // If status is True then poll the result.
                 self._poll();
@@ -2432,11 +2540,11 @@ define(
         // This function will download the grid data as CSV file.
         _download: function() {
           var self = this;
+          var coll = self.collection.fullCollection === undefined ? self.collection : self.collection.fullCollection;
 
           if (self.columns != undefined &&
-              self.collection != undefined &&
-              self.collection.fullCollection != undefined &&
-              self.collection.fullCollection.length > 0)
+              coll != undefined &&
+              coll.length > 0)
           {
             var csv_col = _.indexBy(self.columns, 'name'),
                 labels = _.pluck(self.columns, 'label'),
@@ -2444,7 +2552,7 @@ define(
 
             // Fetch the items from fullCollection and convert it as csv format
             var csv = labels.join(',') + '\n';
-            csv += self.collection.fullCollection.map(function(item) {
+            csv += coll.map(function(item) {
                 return _.map(keys, function(key) {
                   var cell = csv_col [key].cell,
                       // suppose you want to preserve custom formatters
