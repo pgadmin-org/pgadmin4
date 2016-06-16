@@ -54,6 +54,13 @@ MODULE_BLACKLIST = ['test']
 # List of treeview browser nodes to skip when dynamically loading
 NODE_BLACKLIST = []
 
+# Data directory for storage of config settings etc. This shouldn't normally
+# need to be changed - it's here as various other settings depend on it.
+if os.name == 'nt':
+    DATA_DIR = os.path.realpath(os.getenv('APPDATA') + "/pgAdmin")
+else:
+    DATA_DIR = os.path.realpath(os.path.expanduser('~/.pgadmin/'))
+
 ##########################################################################
 # Log settings
 ##########################################################################
@@ -78,7 +85,7 @@ FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
 LOG_FILE = os.path.join(
-    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    DATA_DIR,
     'pgadmin4.log'
     )
 
@@ -156,7 +163,7 @@ SETTINGS_SCHEMA_VERSION = 11
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
 SQLITE_PATH = os.path.join(
-    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    DATA_DIR,
     'pgadmin4.db'
     )
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
@@ -185,7 +192,7 @@ SQLITE_TIMEOUT = 500
 #
 ##########################################################################
 SESSION_DB_PATH = os.path.join(
-    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    DATA_DIR,
     'sessions'
     )
 
@@ -237,7 +244,7 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 # STORAGE_DIR = "/path/to/directory/"
 ##########################################################################
 STORAGE_DIR = os.path.join(
-    os.path.realpath(os.path.expanduser('~/.pgadmin/')),
+    DATA_DIR,
     'storage'
     )
 
