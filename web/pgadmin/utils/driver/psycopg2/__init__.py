@@ -798,14 +798,31 @@ Failed to reset the connection to the server due to following error:
         if state == psycopg2.extensions.POLL_OK:
             return self.ASYNC_OK
         elif state == psycopg2.extensions.POLL_WRITE:
-            if select.select([], [conn.fileno()], [], time) == ([], [], []):
+            # Wait for the given time and then check the return status
+            # If three empty lists are returned then the time-out is reached.
+            timeout_status = select.select([], [conn.fileno()], [], time)
+            if timeout_status == ([], [], []):
                 return self.ASYNC_WRITE_TIMEOUT
-            # Call recursively if no timeout
-            return self._wait_timeout(conn, time)
+
+            # poll again to check the state if it is still POLL_WRITE
+            # then return ASYNC_WRITE_TIMEOUT else return ASYNC_OK.
+            state = conn.poll()
+            if state == psycopg2.extensions.POLL_WRITE:
+                return self.ASYNC_WRITE_TIMEOUT
+            return self.ASYNC_OK
         elif state == psycopg2.extensions.POLL_READ:
-            if select.select([conn.fileno()], [], [], time) == ([], [], []):
+            # Wait for the given time and then check the return status
+            # If three empty lists are returned then the time-out is reached.
+            timeout_status = select.select([conn.fileno()], [], [], time)
+            if timeout_status == ([], [], []):
                 return self.ASYNC_READ_TIMEOUT
-            return self._wait_timeout(conn, time)
+
+            # poll again to check the state if it is still POLL_READ
+            # then return ASYNC_READ_TIMEOUT else return ASYNC_OK.
+            state = conn.poll()
+            if state == psycopg2.extensions.POLL_READ:
+                return self.ASYNC_READ_TIMEOUT
+            return self.ASYNC_OK
         else:
             raise psycopg2.OperationalError(
                 "poll() returned %s from _wait_timeout function" % state
