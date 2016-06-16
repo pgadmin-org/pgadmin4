@@ -73,6 +73,36 @@ Server::Server(quint16 port)
         python_path.append(pymodules_path);
     }
 #endif
+#ifdef Q_OS_WIN
+
+    // In the case we're running in a release application, we need to ensure the
+    // bundled virtual env is included in the Python path. We include it at the
+    // end, so expert users can override the path, but we do not save it.
+
+    // Get the application directory
+    QString app_dir = qApp->applicationDirPath();
+
+    // Build (and canonicalise) the virtual environment path
+    // C:\Program Files (x86)\pgAdmin 4\v1\venv\Lib\site-packages;C:\Program Files (x86)\pgAdmin 4a\v1\venv\Lib;C:\Program Files (x86)\pgAdmin 4\v1\venv\DLLs
+    QString path1 = (app_dir + "/../venv/Lib/site-packages");
+    QString path2 = (app_dir + "/../venv/Lib");
+    QString path3 = (app_dir + "/../venv/DLLs");
+    QFileInfo fi1(path1);
+    QFileInfo fi2(path2);
+    QFileInfo fi3(path3);
+    QString pymodules_path = fi1.canonicalFilePath() + ";" + \
+            fi2.canonicalFilePath() + ";" + \
+            fi3.canonicalFilePath();
+
+    // Append the path, if it's not already there
+    if (!python_path.contains(pymodules_path))
+    {
+        if (!python_path.isEmpty())
+            python_path.append(";");
+
+        python_path.append(pymodules_path);
+    }
+#endif
 
     if (python_path.length() > 0)
     {
