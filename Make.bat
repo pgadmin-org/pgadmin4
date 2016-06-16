@@ -47,7 +47,7 @@ REM Main function Ends
     ECHO Calling clean target...
     IF EXIST "%PGBUILDPATH%" rd "%PGBUILDPATH%" /S /Q
 
-    FOR /R "%WD%" %%f in (*.pyc) do DEL /q "%%f" > nul
+    FOR /R "%WD%" %%f in (*.pyc *.pyo) do DEL /q "%%f" > nul
     IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q
     IF EXIST DEL /q "%WD%\pkg\win32\installer.iss" > nul
     CD %WD%
@@ -181,8 +181,8 @@ GOTO:EOF
     IF NOT EXIST "%QTDIR%\..\%QT_MSVC_PATH%"       GOTO err_handle_qt_mismatch
 
     REM get Python version ex. 2.7.1 will get as 27
-    for /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MAJOR=%%G
-    for /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MINOR=%%G
+    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MAJOR=%%G
+    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MINOR=%%G
     SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
@@ -231,16 +231,16 @@ GOTO:EOF
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    REM Clean up .pyc, pgadmin4.db, config_local.py
+    REM Clean up .pyc, .pyo, pgadmin4.db, config_local.py
     ECHO Cleaning up unnecessary files...
-    for /R "%PGBUILDPATH%\web" %%f in (*.pyc) do DEL /q "%%f"
-    IF EXIST DEL /s "%PGBUILDPATH%\web\pgadmin4.db" > nul
-    IF EXIST DEL /s "%PGBUILDPATH%\web\config_local.py" > nul
+    FOR /R "%PGBUILDPATH%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f"
+    DEL /q "%PGBUILDPATH%\web\pgadmin4.db"
+    DEL /q "%PGBUILDPATH%\web\config_local.py"
     
-    ECHO Creating config_local.py
-    ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_local.py"
-    ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_local.py"
-    ECHO MINIFY_HTML = False >> "%PGBUILDPATH%\web\config_local.py"
+    ECHO Creating config_distro.py
+    ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_distro.py"
+    ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO MINIFY_HTML = False >> "%PGBUILDPATH%\web\config_distro.py"
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
@@ -357,7 +357,7 @@ GOTO:EOF
 
     copy "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%PGBUILDPATH%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    REM search and replace string from config.py and copy to config_local.py
+
     CD "%WD%"
     CD pkg
     CD win32
@@ -385,7 +385,7 @@ GOTO:EOF
 
     ECHO "Location - %TARGETINSTALLER%\%INSTALLERNAME%"
     ECHO Installer generated successfully.
-    GOTO CLEAN_RELEASE
+
     CD %WD%
 GOTO:EOF
 
