@@ -30,6 +30,7 @@ Server::Server(quint16 port)
 
     // Initialise Python
     Py_NoSiteFlag=1;
+    Py_DontWriteBytecodeFlag=1;
 
     // Python3 requires conversion of char  * to wchar_t *, so...
 #ifdef PYTHON2
