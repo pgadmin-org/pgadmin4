@@ -67,7 +67,7 @@ Server::Server(quint16 port)
     // Append the path, if it's not already there
     if (!python_path.contains(pymodules_path))
     {
-        if (!python_path.isEmpty())
+        if (!python_path.isEmpty() && !python_path.endsWith(";"))
             python_path.append(";");
 
         python_path.append(pymodules_path);
@@ -83,24 +83,33 @@ Server::Server(quint16 port)
     QString app_dir = qApp->applicationDirPath();
 
     // Build (and canonicalise) the virtual environment path
-    // C:\Program Files (x86)\pgAdmin 4\v1\venv\Lib\site-packages;C:\Program Files (x86)\pgAdmin 4a\v1\venv\Lib;C:\Program Files (x86)\pgAdmin 4\v1\venv\DLLs
-    QString path1 = (app_dir + "/../venv/Lib/site-packages");
-    QString path2 = (app_dir + "/../venv/Lib");
-    QString path3 = (app_dir + "/../venv/DLLs");
-    QFileInfo fi1(path1);
-    QFileInfo fi2(path2);
-    QFileInfo fi3(path3);
-    QString pymodules_path = fi1.canonicalFilePath() + ";" + \
-            fi2.canonicalFilePath() + ";" + \
-            fi3.canonicalFilePath();
+    QFileInfo path1(app_dir + "/../venv/Lib");
+    QFileInfo path2(app_dir + "/../venv/DLLs");
+    QFileInfo path3(app_dir + "/../venv/Lib/site-packages");
 
-    // Append the path, if it's not already there
-    if (!python_path.contains(pymodules_path))
+    // Append paths, if they're not already there
+    if (!python_path.contains(path1.canonicalFilePath()))
     {
-        if (!python_path.isEmpty())
+        if (!python_path.isEmpty() && !python_path.endsWith(";"))
             python_path.append(";");
 
-        python_path.append(pymodules_path);
+        python_path.append(path1.canonicalFilePath());
+    }
+
+    if (!python_path.contains(path2.canonicalFilePath()))
+    {
+        if (!python_path.isEmpty() && !python_path.endsWith(";"))
+            python_path.append(";");
+
+        python_path.append(path2.canonicalFilePath());
+    }
+
+    if (!python_path.contains(path3.canonicalFilePath()))
+    {
+        if (!python_path.isEmpty() && !python_path.endsWith(";"))
+            python_path.append(";");
+
+        python_path.append(path3.canonicalFilePath());
     }
 #endif
 
@@ -122,8 +131,11 @@ Server::Server(quint16 port)
 #endif
         }
     }
+
+    qDebug() << "Full Python path: " << python_path;
+
     python_path = settings.value("PythonPath").toString();
-    qDebug() << "Python path: " << python_path;
+    qDebug() << "User Python path: " << python_path;
 }
 
 Server::~Server()

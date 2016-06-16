@@ -52,19 +52,6 @@ Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; 
 Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
 
 [Code]
-procedure CurStepChanged(CurStep: TSetupStep);
-var
- value : string;
- begin
-   if CurStep = ssInstall then begin
-     value := ExpandConstant('{app}') + '\venv\Lib\site-packages' + ';' +
-     ExpandConstant('{app}') + '\venv\Lib' + ';' +
-     ExpandConstant('{app}') + '\venv\Lib\lib-tk' + ';' +
-     ExpandConstant('{app}') + '\venv\DLLs';
-     RegWriteStringValue(HKEY_CURRENT_USER,'Software\pgAdmin Development Team\pgAdmin 4', 'PythonPath', value);
- end;
-end;
-
 // find current version before installation
 function InitializeSetup: Boolean;
 var
