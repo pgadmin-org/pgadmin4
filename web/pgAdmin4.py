@@ -60,17 +60,20 @@ else:
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the
 # Flask default.
+PGADMIN_RUNTIME = False
 if 'PGADMIN_PORT' in globals():
-    app.logger.debug('PGADMIN_PORT set in the runtime environment to %s',
+    app.logger.debug('Running under the desktop runtime, port: %s',
                      globals()['PGADMIN_PORT'])
     server_port = int(globals()['PGADMIN_PORT'])
+    PGADMIN_RUNTIME = True
 else:
     app.logger.debug(
-        'PGADMIN_PORT is not set in the runtime environment, using default of %s',
+        'Not running under the desktop runtime, port: %s',
         config.DEFAULT_SERVER_PORT)
     server_port = config.DEFAULT_SERVER_PORT
 
-if config.SERVER_MODE == True:
+# Output a startup message if we're not under the runtime
+if not PGADMIN_RUNTIME:
     print("Starting %s. Please navigate to http://localhost:%d in your browser." %
           (config.APP_NAME, server_port))
     sys.stdout.flush()
@@ -79,7 +82,7 @@ try:
     app.run(
         host=config.DEFAULT_SERVER,
         port=server_port,
-        use_reloader=(config.SERVER_MODE and app.debug),
+        use_reloader=((not PGADMIN_RUNTIME) and app.debug),
         threaded=config.THREADED_MODE
     )
 except IOError:
