@@ -72,22 +72,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
-          category: 'connect', priority: 4, label: '{{ _('Connect Server...') }}',
+          category: 'connect', priority: 4, label: '{{ _('Connect Server') }}',
           icon: 'fa fa-link', enable : 'is_not_connected'
         },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
-          category: 'drop', priority: 5, label: '{{ _('Disconnect Server...') }}',
+          category: 'drop', priority: 5, label: '{{ _('Disconnect Server') }}',
           icon: 'fa fa-chain-broken', enable : 'is_connected'
         },{
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
-          category: 'reload', priority: 6, label: '{{ _('Reload Configuration...') }}',
+          category: 'reload', priority: 6, label: '{{ _('Reload Configuration') }}',
           icon: 'fa fa-repeat', enable : 'enable_reload_config'
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
-          category: 'restore', priority: 9, label: '{{ _('Add named restore point') }}',
+          category: 'restore', priority: 9, label: '{{ _('Add Named Restore Point...') }}',
           icon: 'fa fa-anchor', enable : 'is_applicable'
         },{
           name: 'change_password', node: 'server', module: this,
@@ -97,12 +97,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'pause_wal_replay',
-          category: 'wal_replay_pause', priority: 7, label: '{{ _('Pause replay of WAL') }}',
+          category: 'wal_replay_pause', priority: 7, label: '{{ _('Pause Replay of WAL') }}',
           icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled'
         },{
           name: 'wal_replay_resume', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
-          category: 'wal_replay_resume', priority: 8, label: '{{ _('Resume replay of WAL') }}',
+          category: 'wal_replay_resume', priority: 8, label: '{{ _('Resume Replay of WAL') }}',
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled'
          }]);
 

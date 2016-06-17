@@ -81,7 +81,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           name: 'reset_table_stats', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
-          category: 'Reset', priority: 4, label: '{{ _('Reset statistics') }}',
+          category: 'Reset', priority: 4, label: '{{ _('Reset Statistics') }}',
           icon: 'fa fa-bar-chart', enable : 'canCreate'
         }
         ]);

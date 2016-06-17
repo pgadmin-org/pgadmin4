@@ -43,7 +43,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           pgAdmin.Browser.add_menus([{
             name: 'show_query_tool', node: this.type, module: this,
             applies: ['object', 'context'], callback: 'show_query_tool',
-            priority: 998, label: '{{ _("Query tool") }}',
+            priority: 998, label: '{{ _("Query Tool...") }}',
             icon: 'fa fa-bolt'
           }]);
         }
