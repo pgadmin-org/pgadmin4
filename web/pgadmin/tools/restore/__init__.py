@@ -69,7 +69,7 @@ class RestoreMessage(IProcessDesc):
             id=self.sid, user_id=current_user.id
         ).first()
 
-        return _("Restoring backup on the server - '{0}'").format(
+        return _("Restoring backup on the server '{0}'...").format(
             "{0} ({1}:{2})".format(s.name, s.host, s.port),
         )
 
@@ -83,7 +83,7 @@ class RestoreMessage(IProcessDesc):
 
         res += html.safe_str(
             _(
-                "Restoring the backup on the server - '{0}'"
+                "Restoring the backup on the server '{0}'..."
             ).format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
@@ -127,7 +127,7 @@ class RestoreMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL can not be called directly!"))
+    return bad_request(errormsg=_("This URL can not be called directly."))
 
 
 @blueprint.route("/restore.js")
@@ -189,7 +189,7 @@ def create_restore_job(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Couldn't find the given server")
+            errormsg=_("Could not find the specified server")
         )
 
     # To fetch MetaData for the server
@@ -203,7 +203,7 @@ def create_restore_job(sid):
     if not connected:
         return make_json_response(
             success=0,
-            errormsg=_("Please connect to the server first...")
+            errormsg=_("Please connect to the server first.")
         )
 
     utility = manager.utility('restore')

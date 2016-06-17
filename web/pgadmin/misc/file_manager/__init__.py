@@ -584,14 +584,14 @@ class Filemanager(object):
         oldpath_sys = "{0}{1}".format(dir, old)
         newpath_sys = "{0}{1}".format(dir, newpath)
 
-        error_msg = gettext('Renamed Successfully.')
+        error_msg = gettext('Renamed successfully.')
         code = 1
         try:
             os.rename(oldpath_sys, newpath_sys)
             code = 0
         except Exception as e:
-            error_msg = "{0} - {1}".format(
-                gettext('There was an error renaming the file.'),
+            error_msg = "{0} {1}".format(
+                gettext('There was an error renaming the file:'),
                 str(e))
 
         result = {

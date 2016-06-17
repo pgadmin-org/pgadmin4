@@ -56,8 +56,8 @@ class BGProcessModule(PgAdminModule):
             'STATUS': _('Status'),
             'EXECUTION_TIME': _('Execution time'),
             'running': _('Running...'),
-            'successfully_finished': _("Successfully Finished!"),
-            'failed_with_exit_code': _("Failed (Exit code: %%s).")
+            'successfully_finished': _("Successfully completed."),
+            'failed_with_exit_code': _("Failed (exit code: %%s).")
         }
 
 # Initialise the module
@@ -69,7 +69,7 @@ blueprint = BGProcessModule(
 @blueprint.route('/')
 @login_required
 def index():
-    return bad_request(errormsg=_('User can not call this url directly'))
+    return bad_request(errormsg=_('This URL can not be called directly.'))
 
 
 @blueprint.route('/status/<pid>/', methods=['GET'])

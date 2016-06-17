@@ -73,7 +73,7 @@ class BatchProcess(object):
 
         if p is None:
             raise LookupError(gettext(
-                "Couldn't find the process specified by the id!"
+                "Could not find a process with the specified ID."
             ))
 
         # ID
@@ -170,9 +170,9 @@ class BatchProcess(object):
     def start(self):
         if self.stime is not None:
             if self.etime is None:
-                raise Exception(gettext('Process has already been started!'))
+                raise Exception(gettext('The process has already been started.'))
             raise Exception(gettext(
-                'Process has already been finished, it can not be restared!'
+                'The process has already finished and can not be restarted.'
             ))
 
         executor = os.path.join(
@@ -351,7 +351,7 @@ class BatchProcess(object):
 
         if p is None:
             raise LookupError(gettext(
-                "Couldn't find the process specified by the id!"
+                "Could not find a process with the specified ID."
             ))
 
         if _release:

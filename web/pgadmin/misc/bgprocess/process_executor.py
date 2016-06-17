@@ -209,7 +209,7 @@ def read_configs(data):
         else:
             return None
     else:
-        raise ValueError("Please verify process id and db_file arguments")
+        raise ValueError("Please verify pid and db_file arguments.")
 
 
 def update_configs(kwargs):
@@ -246,7 +246,7 @@ def update_configs(kwargs):
         # Commit & close cursor
         conn.close()
     else:
-        raise ValueError("Please verify pid and db_file arguments")
+        raise ValueError("Please verify pid and db_file arguments.")
 
 
 def execute(configs):
@@ -360,13 +360,13 @@ def execute(configs):
                 process_stdout = None
 
     else:
-        raise ValueError("Please verify configs")
+        raise ValueError("Please verify process configs.")
 
 
 if __name__ == '__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser(
-        description='Process executor for pgAdmin4'
+        description='Process executor for pgAdmin 4'
         )
     parser.add_argument(
         '-p', '--process_id', help='Process ID', required=True

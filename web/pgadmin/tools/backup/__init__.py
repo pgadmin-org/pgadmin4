@@ -97,17 +97,17 @@ class BackupMessage(IProcessDesc):
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
-                "Backing up an object on the server - '{0}' on database '{1}'..."
+                "Backing up an object on the server '{0}' from database '{1}'..."
             ).format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port),
                 self.database
             )
         if self.backup_type == BACKUP.GLOBALS:
-            return _("Backing up the globals for the server - '{0}'...").format(
+            return _("Backing up the global objects on the server - '{0}'...").format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         elif self.backup_type == BACKUP.SERVER:
-            return _("Backing up the server - '{0}'...").format(
+            return _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         else:
@@ -125,7 +125,7 @@ class BackupMessage(IProcessDesc):
         if self.backup_type == BACKUP.OBJECT:
             res += html.safe_str(
                 _(
-                    "Backing up an object on the server - '{0}' on database '{1}'"
+                    "Backing up an object on the server '{0}' from database '{1}'..."
                 ).format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port),
                     self.database
@@ -133,13 +133,13 @@ class BackupMessage(IProcessDesc):
             )
         if self.backup_type == BACKUP.GLOBALS:
             res += html.safe_str(
-                _("Backing up the globals for the server - '{0}'").format(
+                _("Backing up the global objects on the server '{0}'").format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port)
                 )
             )
         elif self.backup_type == BACKUP.SERVER:
             res += html.safe_str(
-                _("Backing up the server - '{0}'").format(
+                _("Backing up the server '{0}'").format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port)
                 )
             )
@@ -185,7 +185,7 @@ class BackupMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL can not be called directly!"))
+    return bad_request(errormsg=_("This URL can not be called directly."))
 
 
 @blueprint.route("/backup.js")
@@ -247,7 +247,7 @@ def create_backup_job(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Couldn't find the given server")
+            errormsg=_("Could not find the specified server.")
         )
 
     # To fetch MetaData for the server
@@ -260,7 +260,7 @@ def create_backup_job(sid):
     if not connected:
         return make_json_response(
             success=0,
-            errormsg=_("Please connect to the server first...")
+            errormsg=_("Please connect to the server first.")
         )
 
     utility = manager.utility('backup_server')
@@ -341,7 +341,7 @@ def create_backup_objects_job(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Couldn't find the given server")
+            errormsg=_("Could not find the specified server.")
         )
 
     # To fetch MetaData for the server
@@ -354,7 +354,7 @@ def create_backup_objects_job(sid):
     if not connected:
         return make_json_response(
             success=0,
-            errormsg=_("Please connect to the server first...")
+            errormsg=_("Please connect to the server first.")
         )
 
     utility = manager.utility('backup')
