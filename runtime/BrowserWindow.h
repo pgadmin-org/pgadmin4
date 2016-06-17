@@ -47,7 +47,7 @@ protected slots:
 
 private slots:
     void openUrl();
-    void configuration();
+    void preferences();
     void about();
 
 public slots:
@@ -58,12 +58,11 @@ public slots:
 private:
     QString m_appServerUrl;
     WebViewWindow *m_mainWebView;
-    QMenu *fileMenu;
-    QMenu *helpMenu;
-    QAction *openUrlAction;
-    QAction *configurationAction;
-    QAction *exitAction;
-    QAction *aboutAction;
+
+    QShortcut *openUrlShortcut;
+    QShortcut *preferencesShortcut;
+    QShortcut *exitShortcut;
+    QShortcut *aboutShortcut;
 
     QGridLayout  *m_tabGridLayout;
     QGridLayout  *m_mainGridLayout;
@@ -82,7 +81,6 @@ private:
     int m_loadAttempt;
 
     void createActions();
-    void createMenus();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
 };

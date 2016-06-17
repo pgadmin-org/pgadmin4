@@ -45,9 +45,8 @@ BrowserWindow::BrowserWindow(QString url)
 
     m_appServerUrl = url;
 
-    // Setup the UI
+    // Setup the shortcuts
     createActions();
-    createMenus();
 
     m_tabWidget = new TabWindow(this);
     m_mainGridLayout = new QGridLayout(m_tabWidget);
@@ -111,45 +110,24 @@ void BrowserWindow::closeEvent(QCloseEvent *event)
 void BrowserWindow::createActions()
 {
     // Open an arbitrary URL
-    openUrlAction = new QAction(tr("&Open URL..."), this);
-    openUrlAction->setShortcut(tr("Ctrl+U"));
-    openUrlAction->setStatusTip(tr("Open a URL"));
-    connect(openUrlAction, SIGNAL(triggered()), this, SLOT(openUrl()));
+    openUrlShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U), this);
+    openUrlShortcut->setContext(Qt::ApplicationShortcut);
+    connect(openUrlShortcut, SIGNAL(activated()), this, SLOT(openUrl()));
 
     // Set the Python Path
-    configurationAction = new QAction(tr("&Configuration..."), this);
-    configurationAction->setStatusTip(tr("Configure the application paths"));
-    connect(configurationAction, SIGNAL(triggered()), this, SLOT(configuration()));
+    preferencesShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P), this);
+    preferencesShortcut->setContext(Qt::ApplicationShortcut);
+    connect(preferencesShortcut, SIGNAL(activated()), this, SLOT(preferences()));
 
     // Exit the app
-    exitAction = new QAction(tr("E&xit"), this);
-    exitAction->setStatusTip(tr("Exit the application"));
-    exitAction->setShortcuts(QKeySequence::Quit);
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    exitShortcut = new QShortcut(QKeySequence::Quit, this);
+    exitShortcut->setContext(Qt::ApplicationShortcut);
+    connect(exitShortcut, SIGNAL(activated()), this, SLOT(close()));
 
     // About box
-    aboutAction = new QAction(tr("&About"), this);
-    aboutAction->setStatusTip(tr("Show the application's About box"));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-}
-
-
-// Create the application menus
-void BrowserWindow::createMenus()
-{
-    // File
-    fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(openUrlAction);
-    fileMenu->addSeparator();
-    fileMenu->addAction(configurationAction);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAction);
-
-    menuBar()->addSeparator();
-
-    // Help
-    helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(aboutAction);
+    aboutShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this);
+    aboutShortcut->setContext(Qt::ApplicationShortcut);
+    connect(aboutShortcut, SIGNAL(activated()), this, SLOT(about()));
 }
 
 
@@ -465,7 +443,7 @@ void BrowserWindow::openUrl()
 }
 
 // Edit the app configuration
-void BrowserWindow::configuration()
+void BrowserWindow::preferences()
 {
     QSettings settings;
     bool ok;
@@ -486,5 +464,4 @@ void BrowserWindow::configuration()
         settings.setValue("ApplicationPath", applicationpath);
     }
 }
-
 
