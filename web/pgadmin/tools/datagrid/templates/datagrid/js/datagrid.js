@@ -59,7 +59,7 @@ define(
         var menus = [{
           name: 'query_tool', module: this, applies: ['tools'],
           callback: 'show_query_tool', enable: query_tool_menu_enabled,
-          priority: 1, label: '{{ _('Query tool') }}',
+          priority: 1, label: '{{ _('Query Tool') }}',
           icon: 'fa fa-bolt'
         }];
 
