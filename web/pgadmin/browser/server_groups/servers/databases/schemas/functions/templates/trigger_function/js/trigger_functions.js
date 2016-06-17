@@ -159,7 +159,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'lanname', label: '{{ _('Language') }}', cell: 'string',
           control: 'node-ajax-options', type: 'text', group: '{{ _('Definition') }}',
           url: 'get_languages', disabled: 'isDisabled', transform: function(d, self) {
-             return _.reject(d, function(o){ return o.label == 'sql'; });
+             return _.reject(d, function(o){ return o.label == 'sql' || o.label == 'edbspl'; });
           }, select2: { allowClear: false }
         },{
           id: 'prosrc', label: '{{ _('Code') }}', cell: 'string',
