@@ -3,7 +3,7 @@
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess {
-  background-color: #31708F;
+  background-color: #2C76B4;
   color: #FFFFFF;
   padding: 0px;
   border-radius: 5px;
@@ -16,23 +16,23 @@
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-header {
-  background-color: #1B4A5A;
+  background-color: #333;
   margin-top: 0px;
   margin-bottom: 5px;
-  font-weight: 900;
   padding: 5px;
   white-space: pre-wrap;
+  text-align: center;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-notify-body {
   font-family: monospace;
+  white-space: nowrap;
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status {
   padding: 2px;
-  font-weight: 700;
   margin: 5px;
   width: calc(100% - 10px);
   text-align: center;
@@ -51,22 +51,24 @@
   font-size: 95%;
   padding: 5px;
   font-weight: bold;
-  color: #fff;
+  color: #000;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: .25em;
-  background-color: #777;
+  background-color: #E2E2E2;
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 
 .pg-bg-click {
-  color: rgb(221, 194, 174);
+  color: #E2E2E2;
   text-decoration: underline;
   cursor: pointer;
 }
 
 .pg-bg-click:hover {
-  color: darkblue;
+  color: #333;
 }
 
 .ajs-bg-bgprocess > .pg-bg-bgprocess > .pg-bg-status.bg-success,
@@ -95,7 +97,7 @@
   padding: 0px 0px 0px 0px;
   WebkitTransition: all 1s;
   transition: all 1s;
-  background-color: rgb(255, 239, 217);
+  background-color: #D9EDF7;
 }
 
 ol.pg-bg-process-logs {
@@ -113,7 +115,7 @@ ol.pg-bg-process-logs {
 }
 
 .pg-bg-res-out {
-  color: rgb(12, 116, 149);
+  color: #337AB7;
 }
 
 .pg-bg-res-err {
@@ -124,7 +126,7 @@ ol.pg-bg-process-logs {
   padding: 10px 15px;
   min-height: 70px;
   color: #000;
-  background-color: whitesmoke;
+  background-color: #E2E2E2;
 }
 
 .pg-panel-content .bg-process-stats p{
@@ -139,7 +141,7 @@ ol.pg-bg-process-logs {
   padding: 10px 15px;
   position: absolute;
   bottom: 0;
-  background-color: whitesmoke;
+  background-color: #E2E2E2;
 }
 
 .pg-panel-content .bg-process-footer p {
@@ -149,7 +151,7 @@ ol.pg-bg-process-logs {
 }
 
 .pg-panel-content .bg-process-footer b, .bg-process-stats span b {
-  color: #285173;
+  color: #333;
 }
 
 .bg-process-footer .bg-process-status {

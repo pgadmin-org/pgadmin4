@@ -341,7 +341,7 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
 
         // set bgprocess execution time
         $footer.find('.bg-process-exec-time p').empty().append(
-          $('<span></span>', {class: 'blink'}).text(
+          $('<span></span>').text(
             String(self.execution_time)
           )
         ).append(
