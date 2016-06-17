@@ -1120,6 +1120,8 @@ def load_file():
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
+    if storage_manager_path is None:
+        storage_manager_path = ""
 
     # generate full path of file
     file_path = os.path.join(

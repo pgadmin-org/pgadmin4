@@ -138,7 +138,9 @@ define([
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
                 }
                 var newFile = $('.currentpath').val() + sel_file;
-
+                if (newFile.indexOf('/') == 0) {
+                  newFile = newFile.substr(1);
+                }
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:storage_dialog', newFile);
               }
               removeTransId(trans_id);
@@ -249,7 +251,9 @@ define([
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
                 }
                 var newFile = $('.currentpath').val() + sel_file;
-
+                if (newFile.indexOf('/') == 0) {
+                  newFile = newFile.substr(1);
+                }
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_file', newFile);
               }
               removeTransId(trans_id);
@@ -360,7 +364,9 @@ define([
                   sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
                 }
                 var newFile = $('.currentpath').val() + sel_file;
-
+                if (newFile.indexOf('/') == 0) {
+                  newFile = newFile.substr(1);
+                }
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_folder', newFile);
               }
               removeTransId(trans_id);
@@ -469,7 +475,9 @@ define([
                   $('.replace_file, .fm_dimmer').hide();
                   var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
                       newFile = $('.currentpath').val() + selected_item;
-
+                  if (newFile.indexOf('/') == 0) {
+                    newFile = newFile.substr(1);
+                  }
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
                   $('.file_manager_create_cancel').trigger('click');
                 });
@@ -509,7 +517,9 @@ define([
               if (closeEvent.button.text == "{{ _('Create') }}") {
                 var selected_item = $('.allowed_file_types .create_input input[type="text"]').val();
                 var newFile = $('.currentpath').val() + selected_item;
-
+                if (newFile.indexOf('/') == 0) {
+                  newFile = newFile.substr(1);
+                }
                 if(!_.isUndefined(selected_item) && selected_item !== '' && this.is_file_exist()) {
                   this.replace_file();
                   closeEvent.cancel = true;
