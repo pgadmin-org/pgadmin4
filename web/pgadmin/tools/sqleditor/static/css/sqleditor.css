@@ -58,6 +58,10 @@
   overflow: auto;
 }
 
+.sql-editor-grid-container.has-no-footer {
+  height: 100%;
+}
+
 #datagrid-paginator {
   bottom: 0px;
   width: 100%;

@@ -448,8 +448,8 @@ define(
 
         // Render the paginator if items_per_page is greater than zero.
         if (self.items_per_page > 0) {
-          if ($data_grid.hasClass('sql-editor-grid-container') === false)
-            $data_grid.addClass('sql-editor-grid-container');
+          if ($data_grid.hasClass('has-no-footer'))
+            $data_grid.removeClass('has-no-footer');
 
           // Render the grid
           $data_grid.append(self.grid.render().$el);
@@ -463,8 +463,8 @@ define(
           self.$el.find('#datagrid-paginator').append(paginator.render().el);
         }
         else {
-          if ($data_grid.hasClass('sql-editor-grid-container'))
-            $data_grid.removeClass('sql-editor-grid-container');
+          if (!$data_grid.hasClass('has-no-footer'))
+            $data_grid.addClass('has-no-footer');
 
           // Render the grid
           $data_grid.append(self.grid.render().$el);
