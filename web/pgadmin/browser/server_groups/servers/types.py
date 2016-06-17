@@ -50,10 +50,10 @@ class ServerType(object):
 
             st.utility_path = paths.register(
                 'bin_paths', st.stype + '_bin_dir',
-                _("{0} bin path").format(st.stype.upper()),
+                _("{0} Binary Path").format(st.desc),
                 'text', "", category_label=_('Binary paths'),
                 help_str=_(
-                    "Set the PATH where the {0} binary utilities can be found...".format(
+                    "Path to the {0} binary utilities.".format(
                         st.desc
                     )
                 )
@@ -104,7 +104,7 @@ class ServerType(object):
             res = 'psql'
         else:
             raise Exception(
-                _("Couldn't find the utility for the operation '%s'".format(
+                _("Could not find the utility for the operation '%s'".format(
                     operation
                 ))
             )

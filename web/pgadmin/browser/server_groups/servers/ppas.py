@@ -17,4 +17,4 @@ class PPAS(ServerType):
         return ver.startswith("EnterpriseDB")
 
 # Default Server Type
-PPAS('ppas', gettext("Postgres Plus Advanced Server"), 2)
+PPAS('ppas', gettext("EDB Advanced Server"), 2)
