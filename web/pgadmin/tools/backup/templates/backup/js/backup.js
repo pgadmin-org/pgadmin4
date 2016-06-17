@@ -102,7 +102,7 @@ TODO LIST FOR BACKUP:
       idAttribute: 'id',
       defaults: {
         file: undefined,
-        role: 'postgres',
+        role: undefined,
         format: 'custom',
         verbose: true,
         blobs: true,

@@ -221,27 +221,39 @@ def create_restore_job(sid):
 
         def set_value(key, param, value):
             if key in data:
-                args.append(param)
                 if value:
-                    if value is True:
+                    if value is True and data[key]:
+                        args.append(param)
                         args.append(data[key])
                     else:
+                        args.append(param)
                         args.append(value)
                     return True
             return False
 
         def set_multiple(key, param, with_schema=True):
             if key in data:
-                data[key] = json.loads(data[key])
                 if len(data[key]) > 0:
                     if with_schema:
-                        for s, o in data[key]:
+                        # TODO:// This is temporary
+                        # Once object tree is implemented then we will use
+                        # list of tuples 'else' part
+                        if isinstance(data[key], list):
+                            s, t = data[key]
                             args.extend([
                                 param,
                                 driver.qtIdent(
                                     conn, s
-                                ) + '.' + driver.qtIdent(conn, o)
+                                ) + '.' + driver.qtIdent(conn, t)
                             ])
+                        else:
+                            for s, o in data[key]:
+                                args.extend([
+                                    param,
+                                    driver.qtIdent(
+                                        conn, s
+                                    ) + '.' + driver.qtIdent(conn, o)
+                                ])
                     else:
                         for o in data[key]:
                             args.extend([param, o])
@@ -257,11 +269,11 @@ def create_restore_job(sid):
         set_value('database', '--dbname', True)
 
         if data['format'] == 'directory':
-            args.extend(['--format', 'directory'])
+            args.extend(['--format=d'])
 
-        set_value('pre_data', '--section', 'pre-data')
-        set_value('data', '--section', 'data')
-        set_value('post_data', '--section', 'post-data')
+        set_value('pre_data', '--section=pre-data', False)
+        set_value('data', '--section=data', False)
+        set_value('post_data', '--section=post-data', False)
 
         if not set_param('only_data', '--data-only'):
             set_param('dns_owner', '--no-owner')

@@ -35,7 +35,7 @@ define([
       defaults: {
         custom: false,
         file: undefined,
-        role: null,
+        role: undefined,
         format: 'Custom or tar',
         verbose: true,
         blobs: true,

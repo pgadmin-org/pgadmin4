@@ -376,30 +376,31 @@ def create_backup_objects_job(sid):
 
     def set_value(key, param, value):
         if key in data:
-            args.append(param)
             if value:
-                if value is True:
+                if value is True and param[key]:
+                    args.append(param)
                     args.append(param[key])
                 else:
+                    args.append(param)
                     args.append(value)
 
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
-
+    set_value('role', '--role', True)
     if data['format'] is not None:
         if data['format'] == 'custom':
-            args.extend(['--format', 'custom'])
+            args.extend(['--format=c'])
 
             set_param('blobs', '--blobs')
             set_value('ratio', '--compress', True)
 
         elif data['format'] == 'tar':
-            args.extend(['--format', 'tar'])
+            args.extend(['--format=t'])
 
             set_param('blobs', '--blobs')
 
         elif data['format'] == 'plain':
-            args.extend(['--format', 'plain'])
+            args.extend(['--format=p'])
             if 'only_data' in data and data['only_data']:
                 args.append('--data-only')
                 set_param('disable_trigger', '--disable-triggers')
@@ -409,11 +410,11 @@ def create_backup_objects_job(sid):
                 set_param('include_create_database', '--create')
                 set_param('include_drop_database', '--clean')
         elif data['format'] == 'directory':
-            args.extend(['--format', 'directory'])
+            args.extend(['--format=d'])
 
-    set_param('pre_data', '--section pre-data')
-    set_param('data', '--section data')
-    set_param('post_data', '--section post-data')
+    set_param('pre_data', '--section=pre-data')
+    set_param('data', '--section=data')
+    set_param('post_data', '--section=post-data')
     set_param('dns_privilege', '--no-privileges')
     set_param('dns_tablespace', '--no-tablespaces')
     set_param('dns_unlogged_tbl_data', '--no-unlogged-table-data')
@@ -423,6 +424,7 @@ def create_backup_objects_job(sid):
     set_param('with_oids', '--oids')
     set_param('use_set_session_auth', '--use-set-session-authorization')
 
+    set_value('encoding', '--encoding', True)
     set_value('no_of_jobs', '--jobs', True)
 
     for s in data['schemas']:
