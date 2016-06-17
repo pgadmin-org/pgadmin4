@@ -66,20 +66,20 @@ define(
         // Create context menu
         for (var idx = 0; idx < supported_nodes.length; idx++) {
           menus.push({
+            name: 'view_all_rows_context_' + supported_nodes[idx],
+            node: supported_nodes[idx], module: this, data: {mnuid: 3},
+            applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
+            category: 'view_data', priority: 101, label: '{{ _('View All Rows') }}'
+          },{
             name: 'view_first_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 1},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 101, label: '{{ _('View First 100 Rows') }}'
+            category: 'view_data', priority: 102, label: '{{ _('View First 100 Rows') }}'
           },{
             name: 'view_last_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 2},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 102, label: '{{ _('View Last 100 Rows') }}'
-          },{
-            name: 'view_all_rows_context_' + supported_nodes[idx],
-            node: supported_nodes[idx], module: this, data: {mnuid: 3},
-            applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 103, label: '{{ _('View All Rows') }}'
+            category: 'view_data', priority: 103, label: '{{ _('View Last 100 Rows') }}'
           },{
             name: 'view_filtered_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 4},
