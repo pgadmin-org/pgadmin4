@@ -550,8 +550,7 @@ var MainPlanModel = Backbone.Model.extend({
         g.rect(
 	        0, 0, this.get('width') - 10, this.get('height') - 10, 5
 	    ).attr({
-            stroke: '#FFEBCD', 'strokeWidth': 1.2,
-            fill: '#FFF8DC', fillOpacity: 0.5
+            fill: '#FFF'
         });
 
         //Fetch total width, height
