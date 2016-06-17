@@ -460,8 +460,8 @@ define([
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.message(
-                          '{{ _('Restore job created!') }}', 5
+                        alertify.notify(
+                          '{{ _('Restore job created.') }}', 'success', 5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       } else {
@@ -472,7 +472,7 @@ define([
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Backup failed...') }}',
+                          '{{ _('Restore failed.') }}',
                           err.errormsg
                         );
                       } catch (e) {}

@@ -462,7 +462,7 @@ TODO LIST FOR BACKUP:
                       self.__internal.buttons[2].element.disabled = false;
                     } else {
                       self.__internal.buttons[2].element.disabled = true;
-                      this.errorModel.set('file', '{{ _('Please provide filename') }}')
+                      this.errorModel.set('file', '{{ _('Please provide a filename') }}')
                     }
                 });
               },
@@ -499,8 +499,8 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.message(
-                          '{{ _('Background process for taking backup has been created!') }}',
+                        alertify.notify(
+                          '{{ _('Backup job created.') }}', 'success',
                           5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
@@ -512,7 +512,7 @@ TODO LIST FOR BACKUP:
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Backup failed...') }}',
+                          '{{ _('Backup job failed.') }}',
                           err.errormsg
                         );
                       } catch (e) {}
@@ -677,7 +677,7 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.message('{{ _('Background process for taking backup has been created!') }}', 1);
+                        alertify.notify('{{ _('Backup job created.') }}', 'success', 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },
@@ -685,7 +685,7 @@ TODO LIST FOR BACKUP:
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Backup failed...') }}',
+                          '{{ _('Backup job failed.') }}',
                           err.errormsg
                         );
                       } catch (e) {}

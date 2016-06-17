@@ -204,9 +204,9 @@ def create_import_export_job(sid):
             if storage_dir:
                 storage_dir = storage_dir.replace('/', '\\')
             data['filename'] = data['filename'].replace('\\', '\\\\')
-            data['filename'] = os.path.join(storage_dir, data['filename'])
+            data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
         else:
-            data['filename'] = os.path.join(storage_dir, data['filename'])
+            data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
     else:
         return make_json_response(
             data={'status': False, 'info': 'Please specify a valid file'}

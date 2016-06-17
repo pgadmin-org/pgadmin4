@@ -1126,7 +1126,7 @@ def load_file():
     # generate full path of file
     file_path = os.path.join(
                     storage_manager_path,
-                    unquote(file_data['file_name'])
+                    unquote(file_data['file_name'].lstrip('/'))
                 )
     file_data = None
 
@@ -1182,10 +1182,12 @@ def save_file():
     storage_manager_path = get_storage_directory()
 
     # generate full path of file
-    file_path = os.path.join(
-                    storage_manager_path,
-                    unquote(file_data['file_name'])
-                )
+    file_path = unquote(file_data['file_name'])
+    if storage_manager_path is not None:
+        file_path = os.path.join(
+                storage_manager_path,
+                unquote(file_data['file_name'].lstrip('/'))
+    )
     file_content = file_data['file_content']
 
     # write to file

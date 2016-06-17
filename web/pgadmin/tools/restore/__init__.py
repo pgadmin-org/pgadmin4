@@ -117,7 +117,7 @@ class RestoreMessage(IProcessDesc):
             idx += 1
 
         if no_args > 1:
-            res += ' "' + html.safe_str(self.bfile) + '"'
+            res += ' "' + html.safe_str(arg) + '"'
 
         res += '</i></div>'
 
@@ -155,7 +155,7 @@ def filename_with_file_manager_path(file):
     storage_dir = get_storage_directory()
 
     if storage_dir:
-        return os.path.join(storage_dir, file)
+        return os.path.join(storage_dir, file.lstrip('/'))
 
     return file
 
@@ -189,7 +189,7 @@ def create_restore_job(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server")
+            errormsg=_("Could not find the specified server.")
         )
 
     # To fetch MetaData for the server

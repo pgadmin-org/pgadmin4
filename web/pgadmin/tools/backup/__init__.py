@@ -131,7 +131,7 @@ class BackupMessage(IProcessDesc):
                     self.database
                 )
             )
-        if self.backup_type == BACKUP.GLOBALS:
+        elif self.backup_type == BACKUP.GLOBALS:
             res += html.safe_str(
                 _("Backing up the global objects on the server '{0}'").format(
                     "{0} ({1}:{2})".format(s.name, s.host, s.port)
@@ -213,7 +213,7 @@ def filename_with_file_manager_path(file):
     storage_dir = get_storage_directory()
 
     if storage_dir:
-        return os.path.join(storage_dir, file)
+        return os.path.join(storage_dir, file.lstrip('/'))
 
     return file
 

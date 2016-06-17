@@ -367,7 +367,7 @@ define(
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        Alertify.message('{{ _('Background process for taking import/export has been created!') }}', 1);
+                        Alertify.notify('{{ _('Import/export job created.') }}', 'success', 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },
@@ -375,7 +375,7 @@ define(
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         Alertify.alert(
-                          '{{ _('Import failed...') }}',
+                          '{{ _('Import/export job failed.') }}',
                           err.errormsg
                         );
                       } catch (e) {}
