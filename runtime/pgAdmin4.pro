@@ -48,21 +48,32 @@ win32 {
 else {
     message(Building for Linux/Mac...)
 
-    PYTHON_CONFIG=python3-config
-
     # Find and configure Python
-    !system(which python3-config > /dev/null 2>&1) {
-        !system(which python-config > /dev/null 2>&1) {
-            error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
-        } else {
-	    PYTHON_CONFIG=python-config
-	    DEFINES += PYTHON2
-        }
+    # Python 3?
+    PYTHON_CONFIG = $$system(which python3-config)
+
+    # Maybe Python 2?
+    isEmpty(PYTHON_CONFIG) {
+        PYTHON_CONFIG = $$system(which python-config)
     }
+
+    # Argh!
+    isEmpty(PYTHON_CONFIG) {
+        error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
+    }
+
+    message(Using $$PYTHON_CONFIG)
 
     QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
     QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
     LIBS += $$system($$PYTHON_CONFIG --libs)
+
+    contains( LIBS, -lpython2.* ) {
+       DEFINES += PYTHON2
+       message(Python2 detected.)
+    } else {
+       message(Python3 detected.)
+    }
 }
 
 # Source code
