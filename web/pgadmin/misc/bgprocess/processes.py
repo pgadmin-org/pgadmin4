@@ -334,11 +334,7 @@ class BatchProcess(object):
                 'id': p.pid,
                 'desc': desc,
                 'details': details,
-                'stime': (
-                    stime - datetime(
-                        1970, 1, 1, tzinfo=pytz.utc
-                    )
-                ).total_seconds(),
+                'stime': stime,
                 'etime': p.end_time,
                 'exit_code': p.exit_code,
                 'acknowledge': p.acknowledge,
