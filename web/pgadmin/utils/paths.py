@@ -18,7 +18,7 @@ import config
 def get_storage_directory():
 
     if config.SERVER_MODE is not True:
-        return None
+        return '/'
 
     storage_dir = getattr(
         config, 'STORAGE_DIR',
@@ -30,7 +30,7 @@ def get_storage_directory():
     )
 
     if storage_dir is None:
-        return None
+        return '/'
 
     username = current_user.email.split('@')[0]
     if len(username) == 0 or username[0].isdigit():

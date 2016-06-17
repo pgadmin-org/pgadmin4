@@ -245,9 +245,6 @@ class Filemanager(object):
             )
         self.dir = get_storage_directory()
 
-        if self.dir is not None and isinstance(self.dir, list):
-            self.dir = ""
-
     @staticmethod
     def create_new_transaction(params):
         """
