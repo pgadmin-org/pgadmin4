@@ -18,9 +18,31 @@
 #include <QDebug>
 #include <QDir>
 #include <QMessageBox>
+#include <QProcessEnvironment>
 
 // App headers
 #include "Server.h"
+
+static void add_to_path(QString python_path, QString path, bool prepend=false)
+{
+    if (!python_path.contains(path))
+    {
+        if (!prepend)
+        {
+            if (!python_path.isEmpty() && !python_path.endsWith(";"))
+                python_path.append(";");
+
+            python_path.append(path);
+        }
+        else
+        {
+            if (!python_path.isEmpty() && !python_path.startsWith(";"))
+                python_path.prepend(";");
+
+            python_path.prepend(path);
+        }
+    }
+}
 
 Server::Server(quint16 port)
 {
@@ -49,69 +71,64 @@ Server::Server(quint16 port)
     QSettings settings;
     QString python_path = settings.value("PythonPath").toString();
 
-#ifdef Q_OS_MAC
+    // Get the application directory
+    QString app_dir = qApp->applicationDirPath();
 
+    QProcessEnvironment env;
+    QString path_env = env.value("PATH");
+
+#ifdef Q_OS_MAC
     // In the case we're running in a release appbundle, we need to ensure the
     // bundled virtual env is included in the Python path. We include it at the
     // end, so expert users can override the path, but we do not save it, because
     // if users move the app bundle, we'll end up with dead entries
 
-    // Get the application directory
-    QString app_dir = qApp->applicationDirPath();
-
     // Build (and canonicalise) the virtual environment path
-    QString get_pymodules_path = (app_dir + "/../Resources/venv/lib/python/site-packages");
-    QFileInfo fi(get_pymodules_path);
-    QString pymodules_path = fi.canonicalFilePath();
+    QFileInfo venvBinPath(app_dir + "/../Resources/venv/bin");
+    QFileInfo venvLibPath(app_dir + "/../Resources/venv/lib/python");
+    QFileInfo venvDynLibPath(app_dir + "/../Resources/venv/lib/python/lib-dynload");
+    QFileInfo venvSitePackagesPath(app_dir + "/../Resources/venv/lib/python/site-packages");
 
+    // Prepend the bin directory to the path
+    add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
     // Append the path, if it's not already there
-    if (!python_path.contains(pymodules_path))
-    {
-        if (!python_path.isEmpty() && !python_path.endsWith(";"))
-            python_path.append(";");
-
-        python_path.append(pymodules_path);
-    }
-#endif
-#ifdef Q_OS_WIN
+    add_to_path(python_path, venvLibPath.canonicalFilePath());
+    add_to_path(python_path, venvDynLibPath.canonicalFilePath());
+    add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
+#elif Q_OS_WIN
 
     // In the case we're running in a release application, we need to ensure the
     // bundled virtual env is included in the Python path. We include it at the
     // end, so expert users can override the path, but we do not save it.
 
-    // Get the application directory
-    QString app_dir = qApp->applicationDirPath();
-
     // Build (and canonicalise) the virtual environment path
-    QFileInfo path1(app_dir + "/../venv/Lib");
-    QFileInfo path2(app_dir + "/../venv/DLLs");
-    QFileInfo path3(app_dir + "/../venv/Lib/site-packages");
+    QFileInfo venvBinPath(app_dir + "/../venv");
+    QFileInfo venvLibPath(app_dir + "/../venv/Lib");
+    QFileInfo venvDLLsPath(app_dir + "/../venv/DLLs");
+    QFileInfo venvSitePackagesPath(app_dir + "/../venv/Lib/site-packages");
 
+    // Prepend the bin directory to the path
+    add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
     // Append paths, if they're not already there
-    if (!python_path.contains(path1.canonicalFilePath()))
-    {
-        if (!python_path.isEmpty() && !python_path.endsWith(";"))
-            python_path.append(";");
+    add_to_path(python_path, venvLibPath.canonicalFilePath());
+    add_to_path(python_path, venvDLLsPath.canonicalFilePath());
+    add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
+#else
+    // Build (and canonicalise) the virtual environment path
+    QFileInfo venvBinPath(app_dir + "/../venv/bin");
+    QFileInfo venvLibPath(app_dir + "/../venv/lib/python");
+    QFileInfo venvDynLibPath(app_dir + "/../venv/lib/python/lib-dynload");
+    QFileInfo venvSitePackagesPath(app_dir + "/../venv/lib/python/site-packages");
 
-        python_path.append(path1.canonicalFilePath());
-    }
-
-    if (!python_path.contains(path2.canonicalFilePath()))
-    {
-        if (!python_path.isEmpty() && !python_path.endsWith(";"))
-            python_path.append(";");
-
-        python_path.append(path2.canonicalFilePath());
-    }
-
-    if (!python_path.contains(path3.canonicalFilePath()))
-    {
-        if (!python_path.isEmpty() && !python_path.endsWith(";"))
-            python_path.append(";");
-
-        python_path.append(path3.canonicalFilePath());
-    }
+    // Prepend the bin directory to the path
+    add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
+    // Append the path, if it's not already there
+    add_to_path(python_path, venvLibPath.canonicalFilePath());
+    add_to_path(python_path, venvDynLibPath.canonicalFilePath());
+    add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
 #endif
+
+    env.insert("PATH", path_env);
 
     if (python_path.length() > 0)
     {
