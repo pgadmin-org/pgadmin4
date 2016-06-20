@@ -465,6 +465,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
             defaults: {
               role: undefined,
               admin: false
+            },
+            validate: function() {
+              return null;
             }
           }),
           filter: function(d) {

@@ -709,7 +709,7 @@ rolmembership:{
                     _("Could not generate reversed engineered Query for the role.")
                     )
 
-        return ajax_response(response=res)
+        return ajax_response(response=res.strip('\n'))
 
     @check_precondition(action='create')
     @validate_request
@@ -823,7 +823,7 @@ rolmembership:{
                         data=self.request,
                         dummy=True,
                         conn=self.conn
-                        )
+                        ).strip('\n')
                     )
         else:
             return make_json_response(
@@ -837,7 +837,7 @@ rolmembership:{
                         rolCatUpdate=self.rolCatUpdate,
                         rolSuper=self.rolSuper,
                         alterKeys=self.alterKeys
-                        )
+                        ).strip('\n')
                     )
 
     @check_precondition()
