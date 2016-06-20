@@ -127,7 +127,11 @@ Server::Server(quint16 port)
 #ifdef PYTHON2
             PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
 #else
+#if PY_MINOR_VERSION > 2
+            PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
+#else
             PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
+#endif
 #endif
         }
     }
