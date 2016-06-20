@@ -175,7 +175,8 @@ define(
         "click #btn-explain-costs": "on_explain_costs",
         "click #btn-explain-buffers": "on_explain_buffers",
         "click #btn-explain-timing": "on_explain_timing",
-        "change .limit": "on_limit_change"
+        "change .limit": "on_limit_change",
+        "keyup": "keyAction"
       },
 
       // This function is used to render the template.
@@ -1010,6 +1011,25 @@ define(
             self,
             self.handler
         );
+      },
+
+      // Callback for keyboard event
+      keyAction: function(ev) {
+        if(ev.ctrlKey && ev.shiftKey) {
+          if(ev.keyCode == 69) {
+            // char e/E
+            // Execute query.
+            this.on_flash(ev);
+          } else if(ev.keyCode == 88){
+            // char x/X
+            // Explain query.
+            this.on_explain(ev);
+          } else if(ev.keyCode == 65) {
+            // char a/A
+            // Explain analyze query.
+            this.on_explain_analyze(ev);
+          }
+        }
       }
     });
 
