@@ -121,4 +121,69 @@ function(alertify, S) {
         'message', msg.replace(new RegExp('\r?\n','g'), '<br />')
         ).set('title', promptmsg);
   };
+
+  var alertifyDialogResized = function(stop) {
+    var self = this;
+
+    if (stop) {
+      self.pgResizeRecursion = false;
+    }
+
+    if(self.pgResizeTimeout) {
+      return;
+    }
+    console.log('test');
+
+    self.pgResizeTimeout = setTimeout(
+      function() {
+        var $el = $(this.elements.dialog),
+            w = $el.width();
+
+        this.pgResizeTimeout = null;
+
+        if (w <= 480) {
+          w = 'xs';
+        } else if (w < 600) {
+          w = 'sm';
+        } else if (w < 768) {
+          w = 'md';
+        } else {
+          w = 'lg';
+        }
+
+        $el.attr('el', w);
+      }.bind(self),
+      100
+    );
+  };
+
+  var alertifyDialogStartResizing = function(start) {
+    var self = this;
+
+    if (start) {
+      self.pgResizeRecursion = true;
+    }
+
+    setTimeout(
+      function() {
+        alertifyDialogResized.apply(self);
+
+        if (self.pgResizeRecursion) {
+          alertifyDialogStartResizing.apply(self, [false]);
+        }
+      }, 100
+    );
+  };
+
+  alertify.pgDialogBuild = function() {
+    this.set('onshow', function() {
+      this.elements.dialog.classList.add('pg-el-container')
+      alertifyDialogResized.apply(this, arguments);
+    });
+    this.set('onresize', alertifyDialogStartResizing.bind(this, true));
+    this.set('onresized', alertifyDialogResized.bind(this, true));
+    this.set('onmaximized', alertifyDialogResized);
+    this.set('onrestored', alertifyDialogResized);
+  };
+
 });
