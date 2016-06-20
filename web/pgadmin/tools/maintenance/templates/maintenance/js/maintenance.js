@@ -186,10 +186,10 @@ define(
           Alertify.dialog('MaintenanceDialog', function factory() {
 
             return {
-              main:function(title) {
+              main: function(title) {
                 this.set('title', title);
               },
-              setup:function() {
+              setup: function() {
                 return {
                   buttons:[{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
@@ -267,8 +267,8 @@ define(
                   });
                 }
               },
-              build:function() {
-
+              build: function() {
+                Alertify.pgDialogBuild.apply(this)
               },
               hooks: {
                 onclose: function() {
@@ -277,7 +277,7 @@ define(
                   }
                 }
               },
-              prepare:function() {
+              prepare: function() {
                 // Main maintenance tool dialog container
                 var $container = $("<div class='maintenance_dlg'></div>");
 

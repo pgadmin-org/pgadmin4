@@ -322,6 +322,10 @@ define(
                 this.setting('pg_item_data', data);
               },
 
+              build: function() {
+                Alertify.pgDialogBuild.apply(this)
+              },
+
               setup: function() {
                 return {
                   buttons:[{

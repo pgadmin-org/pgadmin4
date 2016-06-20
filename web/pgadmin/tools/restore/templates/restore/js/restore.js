@@ -26,7 +26,7 @@ define([
           '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
           '<% } %>'
         ].join("\n")),
-        className: 'pgadmin-control-group form-group col-xs-6'
+        className: 'pgadmin-control-group form-group pg-el-xs-4'
     });
 
     //Restore Model (Objects like Database/Schema/Table)
@@ -304,6 +304,9 @@ define([
                 this.setting('pg_node', node);
                 this.setting('pg_item', item);
                 this.setting('pg_item_data', data);
+               },
+               build: function() {
+                alertify.pgDialogBuild.apply(this)
                },
                setup:function() {
                 return {

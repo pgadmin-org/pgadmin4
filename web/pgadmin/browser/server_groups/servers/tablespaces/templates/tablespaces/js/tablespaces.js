@@ -160,65 +160,67 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if(!alertify.move_objects_dlg) {
             alertify.dialog('move_objects_dlg' ,function factory() {
               return {
-                 main: function() {
-                  var title = '{{ _('Move objects to another tablespace') }} ';
-                  this.set('title', title);
-                 },
-                 setup:function() {
-                   return {
-                      buttons: [{
-                        text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                        attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
-                        url: '{{ url_for('help.static', filename='move_objects.html') }}'}
-                        },{
-                        text: '{{ _('OK') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
-                        },{
-                        text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
-                      }],
-                      // Set options for dialog
-                      options: {
-                        //disable both padding and overflow control.
-                        padding : !1,
-                        overflow: !1,
-                        modal: false,
-                        resizable: true,
-                        maximizable: true,
-                        pinnable: false,
-                        closableByDimmer: false
-                      }
-                    };
-                 },
-                 hooks: {
-                   // Triggered when the dialog is closed
-                   onclose: function() {
-                     if (this.view) {
-                       // clear our backform model/view
-                       this.view.remove({data: true, internal: true, silent: true});
+                main: function() {
+                 var title = '{{ _('Move objects to another tablespace') }} ';
+                 this.set('title', title);
+                },
+                build: function() {
+                  alertify.pgDialogBuild.apply(this);
+                },
+                setup:function() {
+                  return {
+                     buttons: [{
+                       text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                       attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
+                       url: '{{ url_for('help.static', filename='move_objects.html') }}'}
+                       },{
+                       text: '{{ _('OK') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                       },{
+                       text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
+                     }],
+                     // Set options for dialog
+                     options: {
+                       //disable both padding and overflow control.
+                       padding : !1,
+                       overflow: !1,
+                       modal: false,
+                       resizable: true,
+                       maximizable: true,
+                       pinnable: false,
+                       closableByDimmer: false
                      }
-                   }
-                 },
-                 prepare: function() {
-                   var self = this,
-                     $container = $("<div class='move_objects'></div>");
-                   //Disbale Okay button
-                   this.__internal.buttons[1].element.disabled = true;
-                   // Find current/selected node
-                   var t = pgBrowser.tree,
-                     i = t.selected(),
-                     d = i && i.length == 1 ? t.itemData(i) : undefined,
-                     node = d && pgBrowser.Nodes[d._type];
+                   };
+                },
+                hooks: {
+                  // Triggered when the dialog is closed
+                  onclose: function() {
+                    if (this.view) {
+                      // clear our backform model/view
+                      this.view.remove({data: true, internal: true, silent: true});
+                    }
+                  }
+                },
+                prepare: function() {
+                  var self = this,
+                    $container = $("<div class='move_objects'></div>");
+                  //Disbale Okay button
+                  this.__internal.buttons[1].element.disabled = true;
+                  // Find current/selected node
+                  var t = pgBrowser.tree,
+                    i = t.selected(),
+                    d = i && i.length == 1 ? t.itemData(i) : undefined,
+                    node = d && pgBrowser.Nodes[d._type];
 
-                   if (!d)
-                     return;
-                   // Create treeInfo
-                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
-                   // Instance of backbone model
-                   var newModel = new objModel(
-                   {}, {node_info: treeInfo}
-                   ),
-                   fields = Backform.generateViewSchema(
-                     treeInfo, newModel, 'create', node, treeInfo.server, true
-                   );
+                  if (!d)
+                    return;
+                  // Create treeInfo
+                  var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+                  // Instance of backbone model
+                  var newModel = new objModel({}, {node_info: treeInfo}),
+                      fields = Backform.generateViewSchema(
+                        treeInfo, newModel, 'create', node,
+                        treeInfo.server, true
+                      );
 
                   var view = this.view = new Backform.Dialog({
                     el: $container, model: newModel, schema: fields

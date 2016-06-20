@@ -327,9 +327,9 @@ define(
               dialogContentCleanup();
 
               $container.append(
-                "<div class='col-xs-3 preferences_tree aciTree'></div>"
+                "<div class='pg-el-xs-3 preferences_tree aciTree'></div>"
               ).append(
-                "<div class='col-xs-9 preferences_content'>" +
+                "<div class='pg-el-xs-9 preferences_content'>" +
                 " {{ _('Category is not selected.')|safe }}" +
                 "</div>"
               );
@@ -349,7 +349,7 @@ define(
 
               this.show();
             },
-            setup:function(){
+            setup: function() {
               return {
                 buttons:[{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
@@ -371,7 +371,7 @@ define(
                 }
               };
             },
-            callback: function(e){
+            callback: function(e) {
               if (e.button.element.name == "dialog_help") {
                   e.cancel = true;
                   pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
@@ -385,6 +385,7 @@ define(
             },
             build: function() {
               this.elements.content.appendChild($container.get(0));
+              alertify.pgDialogBuild.apply(this)
             },
             hooks: {
               onshow: function() {

@@ -45,7 +45,7 @@ TODO LIST FOR BACKUP:
           '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
           '<% } %>'
         ].join("\n")),
-        className: 'pgadmin-control-group form-group col-xs-6'
+        className: 'pgadmin-control-group form-group pg-el-md-6 pg-el-xs-12'
     });
 
     //Backup Model (Server Node)
@@ -382,6 +382,9 @@ TODO LIST FOR BACKUP:
                main: function(title) {
                 this.set('title', title);
                },
+               build: function() {
+                alertify.pgDialogBuild.apply(this);
+               },
                setup:function() {
                 return {
                   buttons: [{
@@ -545,6 +548,9 @@ TODO LIST FOR BACKUP:
             return {
                main: function(title) {
                 this.set('title', title);
+               },
+               build: function() {
+                alertify.pgDialogBuild.apply(this);
                },
                setup:function() {
                 return {

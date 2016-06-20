@@ -12,17 +12,19 @@ define(
         if (!alertify.aboutDialog) {
           alertify.dialog('aboutDialog', function factory() {
             return {
-              main:function(title, message) {
+              main: function(title, message) {
                 this.set('title', title);
                 this.message = message;
               },
-              setup:function() {
+              setup: function() {
                 return {
                   buttons:[{ text: "OK", key: 27, className: "btn btn-primary" }],
-                  options: { modal: 0, resizable: true }
+                  options: {modal: 0, resizable: true}
                 };
               },
-              build:function() {},
+              build: function() {
+                alertify.pgDialogBuild.apply(this);
+              },
               prepare:function() {
                 this.setContent(this.message);
               }

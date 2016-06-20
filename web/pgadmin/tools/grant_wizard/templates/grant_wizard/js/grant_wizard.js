@@ -402,6 +402,7 @@ define([
               */
               build: function() {
                 this.elements.content.appendChild($container.get(0));
+                alertify.pgDialogBuild.apply(this);
               },
 
               //Returns list of Acls defined for nodes
@@ -653,7 +654,7 @@ define([
 
                         // Create a grid container
                         var gridBody =
-                              $('<div class="db_objects_container col-xs-12"></div>');
+                              $('<div class="db_objects_container pg-el-xs-12"></div>');
 
                         // Remove grid if exits before render
                         if (this.grid) {
@@ -664,7 +665,7 @@ define([
                         this.grid = new Backgrid.Grid({
                           columns: _.clone(columns),
                           collection: coll,
-                          className: "backgrid table-bordered object_type_table col-xs-12"
+                          className: "backgrid table-bordered object_type_table pg-el-xs-12"
                           });
 
                         // Render selection Type grid and paginator

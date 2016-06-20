@@ -374,6 +374,9 @@ define([
               main: function(title) {
                 this.set('title', title);
               },
+              build: function() {
+                alertify.pgDialogBuild.apply(this)
+              },
               setup:function() {
                 return {
                   buttons: [{
