@@ -1787,7 +1787,7 @@
   var Select2Formatter = function() {};
   _.extend(Select2Formatter.prototype, {
     fromRaw: function(rawData, model) {
-      return JSON.stringify(_.escape(rawData));
+      return JSON.parse(JSON.stringify(_.escape(rawData)));
     },
     toRaw: function(formattedData, model) {
       return formattedData;
