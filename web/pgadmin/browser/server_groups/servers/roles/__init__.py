@@ -137,7 +137,9 @@ class RoleView(PGChildNodeView):
                 # Make date explicit so that it works with every
                 # postgres database datestyle format
                 try:
-                    if data[u'rolvaliduntil'] is not None:
+                    if data[u'rolvaliduntil'] is not None and \
+                                    data[u'rolvaliduntil'] != '' and \
+                                    len(data[u'rolvaliduntil']) > 0:
                         date = datetime.datetime.strptime(
                             data[u'rolvaliduntil'], '%m/%d/%Y'
                         )
