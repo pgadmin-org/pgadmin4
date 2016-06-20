@@ -163,7 +163,6 @@ define(
               }
 
               // Call function to create and update local variables ....
-              self.GetLocalVariables(trans_id);
               self.GetStackInformation(trans_id);
             }
             else if (res.data.status === 'NotConnected') {
@@ -224,6 +223,7 @@ define(
             if (res.data.status === 'Success') {
               // Call function to create and update stack information
               self.AddStackInformation(res.data.result);
+              self.GetLocalVariables(pgTools.DirectDebug.trans_id);
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -284,7 +284,6 @@ define(
 
                 // Update the stack, local variables and parameters information
                 self.GetStackInformation(trans_id);
-                self.GetLocalVariables(trans_id);
 
                 }
                 else if (!pgTools.DirectDebug.debug_type && !pgTools.DirectDebug.first_time_indirect_debug) {
@@ -312,7 +311,6 @@ define(
 
                   // Update the stack, local variables and parameters information
                   self.GetStackInformation(trans_id);
-                  self.GetLocalVariables(trans_id);
                 }
 
                 // Enable all the buttons as we got the results
