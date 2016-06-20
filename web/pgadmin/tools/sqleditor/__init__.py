@@ -73,9 +73,10 @@ class SqlEditorModule(PgAdminModule):
             'display', 'items_per_page',
             gettext("Items per page in grid"), 'integer', 50,
             category_label=gettext('Display'),
-            min_val=0,
+            min_val=50,
+            max_val=2000,
             help_str=gettext('The number of rows to display per page in the results grid. '
-                             'A value of 0 will disable paging.')
+                             'Value should be between 50 and 2000.')
             )
 
         self.explain_verbose = self.preference.register(
