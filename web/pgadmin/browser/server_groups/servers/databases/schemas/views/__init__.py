@@ -1241,12 +1241,9 @@ class MViewNode(ViewNode, VacuumSettings):
     @staticmethod
     def ppas_template_path(ver):
         """
-        Returns the template path for PostgreSQL servers.
+        Returns the template path for EDB Advanced servers.
         """
-        return 'ppas/{0}'.format(
-            '9.4_plus' if ver >= 90400 else
-            '9.3_plus'
-        )
+        return 'ppas/9.3_plus'
 
     @staticmethod
     def pg_template_path(ver):
