@@ -37,12 +37,12 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         icon: 'fa fa-refresh'
       }]);
 
-      // show query tool in context & object menu of supported nodes.
+      // show query tool only in context menu of supported nodes.
       if (pgAdmin.DataGrid && pgAdmin.unsupported_nodes) {
         if (_.indexOf(pgAdmin.unsupported_nodes, this.type) == -1) {
           pgAdmin.Browser.add_menus([{
             name: 'show_query_tool', node: this.type, module: this,
-            applies: ['object', 'context'], callback: 'show_query_tool',
+            applies: ['context'], callback: 'show_query_tool',
             priority: 998, label: '{{ _("Query Tool...") }}',
             icon: 'fa fa-bolt'
           }]);
