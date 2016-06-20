@@ -167,7 +167,8 @@ SQLITE_PATH = os.path.join(
     'pgadmin4.db'
     )
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
-# OperationError due to database lock.
+# OperationError due to database lock. On slower system, you may need to change
+# this to some higher value.
 # (Default: 500 milliseconds)
 SQLITE_TIMEOUT = 500
 
