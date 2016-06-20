@@ -18,6 +18,11 @@ CONFIG(debug, debug|release) {
   message(Configure pgAdmin4 to run in debug mode...)
 }
 
+# Environment settings for the build
+QMAKE_CFLAGS += $$(PGADMIN_CFLAGS)
+QMAKE_CXXFLAGS += $$(PGADMIN_CXXFLAGS)
+QMAKE_LFLAGS += $$(PGADMIN_LDFLAGS)
+
 win32 {
     message(Building for Windows...)
 
