@@ -22,7 +22,7 @@ import pytz
 from subprocess import Popen, PIPE
 import sys
 
-from flask.ext.babel import gettext
+from flask.ext.babel import gettext as _
 from flask.ext.security import current_user
 
 import config
@@ -72,9 +72,9 @@ class BatchProcess(object):
         p = Process.query.filter_by(pid=_id, user_id=current_user.id).first()
 
         if p is None:
-            raise LookupError(gettext(
-                "Could not find a process with the specified ID."
-            ))
+            raise LookupError(
+                _("Could not find a process with the specified ID.")
+            )
 
         # ID
         self.id = _id
@@ -170,10 +170,10 @@ class BatchProcess(object):
     def start(self):
         if self.stime is not None:
             if self.etime is None:
-                raise Exception(gettext('The process has already been started.'))
-            raise Exception(gettext(
-                'The process has already finished and can not be restarted.'
-            ))
+                raise Exception(_('The process has already been started.'))
+            raise Exception(
+                _('The process has already finished and can not be restarted.')
+            )
 
         executor = os.path.join(
             os.path.dirname(__file__), 'process_executor.py'
@@ -181,7 +181,8 @@ class BatchProcess(object):
 
         p = None
         cmd = [
-            sys.executable or 'python',
+            (sys.executable if config.SERVER_MODE else
+                'pythonw.exe' if os.name == 'nt' else 'python'),
             executor,
             '-p', self.id,
             '-o', self.log_dir,
@@ -210,7 +211,6 @@ class BatchProcess(object):
         if self.ecode is not None:
             # TODO:: Couldn't start execution
             pass
-
 
     def status(self, out=0, err=0):
         import codecs
@@ -350,9 +350,9 @@ class BatchProcess(object):
         ).first()
 
         if p is None:
-            raise LookupError(gettext(
-                "Could not find a process with the specified ID."
-            ))
+            raise LookupError(
+                _("Could not find a process with the specified ID.")
+            )
 
         if _release:
             import shutil
