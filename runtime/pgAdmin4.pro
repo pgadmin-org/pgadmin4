@@ -49,8 +49,13 @@ else {
     message(Building for Linux/Mac...)
 
     # Find and configure Python
+    # Environment setting
+    PYTHON_CONFIG = $$(PYTHON_CONFIG)
+
     # Python 2?
-    PYTHON_CONFIG = $$system(which python-config)
+    isEmpty(PYTHON_CONFIG) {
+        PYTHON_CONFIG = $$system(which python-config)
+    }
 
     # Maybe Python 3?
     isEmpty(PYTHON_CONFIG) {
