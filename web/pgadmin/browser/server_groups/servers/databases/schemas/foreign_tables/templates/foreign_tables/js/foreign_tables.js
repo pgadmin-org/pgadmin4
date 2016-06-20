@@ -36,6 +36,36 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     });
 
 
+  // Options Model
+  var ColumnOptionsModel = pgBrowser.Node.Model.extend({
+    idAttribute: 'option',
+    defaults: {
+      option: undefined,
+      value: undefined
+    },
+    schema: [
+      {id: 'option', label:'Option', type:'text', editable: true, cellHeaderClasses: 'width_percent_30'},
+      {
+        id: 'value', label:'Value', type: 'text', editable: true, cellHeaderClasses: 'width_percent_50'
+      }
+    ],
+    validate: function() {
+      if (_.isUndefined(this.get('value')) ||
+          _.isNull(this.get('value')) ||
+          String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
+        var msg = 'Please enter a value.';
+
+        this.errorModel.set('value', msg);
+
+        return msg;
+      } else {
+        this.errorModel.unset('value');
+      }
+
+      return null;
+    }
+  });
+
   // Columns Model
   var ColumnsModel = pgBrowser.Node.Model.extend({
     idAttribute: 'attnum',
@@ -50,30 +80,32 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       attnum: undefined,
       inheritedfrom: undefined,
       inheritedid: undefined,
-      attstattarget: undefined
+      attstattarget: undefined,
+      coloptions: []
     },
     type_options: undefined,
     schema: [{
         id: 'attname', label:'{{ _('Name') }}', cell: 'string', type: 'text',
-        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_20'
+        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_40'
       },{
         id: 'datatype', label:'{{ _('Data Type') }}', cell: 'node-ajax-options',
         control: 'node-ajax-options', type: 'text', url: 'get_types',
-        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_20',
+        editable: 'is_editable_column', cellHeaderClasses: 'width_percent_0',
+        group: '{{ _('Definition') }}',
         transform: function(d, self){
             self.model.type_options = d;
             return d;
           }
       },{
         id: 'typlen', label:'{{ _('Length') }}',
-        cell: IntegerDepCell,
-        type: 'text', deps: ['datatype'],
-        editable: function(m) {
+        cell: 'string', group: '{{ _('Definition') }}',
+        type: 'int', deps: ['datatype'],
+        disabled: function(m) {
         // We will store type from selected from combobox
           if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
-            || _.isNull(m.get('inheritedfrom')))) { return false; }
+            || _.isNull(m.get('inheritedfrom')))) { return true; }
 
         var of_type = m.get('datatype');
         if(m.type_options) {
@@ -94,20 +126,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 }
             }
           });
-          return m.get('is_tlength');
+          return !(m.get('is_tlength'));
         }
         return true;
         },
         cellHeaderClasses: 'width_percent_10'
       },{
         id: 'precision', label:'{{ _('Precision') }}',
-        type: 'text', deps: ['datatype'],
-        cell: IntegerDepCell,
-        editable: function(m) {
+        type: 'int', deps: ['datatype'],
+        cell: 'string', group: '{{ _('Definition') }}',
+        disabled: function(m) {
           if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
-            || _.isNull(m.get('inheritedfrom')))) { return false; }
+            || _.isNull(m.get('inheritedfrom')))) { return true; }
 
           var of_type = m.get('datatype');
           if(m.type_options) {
@@ -127,13 +159,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 }
             }
           });
-          return m.get('is_precision');
+          return !(m.get('is_precision'));
         }
         return true;
         }, cellHeaderClasses: 'width_percent_10'
       },{
         id: 'typdefault', label:'{{ _('Default') }}', type: 'text',
-        cell: 'string', min_version: 90300,
+        cell: 'string', min_version: 90300, group: '{{ _('Definition') }}',
         placeholder: "Enter an expression or a value.",
         cellHeaderClasses: 'width_percent_10',
         editable: function(m) {
@@ -149,16 +181,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       },{
         id: 'attnotnull', label:'{{ _('Not Null') }}',
         cell: 'boolean',type: 'switch', editable: 'is_editable_column',
-        cellHeaderClasses: 'width_percent_10'
+        cellHeaderClasses: 'width_percent_10', group: '{{ _('Definition') }}'
       },{
         id: 'attstattarget', label:'{{ _('Statistics') }}', min_version: 90200,
-        cell: 'integer', type: 'int', editable: function(m) {
-        if (_.isUndefined(m.isNew) || m.isNew()) { return false; }
-        if (this.get('node_info').server.version < 90200){
+        cell: 'integer', type: 'int', group: '{{ _('Definition') }}',
+        editable: function(m) {
+         if (_.isUndefined(m.isNew) || m.isNew()) { return false; }
+         if (this.get('node_info').server.version < 90200){
             return false;
-        }
-        return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
-         || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
+         }
+         return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
+          || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
         }, cellHeaderClasses: 'width_percent_10'
       },{
         id: 'collname', label:'{{ _('Collation') }}', cell: 'node-ajax-options',
@@ -168,14 +201,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
            || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
         },
-        cellHeaderClasses: 'width_percent_20'
+        cellHeaderClasses: 'width_percent_20', group: '{{ _('Definition') }}'
       },{
         id: 'attnum', cell: 'string',type: 'text', visible: false
       },{
         id: 'inheritedfrom', label:'{{ _('Inherited From') }}', cell: 'string',
         type: 'text', visible: false, mode: ['properties', 'edit'],
         cellHeaderClasses: 'width_percent_10'
-    }],
+      },{
+          id: 'coloptions', label:'{{ _('Options') }}', cell: 'string',
+          type: 'collection', group: 'Options', mode: ['edit', 'create'],
+          model: ColumnOptionsModel, canAdd: true, canDelete: true, canEdit: false,
+          control: Backform.UniqueColCollectionControl, uniqueCol : ['option'],
+          min_version: 90200
+      }],
     validate: function() {
       var err = {},
       errmsg;
@@ -330,14 +369,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       if (typeof(inherits)  == "string"){ inherits = JSON.parse(inherits); }
 
       // Remove Columns if inherit option is deselected from the combobox
-      if(_.size(JSON.parse(value)) < _.size(inherits)) {
+      if(_.size(value) < _.size(inherits)) {
         var dif =  _.difference(inherits, JSON.parse(value));
         var rmv_columns = columns.where({inheritedid: parseInt(dif[0])});
         columns.remove(rmv_columns);
       }
       else
       {
-        _.each(JSON.parse(value), function(i) {
+        _.each(value, function(i) {
           // Fetch Columns from server
           var fnd_columns = columns.where({inheritedid: parseInt(i)});
           if (fnd_columns && fnd_columns.length <= 0) {
@@ -592,8 +631,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'ftsrvname', label:'{{ _('Foreign server') }}', cell: 'string', control: 'node-ajax-options',
           type: 'text', group: 'Definition', url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); }
         },{
-          id: 'inherits', label:'{{ _('Inherits') }}', cell: 'string', group: 'Definition',
-          type: 'list', min_version: 90500, control: 'node-ajax-options-multiple',
+          id: 'inherits', label:'{{ _('Inherits') }}', group: 'Definition',
+          type: 'array', min_version: 90500, control: 'node-ajax-options-multiple',
           url: 'get_tables', select2: {multiple: true},
           'cache_level': 'database',
           transform: function(d, self){
@@ -612,9 +651,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'columns', label:'{{ _('Columns') }}', cell: 'string',
           type: 'collection', group: 'Columns', visible: false, mode: ['edit', 'create'],
-          model: ColumnsModel, canAdd: true, canDelete: true, canEdit: false,
-          columns: ['attname', 'datatype', 'typlen', 'precision', 'typdefault', 'attnotnull', 'attstattarget', 'collname', 'inheritedfrom'],
+          model: ColumnsModel, canAdd: true, canDelete: true, canEdit: true,
+          columns: ['attname', 'datatype', 'inheritedfrom'],
           canDeleteRow: function(m) {
+            return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
+              || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
+          },
+          canEditRow: function(m) {
             return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
               || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
           }

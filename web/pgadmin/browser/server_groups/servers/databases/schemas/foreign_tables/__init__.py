@@ -891,6 +891,32 @@ AND relkind != 'c'))"""
                     data['columns']['changed'] = self._format_columns(
                         data['columns']['changed'])
 
+                    # Parse Column Options
+                    for c in data['columns']['changed']:
+                        old_col_options = c['attfdwoptions'] if ('attfdwoptions' in c and c['attfdwoptions']) else []
+                        old_col_frmt_options = {}
+
+                        for o in old_col_options:
+                            col_opt = o.split("=")
+                            old_col_frmt_options[col_opt[0]] = col_opt[1]
+
+                        c['coloptions_updated'] = {'added': [],
+                                                   'changed': [],
+                                                   'deleted': []}
+
+                        if 'coloptions' in c and len(c['coloptions']) > 0:
+                            for o in c['coloptions']:
+                                if o['option'] in old_col_frmt_options and o['value'] != old_col_frmt_options[o['option']]:
+                                    c['coloptions_updated']['changed'].append(o)
+                                elif o['option'] not in old_col_frmt_options:
+                                    c['coloptions_updated']['added'].append(o)
+                                if o['option'] in old_col_frmt_options:
+                                    del old_col_frmt_options[o['option']]
+
+                        for o in old_col_frmt_options:
+                            c['coloptions_updated']['deleted'].append({'option': o})
+
+
                 # Parse Privileges
                 if 'acl' in data and 'added' in data['acl']:
                     data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
@@ -1020,7 +1046,7 @@ AND relkind != 'c'))"""
         if 'seclabels' in data:
             data.update(parse_sec_labels_from_db(data['seclabels']))
 
-        # Get formatted Variables
+        # Get formatted Options
         if 'ftoptions' in data:
             data.update({'strftoptions': data['ftoptions']})
             data.update(self._parse_variables_from_db(data['ftoptions']))
@@ -1053,6 +1079,11 @@ AND relkind != 'c'))"""
                 else:
                     c['typlen'] = int(typlen[0])
                     c['precision'] = None
+
+            # Get formatted Column Options
+            if 'attfdwoptions' in c and c['attfdwoptions'] != '':
+                att_opt = self._parse_variables_from_db(c['attfdwoptions'])
+                c['coloptions'] = att_opt['ftoptions']
 
         if cols and 'rows' in cols:
             data['columns'] = cols['rows']

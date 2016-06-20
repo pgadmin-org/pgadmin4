@@ -1,5 +1,5 @@
 SELECT
-    attname, attndims, atttypmod, format_type(t.oid,NULL) AS datatype,
+    attname, attndims, atttypmod, attoptions, attfdwoptions, format_type(t.oid,NULL) AS datatype,
     attnotnull, attstattarget, attnum, format_type(t.oid, att.atttypmod) AS fulltype,
     CASE WHEN length(cn.nspname) > 0 AND length(cl.collname) > 0 THEN
     concat(cn.nspname, '."', cl.collname,'"') ELSE '' END AS collname,
@@ -7,12 +7,21 @@ SELECT
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,
     (
         attname || ' ' || format_type(t.oid, att.atttypmod) || ' ' ||
-        (CASE WHEN attnotnull='true'
-        THEN 'NOT NULL' ELSE 'NULL'
-        END) || ' ' ||
-        (CASE WHEN pg_catalog.pg_get_expr(def.adbin, def.adrelid)<>''
-        THEN 'DEFAULT ' || pg_catalog.pg_get_expr(def.adbin, def.adrelid)
-        ELSE '' END)
+        (
+            CASE WHEN array_length(attfdwoptions, 1)>0
+            THEN concat('OPTIONS (', array_to_string(attfdwoptions, ', '), ')') ELSE ''
+            END
+        ) || ' ' ||
+        (
+            CASE WHEN attnotnull='true'
+            THEN 'NOT NULL' ELSE 'NULL'
+            END
+        ) || ' ' ||
+        (
+            CASE WHEN pg_catalog.pg_get_expr(def.adbin, def.adrelid)<>''
+            THEN 'DEFAULT ' || pg_catalog.pg_get_expr(def.adbin, def.adrelid)
+            ELSE '' END
+        )
     ) as strcolumn
 FROM
     pg_attribute att

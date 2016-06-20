@@ -24,6 +24,10 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ADD COLUMN {{conn|qtIdent(c.attname)}} {{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}
+{% if c.coloptions %}
+{% for o in c.coloptions %}{% if o.option and o.value %}
+{% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
+{% endfor %}{% endif %}
 {% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
 {% if c.typdefault %} DEFAULT {{c.typdefault}}{% endif %}
 {% if c.collname %} COLLATE {{c.collname}}{% endif %};
@@ -57,6 +61,27 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ALTER COLUMN {{conn|qtIdent(col_name)}} SET STATISTICS {% if c.attstattarget %}{{c.attstattarget}}{% else %}-1{% endif %};
 {% endif %}
+{% if c.coloptions_updated %}
+
+{% for o in c.coloptions_updated.deleted %}
+{% if o.option %}
+{% if loop.first %}ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
+    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (DROP {% endif %}{% if not loop.first %}, {% endif %}{{o.option}}{% if loop.last %}){% endif %};
+{% endif %}
+{% endfor %}
+{% for o in c.coloptions_updated.added %}
+{% if o.option and o.value %}
+{% if loop.first %}ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
+    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (ADD {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %});{% endif %}
+{% endif %}
+{% endfor %}
+{% for o in c.coloptions_updated.changed %}
+{% if o.option and o.value %}
+{% if loop.first %}ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
+    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (SET {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %});{% endif %}
+{% endif %}
+{% endfor %}
+{% endif -%}
 {% endfor %}
 {% endif -%}
 {% if data.constraints %}
