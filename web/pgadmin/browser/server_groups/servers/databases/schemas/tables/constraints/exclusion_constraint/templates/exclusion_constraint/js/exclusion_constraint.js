@@ -200,7 +200,18 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
         })
       }
-    ]
+    ],
+    validate: function() {
+      this.errorModel.clear();
+      var operator = this.get('operator'),
+        column_name = this.get('column');
+      if (_.isUndefined(operator) || _.isNull(operator)) {
+        var msg = '{{ _('Please specify operator for column: ') }}' + column_name;
+        this.errorModel.set('operator', msg);
+        return msg;
+      }
+      return null;
+    }
   });
 
   var ExclusionConstraintColumnControl =  Backform.ExclusionConstraintColumnControl =
@@ -246,7 +257,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               if (m.previous('name') ==  self.headerData.get('column')) {
                 /*
                  * Table column name has changed so update
-                 * column name in exclude constraint as well.
+                 * column name in exclusion constraint as well.
                  */
                 self.headerData.set(
                   {"column": m.get('name')});
@@ -881,7 +892,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           this.errorModel.clear();
           var columns = this.get('columns');
           if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = '{{ _('Please specify columns for Exclude constraint.') }}';
+            var msg = '{{ _('Please specify columns for exclusion constraint.') }}';
             this.errorModel.set('columns', msg);
             return msg;
           }
