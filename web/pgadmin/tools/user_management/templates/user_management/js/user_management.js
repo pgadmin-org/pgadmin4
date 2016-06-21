@@ -210,7 +210,7 @@ define([
 
                   this.errorModel.set('newPassword', errmsg);
                   return errmsg;
-                } else if ('newPassword' in changedAttrs && !_.isUndefined(this.get('newPassword')) &&
+                } else if (!_.isUndefined(this.get('newPassword')) &&
                   !_.isNull(this.get('newPassword')) &&
                   this.get('newPassword').length < 6) {
 
