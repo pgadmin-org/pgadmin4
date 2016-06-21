@@ -125,7 +125,8 @@ GOTO:EOF
     SET APP_SUFFIX_VERSION=%APP_SUFFIX_VERSION:'=%
     SET APP_NAME=""
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
-    SET INSTALLERNAME=%APP_NAME%-v%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
+    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print '%APP_NAME%'.lower().replace(' ', '')"') DO SET APP_SHORTNAME=%%G
+    SET INSTALLERNAME=%APP_SHORTNAME%-v%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
 
     SET PGADMIN4_VERSION=v%APP_RELEASE%
     SET PGADMIN4_APP_VERSION=%APP_RELEASE%.%APP_REVISION_VERSION%
@@ -386,10 +387,10 @@ GOTO:EOF
 
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
     ECHO Creating windows installer... using INNO tool
-    ECHO "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss"
+
     CALL "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    ECHO move "%WD%\pkg\win32\Output\Setup.exe" "%TARGETINSTALLER%\%INSTALLERNAME%"
+
     MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGETINSTALLER%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
