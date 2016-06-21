@@ -25,4 +25,4 @@ Click the *Backup* button to build and execute a command based on your selection
 If the backup is successful, a popup window will confirm success. Click *Click here for details* on the popup window to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the backup and provides additional information for troubleshooting.
 
 .. image:: images/backup_server_process_watcher.png
-   If the backup is unsuccessful, review the error message returned by the *Process Watcher* to resolve any issue.
+   If the backup is unsuccessful, review the error message returned by the *Process Watcher* to resolve any issue.

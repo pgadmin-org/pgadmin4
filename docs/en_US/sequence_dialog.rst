@@ -1,4 +1,4 @@
-.. _sequence:
+.. _sequence_dialog:
 
 *******************
 The Sequence Dialog

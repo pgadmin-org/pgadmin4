@@ -44,5 +44,3 @@ The example shown demonstrates creating a primary key constraint named *dept_pke
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
-
-

@@ -14,8 +14,7 @@ Use the fields in the *pgAdmin Login* dialog to authenticate your connection:
 #. Provide your password in the *Password* field.
 #. Click the *Login* button to securely log into pgAdmin.
 
-Recovering a Lost Password
-**************************
+**Recovering a Lost Password**
 
 If you cannot supply your password, click the *Forgotten your password?* button to launch a password recovery utility.
 

@@ -1,4 +1,4 @@
-.. _fts_parser:
+.. _fts_parser_dialog:
 
 *********************
 The FTS Parser Dialog    

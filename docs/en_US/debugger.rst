@@ -1,3 +1,4 @@
+.. _debugger:
 
 *************************
 `pgAdmin Debugger`:index:

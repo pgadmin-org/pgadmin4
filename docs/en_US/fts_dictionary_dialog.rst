@@ -1,4 +1,4 @@
-.. _fts_dictionary:
+.. _fts_dictionary_dialog:
 
 *************************
 The FTS Dictionary Dialog

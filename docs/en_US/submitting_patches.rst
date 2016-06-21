@@ -1,3 +1,5 @@
+.. _submitting_patches:
+
 ******************
 Submitting Patches
 ******************

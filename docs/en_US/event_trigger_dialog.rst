@@ -1,4 +1,4 @@
-.. _event trigger:
+.. _event_trigger_dialog:
 
 ************************
 The Event Trigger Dialog

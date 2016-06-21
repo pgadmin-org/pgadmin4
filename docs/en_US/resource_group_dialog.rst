@@ -1,4 +1,4 @@
-.. _resource_group:
+.. _resource_group_dialog:
 
 *************************
 The Resource Group Dialog

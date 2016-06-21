@@ -4,7 +4,6 @@
 The Import/Export data Dialog
 *****************************
 
-
 Use the *Import/Export data* dialog to copy data from a table to a file, or copy data from a file into a table.
 
 The *Import/Export data* dialog organizes the import/export of data through the *Options* and *Columns* tabs. 
@@ -53,8 +52,3 @@ After completing the *Import/Export data* dialog, click the *OK* button to perfo
 Use the *Click here for details* link on the notification to open the *Process Watcher* and review detailed information about the execution of the command that performed the import or export:
 
 .. image:: images/import_export_pw.png
-
-
-
-
-

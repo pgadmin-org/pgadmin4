@@ -1,4 +1,4 @@
-.. _fts_configuration:
+.. _fts_configuration_dialog:
 
 ****************************
 The FTS Configuration dialog

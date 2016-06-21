@@ -1,4 +1,4 @@
-.. _domain:
+.. _domain_dialog:
 
 *****************
 The Domain Dialog

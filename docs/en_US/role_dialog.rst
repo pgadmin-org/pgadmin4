@@ -1,4 +1,4 @@
-.. _role:
+.. _role_dialog:
 
 ***************************
 The Login/Group Role Dialog

@@ -1,4 +1,4 @@
-.. _materialized_view:
+.. _materialized_view_dialog:
 
 ****************************
 The Materialized View Dialog

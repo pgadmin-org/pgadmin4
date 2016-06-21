@@ -1,6 +1,5 @@
 .. _maintenance_dialog:
 
-
 *************************
 The Maintenance... Dialog
 *************************
@@ -36,6 +35,3 @@ pgAdmin will inform you when the background process completes:
 Use the *Click here for details* link on the notification to open the *Process Watcher* and review detailed information about the execution of the command that performed the import or export:
 
 .. image:: images/maintenance_pw.png
-
-
-

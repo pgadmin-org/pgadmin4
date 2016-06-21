@@ -1,6 +1,5 @@
 .. _change_password_dialog:
 
-
 **************************
 The Change Password Dialog
 **************************

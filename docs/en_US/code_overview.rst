@@ -1,3 +1,5 @@
+.. _code_overview:
+
 *************
 Code Overview
 *************

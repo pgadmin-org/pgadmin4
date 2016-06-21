@@ -1,6 +1,5 @@
 .. _connect_to_server:
 
-
 *****************
 Connect to server
 *****************

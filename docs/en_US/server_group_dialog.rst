@@ -1,4 +1,4 @@
-.. _server_group:
+.. _server_group_dialog:
 
 ***********************
 The Server Group Dialog

@@ -1,4 +1,4 @@
-.. _foreign_server:
+.. _foreign_server_dialog:
 
 *************************
 The Foreign Server Dialog

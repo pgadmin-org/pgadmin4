@@ -1,4 +1,4 @@
-.. _domain_constraint:
+.. _domain_constraint_dialog:
 
 ****************************
 The Domain Constraint Dialog

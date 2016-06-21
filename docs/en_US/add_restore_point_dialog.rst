@@ -15,6 +15,3 @@ documentation <http://www.postgresql.org/docs/9.5/static/recovery-target-setting
 
 * Click the *OK* button to save the restore point.
 * Click the *Cancel* button to exit without saving work.
-
-
-

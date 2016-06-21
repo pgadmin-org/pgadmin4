@@ -1,4 +1,4 @@
-.. _view:
+.. _view_dialog:
 
 ***************
 The View Dialog

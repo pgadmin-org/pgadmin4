@@ -1,3 +1,5 @@
+.. _code_review:
+
 *****************
 Code Review Notes
 *****************

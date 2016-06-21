@@ -1,3 +1,5 @@
+.. _desktop_deployment:
+
 ******************
 Desktop Deployment
 ******************

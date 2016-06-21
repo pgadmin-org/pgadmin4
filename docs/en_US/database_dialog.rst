@@ -1,4 +1,4 @@
-.. _database:
+.. _database_dialog:
 
 *******************
 The Database Dialog

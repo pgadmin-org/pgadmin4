@@ -1,4 +1,4 @@
-.. _fts_template:
+.. _fts_template_dialog:
 
 ***********************
 The FTS Template Dialog   

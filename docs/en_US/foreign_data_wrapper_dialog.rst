@@ -1,4 +1,4 @@
-.. _fdw:
+.. _foreign_data_wrapper_dialog:
 
 *******************************
 The Foreign Data Wrapper Dialog

@@ -1,4 +1,4 @@
-.. _tablespace:
+.. _tablespace_dialog:
 
 *********************
 The Tablespace Dialog

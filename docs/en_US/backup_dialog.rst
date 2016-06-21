@@ -1,6 +1,5 @@
 .. _backup_dialog:
 
-
 *****************
 The Backup Dialog 
 *****************
@@ -107,7 +106,3 @@ If the backup is successful, a popup window will confirm success. Click *Click h
 .. image:: images/backup_process_watcher.png
    
 If the backup is unsuccessful, you can review the error messages returned by the backup command on the *Process Watcher*.
-
-
-
-

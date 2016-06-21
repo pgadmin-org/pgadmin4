@@ -1,4 +1,4 @@
-.. _server:
+.. _server_dialog:
 
 *****************
 The Server Dialog 
@@ -24,7 +24,7 @@ Use the fields in the *Connection* tab to configure a connection:
 
 * Specify the IP address of the server host, or the fully qualified domain name in the *Host Name/Address* field. On Unix based systems, the address field may be left blank to use the default PostgreSQL Unix Domain Socket on the local machine, or may be set to an alternate path containing a PostgreSQL socket. If you enter a path, the path must begin with a "/".
 * Enter the listener port number of the server host in the *Port* field.
-* Use the *Maintenance Database* field to specify the name of the initial database to which the client will connect.  If you will be using pgAgent or adminpack objects, the :ref:`pgAgent <pgagent>` schema and :ref:`adminpack <extend>` objects should be installed on that database. 
+* Use the *Maintenance Database* field to specify the name of the initial database to which the client will connect.  If you will be using pgAgent or adminpack objects, the pgAgent schema and adminpack objects should be installed on that database. 
 * Use the *User Name* field to specify the name of a role that will be used when authenticating with the server. 
 * Use the *Role* field to specify the name of a role that has privileges that will be conveyed to the client after authentication with the server. This selection allows you to connect as one role, and then assume the permissions of this specified role after the connection is established. Note that the connecting role must be a member of the role specified.
 * Use the drop-down list box in the SSL field to select the type of SSL connection the server should use. For more information about using SSL encryption, see Section 31.18 of the Postgres documentation:

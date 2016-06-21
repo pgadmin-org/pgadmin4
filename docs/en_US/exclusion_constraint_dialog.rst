@@ -1,4 +1,4 @@
-.. _exclusion_constraint:
+.. _exclusion_constraint_dialog:
 
 *******************************
 The Exclusion constraint Dialog
@@ -60,5 +60,3 @@ The example shown demonstrates creating an exclusion constraint named *exclude_d
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
-
-

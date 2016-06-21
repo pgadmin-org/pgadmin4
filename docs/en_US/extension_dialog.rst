@@ -1,4 +1,4 @@
-.. _extension:
+.. _extension_dialog:
 
 ********************
 The Extension Dialog

@@ -1,4 +1,4 @@
-.. _schema:
+.. _schema_dialog:
 
 *****************
 The Schema Dialog 

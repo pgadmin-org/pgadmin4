@@ -1,4 +1,4 @@
-.. _cast:
+.. _cast_dialog:
 
 ***************
 The Cast Dialog

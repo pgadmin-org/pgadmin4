@@ -4,12 +4,11 @@
 The pgAdmin Menu Bar
 ********************
 
-
 The pgAdmin menu bar provides drop-down menus for access to options, commands, and utilities. The menu bar displays the following selections: *File*, *Object*, Tools*, and *Help*. Selections may be grayed out which indicates they are disabled for the object currently selected in the *pgAdmin* tree control.
 
-.. image:: /images/file_menu.png
-
 **The File Menu**
+
+.. image:: /images/file_menu.png
 
 Use the *File* menu to access the following options:
 
@@ -18,12 +17,12 @@ Use the *File* menu to access the following options:
 +======================+=========================================================================================================+
 | *Change Password...* | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.    |                                                                     
 +----------------------+---------------------------------------------------------------------------------------------------------+
-| *Preferences*        | Click to open the :ref:`Preferences <preferences_dialog>` dialog to to customize your pgAdmin settings. |
+| *Preferences*        | Click to open the :ref:`Preferences <preferences>` dialog to to customize your pgAdmin settings.        |
 +----------------------+---------------------------------------------------------------------------------------------------------+
 
-.. image:: /images/object_menu.png
-
 **The Object Menu**
+
+.. image:: /images/object_menu.png
 
 The *Object* menu is context-sensitive. Use the *Object* menu to access the following options (in alphabetical order):
 
@@ -45,7 +44,7 @@ The *Object* menu is context-sensitive. Use the *Object* menu to access the foll
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Refresh...*           | Click to refresh the currently selected object.                                                                          |
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Scripts*              | Click to open the :ref:`Query tool <query_tool_overview>` to edit or view the selected script from the flyout menu.      |
+| *Scripts*              | Click to open the :ref:`Query tool <query_tool>` to edit or view the selected script from the flyout menu.               |
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Trigger(s)*           | Click to *Disable* or *Enable* trigger(s) for the currently selected table. Options are displayed on the flyout menu.    |
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+
@@ -55,16 +54,17 @@ The *Object* menu is context-sensitive. Use the *Object* menu to access the foll
 | *View Data*            | Click to access a context menu that provides several options for viewing data (see below).                               |
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+ 
 
-.. image:: /images/tool_menu.png
-
 **The Tool Menu**
+
+.. image:: /images/tool_menu.png
 
 Use the *Tools* menu to access the following options (in alphabetical order): 
 
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                    | Action                                                                                                                                    |
 +===========================+===========================================================================================================================================+
-| *Add named restore point* | Click to open the :ref:`Add named restore point... <add_restore_point>` dialog to take a point-in-time record of the current server state.|
+| *Add named restore point* | Click to open the :ref:`Add named restore point... <add_restore_point_dialog>` dialog to take a point-in-time snapshot of the current     |
+|                           | server state.                                                                                                                             |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Backup...*               | Click to open the :ref:`Backup... <backup_dialog>` dialog to backup database objects.                                                     |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
@@ -80,7 +80,7 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Pause replay of WAL*     | Click to pause the replay of the WAL log.                                                                                                 |   
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Query tool*              | Click to open the :ref:`Query tool <query_tool_overview>` for the currently selected object.                                              |                                                         
+| *Query tool*              | Click to open the :ref:`Query tool <query_tool>` for the currently selected object.                                                       |                                                         
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Reload Configuration...* | Click to update configuration files without restarting the server.                                                                        |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
@@ -89,9 +89,9 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 | *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |         
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
-.. image:: images/help_menu.png
-
 **The Help Menu**
+
+.. image:: images/help_menu.png
 
 Use the options on the *Help* menu to access online help documents, or to review information about the pgAdmin installation (in alphabetical order):
 

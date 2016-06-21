@@ -1,4 +1,4 @@
-.. _user_mapping:
+.. _user_mapping_dialog:
 
 ***********************
 The User Mapping Dialog

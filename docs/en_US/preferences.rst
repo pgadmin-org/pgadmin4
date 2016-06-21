@@ -1,6 +1,5 @@
 .. _preferences:
 
-
 *******************
 pgAdmin Preferences
 *******************

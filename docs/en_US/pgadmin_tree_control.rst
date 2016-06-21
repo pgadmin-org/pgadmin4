@@ -31,7 +31,7 @@ Access context-sensitive menus by right-clicking on a node of the tree control t
 | *Create*                  | Click to access a context menu that provides context-sensitive selections.                                                |
 |                           | Your selection opens a *Create* dialog for creating a new object.                                                         |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *CREATE Script*           | Click to open the :ref:`Query tool <query_tool_overview>` to edit or view the CREATE script.                              |
+| *CREATE Script*           | Click to open the :ref:`Query tool <query_tool>` to edit or view the CREATE script.                                       |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Debugging*               | Click through to open the :ref:`Debug <debugger>` tool or to select *Set breakpoint* to stop or pause a script execution. |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
@@ -69,7 +69,7 @@ The context-sensitive menus associated with *Tables* and nested *Table* nodes pr
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | *Reset Statistics*      | Click to reset statistics for the selected table.                                                                            |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| *Scripts*               | Click to open the :ref:`Query tool <query_tool_overview>` to edit or view the selected script from the flyout menu.          |
+| *Scripts*               | Click to open the :ref:`Query tool <query_tool>` to edit or view the selected script from the flyout menu.                   |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | *Truncate*              | Click to remove all rows from a table.                                                                                       |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+

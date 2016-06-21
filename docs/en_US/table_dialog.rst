@@ -281,12 +281,3 @@ The example shown demonstrates creating a table named *product_category*. It has
 * Click the *Save* button to save work.
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
-
-
-
-
-
-
-
-
-
