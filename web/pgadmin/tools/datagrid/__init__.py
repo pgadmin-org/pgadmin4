@@ -15,6 +15,7 @@ import pickle
 import random
 
 from flask import Response, url_for, session, request, make_response
+from flask import current_app as app
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.tools.sqleditor.command import *
@@ -23,7 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-from flask import current_app as app
+
 
 class DataGridModule(PgAdminModule):
     """
@@ -172,7 +173,7 @@ def panel(trans_id, is_query_tool, editor_title):
 
     return render_template("datagrid/index.html", _=gettext, uniqueId=trans_id,
                            is_query_tool=is_query_tool, editor_title=editor_title,
-                           script_type_url=sURL,is_desktop_mode=app.PGADMIN_RUNTIME,
+                           script_type_url=sURL, is_desktop_mode=app.PGADMIN_RUNTIME,
                            is_linux=is_linux_platform)
 
 
