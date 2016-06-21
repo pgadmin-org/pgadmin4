@@ -1244,16 +1244,18 @@ It may have been removed by another user or moved to another schema.
         func_def, name = res['rows'][0]
 
         # Fetch only arguments
-        args = name[name.rfind('('):].strip('(').strip(')').split(',')
-        # Remove unwanted spaces from arguments
-        args = [arg.strip(' ') for arg in args]
+        argString = name[name.rfind('('):].strip('(').strip(')')
+        if len(argString) > 0:
+            args = argString.split(',')
+            # Remove unwanted spaces from arguments
+            args = [arg.strip(' ') for arg in args]
 
-        # Remove duplicate and then format arguments
-        for arg in list(set(args)):
-            formatted_arg = '\n\t<' + arg + '>'
-            name = name.replace(arg, formatted_arg)
+            # Remove duplicate and then format arguments
+            for arg in list(set(args)):
+                formatted_arg = '\n\t<' + arg + '>'
+                name = name.replace(arg, formatted_arg)
+                name = name.replace(')', '\n)')
 
-        name = name.replace(')', '\n)')
         sql = "SELECT {0}".format(name)
 
         return ajax_response(response=sql)
