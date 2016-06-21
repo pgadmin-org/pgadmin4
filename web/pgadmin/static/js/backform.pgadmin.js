@@ -969,7 +969,7 @@
     showGridControl: function(data) {
       var gridHeader = _.template([
           '<div class="subnode-header">',
-          '  <label class="control-label pg-el-sm-4"><%-label%></label>',
+          '  <label class="control-label pg-el-sm-10"><%-label%></label>',
           '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
           '</div>'].join("\n")),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
@@ -1202,7 +1202,7 @@
     },
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
-          "  <label class='control-label pg-el-sm-4'>" + data.label + "</label>" ,
+          "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add'>ADD</buttton>",
           "</div>"].join("\n");
         gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
