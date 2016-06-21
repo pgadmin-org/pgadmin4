@@ -90,7 +90,7 @@ Server::Server(quint16 port)
     add_to_path(python_path, venvLibPath.canonicalFilePath());
     add_to_path(python_path, venvDynLibPath.canonicalFilePath());
     add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
 
     // In the case we're running in a release application, we need to ensure the
     // bundled virtual env is included in the Python path. We include it at the
@@ -137,7 +137,7 @@ Server::Server(quint16 port)
             python_path.append(path_list.at(i));
             if (i > 0)
             {
-#if Q_OS_WIN
+#if defined(Q_OS_WIN)
                 python_path.append(";");
 #else
                 python_path.append(":");
