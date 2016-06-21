@@ -132,7 +132,6 @@ function(alertify, S) {
     if(self.pgResizeTimeout) {
       return;
     }
-    console.log('test');
 
     self.pgResizeTimeout = setTimeout(
       function() {
