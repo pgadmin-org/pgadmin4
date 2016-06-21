@@ -17,20 +17,50 @@ The *Dashboard* tab provides a graphical analysis of the usage statistics for th
 * The *Tuples In* graph displays the number of tuples inserted, updated, and deleted into the managed server or database.
 * The *Tuples out* graph displays the number of tuples fetched and returned into the managed server or database.
 * The *Block I/O* graph displays the number of transactions processed by the managed server or database.
-* The *Server activity* graph displays information about sessions, locks, prepared transactions and configuration. The information is presented in context-sensitive tables.
+
+The *Server activity* panel displays information about sessions, locks, prepared transactions and configuration. The information is presented in context-sensitive tables.
+
+Click the *Properties* tab to continue.
+
+.. image:: images/main_properties_table.png
+
+Review properties on expandable windows specific to the *Object* selected. If multiple boxes are displayed, you can click the arrow to the left on the blue bar at the top of each box:
+
+ * Point the arrow to the right to contract the box.
+ * Point the arrow down to expand the window. 
+
+.. image:: images/main_properties_edit.png 
+
+Click the *Edit* icon in the toolbar under the browser tabs to launch a dialog. 
+
+.. image:: images/main_properties_icons.png
+
+If you change properties in the opened dialog, save your work. The *Properties* tab updates to show recent modifications. 
+
+Click the *SQL* tab to continue.
+
+.. image:: images/main_sql.png
+
+The SQL pane on the *SQL* tab contains an SQL script that creates the highlighted object, and if applicable, a (commented out) SQL statement that will *DROP* the selected object. You can copy the SQL statements to an editor of your choice using cut & paste shortcuts.
 
 Click the *Statistics* tab to continue.
 
 .. image:: images/main_statistics.png
 
-The *Statistics* tab displays the statistics gathered for each database on the current server. Click a column heading to sort the table by the data displayed in the column; click again to reverse the sort order.  
+The *Statistics* tab displays the statistics gathered for each object on the tree control; the statistics displayed in the table vary by the type of object that is selected. Click a column heading to sort the table by the data displayed in the column; click again to reverse the sort order.  The following table lists some of the statistics that are available:  
 
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 | Panel                      | Description                                                                                                |
 +============================+============================================================================================================+
+| *PID*                      | The process ID associated with the row.                                                                    |
++----------------------------+------------------------------------------------------------------------------------------------------------+
+| *User*                     | The name of the user that owns the object.                                                                 |
++----------------------------+------------------------------------------------------------------------------------------------------------+
 | *Database*                 | displays the database name.                                                                                |
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 | *Backends*                 | displays the number of current connections to the database.                                                |
++----------------------------+------------------------------------------------------------------------------------------------------------+
+| *Backend start*            | The start time of the backend process.                                                                     |
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 | *Xact Committed*           | displays the number of transactions committed to the database within the last week.                        |
 +----------------------------+------------------------------------------------------------------------------------------------------------+
@@ -72,36 +102,6 @@ The *Statistics* tab displays the statistics gathered for each database on the c
 +----------------------------+------------------------------------------------------------------------------------------------------------+
 | *Size*                     | displays the size (in megabytes) of the selected database.                                                 |
 +----------------------------+------------------------------------------------------------------------------------------------------------+
-
-
-Click the *Properties* tab to continue.
-
-.. image:: images/main_properties_table.png
-
-Review properties on expandable windows specific to the *Object* selected. If multiple boxes are displayed, you can click the arrow to the left on the blue bar at the top of each box:
-
- * Point the arrow to the right to contract the box.
- * Point the arrow down to expand the window. 
-
-.. image:: images/main_properties_edit.png 
-
-Click the *Edit* icon in the toolbar under the browser tabs to launch a dialog. 
-
-.. image:: images/main_properties_icons.png
-
-If you change properties in the opened dialog, save your work. The *Properties* tab updates to show recent modifications. 
-
-Click the *SQL* tab to continue.
-
-.. image:: images/main_sql.png
-
-The SQL pane on the *SQL* tab contains an SQL script that creates the highlighted object, and if applicable, a (commented out) SQL statement that will *DROP* the selected object. You can copy the SQL statements to an editor of your choice using cut & paste shortcuts.
-
-Click the *Statistics* tab to continue.
-
-.. image:: images/main_statistics.png  
-
-The *Statistics* tab displays available statistical information about the object currently selected in the *pgAdmin* browser.
 
 Click the *Dependencies* tab to continue.
 

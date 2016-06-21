@@ -13,7 +13,6 @@ Contents:
 .. toctree::
 
    getting_started
-   client_features
    connecting
    managing_cluster_objects
    managing_database_objects
