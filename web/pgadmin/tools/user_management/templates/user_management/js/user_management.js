@@ -382,7 +382,7 @@ define([
                   buttons: [{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
                     attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
-                    url: '{{ url_for('help.static', filename='user_management_dialog.html') }}'}
+                    url: '{{ url_for('help.static', filename='pgadmin_user.html') }}'}
                   },{
                     text: '{{ _('Close') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
                     attrs:{name:'close', type:'button'}

@@ -354,7 +354,7 @@ define(
                 buttons:[{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
                     attrs:{name:'dialog_help', type:'button', label: '{{ _('Preferences') }}',
-                    url: '{{ url_for('help.static', filename='preferences_dialog.html') }}'}
+                    url: '{{ url_for('help.static', filename='preferences.html') }}'}
                   },{
                     text: "{{ _('OK') }}", key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                   },{
