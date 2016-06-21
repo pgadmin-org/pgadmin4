@@ -97,10 +97,10 @@ Server::Server(quint16 port)
     // end, so expert users can override the path, but we do not save it.
 
     // Build (and canonicalise) the virtual environment path
-    QFileInfo venvBinPath(app_dir + "/../pgAdmin 4/venv");
-    QFileInfo venvLibPath(app_dir + "/../pgAdmin 4/venv/Lib");
-    QFileInfo venvDLLsPath(app_dir + "/../pgAdmin 4/venv/DLLs");
-    QFileInfo venvSitePackagesPath(app_dir + "/../pgAdmin 4/venv/Lib/site-packages");
+    QFileInfo venvBinPath(app_dir + "/../venv");
+    QFileInfo venvLibPath(app_dir + "/../venv/Lib");
+    QFileInfo venvDLLsPath(app_dir + "/../venv/DLLs");
+    QFileInfo venvSitePackagesPath(app_dir + "/../venv/Lib/site-packages");
 
     // Prepend the bin directory to the path
     add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
@@ -173,10 +173,8 @@ bool Server::Init()
     paths.append("../web/"); // Linux source tree
     paths.append("../../web/"); // Windows source tree
     paths.append("../../../../web/"); // Mac source tree (in a dev env)
-#if definded(Q_OS_MAC)
+#ifdef Q_OS_MAC
     paths.append("../Resources/web/"); // Mac source tree (in a release app bundle)
-#elif defined(Q_OS_WIN)
-    paths.append("../pgAdmin 4/web/"); // Mac source tree (in a release app bundle)
 #endif
     paths.append(settings.value("ApplicationPath").toString()); // System configured value
     paths.append(""); // Should be last!
