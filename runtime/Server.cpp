@@ -70,7 +70,9 @@ Server::Server(quint16 port)
 
     // Get the application directory
     QString app_dir = qApp->applicationDirPath();
-    QString path_env = qgetenv("PATH");;
+    QString path_env = qgetenv("PATH");
+    QStringList path_list;
+    int i;
 
 #ifdef Q_OS_MAC
     // In the case we're running in a release appbundle, we need to ensure the
@@ -128,11 +130,11 @@ Server::Server(quint16 port)
     if (python_path.length() > 0)
     {
         // Split the path setting into individual entries
-        QStringList path_list = python_path.split(";", QString::SkipEmptyParts);
+        path_list = python_path.split(";", QString::SkipEmptyParts);
         python_path = QString();
 
         // Add new additional path elements
-        for (int i = path_list.size() - 1; i >= 0 ; --i)
+        for (i = path_list.size() - 1; i >= 0 ; --i)
         {
             python_path.append(path_list.at(i));
             if (i > 0)
@@ -153,6 +155,23 @@ Server::Server(quint16 port)
     qDebug() << "User Python path: " << python_path;
 
     Py_Initialize();
+
+    // Get the current path
+    PyObject* sysPath = PySys_GetObject((char*)"path");
+
+    // Add new additional path elements
+    for (i = path_list.size() - 1; i >= 0 ; --i)
+    {
+#ifdef PYTHON2
+        PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
+#else
+#if PY_MINOR_VERSION > 2
+        PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
+#else
+        PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
+#endif
+#endif
+    }
 }
 
 Server::~Server()
