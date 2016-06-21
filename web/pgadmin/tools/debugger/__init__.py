@@ -268,12 +268,31 @@ def direct_new(trans_id):
     # if indirect debugging pass value 0 to client and for direct debugging pass it to 1
     debug_type = 0 if obj['debug_type'] == 'indirect' else 1
 
+    """
+    Animations and transitions are not automatically GPU accelerated and by default use browser's slow rendering engine.
+    We need to set 'translate3d' value of '-webkit-transform' property in order to use GPU.
+    After applying this property under linux, Webkit calculates wrong position of the elements so panel contents are not visible.
+    To make it work, we need to explicitly set '-webkit-transform' property to 'none' for .ajs-notifier, .ajs-message, .ajs-modal classes.
+
+    This issue is only with linux runtime application and observed in Query tool and debugger.
+    When we open 'Open File' dialog then whole Query-tool panel content is not visible though it contains HTML element in back end.
+
+    The port number should have already been set by the runtime if we're running in desktop mode.
+    """
+    is_linux_platform = False
+
+    from sys import platform as _platform
+    if "linux" in _platform:
+        is_linux_platform = True
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
         function_name='test',
         uniqueId=trans_id,
         debug_type=debug_type,
+        is_desktop_mode=current_app.PGADMIN_RUNTIME,
+        is_linux=is_linux_platform,
         stylesheets=[url_for('debugger.static', filename='css/debugger.css')]
     )
 

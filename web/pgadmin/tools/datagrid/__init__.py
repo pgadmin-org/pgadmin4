@@ -23,7 +23,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-
+from flask import current_app as app
 
 class DataGridModule(PgAdminModule):
     """
@@ -153,9 +153,27 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         sURL = None
 
+    """
+    Animations and transitions are not automatically GPU accelerated and by default use browser's slow rendering engine.
+    We need to set 'translate3d' value of '-webkit-transform' property in order to use GPU.
+    After applying this property under linux, Webkit calculates wrong position of the elements so panel contents are not visible.
+    To make it work, we need to explicitly set '-webkit-transform' property to 'none' for .ajs-notifier, .ajs-message, .ajs-modal classes.
+
+    This issue is only with linux runtime application and observed in Query tool and debugger.
+    When we open 'Open File' dialog then whole Query-tool panel content is not visible though it contains HTML element in back end.
+
+    The port number should have already been set by the runtime if we're running in desktop mode.
+    """
+    is_linux_platform = False
+
+    from sys import platform as _platform
+    if "linux" in _platform:
+        is_linux_platform = True
+
     return render_template("datagrid/index.html", _=gettext, uniqueId=trans_id,
                            is_query_tool=is_query_tool, editor_title=editor_title,
-                           script_type_url=sURL)
+                           script_type_url=sURL,is_desktop_mode=app.PGADMIN_RUNTIME,
+                           is_linux=is_linux_platform)
 
 
 @blueprint.route(
