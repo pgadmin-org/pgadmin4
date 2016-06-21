@@ -286,7 +286,7 @@ define([
       },
       // Callback to draw Backup Dialog for objects
       restore_objects: function(action, treeItem) {
-        var title = '{{ _('Restore') }}',
+        var title = S('{{ 'Restore (%s: %s)' }}'),
             tree = pgBrowser.tree,
             item = treeItem || tree.selected(),
             data = item && item.length == 1 && tree.itemData(item),
@@ -294,6 +294,8 @@ define([
 
         if (!node)
           return;
+
+        title = title.sprintf(node.label, data.label).value();
 
         if(!alertify.pg_restore) {
           // Create Dialog title on the fly with node details
@@ -319,10 +321,10 @@ define([
                     url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
                   },{
                     text: '{{ _('Restore') }}', key: 27,
-                    className: 'btn btn-primary', restore: true
+                    className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true
                   },{
                     text: '{{ _('Cancel') }}', key: 27,
-                    className: 'btn btn-danger', restore: false
+                    className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button', restore: false
                   }],
                   // Set options for dialog
                   options: {
@@ -379,7 +381,7 @@ define([
                   el: $container, model: newModel, schema: fields
                 });
 
-                $(this.elements.body.childNodes[2]).addClass(
+                $(this.elements.body.childNodes[0]).addClass(
                   'alertify_tools_dialog_properties obj_properties'
                 );
 
