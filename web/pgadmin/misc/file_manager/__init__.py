@@ -27,6 +27,7 @@ from pgadmin.utils.ajax import make_json_response
 # Checks if platform is Windows
 if _platform == "win32":
     import ctypes
+
     file_root = ""
 
 # uppercase supported in py2, ascii_uppercase supported in py3
@@ -40,7 +41,6 @@ try:
     from urllib import unquote
 except Exception as e:
     from urllib.parse import unquote
-
 
 MODULE_NAME = 'file_manager'
 global transid
@@ -118,18 +118,18 @@ class FileManagerModule(PgAdminModule):
 
     def get_own_javascripts(self):
         return [
-          {
-            'name': 'pgadmin.file_manager',
-            'path': url_for('file_manager.index') + 'file_manager',
-            'when': None
-          },
-          ]
+            {
+                'name': 'pgadmin.file_manager',
+                'path': url_for('file_manager.index') + 'file_manager',
+                'when': None
+            },
+        ]
 
     def get_own_stylesheets(self):
         return [
-              url_for('static', filename='css/jquery.dropzone/dropzone.css'),
-              url_for('file_manager.static', filename='css/file_manager.css')
-            ]
+            url_for('static', filename='css/jquery.dropzone/dropzone.css'),
+            url_for('file_manager.static', filename='css/file_manager.css')
+        ]
 
     def get_own_menuitems(self):
         return {
@@ -145,7 +145,8 @@ class FileManagerModule(PgAdminModule):
             'options', 'file_upload_size',
             gettext("Maximum file upload size(MB)"), 'integer', 50,
             category_label=gettext('Options')
-            )
+        )
+
 
 # Initialise the module
 blueprint = FileManagerModule(MODULE_NAME, __name__)
@@ -156,7 +157,7 @@ blueprint = FileManagerModule(MODULE_NAME, __name__)
 def index():
     """Render the preferences dialog."""
     return render_template(
-            MODULE_NAME + "/index.html", _=gettext)
+        MODULE_NAME + "/index.html", _=gettext)
 
 
 @blueprint.route("/utility.js")
@@ -233,16 +234,18 @@ def delete_trans_id(trans_id):
         data={'status': True}
     )
 
+
 class Filemanager(object):
     """FileManager Class."""
+
     def __init__(self, trans_id):
         self.trans_id = trans_id
         self.patherror = encode_json(
-                {
-                    'Error': gettext('No permission to operate on specified path.'),
-                    'Code': -1
-                }
-            )
+            {
+                'Error': gettext('No permission to operate on specified path.'),
+                'Code': -1
+            }
+        )
         self.dir = get_storage_directory()
 
         if self.dir is not None and isinstance(self.dir, list):
@@ -295,22 +298,22 @@ class Filemanager(object):
 
         # create configs using above configs
         configs = {
-          "fileroot": "/",
-          "dialog_type": fm_type,
-          "title": title,
-          "upload": {
-              "multiple": True
-          },
-          "capabilities": capabilities,
-          "security": {
-              "uploadPolicy": "",
-              "uploadRestrictions": allow_upload_files
-          },
-          "files_only": files_only,
-          "folders_only": folders_only,
-          "supported_types": supp_types,
-          "platform_type": _platform,
-          "show_volumes": show_volumes
+            "fileroot": "/",
+            "dialog_type": fm_type,
+            "title": title,
+            "upload": {
+                "multiple": True
+            },
+            "capabilities": capabilities,
+            "security": {
+                "uploadPolicy": "",
+                "uploadRestrictions": allow_upload_files
+            },
+            "files_only": files_only,
+            "folders_only": folders_only,
+            "supported_types": supp_types,
+            "platform_type": _platform,
+            "show_volumes": show_volumes
         }
 
         # Create a unique id for the transaction
@@ -420,7 +423,7 @@ class Filemanager(object):
                         "Date Created": "",
                         "Date Modified": "",
                         "Size": drive_size_in_units
-                      }
+                    }
                 }
             return files
 
@@ -429,9 +432,9 @@ class Filemanager(object):
         orig_path = "{0}{1}".format(dir, path)
         user_dir = path
         folders_only = trans_data['folders_only'] if 'folders_only' in \
-            trans_data else ''
+                                                     trans_data else ''
         files_only = trans_data['files_only'] if 'files_only' in \
-            trans_data else ''
+                                                 trans_data else ''
         supported_types = trans_data['supported_types'] \
             if 'supported_types' in trans_data else []
 
@@ -451,8 +454,8 @@ class Filemanager(object):
                 file_extension = str(splitext(system_path))
 
                 # set protected to 1 if no write or read permission
-                if(not os.access(system_path, os.R_OK) or
-                   not os.access(system_path, os.W_OK)):
+                if (not os.access(system_path, os.R_OK) or
+                        not os.access(system_path, os.W_OK)):
                     protected = 1
 
                 # list files only or folders only
@@ -465,21 +468,21 @@ class Filemanager(object):
                     # filter files based on file_type
                     if file_type is not None and file_type != "*":
                         if folders_only or len(supported_types) > 0 and \
-                          file_extension not in supported_types or \
-                          file_type != file_extension:
+                                        file_extension not in supported_types or \
+                                        file_type != file_extension:
                             continue
 
                 # create a list of files and folders
                 files[user_path] = {
-                  "Filename": f,
-                  "Path": user_path,
-                  "file_type": file_extension,
-                  "Protected": protected,
-                  "Properties": {
-                    "Date Created": created,
-                    "Date Modified": modified,
-                    "Size": sizeof_fmt(getSize(system_path))
-                  }
+                    "Filename": f,
+                    "Path": user_path,
+                    "file_type": file_extension,
+                    "Protected": protected,
+                    "Properties": {
+                        "Date Created": created,
+                        "Date Modified": modified,
+                        "Size": sizeof_fmt(getSize(system_path))
+                    }
                 }
         except Exception as e:
             if e.strerror == gettext('Permission denied'):
@@ -487,8 +490,8 @@ class Filemanager(object):
             else:
                 err_msg = "Error: {0}".format(e.strerror)
             files = {
-              'Code': 0,
-              'err_msg': err_msg
+                'Code': 0,
+                'err_msg': err_msg
             }
         return files
 
@@ -518,13 +521,13 @@ class Filemanager(object):
             'Error': '',
             'Code': 0,
             'Properties': {
-                    'Date Created': '',
-                    'Date Modified': '',
-                    'Width': '',
-                    'Height': '',
-                    'Size': ''
-                }
+                'Date Created': '',
+                'Date Modified': '',
+                'Width': '',
+                'Height': '',
+                'Size': ''
             }
+        }
 
         if not path_exists(orig_path):
             thefile['Error'] = gettext('File does not exist.')
@@ -559,8 +562,8 @@ class Filemanager(object):
         """
         if not self.validate_request('rename'):
             return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
+                'Error': gettext('Not allowed'),
+                'Code': 1
             }
 
         dir = self.dir
@@ -611,8 +614,8 @@ class Filemanager(object):
         """
         if not self.validate_request('delete'):
             return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
+                'Error': gettext('Not allowed'),
+                'Code': 1
             }
 
         dir = self.dir
@@ -644,8 +647,8 @@ class Filemanager(object):
         """
         if not self.validate_request('upload'):
             return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
+                'Error': gettext('Not allowed'),
+                'Code': 1
             }
 
         dir = self.dir
@@ -706,12 +709,12 @@ class Filemanager(object):
         with same name already exists
         """
         last_char = newName[-1]
-        tnewPath = dir + '/' + path + newName + '_'+str(count)
+        tnewPath = dir + '/' + path + newName + '_' + str(count)
         if last_char == 'r' and not path_exists(tnewPath):
             return tnewPath, newName
         else:
             last_char = int(tnewPath[-1]) + 1
-            newPath = dir + '/' + path + newName + '_'+str(last_char)
+            newPath = dir + '/' + path + newName + '_' + str(last_char)
             if path_exists(newPath):
                 count += 1
                 return Filemanager.getNewName(dir, path, newName, count)
@@ -724,8 +727,8 @@ class Filemanager(object):
         """
         if not self.validate_request('create'):
             return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
+                'Error': gettext('Not allowed'),
+                'Code': 1
             }
 
         dir = self.dir
@@ -766,8 +769,8 @@ class Filemanager(object):
         """
         if not self.validate_request('download'):
             return {
-             'Error': gettext('Not allowed'),
-             'Code': 1
+                'Error': gettext('Not allowed'),
+                'Code': 1
             }
 
         dir = self.dir
@@ -775,7 +778,7 @@ class Filemanager(object):
         name = path.split('/')[-1]
         content = open(orig_path, 'r')
         resp = Response(content)
-        resp.headers['Content-Disposition'] = 'attachment; filename='+name
+        resp.headers['Content-Disposition'] = 'attachment; filename=' + name
         return resp
 
 
@@ -802,8 +805,8 @@ def file_manager(trans_id):
             del kwargs['mode']
     elif req.method == 'GET':
         kwargs = {
-          'path': req.args['path'],
-          'name': req.args['name'] if 'name' in req.args else ''
+            'path': req.args['path'],
+            'name': req.args['name'] if 'name' in req.args else ''
         }
         mode = req.args['mode']
 

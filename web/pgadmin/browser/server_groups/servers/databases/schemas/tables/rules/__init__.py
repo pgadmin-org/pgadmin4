@@ -57,7 +57,7 @@ class RuleModule(CollectionNodeModule):
             if not conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -66,8 +66,8 @@ class RuleModule(CollectionNodeModule):
 
             self.template_path = 'rules/sql'
             SQL = render_template("/".join(
-                    [self.template_path, 'backend_support.sql']
-                  ), vid=kwargs['vid'])
+                [self.template_path, 'backend_support.sql']
+            ), vid=kwargs['vid'])
             status, res = conn.execute_scalar(SQL)
             # check if any errors
             if not status:
@@ -83,10 +83,10 @@ class RuleModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        assert('tid' in kwargs or 'vid' in kwargs)
+        assert ('tid' in kwargs or 'vid' in kwargs)
         yield self.generate_browser_collection_node(
-          kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-          )
+            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+        )
 
     @property
     def node_inode(self):
@@ -109,17 +109,17 @@ class RuleModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type,
-                    _=gettext
-                    ),
-                render_template(
-                    "rules/css/rule.css",
-                    node_type=self.node_type,
-                    _=gettext
-                    )
-                ]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type,
+                _=gettext
+            ),
+            render_template(
+                "rules/css/rule.css",
+                node_type=self.node_type,
+                _=gettext
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -147,15 +147,15 @@ class RuleView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'rid'}
-            ]
+        {'type': 'int', 'id': 'rid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -181,12 +181,12 @@ class RuleView(PGChildNodeView):
         This property defines whether Javascript exists for this node.
         """
         return make_response(
-                render_template(
-                    "rules/js/rules.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "rules/js/rules.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -194,20 +194,20 @@ class RuleView(PGChildNodeView):
         database connection before running a view. It will also attach
         manager, conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
-
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             self.manager = get_driver(
-              PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+                PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -225,15 +225,15 @@ class RuleView(PGChildNodeView):
 
         # fetch schema name by schema id
         SQL = render_template("/".join(
-          [self.template_path, 'properties.sql']), tid=tid)
+            [self.template_path, 'properties.sql']), tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
@@ -242,7 +242,7 @@ class RuleView(PGChildNodeView):
         """
         res = []
         SQL = render_template("/".join(
-          [self.template_path, 'properties.sql']), tid=tid)
+            [self.template_path, 'properties.sql']), tid=tid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -250,17 +250,17 @@ class RuleView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon="icon-rule"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-rule"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, rid):
@@ -270,16 +270,16 @@ class RuleView(PGChildNodeView):
         """
         SQL = render_template("/".join(
             [self.template_path, 'properties.sql']
-          ), rid=rid, datlastsysoid=self.datlastsysoid)
+        ), rid=rid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=parse_rule_definition(res),
-                status=200
-                )
+            response=parse_rule_definition(res),
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -373,7 +373,7 @@ class RuleView(PGChildNodeView):
         try:
             # Get name for rule from did
             SQL = render_template("/".join(
-              [self.template_path, 'delete.sql']), rid=rid)
+                [self.template_path, 'delete.sql']), rid=rid)
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res_data)
@@ -381,10 +381,10 @@ class RuleView(PGChildNodeView):
             rset = res_data['rows'][0]
             SQL = render_template("/".join(
                 [self.template_path, 'delete.sql']),
-                  rulename=rset['rulename'],
-                  relname=rset['relname'],
-                  nspname=rset['nspname'],
-                  cascade=cascade
+                rulename=rset['rulename'],
+                relname=rset['relname'],
+                nspname=rset['nspname'],
+                cascade=cascade
             )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -412,9 +412,9 @@ class RuleView(PGChildNodeView):
         data = request.args
         SQL = self.getSQL(gid, sid, data, tid, rid)
         return make_json_response(
-                data=SQL,
-                status=200
-                )
+            data=SQL,
+            status=200
+        )
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, rid):
@@ -422,7 +422,7 @@ class RuleView(PGChildNodeView):
         This function will generate sql to render into the sql panel
         """
         SQL = render_template("/".join(
-          [self.template_path, 'properties.sql']), rid=rid)
+            [self.template_path, 'properties.sql']), rid=rid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -440,7 +440,7 @@ class RuleView(PGChildNodeView):
         try:
             if rid is not None:
                 SQL = render_template("/".join(
-                  [self.template_path, 'properties.sql']), rid=rid)
+                    [self.template_path, 'properties.sql']), rid=rid)
                 status, res = self.conn.execute_dict(SQL)
                 res_data = []
                 res_data = parse_rule_definition(res)
@@ -450,7 +450,7 @@ class RuleView(PGChildNodeView):
                 SQL = render_template(
                     "/".join([self.template_path, 'update.sql']),
                     data=data, o_data=old_data
-                    )
+                )
             else:
                 SQL = render_template("/".join(
                     [self.template_path, 'create.sql']), data=data)
@@ -475,7 +475,7 @@ class RuleView(PGChildNodeView):
         return ajax_response(
             response=dependents_result,
             status=200
-            )
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, rid):
@@ -494,6 +494,7 @@ class RuleView(PGChildNodeView):
         return ajax_response(
             response=dependencies_result,
             status=200
-            )
+        )
+
 
 RuleView.register_node_view(blueprint)

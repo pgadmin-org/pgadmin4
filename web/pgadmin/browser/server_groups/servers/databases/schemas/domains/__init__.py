@@ -220,8 +220,8 @@ class DomainView(PGChildNodeView, DataTypeReader):
                         # Coverts string into python list as expected.
                         data[key] = json.loads(req[key])
                     elif key == 'typnotnull':
-                        data[key] = True if req[key] == 'true' or req[key] is\
-                                                                  True else\
+                        data[key] = True if req[key] == 'true' or req[key] is \
+                                                                  True else \
                             (False if req[key] == 'false' or req[key] is
                                                              False else '')
                     else:
@@ -253,6 +253,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
         Checks database connection status.
         Attach connection object and template path.
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             self = args[0]
@@ -403,7 +404,7 @@ It may have been removed by another user or moved to another schema.
 
         if basetype != '' and basetype.find("(") > 0:
             substr = basetype[basetype.find("(") + 1:len(
-               basetype) - 1]
+                basetype) - 1]
             typlen = substr.split(",")
             if len(typlen) > 1:
                 typ_len = typlen[0]
@@ -797,9 +798,9 @@ AND relkind != 'c'))"""
         """
         dependents_result = self.get_dependents(self.conn, doid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, doid):
@@ -816,8 +817,9 @@ AND relkind != 'c'))"""
         """
         dependencies_result = self.get_dependencies(self.conn, doid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 DomainView.register_node_view(blueprint)

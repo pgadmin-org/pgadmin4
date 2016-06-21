@@ -82,12 +82,11 @@ class DomainConstraintModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         return [
-                render_template(
-                    "domain_constraints/css/domain_constraints.css",
-                    node_type=self.node_type
-                    )
-                ]
-
+            render_template(
+                "domain_constraints/css/domain_constraints.css",
+                node_type=self.node_type
+            )
+        ]
 
 
 blueprint = DomainConstraintModule(__name__)
@@ -248,6 +247,7 @@ class DomainConstraintView(PGChildNodeView):
         Checks database connection status.
         Attach connection object and template path.
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             self = args[0]
@@ -620,7 +620,7 @@ class DomainConstraintView(PGChildNodeView):
                 SQL = render_template(
                     "/".join([self.template_path, 'update.sql']),
                     data=data, o_data=old_data, conn=self.conn
-                    )
+                )
             else:
                 domain, schema = self._get_domain(doid)
 
@@ -665,9 +665,9 @@ class DomainConstraintView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, coid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, doid, coid):
@@ -685,8 +685,9 @@ class DomainConstraintView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, coid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 DomainConstraintView.register_node_view(blueprint)

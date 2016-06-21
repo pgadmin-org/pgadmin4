@@ -86,6 +86,7 @@ class TypeModule(SchemaChildModule):
         """
         return False
 
+
 blueprint = TypeModule(__name__)
 
 
@@ -173,14 +174,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'tid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -213,6 +214,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -227,7 +229,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -267,9 +269,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
@@ -298,17 +300,17 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        scid,
-                        row['name'],
-                        icon="icon-type"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-type"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def additional_properties(self, copy_dict, tid):
         """
@@ -376,9 +378,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 is_precision = True if t_prec else False
 
                 composite_lst.append({
-                    'attnum':row['attnum'], 'member_name': row['attname'], 'type': row['typname'], 'collation': full_collate,
+                    'attnum': row['attnum'], 'member_name': row['attname'], 'type': row['typname'],
+                    'collation': full_collate,
                     'tlength': t_len, 'precision': t_prec,
-                    'is_tlength': is_tlength, 'is_precision': is_precision })
+                    'is_tlength': is_tlength, 'is_precision': is_precision})
 
             # Adding both results
             res['member_list'] = ', '.join(properties_list)
@@ -470,9 +473,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
         copy_dict.update(self.additional_properties(copy_dict, tid))
 
         return ajax_response(
-                response=copy_dict,
-                status=200
-                )
+            response=copy_dict,
+            status=200
+        )
 
     @check_precondition
     def get_collations(self, gid, sid, did, scid, tid=None):
@@ -490,13 +493,13 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['collation'],
-                             'value': row['collation']}
-                        )
+                    {'label': row['collation'],
+                     'value': row['collation']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -552,17 +555,17 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         max_val = 10
 
                 res.append(
-                            {'label': row['typname'], 'value': row['typname'],
-                             'typval': typeval, 'precision': precision,
-                             'length': length, 'min_val': min_val, 'max_val': max_val,
-                             'is_collatable': row['is_collatable']
-                             }
-                        )
+                    {'label': row['typname'], 'value': row['typname'],
+                     'typval': typeval, 'precision': precision,
+                     'length': length, 'min_val': min_val, 'max_val': max_val,
+                     'is_collatable': row['is_collatable']
+                     }
+                )
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -583,14 +586,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['stype'], 'value': row['stype'],
-                             'is_collate': row['is_collate']}
-                        )
+                    {'label': row['stype'], 'value': row['stype'],
+                     'is_collate': row['is_collate']}
+                )
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -614,13 +617,13 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
                 for row in rset['rows']:
                     res.append(
-                                {'label': row['opcname'],
-                                 'value': row['opcname']})
+                        {'label': row['opcname'],
+                         'value': row['opcname']})
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -651,14 +654,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
                 for row in rset['rows']:
                     res.append(
-                                {'label': row['stypdiff'],
-                                 'value': row['stypdiff']}
-                            )
+                        {'label': row['stypdiff'],
+                         'value': row['stypdiff']}
+                    )
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -697,17 +700,16 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
                 for row in rset['rows']:
                     res.append(
-                                {'label': row['canonical'],
-                                 'value': row['canonical']})
+                        {'label': row['canonical'],
+                         'value': row['canonical']})
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
 
     @check_precondition
     def get_external_functions_list(self, gid, sid, did, scid, tid=None):
@@ -768,7 +770,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
 
     @check_precondition
     def create(self, gid, sid, did, scid):
@@ -922,7 +923,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-
     @check_precondition
     def delete(self, gid, sid, did, scid, tid):
         """
@@ -976,7 +976,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-
     @check_precondition
     def msql(self, gid, sid, did, scid, tid=None):
         """
@@ -993,7 +992,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
         data = dict()
 
         # converting nested request data in proper json format
-        for key,val in req.items():
+        for key, val in req.items():
             if key in ['composite', 'enum', 'seclabels', 'typacl']:
                 data[key] = json.loads(val)
             else:
@@ -1004,9 +1003,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             internal_server_error(errormsg=str(e))
 
@@ -1048,11 +1047,11 @@ class TypeView(PGChildNodeView, DataTypeReader):
             for key in ['typacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                      data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
@@ -1091,7 +1090,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = [
                 'name',
@@ -1111,7 +1110,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
                                   data=data, conn=self.conn)
 
         return SQL
-
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid):
@@ -1197,9 +1195,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
         )
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid):
@@ -1219,8 +1217,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 TypeView.register_node_view(blueprint)

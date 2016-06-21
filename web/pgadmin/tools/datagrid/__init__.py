@@ -19,7 +19,7 @@ from flask.ext.babel import gettext
 from flask.ext.security import login_required
 from pgadmin.tools.sqleditor.command import *
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response, bad_request,\
+from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
@@ -62,7 +62,7 @@ def datagrid_css():
     return make_response(
         render_template('datagrid/css/datagrid.css'),
         200, {'Content-Type': 'text/css'}
-        )
+    )
 
 
 @blueprint.route("/filter")
@@ -74,7 +74,7 @@ def show_filter():
 @blueprint.route(
     '/initialize/datagrid/<int:cmd_type>/<obj_type>/<int:sid>/<int:did>/<int:obj_id>',
     methods=["PUT", "POST"]
-    )
+)
 @login_required
 def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     """
@@ -157,14 +157,15 @@ def panel(trans_id, is_query_tool, editor_title):
                            is_query_tool=is_query_tool, editor_title=editor_title,
                            script_type_url=sURL)
 
+
 @blueprint.route(
     '/initialize/query_tool/<int:sid>/<int:did>',
     methods=["POST"]
-    )
+)
 @blueprint.route(
     '/initialize/query_tool/<int:sid>',
     methods=["POST"]
-    )
+)
 @login_required
 def initialize_query_tool(sid, did=None):
     """

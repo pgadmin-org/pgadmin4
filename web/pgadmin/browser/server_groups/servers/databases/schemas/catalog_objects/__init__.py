@@ -79,6 +79,7 @@ class CatalogObjectModule(SchemaChildModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+
 blueprint = CatalogObjectModule(__name__)
 
 
@@ -111,14 +112,14 @@ class CatalogObjectView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'coid'}
-            ]
+        {'type': 'int', 'id': 'coid'}
+    ]
 
     operations = dict({
         'obj': [{'get': 'properties'}, {'get': 'list'}],
@@ -136,6 +137,7 @@ class CatalogObjectView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -148,12 +150,12 @@ class CatalogObjectView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
             self.template_path = 'catalog_object/sql/{0}/9.1_plus'.format(
-                 'ppas' if self.manager.server_type == 'ppas' else 'pg'
+                'ppas' if self.manager.server_type == 'ppas' else 'pg'
             )
 
             return f(*args, **kwargs)
@@ -177,8 +179,8 @@ class CatalogObjectView(PGChildNodeView):
         """
 
         SQL = render_template("/".join([
-                self.template_path, 'properties.sql'
-            ]), scid=scid
+            self.template_path, 'properties.sql'
+        ]), scid=scid
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -186,9 +188,9 @@ class CatalogObjectView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
@@ -216,17 +218,17 @@ class CatalogObjectView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        scid,
-                        row['name'],
-                        icon="icon-catalog_object"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-catalog_object"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, coid):
@@ -255,9 +257,9 @@ class CatalogObjectView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, coid):
@@ -275,9 +277,9 @@ class CatalogObjectView(PGChildNodeView):
         dependents_result = self.get_dependents(self.conn, coid)
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, coid):
@@ -295,8 +297,9 @@ class CatalogObjectView(PGChildNodeView):
         dependencies_result = self.get_dependencies(self.conn, coid)
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 CatalogObjectView.register_node_view(blueprint)

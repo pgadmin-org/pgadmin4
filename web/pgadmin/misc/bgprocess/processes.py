@@ -58,7 +58,6 @@ class IProcessDesc(object):
 
 
 class BatchProcess(object):
-
     def __init__(self, **kwargs):
 
         self.id = self.desc = self.cmd = self.args = self.log_dir = \
@@ -105,7 +104,7 @@ class BatchProcess(object):
         ctime = get_current_time(format='%y%m%d%H%M%S%f')
         log_dir = os.path.join(
             config.SESSION_DB_PATH, 'process_logs'
-            )
+        )
 
         def random_number(size):
             import random
@@ -184,7 +183,7 @@ class BatchProcess(object):
         p = None
         cmd = [
             (sys.executable if not app.PGADMIN_RUNTIME else
-                'pythonw.exe' if os.name == 'nt' else 'python'),
+             'pythonw.exe' if os.name == 'nt' else 'python'),
             executor,
             '-p', self.id,
             '-o', self.log_dir,
@@ -282,7 +281,7 @@ class BatchProcess(object):
                 execution_time = (etime - stime).total_seconds()
 
             if process_output and self.ecode is not None and (
-                len(stdout) + len(stderr) < 3073
+                            len(stdout) + len(stderr) < 3073
             ):
                 out, out_completed = read_log(
                     self.stdout, stdout, out, ctime, False

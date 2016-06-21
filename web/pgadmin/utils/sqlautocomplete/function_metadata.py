@@ -7,7 +7,6 @@ table_def_regex = re.compile(r'^TABLE\s*\((.+)\)$', re.IGNORECASE)
 
 
 class FunctionMetadata(object):
-
     def __init__(self, schema_name, func_name, arg_list, return_type, is_aggregate,
                  is_window, is_set_returning):
         """Class for describing a postgresql function"""
@@ -29,8 +28,8 @@ class FunctionMetadata(object):
 
     def __hash__(self):
         return hash((self.schema_name, self.func_name, self.arg_list,
-                    self.return_type, self.is_aggregate, self.is_window,
-                    self.is_set_returning))
+                     self.return_type, self.is_aggregate, self.is_window,
+                     self.is_set_returning))
 
     def __repr__(self):
         return (('%s(schema_name=%r, func_name=%r, arg_list=%r, return_type=%r,'

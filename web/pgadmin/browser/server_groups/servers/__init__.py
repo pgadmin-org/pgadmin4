@@ -12,7 +12,7 @@ import traceback
 
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
-        current_app, url_for
+    current_app, url_for
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
 from pgadmin.browser.server_groups.servers.types import ServerType
@@ -91,21 +91,21 @@ class ServerModule(sg.ServerGroupPluginModule):
                 wal_paused = None
 
             yield self.generate_browser_node(
-                    "%d" % (server.id),
-                    gid,
-                    server.name,
-                    "icon-server-not-connected" if not connected else
-                    "icon-{0}".format(manager.server_type),
-                    True,
-                    self.NODE_TYPE,
-                    connected=connected,
-                    server_type=manager.server_type if connected else "pg",
-                    version=manager.version,
-                    db=manager.db,
-                    user=manager.user_info if connected else None,
-                    in_recovery=in_recovery,
-                    wal_pause=wal_paused
-                    )
+                "%d" % (server.id),
+                gid,
+                server.name,
+                "icon-server-not-connected" if not connected else
+                "icon-{0}".format(manager.server_type),
+                True,
+                self.NODE_TYPE,
+                connected=connected,
+                server_type=manager.server_type if connected else "pg",
+                version=manager.version,
+                db=manager.db,
+                user=manager.user_info if connected else None,
+                in_recovery=in_recovery,
+                wal_pause=wal_paused
+            )
 
     @property
     def jssnippets(self):
@@ -133,17 +133,17 @@ class ServerModule(sg.ServerGroupPluginModule):
             'name': 'pgadmin.node.server',
             'path': url_for('browser.index') + '%s/module' % self.node_type,
             'when': self.script_load
+        },
+            {
+                'name': 'pgadmin.browser.server.privilege',
+                'path': url_for('browser.index') + 'server/static/js/privilege',
+                'when': self.node_type,
+                'deps': ['pgadmin.browser.node.ui']
             },
             {
-            'name': 'pgadmin.browser.server.privilege',
-            'path': url_for('browser.index') + 'server/static/js/privilege',
-            'when': self.node_type,
-            'deps': ['pgadmin.browser.node.ui']
-            },
-            {
-            'name': 'pgadmin.browser.server.variable',
-            'path': url_for('browser.index') + 'server/static/js/variable',
-            'when': self.node_type
+                'name': 'pgadmin.browser.server.variable',
+                'path': url_for('browser.index') + 'server/static/js/variable',
+                'when': self.node_type
             }])
 
         for module in self.submodules:
@@ -175,6 +175,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         ServerType.register_preferences()
 
+
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):
         kwargs.setdefault("type", ServerModule.NODE_TYPE)
@@ -182,6 +183,7 @@ class ServerMenuItem(MenuItem):
 
 
 blueprint = ServerModule(__name__)
+
 
 class ServerNode(PGChildNodeView):
     node_type = ServerModule.NODE_TYPE
@@ -207,7 +209,7 @@ class ServerNode(PGChildNodeView):
             [{'post': 'create_restore_point'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
-            }],
+        }],
         'change_password': [{'post': 'change_password'}],
         'wal_replay': [{
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
@@ -265,26 +267,26 @@ class ServerNode(PGChildNodeView):
                     user=manager.user_info if connected else None,
                     in_recovery=in_recovery,
                     wal_pause=wal_paused
-                    )
                 )
+            )
         return make_json_response(result=res)
 
     def node(self, gid, sid):
         """Return a JSON document listing the server groups for the user"""
         server = Server.query.filter_by(user_id=current_user.id,
-                                         servergroup_id=gid,
-                                         id=sid).first()
+                                        servergroup_id=gid,
+                                        id=sid).first()
 
         if server is None:
             return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        gettext(
-                            "Couldn't find the server with id# %s!"
-                            ).format(sid)
-                    )
+                status=410,
+                success=0,
+                errormsg=gettext(
+                    gettext(
+                        "Couldn't find the server with id# %s!"
+                    ).format(sid)
                 )
+            )
 
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
@@ -310,23 +312,23 @@ class ServerNode(PGChildNodeView):
             wal_paused = None
 
         return make_json_response(
-                result=self.blueprint.generate_browser_node(
-                    "%d" % (server.id),
-                    gid,
-                    server.name,
-                    "icon-server-not-connected" if not connected else
-                    "icon-{0}".format(manager.server_type),
-                    True,
-                    self.node_type,
-                    connected=connected,
-                    server_type=manager.server_type if connected else 'pg',
-                    version=manager.version,
-                    db=manager.db,
-                    user=manager.user_info if connected else None,
-                    in_recovery=in_recovery,
-                    wal_pause=wal_paused
-                    )
-                )
+            result=self.blueprint.generate_browser_node(
+                "%d" % (server.id),
+                gid,
+                server.name,
+                "icon-server-not-connected" if not connected else
+                "icon-{0}".format(manager.server_type),
+                True,
+                self.node_type,
+                connected=connected,
+                server_type=manager.server_type if connected else 'pg',
+                version=manager.version,
+                db=manager.db,
+                user=manager.user_info if connected else None,
+                in_recovery=in_recovery,
+                wal_pause=wal_paused
+            )
+        )
 
     def delete(self, gid, sid):
         """Delete a server node in the settings database."""
@@ -365,7 +367,7 @@ class ServerNode(PGChildNodeView):
     def update(self, gid, sid):
         """Update the server settings"""
         server = Server.query.filter_by(
-                    user_id=current_user.id, id=sid).first()
+            user_id=current_user.id, id=sid).first()
 
         if server is None:
             return make_json_response(
@@ -384,7 +386,7 @@ class ServerNode(PGChildNodeView):
             'gid': 'servergroup_id',
             'comment': 'comment',
             'role': 'role'
-            }
+        }
 
         disp_lbl = {
             'name': gettext('name'),
@@ -408,13 +410,13 @@ class ServerNode(PGChildNodeView):
         if connected:
             for arg in (
                     'host', 'port', 'db', 'username', 'sslmode', 'role'
-                    ):
+            ):
                 if arg in data:
                     return forbidden(
-                            errormsg=gettext(
-                                "'{0}' is not allowed to modify, when server is connected."
-                                ).format(disp_lbl[arg])
-                            )
+                        errormsg=gettext(
+                            "'{0}' is not allowed to modify, when server is connected."
+                        ).format(disp_lbl[arg])
+                    )
 
         for arg in config_param_map:
             if arg in data:
@@ -461,12 +463,12 @@ class ServerNode(PGChildNodeView):
         Return list of attributes of all servers.
         """
         servers = Server.query.filter_by(
-                user_id=current_user.id,
-                servergroup_id=gid).order_by(Server.name)
+            user_id=current_user.id,
+            servergroup_id=gid).order_by(Server.name)
         sg = ServerGroup.query.filter_by(
-                user_id=current_user.id,
-                id=gid
-                ).first()
+            user_id=current_user.id,
+            id=gid
+        ).first()
         res = []
 
         from pgadmin.utils.driver import get_driver
@@ -491,10 +493,10 @@ class ServerNode(PGChildNodeView):
                 'connected': connected,
                 'version': manager.ver,
                 'server_type': manager.server_type if connected else 'pg'
-                })
+            })
 
         return ajax_response(
-                response=res
+            response=res
         )
 
     def properties(self, gid, sid):
@@ -599,9 +601,9 @@ class ServerNode(PGChildNodeView):
                     password = None
 
                 status, errmsg = conn.connect(
-                            password=password,
-                            server_types=ServerType.types()
-                            )
+                    password=password,
+                    server_types=ServerType.types()
+                )
 
                 if not status:
                     db.session.delete(server)
@@ -617,17 +619,17 @@ class ServerNode(PGChildNodeView):
                     icon = "icon-pg"
 
             return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        "%d" % server.id, server.servergroup_id,
-                        server.name,
-                        icon,
-                        True,
-                        self.node_type,
-                        user=user,
-                        connected=connected,
-                        server_type='pg'  # Default server type
-                        )
-                    )
+                node=self.blueprint.generate_browser_node(
+                    "%d" % server.id, server.servergroup_id,
+                    server.name,
+                    icon,
+                    True,
+                    self.node_type,
+                    user=user,
+                    connected=connected,
+                    server_type='pg'  # Default server type
+                )
+            )
 
         except Exception as e:
             if server:
@@ -659,10 +661,10 @@ class ServerNode(PGChildNodeView):
                         'servers/sql',
                         '9.2_plus' if manager.version >= 90200 else '9.1_plus',
                         'stats.sql'
-                        ]),
+                    ]),
                     conn=conn, _=gettext
-                    )
                 )
+            )
 
             if not status:
                 return internal_server_error(errormsg=res)
@@ -672,8 +674,8 @@ class ServerNode(PGChildNodeView):
         return make_json_response(
             info=gettext(
                 "Server has no active connection for generating statistics."
-                )
             )
+        )
 
     def dependencies(self, gid, sid):
         return make_json_response(data='')
@@ -691,14 +693,14 @@ class ServerNode(PGChildNodeView):
             username = current_user.email.split('@')[0]
 
         return make_response(
-                render_template(
-                    "servers/servers.js",
-                    server_types=ServerType.types(),
-                    _=gettext,
-                    username=username,
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "servers/servers.js",
+                server_types=ServerType.types(),
+                _=gettext,
+                username=username,
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def connect_status(self, gid, sid):
         """Check and return the connection status."""
@@ -725,8 +727,8 @@ class ServerNode(PGChildNodeView):
             store the password.
         """
         current_app.logger.info(
-                'Connection Request for server#{0}'.format(sid)
-                )
+            'Connection Request for server#{0}'.format(sid)
+        )
 
         # Fetch Server Details
         server = Server.query.filter_by(id=sid).first()
@@ -749,25 +751,25 @@ class ServerNode(PGChildNodeView):
                 # Return the password template in case password is not
                 # provided, or password has not been saved earlier.
                 return make_json_response(
-                        success=0,
-                        status=428,
-                        result=render_template(
-                            'servers/password.html',
-                            server_label=server.name,
-                            username=server.username,
-                            _=gettext
-                            )
-                        )
+                    success=0,
+                    status=428,
+                    result=render_template(
+                        'servers/password.html',
+                        server_label=server.name,
+                        username=server.username,
+                        _=gettext
+                    )
+                )
         else:
             password = data['password'] if 'password' in data else None
             save_password = \
                 data['save_password'] if password and \
-                'save_password' in data else False
+                                         'save_password' in data else False
 
         # Encrypt the password before saving with user's login password key.
         try:
             password = encrypt(password, user.password) \
-                    if password is not None else server.password
+                if password is not None else server.password
         except Exception as e:
             current_app.logger.exception(e)
             return internal_server_error(errormsg=e.message)
@@ -779,9 +781,9 @@ class ServerNode(PGChildNodeView):
 
         try:
             status, errmsg = conn.connect(
-                    password=password,
-                    server_types=ServerType.types()
-                    )
+                password=password,
+                server_types=ServerType.types()
+            )
         except Exception as e:
             current_app.logger.exception(e)
             # TODO::
@@ -795,21 +797,21 @@ class ServerNode(PGChildNodeView):
         if not status:
             current_app.logger.error(
                 "Could not connected to server(#{0}) - '{1}'.\nError: {2}".format(
-                  server.id, server.name, errmsg
-                  )
+                    server.id, server.name, errmsg
                 )
+            )
 
             return make_json_response(
-                        success=0,
-                        status=401,
-                        result=render_template(
-                            'servers/password.html',
-                            server_label=server.name,
-                            username=server.username,
-                            errmsg=errmsg,
-                            _=gettext
-                            )
-                        )
+                success=0,
+                status=401,
+                result=render_template(
+                    'servers/password.html',
+                    server_label=server.name,
+                    username=server.username,
+                    errmsg=errmsg,
+                    _=gettext
+                )
+            )
         else:
             if save_password:
                 try:
@@ -846,21 +848,21 @@ class ServerNode(PGChildNodeView):
                 wal_paused = None
 
             return make_json_response(
-                        success=1,
-                        info=gettext("Server connected."),
-                        data={
-                            'icon': 'icon-{0}'.format(
-                                manager.server_type
-                                ),
-                            'connected': True,
-                            'type': manager.server_type,
-                            'version': manager.version,
-                            'db': manager.db,
-                            'user': manager.user_info,
-                            'in_recovery': in_recovery,
-                            'wal_pause': wal_paused
-                            }
-                        )
+                success=1,
+                info=gettext("Server connected."),
+                data={
+                    'icon': 'icon-{0}'.format(
+                        manager.server_type
+                    ),
+                    'connected': True,
+                    'type': manager.server_type,
+                    'version': manager.version,
+                    'db': manager.db,
+                    'user': manager.user_info,
+                    'in_recovery': in_recovery,
+                    'wal_pause': wal_paused
+                }
+            )
 
     def disconnect(self, gid, sid):
         """Disconnect the Server."""
@@ -879,13 +881,13 @@ class ServerNode(PGChildNodeView):
             return unauthorized(gettext("Server could not be disconnected."))
         else:
             return make_json_response(
-                    success=1,
-                    info=gettext("Server disconnected."),
-                    data={
-                        'icon': 'icon-server-not-connected',
-                        'connected': False
-                        }
-                    )
+                success=1,
+                info=gettext("Server disconnected."),
+                data={
+                    'icon': 'icon-server-not-connected',
+                    'connected': False
+                }
+            )
 
     def reload_configuration(self, gid, sid):
         """Reload the server configuration"""
@@ -901,15 +903,16 @@ class ServerNode(PGChildNodeView):
 
             if not status:
                 return internal_server_error(
-                        gettext("Could not reload the server configuration.")
-                        )
+                    gettext("Could not reload the server configuration.")
+                )
             else:
                 return make_json_response(data={'status': True,
-                                            'result': gettext('Server configuration reloaded.')})
+                                                'result': gettext('Server configuration reloaded.')})
 
         else:
             return make_json_response(data={'status': False,
-                                            'result': gettext('Not connected to the server or the connection to the server has been closed.')})
+                                            'result': gettext(
+                                                'Not connected to the server or the connection to the server has been closed.')})
 
     def create_restore_point(self, gid, sid):
         """
@@ -947,7 +950,7 @@ class ServerNode(PGChildNodeView):
                         'status': 1,
                         'result': gettext(
                             'Named restore point created: {0}'.format(
-                            restore_point_name))
+                                restore_point_name))
                     })
 
         except Exception as e:
@@ -968,11 +971,11 @@ class ServerNode(PGChildNodeView):
         try:
             data = json.loads(request.form['data'])
             if data and ('password' not in data or
-                         data['password'] == '' or
-                         'newPassword' not in data or
-                         data['newPassword'] == '' or
-                         'confirmPassword' not in data or
-                         data['confirmPassword'] == ''):
+                                 data['password'] == '' or
+                                 'newPassword' not in data or
+                                 data['newPassword'] == '' or
+                                 'confirmPassword' not in data or
+                                 data['confirmPassword'] == ''):
                 return make_json_response(
                     status=400,
                     success=0,
@@ -1019,10 +1022,10 @@ class ServerNode(PGChildNodeView):
             password = pqencryptpassword(data['newPassword'], manager.user)
 
             SQL = render_template("/".join([
-                        'servers/sql',
-                        '9.2_plus' if manager.version >= 90200 else '9.1_plus',
-                        'change_password.sql'
-                        ]),
+                'servers/sql',
+                '9.2_plus' if manager.version >= 90200 else '9.1_plus',
+                'change_password.sql'
+            ]),
                 conn=conn, _=gettext,
                 user=manager.user, encrypted_password=password)
 
@@ -1042,12 +1045,12 @@ class ServerNode(PGChildNodeView):
             manager.update_session()
 
             return make_json_response(
-                    status=200,
-                    success=1,
-                    info=gettext(
-                        "Password changed successfully."
-                    )
+                status=200,
+                success=1,
+                info=gettext(
+                    "Password changed successfully."
                 )
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1126,7 +1129,6 @@ class ServerNode(PGChildNodeView):
             None
         """
         return self.wal_replay(sid, True)
-
 
 
 ServerNode.register_node_view(blueprint)

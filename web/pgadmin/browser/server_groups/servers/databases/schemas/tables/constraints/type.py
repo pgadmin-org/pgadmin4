@@ -23,7 +23,6 @@ class ConstraintRegistry(object):
 
     def __init__(self, name, con_blueprint, con_nodeview):
         if name not in ConstraintRegistry.registry:
-
             blueprint = con_blueprint(name)
 
             # TODO:: register the view with the blueprint

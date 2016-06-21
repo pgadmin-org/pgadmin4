@@ -87,7 +87,7 @@ class Counter(dict):
                     for elem, count in iterable.iteritems():
                         self[elem] = self_get(elem, 0) + count
                 else:
-                    dict.update(self, iterable) # fast path when counter is empty
+                    dict.update(self, iterable)  # fast path when counter is empty
             else:
                 self_get = self.get
                 for elem in iterable:

@@ -23,13 +23,12 @@ MODULE_NAME = 'bgprocess'
 
 
 class BGProcessModule(PgAdminModule):
-
     def get_own_javascripts(self):
         return [{
             'name': 'pgadmin.browser.bgprocess',
             'path': url_for('bgprocess.static', filename='js/bgprocess'),
             'when': None
-            }]
+        }]
 
     def get_own_stylesheets(self):
         """
@@ -38,7 +37,7 @@ class BGProcessModule(PgAdminModule):
         """
         stylesheets = [
             url_for('bgprocess.static', filename='css/bgprocess.css')
-            ]
+        ]
         return stylesheets
 
     def get_own_messages(self):
@@ -58,6 +57,7 @@ class BGProcessModule(PgAdminModule):
             'successfully_finished': _("Successfully completed."),
             'failed_with_exit_code': _("Failed (exit code: %%s).")
         }
+
 
 # Initialise the module
 blueprint = BGProcessModule(

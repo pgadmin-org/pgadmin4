@@ -84,6 +84,7 @@ class ForeignServerModule(CollectionNodeModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+
 blueprint = ForeignServerModule(__name__)
 
 
@@ -150,14 +151,14 @@ class ForeignServerView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'fid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'fid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'fsid'}
-            ]
+        {'type': 'int', 'id': 'fsid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -165,7 +166,7 @@ class ForeignServerView(PGChildNodeView):
             {'get': 'list', 'post': 'create'}
         ],
         'delete': [{
-           'delete': 'delete'
+            'delete': 'delete'
         }],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
@@ -183,12 +184,12 @@ class ForeignServerView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "foreign_servers/js/foreign_servers.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "foreign_servers/js/foreign_servers.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -196,6 +197,7 @@ class ForeignServerView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -207,7 +209,7 @@ class ForeignServerView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -219,6 +221,7 @@ class ForeignServerView(PGChildNodeView):
                 self.template_path = 'foreign_servers/sql/9.1_plus'
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -240,9 +243,9 @@ class ForeignServerView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, fid):
@@ -266,17 +269,17 @@ class ForeignServerView(PGChildNodeView):
 
         for row in r_set['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['fsrvid'],
-                        fid,
-                        row['name'],
-                        icon="icon-foreign_server"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['fsrvid'],
+                    fid,
+                    row['name'],
+                    icon="icon-foreign_server"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def tokenizeOptions(self, option_value):
         """
@@ -333,9 +336,9 @@ class ForeignServerView(PGChildNodeView):
                 res['rows'][0][row['deftype']] = [privilege]
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did, fid):
@@ -437,7 +440,7 @@ class ForeignServerView(PGChildNodeView):
                     success=1,
                     info="Foreign server updated",
                     data={
-                        'id':  fsid,
+                        'id': fsid,
                         'fid': fid,
                         'did': did,
                         'sid': sid,
@@ -449,7 +452,7 @@ class ForeignServerView(PGChildNodeView):
                     success=1,
                     info="Nothing to update",
                     data={
-                        'id':  fsid,
+                        'id': fsid,
                         'fid': fid,
                         'did': did,
                         'sid': sid,
@@ -530,14 +533,14 @@ class ForeignServerView(PGChildNodeView):
         sql = self.get_sql(gid, sid, data, did, fid, fsid)
         if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
         else:
             return make_json_response(
-                    data='-- Modified SQL --',
-                    status=200
-                    )
+                data='-- Modified SQL --',
+                status=200
+            )
 
     def get_sql(self, gid, sid, data, did, fid, fsid=None):
         """
@@ -568,11 +571,11 @@ class ForeignServerView(PGChildNodeView):
                 for key in ['fsrvacl']:
                     if key in data and data[key] is not None:
                         if 'added' in data[key]:
-                          data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
+                            data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
                         if 'changed' in data[key]:
-                          data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
+                            data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
                         if 'deleted' in data[key]:
-                          data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
+                            data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
 
                 old_data = res['rows'][0]
                 for arg in required_args:
@@ -727,12 +730,13 @@ class ForeignServerView(PGChildNodeView):
             internal_server_error(errormsg=result)
 
         for row in result['rows']:
-            dependents_result.append({'type': 'user_mapping', 'name': row['name'], 'field': 'normal' if (row['deptype'] == 'n') else ''})
+            dependents_result.append(
+                {'type': 'user_mapping', 'name': row['name'], 'field': 'normal' if (row['deptype'] == 'n') else ''})
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, fid, fsid):
@@ -749,8 +753,9 @@ class ForeignServerView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, fsid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 ForeignServerView.register_node_view(blueprint)

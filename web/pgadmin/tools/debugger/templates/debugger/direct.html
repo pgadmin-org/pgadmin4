@@ -2,18 +2,18 @@
 {% block title %}{{ _('Debugger - ') + function_name }}{% endblock %}
 {% block init_script %}
 try {
-  require(
-    ['pgadmin', 'pgadmin.tools.debugger.direct'],
-    function(pgAdmin, pgDirectDebug) {
-      pgDirectDebug.init({{ uniqueId }}, {{ debug_type }});
-    },
-    function() {
-      /* TODO:: Show proper error dialog */
-      console.log(arguments);
-    });
+require(
+['pgadmin', 'pgadmin.tools.debugger.direct'],
+function(pgAdmin, pgDirectDebug) {
+pgDirectDebug.init({{ uniqueId }}, {{ debug_type }});
+},
+function() {
+/* TODO:: Show proper error dialog */
+console.log(arguments);
+});
 } catch (err) {
-  /* Show proper error dialog */
-  console.log(err);
+/* Show proper error dialog */
+console.log(err);
 }
 {% endblock %}
 {% block body %}

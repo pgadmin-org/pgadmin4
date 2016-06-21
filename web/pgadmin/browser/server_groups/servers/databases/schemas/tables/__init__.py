@@ -216,14 +216,14 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'tid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -266,6 +266,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -281,7 +282,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -353,9 +354,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
@@ -381,19 +382,19 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        scid,
-                        row['name'],
-                        icon="icon-table",
-                        tigger_count=row['triggercount'],
-                        has_enable_triggers=row['has_enable_triggers']
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-table",
+                    tigger_count=row['triggercount'],
+                    has_enable_triggers=row['has_enable_triggers']
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def get_all_tables(self, gid, sid, did, scid, tid=None):
@@ -440,7 +441,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         return ajax_response(
             response=res['rows'],
             status=200
-            )
+        )
 
     @check_precondition
     def get_toast_table_vacuum(self, gid, sid, did, scid=None, tid=None):
@@ -456,7 +457,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         return ajax_response(
             response=res['rows'],
             status=200
-            )
+        )
 
     @check_precondition
     def get_access_methods(self, gid, sid, did, scid, tid=None):
@@ -488,9 +489,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 {'label': row['amname'], 'value': row['amname']}
             )
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def get_oper_class(self, gid, sid, did, scid, tid=None):
@@ -525,7 +526,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return make_json_response(
                     data=result,
                     status=200
-                    )
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -563,7 +564,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return make_json_response(
                     data=result,
                     status=200
-                    )
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -598,7 +599,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 column['seclabels'] = seclabels
 
             if 'attnum' in column and column['attnum'] is not None and \
-                    column['attnum'] > 0:
+                            column['attnum'] > 0:
                 # We need to parse & convert ACL coming from database to json format
                 SQL = render_template("/".join([self.column_template_path, 'acl.sql']),
                                       tid=tid, clid=column['attnum'])
@@ -737,7 +738,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
                 columns = []
                 for r in res['rows']:
-                    columns.append({"column":   r['column'].strip('"')})
+                    columns.append({"column": r['column'].strip('"')})
 
                 result['columns'] = columns
 
@@ -761,7 +762,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         # We will fetch all the index constraints for the table
         sql = render_template("/".join([self.foreign_key_template_path,
                                         'properties.sql']),
-                                  tid=tid)
+                              tid=tid)
 
         status, result = self.conn.execute_dict(sql)
 
@@ -771,10 +772,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         for fk in result['rows']:
 
             sql = render_template("/".join([self.foreign_key_template_path,
-                                        'get_constraint_cols.sql']),
-                              tid=tid,
-                              keys=zip(fk['confkey'], fk['conkey']),
-                              confrelid=fk['confrelid'])
+                                            'get_constraint_cols.sql']),
+                                  tid=tid,
+                                  keys=zip(fk['confkey'], fk['conkey']),
+                                  confrelid=fk['confrelid'])
 
             status, res = self.conn.execute_dict(sql)
 
@@ -1039,7 +1040,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         # Filter inherited columns from all columns
         if 'columns' in data and len(data['columns']) > 0 \
-            and len(all_columns) > 0:
+                and len(all_columns) > 0:
             columns = []
             for row in data['columns']:
                 for i, col in enumerate(all_columns):
@@ -1102,10 +1103,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         if data['toast_table_vacuum_settings_str'] is not None:
             data['vacuum_settings_str'] += '\n' + '\n'.join(
-                    ['toast_' + setting for setting in data[
-                        'toast_table_vacuum_settings_str'
-                    ].split(',')]
-                )
+                ['toast_' + setting for setting in data[
+                    'toast_table_vacuum_settings_str'
+                ].split(',')]
+            )
         data['vacuum_settings_str'] = data[
             'vacuum_settings_str'
         ].replace("=", " = ")
@@ -1113,9 +1114,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         data = self._formatter(scid, tid, data)
 
         return ajax_response(
-                response=data,
-                status=200
-                )
+            response=data,
+            status=200
+        )
 
     @check_precondition
     def types(self, gid, sid, did, scid, tid=None, clid=None):
@@ -1199,14 +1200,14 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
                 res.append(
-                            {'label': row['typname'], 'value': row['typname'],
-                             'tid': row['oid']
-                             }
-                        )
+                    {'label': row['typname'], 'value': row['typname'],
+                     'tid': row['oid']
+                     }
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1228,14 +1229,14 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
                 res.append(
-                            {'label': row['inherits'], 'value': row['inherits'],
-                             'tid': row['oid']
-                             }
-                        )
+                    {'label': row['inherits'], 'value': row['inherits'],
+                     'tid': row['oid']
+                     }
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1256,12 +1257,12 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
                 res.append(
-                            {'label': row['like_relation'], 'value': row['like_relation']}
-                        )
+                    {'label': row['like_relation'], 'value': row['like_relation']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1707,8 +1708,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         # Sql for drop
                         sql.append(
                             render_template("/".join(
-                            [self.index_constraint_template_path,
-                             'delete.sql']),
+                                [self.index_constraint_template_path,
+                                 'delete.sql']),
                                 data=c, conn=self.conn).strip('\n')
                         )
 
@@ -1747,7 +1748,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                                     data=c, conn=self.conn,
                                     constraint_name='PRIMARY KEY'
                                     if ctype == 'p' else 'UNIQUE'
-                                    ).strip('\n')
+                                ).strip('\n')
                             )
                         else:
                             sql.append(
@@ -1784,8 +1785,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     # Sql for drop
                     sql.append(
                         render_template("/".join(
-                        [self.foreign_key_template_path,
-                         'delete.sql']),
+                            [self.foreign_key_template_path,
+                             'delete.sql']),
                             data=c, conn=self.conn).strip('\n')
                     )
 
@@ -1824,13 +1825,13 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
                     coveringindex = self.search_coveringindex(tid, cols)
 
-                    if coveringindex is None and 'autoindex' in c and c['autoindex'] and\
-                        ('coveringindex' in c and
-                             c['coveringindex'] != ''):
+                    if coveringindex is None and 'autoindex' in c and c['autoindex'] and \
+                            ('coveringindex' in c and
+                                     c['coveringindex'] != ''):
                         sql.append(render_template(
                             "/".join([self.foreign_key_template_path, 'create_index.sql']),
                             data=c, conn=self.conn).strip('\n')
-                        )
+                                   )
 
             if 'added' in constraint:
                 for c in constraint['added']:
@@ -1863,7 +1864,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             "/".join([self.foreign_key_template_path,
                                       'create.sql']),
                             data=c, conn=self.conn
-                            ).strip('\n')
+                        ).strip('\n')
                     )
 
                     if c['autoindex']:
@@ -1947,7 +1948,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             "/".join([self.check_constraint_template_path,
                                       'create.sql']),
                             data=c, conn=self.conn
-                            ).strip('\n')
+                        ).strip('\n')
                     )
 
         if len(sql) > 0:
@@ -2023,7 +2024,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             "/".join([self.exclusion_constraint_template_path,
                                       'create.sql']),
                             data=c, conn=self.conn
-                            ).strip('\n')
+                        ).strip('\n')
                     )
 
         if len(sql) > 0:
@@ -2127,11 +2128,11 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                                                            self.column_acl)
 
                         properties_sql = render_template("/".join([self.column_template_path,
-                                            'properties.sql']),
-                                            tid=tid,
-                                            clid=c['attnum'],
-                                            show_sys_objects=self.blueprint.show_system_objects
-                                            )
+                                                                   'properties.sql']),
+                                                         tid=tid,
+                                                         clid=c['attnum'],
+                                                         show_sys_objects=self.blueprint.show_system_objects
+                                                         )
 
                         status, res = self.conn.execute_dict(properties_sql)
                         if not status:
@@ -2249,7 +2250,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     return False
 
             if data['autoindex'] and ('coveringindex' not in data or
-                                      data['coveringindex'] == ''):
+                                              data['coveringindex'] == ''):
                 return False
 
             return True
@@ -2310,9 +2311,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             dependents_result.append({'type': 'sequence', 'name': ref_name, 'field': dep_type})
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid):
@@ -2333,9 +2334,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid):
@@ -2576,7 +2577,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         """
 
         SQL = render_template("/".join(
-          [self.rules_template_path, 'properties.sql']), tid=tid)
+            [self.rules_template_path, 'properties.sql']), tid=tid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -2586,7 +2587,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             rules_sql = '\n'
             SQL = render_template("/".join(
                 [self.rules_template_path, 'properties.sql']
-              ), rid=row['oid'], datlastsysoid=self.datlastsysoid)
+            ), rid=row['oid'], datlastsysoid=self.datlastsysoid)
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -2798,8 +2799,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             render_template(
                 "/".join([self.template_path, 'get_schema.sql']),
                 conn=self.conn, scid=scid
-                )
             )
+        )
         if not status:
             return internal_server_error(errormsg=schema_name)
 
@@ -2808,8 +2809,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 render_template(
                     "/".join([self.template_path, 'coll_table_stats.sql']),
                     conn=self.conn, schema_name=schema_name
-                    )
                 )
+            )
         else:
             # For Individual table stats
 
@@ -2828,8 +2829,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 render_template(
                     "/".join([self.template_path, 'get_table.sql']),
                     conn=self.conn, scid=scid, tid=tid
-                    )
                 )
+            )
             if not status:
                 return internal_server_error(errormsg=table_name)
 
@@ -2839,15 +2840,16 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     conn=self.conn, schema_name=schema_name,
                     table_name=table_name,
                     is_pgstattuple=is_pgstattuple, tid=tid
-                    )
                 )
+            )
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
+
 
 TableView.register_node_view(blueprint)

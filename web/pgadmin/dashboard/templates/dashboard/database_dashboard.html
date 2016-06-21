@@ -62,9 +62,16 @@
             <div class="dashboard-tab-container">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
-                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity" aria-controls="tab_database_activity" role="tab" data-toggle="tab">Sessions</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks" aria-controls="tab_database_locks" role="tab" data-toggle="tab">Locks</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared" aria-controls="tab_database_prepared" role="tab" data-toggle="tab">Prepared Transactions</a></li>
+                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity"
+                                                                            aria-controls="tab_database_activity"
+                                                                            role="tab" data-toggle="tab">Sessions</a>
+                    </li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks"
+                                                                     aria-controls="tab_database_locks" role="tab"
+                                                                     data-toggle="tab">Locks</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared"
+                                                                     aria-controls="tab_database_prepared" role="tab"
+                                                                     data-toggle="tab">Prepared Transactions</a></li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -86,4 +93,5 @@
 
 <script type="text/javascript">
     pgAdmin.Dashboard.init_database_dashboard({{ sid }}, {{ did }}, {{ rates.session_stats_refresh }}, {{ rates.tps_stats_refresh }}, {{ rates.ti_stats_refresh }}, {{ rates.to_stats_refresh }}, {{ rates.bio_stats_refresh }} );
+
 </script>

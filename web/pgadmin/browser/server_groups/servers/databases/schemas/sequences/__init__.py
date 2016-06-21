@@ -82,6 +82,7 @@ class SequenceModule(SchemaChildModule):
         """
         return False
 
+
 blueprint = SequenceModule(__name__)
 
 
@@ -89,14 +90,14 @@ class SequenceView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'seid'}
-            ]
+        {'type': 'int', 'id': 'seid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -119,12 +120,12 @@ class SequenceView(PGChildNodeView):
         This property defines whether javascript exists for this node.
         """
         return make_response(
-                render_template(
-                    "sequence/js/sequence.js",
-                    _=_
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "sequence/js/sequence.js",
+                _=_
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(action=None):
         """
@@ -132,6 +133,7 @@ class SequenceView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         def wrap(f):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
@@ -147,14 +149,16 @@ class SequenceView(PGChildNodeView):
                 if not self.conn.connected():
                     return precondition_required(
                         _(
-                                "Connection to the server has been lost!"
+                            "Connection to the server has been lost!"
                         )
                     )
 
                 self.template_path = 'sequence/sql/9.1_plus'
                 self.acl = ['r', 'w', 'U']
                 return f(self, *args, **kwargs)
+
             return wrapped
+
         return wrap
 
     @check_precondition(action='list')
@@ -177,9 +181,9 @@ class SequenceView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition(action='nodes')
     def nodes(self, gid, sid, did, scid):
@@ -204,17 +208,17 @@ class SequenceView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        sid,
-                        row['name'],
-                        icon="icon-%s" % self.node_type
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    sid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, did, scid, seid):
@@ -244,7 +248,7 @@ class SequenceView(PGChildNodeView):
                 sec_lbls.append({
                     'provider': sec.group(1),
                     'label': sec.group(2)
-                    })
+                })
         res['securities'] = sec_lbls
 
         for row in res['rows']:
@@ -273,9 +277,9 @@ class SequenceView(PGChildNodeView):
                 res['rows'][0][row['deftype']] = [priv]
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition(action="create")
     def create(self, gid, sid, did, scid):
@@ -340,8 +344,8 @@ class SequenceView(PGChildNodeView):
                     scid,
                     data['name'],
                     icon="icon-%s" % self.node_type
-                    )
                 )
+            )
 
         except Exception as e:
             return make_json_response(
@@ -488,14 +492,14 @@ class SequenceView(PGChildNodeView):
             SQL = self.getSQL(gid, sid, did, data, scid, seid)
             SQL = SQL.strip('\n').strip(' ')
             return make_json_response(
-                    data=SQL,
-                    status=200
-                    )
+                data=SQL,
+                status=200
+            )
         except Exception as e:
             return make_json_response(
-                    data="-- modified SQL",
-                    status=200
-                    )
+                data="-- modified SQL",
+                status=200
+            )
 
     def getSQL(self, gid, sid, did, data, scid, seid=None):
         """
@@ -526,11 +530,11 @@ class SequenceView(PGChildNodeView):
             for key in ['relacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                      data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -637,9 +641,9 @@ class SequenceView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, seid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition(action="dependencies")
     def dependencies(self, gid, sid, did, scid, seid):
@@ -686,9 +690,9 @@ class SequenceView(PGChildNodeView):
                                         'field': dep_type})
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition(action="stats")
     def statistics(self, gid, sid, did, scid, seid=None):
@@ -724,15 +728,16 @@ class SequenceView(PGChildNodeView):
                 "/".join([self.template_path, sql]),
                 conn=self.conn, seid=seid,
                 schema_name=schema_name
-                )
             )
+        )
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
+
 
 SequenceView.register_node_view(blueprint)

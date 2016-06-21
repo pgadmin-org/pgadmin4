@@ -26,6 +26,7 @@ from pgadmin.utils.preferences import Preferences
 
 MODULE_NAME = 'preferences'
 
+
 class PreferencesModule(PgAdminModule):
     """
     PreferenceModule represets the preferences of different modules to the
@@ -56,6 +57,7 @@ class PreferencesModule(PgAdminModule):
             ]
         }
 
+
 blueprint = PreferencesModule(MODULE_NAME, __name__)
 
 
@@ -64,10 +66,10 @@ blueprint = PreferencesModule(MODULE_NAME, __name__)
 def index():
     """Render the preferences dialog."""
     return render_template(
-            MODULE_NAME + "/index.html",
-            username=current_user.email,
-            _=gettext
-            )
+        MODULE_NAME + "/index.html",
+        username=current_user.email,
+        _=gettext
+    )
 
 
 @blueprint.route("/preferences.js")
@@ -99,7 +101,7 @@ def preferences():
                 "inode": True,
                 "open": True,
                 "branch": []
-                }
+            }
 
             for c in m['categories']:
                 oc = {
@@ -109,7 +111,7 @@ def preferences():
                     "inode": False,
                     "open": False,
                     "preferences": sorted(c['preferences'], key=label)
-                    }
+                }
 
                 (om['branch']).append(oc)
             om['branch'] = sorted(om['branch'], key=label)
@@ -117,9 +119,9 @@ def preferences():
             res.append(om)
 
     return ajax_response(
-            response=sorted(res, key=label),
-            status=200
-            )
+        response=sorted(res, key=label),
+        status=200
+    )
 
 
 @blueprint.route("/preferences/<int:pid>", methods=["PUT"])

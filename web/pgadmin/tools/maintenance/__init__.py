@@ -45,13 +45,13 @@ class MaintenanceModule(PgAdminModule):
     def get_own_javascripts(self):
         scripts = list()
         for name, script in [
-                ['pgadmin.tools.maintenance', 'js/maintenance']
-                ]:
+            ['pgadmin.tools.maintenance', 'js/maintenance']
+        ]:
             scripts.append({
                 'name': name,
                 'path': url_for('maintenance.index') + script,
                 'when': None
-                })
+            })
 
         return scripts
 
@@ -62,14 +62,14 @@ class MaintenanceModule(PgAdminModule):
         """
         stylesheets = [
             url_for('maintenance.static', filename='css/maintenance.css')
-            ]
+        ]
         return stylesheets
+
 
 blueprint = MaintenanceModule(MODULE_NAME, __name__)
 
 
 class Message(IProcessDesc):
-
     def __init__(self, _sid, _data, _query):
         self.sid = _sid
         self.data = _data
@@ -144,7 +144,7 @@ def index():
 def script():
     """render the maintenance tool of vacuum javascript file"""
     return Response(
-        response=render_template("maintenance/js/maintenance.js",  _=_),
+        response=render_template("maintenance/js/maintenance.js", _=_),
         status=200,
         mimetype="application/javascript"
     )

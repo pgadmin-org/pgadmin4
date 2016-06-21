@@ -41,16 +41,17 @@ import csv
 import pytz
 import codecs
 
-
 # SQLite3 needs all string as UTF-8
 # We need to make string for Python2/3 compatible
 if sys.version_info < (3,):
     from cStringIO import StringIO
 
+
     def u(x):
         return x
 else:
     from io import StringIO
+
 
     def u(x):
         if hasattr(x, 'decode'):
@@ -299,7 +300,7 @@ def execute(configs):
                 shell=(os.name == 'nt'), close_fds=(os.name != 'nt')
             )
             try:
-                del(os.environ['PGPASSWORD'])
+                del (os.environ['PGPASSWORD'])
             except:
                 pass
 
@@ -367,17 +368,17 @@ if __name__ == '__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser(
         description='Process executor for pgAdmin 4'
-        )
+    )
     parser.add_argument(
         '-p', '--process_id', help='Process ID', required=True
-        )
+    )
     parser.add_argument(
         '-d', '--db_file', help='Configuration Database', required=True
-        )
+    )
     parser.add_argument(
         '-o', '--output_directory',
         help='Location where the logs will be created', required=True
-        )
+    )
     args = parser.parse_args()
 
     # Fetch bakcground process details from SQLite3 database file

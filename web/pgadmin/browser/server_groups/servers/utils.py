@@ -17,8 +17,8 @@ def parse_priv_from_db(db_privileges):
     acl = {
         'grantor': db_privileges['grantor'],
         'grantee': db_privileges['grantee'],
-        'privileges':[]
-        }
+        'privileges': []
+    }
 
     privileges = []
     for idx, priv in enumerate(db_privileges['privileges']):
@@ -26,14 +26,14 @@ def parse_priv_from_db(db_privileges):
             "privilege_type": priv,
             "privilege": True,
             "with_grant": db_privileges['grantable'][idx]
-            })
+        })
 
     acl['privileges'] = privileges
 
     return acl
 
 
-def parse_priv_to_db(str_privileges, allowed_acls = []):
+def parse_priv_to_db(str_privileges, allowed_acls=[]):
     """
     Common utility function to parse privileges before sending to database.
     """
@@ -50,7 +50,7 @@ def parse_priv_to_db(str_privileges, allowed_acls = []):
         't': 'TRIGGER',
         'U': 'USAGE',
         'X': 'EXECUTE'
-        }
+    }
 
     privileges = []
     allowed_acls_len = len(allowed_acls)
@@ -69,12 +69,12 @@ def parse_priv_to_db(str_privileges, allowed_acls = []):
 
             if privilege['with_grant']:
                 priv_with_grant.append(
-                            db_privileges[privilege['privilege_type']]
-                            )
+                    db_privileges[privilege['privilege_type']]
+                )
             elif privilege['privilege']:
                 priv_without_grant.append(
-                            db_privileges[privilege['privilege_type']]
-                            )
+                    db_privileges[privilege['privilege_type']]
+                )
         # If we have all acl then just return all
         if len(priv_with_grant) == allowed_acls_len:
             priv_with_grant = ['ALL']
@@ -85,6 +85,6 @@ def parse_priv_to_db(str_privileges, allowed_acls = []):
             'grantee': priv['grantee'],
             'with_grant': priv_with_grant,
             'without_grant': priv_without_grant
-            })
+        })
 
     return privileges

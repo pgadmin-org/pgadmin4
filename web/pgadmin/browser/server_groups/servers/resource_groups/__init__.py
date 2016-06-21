@@ -96,6 +96,7 @@ class ResourceGroupModule(CollectionNodeModule):
         """
         return servers.ServerModule.NODE_TYPE
 
+
 blueprint = ResourceGroupModule(__name__)
 
 
@@ -153,12 +154,12 @@ class ResourceGroupView(NodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'rg_id'}
-            ]
+        {'type': 'int', 'id': 'rg_id'}
+    ]
 
     operations = dict({
         'obj': [
@@ -193,12 +194,12 @@ class ResourceGroupView(NodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "resource_groups/js/resource_groups.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "resource_groups/js/resource_groups.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -206,6 +207,7 @@ class ResourceGroupView(NodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -218,12 +220,13 @@ class ResourceGroupView(NodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
             self.template_path = 'resource_groups/sql'
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -241,9 +244,9 @@ class ResourceGroupView(NodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid):
@@ -263,17 +266,17 @@ class ResourceGroupView(NodeView):
 
         for row in result['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        sid,
-                        row['name'],
-                        icon="icon-resource_group"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    sid,
+                    row['name'],
+                    icon="icon-resource_group"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, rg_id):
@@ -292,9 +295,9 @@ class ResourceGroupView(NodeView):
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid):
@@ -373,7 +376,7 @@ class ResourceGroupView(NodeView):
             sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
-                    return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=res)
             old_data = res['rows'][0]
             for arg in required_args:
                 if arg not in data:
@@ -466,14 +469,14 @@ class ResourceGroupView(NodeView):
         sql = self.get_sql(data, rg_id)
         if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
         else:
             return make_json_response(
-                    data='-- Modified SQL --',
-                    status=200
-                    )
+                data='-- Modified SQL --',
+                status=200
+            )
 
     def get_sql(self, data, rg_id=None):
         """
@@ -503,7 +506,7 @@ class ResourceGroupView(NodeView):
                     name_changed = True
                     sql = render_template("/".join([self.template_path, 'update.sql']),
                                           oldname=old_data['name'], newname=data['name'], conn=self.conn)
-                if (data['cpu_rate_limit'] != old_data['cpu_rate_limit'])\
+                if (data['cpu_rate_limit'] != old_data['cpu_rate_limit']) \
                         or data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
                     if name_changed:
                         sql += "\n-- Following query will be executed in a separate transaction\n"
@@ -543,5 +546,6 @@ class ResourceGroupView(NodeView):
         sql += render_template("/".join([self.template_path, 'update.sql']), data=old_data, conn=self.conn)
 
         return ajax_response(response=sql)
+
 
 ResourceGroupView.register_node_view(blueprint)

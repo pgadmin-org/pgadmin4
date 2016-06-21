@@ -143,13 +143,13 @@ class EventTriggerView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'}
+    ]
     ids = [
         {'type': 'int', 'id': 'etid'}
-        ]
+    ]
 
     operations = dict({
         'obj': [
@@ -172,12 +172,12 @@ class EventTriggerView(PGChildNodeView):
         Returns the javascript module for event trigger.
         """
         return make_response(
-                render_template(
-                    "event_triggers/js/event_trigger.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "event_triggers/js/event_trigger.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -185,6 +185,7 @@ class EventTriggerView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -196,7 +197,7 @@ class EventTriggerView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -205,8 +206,8 @@ class EventTriggerView(PGChildNodeView):
                 self.template_path = 'event_triggers/sql/9.3_plus'
 
             return f(*args, **kwargs)
-        return wrap
 
+        return wrap
 
     @check_precondition
     def list(self, gid, sid, did):
@@ -229,9 +230,9 @@ class EventTriggerView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did):
@@ -256,17 +257,17 @@ class EventTriggerView(PGChildNodeView):
 
         for row in res['rows']:
             result.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon="icon-%s" % self.node_type
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ))
 
         return make_json_response(
-                data=result,
-                status=200
-                )
+            data=result,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, etid):
@@ -297,12 +298,12 @@ class EventTriggerView(PGChildNodeView):
                 sec_labels.append({
                     'provider': sec.group(1),
                     'securitylabel': sec.group(2)
-                    })
+                })
         result.update({"seclabels": sec_labels})
         return ajax_response(
-                response=result,
-                status=200
-                )
+            response=result,
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -320,11 +321,11 @@ class EventTriggerView(PGChildNodeView):
         """
         data = request.form if request.form else json.loads(request.data.decode())
         required_args = {
-            'name':'Name',
-            'eventowner':'Owner',
-            'eventfunname':'Trigger function',
-            'enabled':'Enabled status',
-            'eventname':'Events'
+            'name': 'Name',
+            'eventowner': 'Owner',
+            'eventfunname': 'Trigger function',
+            'enabled': 'Enabled status',
+            'eventname': 'Events'
         }
         err = []
         for arg in required_args:
@@ -332,12 +333,12 @@ class EventTriggerView(PGChildNodeView):
                 err.append(required_args.get(arg, arg))
         if err:
             return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find the required parameter %s." % err
-                    )
+                status=400,
+                success=0,
+                errormsg=gettext(
+                    "Could not find the required parameter %s." % err
                 )
+            )
         try:
             sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
@@ -395,13 +396,13 @@ class EventTriggerView(PGChildNodeView):
                 status, etid = self.conn.execute_scalar(sql)
 
                 return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            etid,
-                            did,
-                            data['name'],
-                            icon="icon-%s" % self.node_type
-                        )
+                    node=self.blueprint.generate_browser_node(
+                        etid,
+                        did,
+                        data['name'],
+                        icon="icon-%s" % self.node_type
                     )
+                )
             else:
                 return make_json_response(
                     success=1,
@@ -416,7 +417,6 @@ class EventTriggerView(PGChildNodeView):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
 
     @check_precondition
     def delete(self, gid, sid, did, etid):
@@ -464,7 +464,7 @@ class EventTriggerView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def msql(self, gid, sid, did, etid = None):
+    def msql(self, gid, sid, did, etid=None):
         """
         This function is used to return modified SQL for the selected
         event trigger node.
@@ -489,9 +489,9 @@ class EventTriggerView(PGChildNodeView):
             sql = sql.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -523,11 +523,11 @@ class EventTriggerView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data)
         else:
             required_args = {
-                'name':'Name',
-                'eventowner':'Owner',
-                'eventfunname':'Trigger function',
-                'enabled':'Enabled status',
-                'eventname':'Events'
+                'name': 'Name',
+                'eventowner': 'Owner',
+                'eventfunname': 'Trigger function',
+                'enabled': 'Enabled status',
+                'eventname': 'Events'
             }
             err = []
             for arg in required_args:
@@ -535,12 +535,12 @@ class EventTriggerView(PGChildNodeView):
                     err.append(required_args.get(arg, arg))
             if err:
                 return make_json_response(
-                        status=400,
-                        success=0,
-                        errormsg=gettext(
-                            "Could not find the required parameter %s." % err
-                        )
+                    status=400,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter %s." % err
                     )
+                )
             sql = render_template("/".join([self.template_path, 'create.sql']), data=data)
             sql += "\n"
             sql += render_template("/".join([self.template_path, 'grant.sql']), data=data)
@@ -581,8 +581,8 @@ class EventTriggerView(PGChildNodeView):
             sql_header = "-- Event Trigger: {0} on database {1}\n\n-- ".format(result['name'], db_name)
 
             sql_header += render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    name=result['name'], )
+                "/".join([self.template_path, 'delete.sql']),
+                name=result['name'], )
             sql_header += "\n"
 
             sql = sql_header + sql
@@ -591,7 +591,6 @@ class EventTriggerView(PGChildNodeView):
 
         except Exception as e:
             return ajax_response(response=str(e))
-
 
     @check_precondition
     def get_event_funcs(self, gid, sid, did, etid=None):
@@ -608,7 +607,7 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        res = [{ 'label': '', 'value': '' }]
+        res = [{'label': '', 'value': ''}]
         sql = render_template("/".join([self.template_path, 'eventfunctions.sql']))
         status, rest = self.conn.execute_2darray(sql)
         if not status:
@@ -618,9 +617,9 @@ class EventTriggerView(PGChildNodeView):
                 {'label': row['tfname'], 'value': row['tfname']}
             )
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def dependents(self, gid, sid, did, etid=None):
@@ -636,9 +635,9 @@ class EventTriggerView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, etid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, etid):
@@ -654,8 +653,9 @@ class EventTriggerView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, etid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 EventTriggerView.register_node_view(blueprint)

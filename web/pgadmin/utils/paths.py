@@ -18,7 +18,6 @@ import config
 
 @login_required
 def get_storage_directory():
-
     if config.SERVER_MODE is not True:
         return None
 
@@ -47,7 +46,6 @@ def get_storage_directory():
 
 
 def init_app(app):
-
     if config.SERVER_MODE is not True:
         return None
 

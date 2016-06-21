@@ -12,9 +12,9 @@ from pgadmin.browser.server_groups.servers.types import ServerType
 
 
 class PPAS(ServerType):
-
     def instanceOf(self, ver):
         return ver.startswith("EnterpriseDB")
+
 
 # Default Server Type
 PPAS('ppas', gettext("EDB Advanced Server"), 2)

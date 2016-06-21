@@ -13,7 +13,6 @@ from .registry import DriverRegistry
 
 
 def get_driver(type, app=None):
-
     if app is not None:
         DriverRegistry.load_drivers()
 
@@ -32,6 +31,7 @@ def get_driver(type, app=None):
         setattr(app or current_app, '_pgadmin_server_drivers', drivers)
 
     return driver
+
 
 def init_app(app):
     drivers = dict()

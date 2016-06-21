@@ -72,7 +72,6 @@ def pad(str):
 
 
 def pqencryptpassword(password, user):
-
     """
     pqencryptpassword -- to encrypt a password
     This is intended to be used by client applications that wish to send

@@ -20,11 +20,10 @@ import config
 
 
 class HelpModule(PgAdminModule):
-
     def get_own_menuitems(self):
         """Return a (set) of dicts of help menu items, with name, priority, URL,
         target and onclick code."""
-        return { 'help_items': [
+        return {'help_items': [
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
                      priority=100,
@@ -33,18 +32,18 @@ class HelpModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html')),
 
             MenuItem(name='mnu_pgadmin_website',
-                     label= gettext('pgAdmin Website'),
-                     priority= 200,
-                     target= '_blank',
+                     label=gettext('pgAdmin Website'),
+                     priority=200,
+                     target='_blank',
                      icon='fa fa-external-link',
-                     url= 'https://www.pgadmin.org/' ),
+                     url='https://www.pgadmin.org/'),
 
-            MenuItem(name= 'mnu_postgresql_website',
-                     label= gettext('PostgreSQL Website'),
-                     priority= 300,
-                     target= '_blank',
+            MenuItem(name='mnu_postgresql_website',
+                     label=gettext('PostgreSQL Website'),
+                     priority=300,
+                     target='_blank',
                      icon='fa fa-external-link',
-                     url= 'http://www.postgresql.org/' )]}
+                     url='http://www.postgresql.org/')]}
 
     def get_panels(self):
         return [
@@ -89,16 +88,19 @@ class HelpModule(PgAdminModule):
             gettext("PostgreSQL Help Path"), 'text',
             'http://www.postgresql.org/docs/$VERSION$/static/',
             category_label=gettext('Help'),
-            help_str=gettext('Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major.minor version number.')
-            )
+            help_str=gettext(
+                'Path to the PostgreSQL documentation. $VERSION$ will be replaced with the major.minor version number.')
+        )
 
         self.edbas_help_path = self.help_preference.register(
             'help', 'edbas_help_path',
             gettext("EDB Advanced Server Help Path"), 'text',
             'http://www.enterprisedb.com/docs/en/$VERSION$/pg/',
             category_label=gettext('Help'),
-            help_str=gettext('Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
-            )
+            help_str=gettext(
+                'Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
+        )
+
 
 # Initialise the module
 blueprint = HelpModule(MODULE_NAME, __name__, static_url_path='/help',

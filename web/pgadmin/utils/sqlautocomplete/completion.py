@@ -23,6 +23,7 @@ class Completion(object):
     :param get_display_meta: Lazy `display_meta`. Retrieve meta information
         only when meta is displayed.
     """
+
     def __init__(self, text, start_position=0, display=None, display_meta=None,
                  get_display_meta=None):
         self.text = text

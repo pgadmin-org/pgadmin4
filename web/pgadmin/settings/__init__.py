@@ -25,7 +25,6 @@ MODULE_NAME = 'settings'
 
 
 class SettingsModule(PgAdminModule):
-
     def get_own_javascripts(self):
         return [{
             'name': 'pgadmin.settings',
@@ -44,6 +43,7 @@ class SettingsModule(PgAdminModule):
                          label=gettext('Reset Layout'))
             ]
         }
+
 
 blueprint = SettingsModule(MODULE_NAME, __name__)
 
@@ -72,6 +72,7 @@ def get_setting(setting, default=None):
 def index():
     return bad_request(errormsg=_("This URL can not be called directly."))
 
+
 @blueprint.route("/settings.js")
 @login_required
 def script():
@@ -79,6 +80,7 @@ def script():
     return Response(response=render_template("settings/settings.js"),
                     status=200,
                     mimetype="application/javascript")
+
 
 @blueprint.route("/store", methods=['POST'])
 @blueprint.route("/store/<setting>/<value>", methods=['GET'])
@@ -93,7 +95,7 @@ def store(setting=None, value=None):
         if request.method == 'POST':
             if 'count' in request.form:
                 for x in range(int(request.form['count'])):
-                    store_setting(request.form['setting%d' % (x+1)], request.form['value%d' % (x+1)])
+                    store_setting(request.form['setting%d' % (x + 1)], request.form['value%d' % (x + 1)])
             else:
                 store_setting(request.form['setting'], request.form['value'])
         else:
@@ -107,11 +109,11 @@ def store(setting=None, value=None):
     except Exception as e:
         info = str(e)
 
-
     return make_json_response(success=success,
                               errormsg=errormsg,
                               info=info,
                               result=request.form)
+
 
 @blueprint.route("/get", methods=['POST'])
 @blueprint.route("/get/<setting>", methods=['GET'])
@@ -156,8 +158,7 @@ def reset_layout():
             db.session.commit()
     except Exception as e:
         return make_json_response(
-                status=410, success=0, errormsg=str(e)
-                )
+            status=410, success=0, errormsg=str(e)
+        )
 
     return make_json_response(result=request.form)
-

@@ -46,6 +46,7 @@ class AboutModule(PgAdminModule):
 blueprint = AboutModule(MODULE_NAME, __name__,
                         static_url_path='')
 
+
 ##########################################################################
 # A test page
 ##########################################################################

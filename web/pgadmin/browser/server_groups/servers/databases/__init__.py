@@ -61,17 +61,17 @@ class DatabaseModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type,
-                    _=_
-                    ),
-                render_template(
-                    "databases/css/database.css",
-                    node_type=self.node_type,
-                    _=_
-                    )
-                ]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type,
+                _=_
+            ),
+            render_template(
+                "databases/css/database.css",
+                node_type=self.node_type,
+                _=_
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -86,12 +86,12 @@ class DatabaseView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'did'}
+    ]
 
     operations = dict({
         'obj': [
@@ -108,7 +108,7 @@ class DatabaseView(PGChildNodeView):
         'module.js': [{}, {}, {'get': 'module_js'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
-            }],
+        }],
         'get_encodings': [{'get': 'get_encodings'}, {'get': 'get_encodings'}],
         'get_ctypes': [{'get': 'get_ctypes'}, {'get': 'get_ctypes'}],
         'vopts': [{}, {'get': 'variable_options'}]
@@ -120,6 +120,7 @@ class DatabaseView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         def wrap(f):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
@@ -135,7 +136,7 @@ class DatabaseView(PGChildNodeView):
                 if not self.conn.connected():
                     return precondition_required(
                         _("Connection to the server has been lost!")
-                        )
+                    )
 
                 ver = self.manager.version
                 # we will set template path for sql scripts
@@ -146,7 +147,9 @@ class DatabaseView(PGChildNodeView):
                 else:
                     self.template_path = 'databases/sql/9.1_plus'
                 return f(self, *args, **kwargs)
+
             return wrapped
+
         return wrap
 
     @check_precondition(action="list")
@@ -156,16 +159,16 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             conn=self.conn, last_system_oid=last_system_oid
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition(action="nodes")
     def nodes(self, gid, sid):
@@ -176,7 +179,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
             last_system_oid=last_system_oid
-            )
+        )
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
@@ -192,31 +195,31 @@ class DatabaseView(PGChildNodeView):
                 canDisConn = True
 
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['did'],
-                        sid,
-                        row['name'],
-                        icon="icon-database-not-connected" if not connected
-                        else "pg-icon-database",
-                        connected=connected,
-                        tablespace=row['spcname'],
-                        allowConn=row['datallowconn'],
-                        canCreate=row['cancreate'],
-                        canDisconn=canDisConn
-                        )
-                    )
+                self.blueprint.generate_browser_node(
+                    row['did'],
+                    sid,
+                    row['name'],
+                    icon="icon-database-not-connected" if not connected
+                    else "pg-icon-database",
+                    connected=connected,
+                    tablespace=row['spcname'],
+                    allowConn=row['datallowconn'],
+                    canCreate=row['cancreate'],
+                    canDisconn=canDisConn
+                )
+            )
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition(action="node")
     def node(self, gid, sid, did):
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
             did=did, conn=self.conn, last_system_oid=0
-            )
+        )
         status, rset = self.conn.execute_2darray(SQL)
 
         if not status:
@@ -224,34 +227,33 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             if self.manager.db == row['name']:
-                connected=True
+                connected = True
             else:
-                conn=self.manager.connection(row['name'])
-                connected=conn.connected()
+                conn = self.manager.connection(row['name'])
+                connected = conn.connected()
             return make_json_response(
-                    data=self.blueprint.generate_browser_node(
-                        row['did'],
-                        sid,
-                        row['name'],
-                        icon="icon-database-not-connected" if not connected \
-                                else "pg-icon-database",
-                        connected=connected,
-                        spcname=row['spcname'],
-                        allowConn=row['datallowconn'],
-                        canCreate=row['cancreate']
-                    ),
-                    status=200
-                    )
+                data=self.blueprint.generate_browser_node(
+                    row['did'],
+                    sid,
+                    row['name'],
+                    icon="icon-database-not-connected" if not connected \
+                        else "pg-icon-database",
+                    connected=connected,
+                    spcname=row['spcname'],
+                    allowConn=row['datallowconn'],
+                    canCreate=row['cancreate']
+                ),
+                status=200
+            )
 
         return gone(errormsg=_("Could not find the database on the server."))
-
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             did=did, conn=self.conn, last_system_oid=0
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -260,7 +262,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
             did=did, conn=self.conn
-            )
+        )
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -270,7 +272,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
             did=did, conn=self.conn
-            )
+        )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -282,7 +284,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
             did=did, conn=self.conn
-            )
+        )
 
         status, res1 = self.conn.execute_dict(SQL)
 
@@ -300,9 +302,9 @@ class DatabaseView(PGChildNodeView):
         result.update(frmtd_variables)
 
         return ajax_response(
-                response=result,
-                status=200
-                )
+            response=result,
+            status=200
+        )
 
     @staticmethod
     def formatdbacl(res, dbacl):
@@ -317,12 +319,12 @@ class DatabaseView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "databases/js/databases.js",
-                    _=_
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "databases/js/databases.js",
+                _=_
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def connect(self, gid, sid, did):
         """Connect the Database."""
@@ -334,9 +336,9 @@ class DatabaseView(PGChildNodeView):
         if not status:
             current_app.logger.error(
                 "Could not connected to database(#{0}).\nError: {1}".format(
-                  did, errmsg
-                  )
+                    did, errmsg
                 )
+            )
 
             return internal_server_error(errmsg)
         else:
@@ -344,13 +346,13 @@ class DatabaseView(PGChildNodeView):
                 %s' % (did))
 
             return make_json_response(
-                        success=1,
-                        info=_("Database connected."),
-                        data={
-                            'icon': 'pg-icon-database',
-                            'connected': True
-                            }
-                        )
+                success=1,
+                info=_("Database connected."),
+                data={
+                    'icon': 'pg-icon-database',
+                    'connected': True
+                }
+            )
 
     def disconnect(self, gid, sid, did):
         """Disconnect the database."""
@@ -365,37 +367,37 @@ class DatabaseView(PGChildNodeView):
             return unauthorized(_("Database could not be disconnected."))
         else:
             return make_json_response(
-                    success=1,
-                    info=_("Database disconnected."),
-                    data={
-                        'icon': 'icon-database-not-connected',
-                        'connected': False
-                        }
-                    )
+                success=1,
+                info=_("Database disconnected."),
+                data={
+                    'icon': 'icon-database-not-connected',
+                    'connected': False
+                }
+            )
 
     @check_precondition(action="get_encodings")
     def get_encodings(self, gid, sid, did=None):
         """
         This function to return list of avialable encodings
         """
-        res = [{ 'label': '', 'value': '' }]
+        res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'get_encodings.sql'])
-                )
+            )
             status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             for row in rset['rows']:
                 res.append(
-                            { 'label': row['encoding'], 'value': row['encoding'] }
-                        )
+                    {'label': row['encoding'], 'value': row['encoding']}
+                )
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -405,16 +407,16 @@ class DatabaseView(PGChildNodeView):
         """
         This function to return list of available collation/character types
         """
-        res = [{ 'label': '', 'value': '' }]
+        res = [{'label': '', 'value': ''}]
         default_list = ['C', 'POSIX']
         for val in default_list:
             res.append(
-                        {'label': val, 'value': val}
-                    )
+                {'label': val, 'value': val}
+            )
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'get_ctypes.sql'])
-                )
+            )
             status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -424,9 +426,9 @@ class DatabaseView(PGChildNodeView):
                     res.append({'label': row['cname'], 'value': row['cname']})
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -454,7 +456,7 @@ class DatabaseView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data, conn=self.conn
-                )
+            )
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=msg)
@@ -466,7 +468,7 @@ class DatabaseView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'grant.sql']),
                 data=data, conn=self.conn
-                )
+            )
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, msg = self.conn.execute_scalar(SQL)
@@ -477,7 +479,7 @@ class DatabaseView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
                 name=data['name'], conn=self.conn, last_system_oid=0
-                )
+            )
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, res = self.conn.execute_dict(SQL)
@@ -497,8 +499,8 @@ class DatabaseView(PGChildNodeView):
                     allowConn=True,
                     canCreate=response['cancreate'],
                     canDisconn=True
-                    )
                 )
+            )
 
         except Exception as e:
             return make_json_response(
@@ -513,7 +515,7 @@ class DatabaseView(PGChildNodeView):
 
         data = request.form if request.form else json.loads(
             request.data.decode()
-            )
+        )
         info = "nothing to update."
 
         if did is not None:
@@ -522,15 +524,15 @@ class DatabaseView(PGChildNodeView):
                 render_template(
                     "/".join([self.template_path, 'nodes.sql']),
                     did=did, conn=self.conn, last_system_oid=0
-                    )
                 )
+            )
             if not status:
                 return internal_server_error(errormsg=rset)
 
             if len(rset['rows']) == 0:
                 return gone(
                     _("Couldnot find the database on the server.")
-                    )
+                )
 
             data['old_name'] = (rset['rows'][0])['name']
             if 'name' not in data:
@@ -563,7 +565,7 @@ class DatabaseView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info = info,
+                info=info,
                 data={
                     'id': did,
                     'sid': sid,
@@ -586,7 +588,7 @@ class DatabaseView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'delete.sql']),
                 did=did, conn=self.conn
-                )
+            )
             status, res = default_conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -605,7 +607,7 @@ class DatabaseView(PGChildNodeView):
                 SQL = render_template(
                     "/".join([self.template_path, 'delete.sql']),
                     datname=res, conn=self.conn
-                    )
+                )
 
                 status, msg = default_conn.execute_scalar(SQL)
                 if not status:
@@ -642,15 +644,15 @@ class DatabaseView(PGChildNodeView):
             SQL = res.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=SQL,
-                    status=200
-                    )
+                data=SQL,
+                status=200
+            )
         except Exception as e:
             current_app.logger.exception(e)
             return make_json_response(
-                    data=_("-- modified SQL"),
-                    status=200
-                    )
+                data=_("-- modified SQL"),
+                status=200
+            )
 
     def get_sql(self, gid, sid, data, did=None):
         SQL = ''
@@ -660,15 +662,15 @@ class DatabaseView(PGChildNodeView):
                 render_template(
                     "/".join([self.template_path, 'nodes.sql']),
                     did=did, conn=self.conn, last_system_oid=0
-                    )
                 )
+            )
             if not status:
                 return False, internal_server_error(errormsg=rset)
 
             if len(rset['rows']) == 0:
                 return False, gone(
                     _("Could not find the database on the server.")
-                    )
+                )
 
             data['old_name'] = (rset['rows'][0])['name']
             if 'name' not in data:
@@ -689,8 +691,8 @@ class DatabaseView(PGChildNodeView):
         Generates sql for creating new database.
         """
         required_args = [
-                u'name'
-            ]
+            u'name'
+        ]
 
         for arg in required_args:
             if arg not in data:
@@ -700,7 +702,7 @@ class DatabaseView(PGChildNodeView):
         try:
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
-                )
+            )
             acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
@@ -711,17 +713,17 @@ class DatabaseView(PGChildNodeView):
                 allowedacl = acls[aclcol]
                 data[aclcol] = parse_priv_to_db(
                     data[aclcol], allowedacl['acl']
-                    )
+                )
 
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),
             data=data, conn=self.conn
-            )
+        )
         SQL += "\n"
         SQL += render_template(
             "/".join([self.template_path, 'grant.sql']),
             data=data, conn=self.conn
-            )
+        )
         return SQL
 
     def get_online_sql(self, gid, sid, data, did=None):
@@ -733,7 +735,7 @@ class DatabaseView(PGChildNodeView):
         try:
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
-                )
+            )
             acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
@@ -747,12 +749,12 @@ class DatabaseView(PGChildNodeView):
                     if key in data[aclcol]:
                         data[aclcol][key] = parse_priv_to_db(
                             data[aclcol][key], allowedacl['acl']
-                            )
+                        )
 
         return render_template(
             "/".join([self.template_path, 'alter_online.sql']),
             data=data, conn=self.conn
-            )
+        )
 
     def get_offline_sql(self, gid, sid, data, did=None, action=None):
         """
@@ -763,22 +765,22 @@ class DatabaseView(PGChildNodeView):
         return render_template(
             "/".join([self.template_path, 'alter_offline.sql']),
             data=data, conn=self.conn, action=action
-            )
+        )
 
     @check_precondition(action="variable_options")
     def variable_options(self, gid, sid):
         SQL = render_template(
             "/".join([self.template_path, 'variables.sql'])
-            )
+        )
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=rset)
 
         return make_json_response(
-                data=rset['rows'],
-                status=200
-                )
+            data=rset['rows'],
+            status=200
+        )
 
     @check_precondition()
     def statistics(self, gid, sid, did=None):
@@ -794,16 +796,16 @@ class DatabaseView(PGChildNodeView):
             render_template(
                 "/".join([self.template_path, 'stats.sql']),
                 did=did, conn=self.conn, last_system_oid=last_system_oid
-                )
             )
+        )
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition(action="sql")
     def sql(self, gid, sid, did):
@@ -813,7 +815,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             did=did, conn=self.conn, last_system_oid=0
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -821,7 +823,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
             did=did, conn=self.conn
-            )
+        )
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -830,7 +832,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
             did=did, conn=self.conn
-            )
+        )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -842,7 +844,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
             did=did, conn=self.conn
-            )
+        )
         status, res1 = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res1)
@@ -875,9 +877,9 @@ class DatabaseView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, did)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition()
     def dependencies(self, gid, sid, did):
@@ -892,8 +894,9 @@ class DatabaseView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, did)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 DatabaseView.register_node_view(blueprint)

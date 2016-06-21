@@ -62,10 +62,19 @@
             <div class="dashboard-tab-container">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
-                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_server_activity" aria-controls="tab_server_activity" role="tab" data-toggle="tab">Sessions</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_locks" aria-controls="tab_server_locks" role="tab" data-toggle="tab">Locks</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_prepared" aria-controls="tab_server_prepared" role="tab" data-toggle="tab">Prepared Transactions</a></li>
-                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_config" aria-controls="tab_server_config" role="tab" data-toggle="tab">Configuration</a></li>
+                    <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_server_activity"
+                                                                            aria-controls="tab_server_activity"
+                                                                            role="tab" data-toggle="tab">Sessions</a>
+                    </li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_locks"
+                                                                     aria-controls="tab_server_locks" role="tab"
+                                                                     data-toggle="tab">Locks</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_prepared"
+                                                                     aria-controls="tab_server_prepared" role="tab"
+                                                                     data-toggle="tab">Prepared Transactions</a></li>
+                    <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_config"
+                                                                     aria-controls="tab_server_config" role="tab"
+                                                                     data-toggle="tab">Configuration</a></li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -90,4 +99,5 @@
 
 <script type="text/javascript">
     pgAdmin.Dashboard.init_server_dashboard({{ sid }}, {{ rates.session_stats_refresh }}, {{ rates.tps_stats_refresh }}, {{ rates.ti_stats_refresh }}, {{ rates.to_stats_refresh }}, {{ rates.bio_stats_refresh }} );
+
 </script>

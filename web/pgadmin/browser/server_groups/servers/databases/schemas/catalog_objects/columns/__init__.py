@@ -91,8 +91,9 @@ class CatalogObjectColumnsModule(CollectionNodeModule):
         # node preferences
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(
-                'show_system_objects'
-                )
+            'show_system_objects'
+        )
+
 
 blueprint = CatalogObjectColumnsModule(__name__)
 
@@ -131,15 +132,15 @@ class CatalogObjectColumnsView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'coid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'coid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'clid'}
-            ]
+        {'type': 'int', 'id': 'clid'}
+    ]
 
     operations = dict({
         'obj': [{'get': 'properties'}, {'get': 'list'}],
@@ -156,6 +157,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -168,7 +170,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -201,9 +203,9 @@ class CatalogObjectColumnsView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, coid):
@@ -230,17 +232,17 @@ class CatalogObjectColumnsView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['attnum'],
-                        coid,
-                        row['attname'],
-                        icon="icon-catalog_object_column"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['attnum'],
+                    coid,
+                    row['attname'],
+                    icon="icon-catalog_object_column"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, coid, clid):
@@ -260,16 +262,16 @@ class CatalogObjectColumnsView(PGChildNodeView):
             JSON of selected column node
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),coid=coid, clid=clid)
+                                        'properties.sql']), coid=coid, clid=clid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, coid, clid):
@@ -319,9 +321,9 @@ class CatalogObjectColumnsView(PGChildNodeView):
             dependents_result.append({'type': 'sequence', 'name': ref_name, 'field': dep_type})
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, coid, clid):
@@ -348,9 +350,9 @@ class CatalogObjectColumnsView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
 
 CatalogObjectColumnsView.register_node_view(blueprint)

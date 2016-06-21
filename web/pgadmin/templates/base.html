@@ -1,47 +1,62 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-        <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="dcterms.rightsHolder" content="The pgAdmin Development Team">
-        <meta name="dcterms.rights" content="All rights reserved">
-        <meta name="dcterms.dateCopyrighted" content="2014 - 2015">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="dcterms.rightsHolder" content="The pgAdmin Development Team">
+    <meta name="dcterms.rights" content="All rights reserved">
+    <meta name="dcterms.dateCopyrighted" content="2014 - 2015">
 
-        <!-- Base template stylesheets -->
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css' if config.DEBUG else 'css/bootstrap.min.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/alertify.css' if config.DEBUG else 'css/alertifyjs/alertify.min.css') }}" />
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'css/alertifyjs/themes/bootstrap.min.css') }}" />
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.css' if config.DEBUG else 'css/bootstrap-theme.min.css') }}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-select-all.css' if config.DEBUG else 'css/backgrid/backgrid-select-all.min.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-paginator.css' if config.DEBUG else 'css/backgrid/backgrid-paginator.min.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-filter.css' if config.DEBUG else 'css/backgrid/backgrid-filter.min.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid-sizeable-columns.css')}}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
+    <!-- Base template stylesheets -->
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/bootstrap.css' if config.DEBUG else 'css/bootstrap.min.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/alertifyjs/alertify.css' if config.DEBUG else 'css/alertifyjs/alertify.min.css') }}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'css/alertifyjs/themes/bootstrap.min.css') }}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/bootstrap-theme.css' if config.DEBUG else 'css/bootstrap-theme.min.css') }}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/backgrid/backgrid-select-all.css' if config.DEBUG else 'css/backgrid/backgrid-select-all.min.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/backgrid/backgrid-paginator.css' if config.DEBUG else 'css/backgrid/backgrid-paginator.min.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/backgrid/backgrid-filter.css' if config.DEBUG else 'css/backgrid/backgrid-filter.min.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/backgrid/backgrid-sizeable-columns.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
 
-        <!-- View specified stylesheets -->
-        {% for stylesheet in current_app.stylesheets %}
-        <link type="text/css" rel="stylesheet" href="{{ stylesheet }}">
-        {% endfor %}
+    <!-- View specified stylesheets -->
+    {% for stylesheet in current_app.stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{{ stylesheet }}">
+    {% endfor %}
 
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/pgadmin.css') }}"/>
-        {% block css_link %}{% endblock %}
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/pgadmin.css') }}"/>
+    {% block css_link %}{% endblock %}
 
-        <!-- Base template scripts -->
-        <script type="text/javascript" src="{{ url_for('static', filename='js/require.js' if config.DEBUG else 'js/require.min.js') }}"></script>
-        <script type="text/javascript">
+    <!-- Base template scripts -->
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='js/require.js' if config.DEBUG else 'js/require.min.js') }}"></script>
+    <script type="text/javascript">
             require.config({
                 baseUrl: '',
                 waitSeconds: 0,
@@ -135,19 +150,22 @@
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
                 }
             });
-        </script>
-        <!-- View specified scripts -->
 
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    </script>
+    <!-- View specified scripts -->
 
-        {% block body %}{% endblock %}
-        <script>
+</head>
+<body>
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+{% block body %}{% endblock %}
+<script>
             {% block init_script %}{% endblock %}
-        </script>
 
-    </body>
+</script>
+
+</body>
 </html>

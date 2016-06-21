@@ -83,6 +83,7 @@ class FtsConfigurationModule(SchemaChildModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+
 blueprint = FtsConfigurationModule(__name__)
 
 
@@ -190,9 +191,9 @@ class FtsConfigurationView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
         'parsers': [{'get': 'parsers'},
-                          {'get': 'parsers'}],
+                    {'get': 'parsers'}],
         'copyConfig': [{'get': 'copyConfig'},
-                              {'get': 'copyConfig'}],
+                       {'get': 'copyConfig'}],
         'tokens': [{'get': 'tokens'}, {'get': 'tokens'}],
         'dictionaries': [{}, {'get': 'dictionaries'}],
     })
@@ -255,9 +256,9 @@ class FtsConfigurationView(PGChildNodeView):
         """
 
         sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                scid=scid
-             )
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid
+        )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -354,10 +355,10 @@ class FtsConfigurationView(PGChildNodeView):
         """
 
         sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                scid=scid,
-                cfgid=cfgid
-              )
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid,
+            cfgid=cfgid
+        )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -371,8 +372,8 @@ class FtsConfigurationView(PGChildNodeView):
         # In edit mode fetch token/dictionary list also
         if cfgid:
             sql = render_template("/".join([self.template_path,
-                                             'tokenDictList.sql']),
-                                cfgid=cfgid)
+                                            'tokenDictList.sql']),
+                                  cfgid=cfgid)
 
             status, rset = self.conn.execute_dict(sql)
 
@@ -561,7 +562,7 @@ class FtsConfigurationView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, 'get_name.sql']),
                 cfgid=cfgid
-                )
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -578,7 +579,7 @@ class FtsConfigurationView(PGChildNodeView):
                 name=result['name'],
                 schema=result['schema'],
                 cascade=cascade
-                )
+            )
 
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -679,7 +680,7 @@ class FtsConfigurationView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, 'schema.sql']),
                     data=old_data
-                    )
+                )
 
                 status, old_schema = self.conn.execute_scalar(sql)
                 if not status:
@@ -691,14 +692,14 @@ class FtsConfigurationView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, 'update.sql']),
                     data=new_data, o_data=old_data
-                    )
+                )
                 # Fetch sql query for modified data
             else:
                 # Fetch schema name from schema oid
                 sql = render_template(
                     "/".join([self.template_path, 'schema.sql']),
                     data=data
-                    )
+                )
 
                 status, schema = self.conn.execute_scalar(sql)
                 if not status:
@@ -709,7 +710,7 @@ class FtsConfigurationView(PGChildNodeView):
                 new_data['schema'] = schema
 
                 if 'name' in new_data and \
-                        'schema' in new_data:
+                                'schema' in new_data:
                     sql = render_template("/".join([self.template_path,
                                                     'create.sql']),
                                           data=new_data,
@@ -737,7 +738,7 @@ class FtsConfigurationView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, 'parser.sql']),
             parser=True
-            )
+        )
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
@@ -745,7 +746,7 @@ class FtsConfigurationView(PGChildNodeView):
 
         # Empty set is added before actual list as initially it will be visible
         # at parser control while creating a new FTS Configuration
-        res = [{'label':'', 'value':''}]
+        res = [{'label': '', 'value': ''}]
         for row in rset['rows']:
             if row['schemaoid'] > datlastsysoid:
                 row['prsname'] = row['nspname'] + '.' + row['prsname']
@@ -772,7 +773,7 @@ class FtsConfigurationView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, 'copy_config.sql']),
             copy_config=True
-            )
+        )
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
@@ -809,7 +810,7 @@ class FtsConfigurationView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, 'parser.sql']),
                     cfgid=cfgid
-                    )
+                )
                 status, parseroid = self.conn.execute_scalar(sql)
 
                 if not status:
@@ -818,7 +819,7 @@ class FtsConfigurationView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, 'tokens.sql']),
                     parseroid=parseroid
-                    )
+                )
                 status, rset = self.conn.execute_dict(sql)
 
                 for row in rset['rows']:
@@ -844,8 +845,8 @@ class FtsConfigurationView(PGChildNodeView):
         :param scid: schema id
         """
         sql = render_template(
-            "/".join([self.template_path,'dictionaries.sql'])
-            )
+            "/".join([self.template_path, 'dictionaries.sql'])
+        )
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
@@ -881,7 +882,7 @@ class FtsConfigurationView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                    "ERROR: Couldn't generate reversed engineered query for the FTS Configuration!\n{0}"
+                        "ERROR: Couldn't generate reversed engineered query for the FTS Configuration!\n{0}"
                     ).format(
                         res
                     )

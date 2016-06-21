@@ -45,6 +45,7 @@ class GrantWizardModule(PgAdminModule):
 
     LABEL = gettext('Browser')
     """
+
     def get_own_stylesheets(self):
         """
         Returns:
@@ -53,7 +54,7 @@ class GrantWizardModule(PgAdminModule):
         stylesheets = [
             url_for('browser.static', filename='css/wizard.css'),
             url_for('grant_wizard.static', filename='css/grant_wizard.css')
-            ]
+        ]
         return stylesheets
 
     def get_own_javascripts(self):
@@ -86,8 +87,9 @@ class GrantWizardModule(PgAdminModule):
         """
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(
-                'show_system_objects'
-                )
+            'show_system_objects'
+        )
+
 
 # Create blueprint for GrantWizardModule class
 blueprint = GrantWizardModule(
@@ -103,6 +105,7 @@ def check_precondition(f):
     Assumptions:
         This function will always be used as decorator of a class method.
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -110,7 +113,7 @@ def check_precondition(f):
         server_info.clear()
         server_info['manager'] = get_driver(
             PG_DEFAULT_DRIVER).connection_manager(
-                kwargs['sid']
+            kwargs['sid']
         )
         server_info['conn'] = server_info['manager'].connection(
             did=kwargs['did']
@@ -145,9 +148,9 @@ def index():
 def script():
     """render own javascript"""
     return Response(response=render_template(
-                "grant_wizard/js/grant_wizard.js", _=gettext),
-                status=200,
-                mimetype="application/javascript")
+        "grant_wizard/js/grant_wizard.js", _=gettext),
+        status=200,
+        mimetype="application/javascript")
 
 
 @blueprint.route(
@@ -158,9 +161,9 @@ def acl_list(gid, sid, did):
     """render list of acls"""
     server_prop = server_info
     return Response(response=render_template(
-                server_prop['template_path']+"/acl.json", _=gettext),
-                status=200,
-                mimetype="application/json")
+        server_prop['template_path'] + "/acl.json", _=gettext),
+        status=200,
+        mimetype="application/json")
 
 
 @blueprint.route(
@@ -202,7 +205,7 @@ def properties(gid, sid, did, node_id, node_type):
     else:
         SQL = render_template("/".join(
             [server_prop['template_path'], '/sql/get_schemas.sql']),
-              nspid=node_id, show_sysobj=False)
+            nspid=node_id, show_sysobj=False)
         status, res = conn.execute_dict(SQL)
 
         if not status:
@@ -231,8 +234,8 @@ def properties(gid, sid, did, node_id, node_type):
 
         # Fetch procedures only if server type is ppas
         if (len(server_prop) > 0 and
-           server_prop['server_type'] == 'ppas' and
-           ntype in ['schema', 'procedure']):
+                    server_prop['server_type'] == 'ppas' and
+                    ntype in ['schema', 'procedure']):
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),
                 node_id=node_id, nspname=nspname, type='procedure')
@@ -304,9 +307,9 @@ def properties(gid, sid, did, node_id, node_type):
             res_data.extend(res['rows'])
 
     return ajax_response(
-            response=res_data,
-            status=200
-            )
+        response=res_data,
+        status=200
+    )
 
 
 @blueprint.route(
@@ -335,7 +338,7 @@ def msql(gid, sid, did):
     try:
         acls = render_template(
             "/".join([server_prop['template_path'], '/acl.json'])
-            )
+        )
         acls = json.loads(acls)
     except Exception as e:
         current_app.logger.exception(e)
@@ -364,9 +367,9 @@ def msql(gid, sid, did):
         data_func['objects'] = data['objects']
         data_func['priv'] = data['priv']['function']
         SQL = render_template(
-              "/".join([server_prop['template_path'],
-                        '/sql/grant_function.sql']),
-              data=data_func, conn=conn)
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_function.sql']),
+            data=data_func, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
@@ -374,9 +377,9 @@ def msql(gid, sid, did):
         data_seq['objects'] = data['objects']
         data_seq['priv'] = data['priv']['sequence']
         SQL = render_template(
-              "/".join([server_prop['template_path'],
-                        '/sql/grant_sequence.sql']),
-              data=data_seq, conn=conn)
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_sequence.sql']),
+            data=data_seq, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
@@ -384,8 +387,8 @@ def msql(gid, sid, did):
         data_table['objects'] = data['objects']
         data_table['priv'] = data['priv']['table']
         SQL = render_template(
-              "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
-              data=data_table, conn=conn)
+            "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
+            data=data_table, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
@@ -394,7 +397,7 @@ def msql(gid, sid, did):
         return ajax_response(
             response=res,
             status=200
-            )
+        )
 
     except Exception as e:
         return make_json_response(
@@ -424,8 +427,8 @@ def save(gid, sid, did):
     acls = []
     try:
         acls = render_template(
-              "/".join([server_prop['template_path'], 'acl.json']),
-            )
+            "/".join([server_prop['template_path'], 'acl.json']),
+        )
         acls = json.loads(acls)
     except Exception as e:
         current_app.logger.exception(e)
@@ -455,9 +458,9 @@ def save(gid, sid, did):
         data_func['objects'] = data['objects']
         data_func['priv'] = data['priv']['function']
         SQL = render_template(
-              "/".join([server_prop['template_path'],
-                        '/sql/grant_function.sql']),
-              data=data_func, conn=conn)
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_function.sql']),
+            data=data_func, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
@@ -465,9 +468,9 @@ def save(gid, sid, did):
         data_seq['objects'] = data['objects']
         data_seq['priv'] = data['priv']['sequence']
         SQL = render_template(
-              "/".join([server_prop['template_path'],
-                        '/sql/grant_sequence.sql']),
-              data=data_seq, conn=conn)
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_sequence.sql']),
+            data=data_seq, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
@@ -475,8 +478,8 @@ def save(gid, sid, did):
         data_table['objects'] = data['objects']
         data_table['priv'] = data['priv']['table']
         SQL = render_template(
-              "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
-              data=data_table, conn=conn)
+            "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
+            data=data_table, conn=conn)
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 

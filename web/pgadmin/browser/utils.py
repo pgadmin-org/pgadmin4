@@ -54,9 +54,9 @@ class PGChildModule(object):
         if (self.min_ver is None and self.max_ver is None):
             return True
 
-        assert(self.max_ver is None or isinstance(self.max_ver, int))
-        assert(self.min_ver is None or isinstance(self.min_ver, int))
-        assert(self.server_type is None or isinstance(self.server_type, list))
+        assert (self.max_ver is None or isinstance(self.max_ver, int))
+        assert (self.min_ver is None or isinstance(self.min_ver, int))
+        assert (self.server_type is None or isinstance(self.server_type, list))
 
         if self.server_type is None or manager.server_type in self.server_type:
             if self.min_ver is None or self.min_ver <= sversion:
@@ -144,7 +144,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
                     cmds.append({
                         'cmd': op, 'req': (idx == 0),
                         'with_id': (idx != 2), 'methods': meths
-                        })
+                    })
                 idx += 1
         return cmds
 
@@ -196,29 +196,29 @@ class NodeView(with_metaclass(MethodViewType, View)):
             meth = 'get'
 
         assert self.cmd in self.operations, \
-                "Unimplemented command ({0}) for {1}".format(
-                    self.cmd,
-                    str(self.__class__.__name__)
-                    )
+            "Unimplemented command ({0}) for {1}".format(
+                self.cmd,
+                str(self.__class__.__name__)
+            )
 
         has_args, has_id = self.check_args(**kwargs)
 
         assert (self.cmd in self.operations and
                 (has_id and len(self.operations[self.cmd]) > 0 and
-                    meth in self.operations[self.cmd][0]) or
+                 meth in self.operations[self.cmd][0]) or
                 (not has_id and len(self.operations[self.cmd]) > 1 and
-                    meth in self.operations[self.cmd][1]) or
+                 meth in self.operations[self.cmd][1]) or
                 (len(self.operations[self.cmd]) > 2 and
-                    meth in self.operations[self.cmd][2])), \
-                "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
-                    meth, self.cmd,
-                    'requires' if has_id else 'does not require'
-                    )
+                 meth in self.operations[self.cmd][2])), \
+            "Unimplemented method ({0}) for command ({1}), which {2} an id".format(
+                meth, self.cmd,
+                'requires' if has_id else 'does not require'
+            )
 
         meth = self.operations[self.cmd][0][meth] if has_id else \
             self.operations[self.cmd][1][meth] if has_args and \
-            meth in self.operations[self.cmd][1] else \
-            self.operations[self.cmd][2][meth]
+                                                  meth in self.operations[self.cmd][1] else \
+                self.operations[self.cmd][2][meth]
 
         method = getattr(self, meth, None)
 
@@ -244,25 +244,25 @@ class NodeView(with_metaclass(MethodViewType, View)):
         for c in commands:
             if c['with_id']:
                 blueprint.add_url_rule(
-                        '/{0}{1}'.format(
-                            c['cmd'], id_url if c['req'] else url
-                            ),
-                        view_func=cls.as_view(
-                            '{0}{1}'.format(
-                                c['cmd'], '_id' if c['req'] else ''
-                                ),
-                            cmd=c['cmd']
-                            ),
-                        methods=c['methods']
-                        )
+                    '/{0}{1}'.format(
+                        c['cmd'], id_url if c['req'] else url
+                    ),
+                    view_func=cls.as_view(
+                        '{0}{1}'.format(
+                            c['cmd'], '_id' if c['req'] else ''
+                        ),
+                        cmd=c['cmd']
+                    ),
+                    methods=c['methods']
+                )
             else:
                 blueprint.add_url_rule(
-                        '/{0}'.format(c['cmd']),
-                        view_func=cls.as_view(
-                            '{0}'.format(c['cmd']), cmd=c['cmd']
-                            ),
-                        methods=c['methods']
-                        )
+                    '/{0}'.format(c['cmd']),
+                    view_func=cls.as_view(
+                        '{0}'.format(c['cmd']), cmd=c['cmd']
+                    ),
+                    methods=c['methods']
+                )
 
     def module_js(self, **kwargs):
         """
@@ -270,11 +270,11 @@ class NodeView(with_metaclass(MethodViewType, View)):
         Override this property for your own logic.
         """
         return flask.make_response(
-                flask.render_template(
-                    "{0}/js/{0}.js".format(self.node_type)
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            flask.render_template(
+                "{0}/js/{0}.js".format(self.node_type)
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def children(self, *args, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
@@ -291,7 +291,6 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
 
 class PGChildNodeView(NodeView):
-
     def children(self, **kwargs):
         """Build a list of treeview nodes from the child nodes."""
 
@@ -302,8 +301,8 @@ class PGChildNodeView(NodeView):
 
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                sid=kwargs['sid']
-                )
+            sid=kwargs['sid']
+        )
 
         did = None
         if 'did' in kwargs:
@@ -313,10 +312,10 @@ class PGChildNodeView(NodeView):
 
         if not conn.connected():
             return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost."
-                        )
-                    )
+                gettext(
+                    "Connection to the server has been lost."
+                )
+            )
 
         nodes = []
         for module in self.blueprint.submodules:

@@ -82,6 +82,7 @@ class CollationModule(SchemaChildModule):
     def node_inode(self):
         return False
 
+
 blueprint = CollationModule(__name__)
 
 
@@ -142,14 +143,14 @@ class CollationView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'coid'}
-            ]
+        {'type': 'int', 'id': 'coid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -175,6 +176,7 @@ class CollationView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -187,7 +189,7 @@ class CollationView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -196,7 +198,6 @@ class CollationView(PGChildNodeView):
             return f(*args, **kwargs)
 
         return wrap
-
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -220,9 +221,9 @@ class CollationView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
@@ -249,17 +250,17 @@ class CollationView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        scid,
-                        row['name'],
-                        icon="icon-collation"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-collation"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, coid):
@@ -288,9 +289,9 @@ class CollationView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             return ajax_response(
-                    response=res['rows'][0],
-                    status=200
-                    )
+                response=res['rows'][0],
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -302,7 +303,7 @@ class CollationView(PGChildNodeView):
         as AJAX response.
         """
 
-        res = [{ 'label': '', 'value': '' }]
+        res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template("/".join([self.template_path,
                                             'get_collations.sql']))
@@ -312,13 +313,13 @@ class CollationView(PGChildNodeView):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['copy_collation'],
-                             'value': row['copy_collation']}
-                        )
+                    {'label': row['copy_collation'],
+                     'value': row['copy_collation']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -363,7 +364,6 @@ class CollationView(PGChildNodeView):
                     missing_definition_flag = True
 
         return missing_definition_flag
-
 
     @check_precondition
     def create(self, gid, sid, did, scid):
@@ -546,9 +546,9 @@ class CollationView(PGChildNodeView):
             SQL = self.get_sql(gid, sid, data, scid, coid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -567,7 +567,7 @@ class CollationView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = [
                 'name'
@@ -636,9 +636,9 @@ class CollationView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, coid):
@@ -658,8 +658,9 @@ class CollationView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 CollationView.register_node_view(blueprint)

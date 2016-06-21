@@ -9,13 +9,13 @@
 
 PRIORITY = 100
 
-class MenuItem(object):
 
+class MenuItem(object):
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
-class Panel(object):
 
+class Panel(object):
     def __init__(self, name, title, content='', width=500, height=600, isIframe=True,
                  showTitle=True, isCloseable=True, isPrivate=False, priority=None,
                  icon=None, data=None, events=None):

@@ -50,6 +50,7 @@ class RestoreModule(PgAdminModule):
             'when': None
         }]
 
+
 # Create blueprint for RestoreModule class
 blueprint = RestoreModule(
     MODULE_NAME, __name__, static_url_path=''
@@ -57,7 +58,6 @@ blueprint = RestoreModule(
 
 
 class RestoreMessage(IProcessDesc):
-
     def __init__(self, _sid, _bfile):
         self.sid = _sid
         self.bfile = _bfile
@@ -321,6 +321,7 @@ def create_restore_job(sid):
     return make_json_response(
         data={'job_id': jid, 'Success': 1}
     )
+
 
 """
 TODO://

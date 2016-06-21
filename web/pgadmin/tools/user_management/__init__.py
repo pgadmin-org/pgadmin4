@@ -18,10 +18,10 @@ from flask.ext.babel import gettext as _
 from flask.ext.security import login_required, roles_required, current_user
 from flask.ext.security.utils import encrypt_password
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_response as ajax_response,\
+from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error
 
-from pgadmin.model import db, Role, User, UserPreference, Server,\
+from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting
 
 # set template path for sql scripts
@@ -71,7 +71,7 @@ def validate_user(data):
                               "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
     if ('newPassword' in data and data['newPassword'] != "" and
-            'confirmPassword' in data and data['confirmPassword'] != ""):
+                'confirmPassword' in data and data['confirmPassword'] != ""):
 
         if data['newPassword'] == data['confirmPassword']:
             new_data['password'] = encrypt_password(data['newPassword'])
@@ -150,8 +150,8 @@ def user(uid):
         res = users_data
 
     return ajax_response(
-                response=res,
-                status=200
+        response=res,
+        status=200
     )
 
 
@@ -201,8 +201,8 @@ def create():
            }
 
     return ajax_response(
-                response=res,
-                status=200
+        response=res,
+        status=200
     )
 
 
@@ -240,10 +240,10 @@ def delete(uid):
         db.session.commit()
 
         return make_json_response(
-                        success=1,
-                        info=_("User Deleted."),
-                        data={}
-                        )
+            success=1,
+            info=_("User Deleted."),
+            data={}
+        )
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
@@ -289,8 +289,8 @@ def update(uid):
                }
 
         return ajax_response(
-                    response=res,
-                    status=200
+            response=res,
+            status=200
         )
 
     except Exception as e:
@@ -325,6 +325,6 @@ def role(rid):
         res = roles_data
 
     return ajax_response(
-                response=res,
-                status=200
+        response=res,
+        status=200
     )

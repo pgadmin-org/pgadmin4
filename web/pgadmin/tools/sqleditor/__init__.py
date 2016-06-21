@@ -22,7 +22,7 @@ from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-     success_return, internal_server_error
+    success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 
@@ -79,43 +79,44 @@ class SqlEditorModule(PgAdminModule):
             max_val=2000,
             help_str=gettext('The number of rows to display per page in the results grid. '
                              'Value should be between 50 and 2000.')
-            )
+        )
 
         self.explain_verbose = self.preference.register(
             'Explain Options', 'explain_verbose',
             gettext("Verbose"), 'boolean', False,
             category_label=gettext('Explain Options')
-            )
+        )
 
         self.explain_costs = self.preference.register(
             'Explain Options', 'explain_costs',
             gettext("Costs"), 'boolean', False,
             category_label=gettext('Explain Options')
-            )
+        )
 
         self.explain_buffers = self.preference.register(
             'Explain Options', 'explain_buffers',
             gettext("Buffers"), 'boolean', False,
             category_label=gettext('Explain Options')
-            )
+        )
 
         self.explain_timing = self.preference.register(
             'Explain Options', 'explain_timing',
             gettext("Timing"), 'boolean', False,
             category_label=gettext('Explain Options')
-            )
+        )
 
         self.auto_commit = self.preference.register(
             'Options', 'auto_commit',
             gettext("Auto-Commit"), 'boolean', True,
             category_label=gettext('Options')
-            )
+        )
 
         self.auto_rollback = self.preference.register(
             'Options', 'auto_rollback',
             gettext("Auto-Rollback"), 'boolean', False,
             category_label=gettext('Options')
-            )
+        )
+
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -160,7 +161,7 @@ def check_transaction_status(trans_id):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
         conn = manager.connection(did=trans_obj.did, conn_id=trans_obj.conn_id)
     except Exception as e:
-                return False, internal_server_error(errormsg=str(e)), None, None, None
+        return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if conn.connected():
         return True, None, conn, trans_obj, session_obj
@@ -222,8 +223,8 @@ def start_view_data(trans_id):
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
             'items_per_page': blueprint.items_per_page.get()
-            }
-        )
+        }
+    )
 
 
 @blueprint.route('/query_tool/start/<int:trans_id>', methods=["PUT", "POST"])
@@ -324,8 +325,8 @@ def start_query_tool(trans_id):
             'status': status, 'result': result,
             'can_edit': can_edit, 'can_filter': can_filter,
             'items_per_page': blueprint.items_per_page.get()
-            }
-        )
+        }
+    )
 
 
 @blueprint.route('/query_tool/preferences/<int:trans_id>', methods=["GET", "PUT"])
@@ -343,7 +344,6 @@ def preferences(trans_id):
         status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
         if status and conn is not None \
                 and trans_obj is not None and session_obj is not None:
-
             # Call the set_auto_commit and set_auto_rollback method of transaction object
             trans_obj.set_auto_commit(blueprint.auto_commit.get())
             trans_obj.set_auto_rollback(blueprint.auto_rollback.get())
@@ -804,8 +804,8 @@ def cancel_transaction(trans_id):
     return make_json_response(
         data={
             'status': status, 'result': result
-            }
-        )
+        }
+    )
 
 
 @blueprint.route('/object/get/<int:trans_id>', methods=["GET"])
@@ -963,7 +963,7 @@ def is_begin_required(query):
     while (word_len < query_len) and query[word_len].isalpha():
         word_len += 1
 
-    #  Transaction control commands.  These should include every keyword that
+    # Transaction control commands.  These should include every keyword that
     #  gives rise to a TransactionStmt in the backend grammar, except for the
     #  savepoint-related commands.
     #
@@ -1012,7 +1012,7 @@ def is_begin_required(query):
 
         if query[0].isalpha():
             return True  # has additional words
-        return False     # it's CLUSTER without arguments
+        return False  # it's CLUSTER without arguments
 
     if word_len == 6 and keyword.lower() == "create":
         query = query[word_len:query_len]
@@ -1128,15 +1128,15 @@ def load_file():
 
     # generate full path of file
     file_path = os.path.join(
-                    storage_manager_path,
-                    unquote(file_data['file_name'].lstrip('/'))
-                )
+        storage_manager_path,
+        unquote(file_data['file_name'].lstrip('/'))
+    )
     file_data = None
 
     # check if file type is text or binary
     textchars = bytearray(
         [7, 8, 9, 10, 12, 13, 27]) + bytearray(
-            range(0x20, 0x7f)) + bytearray(range(0x80, 0x100))
+        range(0x20, 0x7f)) + bytearray(range(0x80, 0x100))
 
     is_binary_string = lambda bytes: bool(
         bytes.translate(None, textchars)
@@ -1188,9 +1188,9 @@ def save_file():
     file_path = unquote(file_data['file_name'])
     if storage_manager_path is not None:
         file_path = os.path.join(
-                storage_manager_path,
-                unquote(file_data['file_name'].lstrip('/'))
-    )
+            storage_manager_path,
+            unquote(file_data['file_name'].lstrip('/'))
+        )
     file_content = file_data['file_content']
 
     # write to file

@@ -42,13 +42,13 @@ class ImportExportModule(PgAdminModule):
     def get_own_javascripts(self):
         scripts = list()
         for name, script in [
-                ['pgadmin.tools.import_export', 'js/import_export']
-                ]:
+            ['pgadmin.tools.import_export', 'js/import_export']
+        ]:
             scripts.append({
                 'name': name,
                 'path': url_for('import_export.index') + script,
                 'when': None
-                })
+            })
 
         return scripts
 
@@ -62,6 +62,7 @@ class Message(IProcessDesc):
 
     Defines the message shown for the Message operation.
     """
+
     def __init__(self, _sid, _schema, _tbl, _database, _storage):
         self.sid = _sid
         self.schema = _schema

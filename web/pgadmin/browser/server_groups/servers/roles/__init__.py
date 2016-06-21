@@ -63,11 +63,11 @@ class RoleModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type
-                    ),
-                render_template("role/css/role.css")]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type
+            ),
+            render_template("role/css/role.css")]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -82,12 +82,12 @@ class RoleView(PGChildNodeView):
     node_type = 'role'
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'rid'}
-            ]
+        {'type': 'int', 'id': 'rid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -103,7 +103,7 @@ class RoleView(PGChildNodeView):
         'module.js': [{}, {}, {'get': 'module_js'}],
         'vopts': [{}, {'get': 'voptions'}],
         'variables': [{'get': 'variables'}],
-        })
+    })
 
     def validate_request(f):
         @wraps(f)
@@ -120,11 +120,11 @@ class RoleView(PGChildNodeView):
 
                     val = req[key]
                     if key in [
-                            u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                            u'rolcreaterole', u'rolinherit', u'rolreplication',
-                            u'rolcatupdate', u'variables', u'rolmembership',
-                            u'seclabels'
-                            ]:
+                        u'rolcanlogin', u'rolsuper', u'rolcreatedb',
+                        u'rolcreaterole', u'rolinherit', u'rolreplication',
+                        u'rolcatupdate', u'variables', u'rolmembership',
+                        u'seclabels'
+                    ]:
                         data[key] = json.loads(val)
                     else:
                         data[key] = val
@@ -132,8 +132,8 @@ class RoleView(PGChildNodeView):
             if u'rid' not in kwargs or kwargs['rid'] == -1:
                 if u'rolname' not in data:
                     return precondition_required(
-                            _("Name must be specified.")
-                            )
+                        _("Name must be specified.")
+                    )
 
             if u'rolvaliduntil' in data:
                 # Make date explicit so that it works with every
@@ -149,15 +149,15 @@ class RoleView(PGChildNodeView):
                 except Exception as e:
                     return precondition_required(
                         _("Date format is invalid.")
-                        )
+                    )
 
             if u'rolconnlimit' in data:
                 if data[u'rolconnlimit'] is not None:
                     data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
                     if type(data[u'rolconnlimit']) != int or data[u'rolconnlimit'] < -1:
                         return precondition_required(
-                                _("Connection limit must be an integer value or equal to -1.")
-                                )
+                            _("Connection limit must be an integer value or equal to -1.")
+                        )
 
             if u'rolmembership' in data:
                 if u'rid' not in kwargs or kwargs['rid'] == -1:
@@ -225,7 +225,7 @@ rolmembership:{
 
                         for r in roles:
                             if (type(r) != dict or u'role' not in r or
-                                    u'admin' not in r):
+                                        u'admin' not in r):
                                 return precondition_required(msg)
 
                             if r[u'admin']:
@@ -245,7 +245,7 @@ rolmembership:{
 
                             data[u'revoked'].append(r[u'role'])
 
-                    if u'changed' in  data[u'rolmembership']:
+                    if u'changed' in data[u'rolmembership']:
                         roles = (data[u'rolmembership'])[u'changed']
 
                         if type(roles) != list:
@@ -253,7 +253,7 @@ rolmembership:{
 
                         for r in roles:
                             if (type(r) != dict or u'role' not in r or
-                                    u'admin' not in r):
+                                        u'admin' not in r):
                                 return precondition_required(msg)
 
                             if not r[u'admin']:
@@ -278,7 +278,7 @@ seclabels:[{
 
                         for s in data[u'seclabels']:
                             if (type(s) != dict or u'provider' not in s or
-                                u'label' not in s):
+                                        u'label' not in s):
                                 return precondition_required(msg)
                     else:
                         msg = _("""
@@ -311,13 +311,12 @@ seclabels:{
                         if u'added' in seclabels:
                             new_seclabels = seclabels[u'added']
 
-
                             if type(new_seclabels) != list:
                                 return precondition_required(msg)
 
                             for s in new_seclabels:
                                 if (type(s) != dict or u'provider' not in s or
-                                        u'label' not in s):
+                                            u'label' not in s):
                                     return precondition_required(msg)
 
                         if u'deleted' in seclabels:
@@ -338,7 +337,7 @@ seclabels:{
 
                             for s in changed_seclabels:
                                 if (type(s) != dict or u'provider' not in s
-                                        and u'label' not in s):
+                                and u'label' not in s):
                                     return precondition_required(msg)
 
             if u'variables' in data:
@@ -358,8 +357,8 @@ variables:[{
 
                     for r in data[u'variables']:
                         if (type(r) != dict or
-                                u'name' not in r or
-                                u'value' not in r):
+                                    u'name' not in r or
+                                    u'value' not in r):
                             return precondition_required(msg)
                 else:
                     msg = _("""
@@ -400,7 +399,7 @@ rolmembership:{
 
                         for v in new_vars:
                             if (type(v) != dict or u'name' not in v or
-                                    u'value' not in v):
+                                        u'value' not in v):
                                 return precondition_required(msg)
 
                     if u'deleted' in variables:
@@ -413,7 +412,7 @@ rolmembership:{
                             if type(v) != dict or u'name' not in v:
                                 return precondition_required(msg)
 
-                    if u'changed' in  variables:
+                    if u'changed' in variables:
                         new_vars = variables[u'changed']
 
                         if type(new_vars) != list:
@@ -421,12 +420,13 @@ rolmembership:{
 
                         for v in new_vars:
                             if (type(v) != dict or u'name' not in v or
-                                    u'value' not in v):
+                                        u'value' not in v):
                                 return precondition_required(msg)
 
             self.request = data
 
             return f(self, **kwargs)
+
         return wrap
 
     def check_precondition(action=None):
@@ -437,14 +437,15 @@ rolmembership:{
         also attach manager, conn (maintenance connection for the server) as
         properties of the instance.
         """
+
         def wrap(f):
             @wraps(f)
             def wrapped(self, **kwargs):
                 self.manager = get_driver(
-                        PG_DEFAULT_DRIVER
-                        ).connection_manager(
-                                kwargs['sid']
-                                )
+                    PG_DEFAULT_DRIVER
+                ).connection_manager(
+                    kwargs['sid']
+                )
                 self.conn = self.manager.connection()
 
                 driver = get_driver(PG_DEFAULT_DRIVER)
@@ -452,30 +453,30 @@ rolmembership:{
 
                 if not self.conn.connected():
                     return precondition_required(
-                            _("Connection to the server has been lost!")
-                            )
+                        _("Connection to the server has been lost!")
+                    )
 
                 ver = self.manager.version
 
                 self.sql_path = 'role/sql/{0}/'.format(
                     'post9_4' if ver >= 90500 else \
-                    'post9_1' if ver >= 90200 else \
-                    'post9_0' if ver >= 90100 else \
-                    'post8_4'
-                    )
+                        'post9_1' if ver >= 90200 else \
+                            'post9_0' if ver >= 90100 else \
+                                'post8_4'
+                )
 
                 self.alterKeys = [
-                        u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                        u'rolcreaterole', u'rolinherit', u'rolreplication',
-                        u'rolconnlimit', u'rolvaliduntil', u'rolpassword'
-                        ] if ver >= 90200 else [
-                                u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                                u'rolcreaterole', u'rolinherit', u'rolconnlimit',
-                                u'rolvaliduntil', u'rolpassword'
-                                ]
+                    u'rolcanlogin', u'rolsuper', u'rolcreatedb',
+                    u'rolcreaterole', u'rolinherit', u'rolreplication',
+                    u'rolconnlimit', u'rolvaliduntil', u'rolpassword'
+                ] if ver >= 90200 else [
+                    u'rolcanlogin', u'rolsuper', u'rolcreatedb',
+                    u'rolcreaterole', u'rolinherit', u'rolconnlimit',
+                    u'rolvaliduntil', u'rolpassword'
+                ]
 
-                check_permission=False
-                fetch_name=False
+                check_permission = False
+                fetch_name = False
                 forbidden_msg = None
 
                 if action in ['drop', 'update']:
@@ -483,19 +484,19 @@ rolmembership:{
                     fetch_name = True
                     if action == 'drop':
                         forbidden_msg = _(
-                                "The current user does not have permission to drop the role."
-                                )
+                            "The current user does not have permission to drop the role."
+                        )
                     else:
                         forbidden_msg = _(
-                                "The current user does not have permission to update the role."
-                                )
+                            "The current user does not have permission to update the role."
+                        )
                 elif action == 'create':
                     check_permission = True
                     forbidden_msg = _(
-                            "The current user does not have permission to create the role."
-                            )
+                        "The current user does not have permission to create the role."
+                    )
                 elif (action == 'msql' and
-                        'rid' in kwargs and kwargs['rid'] != -1):
+                              'rid' in kwargs and kwargs['rid'] != -1):
                     fetch_name = True
 
                 if check_permission:
@@ -504,31 +505,31 @@ rolmembership:{
                     if not user['is_superuser'] and \
                             not user['can_create_role']:
                         if (action != 'update' or
-                                'rid' in kwargs and kwargs['rid'] != -1 and
-                                user['id'] != kwargs['rid']):
+                                            'rid' in kwargs and kwargs['rid'] != -1 and
+                                        user['id'] != kwargs['rid']):
                             return forbidden(forbidden_msg)
 
                 if fetch_name:
 
                     status, res = self.conn.execute_dict(
-                       render_template(
-                           self.sql_path + 'permission.sql',
-                           rid=kwargs['rid'],
-                           conn=self.conn
-                           )
-                       )
+                        render_template(
+                            self.sql_path + 'permission.sql',
+                            rid=kwargs['rid'],
+                            conn=self.conn
+                        )
+                    )
 
                     if not status:
                         return internal_server_error(
-                                _(
-                                    "Error retrieving the role information.\n{0}"
-                                    ).format(res)
-                                )
+                            _(
+                                "Error retrieving the role information.\n{0}"
+                            ).format(res)
+                        )
 
                     if len(res['rows']) == 0:
                         return gone(
-                                _("Couldn't find the role on the database server.")
-                                )
+                            _("Couldn't find the role on the database server.")
+                        )
 
                     row = res['rows'][0]
 
@@ -538,61 +539,63 @@ rolmembership:{
                     self.rolSuper = row['rolsuper']
 
                 return f(self, **kwargs)
+
             return wrapped
+
         return wrap
 
     @check_precondition(action='list')
     def list(self, gid, sid):
         status, res = self.conn.execute_dict(
-                render_template(
-                    self.sql_path + 'properties.sql'
-                    )
-                )
+            render_template(
+                self.sql_path + 'properties.sql'
+            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error retrieving roles from the database server.\n{0}"
-                        ).format(res)
-                    )
+                _(
+                    "Error retrieving roles from the database server.\n{0}"
+                ).format(res)
+            )
 
         self.transform(res)
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition(action='nodes')
     def nodes(self, gid, sid):
 
         status, rset = self.conn.execute_2darray(
             render_template(self.sql_path + 'nodes.sql')
-            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error fetching role information from the database server.\n{0}"
-                        ).format(rset)
-                    )
+                _(
+                    "Error fetching role information from the database server.\n{0}"
+                ).format(rset)
+            )
 
         res = []
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'], sid,
-                        row['rolname'],
-                        'icon-role' if row['rolcanlogin'] else 'icon-group',
-                        can_login=row['rolcanlogin'],
-                        is_superuser=row['rolsuper']
-                        )
-                    )
+                self.blueprint.generate_browser_node(
+                    row['oid'], sid,
+                    row['rolname'],
+                    'icon-role' if row['rolcanlogin'] else 'icon-group',
+                    can_login=row['rolcanlogin'],
+                    is_superuser=row['rolsuper']
+                )
+            )
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition(action='node')
     def node(self, gid, sid, rid):
@@ -601,27 +604,27 @@ rolmembership:{
             render_template(
                 self.sql_path + 'nodes.sql',
                 rid=rid
-                )
             )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error fetching role information from the database server.\n{0}"
-                        ).format(rset)
-                    )
+                _(
+                    "Error fetching role information from the database server.\n{0}"
+                ).format(rset)
+            )
 
         for row in rset['rows']:
             return make_json_response(
-                    data=self.blueprint.generate_browser_node(
-                        row['oid'], sid,
-                        row['rolname'],
-                        'icon-role' if row['rolcanlogin'] else 'icon-group',
-                        can_login=row['rolcanlogin'],
-                        is_superuser=row['rolsuper']
-                        ),
-                    status=200
-                    )
+                data=self.blueprint.generate_browser_node(
+                    row['oid'], sid,
+                    row['rolname'],
+                    'icon-role' if row['rolcanlogin'] else 'icon-group',
+                    can_login=row['rolcanlogin'],
+                    is_superuser=row['rolsuper']
+                ),
+                status=200
+            )
 
         return gone(_("Could not find the role information."))
 
@@ -635,13 +638,13 @@ rolmembership:{
                 res.append({
                     'role': role.group(2),
                     'admin': True if role.group(1) == '1' else False
-                    })
+                })
             row['rolmembership'] = res
             row['rolvaliduntil'] = row['rolvaliduntil'].isoformat() \
-                    if isinstance(
-                            row['rolvaliduntil'],
-                            (datetime.date, datetime.datetime)
-                            ) else None
+                if isinstance(
+                row['rolvaliduntil'],
+                (datetime.date, datetime.datetime)
+            ) else None
             if 'seclabels' in row and row['seclabels'] is not None:
                 res = []
                 for sec in row['seclabels']:
@@ -649,67 +652,67 @@ rolmembership:{
                     res.append({
                         'provider': sec.group(1),
                         'label': sec.group(2)
-                        })
+                    })
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):
 
         status, res = self.conn.execute_dict(
-                render_template(
-                    self.sql_path + 'properties.sql',
-                    rid=rid
-                    )
-                )
+            render_template(
+                self.sql_path + 'properties.sql',
+                rid=rid
+            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error retrieving roles from the database server.\n{0}"
-                        ).format(res)
-                    )
+                _(
+                    "Error retrieving roles from the database server.\n{0}"
+                ).format(res)
+            )
 
         self.transform(res)
         if len(res['rows']) == 0:
             return gone(_("Could not find the role information."))
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition(action='drop')
     def drop(self, gid, sid, rid):
 
         status, res = self.conn.execute_2darray(
-                "DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
-                )
+            "DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
+        )
         if not status:
             return internal_server_error(
-                    _("Couldn't drop the role.\n{0}").format(res)
-                    )
+                _("Couldn't drop the role.\n{0}").format(res)
+            )
 
         return success_return()
 
     @check_precondition()
     def sql(self, gid, sid, rid):
         status, res = self.conn.execute_scalar(
-                render_template(
-                    self.sql_path + 'sql.sql'
-                    ),
-                dict({'rid':rid})
-                )
+            render_template(
+                self.sql_path + 'sql.sql'
+            ),
+            dict({'rid': rid})
+        )
 
         if not status:
             return internal_server_error(
-                    _("Could not generate reversed engineered Query for the role.\n{0}").format(
-                        res
-                        )
-                    )
+                _("Could not generate reversed engineered Query for the role.\n{0}").format(
+                    res
+                )
+            )
 
         if res is None:
             return gone(
-                    _("Could not generate reversed engineered Query for the role.")
-                    )
+                _("Could not generate reversed engineered Query for the role.")
+            )
 
         return ajax_response(response=res.strip('\n'))
 
@@ -718,51 +721,50 @@ rolmembership:{
     def create(self, gid, sid):
 
         sql = render_template(
-                self.sql_path + 'create.sql',
-                data=self.request,
-                dummy=False,
-                conn=self.conn
-                )
+            self.sql_path + 'create.sql',
+            data=self.request,
+            dummy=False,
+            conn=self.conn
+        )
 
         status, msg = self.conn.execute_dict(sql)
 
         if not status:
             return internal_server_error(
-                    _("Could not create the role.\n{0}").format(msg)
-                    )
+                _("Could not create the role.\n{0}").format(msg)
+            )
 
         status, rid = self.conn.execute_scalar(
-                "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
-                {'rolname': self.request[u'rolname']}
-                )
+            "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
+            {'rolname': self.request[u'rolname']}
+        )
 
         if not status:
             return internal_server_error(
-                    _("Could not retrieve the role information.\n{0}").format(msg)
-                    )
-
+                _("Could not retrieve the role information.\n{0}").format(msg)
+            )
 
         status, rset = self.conn.execute_dict(
-                render_template(self.sql_path + 'nodes.sql',
-                    rid=rid
-                    )
-                )
+            render_template(self.sql_path + 'nodes.sql',
+                            rid=rid
+                            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error fetching role information from the database server.\n{0}"
-                        ).format(rset)
-                    )
+                _(
+                    "Error fetching role information from the database server.\n{0}"
+                ).format(rset)
+            )
         for row in rset['rows']:
             return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        rid, sid,
-                        row['rolname'],
-                        'icon-role' if row['rolcanlogin'] else 'icon-group',
-                        can_login=row['rolcanlogin']
-                        )
-                    )
+                node=self.blueprint.generate_browser_node(
+                    rid, sid,
+                    row['rolname'],
+                    'icon-role' if row['rolcanlogin'] else 'icon-group',
+                    can_login=row['rolcanlogin']
+                )
+            )
 
         return gone(_("Could not find the role information."))
 
@@ -771,47 +773,47 @@ rolmembership:{
     def update(self, gid, sid, rid):
 
         sql = render_template(
-                self.sql_path + 'update.sql',
-                data=self.request,
-                dummy=False,
-                conn=self.conn,
-                role=self.role,
-                rolCanLogin=self.rolCanLogin,
-                rolCatUpdate=self.rolCatUpdate,
-                rolSuper=self.rolSuper,
-                alterKeys=self.alterKeys
-                )
+            self.sql_path + 'update.sql',
+            data=self.request,
+            dummy=False,
+            conn=self.conn,
+            role=self.role,
+            rolCanLogin=self.rolCanLogin,
+            rolCatUpdate=self.rolCatUpdate,
+            rolSuper=self.rolSuper,
+            alterKeys=self.alterKeys
+        )
 
         status, msg = self.conn.execute_dict(sql)
 
         if not status:
             return internal_server_error(
-                    _("Could not create the role.\n{0}").format(msg)
-                    )
+                _("Could not create the role.\n{0}").format(msg)
+            )
 
         status, rset = self.conn.execute_dict(
-                render_template(self.sql_path + 'nodes.sql',
-                    rid=rid
-                    )
-                )
+            render_template(self.sql_path + 'nodes.sql',
+                            rid=rid
+                            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error fetching role information from the database server.\n{0}"
-                        ).format(rset)
-                    )
+                _(
+                    "Error fetching role information from the database server.\n{0}"
+                ).format(rset)
+            )
 
         for row in rset['rows']:
             return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        rid, sid,
-                        row['rolname'],
-                        'icon-role' if row['rolcanlogin'] else 'icon-group',
-                        can_login=row['rolcanlogin'],
-                        is_superuser=row['rolsuper']
-                        )
-                    )
+                node=self.blueprint.generate_browser_node(
+                    rid, sid,
+                    row['rolname'],
+                    'icon-role' if row['rolcanlogin'] else 'icon-group',
+                    can_login=row['rolcanlogin'],
+                    is_superuser=row['rolsuper']
+                )
+            )
 
         return gone(_("Could not find the role information."))
 
@@ -820,27 +822,27 @@ rolmembership:{
     def msql(self, gid, sid, rid=-1):
         if rid == -1:
             return make_json_response(
-                    data=render_template(
-                        self.sql_path + 'create.sql',
-                        data=self.request,
-                        dummy=True,
-                        conn=self.conn
-                        ).strip('\n')
-                    )
+                data=render_template(
+                    self.sql_path + 'create.sql',
+                    data=self.request,
+                    dummy=True,
+                    conn=self.conn
+                ).strip('\n')
+            )
         else:
             return make_json_response(
-                    data=render_template(
-                        self.sql_path + 'update.sql',
-                        data=self.request,
-                        dummy=True,
-                        conn=self.conn,
-                        role=self.role,
-                        rolCanLogin=self.rolCanLogin,
-                        rolCatUpdate=self.rolCatUpdate,
-                        rolSuper=self.rolSuper,
-                        alterKeys=self.alterKeys
-                        ).strip('\n')
-                    )
+                data=render_template(
+                    self.sql_path + 'update.sql',
+                    data=self.request,
+                    dummy=True,
+                    conn=self.conn,
+                    role=self.role,
+                    rolCanLogin=self.rolCanLogin,
+                    rolCatUpdate=self.rolCatUpdate,
+                    rolSuper=self.rolSuper,
+                    alterKeys=self.alterKeys
+                ).strip('\n')
+            )
 
     @check_precondition()
     def dependencies(self, gid, sid, rid):
@@ -855,9 +857,9 @@ rolmembership:{
         """
         dependencies_result = self.get_dependencies(self.conn, rid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition()
     def dependents(self, gid, sid, rid):
@@ -872,9 +874,9 @@ rolmembership:{
         """
         dependents_result = self.get_dependents(self.conn, sid, rid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     def get_dependents(self, conn, sid, rid):
         """
@@ -992,52 +994,52 @@ rolmembership:{
     def variables(self, gid, sid, rid):
 
         status, rset = self.conn.execute_dict(
-                render_template(self.sql_path + 'variables.sql',
-                    rid=rid
-                    )
-                )
+            render_template(self.sql_path + 'variables.sql',
+                            rid=rid
+                            )
+        )
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error retrieving variable information for the role.\n{0}"
-                        ).format(rset)
-                    )
+                _(
+                    "Error retrieving variable information for the role.\n{0}"
+                ).format(rset)
+            )
 
         return make_json_response(
-                data=rset['rows']
-                )
+            data=rset['rows']
+        )
 
     @check_precondition()
     def voptions(self, gid, sid):
 
         status, res = self.conn.execute_dict(
-                """
+            """
 SELECT
-	name, vartype, min_val, max_val, enumvals
+name, vartype, min_val, max_val, enumvals
 FROM
-    (
-	SELECT
-		'role'::text AS name, 'string'::text AS vartype,
-		NULL AS min_val, NULL AS max_val, NULL::text[] AS enumvals
-	UNION ALL
-	SELECT
-		name, vartype, min_val::numeric AS min_val, max_val::numeric AS max_val, enumvals
-	FROM
-		pg_settings
-	WHERE
-		context in ('user', 'superuser')
-	) a""")
+(
+SELECT
+    'role'::text AS name, 'string'::text AS vartype,
+    NULL AS min_val, NULL AS max_val, NULL::text[] AS enumvals
+UNION ALL
+SELECT
+    name, vartype, min_val::numeric AS min_val, max_val::numeric AS max_val, enumvals
+FROM
+    pg_settings
+WHERE
+    context in ('user', 'superuser')
+) a""")
 
         if not status:
             return internal_server_error(
-                    _(
-                        "Error retrieving the variable options for the role.\n{0}"
-                        ).format(res)
-                    )
+                _(
+                    "Error retrieving the variable options for the role.\n{0}"
+                ).format(res)
+            )
         return make_json_response(
-                data=res['rows']
-                )
+            data=res['rows']
+        )
 
 
 RoleView.register_node_view(blueprint)

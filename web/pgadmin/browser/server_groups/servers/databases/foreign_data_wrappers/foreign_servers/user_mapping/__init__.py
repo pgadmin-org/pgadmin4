@@ -97,6 +97,7 @@ class UserMappingModule(CollectionNodeModule):
 
         return servers.ServerModule.NODE_TYPE
 
+
 blueprint = UserMappingModule(__name__)
 
 
@@ -163,15 +164,15 @@ class UserMappingView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'fid'},
-            {'type': 'int', 'id': 'fsid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'fid'},
+        {'type': 'int', 'id': 'fsid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'umid'}
-            ]
+        {'type': 'int', 'id': 'umid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -179,7 +180,7 @@ class UserMappingView(PGChildNodeView):
             {'get': 'list', 'post': 'create'}
         ],
         'delete': [{
-           'delete': 'delete'
+            'delete': 'delete'
         }],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
@@ -197,12 +198,12 @@ class UserMappingView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "user_mappings/js/user_mappings.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "user_mappings/js/user_mappings.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -210,6 +211,7 @@ class UserMappingView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -221,7 +223,7 @@ class UserMappingView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -233,6 +235,7 @@ class UserMappingView(PGChildNodeView):
                 self.template_path = 'user_mappings/sql/9.1_plus'
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -255,9 +258,9 @@ class UserMappingView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, fid, fsid):
@@ -282,17 +285,17 @@ class UserMappingView(PGChildNodeView):
 
         for row in r_set['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['um_oid'],
-                        fsid,
-                        row['name'],
-                        icon="icon-user_mapping"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['um_oid'],
+                    fsid,
+                    row['name'],
+                    icon="icon-user_mapping"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def tokenizeOptions(self, option_value):
         """
@@ -310,7 +313,7 @@ class UserMappingView(PGChildNodeView):
             um_options = []
             for um_option in option_str:
                 k, v = um_option.split('=', 1)
-                um_options.append({'umoption': k,'umvalue': v})
+                um_options.append({'umoption': k, 'umvalue': v})
             return um_options
 
     @check_precondition
@@ -340,9 +343,9 @@ class UserMappingView(PGChildNodeView):
             res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did, fid, fsid):
@@ -415,8 +418,8 @@ class UserMappingView(PGChildNodeView):
                         fsid,
                         row['name'],
                         icon='icon-user_mapping'
+                    )
                 )
-            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -447,7 +450,7 @@ class UserMappingView(PGChildNodeView):
                     success=1,
                     info="User Mapping updated",
                     data={
-                        'id':  umid,
+                        'id': umid,
                         'fsid': fsid,
                         'fid': fid,
                         'did': did,
@@ -460,7 +463,7 @@ class UserMappingView(PGChildNodeView):
                     success=1,
                     info="Nothing to update",
                     data={
-                        'id':  umid,
+                        'id': umid,
                         'fsid': fsid,
                         'fid': fid,
                         'did': did,
@@ -553,14 +556,14 @@ class UserMappingView(PGChildNodeView):
         sql = self.get_sql(gid, sid, data, did, fid, fsid, umid)
         if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
         else:
             return make_json_response(
-                    data='-- Modified SQL --',
-                    status=200
-                    )
+                data='-- Modified SQL --',
+                status=200
+            )
 
     def get_sql(self, gid, sid, data, did, fid, fsid, umid=None):
         """
@@ -728,9 +731,9 @@ class UserMappingView(PGChildNodeView):
 
         dependents_result = self.get_dependents(self.conn, umid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, fid, fsid, umid):
@@ -748,8 +751,9 @@ class UserMappingView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, umid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 UserMappingView.register_node_view(blueprint)

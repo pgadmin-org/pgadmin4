@@ -100,22 +100,22 @@ class ViewModule(SchemaChildModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type,
-                    _=gettext
-                    ),
-                render_template(
-                    "view/css/view.css",
-                    node_type=self.node_type,
-                    _=gettext
-                    ),
-                render_template(
-                    "mview/css/mview.css",
-                    node_type='mview',
-                    _=gettext
-                    )
-                ]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type,
+                _=gettext
+            ),
+            render_template(
+                "view/css/view.css",
+                node_type=self.node_type,
+                _=gettext
+            ),
+            render_template(
+                "mview/css/mview.css",
+                node_type='mview',
+                _=gettext
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -159,6 +159,7 @@ def check_precondition(f):
     Assumptions:
         This function will always be used as decorator of a class method.
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
 
@@ -176,14 +177,14 @@ def check_precondition(f):
                 gettext("Connection to the server has been lost!")
             )
         self.datlastsysoid = self.manager.db_info[
-                kwargs['did']]['datlastsysoid']
+            kwargs['did']]['datlastsysoid']
 
         # Set template path for sql scripts
         self.template_path = self.template_initial + '/' + (
             self.ppas_template_path(self.manager.version)
             if self.manager.server_type == 'ppas' else
             self.pg_template_path(self.manager.version)
-            )
+        )
 
         ver = self.manager.version
         if ver >= 90200:
@@ -257,14 +258,14 @@ class ViewNode(PGChildNodeView, VacuumSettings):
     node_type = view_blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'vid'}
-            ]
+        {'type': 'int', 'id': 'vid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -287,11 +288,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         'select_sql': [{'get': 'select_sql'}, {'get': 'select_sql'}],
         'insert_sql': [{'get': 'insert_sql'}, {'get': 'insert_sql'}],
         'get_table_vacuum': [
-          {'get': 'get_table_vacuum'},
-          {'get': 'get_table_vacuum'}],
+            {'get': 'get_table_vacuum'},
+            {'get': 'get_table_vacuum'}],
         'get_toast_table_vacuum': [
-          {'get': 'get_toast_table_vacuum'},
-          {'get': 'get_toast_table_vacuum'}]
+            {'get': 'get_toast_table_vacuum'},
+            {'get': 'get_toast_table_vacuum'}]
     })
 
     def __init__(self, *args, **kwargs):
@@ -336,15 +337,15 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         Fetches all views properties and render into properties tab
         """
         SQL = render_template("/".join(
-          [self.template_path, 'sql/properties.sql']), scid=scid)
+            [self.template_path, 'sql/properties.sql']), scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
@@ -353,24 +354,24 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         res = []
         SQL = render_template("/".join(
-          [self.template_path, 'sql/properties.sql']), scid=scid)
+            [self.template_path, 'sql/properties.sql']), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        scid,
-                        row['name'],
-                        icon="icon-view"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-view"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def parse_views_privileges(self, db_privileges):
         """
@@ -407,13 +408,13 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']
-          ), vid=vid, datlastsysoid=self.datlastsysoid)
+        ), vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         SQL = render_template("/".join(
-          [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -434,9 +435,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         result.update(frmtd_reslt)
 
         return ajax_response(
-                response=result,
-                status=200
-                )
+            response=result,
+            status=200
+        )
 
     @staticmethod
     def formatter(result):
@@ -450,7 +451,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 sec_lbls.append({
                     'provider': sec.group(1),
                     'label': sec.group(2)
-                    })
+                })
 
         frmtd_result.update({"seclabels": sec_lbls})
         return frmtd_result
@@ -485,14 +486,14 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     return internal_server_error(errormsg=res)
 
                 SQL = render_template("/".join(
-                      [self.template_path, 'sql/view_id.sql']), data=data)
+                    [self.template_path, 'sql/view_id.sql']), data=data)
                 status, view_id = self.conn.execute_scalar(SQL)
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
-                      view_id,
-                      scid,
-                      data['name'],
-                      icon="icon-view"
+                        view_id,
+                        scid,
+                        data['name'],
+                        icon="icon-view"
                     )
                 )
             else:
@@ -520,7 +521,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     return internal_server_error(errormsg=res)
 
                 SQL = render_template("/".join(
-                      [self.template_path, 'sql/view_id.sql']), data=data)
+                    [self.template_path, 'sql/view_id.sql']), data=data)
                 status, res_data = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -530,10 +531,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 if vid != view_id:
                     return jsonify(
                         node=self.blueprint.generate_browser_node(
-                          view_id,
-                          scid,
-                          new_view_name,
-                          icon="icon-view"
+                            view_id,
+                            scid,
+                            new_view_name,
+                            icon="icon-view"
                         )
                     )
                 else:
@@ -608,7 +609,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             scid: Schema Id
         """
         SQL = render_template("/".join([self.template_path,
-                              'sql/get_schema.sql']), scid=scid)
+                                        'sql/get_schema.sql']), scid=scid)
 
         status, schema_name = self.conn.execute_scalar(SQL)
 
@@ -631,16 +632,16 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         SQL = self.getSQL(gid, sid, data, vid)
         SQL = SQL.strip('\n')
-        if(SQL):
+        if (SQL):
             return make_json_response(
-                    data=SQL,
-                    status=200
-                    )
+                data=SQL,
+                status=200
+            )
         else:
             return make_json_response(
-                    data=gettext("-- Nothing changed"),
-                    status=200
-                    )
+                data=gettext("-- Nothing changed"),
+                status=200
+            )
 
     @staticmethod
     def parse_privileges(str_privileges, object_type='VIEW'):
@@ -653,7 +654,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             'D': 'TRUNCATE',
             'x': 'REFERENCES',
             't': 'TRIGGER'
-            }
+        }
         privileges = []
         for priv in str_privileges:
             priv_with_grant = []
@@ -661,10 +662,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             for privilege in priv['privileges']:
                 if privilege['with_grant']:
                     priv_with_grant.append(
-                      db_privileges[privilege['privilege_type']])
+                        db_privileges[privilege['privilege_type']])
                 elif privilege['privilege']:
                     priv_without_grant.append(
-                      db_privileges[privilege['privilege_type']])
+                        db_privileges[privilege['privilege_type']])
 
                 # If we have all acl then just return all
                 if len(priv_with_grant) == len(db_privileges):
@@ -675,11 +676,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             # Server Level validation
             if 'grantee' in priv:
                 privileges.append(
-                  {
-                    'grantee': priv['grantee'] if 'grantee' in priv else '',
-                    'with_grant': priv_with_grant,
-                    'without_grant': priv_without_grant
-                  }
+                    {
+                        'grantee': priv['grantee'] if 'grantee' in priv else '',
+                        'with_grant': priv_with_grant,
+                        'without_grant': priv_without_grant
+                    }
                 )
             else:
                 return ''
@@ -693,8 +694,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if vid is not None:
                 SQL = render_template("/".join(
                     [self.template_path, 'sql/properties.sql']),
-                  vid=vid,
-                  datlastsysoid=self.datlastsysoid
+                    vid=vid,
+                    datlastsysoid=self.datlastsysoid
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -711,16 +712,16 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
                         data[key]['added'] = self.parse_privileges(
-                          data[key]['added'])
+                            data[key]['added'])
                     if 'changed' in data[key]:
                         data[key]['changed'] = self.parse_privileges(
-                          data[key]['changed'])
+                            data[key]['changed'])
                     if 'deleted' in data[key]:
                         data[key]['deleted'] = self.parse_privileges(
-                          data[key]['deleted'])
+                            data[key]['deleted'])
                 try:
                     SQL = render_template("/".join(
-                      [self.template_path, 'sql/update.sql']), data=data,
+                        [self.template_path, 'sql/update.sql']), data=data,
                         o_data=old_data, conn=self.conn)
                 except Exception as e:
                     return internal_server_error(errormsg=str(e))
@@ -741,11 +742,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 if 'datacl' in data and data['datacl'] is not None:
                     data['datacl'] = self.parse_privileges(data['datacl'])
                 SQL = render_template("/".join(
-                  [self.template_path, 'sql/create.sql']), data=data)
+                    [self.template_path, 'sql/create.sql']), data=data)
                 if data['definition']:
                     SQL += "\n"
                     SQL += render_template("/".join(
-                      [self.template_path, 'sql/grant.sql']), data=data)
+                        [self.template_path, 'sql/grant.sql']), data=data)
             return SQL
 
         except Exception as e:
@@ -765,7 +766,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         self.index_temp_path = 'index'
         SQL = render_template("/".join([self.index_temp_path,
-                              'sql/9.1_plus/column_details.sql']), idx=idx)
+                                        'sql/9.1_plus/column_details.sql']), idx=idx)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -841,7 +842,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         self.rule_temp_path = 'rules'
         SQL_data = ''
         SQL = render_template("/".join(
-          [self.rule_temp_path, 'sql/properties.sql']), tid=vid)
+            [self.rule_temp_path, 'sql/properties.sql']), tid=vid)
 
         status, data = self.conn.execute_dict(SQL)
         if not status:
@@ -853,13 +854,13 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if rule['name'] != '_RETURN':
                 res = []
                 SQL = render_template("/".join(
-                  [self.rule_temp_path, 'sql/properties.sql']),
+                    [self.rule_temp_path, 'sql/properties.sql']),
                     rid=rule['oid']
-                    )
+                )
                 status, res = self.conn.execute_dict(SQL)
                 res = parse_rule_definition(res)
                 SQL = render_template("/".join(
-                  [self.rule_temp_path, 'sql/create.sql']),
+                    [self.rule_temp_path, 'sql/create.sql']),
                     data=res, display_comments=True)
                 SQL_data += '\n'
                 SQL_data += SQL
@@ -888,10 +889,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         for trigger in data['rows']:
             SQL = render_template("/".join(
-              [self.trigger_temp_path, 'sql/9.1_plus/properties.sql']),
+                [self.trigger_temp_path, 'sql/9.1_plus/properties.sql']),
                 tid=trigger['oid'],
                 tgrelid=vid
-                )
+            )
 
             status, res = self.conn.execute_dict(SQL)
 
@@ -909,7 +910,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             res_rows = trigger_definition(res_rows)
 
             SQL = render_template("/".join(
-              [self.trigger_temp_path, 'sql/9.1_plus/create.sql']),
+                [self.trigger_temp_path, 'sql/9.1_plus/create.sql']),
                 data=res_rows, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL
@@ -926,7 +927,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         self.index_temp_path = 'index'
         SQL_data = ''
         SQL = render_template("/".join(
-          [self.index_temp_path, 'sql/9.1_plus/properties.sql']), tid=vid)
+            [self.index_temp_path, 'sql/9.1_plus/properties.sql']), tid=vid)
         status, data = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=data)
@@ -934,10 +935,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         for index in data['rows']:
             res = []
             SQL = render_template("/".join(
-              [self.index_temp_path, 'sql/9.1_plus/properties.sql']),
+                [self.index_temp_path, 'sql/9.1_plus/properties.sql']),
                 idx=index['oid'],
                 tid=vid
-                )
+            )
             status, res = self.conn.execute_dict(SQL)
 
             data = dict(res['rows'][0])
@@ -949,7 +950,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             data = self.get_index_column_details(index['oid'], data)
 
             SQL = render_template("/".join(
-              [self.index_temp_path, 'sql/9.1_plus/create.sql']),
+                [self.index_temp_path, 'sql/9.1_plus/create.sql']),
                 data=data, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL
@@ -963,9 +964,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         SQL_data = ''
         SQL = render_template("/".join(
-          [self.template_path, 'sql/properties.sql']),
-          vid=vid,
-          datlastsysoid=self.datlastsysoid
+            [self.template_path, 'sql/properties.sql']),
+            vid=vid,
+            datlastsysoid=self.datlastsysoid
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -976,7 +977,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         # Fetch all privileges for view
         SQL = render_template("/".join(
-          [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -993,14 +994,14 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             result['datacl'] = self.parse_privileges(result['datacl'])
 
         SQL = render_template("/".join(
-                [self.template_path, 'sql/create.sql']),
-                data=result,
-                conn=self.conn,
-                display_comments=True
-              )
+            [self.template_path, 'sql/create.sql']),
+            data=result,
+            conn=self.conn,
+            display_comments=True
+        )
         SQL += "\n"
         SQL += render_template("/".join(
-          [self.template_path, 'sql/grant.sql']), data=result)
+            [self.template_path, 'sql/grant.sql']), data=result)
 
         SQL_data += SQL
         SQL_data += self.get_rule_sql(vid)
@@ -1018,20 +1019,20 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'sql/get_tblspc.sql'])
-                )
+            )
             status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['spcname'], 'value': row['spcname']}
-                        )
+                    {'label': row['spcname'], 'value': row['spcname']}
+                )
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1052,7 +1053,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         return ajax_response(
             response=dependents_result,
             status=200
-            )
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, vid):
@@ -1070,7 +1071,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         return ajax_response(
             response=dependencies_result,
             status=200
-            )
+        )
 
     @check_precondition
     def select_sql(self, gid, sid, did, scid, vid):
@@ -1273,8 +1274,8 @@ class MViewNode(ViewNode, VacuumSettings):
             if vid is not None:
                 SQL = render_template("/".join(
                     [self.template_path, 'sql/properties.sql']),
-                  vid=vid,
-                  datlastsysoid=self.datlastsysoid
+                    vid=vid,
+                    datlastsysoid=self.datlastsysoid
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -1301,65 +1302,65 @@ class MViewNode(ViewNode, VacuumSettings):
                                         data['vacuum_data']['reset'].append(item)
                                 else:
                                     if (old_data[item['name']] is None or
-                                       (float(old_data[item['name']]) != float(item['value']))):
+                                            (float(old_data[item['name']]) != float(item['value']))):
                                         data['vacuum_data']['changed'].append(item)
 
                 if ('autovacuum_enabled' in data and
-                   old_data['autovacuum_enabled'] is not None):
+                            old_data['autovacuum_enabled'] is not None):
                     if (data['autovacuum_enabled'] !=
-                       old_data['autovacuum_enabled']):
+                            old_data['autovacuum_enabled']):
                         data['vacuum_data']['changed'].append(
                             {'name': 'autovacuum_enabled',
                              'value': data['autovacuum_enabled']})
                 elif ('autovacuum_enabled' in data and 'autovacuum_custom' in data and
-                      old_data['autovacuum_enabled'] is None and data['autovacuum_custom']):
-                        data['vacuum_data']['changed'].append(
-                            {'name': 'autovacuum_enabled',
-                             'value': data['autovacuum_enabled']})
+                              old_data['autovacuum_enabled'] is None and data['autovacuum_custom']):
+                    data['vacuum_data']['changed'].append(
+                        {'name': 'autovacuum_enabled',
+                         'value': data['autovacuum_enabled']})
 
                 # toast autovacuum: separate list of changed and reset data
                 if ('vacuum_toast' in data):
                     if ('changed' in data['vacuum_toast']):
                         for item in data['vacuum_toast']['changed']:
                             if 'value' in item.keys():
-                                toast_key = 'toast_'+item['name']
-                                item['name'] = 'toast.'+item['name']
+                                toast_key = 'toast_' + item['name']
+                                item['name'] = 'toast.' + item['name']
                                 if item['value'] is None:
                                     if old_data[toast_key] != item['value']:
                                         data['vacuum_data']['reset'].append(item)
                                 else:
                                     if (old_data[toast_key] is None or
-                                       (float(old_data[toast_key]) != float(item['value']))):
+                                            (float(old_data[toast_key]) != float(item['value']))):
                                         data['vacuum_data']['changed'].append(item)
 
                 if ('toast_autovacuum_enabled' in data and
-                   old_data['toast_autovacuum_enabled'] is not None):
+                            old_data['toast_autovacuum_enabled'] is not None):
                     if (data['toast_autovacuum_enabled'] !=
-                       old_data['toast_autovacuum_enabled']):
+                            old_data['toast_autovacuum_enabled']):
                         data['vacuum_data']['changed'].append(
                             {'name': 'toast.autovacuum_enabled',
                              'value': data['toast_autovacuum_enabled']})
                 elif ('toast_autovacuum_enabled' in data and 'toast_autovacuum' in data and
-                      old_data['toast_autovacuum_enabled'] is None and data['toast_autovacuum']):
-                        data['vacuum_data']['changed'].append(
-                            {'name': 'toast.autovacuum_enabled',
-                             'value': data['toast_autovacuum_enabled']})
+                              old_data['toast_autovacuum_enabled'] is None and data['toast_autovacuum']):
+                    data['vacuum_data']['changed'].append(
+                        {'name': 'toast.autovacuum_enabled',
+                         'value': data['toast_autovacuum_enabled']})
 
                 key = 'datacl'
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
                         data[key]['added'] = self.parse_privileges(
-                          data[key]['added'])
+                            data[key]['added'])
                     if 'changed' in data[key]:
                         data[key]['changed'] = self.parse_privileges(
-                          data[key]['changed'])
+                            data[key]['changed'])
                     if 'deleted' in data[key]:
                         data[key]['deleted'] = self.parse_privileges(
-                          data[key]['deleted'])
+                            data[key]['deleted'])
 
                 try:
                     SQL = render_template("/".join(
-                      [self.template_path, 'sql/update.sql']), data=data,
+                        [self.template_path, 'sql/update.sql']), data=data,
                         o_data=old_data, conn=self.conn)
                 except Exception as e:
                     return internal_server_error(errormsg=str(e))
@@ -1382,7 +1383,7 @@ class MViewNode(ViewNode, VacuumSettings):
                                 if 'value' in item.keys() and
                                 item['value'] is not None]
                 vacuum_toast = [
-                    {'name': 'toast.'+item['name'], 'value':item['value']}
+                    {'name': 'toast.' + item['name'], 'value': item['value']}
                     for item in data['vacuum_toast']
                     if 'value' in item.keys() and item['value'] is not None]
 
@@ -1390,37 +1391,37 @@ class MViewNode(ViewNode, VacuumSettings):
                 if ('autovacuum_custom' in data and data['autovacuum_custom']):
                     vacuum_table.append(
                         {
-                          'name': 'autovacuum_enabled',
-                          'value': str(data['autovacuum_enabled'])
+                            'name': 'autovacuum_enabled',
+                            'value': str(data['autovacuum_enabled'])
                         }
                     )
                 if ('toast_autovacuum' in data and data['toast_autovacuum']):
                     vacuum_table.append(
                         {
-                          'name': 'toast.autovacuum_enabled',
-                          'value': str(data['toast_autovacuum_enabled'])
+                            'name': 'toast.autovacuum_enabled',
+                            'value': str(data['toast_autovacuum_enabled'])
                         }
                     )
 
                 # add vacuum_toast dict to vacuum_data only if
                 # table & toast's custom autovacuum is enabled
                 data['vacuum_data'] = (vacuum_table if (
-                        'autovacuum_custom' in data and
-                        data['autovacuum_custom'] is True
-                    ) else []) + (
-                    vacuum_toast if (
-                        'toast_autovacuum' in data and
-                        data['toast_autovacuum'] is True
-                    ) else [])
+                    'autovacuum_custom' in data and
+                    data['autovacuum_custom'] is True
+                ) else []) + (
+                                          vacuum_toast if (
+                                              'toast_autovacuum' in data and
+                                              data['toast_autovacuum'] is True
+                                          ) else [])
 
                 if 'datacl' in data and data['datacl'] is not None:
                     data['datacl'] = self.parse_privileges(data['datacl'])
                 SQL = render_template("/".join(
-                  [self.template_path, 'sql/create.sql']), data=data)
+                    [self.template_path, 'sql/create.sql']), data=data)
                 if data['definition']:
                     SQL += "\n"
                     SQL += render_template("/".join(
-                      [self.template_path, 'sql/grant.sql']), data=data)
+                        [self.template_path, 'sql/grant.sql']), data=data)
             return SQL
 
         except Exception as e:
@@ -1434,9 +1435,9 @@ class MViewNode(ViewNode, VacuumSettings):
 
         SQL_data = ''
         SQL = render_template("/".join(
-          [self.template_path, 'sql/properties.sql']),
-          vid=vid,
-          datlastsysoid=self.datlastsysoid
+            [self.template_path, 'sql/properties.sql']),
+            vid=vid,
+            datlastsysoid=self.datlastsysoid
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -1459,20 +1460,20 @@ class MViewNode(ViewNode, VacuumSettings):
         vacuum_table = [item for item in result['vacuum_table']
                         if 'value' in item.keys() and item['value'] is not None]
         vacuum_toast = [
-            {'name': 'toast.'+item['name'], 'value':item['value']}
+            {'name': 'toast.' + item['name'], 'value': item['value']}
             for item in result['vacuum_toast'] if 'value' in item.keys() and item['value'] is not None]
 
         # add vacuum_toast dict to vacuum_data only if
         # toast's autovacuum is enabled
         if ('toast_autovacuum_enabled' in result and
-           result['toast_autovacuum_enabled'] is True):
+                    result['toast_autovacuum_enabled'] is True):
             result['vacuum_data'] = vacuum_table + vacuum_toast
         else:
             result['vacuum_data'] = vacuum_table
 
         # Fetch all privileges for view
         SQL = render_template("/".join(
-          [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1489,14 +1490,14 @@ class MViewNode(ViewNode, VacuumSettings):
             result['datacl'] = self.parse_privileges(result['datacl'])
 
         SQL = render_template("/".join(
-                [self.template_path, 'sql/create.sql']),
-                data=result,
-                conn=self.conn,
-                display_comments=True
-              )
+            [self.template_path, 'sql/create.sql']),
+            data=result,
+            conn=self.conn,
+            display_comments=True
+        )
         SQL += "\n"
         SQL += render_template("/".join(
-          [self.template_path, 'sql/grant.sql']), data=result)
+            [self.template_path, 'sql/grant.sql']), data=result)
 
         SQL_data += SQL
         SQL_data += self.get_rule_sql(vid)
@@ -1518,9 +1519,9 @@ class MViewNode(ViewNode, VacuumSettings):
 
         res = self.get_vacuum_table_settings(self.conn)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def get_toast_table_vacuum(self, gid, sid, did, scid):
@@ -1535,9 +1536,9 @@ class MViewNode(ViewNode, VacuumSettings):
         res = self.get_vacuum_toast_settings(self.conn)
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, vid):
@@ -1547,13 +1548,13 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']
-          ), vid=vid, datlastsysoid=self.datlastsysoid)
+        ), vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         SQL = render_template("/".join(
-          [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, 'sql/acl.sql']), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1579,9 +1580,9 @@ class MViewNode(ViewNode, VacuumSettings):
             self.conn, result, 'toast')
 
         return ajax_response(
-                response=result,
-                status=200
-                )
+            response=result,
+            status=200
+        )
 
     @check_precondition
     def refresh_data(self, gid, sid, did, scid, vid):
@@ -1600,7 +1601,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
             # Fetch view name by view id
             SQL = render_template("/".join(
-              [self.template_path, 'sql/get_view_name.sql']), vid=vid)
+                [self.template_path, 'sql/get_view_name.sql']), vid=vid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1608,10 +1609,10 @@ class MViewNode(ViewNode, VacuumSettings):
             # Refresh view
             SQL = render_template(
                 "/".join([self.template_path, 'sql/refresh.sql']),
-              name=res['rows'][0]['name'],
-              nspname=res['rows'][0]['schema'],
-              is_concurrent=is_concurrent,
-              with_data=with_data
+                name=res['rows'][0]['name'],
+                nspname=res['rows'][0]['schema'],
+                is_concurrent=is_concurrent,
+                with_data=with_data
             )
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
@@ -1630,6 +1631,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
+
 
 ViewNode.register_node_view(view_blueprint)
 MViewNode.register_node_view(mview_blueprint)

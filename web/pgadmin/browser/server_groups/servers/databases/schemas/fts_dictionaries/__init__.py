@@ -253,7 +253,6 @@ class FtsDictionaryView(PGChildNodeView):
                 options.append({'option': k, 'value': v})
             return options
 
-
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
@@ -348,11 +347,11 @@ class FtsDictionaryView(PGChildNodeView):
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon="icon-fts_dictionary"
-                    ),
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-fts_dictionary"
+                ),
                 status=200
             )
 
@@ -491,7 +490,7 @@ class FtsDictionaryView(PGChildNodeView):
                         "/".join([self.template_path, 'properties.sql']),
                         dcid=dcid,
                         scid=scid
-                      )
+                    )
 
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -504,12 +503,12 @@ class FtsDictionaryView(PGChildNodeView):
 
                 data = res['rows'][0]
                 return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            dcid,
-                            did,
-                            data['name'],
-                            icon="icon-fts_dictionary"
-                        )
+                    node=self.blueprint.generate_browser_node(
+                        dcid,
+                        did,
+                        data['name'],
+                        icon="icon-fts_dictionary"
+                    )
                 )
             # In case FTS Dictionary node is not present
             else:
@@ -555,7 +554,7 @@ class FtsDictionaryView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                    return gone(_("""
+                return gone(_("""
                         Could not find the FTS Dictionary node to delete.
                     """))
 
@@ -597,7 +596,7 @@ class FtsDictionaryView(PGChildNodeView):
         :param scid: schema id
         :param dcid: FTS Dictionary id
         """
-        #data = request.args
+        # data = request.args
         data = {}
         for k, v in request.args.items():
             try:
@@ -694,8 +693,8 @@ class FtsDictionaryView(PGChildNodeView):
                 new_data['schema'] = schema
 
                 if 'template' in new_data and \
-                        'name' in new_data and \
-                        'schema' in new_data:
+                                'name' in new_data and \
+                                'schema' in new_data:
                     sql = render_template("/".join([self.template_path,
                                                     'create.sql']),
                                           data=new_data,
@@ -731,7 +730,7 @@ class FtsDictionaryView(PGChildNodeView):
         # at template control while creating a new FTS Dictionary
         res = [{'label': '', 'value': ''}]
         for row in rset['rows']:
-            if row['schemaoid'] > datlastsysoid :
+            if row['schemaoid'] > datlastsysoid:
                 row['tmplname'] = row['nspname'] + '.' + row['tmplname']
 
             res.append({'label': row['tmplname'],
@@ -794,9 +793,9 @@ class FtsDictionaryView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, dcid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, dcid):
@@ -813,8 +812,9 @@ class FtsDictionaryView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, dcid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 FtsDictionaryView.register_node_view(blueprint)

@@ -25,7 +25,6 @@ from pgadmin.model import db, ServerGroup
 
 
 class ServerGroupModule(BrowserPluginModule):
-
     NODE_TYPE = "server-group"
 
     def get_nodes(self, *arg, **kwargs):
@@ -35,13 +34,13 @@ class ServerGroupModule(BrowserPluginModule):
         ).order_by("id")
         for idx, group in enumerate(groups):
             yield self.generate_browser_node(
-                    "%d" % (group.id), None,
-                    group.name,
-                    "icon-%s" % self.node_type,
-                    True,
-                    self.node_type,
-                    can_delete=True if idx > 0 else False
-                    )
+                "%d" % (group.id), None,
+                group.name,
+                "icon-%s" % self.node_type,
+                True,
+                self.node_type,
+                can_delete=True if idx > 0 else False
+            )
 
     @property
     def node_type(self):
@@ -71,17 +70,16 @@ class ServerGroupModule(BrowserPluginModule):
 
 
 class ServerGroupMenuItem(MenuItem):
-
     def __init__(self, **kwargs):
         kwargs.setdefault("type", ServerGroupModule.NODE_TYPE)
         super(ServerGroupMenuItem, self).__init__(**kwargs)
+
 
 @six.add_metaclass(ABCMeta)
 class ServerGroupPluginModule(BrowserPluginModule):
     """
     Base class for server group plugins.
     """
-
 
     @abstractmethod
     def get_nodes(self, *arg, **kwargs):
@@ -92,7 +90,6 @@ blueprint = ServerGroupModule(__name__, static_url_path='')
 
 
 class ServerGroupView(NodeView):
-
     node_type = ServerGroupModule.NODE_TYPE
     parent_ids = []
     ids = [{'type': 'int', 'id': 'gid'}]
@@ -102,11 +99,11 @@ class ServerGroupView(NodeView):
 
         for sg in ServerGroup.query.filter_by(
                 user_id=current_user.id
-                ).order_by('name'):
+        ).order_by('name'):
             res.append({
                 'id': sg.id,
                 'name': sg.name
-                })
+            })
 
         return ajax_response(response=res, status=200)
 
@@ -122,32 +119,32 @@ class ServerGroupView(NodeView):
 
         if sg.id == gid:
             return make_json_response(
-                    status=417,
-                    success=0,
-                    errormsg=gettext(
-                        'The specified server group cannot be deleted.'
-                        )
-                    )
+                status=417,
+                success=0,
+                errormsg=gettext(
+                    'The specified server group cannot be deleted.'
+                )
+            )
 
         # There can be only one record at most
         sg = groups.filter_by(id=gid).first()
 
         if sg is None:
             return make_json_response(
-                    status=417,
-                    success=0,
-                    errormsg=gettext(
-                        'The specified server group could not be found.'
-                        )
-                    )
+                status=417,
+                success=0,
+                errormsg=gettext(
+                    'The specified server group could not be found.'
+                )
+            )
         else:
             try:
                 db.session.delete(sg)
                 db.session.commit()
             except Exception as e:
                 return make_json_response(
-                        status=410, success=0, errormsg=e.message
-                        )
+                    status=410, success=0, errormsg=e.message
+                )
 
         return make_json_response(result=request.form)
 
@@ -156,19 +153,19 @@ class ServerGroupView(NodeView):
 
         # There can be only one record at most
         servergroup = ServerGroup.query.filter_by(
-                user_id=current_user.id,
-                id=gid).first()
+            user_id=current_user.id,
+            id=gid).first()
 
         data = request.form if request.form else json.loads(request.data.decode())
 
         if servergroup is None:
             return make_json_response(
-                    status=417,
-                    success=0,
-                    errormsg=gettext(
-                        'The specified server group could not be found.'
-                        )
-                    )
+                status=417,
+                success=0,
+                errormsg=gettext(
+                    'The specified server group could not be found.'
+                )
+            )
         else:
             try:
                 if u'name' in data:
@@ -176,8 +173,8 @@ class ServerGroupView(NodeView):
                 db.session.commit()
             except Exception as e:
                 return make_json_response(
-                        status=410, success=0, errormsg=e.message
-                        )
+                    status=410, success=0, errormsg=e.message
+                )
 
         return make_json_response(result=request.form)
 
@@ -186,22 +183,22 @@ class ServerGroupView(NodeView):
 
         # There can be only one record at most
         sg = ServerGroup.query.filter_by(
-                user_id=current_user.id,
-                id=gid).first()
+            user_id=current_user.id,
+            id=gid).first()
 
         if sg is None:
             return make_json_response(
-                    status=417,
-                    success=0,
-                    errormsg=gettext(
-                        'The specified server group could not be found.'
-                        )
-                    )
+                status=417,
+                success=0,
+                errormsg=gettext(
+                    'The specified server group could not be found.'
+                )
+            )
         else:
             return ajax_response(
-                    response={'id': sg.id, 'name': sg.name},
-                    status=200
-                    )
+                response={'id': sg.id, 'name': sg.name},
+                status=200
+            )
 
     def create(self):
         data = request.form if request.form else json.loads(request.data.decode())
@@ -229,26 +226,26 @@ class ServerGroupView(NodeView):
                 data[u'name'] = sg.name
 
                 return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            "%d" % (sg.id), None,
-                            sg.name,
-                            "icon-%s" % self.node_type,
-                            True,
-                            self.node_type,
-                            can_delete=True     # This is user created hence can deleted
-                            )
-                        )
+                    node=self.blueprint.generate_browser_node(
+                        "%d" % (sg.id), None,
+                        sg.name,
+                        "icon-%s" % self.node_type,
+                        True,
+                        self.node_type,
+                        can_delete=True  # This is user created hence can deleted
+                    )
+                )
             except Exception as e:
                 return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=e.message)
+                    status=410,
+                    success=0,
+                    errormsg=e.message)
 
         else:
             return make_json_response(
-                    status=417,
-                    success=0,
-                    errormsg=gettext('No server group name was specified'))
+                status=417,
+                success=0,
+                errormsg=gettext('No server group name was specified'))
 
     def sql(self, gid):
         return make_json_response(status=422)
@@ -271,9 +268,9 @@ class ServerGroupView(NodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template("server_groups/server_groups.js"),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template("server_groups/server_groups.js"),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def nodes(self, gid=None):
         """Return a JSON document listing the server groups for the user"""
@@ -283,18 +280,18 @@ class ServerGroupView(NodeView):
             groups = ServerGroup.query.filter_by(user_id=current_user.id)
         else:
             groups = ServerGroup.query.filter_by(user_id=current_user.id,
-                    id=gid).first()
+                                                 id=gid).first()
 
         for group in groups:
             nodes.append(
-                    self.blueprint.generate_browser_node(
-                        "%d" % (group.id), None,
-                        group.name,
-                        "icon-%s" % self.node_type,
-                        True,
-                        self.node_type
-                        )
-                    )
+                self.blueprint.generate_browser_node(
+                    "%d" % (group.id), None,
+                    group.name,
+                    "icon-%s" % self.node_type,
+                    True,
+                    self.node_type
+                )
+            )
 
         return make_json_response(data=nodes)
 

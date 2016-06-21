@@ -73,7 +73,7 @@ class TriggerModule(CollectionNodeModule):
             if not conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -82,7 +82,7 @@ class TriggerModule(CollectionNodeModule):
 
             template_path = 'trigger/sql/9.1_plus'
             SQL = render_template("/".join(
-                  [template_path, 'backend_support.sql']), vid=kwargs['vid'])
+                [template_path, 'backend_support.sql']), vid=kwargs['vid'])
             status, res = conn.execute_scalar(SQL)
             # check if any errors
             if not status:
@@ -95,7 +95,7 @@ class TriggerModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        assert('tid' in kwargs or 'vid' in kwargs)
+        assert ('tid' in kwargs or 'vid' in kwargs)
         yield self.generate_browser_collection_node(
             kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
         )
@@ -121,16 +121,17 @@ class TriggerModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "trigger/css/trigger.css",
-                    node_type=self.node_type
-                    )
-                ]
+            render_template(
+                "trigger/css/trigger.css",
+                node_type=self.node_type
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
 
         return snippets
+
 
 blueprint = TriggerModule(__name__)
 
@@ -210,15 +211,15 @@ class TriggerView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'trid'}
-            ]
+        {'type': 'int', 'id': 'trid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -235,7 +236,7 @@ class TriggerView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
         'get_triggerfunctions': [{'get': 'get_trigger_functions'},
-                               {'get': 'get_trigger_functions'}],
+                                 {'get': 'get_trigger_functions'}],
         'enable': [{'put': 'enable_disable_trigger'}]
     })
 
@@ -245,6 +246,7 @@ class TriggerView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -257,7 +259,7 @@ class TriggerView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -285,13 +287,13 @@ class TriggerView(PGChildNodeView):
             # Here we are storing trigger definition
             # We will use it to check trigger type definition
             self.trigger_definition = {
-                'TRIGGER_TYPE_ROW':         (1 << 0),
-                'TRIGGER_TYPE_BEFORE':      (1 << 1),
-                'TRIGGER_TYPE_INSERT':      (1 << 2),
-                'TRIGGER_TYPE_DELETE':      (1 << 3),
-                'TRIGGER_TYPE_UPDATE':      (1 << 4),
-                'TRIGGER_TYPE_TRUNCATE':    (1 << 5),
-                'TRIGGER_TYPE_INSTEAD':     (1 << 6)
+                'TRIGGER_TYPE_ROW': (1 << 0),
+                'TRIGGER_TYPE_BEFORE': (1 << 1),
+                'TRIGGER_TYPE_INSERT': (1 << 2),
+                'TRIGGER_TYPE_DELETE': (1 << 3),
+                'TRIGGER_TYPE_UPDATE': (1 << 4),
+                'TRIGGER_TYPE_TRUNCATE': (1 << 5),
+                'TRIGGER_TYPE_INSTEAD': (1 << 6)
             }
 
             return f(*args, **kwargs)
@@ -314,7 +316,7 @@ class TriggerView(PGChildNodeView):
             res.append({
                 'label': 'Inline EDB-SPL',
                 'value': 'Inline EDB-SPL'
-                })
+            })
         try:
             SQL = render_template("/".join([self.template_path,
                                             'get_triggerfunctions.sql']),
@@ -326,13 +328,13 @@ class TriggerView(PGChildNodeView):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['tfunctions'],
-                             'value': row['tfunctions']}
-                        )
+                    {'label': row['tfunctions'],
+                     'value': row['tfunctions']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -360,9 +362,9 @@ class TriggerView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
@@ -389,18 +391,18 @@ class TriggerView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon="icon-trigger" if row['is_enable_trigger']
-                        else "icon-trigger-bad"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-trigger" if row['is_enable_trigger']
+                    else "icon-trigger-bad"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def _column_details(self, tid, clist):
         """
@@ -441,7 +443,7 @@ class TriggerView(PGChildNodeView):
 
         # Fires event definition
         if data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_BEFORE']:
-             data['fires'] = 'BEFORE'
+            data['fires'] = 'BEFORE'
         elif data['tgtype'] & self.trigger_definition['TRIGGER_TYPE_INSTEAD']:
             data['fires'] = 'INSTEAD OF'
         else:
@@ -518,9 +520,9 @@ class TriggerView(PGChildNodeView):
         data = self._trigger_definition(data)
 
         return ajax_response(
-                response=data,
-                status=200
-                )
+            response=data,
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -552,11 +554,11 @@ class TriggerView(PGChildNodeView):
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=gettext("Couldn't find the required parameter (%s)." % \
-                                required_args[arg])
-                        )
+                    status=410,
+                    success=0,
+                    errormsg=gettext("Couldn't find the required parameter (%s)." % \
+                                     required_args[arg])
+                )
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
@@ -716,9 +718,9 @@ class TriggerView(PGChildNodeView):
 
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -756,7 +758,7 @@ class TriggerView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = {
                 'name': 'Name',
@@ -893,7 +895,6 @@ class TriggerView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, trid):
         """
@@ -913,9 +914,9 @@ class TriggerView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, trid):
@@ -937,8 +938,9 @@ class TriggerView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 TriggerView.register_node_view(blueprint)

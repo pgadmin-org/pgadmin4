@@ -91,6 +91,7 @@ class ExclusionConstraintModule(ConstraintTypeModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+
 blueprint = ExclusionConstraintModule(__name__)
 
 
@@ -163,14 +164,14 @@ class ExclusionConstraintView(PGChildNodeView):
     node_type = 'exclusion_constraint'
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [{'type': 'int', 'id': 'exid'}
-            ]
+           ]
 
     operations = dict({
         'obj': [
@@ -192,12 +193,12 @@ class ExclusionConstraintView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "exclusion_constraint/js/exclusion_constraint.js",
-                    _=_
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "exclusion_constraint/js/exclusion_constraint.js",
+                _=_
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -205,20 +206,21 @@ class ExclusionConstraintView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid']
-                )
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 return precondition_required(
                     _(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -246,7 +248,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
     def end_transaction(self):
         SQL = render_template(
-                "/".join([self.template_path, 'end.sql']))
+            "/".join([self.template_path, 'end.sql']))
         # End transaction if any.
         self.conn.execute_scalar(SQL)
 
@@ -307,9 +309,9 @@ class ExclusionConstraintView(PGChildNodeView):
             result['columns'] = columns
 
             return ajax_response(
-                    response=result,
-                    status=200
-                    )
+                response=result,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -333,9 +335,9 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             res = self.get_node_list(gid, sid, did, scid, tid, exid)
             return ajax_response(
-                    response=res,
-                    status=200
-                    )
+                response=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -358,7 +360,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
-                                        tid=tid)
+                              tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         return res['rows']
@@ -383,9 +385,9 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             res = self.get_nodes(gid, sid, did, scid, tid, exid)
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -413,12 +415,12 @@ class ExclusionConstraintView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon="icon-exclusion_constraint"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-exclusion_constraint"
+                ))
         return res
 
     @check_precondition
@@ -450,20 +452,20 @@ class ExclusionConstraintView(PGChildNodeView):
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
-                      status=400,
-                      success=0,
-                      errormsg=_(
-                          "Couldn't find required parameter (%s)." % str(arg)
-                      )
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Couldn't find required parameter (%s)." % str(arg)
                     )
+                )
             elif isinstance(data[arg], list) and len(data[arg]) < 1:
                 return make_json_response(
-                      status=400,
-                      success=0,
-                      errormsg=_(
-                          "Couldn't find required parameter (%s)." % str(arg)
-                      )
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Couldn't find required parameter (%s)." % str(arg)
                     )
+                )
 
         data['schema'] = self.schema
         data['table'] = self.table
@@ -481,7 +483,7 @@ class ExclusionConstraintView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data, conn=self.conn
-                )
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 self.end_transaction()
@@ -515,8 +517,8 @@ class ExclusionConstraintView(PGChildNodeView):
                     tid,
                     data['name'],
                     icon="icon-exclusion_constraint"
-                    )
                 )
+            )
 
         except Exception as e:
             self.end_transaction()
@@ -675,9 +677,9 @@ class ExclusionConstraintView(PGChildNodeView):
             sql = sql.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -789,8 +791,8 @@ class ExclusionConstraintView(PGChildNodeView):
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    data=data)
+                "/".join([self.template_path, 'delete.sql']),
+                data=data)
             sql_header += "\n"
 
             SQL = sql_header + SQL
@@ -845,18 +847,18 @@ class ExclusionConstraintView(PGChildNodeView):
                 "/".join([self.template_path, 'stats.sql']),
                 conn=self.conn, schema=self.schema,
                 name=name, exid=exid, is_pgstattuple=is_pgstattuple
-                )
             )
+        )
         if not status:
-                return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
 
 constraint = ConstraintRegistry(
     'exclusion_constraint', ExclusionConstraintModule, ExclusionConstraintView
-    )
+)
 ExclusionConstraintView.register_node_view(blueprint)

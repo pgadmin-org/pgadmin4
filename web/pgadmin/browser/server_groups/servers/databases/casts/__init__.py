@@ -621,13 +621,13 @@ class CastView(PGChildNodeView):
                 return internal_server_error(
                     _("Could not generate reversed engineered SQL for the cast.\n\n{0}").format(
                         res
-                        )
                     )
+                )
 
             if res is None:
                 return gone(
                     _("Could not generate reversed engineered SQL for the cast node.\n")
-                    )
+                )
 
             return ajax_response(response=res)
 
@@ -648,9 +648,9 @@ class CastView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, cid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, cid):
@@ -666,10 +666,9 @@ class CastView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, cid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
-
+            response=dependencies_result,
+            status=200
+        )
 
 
 CastView.register_node_view(blueprint)

@@ -6,15 +6,15 @@ from sqlparse.sql import IdentifierList, Identifier, Function
 from sqlparse.tokens import Keyword, DML, Punctuation, Token, Error
 
 cleanup_regex = {
-        # This matches only alphanumerics and underscores.
-        'alphanum_underscore': re.compile(r'(\w+)$'),
-        # This matches everything except spaces, parens, colon, and comma
-        'many_punctuations': re.compile(r'([^():,\s]+)$'),
-        # This matches everything except spaces, parens, colon, comma, and period
-        'most_punctuations': re.compile(r'([^\.():,\s]+)$'),
-        # This matches everything except a space.
-        'all_punctuations': re.compile('([^\s]+)$'),
-        }
+    # This matches only alphanumerics and underscores.
+    'alphanum_underscore': re.compile(r'(\w+)$'),
+    # This matches everything except spaces, parens, colon, and comma
+    'many_punctuations': re.compile(r'([^():,\s]+)$'),
+    # This matches everything except spaces, parens, colon, comma, and period
+    'most_punctuations': re.compile(r'([^\.():,\s]+)$'),
+    # This matches everything except a space.
+    'all_punctuations': re.compile('([^\s]+)$'),
+}
 
 
 def last_word(text, include='alphanum_underscore'):
@@ -51,7 +51,7 @@ def last_word(text, include='alphanum_underscore'):
     '"foo*bar'
     """
 
-    if not text:   # Empty string
+    if not text:  # Empty string
         return ''
 
     if text[-1].isspace():
@@ -118,7 +118,7 @@ def extract_from_part(parsed, stop_at_punctuation=True):
         elif isinstance(item, IdentifierList):
             for identifier in item.get_identifiers():
                 if (identifier.ttype is Keyword and
-                        identifier.value.upper() == 'FROM'):
+                            identifier.value.upper() == 'FROM'):
                     tbl_prefix_seen = True
                     break
 
@@ -202,7 +202,7 @@ def find_prev_keyword(sql):
 
     for t in reversed(flattened):
         if t.value == '(' or (t.is_keyword and (
-                              t.value.upper() not in logical_operators)):
+                    t.value.upper() not in logical_operators)):
             # Find the location of token t in the original parsed statement
             # We can't use parsed.token_index(t) because t may be a child token
             # inside a TokenList, in which case token_index thows an error
@@ -215,7 +215,7 @@ def find_prev_keyword(sql):
             # Combine the string values of all tokens in the original list
             # up to and including the target keyword token t, to produce a
             # query string with everything after the keyword token removed
-            text = ''.join(tok.value for tok in flattened[:idx+1])
+            text = ''.join(tok.value for tok in flattened[:idx + 1])
             return t, text
 
     return None, ''
@@ -245,7 +245,7 @@ def _parsed_is_open_quote(parsed):
         elif (tok.ttype in Token.Name.Builtin
               and dollar_quote_regex.match(tok.value)):
             # Find the matching closing dollar quote sign
-            for (j, tok2) in enumerate(tokens[i+1:], i+1):
+            for (j, tok2) in enumerate(tokens[i + 1:], i + 1):
                 if tok2.match(Token.Name.Builtin, tok.value):
                     # Found the matching closing quote - continue our scan for
                     # open quotes thereafter

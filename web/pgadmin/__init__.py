@@ -31,13 +31,12 @@ import config
 
 
 class PgAdmin(Flask):
-
     def find_submodules(self, basemodule):
         for module_name in find_modules(basemodule, True):
             if module_name in self.config['MODULE_BLACKLIST']:
                 self.logger.info(
-                        'Skipping blacklisted module: %s' % module_name
-                        )
+                    'Skipping blacklisted module: %s' % module_name
+                )
                 continue
             self.logger.info('Examining potential module: %s' % module_name)
             module = import_module(module_name)
@@ -103,6 +102,7 @@ class PgAdmin(Flask):
 def _find_blueprint():
     if request.blueprint:
         return current_app.blueprints[request.blueprint]
+
 
 current_blueprint = LocalProxy(_find_blueprint)
 
@@ -178,7 +178,7 @@ def create_app(app_name=config.APP_NAME):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}'.format(
         config.SQLITE_PATH.replace('\\', '/'),
         getattr(config, 'SQLITE_TIMEOUT', 500)
-        )
+    )
 
     # Only enable password related functionality in server mode.
     if config.SERVER_MODE is True:
@@ -204,10 +204,10 @@ def create_app(app_name=config.APP_NAME):
         # Pre-flight checks
         if int(version.value) < int(config.SETTINGS_SCHEMA_VERSION):
             app.logger.info(
-                    """Upgrading the database schema from version {0} to {1}.""".format(
-                        version.value, config.SETTINGS_SCHEMA_VERSION
-                        )
-                    )
+                """Upgrading the database schema from version {0} to {1}.""".format(
+                    version.value, config.SETTINGS_SCHEMA_VERSION
+                )
+            )
             from setup import do_upgrade
             do_upgrade(app, user_datastore, security, version)
 
@@ -236,9 +236,9 @@ def create_app(app_name=config.APP_NAME):
             # that'll through a nice 500 error for us.
             if user is None:
                 app.logger.error(
-                        'The desktop user %s was not found in the configuration database.'
-                        % config.DESKTOP_USER
-                        )
+                    'The desktop user %s was not found in the configuration database.'
+                    % config.DESKTOP_USER
+                )
                 abort(401)
 
             login_user(user)
@@ -263,7 +263,7 @@ def create_app(app_name=config.APP_NAME):
         return {
             'current_app': current_app,
             'current_blueprint': current_blueprint
-            }
+        }
 
     ##########################################################################
     # All done!

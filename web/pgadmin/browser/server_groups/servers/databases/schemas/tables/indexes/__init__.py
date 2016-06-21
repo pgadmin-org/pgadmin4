@@ -73,7 +73,7 @@ class IndexesModule(CollectionNodeModule):
             if not conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -82,7 +82,7 @@ class IndexesModule(CollectionNodeModule):
 
             template_path = 'index/sql/9.1_plus'
             SQL = render_template("/".join(
-                  [template_path, 'backend_support.sql']), vid=kwargs['vid'])
+                [template_path, 'backend_support.sql']), vid=kwargs['vid'])
             status, res = conn.execute_scalar(SQL)
 
             # check if any errors
@@ -96,7 +96,7 @@ class IndexesModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        assert('tid' in kwargs or 'vid' in kwargs)
+        assert ('tid' in kwargs or 'vid' in kwargs)
         yield self.generate_browser_collection_node(
             kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
         )
@@ -115,6 +115,7 @@ class IndexesModule(CollectionNodeModule):
         Load the module node as a leaf node
         """
         return False
+
 
 blueprint = IndexesModule(__name__)
 
@@ -180,15 +181,15 @@ class IndexesView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'idx'}
-            ]
+        {'type': 'int', 'id': 'idx'}
+    ]
 
     operations = dict({
         'obj': [
@@ -209,7 +210,7 @@ class IndexesView(PGChildNodeView):
         'get_access_methods': [{'get': 'get_access_methods'},
                                {'get': 'get_access_methods'}],
         'get_op_class': [{'get': 'get_op_class'},
-                               {'get': 'get_op_class'}]
+                         {'get': 'get_op_class'}]
     })
 
     def check_precondition(f):
@@ -218,6 +219,7 @@ class IndexesView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -230,7 +232,7 @@ class IndexesView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -274,13 +276,13 @@ class IndexesView(PGChildNodeView):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['collation'],
-                             'value': row['collation']}
-                        )
+                    {'label': row['collation'],
+                     'value': row['collation']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -301,13 +303,13 @@ class IndexesView(PGChildNodeView):
 
             for row in rset['rows']:
                 res.append(
-                            {'label': row['amname'],
-                             'value': row['amname']}
-                        )
+                    {'label': row['amname'],
+                     'value': row['amname']}
+                )
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -346,13 +348,12 @@ class IndexesView(PGChildNodeView):
                 res[row['amname']] = op_class_list
 
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
 
     @check_precondition
     def list(self, gid, sid, did, scid, tid):
@@ -377,9 +378,9 @@ class IndexesView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
@@ -406,17 +407,17 @@ class IndexesView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon="icon-index"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-index"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def _column_details(self, idx, data):
         """
@@ -469,7 +470,6 @@ class IndexesView(PGChildNodeView):
 
         return data
 
-
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, idx):
         """
@@ -505,9 +505,9 @@ class IndexesView(PGChildNodeView):
         data = self._column_details(idx, data)
 
         return ajax_response(
-                response=data,
-                status=200
-                )
+            response=data,
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -705,7 +705,6 @@ class IndexesView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-
     @check_precondition
     def msql(self, gid, sid, did, scid, tid, idx=None):
         """
@@ -735,9 +734,9 @@ class IndexesView(PGChildNodeView):
 
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -765,7 +764,7 @@ class IndexesView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = {
                 'name': 'Name',
@@ -855,9 +854,9 @@ class IndexesView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, idx):
@@ -879,9 +878,9 @@ class IndexesView(PGChildNodeView):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def statistics(self, gid, sid, did, scid, tid, idx=None):
@@ -933,8 +932,8 @@ class IndexesView(PGChildNodeView):
                     "/".join([self.template_path, 'stats.sql']),
                     conn=self.conn, schema=self.schema,
                     index=index, idx=idx, is_pgstattuple=is_pgstattuple
-                    )
                 )
+            )
 
         else:
             status, res = self.conn.execute_dict(
@@ -942,15 +941,16 @@ class IndexesView(PGChildNodeView):
                     "/".join([self.template_path, 'coll_stats.sql']),
                     conn=self.conn, schema=self.schema,
                     table=self.table
-                    )
                 )
+            )
 
         if not status:
-                return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
+
 
 IndexesView.register_node_view(blueprint)

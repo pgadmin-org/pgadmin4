@@ -2,12 +2,12 @@
 {% block panel_title %}{{ _('%(appname)s Login', appname=config.APP_NAME) }}{% endblock %}
 {% block panel_body %}
 <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
-  {{ login_user_form.hidden_tag() }}
-  <fieldset>
-    {{ render_field_with_errors(login_user_form.email, "text") }}
-    {{ render_field_with_errors(login_user_form.password, "password") }}
-    <input class="btn btn-lg btn-success btn-block" type="submit" value="{{ _('Login') }}">
-  </fieldset>
+    {{ login_user_form.hidden_tag() }}
+    <fieldset>
+        {{ render_field_with_errors(login_user_form.email, "text") }}
+        {{ render_field_with_errors(login_user_form.password, "password") }}
+        <input class="btn btn-lg btn-success btn-block" type="submit" value="{{ _('Login') }}">
+    </fieldset>
 </form>
 <span class="help-block">{{ _('Forgotten your <a href="%(url)s">password</a>?', url=url_for('security.forgot_password')) }}</span>
 {% endblock %}

@@ -182,14 +182,14 @@ class IndexConstraintView(PGChildNodeView):
     node_label = _('Index constraint')
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [{'type': 'int', 'id': 'cid'}
-            ]
+           ]
 
     operations = dict({
         'obj': [
@@ -213,14 +213,14 @@ class IndexConstraintView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "index_constraint/js/index_constraint.js",
-                    _=_,
-                    node_type=self.node_type,
-                    node_label=self.node_label
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "index_constraint/js/index_constraint.js",
+                _=_,
+                node_type=self.node_type,
+                node_label=self.node_label
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -228,20 +228,21 @@ class IndexConstraintView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid']
-                )
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 return precondition_required(
                     _(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -263,7 +264,7 @@ class IndexConstraintView(PGChildNodeView):
 
     def end_transaction(self):
         SQL = render_template(
-                "/".join([self.template_path, 'end.sql']))
+            "/".join([self.template_path, 'end.sql']))
         # End transaction if any.
         self.conn.execute_scalar(SQL)
 
@@ -287,7 +288,7 @@ class IndexConstraintView(PGChildNodeView):
         sql = render_template("/".join([self.template_path, 'properties.sql']),
                               tid=tid,
                               cid=cid,
-                              constraint_type= self.constraint_type)
+                              constraint_type=self.constraint_type)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -306,14 +307,14 @@ class IndexConstraintView(PGChildNodeView):
 
         columns = []
         for row in res['rows']:
-            columns.append({"column":   row['column'].strip('"')})
+            columns.append({"column": row['column'].strip('"')})
 
         result['columns'] = columns
 
         return ajax_response(
-                response=result,
-                status=200
-                )
+            response=result,
+            status=200
+        )
 
     @check_precondition
     def list(self, gid, sid, did, scid, tid, cid=None):
@@ -335,9 +336,9 @@ class IndexConstraintView(PGChildNodeView):
         try:
             res = self.get_node_list(gid, sid, did, scid, tid, cid)
             return ajax_response(
-                    response=res,
-                    status=200
-                    )
+                response=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -360,7 +361,7 @@ class IndexConstraintView(PGChildNodeView):
         """
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               tid=tid,
-                              constraint_type= self.constraint_type)
+                              constraint_type=self.constraint_type)
         status, res = self.conn.execute_dict(SQL)
 
         return res['rows']
@@ -385,9 +386,9 @@ class IndexConstraintView(PGChildNodeView):
         try:
             res = self.get_nodes(gid, sid, did, scid, tid, cid)
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -415,12 +416,12 @@ class IndexConstraintView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon="icon-%s" % self.node_type
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ))
         return res
 
     @check_precondition
@@ -440,7 +441,7 @@ class IndexConstraintView(PGChildNodeView):
 
         """
         required_args = [
-            [u'columns', u'index']    # Either of one should be there.
+            [u'columns', u'index']  # Either of one should be there.
         ]
 
         data = request.form if request.form else json.loads(request.data.decode())
@@ -456,16 +457,16 @@ class IndexConstraintView(PGChildNodeView):
                 for param in arg:
                     if (param in data and
                             (not isinstance(data[param], list) or
-                                (isinstance(data[param], list) and
-                                    len(data[param]) > 0))):
+                                 (isinstance(data[param], list) and
+                                          len(data[param]) > 0))):
                         break
                 else:
                     return make_json_response(
-                      status=400,
-                      success=0,
-                      errormsg=_(
-                          "Couldn't find at least one required parameter (%s)." % str(param)
-                      )
+                        status=400,
+                        success=0,
+                        errormsg=_(
+                            "Couldn't find at least one required parameter (%s)." % str(param)
+                        )
                     )
 
             elif arg not in data:
@@ -494,7 +495,7 @@ class IndexConstraintView(PGChildNodeView):
                 "/".join([self.template_path, 'create.sql']),
                 data=data, conn=self.conn,
                 constraint_name=self.constraint_name
-                )
+            )
 
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
@@ -534,8 +535,8 @@ class IndexConstraintView(PGChildNodeView):
                     tid,
                     data['name'],
                     icon="icon-%s" % self.node_type
-                    )
                 )
+            )
 
         except Exception as e:
             self.end_transaction()
@@ -636,7 +637,7 @@ class IndexConstraintView(PGChildNodeView):
         try:
             sql = render_template("/".join([self.template_path, 'get_name.sql']),
                                   tid=tid,
-                                  constraint_type = self.constraint_type,
+                                  constraint_type=self.constraint_type,
                                   cid=cid)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -698,9 +699,9 @@ class IndexConstraintView(PGChildNodeView):
             sql = sql.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -721,7 +722,7 @@ class IndexConstraintView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'properties.sql']),
                                   tid=tid,
                                   cid=cid,
-                                  constraint_type= self.constraint_type)
+                                  constraint_type=self.constraint_type)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -737,7 +738,7 @@ class IndexConstraintView(PGChildNodeView):
                                   o_data=old_data)
         else:
             required_args = [
-                [u'columns', u'index']    # Either of one should be there.
+                [u'columns', u'index']  # Either of one should be there.
             ]
 
             for arg in required_args:
@@ -745,9 +746,9 @@ class IndexConstraintView(PGChildNodeView):
                     for param in arg:
                         if (param in data and
                                 ((isinstance(data[param], str) and
-                                    data[param] != "") or
-                                    (isinstance(data[param], list) and
-                                        len(data[param]) > 0))):
+                                          data[param] != "") or
+                                     (isinstance(data[param], list) and
+                                              len(data[param]) > 0))):
                             break
                     else:
                         return _('-- definition incomplete')
@@ -805,7 +806,7 @@ class IndexConstraintView(PGChildNodeView):
 
             columns = []
             for row in res['rows']:
-                columns.append({"column":   row['column'].strip('"')})
+                columns.append({"column": row['column'].strip('"')})
 
             data['columns'] = columns
 
@@ -817,8 +818,8 @@ class IndexConstraintView(PGChildNodeView):
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    data=data)
+                "/".join([self.template_path, 'delete.sql']),
+                data=data)
             sql_header += "\n"
 
             SQL = sql_header + SQL
@@ -859,7 +860,7 @@ class IndexConstraintView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'properties.sql']),
                                   tid=tid,
                                   cid=cid,
-                                  constraint_type= self.constraint_type)
+                                  constraint_type=self.constraint_type)
             status, res = self.conn.execute_dict(sql)
 
             if not status:
@@ -875,15 +876,16 @@ class IndexConstraintView(PGChildNodeView):
                 "/".join([self.template_path, 'stats.sql']),
                 conn=self.conn, schema=self.schema,
                 name=name, cid=cid, is_pgstattuple=is_pgstattuple
-                )
             )
+        )
         if not status:
-                return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
+
 
 class PrimaryKeyConstraintView(IndexConstraintView):
     node_type = 'primary_key'
@@ -907,11 +909,11 @@ class UniqueConstraintView(IndexConstraintView):
 
 primary_key_constraint = ConstraintRegistry(
     'primary_key', PrimaryKeyConstraintModule, PrimaryKeyConstraintView
-    )
+)
 
 unique_constraint = ConstraintRegistry(
     'unique_constraint', UniqueConstraintModule, UniqueConstraintView
-    )
+)
 
 PrimaryKeyConstraintView.register_node_view(primary_key_blueprint)
 UniqueConstraintView.register_node_view(unique_constraint_blueprint)

@@ -41,7 +41,7 @@ class SqliteSessionStorage(MutableMapping, SessionMixin):
         '  key TEXT PRIMARY KEY,'
         '  val BLOB'
         ')'
-        )
+    )
     _get_sql = 'SELECT val FROM pg_session WHERE key = ?'
     _set_sql = 'REPLACE INTO pg_session (key, val) VALUES (?, ?)'
     _del_sql = 'DELETE FROM pg_session WHERE key = ?'
@@ -166,7 +166,7 @@ class SqliteSessionStorage(MutableMapping, SessionMixin):
             if callable(attr):
                 return SqliteSessionStorage.CallableAttributeProxy(
                     self.session, self.key, self.obj, attr
-                    )
+                )
             return attr
 
     def setdefault(self, key, value):
@@ -179,7 +179,7 @@ class SqliteSessionStorage(MutableMapping, SessionMixin):
 
         return SqliteSessionStorage.PersistedObjectProxy(
             self, key, self[key]
-            )
+        )
 
 
 class ServerSideSessionInterface(SessionInterface):
@@ -227,10 +227,10 @@ class ServerSideSessionInterface(SessionInterface):
                 response.delete_cookie(
                     app.session_cookie_name,
                     domain=domain
-                    )
+                )
             return
         cookie_exp = self.get_expiration_time(app, session)
         response.set_cookie(
             app.session_cookie_name, session.sid,
             expires=cookie_exp, httponly=True, domain=domain
-            )
+        )

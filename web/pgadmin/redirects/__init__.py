@@ -17,6 +17,7 @@ MODULE_NAME = 'redirects'
 blueprint = PgAdminModule(MODULE_NAME, __name__,
                           url_prefix='/')
 
+
 @blueprint.route('/')
 @login_required
 def index():

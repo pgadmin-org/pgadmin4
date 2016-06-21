@@ -55,12 +55,12 @@ class TablespaceView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'tsid'}
-            ]
+        {'type': 'int', 'id': 'tsid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -86,12 +86,12 @@ class TablespaceView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "tablespaces/js/tablespaces.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "tablespaces/js/tablespaces.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -99,6 +99,7 @@ class TablespaceView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,tsid
@@ -110,11 +111,11 @@ class TablespaceView(PGChildNodeView):
             if not self.conn.connected():
                 current_app.logger.warning(
                     "Connection to the server has been lost!"
-                    )
+                )
                 return precondition_required(
                     gettext(
                         "Connection to the server has been lost!"
-                        )
+                    )
                 )
 
             ver = self.manager.version
@@ -124,11 +125,12 @@ class TablespaceView(PGChildNodeView):
                 self.template_path = 'tablespaces/sql/9.1_plus'
             current_app.logger.debug(
                 "Using the template path: %s", self.template_path
-                )
+            )
             # Allowed ACL on tablespace
             self.acl = ['C']
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -136,15 +138,15 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             conn=self.conn
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, tsid=None):
@@ -152,24 +154,24 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
             tsid=tsid, conn=self.conn
-            )
+        )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        sid,
-                        row['name'],
-                        icon="icon-tablespace"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    sid,
+                    row['name'],
+                    icon="icon-tablespace"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def _formatter(self, data, tsid=None):
         """
@@ -202,7 +204,7 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
             tsid=tsid, conn=self.conn
-            )
+        )
         status, acl = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=acl)
@@ -225,7 +227,7 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             tsid=tsid, conn=self.conn
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -235,9 +237,9 @@ class TablespaceView(PGChildNodeView):
         copy_data = self._formatter(copy_data, tsid)
 
         return ajax_response(
-                response=copy_data,
-                status=200
-                )
+            response=copy_data,
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid):
@@ -271,7 +273,7 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data, conn=self.conn
-                )
+            )
 
             status, res = self.conn.execute_scalar(SQL)
 
@@ -280,7 +282,7 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'alter.sql']),
                 data=data, conn=self.conn
-                )
+            )
 
             # Checking if we are not executing empty query
             if SQL and SQL.strip('\n') and SQL.strip(' '):
@@ -292,7 +294,7 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'alter.sql']),
                 tablespace=data['name'], conn=self.conn
-                )
+            )
 
             status, tsid = self.conn.execute_scalar(SQL)
 
@@ -360,8 +362,8 @@ class TablespaceView(PGChildNodeView):
                 render_template(
                     "/".join([self.template_path, 'nodes.sql']),
                     tsid=tsid, conn=self.conn
-                    )
                 )
+            )
 
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -369,13 +371,13 @@ class TablespaceView(PGChildNodeView):
             if len(rset['rows']) != 1:
                 return gone(
                     errormsg=gettext("Could not find the tablespace on the server.")
-                    )
+                )
 
             # drop tablespace
             SQL = render_template(
                 "/".join([self.template_path, 'delete.sql']),
                 tsname=(rset['rows'][0])['name'], conn=self.conn
-                )
+            )
 
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -388,8 +390,8 @@ class TablespaceView(PGChildNodeView):
                     'id': tsid,
                     'sid': sid,
                     'gid': gid,
-                    }
-                )
+                }
+            )
 
         except Exception as e:
             current_app.logger.exception(e)
@@ -431,7 +433,7 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
                 tsid=tsid, conn=self.conn
-                )
+            )
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -444,11 +446,11 @@ class TablespaceView(PGChildNodeView):
             for key in ['spcacl']:
                 if key in data and data[key] is not None:
                     if 'added' in data[key]:
-                      data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], self.acl)
                     if 'changed' in data[key]:
-                      data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], self.acl)
                     if 'deleted' in data[key]:
-                      data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -459,7 +461,7 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data
-                )
+            )
         else:
             # To format privileges coming from client
             if 'spcacl' in data:
@@ -468,12 +470,12 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data
-                )
+            )
             SQL += "\n"
             SQL += render_template(
                 "/".join([self.template_path, 'alter.sql']),
                 data=data, conn=self.conn
-                )
+            )
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         return SQL
 
@@ -485,7 +487,7 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             tsid=tsid, conn=self.conn
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -505,12 +507,12 @@ class TablespaceView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=old_data
-                )
+            )
             SQL += "\n"
         SQL += render_template(
             "/".join([self.template_path, 'alter.sql']),
             data=old_data, conn=self.conn
-            )
+        )
 
         sql_header = """
 -- Tablespace: {0}
@@ -522,7 +524,6 @@ class TablespaceView(PGChildNodeView):
         SQL = sql_header + SQL
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         return ajax_response(response=SQL.strip('\n'))
-
 
     @check_precondition
     def variable_options(self, gid, sid):
@@ -537,16 +538,16 @@ class TablespaceView(PGChildNodeView):
         """
         SQL = render_template(
             "/".join([self.template_path, 'variables.sql'])
-            )
+        )
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=rset)
 
         return make_json_response(
-                data=rset['rows'],
-                status=200
-                )
+            data=rset['rows'],
+            status=200
+        )
 
     @check_precondition
     def statistics(self, gid, sid, tsid=None):
@@ -556,7 +557,7 @@ class TablespaceView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'stats.sql']),
             tsid=tsid, conn=self.conn
-            )
+        )
         status, res = self.conn.execute_scalar(SQL)
 
         if not status:
@@ -581,9 +582,9 @@ class TablespaceView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, tsid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def dependents(self, gid, sid, tsid):
@@ -598,9 +599,9 @@ class TablespaceView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, sid, tsid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     def get_dependents(self, conn, sid, tsid):
         """
@@ -648,7 +649,7 @@ class TablespaceView(PGChildNodeView):
             if tsid == oid:
                 dependents.append({
                     'type': 'database', 'name': '', 'field': db_row['datname']
-                    })
+                })
 
             # If connection to the database is not allowed then continue
             # with the next database
@@ -780,7 +781,9 @@ class TablespaceView(PGChildNodeView):
         )
 
         return make_json_response(
-                data=sql.strip('\n'),
-                status=200
-            )
+            data=sql.strip('\n'),
+            status=200
+        )
+
+
 TablespaceView.register_node_view(blueprint)

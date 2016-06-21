@@ -83,6 +83,7 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         """
         return servers.ServerModule.NODE_TYPE
 
+
 blueprint = ForeignDataWrapperModule(__name__)
 
 
@@ -155,13 +156,13 @@ class ForeignDataWrapperView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'fid'}
-            ]
+        {'type': 'int', 'id': 'fid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -169,7 +170,7 @@ class ForeignDataWrapperView(PGChildNodeView):
             {'get': 'list', 'post': 'create'}
         ],
         'delete': [{
-           'delete': 'delete'
+            'delete': 'delete'
         }],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
@@ -189,12 +190,12 @@ class ForeignDataWrapperView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "foreign_data_wrappers/js/foreign_data_wrappers.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "foreign_data_wrappers/js/foreign_data_wrappers.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -202,6 +203,7 @@ class ForeignDataWrapperView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -213,7 +215,7 @@ class ForeignDataWrapperView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -225,6 +227,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                 self.template_path = 'foreign_data_wrappers/sql/9.1_plus'
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -248,9 +251,9 @@ class ForeignDataWrapperView(PGChildNodeView):
                 row['fdwoptions'] = self.tokenize_options(row['fdwoptions'])
 
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did):
@@ -271,17 +274,17 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         for row in r_set['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['fdwoid'],
-                        did,
-                        row['name'],
-                        icon="icon-foreign_data_wrapper"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['fdwoid'],
+                    did,
+                    row['name'],
+                    icon="icon-foreign_data_wrapper"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def tokenize_options(self, option_value):
         """
@@ -334,9 +337,9 @@ class ForeignDataWrapperView(PGChildNodeView):
                 res['rows'][0][row['deftype']] = [privilege]
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -431,7 +434,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                     success=1,
                     info="Foreign Data Wrapper updated",
                     data={
-                        'id':  fid,
+                        'id': fid,
                         'did': did,
                         'sid': sid,
                         'gid': gid
@@ -442,7 +445,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                     success=1,
                     info="Nothing to update",
                     data={
-                        'id':  fid,
+                        'id': fid,
                         'did': did,
                         'sid': sid,
                         'gid': gid
@@ -516,9 +519,9 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         sql = self.get_sql(gid, sid, data, did, fid)
         if sql and sql.strip('\n') and sql.strip(' '):
-            return make_json_response(data=sql,status=200)
+            return make_json_response(data=sql, status=200)
         else:
-            return make_json_response(data='-- Modified SQL --',status=200)
+            return make_json_response(data='-- Modified SQL --', status=200)
 
     def get_sql(self, gid, sid, data, did, fid=None):
         """
@@ -547,11 +550,11 @@ class ForeignDataWrapperView(PGChildNodeView):
                 for key in ['fdwacl']:
                     if key in data and data[key] is not None:
                         if 'added' in data[key]:
-                          data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
+                            data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
                         if 'changed' in data[key]:
-                          data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
+                            data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
                         if 'deleted' in data[key]:
-                          data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
+                            data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
 
                 old_data = res['rows'][0]
                 for arg in required_args:
@@ -688,7 +691,7 @@ class ForeignDataWrapperView(PGChildNodeView):
             for row in r_set['rows']:
                 res.append({'label': row['fdwvalue'], 'value': row['fdwvalue']})
 
-            return make_json_response( data=res, status=200)
+            return make_json_response(data=res, status=200)
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -715,9 +718,9 @@ class ForeignDataWrapperView(PGChildNodeView):
                 res.append({'label': row['fdwhan'], 'value': row['fdwhan']})
 
             return make_json_response(
-                   data=res,
-                   status=200
-                   )
+                data=res,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -736,9 +739,9 @@ class ForeignDataWrapperView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, fid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, fid):
@@ -754,8 +757,9 @@ class ForeignDataWrapperView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, fid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 ForeignDataWrapperView.register_node_view(blueprint)

@@ -1,77 +1,78 @@
 <div class="dashboard-container">
-<div class="row">
-    <div class="col-xs-12">
-        <div class="obj_properties">
-            <legend class="badge">Welcome</legend>
-        </div>
-        <div class="well well-lg">
-            <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}" alt="pgAdmin 4">
-            <h4>Feature rich | Maximises PostgreSQL | Open Source </h4>
-            <p>
-                pgAdmin is an open source administration and management tool for the PostgreSQL
-                database. The tools include a graphical administration interface, an SQL query
-                tool, a procedural code debugger and much more. The tool is designed to answer
-                the needs of developers, DBAs and system administrators alike.
-            </p>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="obj_properties">
+                <legend class="badge">Welcome</legend>
+            </div>
+            <div class="well well-lg">
+                <img src="{{ url_for('dashboard.static', filename='img/welcome_logo.png') }}" alt="pgAdmin 4">
+                <h4>Feature rich | Maximises PostgreSQL | Open Source </h4>
+                <p>
+                    pgAdmin is an open source administration and management tool for the PostgreSQL
+                    database. The tools include a graphical administration interface, an SQL query
+                    tool, a procedural code debugger and much more. The tool is designed to answer
+                    the needs of developers, DBAs and system administrators alike.
+                </p>
+            </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="obj_properties">
-            <legend class="badge">Quick Links</legend>
-        </div>
-        <div class="well well-lg">
-            <div class="row">
-                <div class="col-xs-6 dashboard-link">
-                    <a onclick="pgAdmin.Dashboard.add_new_server()">
-                        <span class="fa fa-4x dashboard-icon fa-server" aria-hidden="true"></span><br />
-                        Add New Server
-                    </a>
-                </div>
-                <div class="col-xs-6 dashboard-link">
-                    <a onclick="pgAdmin.Preferences.show()">
-                        <span id="mnu_preferences" class="fa fa-4x dashboard-icon fa-cogs" aria-hidden="true"></span><br />
-                        Configure pgAdmin
-                    </a>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="obj_properties">
+                <legend class="badge">Quick Links</legend>
+            </div>
+            <div class="well well-lg">
+                <div class="row">
+                    <div class="col-xs-6 dashboard-link">
+                        <a onclick="pgAdmin.Dashboard.add_new_server()">
+                            <span class="fa fa-4x dashboard-icon fa-server" aria-hidden="true"></span><br/>
+                            Add New Server
+                        </a>
+                    </div>
+                    <div class="col-xs-6 dashboard-link">
+                        <a onclick="pgAdmin.Preferences.show()">
+                            <span id="mnu_preferences" class="fa fa-4x dashboard-icon fa-cogs"
+                                  aria-hidden="true"></span><br/>
+                            Configure pgAdmin
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-xs-12">
-        <div class="obj_properties">
-            <legend class="badge">Getting Started</legend>
-        </div>
-        <div class="well well-lg">
-            <div class="row">
-                <div class="col-xs-3 dashboard-link">
-                    <a href="http://www.postgresql.org/docs" target="_new">
-                        <span class="fa fa-4x dashboard-icon icon-postgres" aria-hidden="true"></span><br />
-                        PostgreSQL Documentation
-                    </a>
-                </div>
-                <div class="col-xs-3 dashboard-link">
-                    <a href="https://www.pgadmin.org" target="_new">
-                        <span class="fa fa-4x dashboard-icon fa-globe" aria-hidden="true"></span><br />
-                        pgAdmin Website
-                    </a>
-                </div>
-                <div class="col-xs-3 dashboard-link">
-                    <a href="http://planet.postgresql.org" target="_new">
-                        <span class="fa fa-4x dashboard-icon fa-book" aria-hidden="true"></span><br />
-                        Planet PostgreSQL
-                    </a>
-                </div>
-                <div class="col-xs-3 dashboard-link">
-                    <a href="http://www.postgresql.org/community" target="_new">
-                        <span class="fa fa-4x dashboard-icon fa-users" aria-hidden="true"></span><br />
-                        Community Support
-                    </a>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="obj_properties">
+                <legend class="badge">Getting Started</legend>
+            </div>
+            <div class="well well-lg">
+                <div class="row">
+                    <div class="col-xs-3 dashboard-link">
+                        <a href="http://www.postgresql.org/docs" target="_new">
+                            <span class="fa fa-4x dashboard-icon icon-postgres" aria-hidden="true"></span><br/>
+                            PostgreSQL Documentation
+                        </a>
+                    </div>
+                    <div class="col-xs-3 dashboard-link">
+                        <a href="https://www.pgadmin.org" target="_new">
+                            <span class="fa fa-4x dashboard-icon fa-globe" aria-hidden="true"></span><br/>
+                            pgAdmin Website
+                        </a>
+                    </div>
+                    <div class="col-xs-3 dashboard-link">
+                        <a href="http://planet.postgresql.org" target="_new">
+                            <span class="fa fa-4x dashboard-icon fa-book" aria-hidden="true"></span><br/>
+                            Planet PostgreSQL
+                        </a>
+                    </div>
+                    <div class="col-xs-3 dashboard-link">
+                        <a href="http://www.postgresql.org/community" target="_new">
+                            <span class="fa fa-4x dashboard-icon fa-users" aria-hidden="true"></span><br/>
+                            Community Support
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

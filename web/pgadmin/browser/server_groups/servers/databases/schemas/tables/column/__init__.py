@@ -70,7 +70,7 @@ class ColumnsModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        assert('tid' in kwargs or 'vid' in kwargs)
+        assert ('tid' in kwargs or 'vid' in kwargs)
         yield self.generate_browser_collection_node(
             kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
         )
@@ -155,17 +155,17 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [
-            # Here we specify type as any because table
-            # are also has '-' in them if they are system table
-            {'type': 'string', 'id': 'clid'}
-            ]
+        # Here we specify type as any because table
+        # are also has '-' in them if they are system table
+        {'type': 'string', 'id': 'clid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -188,6 +188,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -202,7 +203,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -255,9 +256,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
@@ -291,12 +292,12 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     row['name'],
                     icon="icon-column",
                     datatype=row['datatype']  # We need datatype somewhere in
-            ))                                # exclusion constraint.
+                ))  # exclusion constraint.
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     def _formatter(self, scid, tid, clid, data):
         """
@@ -468,9 +469,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data = self._formatter(scid, tid, clid, data)
 
         return ajax_response(
-                response=data,
-                status=200
-                )
+            response=data,
+            status=200
+        )
 
     def _cltype_formatter(self, type):
         """
@@ -671,7 +672,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-
     @check_precondition
     def msql(self, gid, sid, did, scid, tid, clid=None):
         """
@@ -706,9 +706,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -739,21 +739,21 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if key in data and data[key] is not None:
                 if 'added' in data[key]:
                     data[key]['added'] = parse_priv_to_db(
-                      data[key]['added'], self.acl
+                        data[key]['added'], self.acl
                     )
                 if 'changed' in data[key]:
                     data[key]['changed'] = parse_priv_to_db(
-                      data[key]['changed'], self.acl
+                        data[key]['changed'], self.acl
                     )
                 if 'deleted' in data[key]:
                     data[key]['deleted'] = parse_priv_to_db(
-                      data[key]['deleted'], self.acl
+                        data[key]['deleted'], self.acl
                     )
 
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = [
                 'name',
@@ -875,9 +875,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             dependents_result.append({'type': 'sequence', 'name': ref_name, 'field': dep_type})
 
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, clid):
@@ -900,9 +900,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def statistics(self, gid, sid, did, scid, tid, clid):
@@ -935,16 +935,16 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 "/".join([self.template_path, 'stats.sql']),
                 conn=self.conn, schema=self.schema,
                 table=self.table, column=column
-                )
             )
+        )
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
 
 ColumnsView.register_node_view(blueprint)

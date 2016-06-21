@@ -46,17 +46,18 @@ class DebuggerModule(PgAdminModule):
     def get_own_javascripts(self):
         scripts = list()
         for name, script in [
-                ['pgadmin.tools.debugger.controller', 'js/debugger'],
-                ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
-                ['pgadmin.tools.debugger.direct', 'js/direct']
-                ]:
+            ['pgadmin.tools.debugger.controller', 'js/debugger'],
+            ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
+            ['pgadmin.tools.debugger.direct', 'js/direct']
+        ]:
             scripts.append({
                 'name': name,
                 'path': url_for('debugger.index') + script,
                 'when': None
-                })
+            })
 
         return scripts
+
 
 blueprint = DebuggerModule(MODULE_NAME, __name__)
 
@@ -148,7 +149,8 @@ def init_function(node_type, sid, did, scid, fid):
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
 
-    sql = render_template("/".join([template_path, 'get_function_debug_info.sql']), is_ppas_database=ppas_server, hasFeatureFunctionDefaults= True, fid=fid)
+    sql = render_template("/".join([template_path, 'get_function_debug_info.sql']), is_ppas_database=ppas_server,
+                          hasFeatureFunctionDefaults=True, fid=fid)
     status, r_set = conn.execute_dict(sql)
     if not status:
         current_app.logger.debug("Error retrieving function information from database")
@@ -179,7 +181,8 @@ def init_function(node_type, sid, did, scid, fid):
                     if "plugin_debugger" not in rid_pre:
                         ret_status = False
 
-            status_in, rid_tar = conn.execute_scalar("SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
+            status_in, rid_tar = conn.execute_scalar(
+                "SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
                 current_app.logger.debug("Could not fetch debugger target information.")
                 return internal_server_error(gettext("Could not fetch debugger target information."))
@@ -247,9 +250,9 @@ def init_function(node_type, sid, did, scid, fid):
     session['funcData'] = function_data
 
     return make_json_response(
-                data=r_set['rows'],
-                status=200
-                )
+        data=r_set['rows'],
+        status=200
+    )
 
 
 @blueprint.route('/direct/<int:trans_id>', methods=['GET'])
@@ -272,10 +275,11 @@ def direct_new(trans_id):
         uniqueId=trans_id,
         debug_type=debug_type,
         stylesheets=[url_for('debugger.static', filename='css/debugger.css')]
-        )
+    )
 
 
-@blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>', methods=['GET', 'POST'])
+@blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
+                 methods=['GET', 'POST'])
 @login_required
 def initialize_target(debug_type, sid, did, scid, func_id):
     """
@@ -324,10 +328,10 @@ def initialize_target(debug_type, sid, did, scid, func_id):
 
     # Find out the debugger version and store it in session variables
     status, rid = conn.execute_scalar(
-                    "SELECT COUNT(*) FROM pg_catalog.pg_proc p \
-                        LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid \
-                    WHERE n.nspname = ANY(current_schemas(false)) AND p.proname = 'pldbg_get_proxy_info';"
-                    )
+        "SELECT COUNT(*) FROM pg_catalog.pg_proc p \
+            LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid \
+        WHERE n.nspname = ANY(current_schemas(false)) AND p.proname = 'pldbg_get_proxy_info';"
+    )
 
     if not status:
         return internal_server_error(errormsg=rid)
@@ -369,7 +373,7 @@ def initialize_target(debug_type, sid, did, scid, func_id):
         'debugger_version': debugger_version,
         'frame_id': 0,
         'restart_debug': 0
-        }
+    }
 
     # Store the grid dictionary into the session variable
     session['debuggerData'] = debugger_data
@@ -574,7 +578,8 @@ def start_debugger_listener(trans_id):
             str_query = ''
 
             # Form the function name with schema name
-            func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + driver.qtIdent(conn, session['functionData'][str(trans_id)]['name'])
+            func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + driver.qtIdent(
+                conn, session['functionData'][str(trans_id)]['name'])
 
             if obj['restart_debug'] == 0:
                 # render the SQL template and send the query to server
@@ -621,19 +626,21 @@ def start_debugger_listener(trans_id):
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
                 str_query = render_template("/".join(['debugger/sql', 'execute_edbspl.sql']),
-                                           func_name=func_name, is_func=session['functionData'][str(trans_id)]['is_func'],
-                                           lan_name=session['functionData'][str(trans_id)]['language'],
-                                           ret_type=session['functionData'][str(trans_id)]['return_type'],
-                                           data=session['functionData'][str(trans_id)]['args_value'],
-                                           arg_type=arg_type,
-                                           args_mode=arg_mode
-                                           )
+                                            func_name=func_name,
+                                            is_func=session['functionData'][str(trans_id)]['is_func'],
+                                            lan_name=session['functionData'][str(trans_id)]['language'],
+                                            ret_type=session['functionData'][str(trans_id)]['return_type'],
+                                            data=session['functionData'][str(trans_id)]['args_value'],
+                                            arg_type=arg_type,
+                                            args_mode=arg_mode
+                                            )
             else:
                 str_query = render_template("/".join(['debugger/sql', 'execute_plpgsql.sql']),
-                                           func_name=func_name, is_func=session['functionData'][str(trans_id)]['is_func'],
-                                           ret_type=session['functionData'][str(trans_id)]['return_type'],
-                                           data=session['functionData'][str(trans_id)]['args_value']
-                                           )
+                                            func_name=func_name,
+                                            is_func=session['functionData'][str(trans_id)]['is_func'],
+                                            ret_type=session['functionData'][str(trans_id)]['return_type'],
+                                            data=session['functionData'][str(trans_id)]['args_value']
+                                            )
 
             status, result = conn.execute_async(str_query)
             if not status:
@@ -814,10 +821,10 @@ def messages(trans_id):
             tmpOffset = 0
             tmpFlag = False
 
-            while notify[0][offset+str_len+tmpOffset].isdigit():
+            while notify[0][offset + str_len + tmpOffset].isdigit():
                 status = 'Success'
                 tmpFlag = True
-                port_number = port_number + notify[0][offset+str_len+tmpOffset]
+                port_number = port_number + notify[0][offset + str_len + tmpOffset]
                 tmpOffset = tmpOffset + 1
 
             if tmpFlag == False:
@@ -1006,7 +1013,7 @@ def clear_all_breakpoint(trans_id):
             line_numbers = request.form['breakpoint_list'].split(",")
             for line_no in line_numbers:
                 sql = render_template("/".join([template_path, "clear_breakpoint.sql"]), session_id=obj['session_id'],
-                                  foid=obj['function_id'], line_number=line_no)
+                                      foid=obj['function_id'], line_number=line_no)
 
                 status, result = conn.execute_dict(sql)
                 if not status:
@@ -1069,7 +1076,8 @@ def deposit_parameter_value(trans_id):
                 info = gettext('Value deposited successfully')
             else:
                 info = gettext('Error while setting the value')
-            return make_json_response(data={'status': status, 'info':info, 'result': result['rows'][0]['pldbg_deposit_value']})
+            return make_json_response(
+                data={'status': status, 'info': info, 'result': result['rows'][0]['pldbg_deposit_value']})
     else:
         status = False
         result = gettext('Not connected to server or connection with the server has been closed.')
@@ -1115,7 +1123,7 @@ def select_frame(trans_id, frame_id):
 
     if conn.connected():
         sql = render_template("/".join([template_path, "select_frame.sql"]), session_id=obj['session_id'],
-                                  frame_id=frame_id)
+                              frame_id=frame_id)
 
         status, result = conn.execute_dict(sql)
         if not status:
@@ -1148,22 +1156,22 @@ def get_arguments_sqlite(sid, did, scid, func_id):
 
     """Get the count of the existing data available in sqlite database"""
     DbgFuncArgsCount = DebuggerFunctionArguments.query.filter_by(
-                  server_id=sid, database_id=did, schema_id=scid, function_id=func_id).count()
+        server_id=sid, database_id=did, schema_id=scid, function_id=func_id).count()
 
     args_data = []
 
     if DbgFuncArgsCount:
         """Update the Debugger Function Arguments settings"""
         DbgFuncArgs = DebuggerFunctionArguments.query.filter_by(
-                      server_id=sid, database_id=did, schema_id=scid, function_id=func_id)
+            server_id=sid, database_id=did, schema_id=scid, function_id=func_id)
 
         args_list = DbgFuncArgs.all()
 
         for i in range(0, DbgFuncArgsCount):
             info = {
                 "arg_id": args_list[i].arg_id,
-                "is_null":  args_list[i].is_null,
-                "is_expression":  args_list[i].is_expression,
+                "is_null": args_list[i].is_null,
+                "is_expression": args_list[i].is_expression,
                 "use_default": args_list[i].use_default,
                 "value": args_list[i].value
             }
@@ -1201,8 +1209,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
     try:
         for i in range(0, len(data)):
             DbgFuncArgsExists = DebuggerFunctionArguments.query.filter_by(
-                    server_id=data[i]['server_id'], database_id=data[i]['database_id'], schema_id=data[i]['schema_id'],
-                    function_id=data[i]['function_id'], arg_id=data[i]['arg_id']).count()
+                server_id=data[i]['server_id'], database_id=data[i]['database_id'], schema_id=data[i]['schema_id'],
+                function_id=data[i]['function_id'], arg_id=data[i]['arg_id']).count()
 
             # handle the Array list sent from the client
             array_string = ''
@@ -1219,8 +1227,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
             # Check if data is already available in database then update the existing value otherwise add the new value
             if DbgFuncArgsExists:
                 DbgFuncArgs = DebuggerFunctionArguments.query.filter_by(
-                        server_id=data[i]['server_id'], database_id=data[i]['database_id'], schema_id=data[i]['schema_id'],
-                        function_id=data[i]['function_id'], arg_id=data[i]['arg_id']).first()
+                    server_id=data[i]['server_id'], database_id=data[i]['database_id'], schema_id=data[i]['schema_id'],
+                    function_id=data[i]['function_id'], arg_id=data[i]['arg_id']).first()
 
                 DbgFuncArgs.is_null = data[i]['is_null']
                 DbgFuncArgs.is_expression = data[i]['is_expression']
@@ -1228,15 +1236,15 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                 DbgFuncArgs.value = array_string
             else:
                 debugger_func_args = DebuggerFunctionArguments(
-                    server_id = data[i]['server_id'],
-                    database_id = data[i]['database_id'],
-                    schema_id = data[i]['schema_id'],
-                    function_id = data[i]['function_id'],
-                    arg_id = data[i]['arg_id'],
-                    is_null = data[i]['is_null'],
-                    is_expression = data[i]['is_expression'],
-                    use_default = data[i]['use_default'],
-                    value = array_string
+                    server_id=data[i]['server_id'],
+                    database_id=data[i]['database_id'],
+                    schema_id=data[i]['schema_id'],
+                    function_id=data[i]['function_id'],
+                    arg_id=data[i]['arg_id'],
+                    is_null=data[i]['is_null'],
+                    is_expression=data[i]['is_expression'],
+                    use_default=data[i]['use_default'],
+                    value=array_string
                 )
 
                 db.session.add(debugger_func_args)
@@ -1289,17 +1297,17 @@ def poll_end_execution_result(trans_id):
             if 'ERROR' in result:
                 status = 'ERROR'
                 return make_json_response(info=gettext("Execution completed with error"),
-                                      data={'status': status, 'status_message': result})
+                                          data={'status': status, 'status_message': result})
             else:
                 status = 'Success'
                 data = {}
                 for i in result:
                     for k, v in i.items():
                         data["name"] = k
-                        data.setdefault("value",[]).append(v)
+                        data.setdefault("value", []).append(v)
 
                 return make_json_response(success=1, info=gettext("Execution Completed."),
-                                      data={'status': status, 'result': data, 'status_message': statusmsg})
+                                          data={'status': status, 'result': data, 'status_message': statusmsg})
         else:
             status = 'Busy'
     else:

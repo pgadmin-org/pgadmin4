@@ -9,6 +9,7 @@
 
 """Database helper utilities"""
 
+
 def parse_sec_labels_from_db(db_sec_labels):
     """
     Function to format the output for security label.
@@ -29,7 +30,7 @@ def parse_sec_labels_from_db(db_sec_labels):
             sec_lbls.append({
                 'provider': sec.group(1),
                 'label': sec.group(2)
-                })
+            })
 
     return {"seclabels": sec_lbls}
 

@@ -113,6 +113,7 @@ class FunctionModule(SchemaChildModule):
 
         return snippets
 
+
 blueprint = FunctionModule(__name__)
 
 
@@ -258,7 +259,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'fnid' not in kwargs:
 
                 for arg in self.required_args:
-                    if (arg not in req or req[arg] == '') or\
+                    if (arg not in req or req[arg] == '') or \
                             (arg == 'probin' and req['lanname'] == 'c'
                              and (arg not in req or req[arg] == '')):
                         return make_json_response(
@@ -281,12 +282,12 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                         # Coverts string into python list as expected.
                         data[key] = json.loads(req[key])
                     elif (
-                            key == 'proretset' or key == 'proisstrict' or
-                            key == 'prosecdef' or key == 'proiswindow' or
-                            key == 'proleakproof'
+                                                key == 'proretset' or key == 'proisstrict' or
+                                            key == 'prosecdef' or key == 'proiswindow' or
+                                    key == 'proleakproof'
                     ):
                         data[key] = True if (
-                            req[key] == 'true' or req[key] is True)\
+                            req[key] == 'true' or req[key] is True) \
                             else False if (req[key] == 'false' or
                                            req[key] is False) else ''
                     else:
@@ -353,7 +354,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 '9.5_plus' if ver >= 90500 else
                 '9.2_plus' if ver >= 90200 else
                 '9.1_plus'
-                ])
+            ])
 
             return f(*args, **kwargs)
 
@@ -458,7 +459,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                     proargnames: Argument Name
                     proargdefaultvals: Default Value of the Argument
         """
-        proargtypes = [ptype for ptype in data['proargtypenames'].split(",")]\
+        proargtypes = [ptype for ptype in data['proargtypenames'].split(",")] \
             if data['proargtypenames'] else []
         proargmodes = data['proargmodes'] if data['proargmodes'] else []
         proargnames = data['proargnames'] if data['proargnames'] else []
@@ -544,7 +545,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             proargnames[i] if len(proargnames) > i else '',
             proargdefaultvals[i] if len(proargdefaultvals) > i else ''
         )
-        for i in range(len(proargtypes))]
+                   for i in range(len(proargtypes))]
 
         proargs = {"proargs": ", ".join(proargs)}
 
@@ -676,7 +677,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 exc_value,
                 exc_traceback,
                 limit=2
-                )
+            )
             )
 
             return internal_server_error(errormsg=str(exc_value))
@@ -699,7 +700,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
         SQL = render_template(
             "/".join([self.sql_template_path, 'variables.sql'])
-            )
+        )
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
@@ -782,7 +783,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         try:
             # Fetch Name and Schema Name to delete the Function.
             SQL = render_template("/".join([self.sql_template_path,
-                                  'delete.sql']), scid=scid, fnid=fnid)
+                                            'delete.sql']), scid=scid, fnid=fnid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -904,7 +905,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             object_type = 'function'
             # Fetch the function definition.
             SQL = render_template("/".join([self.sql_template_path,
-                                  'get_definition.sql']), fnid=fnid, scid=scid)
+                                            'get_definition.sql']), fnid=fnid, scid=scid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -969,7 +970,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             # Get Schema Name from its OID.
             if 'pronamespace' in data:
                 data['pronamespace'] = self._get_schema(data[
-                    'pronamespace'])
+                                                            'pronamespace'])
             if 'provolatile' in data:
                 data['provolatile'] = vol_dict[data['provolatile']]
 
@@ -981,7 +982,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
                 # Get Schema Name
                 old_data['pronamespace'] = self._get_schema(old_data[
-                    'pronamespace'])
+                                                                'pronamespace'])
 
                 if 'provolatile' in old_data:
                     old_data['provolatile'] = vol_dict[old_data['provolatile']]
@@ -1085,11 +1086,11 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 if 'arguments' in data:
                     for a in data['arguments']:
                         if (('argmode' in a and a['argmode'] != 'OUT' and
-                            a['argmode'] is not None
+                                     a['argmode'] is not None
                              ) or 'argnode' not in a):
                             if 'argmode' in a:
                                 args += a['argmode'] + " "
-                            if 'argname' in a and a['argname'] != ''\
+                            if 'argname' in a and a['argname'] != '' \
                                     and a['argname'] is not None:
                                 args += self.qtIdent(
                                     self.conn, a['argname']) + " "
@@ -1177,7 +1178,7 @@ It may have been removed by another user or moved to another schema.
             scid: Schema Id
         """
         SQL = render_template("/".join([self.sql_template_path,
-                              'get_schema.sql']), scid=scid)
+                                        'get_schema.sql']), scid=scid)
 
         status, schema_name = self.conn.execute_scalar(SQL)
 
@@ -1238,7 +1239,7 @@ It may have been removed by another user or moved to another schema.
         """
         # Fetch the function definition.
         SQL = render_template("/".join([self.sql_template_path,
-                              'get_definition.sql']), fnid=fnid, scid=scid)
+                                        'get_definition.sql']), fnid=fnid, scid=scid)
         status, res = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1334,16 +1335,16 @@ It may have been removed by another user or moved to another schema.
                 "/".join([self.sql_template_path, sql]),
                 conn=self.conn, fnid=fnid,
                 scid=scid, schema_name=schema_name
-                )
             )
+        )
 
         if not status:
             return internal_server_error(errormsg=res)
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
 
 FunctionView.register_node_view(blueprint)
@@ -1416,7 +1417,6 @@ procedure_blueprint = ProcedureModule(__name__)
 
 
 class ProcedureView(FunctionView):
-
     node_type = procedure_blueprint.node_type
 
     def __init__(self, *args, **kwargs):
@@ -1456,6 +1456,7 @@ class ProcedureView(FunctionView):
             ),
             200, {'Content-Type': 'application/x-javascript'}
         )
+
 
 ProcedureView.register_node_view(procedure_blueprint)
 
@@ -1526,7 +1527,6 @@ trigger_function_blueprint = TriggerFunctionModule(__name__)
 
 
 class TriggerFunctionView(FunctionView):
-
     node_type = trigger_function_blueprint.node_type
 
     def __init__(self, *args, **kwargs):
@@ -1566,5 +1566,6 @@ class TriggerFunctionView(FunctionView):
             ),
             200, {'Content-Type': 'application/x-javascript'}
         )
+
 
 TriggerFunctionView.register_node_view(trigger_function_blueprint)

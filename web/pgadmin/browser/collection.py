@@ -35,7 +35,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "NODE-%s" % self.node_type,
             import_name,
             **kwargs
-            )
+        )
         PGChildModule.__init__(self)
 
     @property
@@ -52,7 +52,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             'name': 'pgadmin.node.%s' % self.node_type,
             'path': url_for('browser.index') + '%s/module' % self.node_type,
             'when': self.script_load
-            }])
+        }])
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
@@ -61,32 +61,32 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
 
     def generate_browser_node(
             self, node_id, parent_id, label, icon, **kwargs
-            ):
+    ):
         obj = {
-                "id": "%s/%s" % (self.node_type, node_id),
-                "label": label,
-                "icon": self.node_icon if not icon else icon,
-                "inode": self.node_inode,
-                "_type": self.node_type,
-                "_id": node_id,
-                "_pid": parent_id,
-                "module": 'pgadmin.node.%s' % self.node_type
-                }
+            "id": "%s/%s" % (self.node_type, node_id),
+            "label": label,
+            "icon": self.node_icon if not icon else icon,
+            "inode": self.node_inode,
+            "_type": self.node_type,
+            "_id": node_id,
+            "_pid": parent_id,
+            "module": 'pgadmin.node.%s' % self.node_type
+        }
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
         return obj
 
     def generate_browser_collection_node(self, parent_id, **kwargs):
         obj = {
-                "id": "coll-%s/%d" % (self.node_type, parent_id),
-                "label": self.collection_label,
-                "icon": self.collection_icon,
-                "inode": True,
-                "_type": 'coll-%s' % (self.node_type),
-                "_id": parent_id,
-                "_pid": parent_id,
-                "module": 'pgadmin.node.%s' % self.node_type
-                }
+            "id": "coll-%s/%d" % (self.node_type, parent_id),
+            "label": self.collection_label,
+            "icon": self.collection_icon,
+            "inode": True,
+            "_type": 'coll-%s' % (self.node_type),
+            "_id": parent_id,
+            "_pid": parent_id,
+            "module": 'pgadmin.node.%s' % self.node_type
+        }
 
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
@@ -103,16 +103,16 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type
-                    ),
-                render_template(
-                    "browser/css/node.css",
-                    node_type=self.node_type,
-                    _=gettext
-                    )
-                ]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type
+            ),
+            render_template(
+                "browser/css/node.css",
+                node_type=self.node_type,
+                _=gettext
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -136,14 +136,14 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         """
         icon to be displayed for the browser collection node
         """
-        return 'icon-coll-%s'  % (self.node_type)
+        return 'icon-coll-%s' % (self.node_type)
 
     @property
     def node_icon(self):
         """
         icon to be displayed for the browser nodes
         """
-        return 'icon-%s'  % (self.node_type)
+        return 'icon-%s' % (self.node_type)
 
     @property
     def node_inode(self):
@@ -218,10 +218,10 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         # Add the node informaton for browser, not in respective node preferences
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(
-                'show_system_objects'
-                )
+            'show_system_objects'
+        )
         self.pref_show_node = self.browser_preference.register(
-                'node', 'show_node_' + self.node_type,
-                self.collection_label, 'node', self.SHOW_ON_BROWSER,
-                category_label=gettext('Nodes')
-                )
+            'node', 'show_node_' + self.node_type,
+            self.collection_label, 'node', self.SHOW_ON_BROWSER,
+            category_label=gettext('Nodes')
+        )

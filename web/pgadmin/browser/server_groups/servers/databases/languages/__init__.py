@@ -94,6 +94,7 @@ class LanguageModule(CollectionNodeModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+
 blueprint = LanguageModule(__name__)
 
 
@@ -154,13 +155,13 @@ class LanguageView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'lid'}
-            ]
+        {'type': 'int', 'id': 'lid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -196,12 +197,12 @@ class LanguageView(PGChildNodeView):
         This property defines whether javascript exists for this node.
         """
         return make_response(
-                render_template(
-                    "languages/js/languages.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "languages/js/languages.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -209,6 +210,7 @@ class LanguageView(PGChildNodeView):
         database connection before running the view. It also attaches
         manager, conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -221,7 +223,7 @@ class LanguageView(PGChildNodeView):
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -233,6 +235,7 @@ class LanguageView(PGChildNodeView):
                 self.template_path = 'languages/sql/9.1_plus'
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -251,9 +254,9 @@ class LanguageView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did):
@@ -274,17 +277,17 @@ class LanguageView(PGChildNodeView):
 
         for row in result['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon="icon-language"
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-language"
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, lid):
@@ -323,9 +326,9 @@ class LanguageView(PGChildNodeView):
                     res['rows'][0][row['deftype']] = [priv]
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def update(self, gid, sid, did, lid):
@@ -393,14 +396,14 @@ class LanguageView(PGChildNodeView):
         sql = self.get_sql(data, lid)
         if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
         else:
             return make_json_response(
-                    data='-- Modified SQL --',
-                    status=200
-                    )
+                data='-- Modified SQL --',
+                status=200
+            )
 
     def get_sql(self, data, lid=None):
         """
@@ -455,9 +458,9 @@ class LanguageView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=result)
         return make_json_response(
-                data=result['rows'],
-                status=200
-                )
+            data=result['rows'],
+            status=200
+        )
 
     @check_precondition
     def sql(self, gid, sid, did, lid):
@@ -495,9 +498,9 @@ class LanguageView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, lid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, lid):
@@ -513,8 +516,9 @@ class LanguageView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, lid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 LanguageView.register_node_view(blueprint)

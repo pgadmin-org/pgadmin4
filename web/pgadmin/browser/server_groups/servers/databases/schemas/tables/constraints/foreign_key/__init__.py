@@ -97,22 +97,23 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                render_template(
-                    "browser/css/collection.css",
-                    node_type=self.node_type,
-                    _=_
-                    ),
-                render_template(
-                    "foreign_key/css/foreign_key.css",
-                    node_type=self.node_type,
-                    _=_
-                    )
-                ]
+            render_template(
+                "browser/css/collection.css",
+                node_type=self.node_type,
+                _=_
+            ),
+            render_template(
+                "foreign_key/css/foreign_key.css",
+                node_type=self.node_type,
+                _=_
+            )
+        ]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
 
         return snippets
+
 
 blueprint = ForeignKeyConstraintModule(__name__)
 
@@ -177,14 +178,14 @@ class ForeignKeyConstraintView(PGChildNodeView):
     node_type = 'foreign_key'
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'},
-            {'type': 'int', 'id': 'scid'},
-            {'type': 'int', 'id': 'tid'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'},
+        {'type': 'int', 'id': 'scid'},
+        {'type': 'int', 'id': 'tid'}
+    ]
     ids = [{'type': 'int', 'id': 'fkid'}
-            ]
+           ]
 
     operations = dict({
         'obj': [
@@ -211,12 +212,12 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Override this property for your own logic.
         """
         return make_response(
-                render_template(
-                    "foreign_key/js/foreign_key.js",
-                    _=_
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "foreign_key/js/foreign_key.js",
+                _=_
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     def check_precondition(f):
         """
@@ -224,20 +225,21 @@ class ForeignKeyConstraintView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid']
-                )
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 return precondition_required(
                     _(
-                            "Connection to the server has been lost!"
+                        "Connection to the server has been lost!"
                     )
                 )
 
@@ -259,7 +261,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
     def end_transaction(self):
         SQL = render_template(
-                "/".join([self.template_path, 'end.sql']))
+            "/".join([self.template_path, 'end.sql']))
         # End transaction if any.
         self.conn.execute_scalar(SQL)
 
@@ -323,9 +325,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     result['hasindex'] = False
 
             return ajax_response(
-                    response=result,
-                    status=200
-                    )
+                response=result,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -349,9 +351,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
         try:
             res = self.get_node_list(gid, sid, did, scid, tid, fkid)
             return ajax_response(
-                    response=res,
-                    status=200
-                    )
+                response=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -374,7 +376,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
-                                        tid=tid)
+                              tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         return res['rows']
@@ -399,9 +401,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
         try:
             res = self.get_nodes(gid, sid, did, scid, tid, fkid)
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -435,13 +437,13 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 icon = "icon-foreign_key"
                 valid = True
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon=icon,
-                        valid=valid
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon=icon,
+                    valid=valid
+                ))
         return res
 
     @check_precondition
@@ -473,20 +475,20 @@ class ForeignKeyConstraintView(PGChildNodeView):
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
-                      status=400,
-                      success=0,
-                      errormsg=_(
-                          "Couldn't find required parameter (%s)." % str(arg)
-                      )
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Couldn't find required parameter (%s)." % str(arg)
                     )
+                )
             elif isinstance(data[arg], list) and len(data[arg]) < 1:
                 return make_json_response(
-                      status=400,
-                      success=0,
-                      errormsg=_(
-                          "Couldn't find required parameter (%s)." % str(arg)
-                      )
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Couldn't find required parameter (%s)." % str(arg)
                     )
+                )
 
         data['schema'] = self.schema
         data['table'] = self.table
@@ -514,7 +516,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data, conn=self.conn
-                )
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 self.end_transaction()
@@ -568,8 +570,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     data['name'],
                     valid=valid,
                     icon=icon
-                    )
                 )
+            )
 
         except Exception as e:
             self.end_transaction()
@@ -632,8 +634,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                         'sid': sid,
                         'gid': gid,
                         'did': did,
-                        'icon':icon,
-                        'valid':valid
+                        'icon': icon,
+                        'valid': valid
                     }
                 )
             else:
@@ -735,9 +737,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql = sql.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -769,15 +771,15 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'update.sql']),
                                   data=data, o_data=old_data)
 
-            if 'autoindex' in data and data['autoindex'] and\
+            if 'autoindex' in data and data['autoindex'] and \
                     ('coveringindex' in data and
                              data['coveringindex'] != ''):
 
                 col_sql = render_template("/".join([self.template_path,
-                                                'get_constraint_cols.sql']),
-                                      tid=tid,
-                                      keys=zip(old_data['confkey'], old_data['conkey']),
-                                      confrelid=old_data['confrelid'])
+                                                    'get_constraint_cols.sql']),
+                                          tid=tid,
+                                          keys=zip(old_data['confkey'], old_data['conkey']),
+                                          confrelid=old_data['confrelid'])
 
                 status, res = self.conn.execute_dict(col_sql)
 
@@ -805,7 +807,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     return _('-- definition incomplete')
 
             if data['autoindex'] and ('coveringindex' not in data or
-                                      data['coveringindex'] == ''):
+                                              data['coveringindex'] == ''):
                 return _('-- definition incomplete')
 
             SQL = render_template("/".join([self.template_path,
@@ -892,8 +894,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    data=data)
+                "/".join([self.template_path, 'delete.sql']),
+                data=data)
             sql_header += "\n"
 
             SQL = sql_header + SQL
@@ -917,9 +919,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, fkid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, fkid=None):
@@ -935,9 +937,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, fkid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def validate_foreign_key(self, gid, sid, did, scid, tid, fkid):
@@ -1048,11 +1050,12 @@ class ForeignKeyConstraintView(PGChildNodeView):
             return make_json_response(
                 data=index,
                 status=200
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+
 constraint = ConstraintRegistry(
     'foreign_key', ForeignKeyConstraintModule, ForeignKeyConstraintView
-    )
+)
 ForeignKeyConstraintView.register_node_view(blueprint)

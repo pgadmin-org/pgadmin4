@@ -455,7 +455,7 @@ class SQLAutoComplete(object):
                                     status, res = self.conn.execute_dict(query)
                                     if status:
                                         for record in res['rows']:
-                                                columns.append(record['column_name'])
+                                            columns.append(record['column_name'])
             else:
                 # Schema not specified, so traverse the search path looking for
                 # a table or view that matches. Note that in order to get proper
@@ -503,7 +503,7 @@ class SQLAutoComplete(object):
                                         status, res = self.conn.execute_dict(query)
                                         if status:
                                             for record in res['rows']:
-                                                    columns.append(record['column_name'])
+                                                columns.append(record['column_name'])
 
         return columns
 

@@ -8,9 +8,9 @@
 ##########################################################################
 
 import json
-import six
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+import six
 from flask import current_app, render_template, url_for, make_response, flash
 from flask.ext.babel import gettext
 from flask.ext.login import current_user
@@ -33,21 +33,20 @@ MODULE_NAME = 'browser'
 
 
 class BrowserModule(PgAdminModule):
-
     LABEL = gettext('Browser')
 
     def get_own_stylesheets(self):
         stylesheets = []
         # Add browser stylesheets
         for (endpoint, filename) in [
-                ('static', 'css/codemirror/codemirror.css'),
-                ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
-                    else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
-                ('static', 'css/wcDocker/wcDocker.css' if current_app.debug
-                    else 'css/wcDocker/wcDocker.min.css'),
-                ('browser.static', 'css/browser.css'),
-                ('browser.static', 'css/aciTree/css/aciTree.css')
-                ]:
+            ('static', 'css/codemirror/codemirror.css'),
+            ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
+            else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
+            ('static', 'css/wcDocker/wcDocker.css' if current_app.debug
+            else 'css/wcDocker/wcDocker.min.css'),
+            ('browser.static', 'css/browser.css'),
+            ('browser.static', 'css/aciTree/css/aciTree.css')
+        ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         stylesheets.append(url_for('browser.browser_css'))
         return stylesheets
@@ -57,122 +56,122 @@ class BrowserModule(PgAdminModule):
         scripts.append({
             'name': 'alertify',
             'path': url_for(
-                        'static',
-                        filename='js/alertifyjs/alertify' if current_app.debug
-                        else 'js/alertifyjs/alertify.min'
-                        ),
+                'static',
+                filename='js/alertifyjs/alertify' if current_app.debug
+                else 'js/alertifyjs/alertify.min'
+            ),
             'exports': 'alertify',
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jqueryui.position',
             'path': url_for(
                 'static',
                 filename='js/jQuery-contextMenu/jquery.ui.position' if \
-                current_app.debug else \
-                'js/jQuery-contextMenu/jquery.ui.position.min'
-                        ),
+                    current_app.debug else \
+                    'js/jQuery-contextMenu/jquery.ui.position.min'
+            ),
             'deps': ['jquery'],
             'exports': 'jQuery.ui.position',
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jquery.contextmenu',
             'path': url_for(
                 'static',
                 filename='js/jQuery-contextMenu/jquery.contextMenu' if \
-                current_app.debug else \
-                'js/jQuery-contextMenu/jquery.contextMenu.min'
-                            ),
+                    current_app.debug else \
+                    'js/jQuery-contextMenu/jquery.contextMenu.min'
+            ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jquery.aciplugin',
             'path': url_for(
-                        'browser.static',
-                        filename='js/aciTree/jquery.aciPlugin.min'
-                        ),
+                'browser.static',
+                filename='js/aciTree/jquery.aciPlugin.min'
+            ),
             'deps': ['jquery'],
             'exports': 'aciPluginClass',
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jquery.acitree',
             'path': url_for(
-                        'browser.static',
-                        filename='js/aciTree/jquery.aciTree' if
-                        current_app.debug else 'js/aciTree/jquery.aciTree.min'
-                        ),
+                'browser.static',
+                filename='js/aciTree/jquery.aciTree' if
+                current_app.debug else 'js/aciTree/jquery.aciTree.min'
+            ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciTree',
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jquery.acisortable',
             'path': url_for(
-                        'browser.static',
-                        filename='js/aciTree/jquery.aciSortable.min'
-                        ),
+                'browser.static',
+                filename='js/aciTree/jquery.aciSortable.min'
+            ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciSortable',
             'when': None,
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'jquery.acifragment',
             'path': url_for(
-                        'browser.static',
-                        filename='js/aciTree/jquery.aciFragment.min'
-                        ),
+                'browser.static',
+                filename='js/aciTree/jquery.aciFragment.min'
+            ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciFragment',
             'when': None,
             'preloaded': True
-            })
+        })
         scripts.append({
             'name': 'wcdocker',
             'path': url_for(
-                        'static',
-                        filename='js/wcDocker/wcDocker' if current_app.debug
-                        else 'js/wcDocker/wcDocker.min'
-                        ),
+                'static',
+                filename='js/wcDocker/wcDocker' if current_app.debug
+                else 'js/wcDocker/wcDocker.min'
+            ),
             'deps': ['jquery.contextmenu'],
             'exports': '',
             'preloaded': True
-            })
+        })
 
         scripts.append({
             'name': 'pgadmin.browser.datamodel',
             'path': url_for('browser.static', filename='js/datamodel'),
             'preloaded': True
-            })
+        })
 
         for name, script in [
-                ['pgadmin.browser',       'js/browser'],
-                ['pgadmin.browser.error', 'js/error']]:
+            ['pgadmin.browser', 'js/browser'],
+            ['pgadmin.browser.error', 'js/error']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
                 'preloaded': True
-                })
+            })
 
         for name, script in [
-                ['pgadmin.browser.node', 'js/node'],
-                ['pgadmin.browser.messages', 'js/messages'],
-                ['pgadmin.browser.collection', 'js/collection']]:
+            ['pgadmin.browser.node', 'js/node'],
+            ['pgadmin.browser.messages', 'js/messages'],
+            ['pgadmin.browser.collection', 'js/collection']]:
             scripts.append({
                 'name': name,
                 'path': url_for('browser.index') + script,
                 'preloaded': True,
                 'deps': ['pgadmin.browser.datamodel']
-                })
+            })
 
         for name, end in [
-                ['pgadmin.browser.menu', 'js/menu'],
-                ['pgadmin.browser.panel', 'js/panel'],
-                ['pgadmin.browser.frame', 'js/frame']]:
+            ['pgadmin.browser.menu', 'js/menu'],
+            ['pgadmin.browser.panel', 'js/panel'],
+            ['pgadmin.browser.frame', 'js/frame']]:
             scripts.append({
                 'name': name, 'path': url_for('browser.static', filename=end),
                 'preloaded': True})
@@ -181,7 +180,7 @@ class BrowserModule(PgAdminModule):
             'name': 'pgadmin.browser.node.ui',
             'path': url_for('browser.static', filename='js/node.ui'),
             'when': 'server-group'
-            })
+        })
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
@@ -192,7 +191,8 @@ class BrowserModule(PgAdminModule):
             'display', 'show_system_objects',
             gettext("Show system objects"), 'boolean', False,
             category_label=gettext('Display')
-            )
+        )
+
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
@@ -238,10 +238,10 @@ class BrowserPluginModule(PgAdminModule):
         self.pref_show_node = None
 
         super(BrowserPluginModule, self).__init__(
-                                            "NODE-%s" % self.node_type,
-                                            import_name,
-                                            **kwargs
-                                            )
+            "NODE-%s" % self.node_type,
+            import_name,
+            **kwargs
+        )
 
     @property
     def jssnippets(self):
@@ -275,7 +275,7 @@ class BrowserPluginModule(PgAdminModule):
             'name': 'pgadmin.node.%s' % self.node_type,
             'path': url_for('browser.index') + '%s/module' % self.node_type,
             'when': self.script_load
-            }])
+        }])
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())
@@ -283,7 +283,7 @@ class BrowserPluginModule(PgAdminModule):
 
     def generate_browser_node(
             self, node_id, parent_id, label, icon, inode, node_type, **kwargs
-            ):
+    ):
         """
         Helper function to create a browser node for this particular subnode.
 
@@ -306,19 +306,18 @@ class BrowserPluginModule(PgAdminModule):
         browser tree.
         """
         obj = {
-                "id": "%s/%s" % (node_type, node_id),
-                "label": label,
-                "icon": icon,
-                "inode": inode,
-                "_type": node_type,
-                "_id": node_id,
-                "_pid": parent_id,
-                "module": 'pgadmin.node.%s' % node_type
-                }
+            "id": "%s/%s" % (node_type, node_id),
+            "label": label,
+            "icon": icon,
+            "inode": inode,
+            "_type": node_type,
+            "_id": node_id,
+            "_pid": parent_id,
+            "module": 'pgadmin.node.%s' % node_type
+        }
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
         return obj
-
 
     @property
     def csssnippets(self):
@@ -326,11 +325,11 @@ class BrowserPluginModule(PgAdminModule):
         Returns a snippet of css to include in the page
         """
         snippets = [
-                    render_template(
-                        "browser/css/node.css",
-                        node_type=self.node_type,
-                        _=gettext
-                        )]
+            render_template(
+                "browser/css/node.css",
+                node_type=self.node_type,
+                _=gettext
+            )]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -417,11 +416,11 @@ class BrowserPluginModule(PgAdminModule):
         self.browser_preference = blueprint.preference
         self.pref_show_system_objects = blueprint.preference.preference(
             'display', 'show_system_objects'
-            )
+        )
         self.pref_show_node = self.browser_preference.preference(
             'node', 'show_node_' + self.node_type,
             self.label, 'boolean', self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
-            )
+        )
 
 
 @blueprint.route("/")
@@ -475,11 +474,11 @@ def index():
                 flash(msg, 'warning')
 
     return render_template(
-            MODULE_NAME + "/index.html",
-            username=current_user.email,
-            is_admin=current_user.has_role("Administrator"),
-            _=gettext
-            )
+        MODULE_NAME + "/index.html",
+        username=current_user.email,
+        is_admin=current_user.has_role("Administrator"),
+        _=gettext
+    )
 
 
 @blueprint.route("/js/browser.js")
@@ -499,23 +498,23 @@ def browser_js():
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
-            render_template(
-                'browser/js/browser.js',
-                layout=layout,
-                jssnippets=snippets,
-                pg_help_path=pg_help_path,
-                edbas_help_path=edbas_help_path,
-                _=gettext
-                ),
-            200, {'Content-Type': 'application/x-javascript'})
+        render_template(
+            'browser/js/browser.js',
+            layout=layout,
+            jssnippets=snippets,
+            pg_help_path=pg_help_path,
+            edbas_help_path=edbas_help_path,
+            _=gettext
+        ),
+        200, {'Content-Type': 'application/x-javascript'})
 
 
 @blueprint.route("/js/error.js")
 @login_required
 def error_js():
     return make_response(
-            render_template('browser/js/error.js', _=gettext),
-            200, {'Content-Type': 'application/x-javascript'})
+        render_template('browser/js/error.js', _=gettext),
+        200, {'Content-Type': 'application/x-javascript'})
 
 
 @blueprint.route("/js/node.js")
@@ -530,26 +529,27 @@ def node_js():
     edbas_help_path = edbas_help_path_pref.get()
 
     return make_response(
-            render_template('browser/js/node.js',
-                            pg_help_path=pg_help_path,
-                            edbas_help_path=edbas_help_path,
-                            _=gettext
-                            ),
-            200, {'Content-Type': 'application/x-javascript'})
+        render_template('browser/js/node.js',
+                        pg_help_path=pg_help_path,
+                        edbas_help_path=edbas_help_path,
+                        _=gettext
+                        ),
+        200, {'Content-Type': 'application/x-javascript'})
+
 
 @blueprint.route("/js/messages.js")
 def messages_js():
     return make_response(
-            render_template('browser/js/messages.js', _=gettext),
-            200, {'Content-Type': 'application/x-javascript'})
+        render_template('browser/js/messages.js', _=gettext),
+        200, {'Content-Type': 'application/x-javascript'})
 
 
 @blueprint.route("/js/collection.js")
 @login_required
 def collection_js():
     return make_response(
-            render_template('browser/js/collection.js', _=gettext),
-            200, {'Content-Type': 'application/x-javascript'})
+        render_template('browser/js/collection.js', _=gettext),
+        200, {'Content-Type': 'application/x-javascript'})
 
 
 @blueprint.route("/browser.css")
@@ -560,10 +560,10 @@ def browser_css():
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
     return make_response(
-            render_template(
-                'browser/css/browser.css', snippets=snippets, _=gettext
-                ),
-            200, {'Content-Type': 'text/css'})
+        render_template(
+            'browser/css/browser.css', snippets=snippets, _=gettext
+        ),
+        200, {'Content-Type': 'text/css'})
 
 
 @blueprint.route("/nodes/")

@@ -14,7 +14,7 @@ from flask import render_template, make_response
 from flask.ext.babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
-     make_response as ajax_response
+    make_response as ajax_response
 
 from .type import ConstraintRegistry
 
@@ -63,6 +63,7 @@ class ConstraintsModule(CollectionNodeModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+
 blueprint = ConstraintsModule(__name__)
 
 
@@ -86,9 +87,9 @@ def nodes(**kwargs):
         res = res + view.get_nodes(**kwargs)
 
     return make_json_response(
-                data=res,
-                status=200
-                )
+        data=res,
+        status=200
+    )
 
 
 @blueprint.route('/obj/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/')
@@ -110,9 +111,9 @@ def proplist(**kwargs):
         res = res + view.get_node_list(**kwargs)
 
     return ajax_response(
-                response=res,
-                status=200
-                )
+        response=res,
+        status=200
+    )
 
 
 @blueprint.route('/module.js')
@@ -122,13 +123,13 @@ def module_js():
 
     """
     return make_response(
-            render_template(
-                "constraints/js/constraints.js",
-                _=gettext,
-                constraints=[
-                  (ConstraintRegistry.registry[n])['blueprint'].NODE_TYPE \
-                  for n in ConstraintRegistry.registry
-                  ]
-                ),
-            200, {'Content-Type': 'application/x-javascript'}
-            )
+        render_template(
+            "constraints/js/constraints.js",
+            _=gettext,
+            constraints=[
+                (ConstraintRegistry.registry[n])['blueprint'].NODE_TYPE \
+                for n in ConstraintRegistry.registry
+                ]
+        ),
+        200, {'Content-Type': 'application/x-javascript'}
+    )

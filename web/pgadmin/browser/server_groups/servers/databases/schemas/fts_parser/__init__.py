@@ -238,9 +238,9 @@ class FtsParserView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did, scid):
         sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                scid=scid
-              )
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid
+        )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -255,9 +255,9 @@ class FtsParserView(PGChildNodeView):
     def nodes(self, gid, sid, did, scid):
         res = []
         sql = render_template(
-                "/".join([self.template_path, 'nodes.sql']),
-                scid=scid
-              )
+            "/".join([self.template_path, 'nodes.sql']),
+            scid=scid
+        )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -279,9 +279,9 @@ class FtsParserView(PGChildNodeView):
     @check_precondition
     def node(self, gid, sid, did, scid, pid):
         sql = render_template(
-                "/".join([self.template_path, 'nodes.sql']),
-                pid=pid
-              )
+            "/".join([self.template_path, 'nodes.sql']),
+            pid=pid
+        )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -294,21 +294,21 @@ class FtsParserView(PGChildNodeView):
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon="icon-fts_parser"
-                    ),
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-fts_parser"
+                ),
                 status=200
             )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, pid):
         sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                scid=scid,
-                pid=pid
-              )
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid,
+            pid=pid
+        )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -358,10 +358,10 @@ class FtsParserView(PGChildNodeView):
         try:
             # Fetch schema name from schema oid
             sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=data,
-                    conn=self.conn,
-                  )
+                "/".join([self.template_path, 'schema.sql']),
+                data=data,
+                conn=self.conn,
+            )
 
             status, schema = self.conn.execute_scalar(sql)
             if not status:
@@ -372,10 +372,10 @@ class FtsParserView(PGChildNodeView):
             new_data = data.copy()
             new_data['schema'] = schema
             sql = render_template(
-                    "/".join([self.template_path, 'create.sql']),
-                    data=new_data,
-                    conn=self.conn,
-                  )
+                "/".join([self.template_path, 'create.sql']),
+                data=new_data,
+                conn=self.conn,
+            )
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -424,10 +424,10 @@ class FtsParserView(PGChildNodeView):
 
             if pid is not None:
                 sql = render_template(
-                        "/".join([self.template_path, 'properties.sql']),
-                        pid=pid,
-                        scid=scid
-                      )
+                    "/".join([self.template_path, 'properties.sql']),
+                    pid=pid,
+                    scid=scid
+                )
 
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -440,7 +440,7 @@ class FtsParserView(PGChildNodeView):
 
                 data = res['rows'][0]
                 return jsonify(
-                        node=self.blueprint.generate_browser_node(
+                    node=self.blueprint.generate_browser_node(
                         pid,
                         did,
                         data['name'],
@@ -449,16 +449,16 @@ class FtsParserView(PGChildNodeView):
                 )
         else:
             return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id':   pid,
-                        'scid': scid,
-                        'sid':  sid,
-                        'gid':  gid,
-                        'did':  did
-                    }
-                )
+                success=1,
+                info="Nothing to update",
+                data={
+                    'id': pid,
+                    'scid': scid,
+                    'sid': sid,
+                    'gid': gid,
+                    'did': did
+                }
+            )
 
     @check_precondition
     def delete(self, gid, sid, did, scid, pid):
@@ -480,9 +480,9 @@ class FtsParserView(PGChildNodeView):
         try:
             # Get name for Parser from pid
             sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    pid=pid
-                  )
+                "/".join([self.template_path, 'delete.sql']),
+                pid=pid
+            )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -493,11 +493,11 @@ class FtsParserView(PGChildNodeView):
             # Drop fts Parser
             result = res['rows'][0]
             sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    name=result['name'],
-                    schema=result['schema'],
-                    cascade=cascade
-                  )
+                "/".join([self.template_path, 'delete.sql']),
+                name=result['name'],
+                schema=result['schema'],
+                cascade=cascade
+            )
 
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -558,10 +558,10 @@ class FtsParserView(PGChildNodeView):
             # Fetch sql for update
             if pid is not None:
                 sql = render_template(
-                        "/".join([self.template_path, 'properties.sql']),
-                        pid=pid,
-                        scid=scid
-                      )
+                    "/".join([self.template_path, 'properties.sql']),
+                    pid=pid,
+                    scid=scid
+                )
 
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -589,9 +589,9 @@ class FtsParserView(PGChildNodeView):
 
                 # Fetch old schema name using old schema oid
                 sql = render_template(
-                        "/".join([self.template_path, 'schema.sql']),
-                        data=old_data
-                      )
+                    "/".join([self.template_path, 'schema.sql']),
+                    data=old_data
+                )
 
                 status, old_schema = self.conn.execute_scalar(sql)
                 if not status:
@@ -601,17 +601,17 @@ class FtsParserView(PGChildNodeView):
                 old_data['schema'] = old_schema
 
                 sql = render_template(
-                        "/".join([self.template_path, 'update.sql']),
-                        data=new_data,
-                        o_data=old_data
-                      )
+                    "/".join([self.template_path, 'update.sql']),
+                    data=new_data,
+                    o_data=old_data
+                )
                 # Fetch sql query for modified data
             else:
                 # Fetch schema name from schema oid
                 sql = render_template(
-                        "/".join([self.template_path, 'schema.sql']),
-                        data=data
-                      )
+                    "/".join([self.template_path, 'schema.sql']),
+                    data=data
+                )
 
                 status, schema = self.conn.execute_scalar(sql)
                 if not status:
@@ -622,16 +622,16 @@ class FtsParserView(PGChildNodeView):
                 new_data['schema'] = schema
 
                 if 'prsstart' in new_data and \
-                        'prstoken' in new_data and \
-                        'prsend' in new_data and \
-                        'prslextype' in new_data and \
-                        'name' in new_data and \
-                        'schema' in new_data:
+                                'prstoken' in new_data and \
+                                'prsend' in new_data and \
+                                'prslextype' in new_data and \
+                                'name' in new_data and \
+                                'schema' in new_data:
                     sql = render_template(
-                            "/".join([self.template_path,'create.sql']),
-                            data=new_data,
-                            conn=self.conn
-                          )
+                        "/".join([self.template_path, 'create.sql']),
+                        data=new_data,
+                        conn=self.conn
+                    )
                 else:
                     sql = "-- incomplete definition"
             return str(sql.strip('\n'))
@@ -828,9 +828,9 @@ class FtsParserView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, pid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, pid):
@@ -847,8 +847,9 @@ class FtsParserView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, pid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 FtsParserView.register_node_view(blueprint)

@@ -43,22 +43,22 @@ class SchemaChildModule(CollectionNodeModule):
 
     def BackendSupported(self, manager, **kwargs):
         return (
-            (
-                kwargs['is_catalog'] and ((
-                    self.CATALOG_DB_SUPPORTED and kwargs['db_support']
-                ) or (
-                    not self.CATALOG_DB_SUPPORTED and
-                    not kwargs['db_support'] and
-                    (
-                        self.SUPPORTED_SCHEMAS is None or (
-                            kwargs['schema_name'] in self.SUPPORTED_SCHEMAS
-                        )
-                    )
-                ))
-            ) or (
-                not kwargs['is_catalog'] and self.CATALOG_DB_SUPPORTED
-            )
-        ) and CollectionNodeModule.BackendSupported(
+                   (
+                       kwargs['is_catalog'] and ((
+                                                     self.CATALOG_DB_SUPPORTED and kwargs['db_support']
+                                                 ) or (
+                                                     not self.CATALOG_DB_SUPPORTED and
+                                                     not kwargs['db_support'] and
+                                                     (
+                                                         self.SUPPORTED_SCHEMAS is None or (
+                                                             kwargs['schema_name'] in self.SUPPORTED_SCHEMAS
+                                                         )
+                                                     )
+                                                 ))
+                   ) or (
+                       not kwargs['is_catalog'] and self.CATALOG_DB_SUPPORTED
+                   )
+               ) and CollectionNodeModule.BackendSupported(
             self, manager, **kwargs
         )
 
@@ -161,9 +161,9 @@ class DataTypeReader:
         # Above 7.4, format_type also sends the schema name if it's not included
         # in the search_path, so we need to skip it in the typname
         if typname.find(schema + '".') >= 0:
-            name = typname[len(schema)+3]
+            name = typname[len(schema) + 3]
         elif typname.find(schema + '.') >= 0:
-            name = typname[len(schema)+1]
+            name = typname[len(schema) + 1]
         else:
             name = typname
 
@@ -191,19 +191,19 @@ class DataTypeReader:
                 _len = (typmod - 4) >> 16;
                 _prec = (typmod - 4) & 0xffff;
                 length += str(_len)
-                if(_prec):
+                if (_prec):
                     length += ',' + str(_prec)
             elif name == 'time' or \
-                    name == 'timetz' or \
-                    name == 'time without time zone' or \
-                    name == 'time with time zone' or \
-                    name == 'timestamp' or \
-                    name == 'timestamptz'or \
-                    name == 'timestamp without time zone' or \
-                    name == 'timestamp with time zone' or \
-                    name == 'bit' or \
-                    name == 'bit varying' or \
-                    name == 'varbit':
+                            name == 'timetz' or \
+                            name == 'time without time zone' or \
+                            name == 'time with time zone' or \
+                            name == 'timestamp' or \
+                            name == 'timestamptz' or \
+                            name == 'timestamp without time zone' or \
+                            name == 'timestamp with time zone' or \
+                            name == 'bit' or \
+                            name == 'bit varying' or \
+                            name == 'varbit':
                 _prec = 0
                 _len = typmod
                 length += str(_len)
@@ -250,13 +250,13 @@ def trigger_definition(data):
     # Here we are storing trigger definition
     # We will use it to check trigger type definition
     trigger_definition = {
-        'TRIGGER_TYPE_ROW':         (1 << 0),
-        'TRIGGER_TYPE_BEFORE':      (1 << 1),
-        'TRIGGER_TYPE_INSERT':      (1 << 2),
-        'TRIGGER_TYPE_DELETE':      (1 << 3),
-        'TRIGGER_TYPE_UPDATE':      (1 << 4),
-        'TRIGGER_TYPE_TRUNCATE':    (1 << 5),
-        'TRIGGER_TYPE_INSTEAD':     (1 << 6)
+        'TRIGGER_TYPE_ROW': (1 << 0),
+        'TRIGGER_TYPE_BEFORE': (1 << 1),
+        'TRIGGER_TYPE_INSERT': (1 << 2),
+        'TRIGGER_TYPE_DELETE': (1 << 3),
+        'TRIGGER_TYPE_UPDATE': (1 << 4),
+        'TRIGGER_TYPE_TRUNCATE': (1 << 5),
+        'TRIGGER_TYPE_INSTEAD': (1 << 6)
     }
 
     # Fires event definition
@@ -369,6 +369,7 @@ class VacuumSettings:
         * type - table/toast vacuum type
 
     """
+
     def __init__(self):
         pass
 
@@ -388,8 +389,8 @@ class VacuumSettings:
         vacuum_fields = json.loads(vacuum_fields)
 
         # returns an array of setting & name values
-        vacuum_fields_keys = "'"+"','".join(
-            vacuum_fields['table'].keys())+"'"
+        vacuum_fields_keys = "'" + "','".join(
+            vacuum_fields['table'].keys()) + "'"
         SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
                               columns=vacuum_fields_keys)
         status, res = conn.execute_dict(SQL)
@@ -421,8 +422,8 @@ class VacuumSettings:
         vacuum_fields = json.loads(vacuum_fields)
 
         # returns an array of setting & name values
-        vacuum_fields_keys = "'"+"','".join(
-            vacuum_fields['toast'].keys())+"'"
+        vacuum_fields_keys = "'" + "','".join(
+            vacuum_fields['toast'].keys()) + "'"
         SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
                               columns=vacuum_fields_keys)
         status, res = conn.execute_dict(SQL)
@@ -456,7 +457,7 @@ class VacuumSettings:
         vacuum_fields = json.loads(vacuum_fields)
 
         # returns an array of setting & name values
-        vacuum_fields_keys = "'"+"','".join(
+        vacuum_fields_keys = "'" + "','".join(
             vacuum_fields[type].keys()) + "'"
         SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
                               columns=vacuum_fields_keys)

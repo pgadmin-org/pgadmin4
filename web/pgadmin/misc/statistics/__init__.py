@@ -34,4 +34,4 @@ class StatisticsModule(PgAdminModule):
 # Initialise the module
 blueprint = StatisticsModule(
     MODULE_NAME, __name__, url_prefix='/misc/statistics'
-    )
+)

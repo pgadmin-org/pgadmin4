@@ -78,6 +78,7 @@ class BackupMessage(IProcessDesc):
 
     Defines the message shown for the backup operation.
     """
+
     def __init__(self, _type, _sid, _bfile, **kwargs):
         self.backup_type = _type
         self.sid = _sid

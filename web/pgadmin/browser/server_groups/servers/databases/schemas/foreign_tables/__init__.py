@@ -202,7 +202,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         'get_collations': [
             {'get': 'get_collations'},
             {'get': 'get_collations'}
-            ],
+        ],
         'get_types': [{'get': 'types'}, {'get': 'types'}],
         'get_foreign_servers': [{'get': 'get_foreign_servers'},
                                 {'get': 'get_foreign_servers'}],
@@ -225,6 +225,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
         Above both the arguments will not be validated in the update action.
         """
+
         @wraps(f)
         def wrap(self, **kwargs):
 
@@ -264,7 +265,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     if key in list_params and req[key] != '' \
                             and req[key] is not None:
                         # Coverts string into python list as expected.
-                        data[key] = [] if\
+                        data[key] = [] if \
                             type(req[key]) == list and len(req[key]) == 0 else \
                             json.loads(req[key])
 
@@ -297,7 +298,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
                     elif key == 'typnotnull':
                         data[key] = True if (req[key] == 'true' or req[key]
-                                             is True) else False if\
+                                             is True) else False if \
                             (req[key] == 'false' or req[key]) is False else ''
                     else:
                         data[key] = req[key]
@@ -328,6 +329,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         Checks the database connection status.
         Attaches the connection object and template path to the class object.
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             self = args[0]
@@ -621,7 +623,7 @@ AND relkind != 'c'))"""
                 exc_value,
                 exc_traceback,
                 limit=2
-                )
+            )
             )
 
             return internal_server_error(errormsg=str(exc_value))
@@ -700,7 +702,7 @@ AND relkind != 'c'))"""
         try:
             # Fetch Name and Schema Name to delete the foreign table.
             SQL = render_template("/".join([self.template_path,
-                                  'delete.sql']), scid=scid, foid=foid)
+                                            'delete.sql']), scid=scid, foid=foid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -907,7 +909,8 @@ AND relkind != 'c'))"""
 
                         if 'coloptions' in c and len(c['coloptions']) > 0:
                             for o in c['coloptions']:
-                                if o['option'] in old_col_frmt_options and o['value'] != old_col_frmt_options[o['option']]:
+                                if o['option'] in old_col_frmt_options and o['value'] != old_col_frmt_options[
+                                    o['option']]:
                                     c['coloptions_updated']['changed'].append(o)
                                 elif o['option'] not in old_col_frmt_options:
                                     c['coloptions_updated']['added'].append(o)
@@ -917,17 +920,16 @@ AND relkind != 'c'))"""
                         for o in old_col_frmt_options:
                             c['coloptions_updated']['deleted'].append({'option': o})
 
-
                 # Parse Privileges
                 if 'acl' in data and 'added' in data['acl']:
                     data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
-                                                   ["a", "r", "w", "x"])
+                                                            ["a", "r", "w", "x"])
                 if 'acl' in data and 'changed' in data['acl']:
                     data['acl']['changed'] = parse_priv_to_db(
-                        data['acl']['changed'],["a", "r", "w", "x"])
+                        data['acl']['changed'], ["a", "r", "w", "x"])
                 if 'acl' in data and 'deleted' in data['acl']:
                     data['acl']['deleted'] = parse_priv_to_db(
-                        data['acl']['deleted'],["a", "r", "w", "x"])
+                        data['acl']['deleted'], ["a", "r", "w", "x"])
 
                 SQL = render_template(
                     "/".join([self.template_path, 'update.sql']),
@@ -1001,7 +1003,6 @@ AND relkind != 'c'))"""
                 cols.append(c)
 
         return cols
-
 
     def _fetch_properties(self, gid, sid, did, scid, foid, inherits=False):
         """
@@ -1166,7 +1167,6 @@ AND relkind != 'c'))"""
                 variables_lst.append(var_dict)
 
         return {"ftoptions": variables_lst}
-
 
     @check_precondition
     def select_sql(self, gid, sid, did, scid, foid):

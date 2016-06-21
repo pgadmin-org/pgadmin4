@@ -25,10 +25,10 @@ db = SQLAlchemy()
 
 # Define models
 roles_users = db.Table(
-                'roles_users',
-                db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-                db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
-                )
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+)
 
 
 class Version(db.Model):
@@ -81,40 +81,42 @@ class Server(db.Model):
     __tablename__ = 'server'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
-            db.Integer,
-            db.ForeignKey('user.id'),
-            nullable=False
-            )
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
+    )
     servergroup_id = db.Column(
-            db.Integer,
-            db.ForeignKey('servergroup.id'),
-            nullable=False
-            )
+        db.Integer,
+        db.ForeignKey('servergroup.id'),
+        nullable=False
+    )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=False)
     port = db.Column(
-            db.Integer(),
-            db.CheckConstraint('port >= 1024 AND port <= 65534'),
-            nullable=False)
+        db.Integer(),
+        db.CheckConstraint('port >= 1024 AND port <= 65534'),
+        nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=True)
     role = db.Column(db.String(64), nullable=True)
     ssl_mode = db.Column(
-            db.String(16),
-            db.CheckConstraint(
-                "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
-                ),
-            nullable=False)
+        db.String(16),
+        db.CheckConstraint(
+            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
+        ),
+        nullable=False)
     comment = db.Column(
-            db.String(1024),
-            nullable=True)
+        db.String(1024),
+        nullable=True)
+
 
 class ModulePreference(db.Model):
     """Define a preferences table for any modules."""
     __tablename__ = 'module_preference'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
+
 
 class PreferenceCategory(db.Model):
     """Define a preferences category for each modules."""
@@ -124,8 +126,9 @@ class PreferenceCategory(db.Model):
         db.Integer,
         db.ForeignKey('module_preference.id'),
         nullable=False
-        )
+    )
     name = db.Column(db.String(256), nullable=False)
+
 
 class Preferences(db.Model):
     """Define a particular preference."""
@@ -135,19 +138,21 @@ class Preferences(db.Model):
         db.Integer,
         db.ForeignKey('preference_category.id'),
         nullable=False
-        )
+    )
     name = db.Column(db.String(1024), nullable=False)
+
 
 class UserPreference(db.Model):
     """Define the preference for a particular user."""
     __tablename__ = 'user_preferences'
     pid = db.Column(
         db.Integer, db.ForeignKey('preferences.id'), primary_key=True
-        )
+    )
     uid = db.Column(
         db.Integer, db.ForeignKey('user.id'), primary_key=True
-        )
+    )
     value = db.Column(db.String(1024), nullable=False)
+
 
 class DebuggerFunctionArguments(db.Model):
     """Define the debugger input function arguments."""
@@ -158,14 +163,14 @@ class DebuggerFunctionArguments(db.Model):
     function_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     arg_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     is_null = db.Column(db.Integer(),
-            db.CheckConstraint('is_null >= 0 AND is_null <= 1'),
-            nullable=False)
+                        db.CheckConstraint('is_null >= 0 AND is_null <= 1'),
+                        nullable=False)
     is_expression = db.Column(db.Integer(),
-                  db.CheckConstraint('is_expression >= 0 AND is_expression <= 1'),
-                  nullable=False)
+                              db.CheckConstraint('is_expression >= 0 AND is_expression <= 1'),
+                              nullable=False)
     use_default = db.Column(db.Integer(),
-                db.CheckConstraint('use_default >= 0 AND use_default <= 1'),
-                nullable=False)
+                            db.CheckConstraint('use_default >= 0 AND use_default <= 1'),
+                            nullable=False)
 
     value = db.Column(db.String(), nullable=True)
 
@@ -175,10 +180,10 @@ class Process(db.Model):
     __tablename__ = 'process'
     pid = db.Column(db.String(), nullable=False, primary_key=True)
     user_id = db.Column(
-            db.Integer,
-            db.ForeignKey('user.id'),
-            nullable=False
-            )
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
+    )
     command = db.Column(db.String(), nullable=False)
     desc = db.Column(db.String(), nullable=False)
     arguments = db.Column(db.String(), nullable=True)

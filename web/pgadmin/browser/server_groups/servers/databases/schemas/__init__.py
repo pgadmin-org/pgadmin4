@@ -120,6 +120,7 @@ def check_precondition(f):
     Assumptions:
         This function will always be used as decorator of a class method.
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
@@ -139,7 +140,7 @@ def check_precondition(f):
             self.ppas_template_path(self.manager.version)
             if self.manager.server_type == 'ppas' else
             self.pg_template_path(self.manager.version)
-            )
+        )
 
         return f(*args, **kwargs)
 
@@ -201,20 +202,20 @@ class SchemaView(PGChildNodeView):
     node_type = schema_blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'scid'}
-            ]
+        {'type': 'int', 'id': 'scid'}
+    ]
 
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'children': [{ 'get': 'children'}],
+        'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -236,7 +237,6 @@ class SchemaView(PGChildNodeView):
         self.conn = None
         self.template_path = None
         self.template_initial = 'schema'
-
 
     @staticmethod
     def ppas_template_path(ver):
@@ -261,7 +261,7 @@ class SchemaView(PGChildNodeView):
         try:
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
-                )
+            )
             acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
@@ -278,7 +278,7 @@ class SchemaView(PGChildNodeView):
                         if modifier in data[aclcol]:
                             data[aclcol][modifier] = parse_priv_to_db(
                                 data[aclcol][modifier], allowedacl['acl']
-                                )
+                            )
                 else:
                     data[aclcol] = parse_priv_to_db(data[aclcol], allowedacl['acl'])
 
@@ -322,7 +322,7 @@ class SchemaView(PGChildNodeView):
                 seclabels.append({
                     'provider': sec.group(1),
                     'label': sec.group(2)
-                    })
+                })
 
         data['seclabels'] = seclabels
 
@@ -331,7 +331,7 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, 'sql/acl.sql']),
             _=gettext,
             scid=scid
-            )
+        )
         status, acl = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=acl)
@@ -350,7 +350,7 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, 'sql/defacl.sql']),
             _=gettext,
             scid=scid
-            )
+        )
 
         status, defacl = self.conn.execute_dict(SQL)
         if not status:
@@ -377,15 +377,15 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, 'sql/properties.sql']),
             _=gettext,
             show_sysobj=self.blueprint.show_system_objects
-            )
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did, scid=None):
@@ -407,7 +407,7 @@ class SchemaView(PGChildNodeView):
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
             scid=scid
-            )
+        )
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -431,13 +431,13 @@ It may have been removed by another user.
                     icon=icon,
                     can_create=row['can_create'],
                     has_usage=row['has_usage']
-                    )
                 )
+            )
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid):
@@ -458,7 +458,7 @@ It may have been removed by another user.
             scid=scid,
             _=gettext,
             show_sysobj=self.blueprint.show_system_objects
-            )
+        )
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -476,9 +476,9 @@ It may have been removed by another user.
         copy_data = self._formatter(copy_data, scid)
 
         return ajax_response(
-                response=copy_data,
-                status=200
-                )
+            response=copy_data,
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -512,22 +512,22 @@ It may have been removed by another user.
             SQL = render_template(
                 "/".join([self.template_path, 'sql/create.sql']),
                 data=data, conn=self.conn, _=gettext
-                )
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return make_json_response(
                     status=410,
                     success=0,
                     errormsg=res + '\n' +
-                    'Operation failed while running create statement'
-                    )
+                             'Operation failed while running create statement'
+                )
 
             # we need oid to to add object in tree at browser,
             # below sql will gives the same
             SQL = render_template(
                 "/".join([self.template_path, 'sql/oid.sql']),
                 schema=data['name'], _=gettext
-                )
+            )
 
             status, scid = self.conn.execute_scalar(SQL)
             if not status:
@@ -611,7 +611,7 @@ It may have been removed by another user.
                 "/".join([self.template_path, 'sql/get_name.sql']),
                 _=gettext,
                 scid=scid
-                )
+            )
 
             status, name = self.conn.execute_scalar(SQL)
             if not status:
@@ -621,7 +621,7 @@ It may have been removed by another user.
                 "/".join([self.template_path, 'sql/delete.sql']),
                 _=gettext, name=name, conn=self.conn,
                 cascade=True if self.cmd == 'delete' else False
-                )
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -665,9 +665,9 @@ It may have been removed by another user.
             SQL = self.get_sql(gid, sid, data, scid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                        data=SQL,
-                        status=200
-                        )
+                    data=SQL,
+                    status=200
+                )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -680,7 +680,7 @@ It may have been removed by another user.
                 "/".join([self.template_path, 'sql/properties.sql']),
                 _=gettext, scid=scid,
                 show_sysobj=self.blueprint.show_system_objects
-                )
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -699,7 +699,7 @@ It may have been removed by another user.
             SQL = render_template(
                 "/".join([self.template_path, 'sql/update.sql']),
                 _=gettext, data=data, o_data=old_data, conn=self.conn
-                )
+            )
         else:
             required_args = ['name']
 
@@ -713,7 +713,7 @@ It may have been removed by another user.
             SQL = render_template(
                 "/".join([self.template_path, 'sql/create.sql']),
                 data=data, conn=self.conn, _=gettext
-                )
+            )
 
         return SQL
 
@@ -732,7 +732,7 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path, 'sql/properties.sql']),
             scid=scid, _=gettext
-            )
+        )
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -755,7 +755,7 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path, 'sql/create.sql']),
             _=gettext, data=data, conn=self.conn
-            )
+        )
 
         sql_header = """
 -- SCHEMA: {0}
@@ -782,9 +782,9 @@ It may have been removed by another user.
         """
         dependents_result = self.get_dependents(self.conn, scid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid):
@@ -800,9 +800,9 @@ It may have been removed by another user.
         """
         dependencies_result = self.get_dependencies(self.conn, scid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def children(self, **kwargs):
@@ -811,7 +811,7 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path, 'sql/is_catalog.sql']),
             scid=kwargs['scid'], _=gettext
-            )
+        )
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -882,7 +882,6 @@ class CatalogView(SchemaView):
 
         self.template_initial = 'catalog'
 
-
     def _formatter(self, data, scid=None):
 
         """
@@ -917,7 +916,7 @@ class CatalogView(SchemaView):
         SQL = render_template(
             "/".join([self.template_path, 'sql/properties.sql']),
             scid=scid, _=gettext
-            )
+        )
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -940,7 +939,7 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path, 'sql/create.sql']),
             _=gettext, data=old_data, conn=self.conn
-            )
+        )
 
         sql_header = """
 -- CATALOG: {0}

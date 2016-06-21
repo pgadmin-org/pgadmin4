@@ -32,7 +32,7 @@ class _Preference(object):
     def __init__(
             self, cid, name, label, _type, default, help_str=None, min_val=None,
             max_val=None, options=None
-            ):
+    ):
         """
         __init__
         Constructor/Initializer for the internal _Preference object.
@@ -70,7 +70,7 @@ class _Preference(object):
         # preference.
         res = PrefTable.query.filter_by(
             name=name
-            ).first()
+        ).first()
 
         if res is None:
             # Couldn't find in the configuration table, we will create new
@@ -80,7 +80,7 @@ class _Preference(object):
             db.session.commit()
             res = PrefTable.query.filter_by(
                 name=name
-                ).first()
+            ).first()
 
         # Save this id for letter use.
         self.pid = res.id
@@ -96,7 +96,7 @@ class _Preference(object):
         """
         res = UserPrefTable.query.filter_by(
             pid=self.pid
-            ).filter_by(uid=current_user.id).first()
+        ).filter_by(uid=current_user.id).first()
 
         # Couldn't find any preference for this user, return default value.
         if res is None:
@@ -105,7 +105,7 @@ class _Preference(object):
         # The data stored in the configuration will be in string format, we
         # need to convert them in proper format.
         if self._type == 'boolean' or self._type == 'switch' or \
-                self._type == 'node':
+                        self._type == 'node':
             return res.value == 'True'
         if self._type == 'integer':
             try:
@@ -144,7 +144,7 @@ class _Preference(object):
         # We can't store the values in the given format, we need to convert
         # them in string first. We also need to validate the value type.
         if self._type == 'boolean' or self._type == 'switch' or \
-                self._type == 'node':
+                        self._type == 'node':
             if type(value) != bool:
                 return False, gettext("Invalid value for a boolean option.")
         elif self._type == 'integer':
@@ -174,12 +174,12 @@ class _Preference(object):
 
         pref = UserPrefTable.query.filter_by(
             pid=self.pid
-            ).filter_by(uid=current_user.id).first()
+        ).filter_by(uid=current_user.id).first()
 
         if pref is None:
             pref = UserPrefTable(
                 uid=current_user.id, pid=self.pid, value=str(value)
-                )
+            )
             db.session.add(pref)
         else:
             pref.value = str(value)
@@ -205,7 +205,7 @@ class _Preference(object):
             'max_val': self.max_val,
             'options': self.options,
             'value': self.get()
-            }
+        }
         return res
 
 
@@ -289,7 +289,7 @@ class Preferences(object):
                 'id': cat['id'],
                 'label': cat['label'] or cat['name'],
                 'preferences': []
-                }
+            }
 
             res['categories'].append(interm)
 
@@ -321,7 +321,7 @@ class Preferences(object):
 
         cat = PrefCategoryTbl.query.filter_by(
             mid=self.mid
-            ).filter_by(name=name).first()
+        ).filter_by(name=name).first()
 
         if cat is None:
             cat = PrefCategoryTbl(name=name, mid=self.mid)
@@ -329,20 +329,20 @@ class Preferences(object):
             db.session.commit()
             cat = PrefCategoryTbl.query.filter_by(
                 mid=self.mid
-                ).filter_by(name=name).first()
+            ).filter_by(name=name).first()
 
         self.categories[name] = res = {
             'id': cat.id,
             'name': name,
             'label': label,
             'preferences': dict()
-            }
+        }
 
         return res
 
     def register(
-        self, category, name, label, _type, default, min_val=None,
-        max_val=None, options=None, help_str=None, category_label=None
+            self, category, name, label, _type, default, min_val=None,
+            max_val=None, options=None, help_str=None, category_label=None
     ):
         """
         register
@@ -373,12 +373,12 @@ class Preferences(object):
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
             'options', 'multiline', 'switch', 'node', 'text'
-            ), "Type can not be found in the defined list!"
+        ), "Type can not be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str, min_val,
             max_val, options
-            )
+        )
 
         return res
 
@@ -417,7 +417,7 @@ Did you forget to register it?"""
             cls, module, category, name, label, _type, default, min_val=None,
             max_val=None, options=None, help_str=None, module_label=None,
             category_label=None
-            ):
+    ):
         """
         register
         Register/Refer a preference in the system for any module.
@@ -449,7 +449,7 @@ Did you forget to register it?"""
         return m.register(
             category, name, label, _type, default, min_val, max_val,
             options, help_str, category_label
-            )
+        )
 
     @classmethod
     def module(cls, name):
@@ -507,7 +507,7 @@ Did you forget to register it?"""
 
         if category is None:
             return False, gettext(
-                 "Module '{0}' does not have category with id '{1}'"
+                "Module '{0}' does not have category with id '{1}'"
             ).format(module.name, cid)
 
         preference = None
@@ -521,7 +521,7 @@ Did you forget to register it?"""
 
         if preference is None:
             return False, gettext(
-                 "Could not find the specified preference."
+                "Could not find the specified preference."
             )
 
         try:

@@ -279,11 +279,11 @@ class FtsTemplateView(PGChildNodeView):
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                        row['oid'],
-                        did,
-                        row['name'],
-                        icon="icon-fts_template"
-                    ),
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-fts_template"
+                ),
                 status=200
             )
 
@@ -695,9 +695,9 @@ class FtsTemplateView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, tid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid):
@@ -714,8 +714,9 @@ class FtsTemplateView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, tid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
+
 
 FtsTemplateView.register_node_view(blueprint)

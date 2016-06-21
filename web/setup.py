@@ -31,16 +31,16 @@ if hasattr(__builtins__, 'raw_input'):
     input = raw_input
     range = xrange
 
-def do_setup(app):
 
+def do_setup(app):
     """Create a new settings database from scratch"""
     if config.SERVER_MODE is False:
         print("NOTE: Configuring authentication for DESKTOP mode.")
         email = config.DESKTOP_USER
         p1 = ''.join([
-                    random.choice(string.ascii_letters + string.digits)
-                    for n in range(32)
-                    ])
+                         random.choice(string.ascii_letters + string.digits)
+                         for n in range(32)
+                         ])
 
     else:
         print("NOTE: Configuring authentication for SERVER mode.\n")
@@ -77,13 +77,13 @@ account:\n""")
 
         db.create_all()
         user_datastore.create_role(
-                name='Administrator',
-                description='pgAdmin Administrator Role'
-                )
+            name='Administrator',
+            description='pgAdmin Administrator Role'
+        )
         user_datastore.create_role(
-                name='User',
-                description='pgAdmin User Role'
-                )
+            name='User',
+            description='pgAdmin User Role'
+        )
 
         user_datastore.create_user(email=email, password=password)
         db.session.flush()
@@ -96,8 +96,8 @@ account:\n""")
 
         # Set the schema version
         version = Version(
-                name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION
-                )
+            name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION
+        )
         db.session.merge(version)
 
         db.session.commit()
@@ -105,10 +105,10 @@ account:\n""")
     # Done!
     print("")
     print(
-            "The configuration database has been created at {0}".format(
-                config.SQLITE_PATH
-                )
-            )
+        "The configuration database has been created at {0}".format(
+            config.SQLITE_PATH
+        )
+    )
 
 
 def do_upgrade(app, datastore, security, version):
@@ -137,7 +137,7 @@ Exiting...""".format(version.value))
         app.logger.info(
             "NOTE: Upgrading database schema from version %d to %d." %
             (version.value, config.SETTINGS_SCHEMA_VERSION)
-            )
+        )
 
         #######################################################################
         # Run whatever is required to update the database schema to the current
@@ -151,11 +151,11 @@ Exiting...""".format(version.value))
         if int(version.value) < 3:
             db.engine.execute(
                 'ALTER TABLE server ADD COLUMN comment TEXT(1024)'
-                )
+            )
         if int(version.value) < 4:
             db.engine.execute(
                 'ALTER TABLE server ADD COLUMN password TEXT(64)'
-                )
+            )
         if int(version.value) < 5:
             db.engine.execute('ALTER TABLE server ADD COLUMN role text(64)')
         if int(version.value) < 6:
@@ -192,7 +192,7 @@ FROM server_old""")
         if int(version.value) < 8:
             app.logger.info(
                 "Creating the preferences tables..."
-                )
+            )
             db.engine.execute("""
 CREATE TABLE module_preference(
     id INTEGER PRIMARY KEY,
@@ -284,8 +284,9 @@ INSERT INTO role ( name, description )
     # Done!
     app.logger.info(
         "The configuration database %s has been upgraded to version %d" %
-            (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
-        )
+        (config.SQLITE_PATH, config.SETTINGS_SCHEMA_VERSION)
+    )
+
 
 ###############################################################################
 # Do stuff!
@@ -301,9 +302,9 @@ if __name__ == '__main__':
     print("======================================\n")
 
     local_config = os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)),
-                    'config_local.py'
-                    )
+        os.path.dirname(os.path.realpath(__file__)),
+        'config_local.py'
+    )
     if not os.path.isfile(local_config):
         print("""
  The configuration file - {0} does not exist.
@@ -342,7 +343,7 @@ Exiting...""" % (version.value))
 
             print("NOTE: Upgrading database schema from version %d to %d." % (
                 version.value, config.SETTINGS_SCHEMA_VERSION
-                ))
+            ))
             do_upgrade(app, user_datastore, security, version)
     else:
         directory = os.path.dirname(config.SQLITE_PATH)

@@ -87,7 +87,7 @@ FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 LOG_FILE = os.path.join(
     DATA_DIR,
     'pgadmin4.log'
-    )
+)
 
 ##########################################################################
 # Server settings
@@ -139,7 +139,6 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 # Should HTML be minified on the fly when not in debug mode?
 MINIFY_HTML = True
 
-
 ##########################################################################
 # Server Connection Driver Settings
 ##########################################################################
@@ -165,7 +164,7 @@ SETTINGS_SCHEMA_VERSION = 11
 SQLITE_PATH = os.path.join(
     DATA_DIR,
     'pgadmin4.db'
-    )
+)
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
 # OperationError due to database lock. On slower system, you may need to change
 # this to some higher value.
@@ -195,7 +194,7 @@ SQLITE_TIMEOUT = 500
 SESSION_DB_PATH = os.path.join(
     DATA_DIR,
     'sessions'
-    )
+)
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
@@ -217,11 +216,11 @@ MAIL_PASSWORD = 'SuperSecret'
 
 # These settings define the content of password reset emails
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for %s" \
-        % APP_NAME
+                                        % APP_NAME
 SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE = "Your %s password has been reset" \
-        % APP_NAME
+                                         % APP_NAME
 SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
-        "Your password for %s has been changed" % APP_NAME
+    "Your password for %s has been changed" % APP_NAME
 
 ##########################################################################
 # Upgrade checks
@@ -247,7 +246,7 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 STORAGE_DIR = os.path.join(
     DATA_DIR,
     'storage'
-    )
+)
 
 ##########################################################################
 # Allows flask application to response to the each request asynchronously

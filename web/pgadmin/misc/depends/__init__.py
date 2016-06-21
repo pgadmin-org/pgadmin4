@@ -16,13 +16,13 @@ MODULE_NAME = 'depends'
 
 
 class DependsModule(PgAdminModule):
-
     def get_own_javascripts(self):
         return [{
             'name': 'pgadmin.browser.object_depends',
             'path': url_for('depends.static', filename='js/depends'),
             'when': None
-            }]
+        }]
+
 
 # Initialise the module
 blueprint = DependsModule(MODULE_NAME, __name__, url_prefix='/misc/depends')

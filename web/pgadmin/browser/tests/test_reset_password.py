@@ -12,6 +12,7 @@ import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression.config import config_data
 
+
 class ResetPasswordTestCase(BaseTestGenerator):
     """
     This class validates the reset password functionality by defining

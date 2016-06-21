@@ -20,7 +20,6 @@ MODULE_NAME = 'misc'
 
 
 class MiscModule(PgAdminModule):
-
     def get_own_javascripts(self):
         return [{
             'name': 'pgadmin.misc.explain',

@@ -31,7 +31,7 @@ class ServerType(object):
         self.spriority = priority
         self.utility_path = None
 
-        assert(server_type not in ServerType.registry)
+        assert (server_type not in ServerType.registry)
         ServerType.registry[server_type] = self
 
     @property
@@ -66,8 +66,8 @@ class ServerType(object):
 
     def __str__(self):
         return "Type: {0}, Description:{1}, Priority: {2}".format(
-                self.stype, self.desc, self.spriority
-                )
+            self.stype, self.desc, self.spriority
+        )
 
     def instanceOf(self, version):
         return True
@@ -78,19 +78,19 @@ class ServerType(object):
         Returns a snippet of css to include in the page
         """
         return [
-                render_template(
-                    "css/server_type.css",
-                    server_type=self.stype
-                    )
-                ]
+            render_template(
+                "css/server_type.css",
+                server_type=self.stype
+            )
+        ]
 
     @classmethod
     def types(cls):
         return sorted(
-                ServerType.registry.values(),
-                key=lambda x: x.priority,
-                reverse=True
-                )
+            ServerType.registry.values(),
+            key=lambda x: x.priority,
+            reverse=True
+        )
 
     def utility(self, operation, sverion):
         res = None

@@ -83,11 +83,11 @@ class CheckConstraintModule(CollectionNodeModule):
         Returns a snippet of css to include in the page
         """
         return [
-                render_template(
-                    "check_constraint/css/check_constraint.css",
-                    node_type=self.node_type
-                    )
-                ]
+            render_template(
+                "check_constraint/css/check_constraint.css",
+                node_type=self.node_type
+            )
+        ]
 
 
 blueprint = CheckConstraintModule(__name__)
@@ -199,6 +199,7 @@ class CheckConstraintView(PGChildNodeView):
         Checks database connection status.
         Attach connection object and template path.
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             self = args[0]
@@ -260,9 +261,9 @@ class CheckConstraintView(PGChildNodeView):
         try:
             res = self.get_node_list(gid, sid, did, scid, tid, cid)
             return ajax_response(
-                    response=res,
-                    status=200
-                    )
+                response=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -305,9 +306,9 @@ class CheckConstraintView(PGChildNodeView):
         try:
             res = self.get_nodes(gid, sid, did, scid, tid, cid)
             return make_json_response(
-                    data=res,
-                    status=200
-                    )
+                data=res,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -341,13 +342,13 @@ class CheckConstraintView(PGChildNodeView):
                 icon = "icon-check_constraints"
                 valid = True
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['oid'],
-                        tid,
-                        row['name'],
-                        icon=icon,
-                        valid=valid
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon=icon,
+                    valid=valid
+                ))
         return res
 
     @check_precondition
@@ -428,7 +429,7 @@ class CheckConstraintView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data
-                )
+            )
 
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
@@ -474,8 +475,8 @@ class CheckConstraintView(PGChildNodeView):
                     data['name'],
                     icon=icon,
                     valid=valid
-                    )
                 )
+            )
 
         except Exception as e:
             self.end_transaction()
@@ -633,8 +634,8 @@ class CheckConstraintView(PGChildNodeView):
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data)
+            "/".join([self.template_path, 'delete.sql']),
+            data=data)
         sql_header += "\n"
 
         SQL = sql_header + SQL
@@ -671,9 +672,9 @@ class CheckConstraintView(PGChildNodeView):
             sql = sql.strip('\n').strip(' ')
 
             return make_json_response(
-                    data=sql,
-                    status=200
-                    )
+                data=sql,
+                status=200
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -709,7 +710,7 @@ class CheckConstraintView(PGChildNodeView):
                 SQL = render_template(
                     "/".join([self.template_path, 'update.sql']),
                     data=data, o_data=old_data, conn=self.conn
-                    )
+                )
             else:
                 required_args = ['consrc']
 
@@ -743,9 +744,9 @@ class CheckConstraintView(PGChildNodeView):
         """
         dependents_result = self.get_dependents(self.conn, cid)
         return ajax_response(
-                response=dependents_result,
-                status=200
-                )
+            response=dependents_result,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, scid, tid, cid):
@@ -763,9 +764,9 @@ class CheckConstraintView(PGChildNodeView):
         """
         dependencies_result = self.get_dependencies(self.conn, cid)
         return ajax_response(
-                response=dependencies_result,
-                status=200
-                )
+            response=dependencies_result,
+            status=200
+        )
 
     @check_precondition
     def validate_check_constraint(self, gid, sid, did, scid, tid, cid):
@@ -811,7 +812,8 @@ class CheckConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+
 constraint = ConstraintRegistry(
     'check_constraint', CheckConstraintModule, CheckConstraintView
-    )
+)
 CheckConstraintView.register_node_view(blueprint)

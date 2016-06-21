@@ -45,6 +45,3 @@ class PrevalenceCounter(object):
 
     def name_count(self, name):
         return self.name_counts[name]
-
-
-

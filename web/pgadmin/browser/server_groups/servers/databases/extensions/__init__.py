@@ -104,13 +104,13 @@ class ExtensionView(PGChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
-            {'type': 'int', 'id': 'gid'},
-            {'type': 'int', 'id': 'sid'},
-            {'type': 'int', 'id': 'did'}
-            ]
+        {'type': 'int', 'id': 'gid'},
+        {'type': 'int', 'id': 'sid'},
+        {'type': 'int', 'id': 'did'}
+    ]
     ids = [
-            {'type': 'int', 'id': 'eid'}
-            ]
+        {'type': 'int', 'id': 'eid'}
+    ]
 
     operations = dict({
         'obj': [
@@ -136,17 +136,19 @@ class ExtensionView(PGChildNodeView):
         database connection before running view, it will also attaches
         manager,conn & template_path properties to self
         """
+
         @wraps(f)
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             self.manager = get_driver(
-                    PG_DEFAULT_DRIVER
-                ).connection_manager(kwargs['sid'])
+                PG_DEFAULT_DRIVER
+            ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = 'extensions/sql'
 
             return f(*args, **kwargs)
+
         return wrap
 
     @check_precondition
@@ -160,9 +162,9 @@ class ExtensionView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         return ajax_response(
-                response=res['rows'],
-                status=200
-                )
+            response=res['rows'],
+            status=200
+        )
 
     @check_precondition
     def nodes(self, gid, sid, did):
@@ -177,17 +179,17 @@ class ExtensionView(PGChildNodeView):
 
         for row in rset['rows']:
             res.append(
-                    self.blueprint.generate_browser_node(
-                        row['eid'],
-                        did,
-                        row['name'],
-                        'icon-extension'
-                    ))
+                self.blueprint.generate_browser_node(
+                    row['eid'],
+                    did,
+                    row['name'],
+                    'icon-extension'
+                ))
 
         return make_json_response(
-                data=res,
-                status=200
-                )
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, eid):
@@ -201,9 +203,9 @@ class ExtensionView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         return ajax_response(
-                response=res['rows'][0],
-                status=200
-                )
+            response=res['rows'][0],
+            status=200
+        )
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -230,8 +232,8 @@ class ExtensionView(PGChildNodeView):
             render_template(
                 "/".join([self.template_path, 'create.sql']),
                 data=data
-                )
             )
+        )
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -248,12 +250,12 @@ class ExtensionView(PGChildNodeView):
 
         for row in rset['rows']:
             return jsonify(
-              node=self.blueprint.generate_browser_node(
+                node=self.blueprint.generate_browser_node(
                     row['eid'],
                     did,
                     row['name'],
                     'icon-extension'
-                    )
+                )
             )
 
     @check_precondition
@@ -310,8 +312,8 @@ class ExtensionView(PGChildNodeView):
                 return internal_server_error(errormsg=name)
             # drop extension
             SQL = render_template("/".join(
-                    [self.template_path, 'delete.sql']
-                ), name=name, cascade=cascade)
+                [self.template_path, 'delete.sql']
+            ), name=name, cascade=cascade)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -339,14 +341,14 @@ class ExtensionView(PGChildNodeView):
         if SQL and isinstance(SQL, basestring) and SQL.strip('\n') \
                 and SQL.strip(' '):
             return make_json_response(
-                    data=SQL,
-                    status=200
-                    )
+                data=SQL,
+                status=200
+            )
         else:
             return make_json_response(
-                    data=gettext('-- Modified SQL --'),
-                    status=200
-                    )
+                data=gettext('-- Modified SQL --'),
+                status=200
+            )
 
     def getSQL(self, gid, sid, data, did, eid=None):
         """
@@ -358,8 +360,8 @@ class ExtensionView(PGChildNodeView):
         try:
             if eid is not None:
                 SQL = render_template("/".join(
-                        [self.template_path, 'properties.sql']
-                    ), eid=eid)
+                    [self.template_path, 'properties.sql']
+                ), eid=eid)
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -368,12 +370,12 @@ class ExtensionView(PGChildNodeView):
                     if arg not in data:
                         data[arg] = old_data[arg]
                 SQL = render_template("/".join(
-                            [self.template_path, 'update.sql']
-                        ), data=data, o_data=old_data)
+                    [self.template_path, 'update.sql']
+                ), data=data, o_data=old_data)
             else:
                 SQL = render_template("/".join(
-                            [self.template_path, 'create.sql']
-                        ), data=data)
+                    [self.template_path, 'create.sql']
+                ), data=data)
             return SQL
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -388,9 +390,9 @@ class ExtensionView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=rset)
         return make_json_response(
-                data=rset['rows'],
-                status=200
-                )
+            data=rset['rows'],
+            status=200
+        )
 
     @check_precondition
     def schemas(self, gid, sid, did):
@@ -402,21 +404,21 @@ class ExtensionView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=rset)
         return make_json_response(
-                data=rset['rows'],
-                status=200
-                )
+            data=rset['rows'],
+            status=200
+        )
 
     def module_js(self):
         """
         This property defines whether javascript exists for this node.
         """
         return make_response(
-                render_template(
-                    "extensions/js/extensions.js",
-                    _=gettext
-                    ),
-                200, {'Content-Type': 'application/x-javascript'}
-                )
+            render_template(
+                "extensions/js/extensions.js",
+                _=gettext
+            ),
+            200, {'Content-Type': 'application/x-javascript'}
+        )
 
     @check_precondition
     def sql(self, gid, sid, did, eid):
@@ -424,8 +426,8 @@ class ExtensionView(PGChildNodeView):
         This function will generate sql for the sql panel
         """
         SQL = render_template("/".join(
-                [self.template_path, 'properties.sql']
-            ), eid=eid)
+            [self.template_path, 'properties.sql']
+        ), eid=eid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -433,8 +435,8 @@ class ExtensionView(PGChildNodeView):
         result = res['rows'][0]
 
         SQL = render_template("/".join(
-                [self.template_path, 'create.sql']
-                ),
+            [self.template_path, 'create.sql']
+        ),
             data=result,
             conn=self.conn,
             display_comments=True
@@ -458,7 +460,7 @@ class ExtensionView(PGChildNodeView):
         return ajax_response(
             response=dependents_result,
             status=200
-            )
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, did, eid):
@@ -476,7 +478,8 @@ class ExtensionView(PGChildNodeView):
         return ajax_response(
             response=dependencies_result,
             status=200
-            )
+        )
+
 
 # Register and add ExtensionView as blueprint
 ExtensionView.register_node_view(blueprint)
