@@ -323,7 +323,8 @@ define(
             });
 
             // Open the panel if frame is initialized
-            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/false/" + grid_title;
+            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/false/"
+                                                                    + encodeURIComponent(grid_title);
             var openDataGridURL = function(j) {
                 setTimeout(function() {
                     var frameInitialized = j.data('frameInitialized');
@@ -419,7 +420,7 @@ define(
 
             // Open the panel if frame is initialized
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
-                        + grid_title + '?' + "query_url=" + encodeURI(sURL);
+                        + encodeURIComponent(grid_title) + '?' + "query_url=" + encodeURI(sURL);
             var openQueryToolURL = function(j) {
                 setTimeout(function() {
                     var frameInitialized = j.data('frameInitialized');

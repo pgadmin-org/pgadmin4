@@ -134,7 +134,7 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     return make_json_response(data={'gridTransId': trans_id})
 
 
-@blueprint.route('/panel/<int:trans_id>/<is_query_tool>/<editor_title>', methods=["GET"])
+@blueprint.route('/panel/<int:trans_id>/<is_query_tool>/<path:editor_title>', methods=["GET"])
 def panel(trans_id, is_query_tool, editor_title):
     """
     This method calls index.html to render the data grid.
