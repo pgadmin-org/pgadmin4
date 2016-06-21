@@ -346,6 +346,13 @@ GOTO:EOF
 :CREATE_PYTHON_ENV
     copy %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    REM Copy Python interpretor as it's needed to run background processes
+    copy %PYTHON_HOME%\python.exe "%PGBUILDPATH%\runtime"  > nul
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy %PYTHON_HOME%\pythonw.exe "%PGBUILDPATH%\runtime"  > nul
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
     XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul
