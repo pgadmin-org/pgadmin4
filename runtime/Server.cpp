@@ -18,7 +18,6 @@
 #include <QDebug>
 #include <QDir>
 #include <QMessageBox>
-#include <QProcessEnvironment>
 
 // App headers
 #include "Server.h"
@@ -65,17 +64,13 @@ Server::Server(quint16 port)
     Py_SetProgramName(m_wcAppName);
 #endif
 
-    Py_Initialize();
-
     // Setup the search path
     QSettings settings;
     QString python_path = settings.value("PythonPath").toString();
 
     // Get the application directory
     QString app_dir = qApp->applicationDirPath();
-
-    QProcessEnvironment env;
-    QString path_env = env.value("PATH");
+    QString path_env = qgetenv("PATH");;
 
 #ifdef Q_OS_MAC
     // In the case we're running in a release appbundle, we need to ensure the
@@ -128,35 +123,36 @@ Server::Server(quint16 port)
     add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
 #endif
 
-    env.insert("PATH", path_env);
+    qputenv("PATH", path_env.toUtf8().data());
 
     if (python_path.length() > 0)
     {
         // Split the path setting into individual entries
         QStringList path_list = python_path.split(";", QString::SkipEmptyParts);
-
-        // Get the current path
-        PyObject* sysPath = PySys_GetObject((char*)"path");
+        python_path = QString();
 
         // Add new additional path elements
         for (int i = path_list.size() - 1; i >= 0 ; --i)
         {
-#ifdef PYTHON2
-            PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
+            python_path.append(path_list.at(i));
+            if (i > 0)
+            {
+#if Q_OS_WIN
+                python_path.append(";");
 #else
-#if PY_MINOR_VERSION > 2
-            PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
-#else
-            PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
+                python_path.append(":");
 #endif
-#endif
+            }
         }
+        qputenv("PYTHONPATH", python_path.toUtf8().data());
     }
 
     qDebug() << "Full Python path: " << python_path;
 
     python_path = settings.value("PythonPath").toString();
     qDebug() << "User Python path: " << python_path;
+
+    Py_Initialize();
 }
 
 Server::~Server()
