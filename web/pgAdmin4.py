@@ -72,6 +72,9 @@ else:
         config.DEFAULT_SERVER_PORT)
     server_port = config.DEFAULT_SERVER_PORT
 
+# Let the application save the status about the runtime for using it later.
+app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
+
 # Output a startup message if we're not under the runtime
 if not PGADMIN_RUNTIME:
     print("Starting %s. Please navigate to http://localhost:%d in your browser." %

@@ -22,6 +22,7 @@ import pytz
 from subprocess import Popen, PIPE
 import sys
 
+from flask import current_app as app
 from flask.ext.babel import gettext as _
 from flask.ext.security import current_user
 
@@ -32,13 +33,6 @@ if sys.version_info < (3,):
     from StringIO import StringIO
 else:
     from io import StringIO
-
-# The port number should have already been set by the runtime if we're running
-# in desktop mode.
-PGADMIN_RUNTIME = False
-
-if 'PGADMIN_PORT' in globals():
-    PGADMIN_RUNTIME = True
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
@@ -188,7 +182,7 @@ class BatchProcess(object):
 
         p = None
         cmd = [
-            (sys.executable if not PGADMIN_RUNTIME else
+            (sys.executable if not app.PGADMIN_RUNTIME else
                 'pythonw.exe' if os.name == 'nt' else 'python'),
             executor,
             '-p', self.id,
