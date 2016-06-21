@@ -9,11 +9,12 @@
 
 """Utility functions for dealing with AJAX."""
 
-from flask import Response
-from flask.ext.babel import gettext as _
-import simplejson as json
 import datetime
 import decimal
+
+import simplejson as json
+from flask import Response
+from flask.ext.babel import gettext as _
 
 
 class DataTypeJSONEncoder(json.JSONEncoder):

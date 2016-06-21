@@ -9,10 +9,11 @@
 
 """This File Provides Cryptography."""
 
-from Crypto.Cipher import AES
-from Crypto import Random
 import base64
 import hashlib
+
+from Crypto import Random
+from Crypto.Cipher import AES
 
 padding_string = b'}'
 

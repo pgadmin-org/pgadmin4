@@ -9,21 +9,23 @@
 
 """A blueprint module implementing the sql auto complete feature."""
 
-import sys
-import re
-import sqlparse
 import itertools
 import operator
+import re
+import sys
 from collections import namedtuple
+
+import sqlparse
+from flask import render_template
+from pgadmin.utils.driver import get_driver
 from sqlparse.sql import Comparison, Identifier, Where
+
+from config import PG_DEFAULT_DRIVER
+from .completion import Completion
+from .function_metadata import FunctionMetadata
 from .parseutils import (
     last_word, extract_tables, find_prev_keyword, parse_partial_identifier)
 from .prioritization import PrevalenceCounter
-from .completion import Completion
-from .function_metadata import FunctionMetadata
-from flask import render_template
-from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3

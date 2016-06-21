@@ -13,6 +13,7 @@ them to TestSuite. """
 import os
 import sys
 import unittest
+
 from testscenarios.scenarios import generate_scenarios
 
 # We need to include the root directory in sys.path to ensure that we can

@@ -12,14 +12,16 @@ Utility classes to register, getter, setter functions for the preferences of a
 module within the system.
 """
 
+import decimal
+
+import dateutil.parser as dateutil_parser
 from flask import current_app
+from flask.ext.babel import gettext
 from flask.ext.security import current_user
+
 from pgadmin.model import db, Preferences as PrefTable, \
     ModulePreference as ModulePrefTable, UserPreference as UserPrefTable, \
     PreferenceCategory as PrefCategoryTbl
-from flask.ext.babel import gettext
-import dateutil.parser as dateutil_parser
-import decimal
 
 
 class _Preference(object):

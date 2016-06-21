@@ -10,17 +10,19 @@
 """Defines views for management of FTS Parser node"""
 
 import json
+from functools import wraps
+
 from flask import render_template, request, jsonify, current_app
 from flask.ext.babel import gettext as _
+from pgadmin.browser.server_groups.servers.databases import DatabaseModule
+from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
-from pgadmin.browser.server_groups.servers.databases import DatabaseModule
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
-from functools import wraps
 
 
 class FtsParserModule(SchemaChildModule):

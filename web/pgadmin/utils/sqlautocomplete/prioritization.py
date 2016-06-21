@@ -1,7 +1,8 @@
 import re
+from collections import defaultdict
+
 import sqlparse
 from sqlparse.tokens import Name
-from collections import defaultdict
 
 white_space_regex = re.compile('\\s+', re.MULTILINE)
 

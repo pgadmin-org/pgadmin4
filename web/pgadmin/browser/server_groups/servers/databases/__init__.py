@@ -11,21 +11,23 @@
 
 import json
 import re
+from functools import wraps
+
+import pgadmin.browser.server_groups.servers as servers
 from flask import render_template, make_response, current_app, request, jsonify
 from flask.ext.babel import gettext as _
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, unauthorized
-from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
 from pgadmin.browser.collection import CollectionNodeModule
-import pgadmin.browser.server_groups.servers as servers
-from pgadmin.utils.ajax import precondition_required, gone
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db
+from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
+    parse_priv_to_db
+from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils.ajax import make_json_response, \
+    make_response as ajax_response, internal_server_error, unauthorized
+from pgadmin.utils.ajax import precondition_required, gone
 from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
-from functools import wraps
 
 
 class DatabaseModule(CollectionNodeModule):

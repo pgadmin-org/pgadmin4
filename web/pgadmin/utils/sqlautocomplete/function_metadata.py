@@ -1,7 +1,7 @@
 import re
+
 import sqlparse
 from sqlparse.tokens import Whitespace, Comment, Keyword, Name, Punctuation
-
 
 table_def_regex = re.compile(r'^TABLE\s*\((.+)\)$', re.IGNORECASE)
 

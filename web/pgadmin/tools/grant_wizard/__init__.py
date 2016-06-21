@@ -10,16 +10,18 @@
 """Implements Grant Wizard"""
 
 import simplejson as json
+from flask import Response, url_for
 from flask import render_template, request, current_app
 from flask.ext.babel import gettext
+from flask.ext.security import login_required
+from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
+from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, internal_server_error
 from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
-from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
-from pgadmin.utils import PgAdminModule
-from flask import Response, url_for
-from flask.ext.security import login_required
+
 try:
     from urllib import unquote
 except:

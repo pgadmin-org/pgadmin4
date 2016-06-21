@@ -9,24 +9,23 @@
 
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
+import logging
+import sys
 from collections import defaultdict
+from importlib import import_module
+
 from flask import Flask, abort, request, current_app
 from flask.ext.babel import Babel
 from flask.ext.security import Security, SQLAlchemyUserDatastore
-from flask_security.utils import login_user
 from flask_mail import Mail
+from flask_security.utils import login_user
 from htmlmin.minify import html_minify
-from pgadmin.model import db, Role, User, Version
-from importlib import import_module
-from werkzeug.local import LocalProxy
 from pgadmin.utils import PgAdminModule, driver
-from werkzeug.utils import find_modules
-import sys
-import logging
-
 from pgadmin.utils.session import ServerSideSessionInterface
+from werkzeug.local import LocalProxy
+from werkzeug.utils import find_modules
 
-
+from pgadmin.model import db, Role, User, Version
 # Configuration settings
 import config
 

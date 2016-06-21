@@ -20,18 +20,16 @@ import select
 
 import psycopg2
 import psycopg2.extras
-from psycopg2.extensions import adapt
-
 from flask import g, current_app, session
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
+from pgadmin.utils.crypto import decrypt
+from psycopg2.extensions import adapt
 
 import config
 from pgadmin.model import Server, User
-from pgadmin.utils.crypto import decrypt
-from ..abstract import BaseDriver, BaseConnection
 from .keywords import ScanKeyword
-
+from ..abstract import BaseDriver, BaseConnection
 
 _ = gettext
 

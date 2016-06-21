@@ -14,13 +14,13 @@ import json
 from flask import url_for, Response, render_template, request, current_app
 from flask.ext.babel import gettext as _
 from flask.ext.security import login_required
-
-from config import PG_DEFAULT_DRIVER
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.model import Server
 from pgadmin.utils import PgAdminModule, html
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
+
+from config import PG_DEFAULT_DRIVER
+from pgadmin.model import Server
 
 MODULE_NAME = 'maintenance'
 

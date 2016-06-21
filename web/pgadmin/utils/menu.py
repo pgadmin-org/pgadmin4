@@ -7,8 +7,6 @@
 #
 ##########################################################################
 
-from collections import namedtuple
-
 PRIORITY = 100
 
 class MenuItem(object):

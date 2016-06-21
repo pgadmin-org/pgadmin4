@@ -10,12 +10,14 @@
 """ Implemented classes for the different object type used by data grid """
 
 from abc import ABCMeta, abstractmethod
+
+import six
 from flask import render_template
 from flask.ext.babel import gettext
-from pgadmin.utils.driver import get_driver
 from pgadmin.utils.ajax import forbidden
+from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
-import six
 
 VIEW_FIRST_100_ROWS = 1
 VIEW_LAST_100_ROWS = 2

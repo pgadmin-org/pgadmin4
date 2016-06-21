@@ -7,8 +7,8 @@
 #
 ##########################################################################
 
-from pgadmin.browser.collection import CollectionNodeModule
 from flask import Blueprint
+from pgadmin.browser.collection import CollectionNodeModule
 
 
 class ConstraintRegistry(object):

@@ -9,12 +9,12 @@
 
 """A blueprint module providing utility functions for the application."""
 
+import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response
 from flask.ext.babel import gettext as _
+from pgadmin.utils import PgAdminModule
 
 import config
-from pgadmin.utils import PgAdminModule
-import pgadmin.utils.driver as driver
 
 MODULE_NAME = 'misc'
 

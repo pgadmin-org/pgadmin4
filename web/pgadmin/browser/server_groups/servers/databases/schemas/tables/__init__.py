@@ -11,21 +11,23 @@
 
 import json
 import re
-from flask import render_template, make_response, request, jsonify
+from functools import wraps
+
+import pgadmin.browser.server_groups.servers.databases as database
+from flask import render_template, request, jsonify
 from flask.ext.babel import gettext
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader, VacuumSettings, \
     trigger_definition, parse_rule_definition
-import pgadmin.browser.server_groups.servers.databases as database
-from pgadmin.utils.ajax import precondition_required
-from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
-from functools import wraps
+from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils.ajax import make_json_response, \
+    make_response as ajax_response, internal_server_error
+from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.driver import get_driver
+
+from config import PG_DEFAULT_DRIVER
 
 
 class TableModule(SchemaChildModule):

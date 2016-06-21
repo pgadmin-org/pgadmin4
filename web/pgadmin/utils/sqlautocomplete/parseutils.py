@@ -1,7 +1,7 @@
-
 import re
-import sqlparse
 from collections import namedtuple
+
+import sqlparse
 from sqlparse.sql import IdentifierList, Identifier, Function
 from sqlparse.tokens import Keyword, DML, Punctuation, Token, Error
 

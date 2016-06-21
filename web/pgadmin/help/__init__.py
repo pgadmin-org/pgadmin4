@@ -10,11 +10,12 @@
 """A blueprint module implementing the pgAdmin help system."""
 MODULE_NAME = 'help'
 
-from pgadmin.utils.preferences import Preferences
+from flask import url_for
+from flask.ext.babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
-from flask.ext.babel import gettext
-from flask import url_for
+from pgadmin.utils.preferences import Preferences
+
 import config
 
 

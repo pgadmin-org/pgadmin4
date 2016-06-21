@@ -12,7 +12,6 @@ MODULE_NAME = 'dashboard'
 
 from functools import wraps
 
-from config import PG_DEFAULT_DRIVER
 from flask import render_template, url_for, Response, g
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
@@ -22,6 +21,8 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
+
+from config import PG_DEFAULT_DRIVER
 
 
 class DashboardModule(PgAdminModule):

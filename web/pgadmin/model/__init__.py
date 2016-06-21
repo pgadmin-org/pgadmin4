@@ -18,8 +18,8 @@ things:
    config database to upgrade it to the new version.
 """
 
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
+from flask.ext.sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 

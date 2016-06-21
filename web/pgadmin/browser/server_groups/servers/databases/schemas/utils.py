@@ -9,11 +9,12 @@
 
 """Schema collection node helper class"""
 
-from pgadmin.browser.collection import CollectionNodeModule
-from pgadmin.browser.utils import PGChildNodeView
-from flask import render_template
-from pgadmin.utils.ajax import internal_server_error
 import json
+
+from flask import render_template
+from pgadmin.browser.collection import CollectionNodeModule
+from pgadmin.utils.ajax import internal_server_error
+
 
 class SchemaChildModule(CollectionNodeModule):
     """

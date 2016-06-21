@@ -9,21 +9,22 @@
 
 """Implements View and Materialized View Node"""
 
+from functools import wraps
+
+import pgadmin.browser.server_groups.servers.databases as databases
 import simplejson as json
 from flask import render_template, request, jsonify
 from flask.ext.babel import gettext
+from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
+    SchemaChildModule, parse_rule_definition, VacuumSettings
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, \
     bad_request
-from pgadmin.browser.utils import PGChildNodeView
-import pgadmin.browser.server_groups.servers.databases as databases
-from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
-    SchemaChildModule, parse_rule_definition, VacuumSettings
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from functools import wraps
 
+from config import PG_DEFAULT_DRIVER
 
 """
     This module is responsible for generating two nodes

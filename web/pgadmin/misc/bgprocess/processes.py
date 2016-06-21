@@ -12,16 +12,17 @@
 Introduce a function to run the process executor in detached mode.
 """
 from __future__ import print_function, unicode_literals
-from abc import ABCMeta, abstractproperty, abstractmethod
-import csv
-from datetime import datetime
-from dateutil import parser
-import os
-from pickle import dumps, loads
-import pytz
-from subprocess import Popen, PIPE
-import sys
 
+import csv
+import os
+import sys
+from abc import ABCMeta, abstractproperty, abstractmethod
+from datetime import datetime
+from pickle import dumps, loads
+from subprocess import Popen, PIPE
+
+import pytz
+from dateutil import parser
 from flask import current_app as app
 from flask.ext.babel import gettext as _
 from flask.ext.security import current_user

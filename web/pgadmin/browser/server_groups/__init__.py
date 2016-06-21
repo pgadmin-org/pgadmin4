@@ -8,18 +8,21 @@
 ##########################################################################
 """Defines views for management of server groups"""
 
-from abc import ABCMeta, abstractmethod
 import json
+from abc import ABCMeta, abstractmethod
+
+import six
 from flask import request, render_template, make_response, jsonify
 from flask.ext.babel import gettext
 from flask.ext.security import current_user
+from pgadmin.browser import BrowserPluginModule
+from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response
-from pgadmin.browser import BrowserPluginModule
 from pgadmin.utils.menu import MenuItem
+
 from pgadmin.model import db, ServerGroup
-from pgadmin.browser.utils import NodeView
-import six
+
 
 class ServerGroupModule(BrowserPluginModule):
 

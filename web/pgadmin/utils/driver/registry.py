@@ -8,6 +8,7 @@
 ##########################################################################
 
 from abc import ABCMeta
+
 from flask.ext.babel import gettext
 
 

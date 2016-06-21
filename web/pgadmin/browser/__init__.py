@@ -7,20 +7,22 @@
 #
 ##########################################################################
 
+import json
+import six
 from abc import ABCMeta, abstractmethod, abstractproperty
-from pgadmin import current_blueprint
+
+from flask import current_app, render_template, url_for, make_response, flash
+from flask.ext.babel import gettext
+from flask.ext.login import current_user
+from flask.ext.security import login_required
+from flask_gravatar import Gravatar
+from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
-from pgadmin.settings import get_setting
-from flask import current_app, render_template, url_for, make_response, flash
-from flask.ext.security import login_required
-from flask.ext.login import current_user
-from flask.ext.babel import gettext
-from flask_gravatar import Gravatar
-import json, six
 
 import config
+from pgadmin import current_blueprint
 
 try:
     import urllib.request as urlreq

@@ -9,12 +9,13 @@
 
 """Implements Constraint Node"""
 
-from flask.ext.babel import gettext
-from flask import render_template, make_response
-from pgadmin.browser.collection import CollectionNodeModule
 import pgadmin.browser.server_groups.servers.databases as database
+from flask import render_template, make_response
+from flask.ext.babel import gettext
+from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
      make_response as ajax_response
+
 from .type import ConstraintRegistry
 
 

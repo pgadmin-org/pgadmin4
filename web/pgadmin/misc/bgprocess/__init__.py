@@ -14,9 +14,8 @@ the long running background-processes.
 from flask import url_for
 from flask.ext.babel import gettext as _
 from flask.ext.security import login_required
-
-from pgadmin.utils.ajax import make_response, gone, bad_request, success_return
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import make_response, gone, bad_request, success_return
 
 from .processes import BatchProcess
 

@@ -15,12 +15,12 @@ import os
 from flask import url_for, Response, render_template, request, current_app
 from flask.ext.babel import gettext as _
 from flask.ext.security import login_required, current_user
-
-from config import PG_DEFAULT_DRIVER
+from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html
 from pgadmin.utils.ajax import make_json_response, bad_request
+
+from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
-from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 
 MODULE_NAME = 'import_export'
 

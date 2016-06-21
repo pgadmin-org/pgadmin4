@@ -11,20 +11,22 @@
 MODULE_NAME = 'sqleditor'
 
 import json
+import os
 import pickle
 import random
-import os
+
 from flask import Response, url_for, render_template, session, request
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
+from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
      success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.tools.sqleditor.command import QueryToolCommand
-from pgadmin.utils import get_storage_directory
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
+
+from config import PG_DEFAULT_DRIVER
 
 # import unquote from urlib for python2.x and python3.x
 try:

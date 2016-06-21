@@ -2,9 +2,9 @@
 Copied from http://code.activestate.com/recipes/576611-counter-class/
 """
 
-from operator import itemgetter
 from heapq import nlargest
 from itertools import repeat, ifilter
+from operator import itemgetter
 
 
 class Counter(dict):

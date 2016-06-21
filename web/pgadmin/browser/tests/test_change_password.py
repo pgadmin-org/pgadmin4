@@ -7,9 +7,10 @@
 #
 # ##########################################################################
 
+import uuid
+
 from pgadmin.browser.tests.test_login import LoginTestCase
 from regression.config import config_data
-import uuid
 
 
 class ChangePasswordTestCase(LoginTestCase):

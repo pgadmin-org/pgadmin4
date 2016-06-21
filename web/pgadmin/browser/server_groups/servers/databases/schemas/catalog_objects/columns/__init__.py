@@ -9,18 +9,20 @@
 
 """ Implements Columns Node (For Catalog objects) """
 
+from functools import wraps
+
+import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template
 from flask.ext.babel import gettext
+from pgadmin.browser.collection import CollectionNodeModule
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
-from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.browser.collection import CollectionNodeModule
-import pgadmin.browser.server_groups.servers.databases as database
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from functools import wraps
 from pgadmin.utils.preferences import Preferences
+
+from config import PG_DEFAULT_DRIVER
 
 
 class CatalogObjectColumnsModule(CollectionNodeModule):

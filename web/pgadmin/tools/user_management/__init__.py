@@ -16,13 +16,13 @@ from flask import render_template, request, \
     url_for, Response, abort
 from flask.ext.babel import gettext as _
 from flask.ext.security import login_required, roles_required, current_user
-
+from flask.ext.security.utils import encrypt_password
+from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     make_json_response, bad_request, internal_server_error
-from pgadmin.utils import PgAdminModule
+
 from pgadmin.model import db, Role, User, UserPreference, Server,\
     ServerGroup, Process, Setting
-from flask.ext.security.utils import encrypt_password
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'

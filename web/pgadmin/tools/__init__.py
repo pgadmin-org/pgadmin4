@@ -9,9 +9,9 @@
 
 """A blueprint module container for keeping all submodule of type tool."""
 
+from flask.ext.babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
-from flask.ext.babel import gettext
 
 MODULE_NAME = 'tools'
 

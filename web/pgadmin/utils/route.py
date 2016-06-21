@@ -7,8 +7,8 @@
 #
 ##############################################################
 
-from abc import ABCMeta, abstractmethod
 import unittest
+from abc import ABCMeta, abstractmethod
 
 
 class TestsGeneratorRegistry(ABCMeta):

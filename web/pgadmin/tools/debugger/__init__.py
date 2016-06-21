@@ -13,17 +13,18 @@ MODULE_NAME = 'debugger'
 
 import json
 import random
-from flask import url_for, Response, render_template, request, make_response, jsonify, session, current_app
-from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import bad_request
+
+from flask import url_for, Response, render_template, request, session, current_app
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
+from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import bad_request
+from pgadmin.utils.ajax import make_json_response, \
+    internal_server_error
 from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.menu import Panel
 
 # Constants
 ASYNC_OK = 1

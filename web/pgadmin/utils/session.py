@@ -15,10 +15,11 @@ Credit/Reference: http://flask.pocoo.org/snippets/86/
 Modified to support both Python 2.6+ & Python 3.x
 """
 
-import os
 import errno
+import os
 import sqlite3
 from uuid import uuid4
+
 try:
     from cPickle import dumps, loads
 except:

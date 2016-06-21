@@ -13,8 +13,8 @@
 #
 ##########################################################################
 
-import re
 import os
+import re
 
 if __name__ == '__main__':
 	include_dir = os.popen('pg_config --includedir').read().rstrip()

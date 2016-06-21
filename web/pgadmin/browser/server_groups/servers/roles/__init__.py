@@ -6,20 +6,22 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import datetime
+import re
+from functools import wraps
+
+import pgadmin.browser.server_groups as sg
+import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask.ext.babel import gettext as _
+from pgadmin.browser.collection import CollectionNodeModule
+from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, precondition_required, \
     internal_server_error, forbidden, success_return, gone
-from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.browser.collection import CollectionNodeModule
-import pgadmin.browser.server_groups as sg
 from pgadmin.utils.driver import get_driver
+
 from config import PG_DEFAULT_DRIVER
-import re
-import datetime
-from functools import wraps
-import simplejson as json
 
 
 class RoleModule(CollectionNodeModule):

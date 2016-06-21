@@ -10,8 +10,10 @@
 """Implement the Base class for Driver and Connection"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from .registry import DriverRegistry
+
 import six
+
+from .registry import DriverRegistry
 
 
 @six.add_metaclass(DriverRegistry)

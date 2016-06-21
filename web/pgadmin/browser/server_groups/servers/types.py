@@ -8,6 +8,7 @@
 ##########################################################################
 
 import os
+
 from flask import render_template
 from flask.ext.babel import gettext as _
 from pgadmin.utils.preferences import Preferences

@@ -10,9 +10,10 @@
 """A blueprint module implementing the datagrid frame."""
 MODULE_NAME = 'datagrid'
 
+import json
 import pickle
 import random
-import json
+
 from flask import Response, url_for, session, request, make_response
 from flask.ext.babel import gettext
 from flask.ext.security import login_required
@@ -20,7 +21,9 @@ from pgadmin.tools.sqleditor.command import *
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request,\
     internal_server_error
+
 from config import PG_DEFAULT_DRIVER
+
 
 class DataGridModule(PgAdminModule):
     """

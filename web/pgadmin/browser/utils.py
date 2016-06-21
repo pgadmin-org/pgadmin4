@@ -10,12 +10,14 @@
 """Browser helper utilities"""
 
 from abc import abstractmethod
+
 import flask
-from flask.views import View, MethodViewType, with_metaclass
-from flask.ext.babel import gettext
 from flask import render_template, current_app
-from config import PG_DEFAULT_DRIVER
+from flask.ext.babel import gettext
+from flask.views import View, MethodViewType, with_metaclass
 from pgadmin.utils.ajax import make_json_response, precondition_required
+
+from config import PG_DEFAULT_DRIVER
 
 
 class PGChildModule(object):

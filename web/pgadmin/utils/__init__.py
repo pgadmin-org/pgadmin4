@@ -7,11 +7,13 @@
 #
 ##########################################################################
 
-from flask import Blueprint
 from collections import defaultdict
 from operator import attrgetter
-from .preferences import Preferences
+
+from flask import Blueprint
+
 from .paths import get_storage_directory
+from .preferences import Preferences
 
 
 class PgAdminModule(Blueprint):

@@ -9,20 +9,20 @@
 
 """Implements File Manager"""
 
-from pgadmin.utils import PgAdminModule
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
-from flask import render_template, Response, session, request as req, url_for
-from pgadmin.utils.ajax import make_json_response
-import random
 import os
 import os.path
-import time
-import simplejson as json
+import random
 import string
+import time
 from sys import platform as _platform
-from pgadmin.utils import get_storage_directory
 
+import simplejson as json
+from flask import render_template, Response, session, request as req, url_for
+from flask.ext.babel import gettext
+from flask.ext.security import login_required
+from pgadmin.utils import PgAdminModule
+from pgadmin.utils import get_storage_directory
+from pgadmin.utils.ajax import make_json_response
 
 # Checks if platform is Windows
 if _platform == "win32":

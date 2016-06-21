@@ -10,19 +10,19 @@
 """Perform the initial setup of the application, by creating the auth
 and settings database."""
 
-import os
-import sys
 import getpass
+import os
 import random
-import string
 import re
+import string
+import sys
 
 from flask import Flask
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password
+
 from pgadmin.model import db, Role, User, Server, \
     ServerGroup, Version
-
 # Configuration settings
 import config
 
