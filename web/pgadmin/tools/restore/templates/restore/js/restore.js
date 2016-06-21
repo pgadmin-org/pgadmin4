@@ -333,7 +333,9 @@ define([
                     model: 0,
                     resizable: true,
                     maximizable: true,
-                    pinnable: false
+                    pinnable: false,
+                    closableByDimmer: false,
+                    modal: false
                   }
                 };
               },

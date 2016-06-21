@@ -409,7 +409,9 @@ TODO LIST FOR BACKUP:
                     model: 0,
                     resizable: true,
                     maximizable: true,
-                    pinnable: false
+                    pinnable: false,
+                    closableByDimmer: false,
+                    modal: false
                   }
                 };
               },
@@ -575,7 +577,9 @@ TODO LIST FOR BACKUP:
                     model: 0,
                     resizable: true,
                     maximizable: true,
-                    pinnable: false
+                    pinnable: false,
+                    closableByDimmer: false,
+                    modal: false
                   }
                 };
               },
