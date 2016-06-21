@@ -377,9 +377,9 @@ def create_backup_objects_job(sid):
     def set_value(key, param, value):
         if key in data:
             if value:
-                if value is True and param[key]:
+                if value is True and data[key]:
                     args.append(param)
-                    args.append(param[key])
+                    args.append(data[key])
                 else:
                     args.append(param)
                     args.append(value)
