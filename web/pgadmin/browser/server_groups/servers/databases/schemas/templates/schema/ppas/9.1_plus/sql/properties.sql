@@ -12,9 +12,9 @@ SELECT
     CASE
     WHEN nspname LIKE E'pg\\_%' THEN true
     ELSE false END AS is_sys_object,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'deftblacl' AND defaclnamespace = nsp.oid) AS tblacl,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'defseqacl' AND defaclnamespace = nsp.oid) AS seqacl,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'deffuncacl' AND defaclnamespace = nsp.oid) AS funcacl
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid) AS tblacl,
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid) AS seqacl,
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl
 FROM
     pg_namespace nsp
     LEFT OUTER JOIN pg_description des ON
