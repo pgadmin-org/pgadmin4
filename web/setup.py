@@ -275,6 +275,37 @@ INSERT INTO role ( name, description )
             VALUES ('User', 'pgAdmin User Role')
     """)
 
+        if int(version.value) < 12:
+            db.engine.execute("ALTER TABLE server RENAME TO server_old")
+            db.engine.execute("""
+CREATE TABLE server (
+    id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    servergroup_id INTEGER NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    host VARCHAR(128) NOT NULL,
+    port INTEGER NOT NULL CHECK (port >= 1024 AND port <= 65535),
+    maintenance_db VARCHAR(64) NOT NULL,
+    username VARCHAR(64) NOT NULL,
+    ssl_mode VARCHAR(16) NOT NULL CHECK (
+        ssl_mode IN (
+            'allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full'
+            )),
+    comment VARCHAR(1024), password TEXT(64), role text(64),
+    PRIMARY KEY (id),
+    FOREIGN KEY(user_id) REFERENCES user (id),
+    FOREIGN KEY(servergroup_id) REFERENCES servergroup (id)
+)""")
+            db.engine.execute("""
+INSERT INTO server (
+    id, user_id, servergroup_id, name, host, port, maintenance_db, username,
+    ssl_mode, comment, password, role
+) SELECT
+    id, user_id, servergroup_id, name, host, port, maintenance_db, username,
+    ssl_mode, comment, password, role
+FROM server_old""")
+            db.engine.execute("DROP TABLE server_old")
+
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
     db.session.merge(version)
