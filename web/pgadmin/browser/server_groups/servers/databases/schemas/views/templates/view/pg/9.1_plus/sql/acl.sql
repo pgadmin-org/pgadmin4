@@ -2,7 +2,7 @@
 {% if vid %}
 SELECT
     'datacl' as deftype,
-    COALESCE(gt.rolname, 'public') grantee,
+    COALESCE(gt.rolname, 'PUBLIC') grantee,
     g.rolname grantor,
     array_agg(privilege_type) as privileges,
     array_agg(is_grantable) as grantable

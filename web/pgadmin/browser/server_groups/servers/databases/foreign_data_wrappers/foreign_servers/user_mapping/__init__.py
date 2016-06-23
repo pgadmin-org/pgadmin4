@@ -336,9 +336,6 @@ class UserMappingView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
-        if res['rows'][0]['name'] == 'public':
-            res['rows'][0]['name'] = 'PUBLIC'
-
         if res['rows'][0]['umoptions'] is not None:
             res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
 

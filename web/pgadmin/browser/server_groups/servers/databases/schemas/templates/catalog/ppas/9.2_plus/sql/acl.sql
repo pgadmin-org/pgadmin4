@@ -1,6 +1,6 @@
 {# Fetch privileges for schema #}
 SELECT
-    'nspacl' as deftype, COALESCE(gt.rolname, 'public') AS grantee,
+    'nspacl' as deftype, COALESCE(gt.rolname, 'PUBLIC') AS grantee,
     g.rolname AS grantor, array_agg(b.privilege_type) AS privileges,
     array_agg(b.is_grantable) AS grantable
 FROM

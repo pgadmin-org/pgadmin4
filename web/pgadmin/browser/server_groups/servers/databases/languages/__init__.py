@@ -314,7 +314,7 @@ class LanguageView(PGChildNodeView):
         # if no acl found then by default add public
         if res['rows'][0]['acl'] is None:
             res['rows'][0]['lanacl'] = dict()
-            res['rows'][0]['lanacl']['grantee'] = 'public'
+            res['rows'][0]['lanacl']['grantee'] = 'PUBLIC'
             res['rows'][0]['lanacl']['grantor'] = res['rows'][0]['lanowner']
             res['rows'][0]['lanacl']['privileges'] = [{'privilege_type': 'U', 'privilege': True, 'with_grant': False}]
         else:

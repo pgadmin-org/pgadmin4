@@ -1,5 +1,5 @@
 SELECT
-    COALESCE(gt.rolname, 'public') AS grantee,
+    COALESCE(gt.rolname, 'PUBLIC') AS grantee,
     g.rolname AS grantor, array_agg(privilege_type) AS privileges,
     array_agg(is_grantable) AS grantable
 FROM

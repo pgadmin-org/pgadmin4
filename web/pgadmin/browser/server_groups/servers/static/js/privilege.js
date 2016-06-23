@@ -88,7 +88,7 @@
           Backgrid.Extension.NodeListByNameCell.prototype.defaults.transform.apply(
             this, arguments
             );
-        res.unshift({label: 'public', value: 'public'});
+        res.unshift({label: 'PUBLIC', value: 'PUBLIC'});
         return res;
       },
       cell: Backgrid.Extension.NodeListByNameCell.extend({
@@ -239,7 +239,7 @@
           grantee = this.get('grantee');
 
       // Reset all with grant options if grantee is public.
-      if (grantee == 'public') {
+      if (grantee == 'PUBLIC') {
         privileges.each(function(m) {
           m.set("with_grant", false, {silent: true});
         });
@@ -379,8 +379,8 @@
               'target': self.cid,
               'header': false,
               'privilege_label': self.Labels[d.privilege_type],
-              'with_grant': (self.model.get('grantee') != 'public' && d.with_grant),
-              'enable_with_grant': (self.model.get('grantee') != 'public' && d.privilege)
+              'with_grant': (self.model.get('grantee') != 'PUBLIC' && d.with_grant),
+              'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && d.privilege)
               });
           privilege = (privilege && d.privilege);
           with_grant = (with_grant && privilege && d.with_grant);
@@ -395,8 +395,8 @@
                 'privilege_label': 'ALL',
                 'privilege_type': 'ALL',
                 'privilege': privilege,
-                'with_grant': (self.model.get('grantee') != 'public' && with_grant),
-                'enable_with_grant': (self.model.get('grantee') != 'public' && privilege),
+                'with_grant': (self.model.get('grantee') != 'PUBLIC' && with_grant),
+                'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && privilege),
                 'header': true
               }));
         }
@@ -461,7 +461,7 @@
                  * We have clicked the ALL checkbox, we should be able to select
                  * the grant options too.
                  */
-                if (grantee == 'public') {
+                if (grantee == 'PUBLIC') {
                   $allGrants.prop('disabled', true);
                   $elGrant.prop('disabled', true);
                 } else {
@@ -531,7 +531,7 @@
               $allPrivilege.prop('checked', false);
               $allGrant.prop('disabled', true);
               $allGrant.prop('checked', false);
-            } else if (grantee != "public") {
+            } else if (grantee != "PUBLIC") {
               $elGrant.prop('disabled', false);
             }
           } else if (!checked) {
@@ -557,7 +557,7 @@
                   $allGrant.prop('disabled', false);
                   $allGrant.prop('checked', true);
                 }
-              } else if (grantee != "public") {
+              } else if (grantee != "PUBLIC") {
                 $allGrant.prop('disabled', false);
               }
             }

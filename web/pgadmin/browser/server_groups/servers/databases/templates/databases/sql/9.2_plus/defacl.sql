@@ -5,7 +5,7 @@ SELECT
     WHEN 'f' THEN 'deffuncacl'
     WHEN 'T' THEN 'deftypeacl'
     END AS deftype,
-    COALESCE(gt.rolname, 'public') grantee, g.rolname grantor, array_agg(a.privilege_type) as privileges, array_agg(a.is_grantable) as grantable
+    COALESCE(gt.rolname, 'PUBLIC') grantee, g.rolname grantor, array_agg(a.privilege_type) as privileges, array_agg(a.is_grantable) as grantable
 FROM
     (SELECT
         (acl).grantee as grantee, (acl).grantor AS grantor, (acl).is_grantable AS is_grantable,

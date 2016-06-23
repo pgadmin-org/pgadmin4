@@ -1,5 +1,5 @@
 {### SQL to fetch privileges for tablespace ###}
-SELECT 'relacl' as deftype, COALESCE(gt.rolname, 'public') grantee, g.rolname grantor,
+SELECT 'relacl' as deftype, COALESCE(gt.rolname, 'PUBLIC') grantee, g.rolname grantor,
     array_agg(privilege_type) as privileges, array_agg(is_grantable) as grantable
 FROM
   (SELECT
