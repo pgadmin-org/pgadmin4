@@ -377,7 +377,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           canEdit: false, canDelete: true, control: 'unique-col-collection'
         },{
           type: 'nested', control: 'tab', group: '{{ _('Default Privileges') }}',
-          mode: ['edit'],
+          mode: ['create','edit'],
           schema:[{
               id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}),

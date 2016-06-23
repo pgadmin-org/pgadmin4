@@ -508,7 +508,7 @@ It may have been removed by another user.
                     )
                 )
         try:
-            self.format_request_acls(data, specific=['nspacl'])
+            self.format_request_acls(data)
             SQL = render_template(
                 "/".join([self.template_path, 'sql/create.sql']),
                 data=data, conn=self.conn, _=gettext
@@ -665,7 +665,7 @@ It may have been removed by another user.
             SQL = self.get_sql(gid, sid, data, scid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
-                    data=SQL,
+                    data=SQL.strip('\n'),
                     status=200
                 )
         except Exception as e:
@@ -708,7 +708,7 @@ It may have been removed by another user.
                     return " -- " + gettext("Definition incomplete.")
 
             # Privileges
-            self.format_request_acls(data, specific=['nspacl'])
+            self.format_request_acls(data)
 
             SQL = render_template(
                 "/".join([self.template_path, 'sql/create.sql']),
