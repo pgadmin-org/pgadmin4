@@ -306,6 +306,12 @@ INSERT INTO server (
 FROM server_old""")
             db.engine.execute("DROP TABLE server_old")
 
+        if int(version.value) < 13:
+            db.engine.execute("""
+ALTER TABLE SERVER
+    ADD COLUMN discovery_id TEXT
+    """)
+
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
     db.session.merge(version)

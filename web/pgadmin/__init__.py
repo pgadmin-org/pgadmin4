@@ -10,13 +10,14 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 import logging
-import sys
+import os, sys
 from collections import defaultdict
 from importlib import import_module
 
 from flask import Flask, abort, request, current_app
-from flask.ext.babel import Babel
-from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask.ext.babel import Babel, gettext
+from flask.ext.login import user_logged_in
+from flask.ext.security import current_user, Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
 from htmlmin.minify import html_minify
@@ -25,10 +26,12 @@ from pgadmin.utils.session import ServerSideSessionInterface
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
-from pgadmin.model import db, Role, User, Version
+from pgadmin.model import db, Role, Server, ServerGroup, User, Version
 # Configuration settings
 import config
 
+if os.name == 'nt':
+    from _winreg import *
 
 class PgAdmin(Flask):
     def find_submodules(self, basemodule):
@@ -211,8 +214,112 @@ def create_app(app_name=config.APP_NAME):
             from setup import do_upgrade
             do_upgrade(app, user_datastore, security, version)
 
-    # Load all available serve drivers
+    # Load all available server drivers
     driver.init_app(app)
+
+    ##########################################################################
+    # Register any local servers we can discover
+    ##########################################################################
+    @user_logged_in.connect_via(app)
+    def on_user_logged_in(sender, user):
+
+        # Keep hold of the user ID
+        user_id = user.id
+
+        # Get the first server group for the user
+        servergroup_id = 1
+        servergroups = ServerGroup.query.filter_by(
+            user_id=user_id
+        ).order_by("id")
+
+        if servergroups.count() > 0:
+            servergroup = servergroups.first()
+            servergroup_id = servergroup.id
+
+        '''Add a server to the config database'''
+        def add_server(user_id, servergroup_id, name, superuser, port, discovery_id, comment):
+        # Create a server object if needed, and store it.
+            servers = Server.query.filter_by(
+                user_id=user_id,
+                discovery_id=svr_discovery_id
+            ).order_by("id")
+
+            if servers.count() > 0:
+                return;
+
+            svr = Server(user_id=user_id,
+                            servergroup_id=servergroup_id,
+                            name=name,
+                            host='localhost',
+                            port=port,
+                            maintenance_db='postgres',
+                            username=superuser,
+                            ssl_mode='prefer',
+                            comment=svr_comment,
+                            discovery_id=discovery_id)
+
+            db.session.add(svr)
+            db.session.commit()
+
+        # Figure out what servers are present
+        if os.name == 'nt':
+            proc_arch = os.environ['PROCESSOR_ARCHITECTURE'].lower()
+            proc_arch64 = os.environ['PROCESSOR_ARCHITEW6432'].lower()
+
+            if proc_arch == 'x86' and not proc_arch64:
+                arch_keys = {0}
+            elif proc_arch == 'x86' or proc_arch == 'amd64':
+                arch_keys = { KEY_WOW64_32KEY, KEY_WOW64_64KEY }
+
+            for arch_key in arch_keys:
+                for server_type in { 'PostgreSQL', 'EnterpriseDB'}:
+                    try:
+                        root_key = OpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\" + server_type + "\Services", 0, KEY_READ | arch_key)
+                        for i in xrange(0, QueryInfoKey(root_key)[0]):
+                            inst_id = EnumKey(root_key, i)
+                            inst_key = OpenKey(root_key, inst_id)
+
+                            svr_name = QueryValueEx(inst_key, 'Display Name')[0]
+                            svr_superuser = QueryValueEx(inst_key, 'Database Superuser')[0]
+                            svr_port = QueryValueEx(inst_key, 'Port')[0]
+                            svr_discovery_id = inst_id
+                            svr_comment = gettext("Auto-detected %s installation with the data directory at %s" % (
+                                QueryValueEx(inst_key, 'Display Name')[0],
+                                QueryValueEx(inst_key, 'Data Directory')[0]))
+
+                            add_server(user_id, servergroup_id, svr_name, svr_superuser, svr_port, svr_discovery_id, svr_comment)
+
+                            inst_key.Close()
+                    except:
+                        pass
+        else:
+            # We use the postgres-reg.ini file on non-Windows
+            try:
+                from configparser import ConfigParser
+            except ImportError:
+                from ConfigParser import ConfigParser  # Python 2
+
+            registry = ConfigParser()
+
+        try:
+            registry.read('/etc/postgres-reg.ini')
+            sections = registry.sections()
+
+            # Loop the sections, and get the data from any that are PG or PPAS
+            for section in sections:
+                if section.startswith('PostgreSQL/') or section.startswith('EnterpriseDB/'):
+                    svr_name = registry.get(section, 'Description')
+                    svr_superuser = registry.get(section, 'Superuser')
+                    svr_port = registry.getint(section, 'Port')
+                    svr_discovery_id = section
+                    svr_comment = gettext("Auto-detected %s installation with the data directory at %s" % (
+                        registry.get(section, 'Description'),
+                        registry.get(section, 'DataDirectory')))
+                    add_server(user_id, servergroup_id, svr_name, svr_superuser, svr_port, svr_discovery_id, svr_comment)
+
+        except:
+            pass
+
 
     ##########################################################################
     # Load plugin modules

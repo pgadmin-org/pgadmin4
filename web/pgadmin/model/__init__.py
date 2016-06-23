@@ -106,9 +106,8 @@ class Server(db.Model):
             "ssl_mode IN ('allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full')"
         ),
         nullable=False)
-    comment = db.Column(
-        db.String(1024),
-        nullable=True)
+    comment = db.Column(db.String(1024), nullable=True)
+    discovery_id = db.Column(db.String(128), nullable=True)
 
 
 class ModulePreference(db.Model):
