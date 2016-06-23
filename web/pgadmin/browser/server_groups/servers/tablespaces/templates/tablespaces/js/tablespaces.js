@@ -8,7 +8,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'tablespace',
         label: '{{ _('Tablespaces') }}',
         type: 'coll-tablespace',
-        columns: ['name', 'spcuser', 'description']
+        columns: ['name', 'spcuser', 'description'],
+        hasStatistics: true
       });
   };
 
@@ -23,6 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       hasSQL:  true,
       canDrop: true,
       hasDepends: true,
+      hasStatistics: true,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

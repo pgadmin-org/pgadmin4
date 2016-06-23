@@ -1,6 +1,9 @@
 {### SQL to fetch tablespace object stats ###}
 {% if tsid %}
-SELECT pg_size_pretty(pg_tablespace_size({{ qtLiteral(tsid) }}::OID)) AS size
+SELECT pg_size_pretty(pg_tablespace_size({{ tsid|qtLiteral }}::OID)) AS {{ conn|qtIdent(_('Size')) }}
 {% else %}
-SELECT ts.spcname as name, pg_size_pretty(pg_tablespace_size(ts.oid)) AS size FROM pg_catalog.pg_tablespace ts;
+SELECT ts.spcname AS {{ conn|qtIdent(_('Name')) }},
+    pg_size_pretty(pg_tablespace_size(ts.oid)) AS {{ conn|qtIdent(_('Size')) }}
+FROM
+    pg_catalog.pg_tablespace ts;
 {% endif %}

@@ -558,16 +558,15 @@ class TablespaceView(PGChildNodeView):
             "/".join([self.template_path, 'stats.sql']),
             tsid=tsid, conn=self.conn
         )
-        status, res = self.conn.execute_scalar(SQL)
+        status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
 
-        # TODO:// Format & return output of stats call accordingly
-        # TODO:// for now it's hardcoded as below
-        result = 'Tablespace Size: {0}'.format(res)
-
-        return ajax_response(response=result)
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def dependencies(self, gid, sid, tsid):
