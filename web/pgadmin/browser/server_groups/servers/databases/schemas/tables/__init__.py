@@ -1669,7 +1669,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         try:
             SQL = self.get_sql(scid, tid, data)
-            SQL = re.sub('\n{2,}', '\n', SQL)
+            SQL = re.sub('\n{2,}', '\n\n', SQL)
             SQL = SQL.strip('\n')
             return make_json_response(
                 data=SQL,
@@ -2230,7 +2230,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
-        SQL = re.sub('\n{2,}', '\n', SQL)
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = SQL.strip('\n')
 
         return SQL
