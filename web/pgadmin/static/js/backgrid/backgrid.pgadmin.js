@@ -884,6 +884,26 @@
     })
   });
 
+  /*
+   * Override NumberFormatter to support NaN, Infinity values.
+   * On client side, JSON do not directly support NaN & Infinity,
+   * we explicitly converted it into string format at server side
+   * and we need to parse it again in float at client side.
+   */
+  _.extend(Backgrid.NumberFormatter.prototype, {
+    fromRaw: function (number, model) {
+      if (_.isNull(number) || _.isUndefined(number)) return '';
+
+      number = parseFloat(number).toFixed(~~this.decimals);
+
+      var parts = number.split('.');
+      var integerPart = parts[0];
+      var decimalPart = parts[1] ? (this.decimalSeparator || '.') + parts[1] : '';
+
+      return integerPart.replace(this.HUMANIZED_NUM_RE, '$1' + this.orderSeparator) + decimalPart;
+    }
+  });
+
   return Backgrid;
 
 }));
