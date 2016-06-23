@@ -26,7 +26,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
-      canDrop: true,
+      canDrop: function(node) {
+        return node.canDrop;
+      },
       label: '{{ _('Database') }}',
       node_image: function() {
         return 'pg-icon-database';

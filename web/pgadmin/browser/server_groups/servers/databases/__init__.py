@@ -188,11 +188,11 @@ class DatabaseView(PGChildNodeView):
         for row in rset['rows']:
             if self.manager.db == row['name']:
                 connected = True
-                canDisConn = False
+                canDrop = canDisConn = False
             else:
                 conn = self.manager.connection(row['name'])
                 connected = conn.connected()
-                canDisConn = True
+                canDrop = canDisConn = True
 
             res.append(
                 self.blueprint.generate_browser_node(
@@ -205,7 +205,8 @@ class DatabaseView(PGChildNodeView):
                     tablespace=row['spcname'],
                     allowConn=row['datallowconn'],
                     canCreate=row['cancreate'],
-                    canDisconn=canDisConn
+                    canDisconn=canDisConn,
+                    canDrop = canDrop
                 )
             )
 
