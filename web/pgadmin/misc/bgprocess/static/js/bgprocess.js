@@ -283,7 +283,7 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
           }
           // TODO:: Formatted execution time
           self.container.find('.pg-bg-etime').empty().append(
-            $('<span></span>', {class: 'blink'}).text(
+            $('<span></span>').text(
               String(self.execution_time)
             )
           ).append(
