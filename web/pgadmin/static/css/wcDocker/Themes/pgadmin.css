@@ -257,6 +257,15 @@
   margin-right: 5px;
 }
 
+.wcPanelTab > div .wcTabIcon.fa {
+  padding-left: 0px !important;
+  color: black;
+}
+
+.wcTabIcon.fa {
+  margin-right: 5px;
+}
+
 .wcFrameTitleBar {
   background-color: #E2E2E2;
   height: 35px;

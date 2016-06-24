@@ -965,11 +965,6 @@ ul.nav.nav-tabs {
   height: 500px!important;
 }
 
-.wcPanelTab > div .wcTabIcon.fa {
-  padding-left: 0px !important;
-  color: black;
-}
-
 /* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */ 
 *:focus {
   outline: none;
