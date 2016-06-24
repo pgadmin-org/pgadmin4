@@ -457,7 +457,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
   }
 
   // Switch Cell with Deps
-  var SwitchDepCell = Backgrid.Extension.SwitchCell.extend({
+  var SwitchDepCell =
+    Backgrid.Extension.SwitchDepCell =  Backgrid.Extension.SwitchCell.extend({
       initialize: function() {
         Backgrid.Extension.SwitchCell.prototype.initialize.apply(this, arguments);
         Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
@@ -466,15 +467,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         var model = this.model,
           column = this.column,
           editable = this.column.get("editable"),
-          input = this.$el.find('input[type=checkbox]').first();
+          input = this.$el.find('input[type=checkbox]').first(),
+          self_name = column.get('name');
 
         is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable) {
            this.$el.addClass("editable");
-           input.prop('disabled', false);
+           input.bootstrapSwitch('disabled',false);
          } else {
            this.$el.removeClass("editable");
-           input.prop('disabled', true);
+           input.bootstrapSwitch('disabled',true);
+           // Set self value into model to false
+           setTimeout(function() { model.set(self_name, false); }, 10);
          }
 
         this.delegateEvents();

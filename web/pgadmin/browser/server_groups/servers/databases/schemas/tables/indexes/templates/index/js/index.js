@@ -107,7 +107,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           },{
             id: 'sort_order', label:'{{ _('Sort order') }}',
-            cell: Backgrid.ExtensionSwitchDepCell, type: 'switch',
+            cell: Backgrid.Extension.SwitchDepCell, type: 'switch',
             disabled: 'checkAccessMethod',
             editable: function(m) {
                 // Header cell then skip
