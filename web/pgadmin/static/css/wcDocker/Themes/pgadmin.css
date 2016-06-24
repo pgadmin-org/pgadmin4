@@ -19,15 +19,14 @@
 }
 
 .wcFrameTitle {
-  font-size: 12px;
-  font-weight: bold;
-  padding-left: 3px;
+  font-size: 13px;
+  padding-left: 8px;
   vertical-align: middle;
   text-align: left;
   border-bottom: 1px none;
   height: 100%;
   padding-top: 10px;
-  background-color: #A8A8A8;
+  background-color: #E2E2E2;
 }
 
 .wcFrameCenter {
@@ -274,6 +273,10 @@
 .wcFloating .wcFrameTitleBar {
   border-bottom: 2px solid darkgray;
   background-color: #2C76B4;
+}
+
+.wcFloating .wcFrameTitleBar > div .wcTabIcon.fa {
+  color: white;
 }
 
 .wcFrameButtonBar {
