@@ -55,9 +55,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
         title: '{{ _('Browser') }}',
-        showTitle: false,
+        showTitle: true,
         isCloseable: false,
         isPrivate: true,
+        icon: 'fa fa-binoculars',
         content: '<div id="tree" class="aciTree"></div>'
       }),
       // Properties of the object node
