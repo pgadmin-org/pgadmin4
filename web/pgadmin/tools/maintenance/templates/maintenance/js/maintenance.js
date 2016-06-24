@@ -38,6 +38,15 @@ define(
       vacuum_analyze: false,
       verbose: true
     },
+    initialize: function() {
+        var node_info = arguments[1]['node_info'];
+        // If node is Unique or Primary key then set op to reindex
+        if ('primary_key' in node_info || 'unique_constraint' in node_info
+                                       || 'index' in node_info) {
+          this.set('op', 'REINDEX');
+          this.set('verbose', false);
+        }
+    },
     schema: [
       {
         id: 'op', label:'{{ _('Maintenance operation') }}', cell: 'string',
@@ -88,7 +97,8 @@ define(
 
     // Enable/Disable the items based on the user maintenance operation selection
     isDisabled: function(m) {
-      name = this.name;
+      var name = this.name,
+        node_info = this.node_info;
       switch(name) {
         case 'vacuum_full':
         case 'vacuum_freeze':
@@ -101,6 +111,13 @@ define(
           }
           break;
         case 'verbose':
+          if ('primary_key' in node_info || 'unique_constraint' in node_info ||
+                'index' in node_info ) {
+            if (m.get('op') == 'REINDEX') {
+              setTimeout(function() { m.set('verbose', false); }, 10);
+              return true;
+            }
+          }
           if (m.get('op') == 'REINDEX') {
             return true;
           }
@@ -125,7 +142,8 @@ define(
         this.initialized = true;
 
         var maintenance_supported_nodes = [
-              'database', 'table'
+              'database', 'table', 'primary_key',
+              'unique_constraint', 'index'
             ];
 
         /**
@@ -203,7 +221,7 @@ define(
                   },{
                     text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }],
-                  options: { modal: 0}
+                  options: { modal: 0, pinnable: false}
                 };
               },
               // Callback functions when click on the buttons of the Alertify dialogs
@@ -221,9 +239,11 @@ define(
 
                 if (e.button.text === "{{ _('OK') }}") {
 
-                  var schema = '';
-                  var table = '';
-
+                  var schema = undefined,
+                    table = undefined,
+                    primary_key = undefined,
+                    unique_constraint = undefined,
+                    index = undefined;
 
                   if (!d)
                     return;
@@ -237,9 +257,20 @@ define(
                     table = treeInfo.table.label;
                   }
 
+                  if (treeInfo.primary_key != undefined) {
+                    primary_key = treeInfo.primary_key.label;
+                  } else if (treeInfo.unique_constraint != undefined) {
+                    unique_constraint = treeInfo.unique_constraint.label;
+                  } else if (treeInfo.index != undefined) {
+                    index = treeInfo.index.label;
+                  }
+
                   this.view.model.set({'database': treeInfo.database.label,
                                       'schema': schema,
-                                      'table': table})
+                                      'table': table,
+                                      'primary_key': primary_key,
+                                      'unique_constraint': unique_constraint,
+                                      'index': index})
 
                     baseUrl = "{{ url_for('maintenance.index') }}" +
                     "create_job/" + treeInfo.server._id + "/" + treeInfo.database._id,
@@ -256,12 +287,12 @@ define(
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                       else {
-                        Alertify.error(res.data.info);
+                        Alertify.error(res.data.errmsg);
                       }
                     },
                     error: function(e) {
                       Alertify.alert(
-                        "{{ _('Maintenance job creation failed') }}"
+                        "{{ _('Maintenance job creation failed.') }}"
                       );
                     }
                   });
@@ -303,8 +334,18 @@ define(
                   });
 
                   $(this.elements.body.childNodes[0]).addClass('alertify_tools_dialog_properties obj_properties');
-
                   view.render();
+
+                 // If node is Index, Unique or Primary key then disable vacuum & analyze button
+                  if (d._type == 'primary_key' || d._type == 'unique_constraint'
+                                               || d._type == 'index') {
+                    var vacuum_analyze_btns = $container.find(
+                                                '.pgadmin-controls label:lt(2)'
+                                                ).removeClass('active').addClass('disabled');
+                    // Find reindex button element & add active class to it
+                    var reindex_btn = vacuum_analyze_btns[1].nextElementSibling;
+                    $(reindex_btn).addClass('active');
+                  }
 
                   this.elements.content.appendChild($container.get(0));
               }

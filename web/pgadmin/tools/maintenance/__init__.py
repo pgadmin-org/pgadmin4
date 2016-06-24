@@ -112,7 +112,12 @@ class Message(IProcessDesc):
 
         if self.data['op'] == "REINDEX":
             if 'schema' in self.data and self.data['schema']:
-                return _('REINDEX TABLE')
+                if 'primary_key' in self.data or\
+                                'unique_constraint' in self.data or\
+                                'index' in self.data:
+                    return _('REINDEX INDEX')
+                else:
+                    return _('REINDEX TABLE')
             res = _('REINDEX')
 
         if self.data['op'] == "CLUSTER":
@@ -170,6 +175,15 @@ def create_maintenance_job(sid, did):
     else:
         data = json.loads(request.data.decode())
 
+    index_name = None
+
+    if 'primary_key' in data and data['primary_key']:
+        index_name = data['primary_key']
+    elif 'unique_constraint' in data and data['unique_constraint']:
+        index_name = data['unique_constraint']
+    elif 'index' in data and data['index']:
+        index_name = data['index']
+
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
         id=sid).first()
@@ -189,14 +203,15 @@ def create_maintenance_job(sid, did):
     if not connected:
         return make_json_response(
             success=0,
-            errormsg=_("Please connect to the server first...")
+            errormsg=_("Please connect to the server first.")
         )
 
     utility = manager.utility('sql')
 
     # Create the command for the vacuum operation
     query = render_template(
-        'maintenance/sql/command.sql', conn=conn, data=data
+        'maintenance/sql/command.sql', conn=conn, data=data,
+        index_name=index_name
     )
 
     args = [
@@ -224,5 +239,5 @@ def create_maintenance_job(sid, did):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'status': True, 'info': 'Maintenance job created'}
+        data={'job_id': jid, 'status': True, 'info': 'Maintenance job created.'}
     )
