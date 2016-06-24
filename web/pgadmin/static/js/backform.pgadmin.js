@@ -1787,10 +1787,10 @@
   var Select2Formatter = function() {};
   _.extend(Select2Formatter.prototype, {
     fromRaw: function(rawData, model) {
-      return JSON.parse(JSON.stringify(_.escape(rawData)));
+      return encodeURIComponent(rawData);
     },
     toRaw: function(formattedData, model) {
-      return formattedData;
+      return decodeURIComponent(formattedData);
     }
   });
 
