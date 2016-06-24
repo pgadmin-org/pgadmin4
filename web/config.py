@@ -154,10 +154,6 @@ MAX_SESSION_IDLE_TIME = 60
 # User account and settings storage
 ##########################################################################
 
-# The schema version number for the configuration database
-# DO NOT CHANGE UNLESS YOU ARE A PGADMIN DEVELOPER!!
-SETTINGS_SCHEMA_VERSION = 13
-
 # The default path to the SQLite database used to store user accounts and
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.

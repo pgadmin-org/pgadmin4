@@ -23,6 +23,11 @@ if sys.path[0] != root:
 import config
 from pgadmin import create_app
 
+# Get the config database schema version. We store this in pgadmin.model
+# as it turns out that putting it in the config files isn't a great idea
+from pgadmin.model import SCHEMA_VERSION
+config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
+
 ##########################################################################
 # Sanity checks
 ##########################################################################

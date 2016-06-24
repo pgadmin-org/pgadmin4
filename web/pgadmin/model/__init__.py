@@ -12,7 +12,7 @@
 If any of the models are updated, you (yes, you, the developer) MUST do two
 things:
 
-1) Increment SETTINGS_SCHEMA_VERSION in config.py
+1) Increment SCHEMA_VERSION below
 
 2) Modify setup.py to ensure that the appropriate changes are made to the
    config database to upgrade it to the new version.
@@ -20,6 +20,22 @@ things:
 
 from flask.ext.security import UserMixin, RoleMixin
 from flask.ext.sqlalchemy import SQLAlchemy
+
+##########################################################################
+#
+# The schema version is used to track when upgrades are needed to the
+# configuration database. Increment this whenever changes are made to the
+# model or data, AND ensure the upgrade code is added to setup.py
+#
+##########################################################################
+
+SCHEMA_VERSION = 13
+
+##########################################################################
+#
+# And now we return to our regularly scheduled programming:
+#
+##########################################################################
 
 db = SQLAlchemy()
 
