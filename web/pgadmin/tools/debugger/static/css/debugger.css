@@ -1,6 +1,6 @@
 #container {
   position: absolute;
-  top: 44px;
+  top: 40px;
   bottom: 0px;
   left: 0px;
   right: 0px;
@@ -31,28 +31,12 @@
   top: 0; bottom: 0; right: 0; left: 0;
 }
 
-.wcLoadingIcon {
-  position: absolute;
-  font-size: 100px;
-  left: calc(50% - 100px);
-  top: calc(50% - 100px);
-  height: 95px;
-}
-
-.wcLoadingLabel {
-  position: absolute;
-  width: 103%;
-  font-size: 30px;
-  top: calc(50% + 0px);
-  text-align: center;
-}
-
 .debugger-container .breakpoints {
-    width: 0.9em;
+  width: 0.9em;
 }
 
 .debugger-container .CodeMirror-activeline-background {
-    background: #50B0F0;
+  background: #50B0F0;
 }
 
 .CodeMirror-foldmarker {
@@ -64,7 +48,7 @@
 }
 
 .CodeMirror, .CodeMirror-gutters {
-    min-height: 100%;
+  min-height: 100%;
 }
 
 .CodeMirror-foldgutter {
