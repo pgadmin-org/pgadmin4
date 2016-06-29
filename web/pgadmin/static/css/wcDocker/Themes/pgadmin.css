@@ -342,7 +342,30 @@ span.fa.fa-arrow-left, .fa-arrow-right {
   visibility: hidden;
 }
 
-
 i.wcTabIcon {
   min-width: 20px;
+}
+
+.wcLoadingBackground {
+  background: black;
+  opacity: 0.6 !important;
+}
+
+.wcLoadingIcon.fa-spinner {
+  position: absolute;
+  top: 34%;
+  left: 48%;
+  font-size: 50px;
+  color: #ccc;
+  height: 49px !important;
+}
+
+.wcLoadingLabel {
+  top: 40%;
+  left: 0;
+  color: #fff;
+  width: 100%;
+  font-size: 20px;
+  position: absolute;
+  text-align: center;
 }

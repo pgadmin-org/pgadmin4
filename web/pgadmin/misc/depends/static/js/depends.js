@@ -175,11 +175,30 @@ define(
     },
 
     // Fetch the actual data and update the collection
-    __updateCollection: function(collection, panel, url, messages, node) {
+    __updateCollection: function(collection, panel, url, messages, node, item, type) {
       var msg = messages[0],
           $container = panel[0].layout().scene().find('.pg-panel-content'),
           $msgContainer = $container.find('.pg-panel-depends-message'),
           $gridContainer = $container.find('.pg-panel-depends-container');
+          treeHierarchy = node.getTreeNodeHierarchy(item),
+          n_value = -1,
+          n_type = type;
+
+      // Avoid unnecessary reloads
+      if (_.isUndefined(treeHierarchy[n_type]) ||
+          _.isUndefined(treeHierarchy[n_type]._id)) {
+          n_value = -1;
+      } else {
+        n_value = treeHierarchy[n_type]._id;
+      }
+
+      if (n_value == $(panel[0]).data(n_type)) {
+        return;
+      }
+
+      // Cache the current IDs for next time
+      $(panel[0]).data(n_type, n_value);
+
 
       // Hide the grid container and show the default message container
       if (!$gridContainer.hasClass('hidden'))
@@ -210,19 +229,12 @@ define(
             this.dependentGrid.columns.models[2].set({'label': 'Restriction'});
           }
 
+          // Hide the message container and show the grid container.
+          $msgContainer.addClass('hidden');
+          $gridContainer.removeClass('hidden');
           // Set the url, fetch the data and update the collection
           collection.url = url;
-          collection.fetch({
-            reset: true,
-            success: function(res) {
-
-              // In case of success hide the message container and show the grid container.
-              $gridContainer.removeClass('hidden');
-              $msgContainer.addClass('hidden');
-            },
-            error: function() {
-            }
-          });
+          collection.fetch({ reset: true });
         }
       }
       if (msg != '') {
@@ -250,7 +262,9 @@ define(
           node.generate_url(item, 'dependent', data, true),
           ['No object selected.', 'No dependent information is available for the current object.',
             'Fetching dependent information from the server...'],
-          node
+          node,
+          item,
+          data._type
         ), 400
       );
     },
@@ -292,7 +306,9 @@ define(
           node.generate_url(item, 'dependency', data, true),
           ['Please select an object in the tree view.', 'No dependency information is available for the current object.',
             'Fetching dependency information from the server...'],
-          node
+          node,
+          item,
+          data._type
         ), 400
       );
     },

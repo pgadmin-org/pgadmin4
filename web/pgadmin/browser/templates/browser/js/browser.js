@@ -300,8 +300,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         // Stored layout in database from the previous session
         var layout = '{{ layout }}';
 
-        obj.docker.startLoading('{{ _('Loading...') }}');
-
         // Try to restore the layout if there is one
         if (layout != '') {
           try {
@@ -314,10 +312,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         } else {
           obj.buildDefaultLayout()
         }
-
-        obj.docker.on(wcDocker.EVENT.LOADED, function() {
-            obj.docker.finishLoading(500);
-        });
       }
 
       // Syntax highlight the SQL Pane

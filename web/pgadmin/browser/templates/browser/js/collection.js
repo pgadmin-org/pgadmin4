@@ -91,11 +91,25 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
         };
 
       if (view) {
-        // Release the view
-        view.remove({data: true, internal: true, silent: true});
-        // Deallocate the view
-        delete view;
-        view = null;
+        // Avoid unnecessary reloads
+        var n_type = data._type,
+            n_value = -1,
+            treeHierarchy = n.getTreeNodeHierarchy(item);
+
+        if (_.isUndefined(treeHierarchy[n_type]) ||
+            _.isUndefined(treeHierarchy[n_type]._id)) {
+            n_value = -1;
+        } else {
+          n_value = treeHierarchy[n_type]._id;
+        }
+
+        if (n_value == $(panel).data(n_type)) {
+          return;
+        }
+
+        // Cache the current IDs for next time
+        $(panel).data(n_type, n_value);
+
         // Reset the data object
         j.data('obj-view', null);
       }

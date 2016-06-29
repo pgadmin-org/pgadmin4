@@ -18,6 +18,12 @@ define(
         this.initialized = true;
         this.title_index = 1;
 
+        this.spinner_el = '<div class="wcLoadingContainer">'+
+              '<div class="wcLoadingBackground"></div>'+
+                '<div class="wcLoadingIconContainer">'+
+                  '<i class="wcLoadingIcon fa fa-spinner fa-pulse"></i>'+
+                '</div>'+
+              '</div>';
         // Define list of nodes on which view data option appears
         var supported_nodes = [
            'table', 'view', 'mview',
@@ -326,17 +332,19 @@ define(
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/false/"
                                                                     + encodeURIComponent(grid_title);
             var openDataGridURL = function(j) {
-                setTimeout(function() {
-                    var frameInitialized = j.data('frameInitialized');
-                    if (frameInitialized) {
-                        var frame = j.data('embeddedFrame');
-                        if (frame) {
-                            frame.openURL(baseUrl);
-                        }
-                    } else {
-                        openDataGridURL(j);
-                    }
-                }, 100);
+              j.data('embeddedFrame').$container.append(self.spinner_el);
+              setTimeout(function() {
+                var frameInitialized = j.data('frameInitialized');
+                if (frameInitialized) {
+                  var frame = j.data('embeddedFrame');
+                  if (frame) {
+                    frame.openURL(baseUrl);
+                    frame.$container.find('.wcLoadingContainer').hide(1);
+                  }
+                } else {
+                    openDataGridURL(j);
+                }
+              }, 100);
             };
             openDataGridURL($(dataGridPanel));
           },
@@ -422,17 +430,19 @@ define(
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
                         + encodeURIComponent(grid_title) + '?' + "query_url=" + encodeURI(sURL);
             var openQueryToolURL = function(j) {
-                setTimeout(function() {
-                    var frameInitialized = j.data('frameInitialized');
-                    if (frameInitialized) {
-                        var frame = j.data('embeddedFrame');
-                        if (frame) {
-                            frame.openURL(baseUrl);
-                        }
-                    } else {
-                        openQueryToolURL(j);
-                    }
-                }, 100);
+              j.data('embeddedFrame').$container.append(pgAdmin.DataGrid.spinner_el);
+              setTimeout(function() {
+                var frameInitialized = j.data('frameInitialized');
+                if (frameInitialized) {
+                  var frame = j.data('embeddedFrame');
+                  if (frame) {
+                    frame.openURL(baseUrl);
+                    frame.$container.find('.wcLoadingContainer').delay(1000).hide(1);
+                  }
+                } else {
+                  openQueryToolURL(j);
+                }
+              }, 100);
             };
             openQueryToolURL($(queryToolPanel));
           },

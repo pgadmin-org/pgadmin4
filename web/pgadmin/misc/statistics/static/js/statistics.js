@@ -139,14 +139,15 @@ function(_, $, pgBrowser, Backgrid) {
     },
 
     // Fetch the actual data and update the collection
-    __updateCollection: function(url, node) {
+    __updateCollection: function(url, node, item, node_type) {
       var $container = this.panel[0].layout().scene().find('.pg-panel-content'),
           $msgContainer = $container.find('.pg-panel-statistics-message'),
           $gridContainer = $container.find('.pg-panel-statistics-container'),
           collection = this.collection,
           panel = this.panel,
           self = this,
-          msg = '';
+          msg = '',
+          n_type = node_type;
 
       if (node) {
         msg = pgBrowser.messages.NODE_HAS_NO_STATISTICS;
@@ -154,6 +155,24 @@ function(_, $, pgBrowser, Backgrid) {
          * showStatistics function.
          */
         if (node.hasStatistics) {
+
+          // Avoid unnecessary reloads
+          var treeHierarchy = node.getTreeNodeHierarchy(item);
+          if (_.isUndefined(treeHierarchy[n_type]) ||
+              _.isUndefined(treeHierarchy[n_type]._id)) {
+              n_value = undefined,
+              n_value = -1;
+          } else {
+            n_value = treeHierarchy[n_type]._id;
+          }
+
+          if (n_value == $(this.panel[0]).data(n_type)) {
+            return;
+          }
+
+          // Cache the current IDs for next time
+          $(this.panel[0]).data(n_type, n_value);
+
           /* Set the message because ajax request may take time to
            * fetch the information from the server.
            */
@@ -236,7 +255,7 @@ function(_, $, pgBrowser, Backgrid) {
         self.timeout =  setTimeout(
           function() {
             self.__updateCollection.call(
-              self, node.generate_url(item, 'stats', data, true), node
+              self, node.generate_url(item, 'stats', data, true), node, item, data._type
             );
           }, 400);
         }

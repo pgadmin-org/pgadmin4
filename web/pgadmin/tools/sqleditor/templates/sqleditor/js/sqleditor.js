@@ -1143,15 +1143,16 @@ define(
 
           $("#btn-flash").prop('disabled', true);
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:message',
+              '{{ _('Waiting for the query execution to complete...') }}'
+          );
+
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "view_data/start/" + self.transId,
             method: 'GET',
             success: function(res) {
               if (res.data.status) {
-                self.trigger(
-                  'pgadmin-sqleditor:loading-icon:message',
-                   '{{ _('Waiting for the query execution to complete...') }}'
-                );
 
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;

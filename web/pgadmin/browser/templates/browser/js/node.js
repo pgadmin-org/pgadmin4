@@ -788,7 +788,28 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         // Callback to show object properties
         properties = function() {
 
-          var panel = this;
+          // Avoid unnecessary reloads
+          var panel = this,
+              i = tree.selected(),
+              d = i && tree.itemData(i),
+              n_type = d._type,
+              n_value = -1,
+              n = i && d && pgBrowser.Nodes[d._type],
+              treeHierarchy = n.getTreeNodeHierarchy(i);
+
+          if (_.isUndefined(treeHierarchy[n_type]) ||
+              _.isUndefined(treeHierarchy[n_type]._id)) {
+              n_value = -1;
+          } else {
+            n_value = treeHierarchy[n_type]._id;
+          }
+
+          if (n_value == $(panel).data(n_type)) {
+            return;
+          }
+
+          // Cache the current IDs for next time
+          $(panel).data(n_type, n_value);
 
           if (!content.hasClass('has-pg-prop-btn-group'))
             content.addClass('has-pg-prop-btn-group');

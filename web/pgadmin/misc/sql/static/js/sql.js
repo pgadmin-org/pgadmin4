@@ -16,7 +16,7 @@ function(_, $, pgBrowser) {
       this.initialized = true;
       _.bindAll(this, 'showSQL', 'sqlPanelVisibilityChanged');
 
-      var sqlPanels = pgBrowser.docker.findPanels('sql');
+      this.sqlPanels = sqlPanels = pgBrowser.docker.findPanels('sql');
 
       // We will listend to the visibility change of the SQL panel
       pgBrowser.Events.on(
@@ -60,6 +60,26 @@ function(_, $, pgBrowser) {
           if (node) {
             sql = '-- ' + pgBrowser.messages.NODE_HAS_NO_SQL;
             if (node.hasSQL) {
+
+              var self = this,
+                  n_type = data._type,
+                  n_value = -1,
+                  treeHierarchy = node.getTreeNodeHierarchy(item);
+
+              // Avoid unnecessary reloads
+              if (_.isUndefined(treeHierarchy[n_type]) ||
+                  _.isUndefined(treeHierarchy[n_type]._id)) {
+                  n_value = -1;
+              } else {
+                  n_value = treeHierarchy[n_type]._id;
+              }
+
+              if (n_value == $(sqlPanels[0]).data(n_type)) {
+                return;
+              }
+
+              // Cache the current IDs for next time
+              $(this.sqlPanels[0]).data(n_type, n_value);
 
               sql = '';
               var url = node.generate_url(item, 'sql', data, true);
