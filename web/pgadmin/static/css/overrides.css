@@ -1349,7 +1349,3 @@ height: calc(100% - 35px);
 table.backgrid {
   overflow: auto;
 }
-
-.aciTree.aciTreeLoad {
-  background: none;
-}

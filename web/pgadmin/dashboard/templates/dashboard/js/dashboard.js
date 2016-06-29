@@ -31,7 +31,6 @@ function(r, $, pgAdmin, _, Backbone) {
             if (dashboardPanel) {
                 var div = dashboardPanel.layout().scene().find('.pg-panel-content');
 
-                dashboardPanel.startLoading();
                 if (div) {
                     $.ajax({
                         url: url,
@@ -39,9 +38,6 @@ function(r, $, pgAdmin, _, Backbone) {
                         dataType: "html",
                         success: function (data) {
                             $(div).html(data);
-                            setTimeout(function() {
-                              dashboardPanel.finishLoading();
-                            }, 1000);
                         },
                         error: function (xhr, status) {
                             $(div).html(
@@ -106,16 +102,12 @@ function(r, $, pgAdmin, _, Backbone) {
 
                         // Clear out everything so any existing timers die off
                         $(div).empty();
-                        dashboardPanel.startLoading();
 
                         $.ajax({
                             url: url,
                             type: "GET",
                             dataType: "html",
                             success: function (data) {
-                                setTimeout(function() {
-                                  dashboardPanel.finishLoading();
-                                }, 1000);
                                 $(div).html(data);
                             },
                             error: function (xhr, status) {

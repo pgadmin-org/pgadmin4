@@ -14,10 +14,10 @@
     {% endif %}
 </style>
 <div id="main-editor_panel">
-    <div id="fetching_data" class="wcLoadingIconContainer sql-editor-busy-fetching hide">
-        <div class="wcLoadingBackground"></div>
-        <span class="sql-editor-busy-icon wcLoadingIcon fa fa-spinner fa-pulse"></span>
-        <span class="sql-editor-busy-text wcLoadingLabel"></span>
+    <div id="fetching_data" class="sql-editor-busy-fetching hide">
+        <span class="sql-editor-busy-icon"><img
+                src="{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}"></span>
+        <span class="sql-editor-busy-text"></span>
     </div>
     <div class="sql-editor" data-trans-id="{{ uniqueId }}">
         <div id="btn-toolbar" class="pg-prop-btn-group" role="toolbar" aria-label="">
