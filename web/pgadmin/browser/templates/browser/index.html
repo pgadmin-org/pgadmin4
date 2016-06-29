@@ -15,8 +15,84 @@ console.log(arguments);
 /* Show proper error dialog */
 console.log(err);
 }
+
+/*
+ * Show loading spinner till every js module is loaded completely
+ * Referenced url:
+ * http://stackoverflow.com/questions/15581563/requirejs-load-script-progress
+ * Little bit tweaked as per need
+ */
+require.onResourceLoad = function (context, map, depMaps) {
+  var loadingStatusEl = panel = document.getElementById('pg-spinner');
+  if (loadingStatusEl) {
+    if (!context) {
+      // we will call onResourceLoad(false) by ourselves when requirejs
+      // is not loading anything hide the indicator and exit
+      setTimeout(function() {
+        if (panel != null) {
+          panel.remove();
+          return;
+        }
+      }, 500);
+    }
+
+    // show indicator when any module is loaded and
+    // shedule requirejs status (loading/idle) check
+    panel.style.display = "";
+    clearTimeout(panel.ttimer);
+    panel.ttimer = setTimeout(function () {
+      var context = require.s.contexts._;
+      var inited = true;
+      for (name in context.registry) {
+        var m = context.registry[name];
+        if (m.inited !== true) {
+          inited = false;
+          break;
+        }
+      }
+
+      // here the "inited" variable will be true, if requirejs is "idle",
+      // false if "loading"
+      if (inited) {
+        // will fire if module loads in 400ms. TODO: reset this timer
+        // for slow module loading
+        require.onResourceLoad(false);
+      }
+    }, 400)
+  }
+};
 {% endblock %}
 {% block body %}
+<style>
+#pg-spinner {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.6;
+  z-index: 1056;
+}
+#pg-spinner .pg-sp-icon {
+  position: absolute;
+  font-size: 50px;
+  color: #ccc;
+  top: 40%;
+  left: 48.8%;
+}
+#pg-spinner .pg-sp-text {
+  top: 46%;
+  color: #fff;
+  width: 100%;
+  font-size: 20px;
+  position: absolute;
+  text-align: center;
+}
+</style>
+<div id="pg-spinner">
+  <span class="pg-sp-icon fa fa-spinner fa-pulse"></span>
+  <span class="pg-sp-text">{{ 'Loading {0} {1}...'.format(config.APP_NAME, config.APP_VERSION) }}</span>
+</div>
 <nav class="navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
