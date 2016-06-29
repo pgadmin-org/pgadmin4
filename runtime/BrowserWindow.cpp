@@ -110,12 +110,12 @@ void BrowserWindow::closeEvent(QCloseEvent *event)
 void BrowserWindow::createActions()
 {
     // Open an arbitrary URL
-    openUrlShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U), this);
+    openUrlShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_U), this);
     openUrlShortcut->setContext(Qt::ApplicationShortcut);
     connect(openUrlShortcut, SIGNAL(activated()), this, SLOT(openUrl()));
 
     // Set the Python Path
-    preferencesShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P), this);
+    preferencesShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_P), this);
     preferencesShortcut->setContext(Qt::ApplicationShortcut);
     connect(preferencesShortcut, SIGNAL(activated()), this, SLOT(preferences()));
 
@@ -125,7 +125,7 @@ void BrowserWindow::createActions()
     connect(exitShortcut, SIGNAL(activated()), this, SLOT(close()));
 
     // About box
-    aboutShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this);
+    aboutShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_A), this);
     aboutShortcut->setContext(Qt::ApplicationShortcut);
     connect(aboutShortcut, SIGNAL(activated()), this, SLOT(about()));
 }
