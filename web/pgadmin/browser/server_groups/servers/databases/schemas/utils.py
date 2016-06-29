@@ -75,13 +75,14 @@ class DataTypeReader:
       - Returns data-types on the basis of the condition provided.
     """
 
-    def get_types(self, conn, condition):
+    def get_types(self, conn, condition, add_serials=False):
         """
         Returns data-types including calculation for Length and Precision.
 
         Args:
             conn: Connection Object
             condition: condition to restrict SQL statement
+            add_serials: If you want to serials type
         """
         res = []
         try:
@@ -91,7 +92,8 @@ class DataTypeReader:
 
             SQL = render_template("/".join([sql_template_path,
                                             'get_types.sql']),
-                                  condition=condition)
+                                  condition=condition,
+                                  add_serials=add_serials)
             status, rset = conn.execute_2darray(SQL)
             if not status:
                 return status, rset
@@ -234,7 +236,6 @@ class DataTypeReader:
             return 'timestamp' + length + ' without time zone' + array
         else:
             return name + length + array
-
 
 def trigger_definition(data):
     """

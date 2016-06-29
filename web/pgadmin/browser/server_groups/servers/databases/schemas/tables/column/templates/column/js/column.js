@@ -327,8 +327,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           }
         },{
           id: 'defval', label:'{{ _('Default Value') }}', cell: 'string',
-          type: 'text', disabled: 'inSchemaWithColumnCheck',
-          group: '{{ _('Definition') }}'
+          type: 'text', group: '{{ _('Definition') }}', deps: ['cltype'],
+          disabled: function(m) {
+            if(!m.inSchemaWithModelCheck.apply(this, [m])) {
+              var type = m.get('cltype');
+                return type == 'serial' || type == 'bigserial'
+                                        || type == 'smallserial';
+            }
+          }
         },{
           id: 'attnotnull', label:'{{ _('Not NULL?') }}', cell: 'string',
           type: 'switch', disabled: 'inSchemaWithColumnCheck',

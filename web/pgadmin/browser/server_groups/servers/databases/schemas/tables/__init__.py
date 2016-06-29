@@ -1129,7 +1129,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                                               'get_types_where_condition.sql']),
                                     show_system_objects=self.blueprint.show_system_objects)
 
-        status, types = self.get_types(self.conn, condition)
+        status, types = self.get_types(self.conn, condition, True)
 
         if not status:
             return internal_server_error(errormsg=types)
