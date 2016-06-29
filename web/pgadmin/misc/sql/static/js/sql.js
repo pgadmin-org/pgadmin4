@@ -24,7 +24,7 @@ function(_, $, pgBrowser) {
         this.sqlPanelVisibilityChanged
       );
 
-      // Hmm.. Did we find the SQL panel, and is it visible (openned)?
+      // Hmm.. Did we find the SQL panel, and is it visible (opened)?
       // If that is the case - we need to listen the browser tree selection
       // events.
       if (sqlPanels.length == 0) {
@@ -52,9 +52,8 @@ function(_, $, pgBrowser) {
        * through. We will wait for some time before fetching the Reversed
        * Engineering SQL.
        **/
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-      }
+      this.timeout && clearTimeout(this.timeout);
+
       this.timeout =  setTimeout(
         function() {
           var sql = '';
@@ -78,10 +77,8 @@ function(_, $, pgBrowser) {
                 }
               });
             }
-          } else {
-            var e = pgAdmin.Browser.editor;
-            e.refresh.apply(e);
           }
+
           if (sql != '') {
             pgAdmin.Browser.editor.setValue(sql);
           }

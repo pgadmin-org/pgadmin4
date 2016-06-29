@@ -329,6 +329,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             readOnly: true
           });
 
+      setTimeout(function() {
+        obj.editor.refresh();
+      }, 10);
+
       // Initialise the treeview
       $('#tree').aciTree({
         ajax: {
