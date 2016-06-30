@@ -1485,7 +1485,7 @@ class TriggerFunctionModule(SchemaChildModule):
     """
 
     NODE_TYPE = 'trigger_function'
-    COLLECTION_LABEL = gettext("Trigger Function")
+    COLLECTION_LABEL = gettext("Trigger Functions")
 
     def __init__(self, *args, **kwargs):
         """
