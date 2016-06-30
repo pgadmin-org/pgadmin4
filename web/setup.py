@@ -59,8 +59,7 @@ account:\n""")
             "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
             "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
-        email = ''
-        input("Email address: ")
+        email = input("Email address: ")
         while email == '' or not email_filter.match(email):
             print('Invalid email address. Please try again.')
             email = input("Email address: ")
