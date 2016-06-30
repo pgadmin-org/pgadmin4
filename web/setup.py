@@ -68,8 +68,11 @@ account:\n""")
             return getpass.getpass(), getpass.getpass('Retype password:')
 
         p1, p2 = pprompt()
-        while p1 != p2:
-            print('Passwords do not match. Please try again.')
+        while p1 != p2 or len(p1) < 6:
+            if p1 != p2:
+                print('Passwords do not match. Please try again.')
+            else:
+                print('Password must be at least 6 characters. Please try again.')
             p1, p2 = pprompt()
 
     # Setup Flask-Security
