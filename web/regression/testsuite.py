@@ -25,6 +25,12 @@ if sys.path[0] != root:
     sys.path.insert(0, root)
 
 from pgadmin import create_app
+import config
+
+# Get the config database schema version. We store this in pgadmin.model
+# as it turns out that putting it in the config files isn't a great idea
+from pgadmin.model import SCHEMA_VERSION
+config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 # Create the app!
 app = create_app()
