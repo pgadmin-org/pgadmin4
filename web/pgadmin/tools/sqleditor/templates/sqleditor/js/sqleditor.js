@@ -176,7 +176,7 @@ define(
         "click #btn-explain-buffers": "on_explain_buffers",
         "click #btn-explain-timing": "on_explain_timing",
         "change .limit": "on_limit_change",
-        "keyup": "keyAction"
+        "keydown": "keyAction"
       },
 
       // This function is used to render the template.
@@ -1020,12 +1020,12 @@ define(
             // char e/E
             // Execute query.
             this.on_flash(ev);
-          } else if(ev.keyCode == 88){
+          } else if(ev.keyCode == 88) {
             // char x/X
             // Explain query.
             this.on_explain(ev);
-          } else if(ev.keyCode == 65) {
-            // char a/A
+          } else if(ev.keyCode == 78) {
+            // char n/N
             // Explain analyze query.
             this.on_explain_analyze(ev);
           }
