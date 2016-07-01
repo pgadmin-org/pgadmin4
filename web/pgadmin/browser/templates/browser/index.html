@@ -30,7 +30,7 @@ require.onResourceLoad = function (context, map, depMaps) {
       // is not loading anything hide the indicator and exit
       setTimeout(function() {
         if (panel != null) {
-          panel.remove();
+          $(panel).remove();
           return;
         }
       }, 500);
