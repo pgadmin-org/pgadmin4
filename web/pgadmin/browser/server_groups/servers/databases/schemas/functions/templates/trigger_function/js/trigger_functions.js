@@ -21,7 +21,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'trigger_function',
       sqlAlterHelp: 'plpgsql-trigger.html',
       sqlCreateHelp: 'plpgsql-trigger.html',
-      dialogHelp: '{{ url_for('help.static', filename='create_trigger_function.html') }}',
+      dialogHelp: '{{ url_for('help.static', filename='trigger_function_dialog.html') }}',
       label: '{{ _('Trigger function') }}',
       collection_type: 'coll-trigger_function',
       hasSQL: true,
