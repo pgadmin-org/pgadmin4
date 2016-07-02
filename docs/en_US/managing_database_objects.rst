@@ -30,6 +30,7 @@ Contents:
    procedure_dialog
    schema_dialog
    sequence_dialog
+   trigger_function_dialog
    type_dialog
    user_mapping_dialog
    view_dialog
