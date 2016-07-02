@@ -1036,6 +1036,12 @@ ul.nav.nav-tabs {
   margin-left: 5px;
 }
 
+/* Prevent text blur in the runtime */
+.alertify .ajs-dimmer,
+.alertify .ajs-modal {
+  -webkit-transform: none;
+}
+
 .ajs-commands {
   position: absolute;
   width: auto!important;
