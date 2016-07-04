@@ -1555,6 +1555,12 @@ define(
                     case "timestamp with time zone":
                       col_cell = 'datetime';
                       break;
+                    case "json":
+                    case "json[]":
+                    case "jsonb":
+                    case "jsonb[]":
+                      col_cell = Backgrid.Extension.JSONBCell;
+                      break;
                     default:
                       col_cell = 'string';
                   }

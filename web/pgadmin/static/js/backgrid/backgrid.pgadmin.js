@@ -904,6 +904,40 @@
     }
   });
 
+  /*
+   *  JSONBCell Formatter.
+   */
+  var JSONBCellFormatter = Backgrid.Extension.JSONBCellFormatter =
+    function () {};
+  _.extend(JSONBCellFormatter.prototype, {
+    fromRaw: function (rawData, model) {
+        // json data
+        if(_.isArray(rawData)) {
+          var converted_data = '';
+          converted_data = _.map(rawData, function(data) {
+            return JSON.stringify(JSON.stringify(data));
+          });
+          return '{' + converted_data.join() + '}';
+        } else if(_.isObject(rawData)) {
+          return JSON.stringify(rawData);
+        } else {
+          return rawData;
+        }
+    },
+    toRaw: function (formattedData, model) {
+      return formattedData;
+    }
+  });
+
+  /*
+   *  JSONBCell for backgrid.
+   */
+  var JSONBCell = Backgrid.Extension.JSONBCell =
+      Backgrid.StringCell.extend({
+        className: "jsonb-cell",
+        formatter: JSONBCellFormatter
+      });
+
   return Backgrid;
 
 }));
