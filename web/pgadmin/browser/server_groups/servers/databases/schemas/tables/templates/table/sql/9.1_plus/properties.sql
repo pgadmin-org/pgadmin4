@@ -8,7 +8,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 			JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'
 			WHERE tgrelid=rel.oid) AS isrepl,
 	(SELECT count(*) FROM pg_trigger WHERE tgrelid=rel.oid AND tgisinternal = FALSE) AS triggercount,
-	(SELECT ARRAY(SELECT CASE WHEN (nspname NOT LIKE E'pg\_%' AND nspname <> 'public') THEN
+	(SELECT ARRAY(SELECT CASE WHEN (nspname NOT LIKE E'pg\_%') THEN
             quote_ident(nspname)||'.'||quote_ident(c.relname)
             ELSE quote_ident(c.relname) END AS inherited_tables
     FROM pg_inherits i

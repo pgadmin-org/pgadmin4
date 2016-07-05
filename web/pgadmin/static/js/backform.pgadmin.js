@@ -1790,7 +1790,11 @@
       return encodeURIComponent(rawData);
     },
     toRaw: function(formattedData, model) {
-      return decodeURIComponent(formattedData);
+      if (_.isArray(formattedData)) {
+        return _.map(formattedData, decodeURIComponent);
+      } else {
+        return decodeURIComponent(formattedData);
+      }
     }
   });
 

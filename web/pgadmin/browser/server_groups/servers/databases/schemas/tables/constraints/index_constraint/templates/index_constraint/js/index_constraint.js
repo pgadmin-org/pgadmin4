@@ -227,6 +227,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 }
               }
             ),
+            keyPathAccessor: function(obj, path) {
+              var res = obj;
+              if(_.isArray(res)) {
+                return _.map(res, function(o) { return o['column']
+                });
+              }
+              path = path.split('.');
+              for (var i = 0; i < path.length; i++) {
+                if (_.isNull(res)) return null;
+                if (_.isEmpty(path[i])) continue;
+                if (!_.isUndefined(res[path[i]])) res = res[path[i]];
+              }
+              return _.isObject(res) && !_.isArray(res) ? null : res;
+            },
             initialize: function() {
             // Here we will decide if we need to call URL
             // Or fetch the data from parent columns collection
