@@ -1359,3 +1359,8 @@ table.backgrid {
 .aciTree.aciTreeLoad {
   background: none;
 }
+
+/* class to disable Codemirror editor */
+.cm_disabled {
+  background: #EEEEEE;
+}

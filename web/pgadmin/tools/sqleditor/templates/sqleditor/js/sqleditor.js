@@ -1124,7 +1124,12 @@ define(
             }
           }
           else {
-            self.gridView.query_tool_obj.setOption("readOnly",true);
+            // Disable codemirror by setting cursor to nocursor and background to dark.
+            self.gridView.query_tool_obj.setOption("readOnly", 'nocursor');
+            var cm = self.gridView.query_tool_obj.getWrapperElement();
+            if (cm) {
+              cm.className += ' cm_disabled';
+            }
             self.disable_tool_buttons(true);
             self._execute_data_query();
           }
