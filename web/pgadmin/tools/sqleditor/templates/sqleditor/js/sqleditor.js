@@ -1800,7 +1800,9 @@ define(
           }
           else {
             // If current page is not the last page then confirm from the user
-            if (self.collection.state.currentPage != self.collection.state.lastPage) {
+            if (self.collection.state.lastPage != null &&
+                self.collection.state.currentPage != self.collection.state.lastPage
+              ) {
               alertify.confirm('{{ _('Add New Row') }}',
                 '{{ _('The result set display will move to the last page. Do you wish to continue?') }}',
                 function() {
@@ -2301,7 +2303,9 @@ define(
           }
           else {
             // If current page is not the last page then confirm from the user
-            if (self.collection.state.currentPage != self.collection.state.lastPage) {
+            if (self.collection.state.lastPage != null &&
+                self.collection.state.currentPage != self.collection.state.lastPage
+              ) {
               alertify.confirm('{{ _('Paste Row') }}',
                 '{{ _('The result set display will move to the last page. Do you wish to continue?') }}',
                 function() {
