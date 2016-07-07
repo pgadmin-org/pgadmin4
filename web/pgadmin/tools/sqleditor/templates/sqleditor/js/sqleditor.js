@@ -1792,11 +1792,14 @@ define(
         // This function will add a new row to the backgrid.
         _add: function() {
           var self = this,
-              empty_model = new (self.collection.model);
+              empty_model = new (self.collection.model),
+              dgrid = document.getElementById("datagrid");
 
           // If items_per_page is zero then no pagination.
           if (self.items_per_page === 0) {
             self.collection.add(empty_model);
+            // scroll to the newly added row
+            dgrid.scrollTop = dgrid.scrollHeight;
           }
           else {
             // If current page is not the last page then confirm from the user
@@ -1808,6 +1811,8 @@ define(
                 function() {
                   self.collection.getLastPage();
                   self.collection.add(empty_model);
+                  // scroll to the newly added row
+                  dgrid.scrollTop = dgrid.scrollHeight;
                 },
                 function() {
                   // Do nothing as user canceled the operation.
@@ -1816,6 +1821,8 @@ define(
             }
             else {
               self.collection.add(empty_model);
+              // scroll to the newly added row
+              dgrid.scrollTop = dgrid.scrollHeight;
 
               /* If no of items on the page exceeds the page size limit then
                * advanced to the next page.
@@ -2295,11 +2302,14 @@ define(
 
         // This function is callback function for paste row.
         _paste_row_callback: function() {
-          var self = this;
+          var self = this,
+              dgrid = document.getElementById("datagrid");
 
           // If items_per_page is zero then no pagination.
           if (self.items_per_page == 0) {
             self._paste_row();
+            // scroll to the newly added row
+            dgrid.scrollTop = dgrid.scrollHeight;
           }
           else {
             // If current page is not the last page then confirm from the user
@@ -2311,6 +2321,8 @@ define(
                 function() {
                   self.collection.getLastPage();
                   self._paste_row();
+                  // scroll to the newly added row
+                  dgrid.scrollTop = dgrid.scrollHeight;
                 },
                 function() {
                   // Do nothing as user canceled the operation.
@@ -2319,6 +2331,8 @@ define(
             }
             else {
               self._paste_row();
+              // scroll to the newly added row
+              dgrid.scrollTop = dgrid.scrollHeight;
 
               /* If no of items on the page exceeds the page size limit then
                * advanced to the next page.
