@@ -10,227 +10,265 @@
 """
 Implements the server-side session management.
 
-Credit/Reference: http://flask.pocoo.org/snippets/86/
+Credit/Reference: http://flask.pocoo.org/snippets/109/
 
 Modified to support both Python 2.6+ & Python 3.x
 """
 
-import errno
+import base64
+import datetime
+import hmac
+import hashlib
 import os
-import sqlite3
+import random
+import string
 from uuid import uuid4
 
 try:
-    from cPickle import dumps, loads
+    from cPickle import dump, load
 except:
-    from pickle import dumps, loads
+    from pickle import dump, load
 
-from collections import MutableMapping
-from flask import request
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict
+
 from flask.sessions import SessionInterface, SessionMixin
+from werkzeug.datastructures import CallbackDict
 
 
-class SqliteSessionStorage(MutableMapping, SessionMixin):
-    """
-    A class to store the session as sqlite object.
-    """
+def _calc_hmac(body, secret):
+    return base64.b64encode(hmac.new(secret, body, hashlib.sha1).digest())
 
-    _create_sql = (
-        'CREATE TABLE IF NOT EXISTS pg_session '
-        '('
-        '  key TEXT PRIMARY KEY,'
-        '  val BLOB'
-        ')'
-    )
-    _get_sql = 'SELECT val FROM pg_session WHERE key = ?'
-    _set_sql = 'REPLACE INTO pg_session (key, val) VALUES (?, ?)'
-    _del_sql = 'DELETE FROM pg_session WHERE key = ?'
-    _ite_sql = 'SELECT key FROM pg_session'
-    _len_sql = 'SELECT COUNT(*) FROM pg_session'
 
-    def __init__(self, directory, sid, *args, **kwargs):
-        """Initialize the session storage for this particular session. If
-        requires, creates new sqlite database per session (if require).
-        """
-        self.path = os.path.join(directory, sid)
-        self.directory = directory
-        self.sid = sid
-        self.modified = False
-        self.conn = None
-        if not os.path.exists(self.path):
-            sess_db = os.open(self.path, os.O_CREAT, int("600", 8))
-            os.close(sess_db)
-
-            with self._get_conn() as conn:
-                conn.execute(self._create_sql)
-                self.new = True
-
-    def __getitem__(self, key):
-        """Reads the session data for the particular key from the sqlite
-        database.
-        """
-        key = dumps(key, 0)
-        rv = None
-        with self._get_conn() as conn:
-            for row in conn.execute(self._get_sql, (key,)):
-                rv = loads(bytes(row[0]))
-                break
-        if rv is None:
-            raise KeyError('Key not in this session')
-        return rv
-
-    def __setitem__(self, key, value):
-        """Stores the session data for the given key.
-        """
-        key = dumps(key, 0)
-        value = dumps(value, 2)
-        with self._get_conn() as conn:
-            conn.execute(self._set_sql, (key, sqlite3.Binary(value)))
-        self.modified = True
-
-    def __delitem__(self, key):
-        """Removes the session data representing the key from the session.
-        """
-        key = dumps(key, 0)
-        with self._get_conn() as conn:
-            conn.execute(self._del_sql, (key,))
-        self.modified = True
-
-    def __iter__(self):
-        """Returns the iterator of the key, value pair stored under this
-        session.
-        """
-        with self._get_conn() as conn:
-            for row in conn.execute(self._ite_sql):
-                yield loads(dumps(row[0]))
-
-    def __len__(self):
-        """Returns the number of keys stored in this session.
-        """
-        with self._get_conn() as conn:
-            for row in conn.execute(self._len_sql):
-                return row[0]
-
-    def _get_conn(self):
-        """Connection object to the sqlite database object.
-        """
-        if not self.conn:
-            self.conn = sqlite3.Connection(self.path)
-        return self.conn
-
-    # These proxy classes are needed in order
-    # for this session implementation to work properly.
-    # That is because sometimes flask will chain method calls
-    # with session'setdefault' calls.
-    # Eg: session.setdefault('_flashes', []).append(1)
-    # With these proxies, the changes made by chained
-    # method calls will be persisted back to the sqlite
-    # database.
-    class CallableAttributeProxy(object):
-        """
-        A proxy class to represent the callable attributes of a object.
-        """
-
-        def __init__(self, session, key, obj, attr):
-            """Initialize the proxy instance for the callable attribute.
-            """
-            self.session = session
-            self.key = key
-            self.obj = obj
-            self.attr = attr
-
-        def __call__(self, *args, **kwargs):
-            """Returns the callable attributes for this session.
-            """
-            rv = self.attr(*args, **kwargs)
-            self.session[self.key] = self.obj
-            return rv
-
-    class PersistedObjectProxy(object):
-        """
-        A proxy class to represent the persistent object.
-        """
-
-        def __init__(self, session, key, obj):
-            """Initialize the persitent objects under the session.
-            """
-            self.session = session
-            self.key = key
-            self.obj = obj
-
-        def __getattr__(self, name):
-            """Returns the attribute of the persistent object representing by
-            the name for this object.
-            """
-            attr = getattr(self.obj, name)
-            if callable(attr):
-                return SqliteSessionStorage.CallableAttributeProxy(
-                    self.session, self.key, self.obj, attr
-                )
-            return attr
-
-    def setdefault(self, key, value):
-        """Sets the default value for the particular key in the session.
-        """
-
-        if key not in self:
-            self[key] = value
+class ManagedSession(CallbackDict, SessionMixin):
+    def __init__(self, initial=None, sid=None, new=False, randval=None, hmac_digest=None):
+        def on_update(self):
             self.modified = True
 
-        return SqliteSessionStorage.PersistedObjectProxy(
-            self, key, self[key]
+        CallbackDict.__init__(self, initial, on_update)
+        self.sid = sid
+        self.new = new
+        self.modified = False
+        self.randval = randval
+        self.hmac_digest = hmac_digest
+
+    def sign(self, secret):
+        if not self.hmac_digest:
+            self.randval = ''.join(random.sample(string.lowercase+string.digits, 20))
+            self.hmac_digest = _calc_hmac('%s:%s' % (self.sid, self.randval), secret)
+
+
+class SessionManager(object):
+    def new_session(self):
+        'Create a new session'
+        raise NotImplementedError
+
+    def exists(self, sid):
+        'Does the given session-id exist?'
+        raise NotImplementedError
+
+    def remove(self, sid):
+        'Remove the session'
+        raise NotImplementedError
+
+    def get(self, sid, digest):
+        'Retrieve a managed session by session-id, checking the HMAC digest'
+        raise NotImplementedError
+
+    def put(self, session):
+        'Store a managed session'
+        raise NotImplementedError
+
+
+class CachingSessionManager(SessionManager):
+    def __init__(self, parent, num_to_store):
+        self.parent = parent
+        self.num_to_store = num_to_store
+        self._cache = OrderedDict()
+
+    def _normalize(self):
+        if len(self._cache) > self.num_to_store:
+            # Flush 20% of the cache
+            while len(self._cache) > (self.num_to_store * 0.8):
+                self._cache.popitem(False)
+
+    def new_session(self):
+        session = self.parent.new_session()
+        self._cache[session.sid] = session
+        self._normalize()
+
+        return session
+
+    def remove(self, sid):
+        self.parent.remove(sid)
+        if sid in self._cache:
+            del self._cache[sid]
+
+    def exists(self, sid):
+        if sid in self._cache:
+            return True
+        return self.parent.exists(sid)
+
+    def get(self, sid, digest):
+        session = None
+        if sid in self._cache:
+            session = self._cache[sid]
+            if session.hmac_digest != digest:
+                session = None
+
+            # reset order in Dict
+            del self._cache[sid]
+
+        if not session:
+            session = self.parent.get(sid, digest)
+
+        self._cache[sid] = session
+        self._normalize()
+
+        return session
+
+    def put(self, session):
+        self.parent.put(session)
+        if session.sid in self._cache:
+            del self._cache[session.sid]
+        self._cache[session.sid] = session
+        self._normalize()
+
+
+class FileBackedSessionManager(SessionManager):
+
+    def __init__(self, path, secret):
+        self.path = path
+        self.secret = secret
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+    def exists(self, sid):
+        fname = os.path.join(self.path, sid)
+        return os.path.exists(fname)
+
+    def remove(self, sid):
+        fname = os.path.join(self.path, sid)
+        if os.path.exists(fname):
+            os.unlink(fname)
+
+    def new_session(self):
+        sid = str(uuid4())
+        fname = os.path.join(self.path, sid)
+
+        while os.path.exists(fname):
+            sid = str(uuid4())
+            fname = os.path.join(self.path, sid)
+
+        # touch the file
+        with open(fname, 'w'):
+            pass
+
+        return ManagedSession(sid=sid)
+
+    def get(self, sid, digest):
+        'Retrieve a managed session by session-id, checking the HMAC digest'
+
+        fname = os.path.join(self.path, sid)
+        data = None
+        hmac_digest = None
+        randval = None
+
+        if os.path.exists(fname):
+            try:
+                with open(fname) as f:
+                    randval, hmac_digest, data = load(f)
+            except:
+                pass
+
+        if not data:
+            return self.new_session()
+
+        # This assumes the file is correct, if you really want to
+        # make sure the session is good from the server side, you
+        # can re-calculate the hmac
+
+        if hmac_digest != digest:
+            return self.new_session()
+
+        return ManagedSession(
+            data, sid=sid, randval=randval, hmac_digest=hmac_digest
         )
 
+    def put(self, session):
+        'Store a managed session'
+        if not session.hmac_digest:
+            session.sign(self.secret)
 
-class ServerSideSessionInterface(SessionInterface):
-    """
-    Implements the SessionInterface to support saving/opening session
-    as sqlite object.
-    """
+        fname = os.path.join(self.path, session.sid)
+        with open(fname, 'w') as f:
+            dump(
+                (session.randval, session.hmac_digest, dict(session)),
+                f
+            )
 
-    def __init__(self, directory):
-        """Initialize the session interface, which uses the sqlite as local
-        storage, and works as server side session manager.
 
-        It takes directory as parameter, and creates the directory with 700
-        permission (if not exists).
-        """
-        directory = os.path.abspath(directory)
-        if not os.path.exists(directory):
-            os.makedirs(directory, int('700', 8))
-        self.directory = directory
+class ManagedSessionInterface(SessionInterface):
+    def __init__(self, manager, skip_paths, cookie_timedelta):
+        self.manager = manager
+        self.skip_paths = skip_paths
+        self.cookie_timedelta = cookie_timedelta
+
+    def get_expiration_time(self, app, session):
+        if session.permanent:
+            return app.permanent_session_lifetime
+        return datetime.datetime.now() + self.cookie_timedelta
 
     def open_session(self, app, request):
-        """
-        Returns the SqliteSessionStorage object representing this session.
-        """
-        sid = request.cookies.get(app.session_cookie_name)
-        if not sid or len(sid) > 40:
-            sid = str(uuid4())
-        return SqliteSessionStorage(self.directory, sid)
+        cookie_val = request.cookies.get(app.session_cookie_name)
+
+        if not cookie_val or not '!' in cookie_val:
+            # Don't bother creating a cookie for static resources
+            for sp in self.skip_paths:
+                if request.path.startswith(sp):
+                    return None
+
+            return self.manager.new_session()
+
+        sid, digest = cookie_val.split('!', 1)
+
+        if self.manager.exists(sid):
+            return self.manager.get(sid, digest)
+
+        return self.manager.new_session()
 
     def save_session(self, app, session, response):
-        """
-        Saves/Detroys the session object.
-        """
-        sid = request.cookies.get(app.session_cookie_name)
         domain = self.get_cookie_domain(app)
         if not session:
-            try:
-                if session is None:
-                    session = SqliteSessionStorage(self.directory, sid)
-                os.unlink(session.path)
-            except OSError as ex:
-                if ex.errno != errno.ENOENT:
-                    raise
+            self.manager.remove(session.sid)
             if session.modified:
-                response.delete_cookie(
-                    app.session_cookie_name,
-                    domain=domain
-                )
+                response.delete_cookie(app.session_cookie_name, domain=domain)
             return
+
+        if not session.modified:
+            # No need to save an unaltered session
+            # TODO: put logic here to test if the cookie is older than N days,
+            # if so, update the expiration date
+            return
+
+        self.manager.put(session)
+        session.modified = False
+
         cookie_exp = self.get_expiration_time(app, session)
-        response.set_cookie(
-            app.session_cookie_name, session.sid,
-            expires=cookie_exp, httponly=True, domain=domain
-        )
+        response.set_cookie(app.session_cookie_name,
+                            '%s!%s' % (session.sid, session.hmac_digest),
+                            expires=cookie_exp, httponly=True, domain=domain)
+
+
+def create_session_interface(app, skip_paths=[]):
+    return ManagedSessionInterface(
+        CachingSessionManager(
+            FileBackedSessionManager(
+                app.config['SESSION_DB_PATH'],
+                app.config['SECRET_KEY']
+            ),
+            1000
+        ), skip_paths,
+        datetime.timedelta(days=1))

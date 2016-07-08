@@ -22,7 +22,7 @@ from flask_mail import Mail
 from flask_security.utils import login_user
 from htmlmin.minify import html_minify
 from pgadmin.utils import PgAdminModule, driver
-from pgadmin.utils.session import ServerSideSessionInterface
+from pgadmin.utils.session import create_session_interface
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
@@ -121,7 +121,7 @@ def create_app(app_name=config.APP_NAME):
     ##########################################################################
     # Setup session management
     ##########################################################################
-    app.session_interface = ServerSideSessionInterface(config.SESSION_DB_PATH)
+    app.session_interface = create_session_interface(app)
 
     ##########################################################################
     # Setup logging and log the application startup
