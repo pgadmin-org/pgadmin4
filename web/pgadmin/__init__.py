@@ -17,7 +17,7 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app
 from flask.ext.babel import Babel, gettext
 from flask.ext.login import user_logged_in
-from flask.ext.security import current_user, Security, SQLAlchemyUserDatastore
+from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
 from htmlmin.minify import html_minify
@@ -30,8 +30,15 @@ from pgadmin.model import db, Role, Server, ServerGroup, User, Version
 # Configuration settings
 import config
 
-if os.name == 'nt':
-    from _winreg import *
+# If script is running under python3, it will not have the xrange function
+# defined
+winreg = None
+if not hasattr(__builtins__, 'xrange'):
+    xrange = range
+    if os.name == 'nt':
+        import winreg
+elif os.name == 'nt':
+    import _winreg as winreg
 
 class PgAdmin(Flask):
     def find_submodules(self, basemodule):
@@ -262,7 +269,7 @@ def create_app(app_name=config.APP_NAME):
             db.session.commit()
 
         # Figure out what servers are present
-        if os.name == 'nt':
+        if winreg is not None:
             proc_arch = os.environ['PROCESSOR_ARCHITECTURE'].lower()
 
             try:
@@ -273,31 +280,50 @@ def create_app(app_name=config.APP_NAME):
             if proc_arch == 'x86' and not proc_arch64:
                 arch_keys = {0}
             elif proc_arch == 'x86' or proc_arch == 'amd64':
-                arch_keys = { KEY_WOW64_32KEY, KEY_WOW64_64KEY }
+                arch_keys = {winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY}
 
             for arch_key in arch_keys:
                 for server_type in { 'PostgreSQL', 'EnterpriseDB'}:
                     try:
-                        root_key = OpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\" + server_type + "\Services", 0, KEY_READ | arch_key)
-                        for i in xrange(0, QueryInfoKey(root_key)[0]):
-                            inst_id = EnumKey(root_key, i)
-                            inst_key = OpenKey(root_key, inst_id)
+                        root_key = winreg.OpenKey(
+                            winreg.HKEY_LOCAL_MACHINE,
+                            "SOFTWARE\\" + server_type + "\Services", 0,
+                            winreg.KEY_READ | arch_key
+                        )
+                        for i in xrange(0, winreg.QueryInfoKey(root_key)[0]):
+                            inst_id = winreg.EnumKey(root_key, i)
+                            inst_key = winreg.OpenKey(root_key, inst_id)
 
-                            svr_name = QueryValueEx(inst_key, 'Display Name')[0]
-                            svr_superuser = QueryValueEx(inst_key, 'Database Superuser')[0]
-                            svr_port = QueryValueEx(inst_key, 'Port')[0]
+                            svr_name = winreg.QueryValueEx(
+                                inst_key, 'Display Name'
+                            )[0]
+                            svr_superuser = winreg.QueryValueEx(
+                                inst_key, 'Database Superuser'
+                            )[0]
+                            svr_port = winreg.QueryValueEx(inst_key, 'Port')[0]
                             svr_discovery_id = inst_id
-                            svr_comment = gettext("Auto-detected %s installation with the data directory at %s" % (
-                                QueryValueEx(inst_key, 'Display Name')[0],
-                                QueryValueEx(inst_key, 'Data Directory')[0]))
+                            svr_comment = gettext(
+                                "Auto-detected %s installation with the data directory at %s" % (
+                                    winreg.QueryValueEx(
+                                        inst_key, 'Display Name'
+                                    )[0],
+                                    winreg.QueryValueEx(
+                                        inst_key, 'Data Directory'
+                                    )[0]
+                                )
+                            )
 
-                            add_server(user_id, servergroup_id, svr_name, svr_superuser, svr_port, svr_discovery_id, svr_comment)
+                            add_server(
+                                user_id, servergroup_id, svr_name,
+                                svr_superuser, svr_port,
+                                svr_discovery_id, svr_comment
+                            )
 
                             inst_key.Close()
                     except:
                         pass
         else:
-            # We use the postgres-reg.ini file on non-Windows
+            # We use the postgres-winreg.ini file on non-Windows
             try:
                 from configparser import ConfigParser
             except ImportError:
