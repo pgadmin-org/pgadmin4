@@ -76,7 +76,9 @@ function(r, $, pgAdmin, _, Backbone) {
                     default:
                         url = '{{ url_for('dashboard.index') }}'
                                 + treeHierarchy.server._id
-                                + '/' + treeHierarchy.database._id;
+                        if ('database' in treeHierarchy) {
+                          url += '/' + treeHierarchy.database._id;
+                        }
                         break;
                 }
             }
