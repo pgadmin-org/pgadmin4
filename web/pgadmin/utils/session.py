@@ -39,7 +39,11 @@ from werkzeug.datastructures import CallbackDict
 
 
 def _calc_hmac(body, secret):
-    return base64.b64encode(hmac.new(secret, body, hashlib.sha1).digest())
+    return base64.b64encode(
+        hmac.new(
+            secret.encode(), body.encode(), hashlib.sha1
+        ).digest()
+    ).decode()
 
 
 class ManagedSession(CallbackDict, SessionMixin):
@@ -56,7 +60,14 @@ class ManagedSession(CallbackDict, SessionMixin):
 
     def sign(self, secret):
         if not self.hmac_digest:
-            self.randval = ''.join(random.sample(string.lowercase+string.digits, 20))
+            if hasattr(string, 'lowercase'):
+                population = string.lowercase
+            # If script is running under python3
+            elif hasattr(string, 'ascii_lowercase'):
+                population = string.ascii_lowercase
+            population += string.digits
+
+            self.randval = ''.join(random.sample(population, 20))
             self.hmac_digest = _calc_hmac('%s:%s' % (self.sid, self.randval), secret)
 
 
@@ -163,7 +174,7 @@ class FileBackedSessionManager(SessionManager):
             fname = os.path.join(self.path, sid)
 
         # touch the file
-        with open(fname, 'w'):
+        with open(fname, 'wb'):
             pass
 
         return ManagedSession(sid=sid)
@@ -178,7 +189,7 @@ class FileBackedSessionManager(SessionManager):
 
         if os.path.exists(fname):
             try:
-                with open(fname) as f:
+                with open(fname, 'rb') as f:
                     randval, hmac_digest, data = load(f)
             except:
                 pass
@@ -203,7 +214,7 @@ class FileBackedSessionManager(SessionManager):
             session.sign(self.secret)
 
         fname = os.path.join(self.path, session.sid)
-        with open(fname, 'w') as f:
+        with open(fname, 'wb') as f:
             dump(
                 (session.randval, session.hmac_digest, dict(session)),
                 f
