@@ -33,7 +33,7 @@ import config
 # If script is running under python3, it will not have the xrange function
 # defined
 winreg = None
-if not hasattr(__builtins__, 'xrange'):
+if sys.version_info.major >= 3:
     xrange = range
     if os.name == 'nt':
         import winreg
