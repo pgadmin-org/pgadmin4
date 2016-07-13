@@ -18,3 +18,9 @@ CREATE {% if data.trusted %}TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIde
 ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
     OWNER TO {{ conn|qtIdent(data.lanowner) }};
 {% endif %}
+
+{# ============= Comment on LANGUAGE Query ============= #}
+{% if data.description %}
+COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
+    IS {{ data.description|qtLiteral }};
+{% endif %}
