@@ -4,7 +4,7 @@
 {% set is_columns = [] %}
 {% if data %}
 CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.args %}
-({% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %} {{ conn|qtIdent(p.argname)}}{% endif %}{% if p.argtype %}{{ conn|qtIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+({% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %} {{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
 {% endfor -%}){% endif %}
 

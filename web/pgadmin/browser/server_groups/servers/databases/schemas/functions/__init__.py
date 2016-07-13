@@ -274,7 +274,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 list_params = []
                 if request.method == 'GET':
                     list_params = ['arguments', 'variables', 'proacl',
-                                   'seclabels', 'acl']
+                                   'seclabels', 'acl', 'args']
 
                 for key in req:
                     if key in list_params and req[key] != '' \
