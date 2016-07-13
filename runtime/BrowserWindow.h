@@ -54,6 +54,12 @@ public slots:
     void tabIndexChanged(int index);
     void goBackPage();
     void goForwardPage();
+    void download(const QNetworkRequest &request);
+    void unsupportedContent(QNetworkReply * reply);
+    void downloadFinished();
+    void downloadFileProgress(qint64 , qint64 );
+    void progressCanceled();
+    void current_dir_path(const QString &dir);
 
 private:
     QString m_appServerUrl;
@@ -79,10 +85,20 @@ private:
 
     bool m_initialLoad;
     int m_loadAttempt;
+    QString m_downloadFilename;
+    int m_downloadStarted;
+    int m_downloadCancelled;
+    QFile *m_file;
+    QProgressDialog *m_progressDialog;
+    QString m_defaultFilename;
+    QString m_last_open_folder_path;
+    QString m_dir;
+    QNetworkReply *m_reply;
 
     void createActions();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
+    bool checkClientDownload(const QUrl &name, const QNetworkRequest &request);
 };
 
 #endif // BROWSERWINDOW_H

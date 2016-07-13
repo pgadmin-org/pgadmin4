@@ -2601,7 +2601,7 @@ define(
                 keys = _.pluck(self.columns, 'name');
 
             // Fetch the items from fullCollection and convert it as csv format
-            var csv = labels.join(',') + '\n';
+            var csv = keys.join(',') + '\n';
             csv += coll.map(function(item) {
                 return _.map(keys, function(key) {
                   var cell = csv_col [key].cell,
@@ -2614,7 +2614,7 @@ define(
             }).join('\n');
 
             // Download the file.
-            var encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv),
+            var encodedUri = encodeURI('data:text/csv&charset=utf-8&filename=download.csv&value=' + csv),
                     link = document.createElement('a');
             link.setAttribute('href', encodedUri);
 
