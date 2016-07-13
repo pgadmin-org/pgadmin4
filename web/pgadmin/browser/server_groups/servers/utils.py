@@ -37,6 +37,10 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
     """
     Common utility function to parse privileges before sending to database.
     """
+    from pgadmin.utils.driver import get_driver
+    from config import PG_DEFAULT_DRIVER
+    driver = get_driver(PG_DEFAULT_DRIVER)
+
     db_privileges = {
         'c': 'CONNECT',
         'C': 'CREATE',
@@ -82,7 +86,8 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             priv_without_grant = ['ALL']
         # Appending and returning all ACL
         privileges.append({
-            'grantee': priv['grantee'],
+            'grantee': driver.qtIdent(None, priv['grantee'])
+            if priv['grantee'] != 'PUBLIC' else 'PUBLIC',
             'with_grant': priv_with_grant,
             'without_grant': priv_without_grant
         })
