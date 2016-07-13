@@ -860,8 +860,16 @@ class DatabaseView(PGChildNodeView):
         frmtd_variables = parse_variables_from_db(res1['rows'])
         result.update(frmtd_variables)
 
+        sql_header = """
+-- Database: {0}
+
+-- DROP DATABASE {0};
+
+""".format(result['name'])
+
         SQL = self.get_new_sql(gid, sid, result, did)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
+        SQL = sql_header + SQL
         SQL = SQL.strip('\n')
         return ajax_response(response=SQL)
 
