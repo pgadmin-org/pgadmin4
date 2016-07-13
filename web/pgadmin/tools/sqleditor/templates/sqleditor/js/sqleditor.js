@@ -862,9 +862,8 @@ define(
 
       // Callback function for the clear button click.
       on_clear: function(ev) {
-        ev = ev || window.event;
-        ev.cancelBubble = true;
-        ev.stopPropagation();
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
 
         this.query_tool_obj.setValue('');
       },
