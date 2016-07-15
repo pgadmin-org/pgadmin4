@@ -1555,9 +1555,16 @@ define(
                     case "numeric":
                       col_cell = 'number';
                       break;
+                    case "date":
+                    case "reltime":
+                    case "abstime":
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                      col_cell = 'datetime';
+                    case "time with time zone":
+                    case "time without time zone":
+                      col_cell = Backgrid.DatetimeCell.extend({
+                        formatter: Backgrid.StringFormatter,
+                      });
                       break;
                     case "json":
                     case "json[]":
