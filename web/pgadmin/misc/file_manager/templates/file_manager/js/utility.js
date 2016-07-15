@@ -195,7 +195,7 @@ var setUploader = function(path) {
   path = decodeURI(path);
 
   var display_string = path,
-      mypath = '';
+      file_path = '';
 
   // split path
   var split_path = display_string.split('/');
@@ -203,29 +203,17 @@ var setUploader = function(path) {
 
   // set empty path if it is windows
   if (config.options.platform_type === "win32" && config.options.show_volumes) {
-      mypath = "";
+      file_path = "";
   } else if (split_path.length === 0) {
-    mypath = $('<b>/</b>');
+    file_path = '/';
   } else {
-    mypath = $('<a class="breadcrumbs" href="#" data-path="/">/</a>');
+    file_path = '/';
   }
-  $(mypath).appendTo($('.storage_dialog #uploader h1'));
 
   Object.keys(split_path).forEach(function (i) {
-    if (i < split_path.length - 1) {
-      mypath = $(
-        '<a class="breadcrumbs" href="#" data-path="' +
-        display_string.replace(split_path[i+1], '') +
-        '">' + split_path[i] + '/</a>'
-      );
-      $(mypath).appendTo($('.storage_dialog #uploader h1'));
-    } else {
-      mypath = $('<b>' + split_path[i] + '/</b>');
-      $(mypath).appendTo(
-        $('.storage_dialog #uploader h1')
-      );
-    }
+    file_path += split_path[i] + '/';
   });
+  $('.storage_dialog #uploader h1').html(file_path);
 
   $('.currentpath').val(path);
   if ($('.storage_dialog #uploader h1 span').length === 0) {
@@ -908,28 +896,6 @@ var getFolderInfo = function(path, file_type) {
         }
       });
 
-      $('.fileinfo #contents li p').on('dblclick',function(e) {
-        e.stopPropagation();
-        var $this = $(this);
-        var orig_value = decodeURI($this.find('span').attr('title')),
-            newvalue = orig_value.substring(0, orig_value.indexOf('.'));
-
-        if (newvalue === '') {
-          newvalue = orig_value;
-        }
-
-        $this.find('input').toggle().val(newvalue).focus();
-        $this.find('span').toggle();
-
-        // Rename folder/file on pressing enter key
-        $('.file_manager').unbind().on('keyup', function(e) {
-          if (e.keyCode == 13) {
-            e.stopPropagation();
-            $this.find('input').trigger('blur');
-          }
-        });
-      });
-
       // Rename UI handling
       $('.fileinfo #contents li p').on('blur dblclick','input', function(e) {
         e.stopPropagation();
@@ -1006,30 +972,6 @@ var getFolderInfo = function(path, file_type) {
         } else {
           e.stopPropagation();
         }
-      });
-
-      $('.fileinfo table#contents tr td p').on('dblclick', function(e) {
-        e.stopPropagation();
-        var $this = $(this),
-            orig_value = decodeURI(
-              $this.find('span').attr('title')
-            );
-
-        var newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
-        if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {
-          newvalue = orig_value;
-        }
-
-        $this.find('input').toggle().val(newvalue).focus();
-        $this.find('span').toggle();
-
-        // Rename folder/file on pressing enter key
-        $('.file_manager').unbind().on('keyup', function(e) {
-          if (e.keyCode == 13) {
-            e.stopPropagation();
-            $this.find('input').trigger('blur');
-          }
-        });
       });
 
       $('.fileinfo table#contents tr td p').on(
@@ -1148,11 +1090,7 @@ var getFolderInfo = function(path, file_type) {
                 'disabled'
               );
               // set selected folder name in breadcrums
-              $('.file_manager #uploader h1').hide();
               $('.file_manager #uploader .show_selected_file').remove();
-              $('<span class="show_selected_file">'+path+'</span>').appendTo(
-                '.file_manager #uploader .filemanager-path-group'
-              );
             }
 
             if (
@@ -1200,11 +1138,7 @@ var getFolderInfo = function(path, file_type) {
                 'disabled'
               );
               // set selected folder name in breadcrums
-              $('.file_manager #uploader h1').hide();
               $('.file_manager #uploader .show_selected_file').remove();
-              $('<span class="show_selected_file">' + path + '</span>').appendTo(
-                '.file_manager #uploader .filemanager-path-group'
-              );
             }
             if (
               config.options.dialog_type == 'create_file' &&

@@ -1121,16 +1121,13 @@ def load_file():
     if request.data:
         file_data = json.loads(request.data.decode())
 
+    file_path = unquote(file_data['file_name'])
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
-    if storage_manager_path is None:
-        storage_manager_path = ""
+    if storage_manager_path:
+        # generate full path of file
+        file_path = os.path.join(storage_manager_path, file_path.lstrip('/'))
 
-    # generate full path of file
-    file_path = os.path.join(
-        storage_manager_path,
-        unquote(file_data['file_name'].lstrip('/'))
-    )
     file_data = None
 
     # check if file type is text or binary

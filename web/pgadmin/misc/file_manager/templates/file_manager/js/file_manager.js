@@ -94,6 +94,7 @@ define([
               $container.find('.storage_content').remove();
               $container.append("<div class='storage_content'></div>");
               renderStoragePanel(params);
+              this.elements.dialog.style.minWidth = '630px';
               this.show();
             },
             settings: {
@@ -203,6 +204,7 @@ define([
               $container.find('.storage_content').remove();
               $container.append("<div class='storage_content'></div>");
               renderStoragePanel(params);
+              this.elements.dialog.style.minWidth = '630px';
               this.show();
             },
             settings: {
@@ -314,6 +316,7 @@ define([
               $container.find('.storage_content').remove();
               $container.append("<div class='storage_content'></div>");
               renderStoragePanel(params);
+              this.elements.dialog.style.minWidth = '630px';
               this.show();
             },
             settings: {
@@ -425,6 +428,7 @@ define([
               $container.find('.storage_content').remove();
               $container.append("<div class='storage_content'></div>");
               renderStoragePanel(params);
+              this.elements.dialog.style.minWidth = '630px';
               this.show();
             },
             settings: {
