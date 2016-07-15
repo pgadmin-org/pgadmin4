@@ -1525,7 +1525,14 @@ define(
                       col_type = '';
                   label_text.innerText = c.name;
 
-                  var type = pg_types[c.type_code][0];
+                  var type = pg_types[c.type_code] ?
+                               pg_types[c.type_code][0] :
+                               // This is the case where user might
+                               // have use casting so we will use type
+                               // returned by cast function
+                               pg_types[pg_types.length - 1][0] ?
+                                 pg_types[pg_types.length - 1][0] : 'unknown';
+
                   if (!is_primary_key)
                     col_type += ' ' + type;
                   else
