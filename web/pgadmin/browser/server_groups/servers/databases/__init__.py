@@ -499,7 +499,8 @@ class DatabaseView(PGChildNodeView):
                     tablespace=response['default_tablespace'],
                     allowConn=True,
                     canCreate=response['cancreate'],
-                    canDisconn=True
+                    canDisconn=True,
+                    canDrop=True
                 )
             )
 
