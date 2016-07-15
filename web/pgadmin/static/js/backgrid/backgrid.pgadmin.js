@@ -407,11 +407,13 @@
       if (!this.$el.hasClass('editor'))
         this.$el.addClass('editor');
       this.$select.select2('focus');
+      this.$select.select2('open');
       this.$select.on('blur', this.exitEditMode);
     },
 
     exitEditMode: function() {
       this.$select.off('blur', this.exitEditMode);
+      this.$select.select2('close');
       this.$el.removeClass('editor');
     },
 
@@ -539,7 +541,7 @@
       }
       this.$el.empty();
       Backgrid.SelectCell.prototype.remove.apply(this, arguments);
-     }
+    }
   });
 
   /**

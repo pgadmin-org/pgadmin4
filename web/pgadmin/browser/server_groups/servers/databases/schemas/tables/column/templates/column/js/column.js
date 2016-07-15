@@ -48,6 +48,29 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     }
   });
 
+  // Integer Cell for Columns Length and Precision
+  var IntegerDepCell = Backgrid.Extension.IntegerDepCell =
+    Backgrid.IntegerCell.extend({
+      initialize: function() {
+        Backgrid.NumberCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        this.$el.empty();
+        var model = this.model;
+        var column = this.column;
+        editable = this.column.get("editable");
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        if (is_editable){ this.$el.addClass("editable"); }
+        else { this.$el.removeClass("editable"); }
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
   if (!pgBrowser.Nodes['column']) {
     pgBrowser.Nodes['column'] = pgBrowser.Node.extend({
       parent_type: ['table', 'view', 'mview'],
@@ -132,7 +155,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           edit_types: undefined,
           is_primary_key: false,
           inheritedfrom: undefined,
-          attstattarget:undefined
+          attstattarget:undefined,
+          attnotnull: false
         },
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -142,11 +166,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },{
           // Need to show this field only when creating new table
           // [in SubNode control]
-          id: 'is_primary_key', label: '{{ _('Is primary key?') }}',
+          id: 'is_primary_key', label: '{{ _('Primary key?') }}',
           cell: Backgrid.Extension.SwitchDepCell, type: 'switch', deps:['name'],
-          options: {
-            onText: 'Yes', offText: 'No', onColor: 'success',
-            offColor: 'primary', size: 'small'},
+          options: { onText: 'Yes', offText: 'No', onColor: 'success', offColor: 'primary' },
           cellHeaderClasses:'width_percent_5',
           visible: function(m) {
             return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
@@ -193,7 +215,25 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'attnum', label:'{{ _('Position') }}', cell: 'string',
           type: 'text', disabled: 'notInSchema', mode: ['properties']
         },{
-          id: 'cltype', label:'{{ _('Data type') }}', cell: 'node-ajax-options',
+          id: 'cltype', label:'{{ _('Data type') }}',
+          cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
+            exitEditMode: function(e) {
+                this.$select.off('blur', this.exitEditMode);
+                this.$select.select2('close');
+                this.$el.removeClass('editor');
+                // Once user have selected a value
+                // we can shift to next cell if it is editable
+                var el_length_cell = this.$el.next();
+                if(el_length_cell && el_length_cell.hasClass('editable') && e) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      var command = new Backgrid.Command({key: "Tab", keyCode: 9, which: 9});
+                      this.model.trigger("backgrid:edited", this.model, this.column,
+                                        command);
+                      el_length_cell.focus();
+                }
+            }
+          }),
           type: 'text', disabled: 'inSchemaWithColumnCheck',
           control: 'node-ajax-options', url: 'get_types', node: 'table',
           cellHeaderClasses:'width_percent_30', first_empty: true,
@@ -248,13 +288,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           // Need to show this field only when creating new table [in SubNode control]
           id: 'inheritedfrom', label: '{{ _('Inherited from table') }}',
           type: 'text', disabled: true, editable: false,
-          cellHeaderClasses:'width_percent_30',
+          cellHeaderClasses:'width_percent_10',
           visible: function(m) {
             return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
           }
         },{
-          id: 'attlen', label:'{{ _('Length') }}', cell: 'string',
-           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}',
+          id: 'attlen', label:'{{ _('Length') }}', cell: IntegerDepCell,
+           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}', cellHeaderClasses:'width_percent_20',
            disabled: function(m) {
              var of_type = m.get('cltype'),
                flag = true;
@@ -276,10 +316,36 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 },10);
 
               return flag;
+           },
+           editable: function(m) {
+             // inheritedfrom has value then we should disable it
+             if(!_.isUndefined(m.get('inheritedfrom'))) {
+                return false;
+             }
+             var of_type = m.get('cltype'),
+               flag = false;
+              _.each(m.datatypes, function(o) {
+                if ( of_type == o.value ) {
+                    if(o.length)
+                    {
+                      m.set('min_val', o.min_val, {silent: true});
+                      m.set('max_val', o.max_val, {silent: true});
+                      flag = true;
+                    }
+                }
+              });
+
+              !flag && setTimeout(function() {
+                  if(m.get('attlen')) {
+                    m.set('attlen', null);
+                  }
+                },10);
+
+              return flag;
            }
         },{
-          id: 'attprecision', label:'{{ _('Precision') }}', cell: 'string',
-           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}',
+          id: 'attprecision', label:'{{ _('Precision') }}', cell: IntegerDepCell,
+           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}', cellHeaderClasses:'width_percent_20',
            disabled: function(m) {
              var of_type = m.get('cltype'),
                flag = true;
@@ -299,6 +365,33 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                   m.set('attprecision', null);
                 }
               },10);
+              return flag;
+           },
+           editable: function(m) {
+             // inheritedfrom has value then we should disable it
+             if(!_.isUndefined(m.get('inheritedfrom'))) {
+                return false;
+             }
+
+             var of_type = m.get('cltype'),
+               flag = false;
+              _.each(m.datatypes, function(o) {
+                if ( of_type == o.value ) {
+                    if(o.precision)
+                    {
+                      m.set('min_val', o.min_val, {silent: true});
+                      m.set('max_val', o.max_val, {silent: true});
+                      flag = true;
+                    }
+                }
+              });
+
+              !flag && setTimeout(function() {
+                if(m.get('attprecision')) {
+                  m.set('attprecision', null);
+                }
+              },10);
+
               return flag;
            }
          },{
@@ -336,9 +429,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-          id: 'attnotnull', label:'{{ _('Not NULL?') }}', cell: 'string',
-          type: 'switch', disabled: 'inSchemaWithColumnCheck',
-          group: '{{ _('Definition') }}'
+          id: 'attnotnull', label:'{{ _('Not NULL?') }}', cell: 'switch',
+          type: 'switch', disabled: 'inSchemaWithColumnCheck', cellHeaderClasses:'width_percent_20',
+          group: '{{ _('Definition') }}', editable: 'editable_check_for_table',
+          options: { onText: 'Yes', offText: 'No', onColor: 'success', offColor: 'primary' }
         },{
           id: 'attstattarget', label:'{{ _('Statistics') }}', cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],

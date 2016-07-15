@@ -427,7 +427,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           canEditRow: 'check_grid_row_edit_delete',
           canDeleteRow: 'check_grid_row_edit_delete',
           uniqueCol : ['name'],
-          columns : ['name' , 'cltype', 'is_primary_key', 'inheritedfrom'],
+          columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
           control: Backform.UniqueColCollectionControl.extend({
             initialize: function() {
               Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
