@@ -30,6 +30,7 @@ import config
 from pgadmin.model import Server, User
 from .keywords import ScanKeyword
 from ..abstract import BaseDriver, BaseConnection
+from .cursor import DictCursor
 
 _ = gettext
 
@@ -63,12 +64,10 @@ def register_date_typecasters(connection):
         return value
 
     cursor = connection.cursor()
-    cursor.execute('SELECT NULL::date')
+    cursor.execute('SELECT NULL::date, NULL::timestamp, NULL::timestamptz')
     date_oid = cursor.description[0][1]
-    cursor.execute('SELECT NULL::timestamp')
-    timestamp_oid = cursor.description[0][1]
-    cursor.execute('SELECT NULL::timestamptz')
-    timestamptz_oid = cursor.description[0][1]
+    timestamp_oid = cursor.description[1][1]
+    timestamptz_oid = cursor.description[2][1]
     oids = (date_oid, timestamp_oid, timestamptz_oid)
     new_type = psycopg2.extensions.new_type(oids, 'DATE', cast_date)
     psycopg2.extensions.register_type(new_type)
@@ -415,7 +414,7 @@ Attempt to reconnect failed with the error:
                 return False, msg
 
         try:
-            cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur = self.conn.cursor(cursor_factory=DictCursor)
         except psycopg2.Error as pe:
             errmsg = gettext("""
 Failed to create cursor for psycopg2 connection with error message for the \
@@ -475,17 +474,19 @@ Attempt to reconnect it failed with the error:
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        current_app.logger.log(25,
-                               "Execute (scalar) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
-                                   server_id=self.manager.sid,
-                                   conn_id=self.conn_id,
-                                   query=query,
-                                   query_id=query_id
-                               )
-                               )
+        current_app.logger.log(
+            25,
+            "Execute (scalar) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query,
+                query_id=query_id
+            )
+        )
         try:
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
+            current_app.logger.exception(pe)
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
@@ -523,15 +524,15 @@ Attempt to reconnect it failed with the error:
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        current_app.logger.log(25, """
-Execute (async) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}
-""".format(
-            server_id=self.manager.sid,
-            conn_id=self.conn_id,
-            query=query,
-            query_id=query_id
+        current_app.logger.log(
+            25,
+            "Execute (async) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query,
+                query_id=query_id
+            )
         )
-                               )
 
         try:
             self.execution_aborted = False
@@ -573,15 +574,15 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        current_app.logger.log(25, """
-Execute (void) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}
-""".format(
-            server_id=self.manager.sid,
-            conn_id=self.conn_id,
-            query=query,
-            query_id=query_id
+        current_app.logger.log(
+            25,
+            "Execute (void) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query,
+                query_id=query_id
+            )
         )
-                               )
 
         try:
             self.__internal_blocking_execute(cur, query, params)
@@ -613,14 +614,15 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             return False, str(cur)
 
         query_id = random.randint(1, 9999999)
-        current_app.logger.log(25,
-                               "Execute (2darray) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
-                                   server_id=self.manager.sid,
-                                   conn_id=self.conn_id,
-                                   query=query,
-                                   query_id=query_id
-                               )
-                               )
+        current_app.logger.log(
+            25,
+            "Execute (2darray) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query,
+                query_id=query_id
+            )
+        )
         try:
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
@@ -637,10 +639,9 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             )
             return False, errmsg
 
-        import copy
         # Get Resultset Column Name, Type and size
         columns = cur.description and [
-            copy.deepcopy(desc._asdict()) for desc in cur.description
+            desc.to_dict() for desc in cur.ordered_description()
             ] or []
 
         rows = []
@@ -658,14 +659,15 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
         if not status:
             return False, str(cur)
         query_id = random.randint(1, 9999999)
-        current_app.logger.log(25,
-                               "Execute (dict) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
-                                   server_id=self.manager.sid,
-                                   conn_id=self.conn_id,
-                                   query=query,
-                                   query_id=query_id
-                               )
-                               )
+        current_app.logger.log(
+            25,
+            "Execute (dict) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query,
+                query_id=query_id
+            )
+        )
         try:
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
@@ -681,10 +683,9 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             )
             return False, errmsg
 
-        import copy
         # Get Resultset Column Name, Type and size
         columns = cur.description and [
-            copy.deepcopy(desc._asdict()) for desc in cur.description
+            desc.to_dict() for desc in cur.ordered_description()
             ] or []
 
         rows = []
@@ -873,7 +874,9 @@ Failed to reset the connection to the server due to following error:
 
             # Fetch the column information
             if cur.description is not None:
-                colinfo = [desc for desc in cur.description]
+                colinfo = [
+                    desc.to_dict() for desc in cur.ordered_description()
+                ]
 
             self.row_count = cur.rowcount
             if cur.rowcount > 0:

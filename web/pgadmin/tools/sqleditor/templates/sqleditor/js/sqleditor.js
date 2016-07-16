@@ -1523,7 +1523,7 @@ define(
                       column_type = document.createElement('span'),
                       col_label = '',
                       col_type = '';
-                  label_text.innerText = c.name;
+                  label_text.innerText = c.display_name;
 
                   var type = pg_types[c.type_code] ?
                                pg_types[c.type_code][0] :

@@ -410,7 +410,8 @@ def poll(trans_id):
             # rollback to cleanup
             if isinstance(trans_obj, QueryToolCommand):
                 trans_status = conn.transaction_status()
-                if trans_status == TX_STATUS_INERROR and trans_obj.auto_rollback:
+                if (trans_status == TX_STATUS_INERROR and
+                        trans_obj.auto_rollback):
                     conn.execute_void("ROLLBACK;")
         elif status == ASYNC_EXECUTION_ABORTED:
             status = 'Cancel'
@@ -426,10 +427,11 @@ def poll(trans_id):
         rows_affected = conn.rows_affected()
 
         for col in col_info:
+            items = list(col.items())
             col_type = dict()
-            col_type['type_code'] = col[1]
+            col_type['type_code'] = items[1][1]
             col_type['type_name'] = None
-            columns[col[0]] = col_type
+            columns[items[0][1]] = col_type
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.
@@ -440,9 +442,9 @@ def poll(trans_id):
             result = conn.status_message()
             additional_result = conn.messages()
             """
-            'Procedure/Function output may comes in the form of Notices from the
-            database server, so we need to append those outputs with the original
-            result.
+            Procedure/Function output may comes in the form of Notices from the
+            database server, so we need to append those outputs with the
+            original result.
             """
             if isinstance(additional_result, list) \
                     and len(additional_result) > 0:
@@ -450,9 +452,13 @@ def poll(trans_id):
 
             rows_affected = conn.rows_affected()
 
-    return make_json_response(data={'status': status, 'result': result,
-                                    'colinfo': col_info, 'primary_keys': primary_keys,
-                                    'rows_affected': rows_affected})
+    return make_json_response(
+        data={
+            'status': status, 'result': result,
+            'colinfo': col_info, 'primary_keys': primary_keys,
+            'rows_affected': rows_affected
+        }
+    )
 
 
 @blueprint.route('/fetch/types/<int:trans_id>', methods=["GET"])
