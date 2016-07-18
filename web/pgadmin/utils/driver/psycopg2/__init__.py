@@ -53,6 +53,11 @@ psycopg2.extensions.register_type(
     psycopg2.extensions.new_type((701,), 'NaN_TEXT', psycopg2.STRING)
 )
 
+# This registers a type caster for datatype 'interval'.
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type((1186,), 'INTERVAL_TEXT', psycopg2.STRING)
+)
+
 
 def register_date_typecasters(connection):
     """
