@@ -8,9 +8,9 @@
 ##########################################################################
 
 import uuid
-
 from pgadmin.utils.route import BaseTestGenerator
-from regression.config import config_data
+from regression.test_setup import config_data
+from regression import test_utils as utils
 
 
 class LoginTestCase(BaseTestGenerator):
@@ -19,8 +19,6 @@ class LoginTestCase(BaseTestGenerator):
     Login scenarios are defined in dictionary; where dict of parameters
     describe the scenario appended by test name.
     """
-
-    priority = 0
 
     scenarios = [
         # This test case validates the invalid/incorrect password
@@ -67,8 +65,13 @@ class LoginTestCase(BaseTestGenerator):
                    ['test_login_username']),
             password=(config_data['pgAdmin4_login_credentials']
                       ['test_login_password']),
-            respdata='You are currently running version'))
+            respdata='Gravatar image for %s' %
+                     config_data['pgAdmin4_login_credentials']
+                     ['test_login_username']))
     ]
+
+    def setUp(self):
+        pass
 
     def runTest(self):
         """This function checks login functionality."""
@@ -76,4 +79,14 @@ class LoginTestCase(BaseTestGenerator):
         response = self.tester.post('/login', data=dict(
             email=self.email, password=self.password),
                                     follow_redirects=True)
-        self.assertIn(self.respdata, response.data)
+        self.assertIn(self.respdata, response.data.decode('utf8'))
+
+    def tearDown(self):
+        """
+        This function deletes the 'parent_id.pkl' file which is created in
+        setup() function. Also this function logout the test client
+
+        :return: None
+        """
+
+        utils.logout_tester_account(self.tester)

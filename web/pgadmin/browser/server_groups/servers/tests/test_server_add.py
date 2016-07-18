@@ -9,45 +9,50 @@
 
 import json
 
-from pgadmin.browser.tests.test_login import LoginTestCase
-from regression.config import config_data
+from pgadmin.utils.route import BaseTestGenerator
+from regression import test_utils as utils
+from regression.test_setup import config_data
+from regression.test_utils import get_ids
 
 
-class ServersAddTestCase(LoginTestCase):
-    """
-    This class will add the servers under default server group and verify with
-    server's name.
-    """
-
-    priority = 4
+class ServersAddTestCase(BaseTestGenerator):
+    """ This class will add the servers under default server group. """
 
     scenarios = [
         # Fetch the default url for server object
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
+    def setUp(self):
+        """
+        This function login the test account before running the logout
+        test case
+        """
+
+        utils.login_tester_account(self.tester)
+
     def runTest(self):
-        """
-        This function will add the server under default server group.
-        Verify the added server with response code as well as server name.
-        """
+        """ This function will add the server under default server group."""
 
-        srv_grp = config_data['test_server_group']
-
-        for srv in config_data['test_server_credentials']:
-            data = {"name": srv['test_name'],
-                    "comment": "",
-                    "host": srv['test_host'],
-                    "port": srv['test_db_port'],
-                    "db": srv['test_maintenance_db'],
-                    "username": srv['test_db_username'],
-                    "role": "",
-                    "sslmode": srv['test_sslmode']}
-
-            url = self.url + str(srv_grp) + "/"
-
-            response = self.tester.post(url, data=json.dumps(data),
+        server_group, config_data, pickle_id_dict = utils.get_config_data()
+        for server_data in config_data:
+            url = "{0}{1}/".format(self.url, server_group)
+            response = self.tester.post(url, data=json.dumps(server_data),
                                         content_type='html/json')
+
             self.assertTrue(response.status_code, 200)
-            respdata = json.loads(response.data)
-            self.assertTrue(respdata['node']['label'], srv['test_name'])
+
+            response_data = json.loads(response.data.decode())
+            utils.write_parent_id(response_data, pickle_id_dict)
+
+    def tearDown(self):
+        """
+        This function deletes the 'parent_id.pkl' file which is created in
+        setup() function. Also this function logout the test client
+
+        :return: None
+        """
+
+        utils.delete_server(self.tester)
+        utils.delete_parent_id_file()
+        utils.logout_tester_account(self.tester)

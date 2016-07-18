@@ -10,7 +10,8 @@
 import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
-from regression.config import config_data
+from regression.test_setup import config_data
+from regression import test_utils as utils
 
 
 class ResetPasswordTestCase(BaseTestGenerator):
@@ -19,7 +20,6 @@ class ResetPasswordTestCase(BaseTestGenerator):
     scenarios; Each dict parameter describe a scenario appended by
     test name.
     """
-    priority = 1
 
     scenarios = [
         # This test case validates the empty email field
@@ -37,12 +37,29 @@ class ResetPasswordTestCase(BaseTestGenerator):
             ['test_login_username'], respdata='pgAdmin 4'))
     ]
 
+    def setUp(self):
+        """
+        This function login the test account before running the logout
+        test case
+        """
+
+        utils.login_tester_account(self.tester)
+
     def runTest(self):
         """This function checks reset password functionality."""
 
         response = self.tester.get('/reset')
-        self.assertIn('Recover pgAdmin 4 Password', response.data)
+        self.assertIn('Recover pgAdmin 4 Password', response.data.decode())
         response = self.tester.post(
             '/reset', data=dict(email=self.email),
             follow_redirects=True)
-        self.assertIn(self.respdata, response.data)
+        self.assertIn(self.respdata, response.data.decode('utf-8'))
+
+    def tearDown(self):
+        """
+        This function logout the test client
+
+        :return: None
+        """
+
+        utils.logout_tester_account(self.tester)

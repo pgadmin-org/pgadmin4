@@ -12,22 +12,23 @@ import json
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
 from regression.test_setup import config_data
-from regression.test_utils import get_ids
+from regression.test_utils import get_ids, test_getnodes
 
 
-class ServerDeleteTestCase(BaseTestGenerator):
-    """ This class will delete the last server present under tree node."""
+class DatabaseDeleteTestCase(BaseTestGenerator):
+    """ This class will delete the database under last added server. """
 
     scenarios = [
-        # Fetching the default url for server node
-        ('Default Server Node url', dict(url='/browser/server/obj/'))
+        # Fetching default URL for database node.
+        ('Check Databases Node URL', dict(url='/browser/database/obj/'))
     ]
 
     def setUp(self):
         """
-        This function perform the two tasks
+        This function perform the three tasks
          1. Login to test client
          2. Add the test server
+         3. Connect to server
 
         :return: None
         """
@@ -35,24 +36,28 @@ class ServerDeleteTestCase(BaseTestGenerator):
         utils.login_tester_account(self.tester)
         # Firstly, add the server
         utils.add_server(self.tester)
+        # Secondly, connect to server/database
+        utils.connect_server(self.tester)
 
     def runTest(self):
-        """ This function will get all available servers under object browser
-        and delete the last server using server id."""
+        """ This function will delete the database."""
 
         srv_grp = config_data['test_server_group']
         all_id = get_ids()
         server_ids = all_id["sid"]
 
-        url = self.url + str(srv_grp) + "/"
-        if len(server_ids) == 0:
-            raise Exception("No server(s) to delete!!!")
-
-        # Call api to delete the servers
+        # TODO: Need to modify the code , to delete the databases for all
+        # TODO: servers. Currently it delete only one database.
+        db_id = all_id["did"][0]
+        db_con = test_getnodes(self.tester)
+        if len(db_con) == 0:
+            raise Exception("No database(s) to delete!!!")
         for server_id in server_ids:
-            response = self.tester.delete(url + str(server_id))
-            self.assertTrue(response.status_code, 200)
-            response_data = json.loads(response.data.decode())
+            response = self.tester.delete(self.url + str(srv_grp) + '/' +
+                                          str(server_id) + '/' + str(db_id),
+                                          follow_redirects=True)
+
+            response_data = json.loads(response.data.decode('utf-8'))
             self.assertTrue(response_data['success'], 1)
 
     def tearDown(self):
@@ -63,5 +68,6 @@ class ServerDeleteTestCase(BaseTestGenerator):
         :return: None
         """
 
+        utils.delete_server(self.tester)
         utils.delete_parent_id_file()
         utils.logout_tester_account(self.tester)

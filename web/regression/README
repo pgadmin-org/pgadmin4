@@ -1,10 +1,8 @@
 pgAdmin 4 Test Framework
 ========================
 
-This regression framework is designed for executing the individual unit tests
-available for the existing modules and to help catch regressions. In addition
-to that this should be helpful for other new plugged-in module that can come
-in later in time.
+This regression framework is designed to execute unit tests for all modules to
+help catch regressions in the code.
 
 Assumptions
 -----------
@@ -40,29 +38,39 @@ General Information
     3. test_server_get.py
     4. test_server_update.py
 
-2) The pgAdmin4 source tree includes a file template for the server configuration
-   named ‘test_config.json.in' in the ‘pgAdmin4/web/regression’ directory. After
-   completing the pgAdmin4 configuration, you must make a working copy of the
-   template called test_config.json before modifying the file contents.
+2) The pgAdmin4 source tree includes 2 different configuration file templates.
+   One file template for the server configuration
+   named ‘test_config.json.in' and another for test configuration named
+   'test_advanced_config.json.in' in the ‘pgAdmin4/web/regression’ directory.
+   After completing the pgAdmin4 configuration, you must make a working copy of
+   the templates called test_config.json and test_advance_config.json
+   before modifying the file contents.
 
-	2a) The following command copies the test_config.json.in file, creating a
-	    configuration file named test_config.json
+    2a) The following command copies the test_config.json.in file, creating a
+        configuration file named test_config.json (same way user can copy
+        test_advance_config.json.in file into test_advance_config.json)
 
-            # cp pgadmin4/web/regression/test_config.json.in \
-              pgadmin4/web/regression/test_config.json
+             $ cp pgadmin4/web/regression/test_config.json.in \
+               pgadmin4/web/regression/test_config.json
 
-	2b) After creating the server configuration file, add (or modify)
-	    parameter values as per requirements. The configuration
-	    files are owned by root/user. The pgAdmin4 regression framework expects
-	    to find the files in the  directory '/<installation dir>/web/regression/'.
-	    If you move the file to another location, you must create a symbolic link
-	    that specifies the new location.
+    2b) After creating the server and test configuration file, add (or modify)
+        parameter values as per requirements. The pgAdmin4 regression framework expects
+        to find the files in the  directory '/<installation dir>/web/regression/'.
+        If you move the file to another location, you must create a symbolic
+        link that specifies the new location.
 
-	2c) Specifying Server Configuration file:
+    2c) Specifying Server Configuration file:
 
-	    The user can use the parameters in the configuration file to specify the
-	    server details and connection properties as per their local setup. The
-	    test_config file is in json format and property values are case-sensitive.
+        Server details and connection properties as per their local setup. The
+        test_config file is in JSON format and property values are
+        case-sensitive.
+
+    2d) Specifying the Test Configuration file:
+
+        The user can add/change test data as per their need. The
+        test_advanced_config file is in JSON format and property values are
+        case-sensitive.
+
 
 Test Data Details
 -----------------
@@ -87,10 +95,20 @@ Test Data Details
 
 Execution:
 -----------
+
 - The test framework is modular and pluggable and dynamically locates tests
   for modules which are discovered at runtime. All test cases are found
   and registered automatically by its module name in
   'pgadmin4/web/pgadmin/utils/test.py' file.
 
-- Execute test framework run 'regression/testsuite.py' file.
+- Execute the test framework for all nodes
+     run 'regression/runtests.py --pkg all' or just:
+         'regression/runtests.py'
 
+- Execute test framework for single node at a time
+
+     Example 1) Run test framework for 'browser' node
+     run 'regression/runtests.py --pkg browser'
+
+     Example 2) Run test framework for 'database' node
+     run 'regression/runtests.py --pkg browser.server_groups.servers.databases'

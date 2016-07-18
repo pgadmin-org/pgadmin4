@@ -7,43 +7,55 @@
 #
 # ##########################################################################
 
-import json
+from pgadmin.utils.route import BaseTestGenerator
+from regression import test_utils as utils
+from regression.test_setup import config_data
+from regression.test_utils import get_ids
 
-from pgadmin.browser.tests.test_login import LoginTestCase
-from regression.config import config_data
 
-
-class ServersGetTestCase(LoginTestCase):
+class ServersGetTestCase(BaseTestGenerator):
     """
-    This class will check server node present on the object browser's tree node
+    This class will fetch added servers under default server group
     by response code.
     """
-
-    priority = 5
 
     scenarios = [
         # Fetch the default url for server node
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    def runTest(self):
+    def setUp(self):
         """
-        This function will get all available servers present under
-        object browser.
+        This function perform the two tasks
+         1. Login to test client
+         2. Add the test server
+
+        :return: None
         """
 
+        utils.login_tester_account(self.tester)
+        utils.add_server(self.tester)
+
+    def runTest(self):
+        """ This function will fetch the added servers to object browser. """
+
+        all_id = get_ids()
+        server_ids = all_id["sid"]
         srv_grp = config_data['test_server_group']
 
-        for srv in config_data['test_server_credentials']:
-            data = {"name": srv['test_name'],
-                    "host": srv['test_host'],
-                    "port": srv['test_db_port'],
-                    "db": srv['test_maintenance_db'],
-                    "username": srv['test_db_username'],
-                    "role": "",
-                    "sslmode": srv['test_sslmode']}
+        for server_id in server_ids:
+            url = "{0}{1}/{2}".format(self.url, srv_grp, server_id)
+            response = self.tester.get(url, content_type='html/json')
+            self.assertEquals(response.status_code, 200)
 
-            url = self.url + str(srv_grp) + "/"
-            response = self.tester.get(url, data=json.dumps(data),
-                                       content_type='html/json')
-            self.assertTrue(response.status_code, 200)
+    def tearDown(self):
+        """
+        This function deletes the 'parent_id.pkl' file which is created in
+        setup() function. Also this function logout the test client
+
+        :return: None
+        """
+
+        utils.delete_server(self.tester)
+        utils.delete_parent_id_file()
+        utils.logout_tester_account(self.tester)

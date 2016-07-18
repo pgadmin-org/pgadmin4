@@ -10,6 +10,6 @@
 from pgadmin.utils.route import BaseTestGenerator
 
 
-class ServerGenerateTestCase(BaseTestGenerator):
+class DatabaseCreateTestCase(BaseTestGenerator):
     def runTest(self):
         return

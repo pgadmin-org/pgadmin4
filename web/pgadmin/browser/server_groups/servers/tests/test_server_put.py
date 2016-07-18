@@ -9,57 +9,67 @@
 
 import json
 
-from pgadmin.browser.tests.test_login import LoginTestCase
-from regression.config import config_data
+from pgadmin.utils.route import BaseTestGenerator
+from regression import test_utils as utils
+from regression.test_setup import config_data
 
 
-class ServersUpdateTestCase(LoginTestCase):
-    """
-    This class will check server node present on the object browser's tree node
-    by response code.
-    """
-
-    priority = 6
+class ServerUpdateTestCase(BaseTestGenerator):
+    """ This class will update server's comment field. """
 
     scenarios = [
         # Fetching the default url for server node
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
+    def setUp(self):
+        """
+        This function perform the four tasks
+         1. Login to test client
+         2. Add the test server
+         3. Get the server
+         4. Connect to server
+
+        :return: None
+        """
+
+        utils.login_tester_account(self.tester)
+        # Firstly, add the server
+        utils.add_server(self.tester)
+        # Get the server
+        utils.get_server(self.tester)
+        # Connect to server
+        self.server_connect, self.server_group, self.server_ids = \
+            utils.connect_server(self.tester)
+        if len(self.server_connect) == 0:
+            raise Exception("No Server(s) connected to update!!!")
+
     def runTest(self):
+        """ This function will update the server's comment field. """
+
+        for server_id in self.server_ids:
+            data = {
+                "comment":
+                    config_data['test_server_update_data'][0]['test_comment'],
+                "id": server_id
+            }
+            put_response = self.tester.put(
+                self.url + str(self.server_group) + '/' +
+                str(server_id), data=json.dumps(data),
+                content_type='html/json')
+            self.assertEquals(put_response.status_code, 200)
+
+            response_data = json.loads(put_response.data.decode())
+            self.assertTrue(response_data['success'], 1)
+
+    def tearDown(self):
         """
-        This function will edit and update the server's comment field
-        by the server id.
+        This function deletes the 'parent_id.pkl' file which is created in
+        setup() function. Also this function logout the test client
+
+        :return: None
         """
 
-        srv_grp = config_data['test_server_group']
-
-        for srv in config_data['test_server_credentials']:
-
-            data = {"name": srv['test_name'],
-                    "host": srv['test_host'],
-                    "port": srv['test_db_port'],
-                    "db": srv['test_maintenance_db'],
-                    "username": srv['test_db_username'],
-                    "role": "",
-                    "sslmode": srv['test_sslmode']}
-
-            url = self.url + str(srv_grp) + "/"
-
-            response = self.tester.get(url, data=json.dumps(data),
-                                       content_type='html/json')
-
-            self.assertTrue(response.status_code, 200)
-            respdata = json.loads(response.data)
-
-            for server in respdata:
-
-                url = self.url + str(srv_grp) + "/" + json.dumps(server['id'])
-
-                for server in config_data['test_server_update_data']:
-                    data = {"comment": server['test_comment']}
-                    response = self.tester.put(url, data=json.dumps(data),
-                                               content_type='html/json')
-                    self.assertTrue(response.status_code, 200)
-                    respdata = json.loads(response.data)
-                    self.assertTrue(respdata['success'], 1)
+        utils.delete_server(self.tester)
+        utils.delete_parent_id_file()
+        utils.logout_tester_account(self.tester)

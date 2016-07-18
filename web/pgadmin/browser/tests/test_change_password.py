@@ -9,18 +9,17 @@
 
 import uuid
 
-from pgadmin.browser.tests.test_login import LoginTestCase
-from regression.config import config_data
+from pgadmin.utils.route import BaseTestGenerator
+from regression.test_setup import config_data
+from regression import test_utils as utils
 
 
-class ChangePasswordTestCase(LoginTestCase):
+class ChangePasswordTestCase(BaseTestGenerator):
     """
     This class validates the change password functionality
     by defining change password scenarios; where dict of
     parameters describes the scenario appended by test name.
     """
-
-    priority = 2
 
     scenarios = [
         # This testcase validates invalid confirmation password
@@ -48,8 +47,7 @@ class ChangePasswordTestCase(LoginTestCase):
             new_password='', new_password_confirm='',
             respdata='Password not provided')),
 
-        # This testcase validates if current entered password
-        # is incorrect
+        # This testcase validates if current entered password is incorrect
         ('TestCase for Validating Incorrect_Current_Password', dict(
             password=str(uuid.uuid4())[4:8],
             new_password=(config_data['pgAdmin4_login_credentials']
@@ -70,6 +68,7 @@ class ChangePasswordTestCase(LoginTestCase):
                 ['test_new_password']),
             respdata='You successfully changed your password.')),
         ('Reassigning_Password', dict(
+            test_case='reassigning_password',
             password=(config_data['pgAdmin4_login_credentials']
                       ['test_new_password']),
             new_password=(config_data['pgAdmin4_login_credentials']
@@ -81,14 +80,44 @@ class ChangePasswordTestCase(LoginTestCase):
 
     ]
 
+    def setUp(self):
+        """
+        This function login the test account before running the logout
+        test case
+        """
+
+        utils.login_tester_account(self.tester)
+
     def runTest(self):
         """This function will check change password functionality."""
 
+        # Check for 'test_case' exists in self For reassigning the password.
+        # Password gets change in change password test case.
+        if 'test_case' in dir(self):
+            email = \
+                config_data['pgAdmin4_login_credentials'][
+                    'test_login_username']
+            password = \
+                config_data['pgAdmin4_login_credentials'][
+                    'test_new_password']
+            response = self.tester.post('/login', data=dict(
+                email=email, password=password), follow_redirects=True)
+
         response = self.tester.get('/change', follow_redirects=True)
-        self.assertIn('pgAdmin 4 Password Change', response.data)
+        self.assertIn('pgAdmin 4 Password Change', response.data.decode())
+
         response = self.tester.post('/change', data=dict(
             password=self.password,
             new_password=self.new_password,
             new_password_confirm=self.new_password_confirm),
                                     follow_redirects=True)
-        self.assertIn(self.respdata, response.data)
+        self.assertIn(self.respdata, response.data.decode('utf-8'))
+
+    def tearDown(self):
+        """
+        This function logout the test client
+
+        :return: None
+        """
+
+        utils.logout_tester_account(self.tester)

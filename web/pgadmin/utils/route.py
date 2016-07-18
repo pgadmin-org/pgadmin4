@@ -52,8 +52,10 @@ class TestsGeneratorRegistry(ABCMeta):
         from werkzeug.utils import find_modules
 
         for module_name in find_modules(pkg, False, True):
-            module = import_module(module_name)
-
+            try:
+                module = import_module(module_name)
+            except ImportError:
+                pass
 
 import six
 
