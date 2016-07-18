@@ -47,7 +47,7 @@ BrowserWindow::BrowserWindow(QString url)
     m_downloadFilename = "";
     m_defaultFilename = "";
     m_progressDialog = NULL;
-    m_last_open_folder_path = QDir::currentPath();
+    m_last_open_folder_path = "";
     m_dir = "";
     m_reply = NULL;
 
@@ -102,6 +102,9 @@ BrowserWindow::BrowserWindow(QString url)
     QSettings settings;
     restoreGeometry(settings.value("Browser/Geometry").toByteArray());
     restoreState(settings.value("Browser/WindowState").toByteArray());
+
+    // The last save location
+    m_last_open_folder_path = settings.value("Browser/LastSaveLocation", QDir::homePath()).toString();
 
     // Display the app
     m_initialLoad = true;
@@ -353,8 +356,9 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
         m_file->write(reply->read(readData));
         m_progressDialog->setValue(readData);
 
-        // As read data and totalData difference is zero means downloading is finished
-        if ((totalData - readData) == 0)
+        // As read data and totalData difference is zero means downloading is finished.
+        if ((totalData - readData) == 0 ||
+            (readData != 0 && totalData == -1))
         {
             // As downloading is finished so remove progress bar dialog
             if (m_progressDialog)
@@ -438,6 +442,11 @@ void BrowserWindow::downloadFinished()
 // Below slot will be called when user directly click on any download link
 void BrowserWindow::unsupportedContent(QNetworkReply * reply)
 {
+    // Extract filename and query from encoded URL
+    QUrlQuery query_data(reply->url());
+    QString file_name = query_data.queryItemValue("filename");
+    QString query = query_data.queryItemValue("query");
+
     if (m_downloadStarted)
     {
         // Inform user that download is already started
@@ -445,7 +454,12 @@ void BrowserWindow::unsupportedContent(QNetworkReply * reply)
         return;
     }
 
-    m_defaultFilename = QFileInfo(reply->url().toString()).fileName();
+    // If encoded URL contains 'filename' attribute then use that filename in file dialog.
+    if (file_name.isEmpty() && query.isEmpty())
+        m_defaultFilename = QFileInfo(reply->url().toString()).fileName();
+    else
+        m_defaultFilename = file_name;
+
     QFileDialog save_dialog(this);
     save_dialog.setAcceptMode(QFileDialog::AcceptSave);
     save_dialog.setWindowTitle(tr("Save file"));
@@ -741,8 +755,6 @@ bool BrowserWindow::checkClientDownload(const QUrl &name, const QNetworkRequest 
 #endif
         if(!filename.isEmpty())
         {
-            // Save last open folder path
-            m_last_open_folder_path = QFileInfo(filename).path();
             // Decode the encoded uri data
             QString csvData = QUrl::fromPercentEncoding(write_data.toUtf8());
 
@@ -771,6 +783,9 @@ void BrowserWindow::current_dir_path(const QString &dir)
 {
     m_dir = dir;
     m_last_open_folder_path = dir;
+
+    QSettings settings;
+    settings.setValue("Browser/LastSaveLocation", m_last_open_folder_path);
 }
 
 // Slot: Link is open from pgAdmin mainwindow
