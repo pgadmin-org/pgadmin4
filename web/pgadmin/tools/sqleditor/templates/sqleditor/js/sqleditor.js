@@ -2602,76 +2602,63 @@ define(
 
         // This function will download the grid data as CSV file.
         _download: function() {
-          var self = this;
-          var coll = self.collection.fullCollection === undefined ? self.collection : self.collection.fullCollection;
+          var self = this,
+          selected_code = self.gridView.query_tool_obj.getSelection(),
+          sql = "";
 
-          if (self.columns != undefined &&
-              coll != undefined &&
-              coll.length > 0)
-          {
-            var csv_col = _.indexBy(self.columns, 'name'),
-                labels = _.pluck(self.columns, 'label'),
-                keys = _.pluck(self.columns, 'name');
+          if (selected_code.length > 0)
+            sql = selected_code;
+          else
+            sql = self.gridView.query_tool_obj.getValue();
 
-            // Fetch the items from fullCollection and convert it as csv format
-            var csv = keys.join(',') + '\n';
-            csv += coll.map(function(item) {
-                return _.map(keys, function(key) {
-                  var cell = csv_col [key].cell,
-                      // suppose you want to preserve custom formatters
-                      formatter = cell.prototype && cell.prototype.formatter;
+          // If it is an empty query, do nothing.
+          if (sql.length <= 0) return;
 
-                  return formatter && formatter.fromRaw ?
-                            formatter.fromRaw(item.get(key), item) : item.get(key);
-                }).join(',');
-            }).join('\n');
-
-            // Download the file.
-            var encodedUri = encodeURI('data:text/csv&charset=utf-8&filename=download.csv&value=' + csv),
-                    link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-
-            /* If download is from view data then file name should be
-             * the object name for which data is to be displayed.
-             */
-            if (!self.is_query_tool) {
-              $.ajax({
-                url: "{{ url_for('sqleditor.index') }}" + "object/get/" + self.transId,
-                method: 'GET',
-                success: function(res) {
-                  if (res.data.status) {
-                    filename = res.data.result + '.csv';
-                    link.setAttribute('download', filename);
-                    link.click();
-                  }
-                },
-                error: function(e) {
-                  if (e.readyState == 0) {
-                    alertify.alert('Get Object Name Error',
-                     '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                    );
-                    return;
-                  }
-
-                  var msg = e.responseText;
-                  if (e.responseJSON != undefined &&
-                      e.responseJSON.errormsg != undefined)
-                    msg = e.responseJSON.errormsg;
-
-                  alertify.alert('Get Object Name Error', msg);
+          /* If download is from view data then file name should be
+           * the object name for which data is to be displayed.
+           */
+          if (!self.is_query_tool) {
+            $.ajax({
+              url: "{{ url_for('sqleditor.index') }}" + "object/get/" + self.transId,
+              method: 'GET',
+              success: function(res) {
+                if (res.data.status) {
+                  filename = res.data.result + '.csv';
+                  self._trigger_csv_download(sql, filename);
+                 }
+              },
+              error: function(e) {
+                if (e.readyState == 0) {
+                  alertify.alert('Get Object Name Error',
+                   '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                  );
+                  return;
                 }
-              });
-            }
-            else {
-              var cur_time = new Date();
-              var filename = 'data-' + cur_time.getTime() + '.csv';
-              link.setAttribute('download', filename);
-              link.click();
-            }
-          }
-          else {
-            alertify.alert('Download Data', 'No data is available to download');
-          }
+
+                var msg = e.responseText;
+                if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                  msg = e.responseJSON.errormsg;
+
+                alertify.alert('Get Object Name Error', msg);
+              }
+            });
+           }
+           else {
+            var cur_time = new Date();
+            var filename = 'data-' + cur_time.getTime() + '.csv';
+            self._trigger_csv_download(sql, filename);
+           }
+
+        },
+        // Trigger query result download to csv.
+        _trigger_csv_download: function(query, filename) {
+          var self = this,
+            link = $(this.container).find("#download-csv"),
+            url = "{{ url_for('sqleditor.index') }}" + "query_tool/download/" + self.transId;
+
+          url +="?" + $.param({query:query, filename:filename});
+          link.attr("src", url);
         },
 
         _auto_rollback: function() {

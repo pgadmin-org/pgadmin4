@@ -1215,3 +1215,58 @@ def save_file():
             'status': True,
         }
     )
+
+
+@blueprint.route('/query_tool/download/<int:trans_id>', methods=["GET"])
+@login_required
+def start_query_download_tool(trans_id):
+    sync_conn = None
+    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+
+    if status and conn is not None \
+            and trans_obj is not None and session_obj is not None:
+
+        data = request.args if request.args else None
+        try:
+            if data and 'query' in data:
+                sql = data['query']
+                conn_id = str(random.randint(1, 9999999))
+                sync_conn = conn.manager.connection(
+                    did=trans_obj.did,
+                    conn_id=conn_id,
+                    auto_reconnect=False,
+                    async=False
+                )
+
+                sync_conn.connect(autocommit=False)
+
+                # This returns generator of records.
+                status, gen = sync_conn.execute_on_server_as_csv(sql, records=2000)
+
+                if not status:
+                    conn.manager.release(conn_id=conn_id, did=trans_obj.did)
+                    return internal_server_error(errormsg=str(gen))
+
+                def cleanup():
+                    conn.manager.connections[sync_conn.conn_id]._release()
+                    del conn.manager.connections[sync_conn.conn_id]
+
+                r = Response(gen(), mimetype='text/csv')
+
+                if 'filename' in data and data['filename'] != "":
+                    filename = data['filename']
+                else:
+                    import time
+                    filename = str(int(time.time())) + ".csv"
+
+                r.headers["Content-Disposition"] = "attachment;filename={0}".format(filename)
+
+                r.call_on_close(cleanup)
+
+                return r
+
+        except Exception as e:
+            conn.manager.release(conn_id=conn_id, did=trans_obj.did)
+            return internal_server_error(errormsg=str(e))
+    else:
+        return internal_server_error(errormsg=gettext("Transaction status check failed."))
