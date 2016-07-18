@@ -86,7 +86,7 @@ define(
       if (_.isUndefined(this.get('value')) ||
           _.isNull(this.get('value')) ||
           String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = '{{ _('Please enter some value!') }}';
+        var msg = '{{ _('Please enter a value for the parameter.') }}';
         this.errorModel.set('value', msg);
         return msg;
       } else {

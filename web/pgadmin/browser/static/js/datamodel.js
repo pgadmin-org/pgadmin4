@@ -7,6 +7,7 @@ function(_, pgAdmin, $, Backbone) {
       /*
        * Parsing the existing data
        */
+      on_server: false,
       parse: function(res) {
         var self = this;
         if (res && _.isObject(res) && 'node' in res && res['node']) {
@@ -33,9 +34,21 @@ function(_, pgAdmin, $, Backbone) {
                         silent: true,
                         attrName: s.id
                         });
-                      self.set(s.id, obj, {silent: true, parse: true});
+
+                      /*
+                       * Nested collection models may or may not have idAttribute.
+                       * So to decide whether model is new or not set 'on_server'
+                       * flag on such models.
+                       */
+
+                      self.set(s.id, obj, {silent: true, parse: true, on_server : true});
                     } else {
-                      obj.reset(val, {silent: true, parse: true});
+                      /*
+                       * Nested collection models may or may not have idAttribute.
+                       * So to decide whether model is new or not set 'on_server'
+                       * flag on such models.
+                       */
+                      obj.reset(val, {silent: true, parse: true, on_server : true});
                     }
                   }
                   else {
@@ -89,6 +102,12 @@ function(_, pgAdmin, $, Backbone) {
 
         return res;
       },
+      isNew: function() {
+        if (this.has(this.idAttribute)) {
+          return !this.has(this.idAttribute);
+        }
+        return !this.on_server;
+      },
       primary_key: function() {
         if (this.keys && _.isArray(this.keys)) {
           var res = {}, self = this;
@@ -103,6 +122,11 @@ function(_, pgAdmin, $, Backbone) {
       },
       initialize: function(attributes, options) {
         var self = this;
+        self._previous_key_values = {};
+
+        if ('on_server' in options && options.on_server) {
+          self.on_server = true;
+        }
 
         Backbone.Model.prototype.initialize.apply(self, arguments);
 
@@ -198,6 +222,13 @@ function(_, pgAdmin, $, Backbone) {
           self.startNewSession();
         }
 
+        if ('keys' in self && _.isArray(self.keys)) {
+          _.each(self.keys, function(key) {
+              self.on("change:" + key, function(m) {
+                self._previous_key_values[key] =  m.previous(key);
+              })
+          })
+        }
         return self;
       },
       // Create a reset function, which allow us to remove the nested object.
@@ -725,13 +756,19 @@ function(_, pgAdmin, $, Backbone) {
             invalidModels = self.sessAttrs['invalid'];
 
         if (self.trackChanges) {
-          // Find the object the invalid list, if found remove it from the list
+          // Now check uniqueness of current model with other models.
+          var isUnique = self.checkDuplicateWithModel(m);
+
+          // If unique then find the object the invalid list, if found remove it from the list
           // and inform the parent that - I am a valid object now.
-          if (m.cid in invalidModels) {
+
+          if (isUnique && m.cid in invalidModels) {
             delete invalidModels[m.cid];
           }
 
-          this.triggerValidationEvent.apply(this);
+          if (isUnique) {
+            this.triggerValidationEvent.apply(this);
+          }
         }
 
         return true;
@@ -837,7 +874,6 @@ function(_, pgAdmin, $, Backbone) {
         return (_.findIndex(this.sessAttrs[type], comparator));
       },
       onModelAdd: function(obj) {
-
         if (!this.trackChanges)
           return true;
 
@@ -871,25 +907,21 @@ function(_, pgAdmin, $, Backbone) {
               (self.sessAttrs['invalid'])[obj.cid] = msg;
             }
           }
+        } else {
+          if ('validate' in obj && typeof(obj.validate) === 'function') {
+            msg = obj.validate();
 
-          // Let the parent/listener know about my status (valid/invalid).
-          this.triggerValidationEvent.apply(this);
-
-          return true;
-        }
-        if ('validate' in obj && typeof(obj.validate) === 'function') {
-          msg = obj.validate();
-
-          if (msg) {
-            (self.sessAttrs['invalid'])[obj.cid] = msg;
+            if (msg) {
+              (self.sessAttrs['invalid'])[obj.cid] = msg;
+            }
           }
-        }
-        self.sessAttrs['added'].push(obj);
+          self.sessAttrs['added'].push(obj);
 
-        /*
-         * Session has been changed
-         */
-        (self.handler || self).trigger('pgadmin-session:added', self, obj);
+          /*
+           * Session has been changed
+           */
+          (self.handler || self).trigger('pgadmin-session:added', self, obj);
+        }
 
         // Let the parent/listener know about my status (valid/invalid).
         this.triggerValidationEvent.apply(this);
@@ -897,7 +929,6 @@ function(_, pgAdmin, $, Backbone) {
         return true;
       },
       onModelRemove: function(obj) {
-
         if (!this.trackChanges)
           return true;
 
@@ -917,6 +948,8 @@ function(_, pgAdmin, $, Backbone) {
 
           (self.handler || self).trigger('pgadmin-session:removed', self, copy);
 
+          self.checkDuplicateWithModel(copy);
+
           // Let the parent/listener know about my status (valid/invalid).
           this.triggerValidationEvent.apply(this);
 
@@ -935,6 +968,8 @@ function(_, pgAdmin, $, Backbone) {
         }
 
         self.sessAttrs['deleted'].push(obj);
+
+        self.checkDuplicateWithModel(obj);
 
         // Let the parent/listener know about my status (valid/invalid).
         this.triggerValidationEvent.apply(this);
@@ -985,12 +1020,12 @@ function(_, pgAdmin, $, Backbone) {
         }
       },
       onModelChange: function(obj) {
+        var  self = this;
 
         if (!this.trackChanges || !(obj instanceof pgBrowser.Node.Model))
           return true;
 
-        var self = this,
-            idx = self.objFindInSession(obj, 'added');
+        var idx = self.objFindInSession(obj, 'added');
 
         // It was newly added model, we don't need to add into the changed
         // list.
@@ -1034,6 +1069,74 @@ function(_, pgAdmin, $, Backbone) {
         (self.handler || self).trigger('pgadmin-session:changed', self, obj);
 
         return true;
+      },
+
+      /*
+       * This function will check if given model is unique or duplicate in
+       * collection and set/clear duplicate errors on models.
+       */
+      checkDuplicateWithModel: function(model) {
+        if (!('keys' in model) || _.isEmpty(model.keys)) {
+          return true;
+        }
+
+        var self = this,
+            condition = {},
+            previous_condition = {};
+
+        _.each(model.keys, function(key) {
+          condition[key] = model.get(key);
+          if(key in model._previous_key_values) {
+              previous_condition[key] = model._previous_key_values[key];
+            } else {
+              previous_condition[key] = model.previous(key);
+            }
+        });
+
+        // Reset previously changed values.
+        model._previous_key_values = {};
+
+        var old_conflicting_models =  self.where(previous_condition);
+
+        if (old_conflicting_models.length == 1) {
+          var m = old_conflicting_models[0];
+          self.clearInvalidSessionIfModelValid(m);
+        }
+
+        new_conflicting_models = self.where(condition);
+        if (new_conflicting_models.length == 0) {
+          self.clearInvalidSessionIfModelValid(model);
+        } else if (new_conflicting_models.length == 1) {
+          self.clearInvalidSessionIfModelValid(model);
+          self.clearInvalidSessionIfModelValid(new_conflicting_models[0]);
+        } else {
+          var msg = "Duplicate rows.";
+          setTimeout(function() {
+            _.each(new_conflicting_models, function(m) {
+              self.trigger(
+                    'pgadmin-session:model:invalid', msg, m, self.handler
+                    );
+              m.trigger(
+                    'pgadmin-session:model:duplicate', m, msg
+                    );
+            });
+          }, 10);
+
+          return false;
+        }
+        return true;
+      },
+      clearInvalidSessionIfModelValid: function(m) {
+        var errors = m.errorModel.attributes,
+            invalidModels = this.sessAttrs['invalid'];
+
+        m.trigger('pgadmin-session:model:unique', m
+                    );
+        if (_.size(errors) == 0) {
+          delete invalidModels[m.cid];
+        } else {
+          invalidModels[m.cid] = errors[Object.keys(errors)[0]];
+        }
       }
     });
 

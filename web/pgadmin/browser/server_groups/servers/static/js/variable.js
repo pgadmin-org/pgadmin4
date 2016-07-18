@@ -20,6 +20,7 @@
       Alertify = require('alertify') || root.Alertify;
       pgAdmin = require('pgadmin') || root.pgAdmin,
       pgNode = require('pgadmin.browser.node') || root.pgAdmin.Browser.Node;
+
     factory(root, _, $, Backbone, Backform, Alertify, pgAdmin, pgNode);
 
   // Finally, as a browser global.
@@ -38,8 +39,17 @@
   var cellFunction = function(model) {
     var self = this,
       name = model.get("name"),
-      availVariables = self.get('availVariables'),
-      variable = availVariables[name];
+      availVariables = {};
+
+    self.collection.each(function(col) {
+      if (col.get("name") == "name") {
+        availVariables = col.get('availVariables');
+      }
+    });
+
+
+    var variable = name ? availVariables[name]: undefined,
+      value = model.get("value");
 
     switch(variable && variable.vartype) {
       case "bool":
@@ -47,13 +57,13 @@
          * bool cell and variable can not be stateless (i.e undefined).
          * It should be either true or false.
          */
-        if (_.isUndefined(model.get("value"))) {
-          model.set("value", false);
-        }
+
+        model.set("value", !!model.get("value"), {silent: true});
 
         return Backgrid.Extension.SwitchCell;
       break;
       case "enum":
+        model.set({'value': undefined}, {silent:true});
         var options = [],
             enumVals = variable.enumvals;
 
@@ -64,40 +74,138 @@
         return Backgrid.Extension.Select2Cell.extend({optionValues: options});
       break;
       case "integer":
+        if (!_.isNaN(parseInt(value))) {
+          model.set({'value': parseInt(value)}, {silent:true});
+        } else {
+          model.set({'value': undefined}, {silent:true});
+        }
         return Backgrid.IntegerCell;
         break;
       case "real":
+        if (!_.isNaN(parseFloat(value))) {
+          model.set({'value': parseFloat(value)}, {silent:true});
+        } else {
+          model.set({'value': undefined}, {silent:true});
+        }
         return Backgrid.NumberCell.extend({decimals: 0});
       break;
       case "string":
         return Backgrid.StringCell;
       break;
       default:
+        model.set({'value': undefined}, {silent:true});
         return Backgrid.Cell;
       break;
     }
+    model.set({'value': undefined}, {silent:true});
+    return Backgrid.Cell;
   }
 
+  /*
+   * This row will define behaviour or value column cell depending upon
+   * variable name.
+   */
+  var VariableRow = Backgrid.Row.extend({
+    modelDuplicateColor: "lightYellow",
+
+    modelUniqueColor: "#fff",
+
+    initialize: function () {
+      Backgrid.Row.prototype.initialize.apply(this, arguments);
+      var self = this;
+      self.model.on("change:name", function() {
+        setTimeout(function() {
+          self.columns.each(function(col) {
+            if (col.get('name') == 'value') {
+
+              var idx = self.columns.indexOf(col),
+                cf = col.get("cellFunction"),
+                cell = new (cf.apply(col, [self.model]))({
+                  column: col,
+                  model: self.model
+                }),
+                  oldCell = self.cells[idx];
+                oldCell.remove();
+                self.cells[idx] = cell;
+                self.render();
+            }
+
+          });
+        }, 10);
+      });
+      self.listenTo(self.model, 'pgadmin-session:model:duplicate', self.modelDuplicate);
+      self.listenTo(self.model, 'pgadmin-session:model:unique', self.modelUnique);
+    },
+    modelDuplicate: function() {
+      $(this.el).removeClass("new");
+      this.el.style.backgroundColor = this.modelDuplicateColor;
+    },
+    modelUnique: function() {
+      this.el.style.backgroundColor = this.modelUniqueColor;
+    }
+
+  })
   /**
    *  VariableModel used to represent configuration parameters (variables tab)
    *  for database objects.
    **/
   var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
+    keys: ['name'],
     defaults: {
       name: undefined,
       value: undefined,
-      role: undefined,
-      database: undefined,
+      role: null,
+      database: null,
     },
-    keys: ['name', 'role', 'database'],
     schema: [
-      {id: 'name', label:'Name', type:'text', editable: false, cellHeaderClasses: 'width_percent_30'},
+      {
+        id: 'name', label:'Name', type:'text', editable: true, cellHeaderClasses: 'width_percent_30',
+        editable: function(m) {
+          return (m instanceof Backbone.Collection) ? true : m.isNew();
+        },
+        cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
+          initialize: function() {
+            Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+
+            // Immediately process options as we need them before render.
+
+            var opVals = _.clone(this.optionValues ||
+                (_.isFunction(this.column.get('options')) ?
+                    (this.column.get('options'))(this) :
+                    this.column.get('options')));
+
+            this.column.set('options', opVals);
+          }
+        }),
+        url: 'vopts',
+        select2: { allowClear: false },
+        transform: function(vars, cell) {
+          var self = this,
+              res = [],
+              availVariables = {};
+
+          _.each(vars, function(v) {
+            res.push({
+              'value': v.name,
+              'image': undefined,
+              'label': v.name
+            });
+            availVariables[v.name] = v;
+          });
+
+          cell.column.set("availVariables", availVariables);
+          return res;
+        }
+      },
       {
         id: 'value', label:'Value', type: 'text', editable: true,
-        cellFunction: cellFunction, cellHeaderClasses: 'width_percent_50'
+        cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40'
       },
-      {id: 'database', label:'Database', type: 'text', editable: false},
-      {id: 'role', label:'Role', type: 'text', editable: false}
+      {id: 'database', label:'Database', type: 'text', editable: true,
+      node: 'database', cell: Backgrid.Extension.NodeListByNameCell
+      },
+      {id: 'role', label:'Role', type: 'text', editable: true,
+      node: 'role', cell: Backgrid.Extension.NodeListByNameCell}
     ],
     toJSON: function() {
       var d = Backbone.Model.prototype.toJSON.apply(this);
@@ -116,15 +224,24 @@
       return d;
     },
     validate: function() {
-      if (_.isUndefined(this.get('value')) ||
+      if (_.isUndefined(this.get('name')) ||
+          _.isNull(this.get('name')) ||
+          String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
+        var msg = 'Please select a parameter name.';
+
+        this.errorModel.set('name', msg);
+
+        return msg;
+      } else if (_.isUndefined(this.get('value')) ||
           _.isNull(this.get('value')) ||
           String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = 'Please enter some value!';
+        var msg = 'Please enter a value for the parameter.';
 
         this.errorModel.set('value', msg);
 
         return msg;
       } else {
+        this.errorModel.unset('name');
         this.errorModel.unset('value');
       }
 
@@ -144,7 +261,7 @@
 
     initialize: function(opts) {
       var self = this,
-          uniqueCols = ['name'];
+          keys = ['name'];
 
       /*
        * Read from field schema whether user wants to use database and role
@@ -155,24 +272,22 @@
 
       // Update unique coll field based on above flag status.
       if (self.hasDatabase) {
-        uniqueCols.push('database')
+        keys.push('database');
       } else if (self.hasRole) {
-        uniqueCols.push('role')
+        keys.push('role');
       }
       // Overriding the uniqueCol in the field
       if (opts && opts.field) {
         if (opts.field instanceof Backform.Field) {
           opts.field.set({
-            uniqueCol: uniqueCols,
-            model: pgNode.VariableModel
+            model: pgNode.VariableModel.extend({keys:keys})
           },
           {
             silent: true
           });
         } else {
           opts.field.extend({
-            uniqueCol: uniqueCols,
-            model: pgNode.VariableModel
+            model: pgNode.VariableModel.extend({keys:keys})
           });
         }
       }
@@ -181,94 +296,25 @@
           self, arguments
           );
 
-
       self.availVariables = {};
 
       var node = self.field.get('node').type,
-          headerSchema = [{
-            id: 'name', label:'', type:'text',
-            url: self.field.get('variable_opts') || 'vopts',
-            control: Backform.NodeAjaxOptionsControl,
-            cache_level: 'server',
-            select2: {
-              allowClear: false, width: 'style'
-            },
-            availVariables: self.availVariables,
-            node: node, first_empty: false,
-            version_compatible: self.field.get('version_compatible'),
-            transform: function(vars) {
-              var self = this,
-                  opts = self.field.get('availVariables');
-
-              res = [];
-
-              for (var prop in opts) {
-                if (opts.hasOwnProperty(prop)) {
-                  delete opts[prop];
-                }
-              }
-
-              _.each(vars, function(v) {
-                opts[v.name] = _.extend({}, v);
-                res.push({
-                  'label': v.name,
-                  'value': v.name
-                });
-              });
-
-              return res;
-            }
-          }],
-          headerDefaults = {name: null},
           gridCols = ['name', 'value'];
 
       if (self.hasDatabase) {
-        headerSchema.push({
-          id: 'database', label:'', type: 'text', cache_level: 'server',
-          control: Backform.NodeListByNameControl, node: 'database',
-          version_compatible: self.field.get('version_compatible')
-        });
-        headerDefaults['database'] = null;
         gridCols.push('database');
       }
 
       if (self.hasRole) {
-        headerSchema.push({
-          id: 'role', label:'', type: 'text', cache_level: 'server',
-          control: Backform.NodeListByNameControl, node: 'role',
-          version_compatible: self.field.get('version_compatible')
-        });
-        headerDefaults['role'] = null;
         gridCols.push('role');
       }
 
-      self.headerData = new (Backbone.Model.extend({
-        defaults: headerDefaults,
-        schema: headerSchema
-      }))({});
-
-      var headerGroups = Backform.generateViewSchema(
-          self.field.get('node_info'), self.headerData, 'create',
-          node, self.field.get('node_data')
-          ),
-          fields = [];
-
-      _.each(headerGroups, function(o) {
-        fields = fields.concat(o.fields);
-      });
-
-      self.headerFields = new Backform.Fields(fields);
       self.gridSchema = Backform.generateGridColumnsFromModel(
-          null, VariableModel, 'edit', gridCols
+          self.field.get('node_info'), VariableModel.extend({keys:keys}), 'edit', gridCols, self.field.get('schema_node')
           );
 
       // Make sure - we do have the data for variables
       self.getVariables();
-
-      self.controls = [];
-      self.listenTo(self.headerData, "change", self.headerDataChanged);
-      self.listenTo(self.headerData, "select2", self.headerDataChanged);
-      self.listenTo(self.collection, "remove", self.onRemoveVariable);
     },
     /*
      * Get the variable data for this node.
@@ -321,100 +367,18 @@
       }
     },
 
-    generateHeader: function(data) {
-      var header = [
-        '<div class="subnode-header-form">',
-        ' <div class="container-fluid">',
-        '  <div class="row">',
-        '   <div class="col-md-4">',
-        '    <label class="control-label"><%-variable_label%></label>',
-        '   </div>',
-        '   <div class="col-md-4" header="name"></div>',
-        '   <div class="col-md-4">',
-        '     <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%-add_label%></buttton>',
-        '   </div>',
-        '  </div>'];
-
-      if(this.hasDatabase) {
-        header.push([
-          '  <div class="row">',
-          '   <div class="col-md-4">',
-          '    <label class="control-label"><%-database_label%></label>',
-          '   </div>',
-          '   <div class="col-md-4" header="database"></div>',
-          '  </div>'].join("\n")
-          );
-      }
-
-      if (this.hasRole) {
-        header.push([
-          '  <div class="row">',
-          '   <div class="col-md-4">',
-          '    <label class="control-label"><%-role_label%></label>',
-          '   </div>',
-          '   <div class="col-md-4" header="role"></div>',
-          '  </div>'].join("\n")
-          );
-      }
-
-      header.push([
-          ' </div>',
-          '</div>'].join("\n"));
-
-      // TODO:: Do the i18n
-      _.extend(data, {
-        variable_label: "Parameter name",
-        add_label: "ADD",
-        database_label: "Database",
-        role_label: "Role"
-      });
-
-      var self = this,
-          headerTmpl = _.template(header.join("\n")),
-          $header = $(headerTmpl(data)),
-          controls = this.controls;
-
-      this.headerFields.each(function(field) {
-        var control = new (field.get("control"))({
-          field: field,
-          model: self.headerData
-        });
-
-        $header.find('div[header="' + field.get('name') + '"]').append(
-          control.render().$el
-        );
-
-        controls.push(control);
-      });
-
-      // We should not show add but in properties mode
-      if (data.mode == 'properties') {
-        $header.find("button.add").remove();
-      }
-
-      self.$header = $header;
-
-      return $header;
-    },
-
-    events: _.extend(
-                {}, Backform.UniqueColCollectionControl.prototype.events,
-                {'click button.add': 'addVariable'}
-                ),
-
     showGridControl: function(data) {
 
       var self = this,
           titleTmpl = _.template([
             "<div class='subnode-header'>",
             "<label class='control-label'><%-label%></label>",
+            "<button class='btn-sm btn-default add' <%=canAdd ? '' : 'disabled=\"disabled\"'%>>Add</buttton>",
             "</div>"].join("\n")),
           $gridBody =
             $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(
-              titleTmpl({label: data.label})
+              titleTmpl(data)
             );
-
-      $gridBody.append(self.generateHeader(data));
 
       var gridSchema = _.clone(this.gridSchema);
 
@@ -460,18 +424,61 @@
       var grid = self.grid = new Backgrid.Grid({
         columns: gridSchema.columns,
         collection: self.collection,
+        row: VariableRow,
         className: "backgrid table-bordered"
       });
       self.$grid = grid.render().$el;
 
       $gridBody.append(self.$grid);
 
-      self.headerData.set(
-          'name',
-          self.$header.find(
-            'div[header="name"] select option:first'
-            ).val()
-          );
+      // Add button callback
+      if (!(data.disabled || data.canAdd == false)) {
+        $gridBody.find('button.add').first().click(function(e) {
+          e.preventDefault();
+          var canAddRow = _.isFunction(data.canAddRow) ?
+                            data.canAddRow.apply(self, [self.model]) : true;
+          if (canAddRow) {
+
+              var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
+
+              // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
+              // There should be only one empty row.
+              if (!allowMultipleEmptyRows && self.collection) {
+                var isEmpty = false;
+                self.collection.each(function(model) {
+                  var modelValues = [];
+                  _.each(model.attributes, function(val, key) {
+                    modelValues.push(val);
+                  })
+                  if(!_.some(modelValues, _.identity)) {
+                    isEmpty = true;
+                  }
+                });
+                if(isEmpty) {
+                  return false;
+                }
+              }
+
+              $(grid.body.$el.find($("tr.new"))).removeClass("new")
+              var m = new (data.model) (null, {
+                silent: true,
+                handler: self.collection,
+                top: self.model.top || self.model,
+                collection: self.collection,
+                node_info: self.model.node_info
+              });
+              self.collection.add(m);
+
+              var idx = self.collection.indexOf(m),
+                  newRow = grid.body.rows[idx].$el;
+
+              newRow.addClass("new");
+              $(newRow).pgMakeVisible('backform-tab');
+
+              return false;
+          }
+        });
+      }
 
       // Render node grid
       return $gridBody;
@@ -505,83 +512,7 @@
         delete m;
       }
 
-      this.headerDataChanged();
-
       return false;
-    },
-
-    headerDataChanged: function() {
-      var self = this, val,
-          data = this.headerData.toJSON(),
-          inSelected = false,
-          checkVars = ['name'];
-
-      if (!self.$header) {
-        return;
-      }
-
-      if (self.hasDatabase) {
-        checkVars.push('database');
-      }
-
-      if (self.hasRole) {
-        checkVars.push('role');
-      }
-
-      if (self.control_data.canAdd) {
-        self.collection.each(function(m) {
-          if (!inSelected) {
-            var has = true;
-            _.each(checkVars, function(v) {
-              val = m.get(v);
-              has = has && ((
-                (_.isUndefined(val) || _.isNull(val)) &&
-                (_.isUndefined(data[v]) || _.isNull(data[v]))
-                ) ||
-                (val == data[v]));
-            });
-
-            inSelected = has;
-          }
-        });
-      }
-      else {
-        inSelected = true;
-      }
-
-      self.$header.find('button.add').prop('disabled', inSelected);
-    },
-
-    onRemoveVariable: function() {
-      var self = this;
-
-      // Wait for collection to be updated before checking for the button to be
-      // enabled, or not.
-      setTimeout(function() {
-        self.headerDataChanged();
-      }, 10);
-    },
-
-    remove: function() {
-      /*
-       * Stop listening the events registered by this control.
-       */
-      this.stopListening(this.headerData, "change", this.headerDataChanged);
-      this.listenTo(this.headerData, "select2", this.headerDataChanged);
-      this.listenTo(this.collection, "remove", this.onRemoveVariable);
-
-      // Remove header controls.
-      _.each(this.controls, function(control) {
-        control.remove();
-      });
-
-      VariableCollectionControl.__super__.remove.apply(this, arguments);
-
-      // Remove the header model
-      delete (this.headerData);
-
-      // Clear the available Variables object
-      self.availVariables = {};
     }
   });
 

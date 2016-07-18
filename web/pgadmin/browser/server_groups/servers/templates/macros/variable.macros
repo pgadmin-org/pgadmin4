@@ -3,10 +3,12 @@
 {####################################################}
 {% macro APPLY(conn, database, role, param, value) -%}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+
     SET {{ conn|qtIdent(param) }} TO {{ value|qtLiteral }};
 {%- endmacro %}
 {% macro RESET(conn, database, role, param) -%}
 ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+
     RESET {{ conn|qtIdent(param) }};
 {%- endmacro %}
 {################################################}
@@ -14,11 +16,13 @@ ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABA
 {################################################}
 {% macro SET(conn, object_type, object_name, options) -%}
 ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+
     SET ({% for opt in options %}{% if loop.index != 1 %}
 , {% endif %}{{ conn|qtIdent(opt.name) }}={{ opt.value|qtLiteral }}{% endfor %});
 {%- endmacro %}
 {% macro UNSET(conn, object_type, object_name, options) -%}
 ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+
     RESET ({% for opt in options %}{% if loop.index != 1 %}
 , {% endif %}{{ conn|qtIdent(opt.name) }}{% endfor %});
 {%- endmacro %}

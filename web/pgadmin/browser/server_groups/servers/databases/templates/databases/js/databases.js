@@ -284,7 +284,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
           id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
-          model: pgBrowser.Node.VariableModel, editable: false,
+          model: pgBrowser.Node.VariableModel.extend({keys:['name', 'role']}), editable: false,
           group: '{{ _('Parameters') }}', mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
