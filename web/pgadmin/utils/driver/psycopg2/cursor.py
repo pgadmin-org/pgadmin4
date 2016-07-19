@@ -151,7 +151,7 @@ class DictCursor(_cursor):
             if idx == 0:
                 od[d.name] = 1
             else:
-                name = ("%s-%s" % (d.name, idx))
+                name = d.name
                 while name in od:
                     idx += 1
                     name = ("%s-%s" % (d.name, idx))
