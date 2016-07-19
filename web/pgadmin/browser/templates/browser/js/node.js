@@ -797,19 +797,12 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               n = i && d && pgBrowser.Nodes[d._type],
               treeHierarchy = n.getTreeNodeHierarchy(i);
 
-          if (_.isUndefined(treeHierarchy[n_type]) ||
-              _.isUndefined(treeHierarchy[n_type]._id)) {
-              n_value = -1;
-          } else {
-            n_value = treeHierarchy[n_type]._id;
-          }
-
-          if (n_value == $(panel).data(n_type)) {
+          if (_.isEqual($(panel).data('node-prop'), treeHierarchy)) {
             return;
           }
 
           // Cache the current IDs for next time
-          $(panel).data(n_type, n_value);
+          $(panel).data('node-prop', treeHierarchy);
 
           if (!content.hasClass('has-pg-prop-btn-group'))
             content.addClass('has-pg-prop-btn-group');
