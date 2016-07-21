@@ -59,27 +59,19 @@ function(_, $, pgBrowser) {
           var sql = '';
           if (node) {
             sql = '-- ' + pgBrowser.messages.NODE_HAS_NO_SQL;
+            var self = this,
+                n_type = data._type,
+                n_value = -1,
+                treeHierarchy = node.getTreeNodeHierarchy(item);
+
+            // Avoid unnecessary reloads
+            if (_.isEqual($(this.sqlPanels[0]).data('node-prop'), treeHierarchy)) {
+              return;
+            }
+            // Cache the current IDs for next time
+            $(this.sqlPanels[0]).data('node-prop', treeHierarchy);
+
             if (node.hasSQL) {
-
-              var self = this,
-                  n_type = data._type,
-                  n_value = -1,
-                  treeHierarchy = node.getTreeNodeHierarchy(item);
-
-              // Avoid unnecessary reloads
-              if (_.isUndefined(treeHierarchy[n_type]) ||
-                  _.isUndefined(treeHierarchy[n_type]._id)) {
-                  n_value = -1;
-              } else {
-                  n_value = treeHierarchy[n_type]._id;
-              }
-
-              if (n_value == $(sqlPanels[0]).data(n_type)) {
-                return;
-              }
-
-              // Cache the current IDs for next time
-              $(this.sqlPanels[0]).data(n_type, n_value);
 
               sql = '';
               var url = node.generate_url(item, 'sql', data, true);

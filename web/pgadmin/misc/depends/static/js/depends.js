@@ -185,20 +185,12 @@ define(
           n_type = type;
 
       // Avoid unnecessary reloads
-      if (_.isUndefined(treeHierarchy[n_type]) ||
-          _.isUndefined(treeHierarchy[n_type]._id)) {
-          n_value = -1;
-      } else {
-        n_value = treeHierarchy[n_type]._id;
-      }
-
-      if (n_value == $(panel[0]).data(n_type)) {
+      if (_.isEqual($(panel[0]).data('node-prop'), treeHierarchy)) {
         return;
       }
 
       // Cache the current IDs for next time
-      $(panel[0]).data(n_type, n_value);
-
+      $(panel[0]).data('node-prop', treeHierarchy);
 
       // Hide the grid container and show the default message container
       if (!$gridContainer.hasClass('hidden'))

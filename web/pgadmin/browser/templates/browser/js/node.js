@@ -1034,6 +1034,24 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                       cache: false,
                       success: function() {
                         onSaveFunc.call();
+                        // Removing the node-prop property of panel
+                        // so that we show updated data on panel
+                        var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                          pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                          pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                          pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                          pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+
+                        if(pnlProperties)
+                            $(pnlProperties).removeData('node-prop');
+                        if(pnlSql)
+                            $(pnlSql).removeData('node-prop');
+                        if(pnlStats)
+                            $(pnlStats).removeData('node-prop');
+                        if(pnlDependencies)
+                            $(pnlDependencies).removeData('node-prop');
+                        if(pnlDependents)
+                            $(pnlDependents).removeData('node-prop');
                       },
                       error: function(m, jqxhr) {
                         Alertify.pgNotifier(

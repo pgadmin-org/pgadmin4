@@ -154,25 +154,16 @@ function(_, $, pgBrowser, Backgrid) {
         /* We fetch the statistics only for those node who set the parameter
          * showStatistics function.
          */
-        if (node.hasStatistics) {
 
           // Avoid unnecessary reloads
           var treeHierarchy = node.getTreeNodeHierarchy(item);
-          if (_.isUndefined(treeHierarchy[n_type]) ||
-              _.isUndefined(treeHierarchy[n_type]._id)) {
-              n_value = undefined,
-              n_value = -1;
-          } else {
-            n_value = treeHierarchy[n_type]._id;
-          }
-
-          if (n_value == $(this.panel[0]).data(n_type)) {
+          if (_.isEqual($(panel[0]).data('node-prop'), treeHierarchy)) {
             return;
           }
-
           // Cache the current IDs for next time
-          $(this.panel[0]).data(n_type, n_value);
+          $(panel[0]).data('node-prop', treeHierarchy);
 
+        if (node.hasStatistics) {
           /* Set the message because ajax request may take time to
            * fetch the information from the server.
            */
