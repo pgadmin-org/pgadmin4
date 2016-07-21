@@ -152,6 +152,8 @@ define(
       events: {
         "click .btn-load-file": "on_file_load",
         "click #btn-save": "on_save",
+        "click #btn-file-menu-save": "on_save",
+        "click #btn-file-menu-save-as": "on_save_as",
         "click #btn-add-row": "on_add",
         "click #btn-filter": "on_show_filter",
         "click #btn-include-filter": "on_include_filter",
@@ -713,6 +715,22 @@ define(
         );
       },
 
+      // Callback function for Save button click.
+      on_save_as: function(ev) {
+        var self = this;
+
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        // Trigger the save signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:button:save',
+            self,
+            self.handler,
+            true
+        );
+      },
+
       // Callback function for filter button click.
       on_show_filter: function() {
         var self = this;
@@ -1089,7 +1107,7 @@ define(
           // only in query editor tool
           if (self.is_query_tool) {
             self.get_preferences();
-            self.gridView.query_tool_obj.on('change', self._on_query_change, self);
+            self.gridView.query_tool_obj.on('change', self._on_query_change.bind(self));
           }
 
           // Listen on events come from SQLEditorView for the button clicked.
@@ -1183,8 +1201,8 @@ define(
                   $('#btn-filter').addClass('btn-default');
                   $('#btn-filter-dropdown').addClass('btn-default');
                 }
-
                 $("#btn-save").prop('disabled', true);
+                $("#btn-file-menu-dropdown").prop('disabled', true);
                 $("#btn-copy-row").prop('disabled', true);
                 $("#btn-paste-row").prop('disabled', true);
 
@@ -1345,6 +1363,7 @@ define(
           }
           else {
             $("#btn-save").prop('disabled', true);
+            $("#btn-file-menu-dropdown").prop('disabled', true);
             $("#btn-add-row").prop('disabled', true);
             $("#btn-copy-row").prop('disabled', true);
             $("#btn-paste-row").prop('disabled', true);
@@ -1750,10 +1769,12 @@ define(
           model.trigger('backgrid:row:mark:deletion', model);
 
           // Enable/Disable Save button
-          if (self.changedModels.length > 0)
+          if (self.changedModels.length > 0) {
             $("#btn-save").prop('disabled', false);
-          else
+          } else {
             $("#btn-save").prop('disabled', true);
+            $("#btn-file-menu-dropdown").prop('disabled', true);
+          }
         },
 
         /* This is a callback function when backgrid cell
@@ -1851,7 +1872,7 @@ define(
          * the ajax call to save the data into the database server.
          * and will open save file dialog conditionally.
          */
-        _save: function() {
+        _save: function(view, controller, save_as) {
           var self = this,
               data = [],
               save_data = true;
@@ -1860,7 +1881,7 @@ define(
           if (self.is_query_tool) {
 
             var current_file = self.gridView.current_file;
-            if (!_.isUndefined(current_file)) {
+            if (!_.isUndefined(current_file) && !save_as) {
               self._save_file_handler(current_file);
             }
             else {
@@ -1876,8 +1897,8 @@ define(
             }
             return;
           }
-
           $("#btn-save").prop('disabled', true);
+          $("#btn-file-menu-dropdown").prop('disabled', true);
           if (self.changedModels.length == 0)
             return;
 
@@ -1970,6 +1991,19 @@ define(
           }
         },
 
+        // Save as
+        _save_as: function() {
+          return this._save(true);
+        },
+
+        // Set panel title.
+        setTitle: function(title) {
+          _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+            if(p.isVisible()) {
+              p.title(title);
+            }
+          });
+        },
         // load select file dialog
         _load_file: function() {
           var params = {
@@ -1999,6 +2033,7 @@ define(
               if (res.data.status) {
                 self.gridView.query_tool_obj.setValue(res.data.result);
                 self.gridView.current_file = e;
+                self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
               }
             },
             error: function(e) {
@@ -2027,9 +2062,10 @@ define(
               if (res.data.status) {
                 alertify.success('{{ _('File saved successfully.') }}');
                 self.gridView.current_file = e;
-
+                self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
                 // disable save button on file save
                 $("#btn-save").prop('disabled', true);
+                $("#btn-file-menu-dropdown").prop('disabled', true);
               }
             },
             error: function(e) {
@@ -2041,12 +2077,17 @@ define(
 
         // codemirror text change event
         _on_query_change: function(query_tool_obj) {
-
+          var self = this;
           if(query_tool_obj.getValue().length == 0) {
             $("#btn-save").prop('disabled', true);
-          }
-          else {
+            $("#btn-file-menu-dropdown").prop('disabled', true);
+          } else {
+            if(self.gridView.current_file) {
+              var title = self.gridView.current_file.replace(/^\/|\/$/g, '') + ' *'
+              self.setTitle(title);
+            }
             $("#btn-save").prop('disabled', false);
+            $("#btn-file-menu-dropdown").prop('disabled', false);
           }
         },
 
@@ -2288,6 +2329,7 @@ define(
               new_model = null;
           if ('copied_model' in self && self.copied_model != null) {
             $("#btn-save").prop('disabled', false);
+            $("#btn-file-menu-dropdown").prop('disabled', false);
 
             // fullCollection is part of pageable collection
             var coll = self.collection.fullCollection === undefined ? self.collection : self.collection.fullCollection;

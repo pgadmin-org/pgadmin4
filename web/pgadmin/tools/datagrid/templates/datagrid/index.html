@@ -30,6 +30,22 @@
                 <button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>
                     <i class="fa fa-floppy-o" aria-hidden="true"></i>
                 </button>
+                <button id="btn-file-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id="btn-file-menu-save" href="#">
+                            <span>{{ _('Save') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="btn-file-menu-save-as" href="#">
+                            <span>{{ _('Save as') }}</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-copy-row" type="button" class="btn btn-default" title="{{ _('Copy Row') }}" disabled>
