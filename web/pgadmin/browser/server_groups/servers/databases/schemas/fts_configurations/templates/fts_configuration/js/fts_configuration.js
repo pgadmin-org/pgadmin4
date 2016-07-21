@@ -208,8 +208,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        token_label: '{{ _('Tokens')}}',
-        add_label: '{{ _('ADD')}}'
+        token_label: '{{ _('Tokens') }}',
+        add_label: '{{ _('Add') }}'
       });
 
       var self = this,

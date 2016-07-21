@@ -593,7 +593,7 @@
       render: function () {
           this.$el.empty();
           //this.$el.html("<i class='fa fa-plus-circle'></i>");
-          this.$el.html("<label><a><span style='font-weight:normal;'>Array Values</a></span></label> <button class='btn-sm btn-default add'>ADD</button>");
+          this.$el.html("<label><a><span style='font-weight:normal;'>Array Values</a></span></label> <button class='btn-sm btn-default add'>Add</button>");
           this.delegateEvents();
           return this;
       }

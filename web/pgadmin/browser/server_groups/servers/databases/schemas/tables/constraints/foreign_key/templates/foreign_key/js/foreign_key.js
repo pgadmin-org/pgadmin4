@@ -320,10 +320,10 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        column_label: '{{ _('Local column')}}',
-        add_label: '{{ _('ADD')}}',
-        references_label: '{{ _('References')}}',
-        referenced_label: '{{ _('Referencing')}}'
+        column_label: '{{ _('Local column') }}',
+        add_label: '{{ _('Add') }}',
+        references_label: '{{ _('References') }}',
+        referenced_label: '{{ _('Referencing') }}'
       });
 
       var self = this,

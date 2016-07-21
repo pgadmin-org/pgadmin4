@@ -538,8 +538,8 @@ define([
                   headerTpl = _.template(header),
                   data = {
                     canAdd: true,
-                    add_title: '{{ _("Add new user")}}',
-                    add_label:'{{ _('ADD')}}'
+                    add_title: '{{ _("Add new user") }}',
+                    add_label:'{{ _('Add') }}'
                   },
                   $gridBody = $("<div></div>", {
                     class: "user_container"

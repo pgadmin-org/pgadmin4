@@ -409,8 +409,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        column_label: '{{ _('Column')}}',
-        add_label: '{{ _('ADD')}}'
+        column_label: '{{ _('Column') }}',
+        add_label: '{{ _('Add') }}'
       });
 
       var self = this,

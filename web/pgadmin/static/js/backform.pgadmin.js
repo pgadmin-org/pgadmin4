@@ -948,7 +948,7 @@
         canDelete: evalF.apply(this.field, [data.canDelete, data, this.model]),
         canEdit: evalF.apply(this.field, [data.canEdit, data, this.model])
       });
-      _.extend(data, {add_label: "ADD"});
+      _.extend(data, {add_label: "Add"});
 
       // This control is not visible, we should remove it.
       if (!data.visible) {
@@ -1203,7 +1203,7 @@
     showGridControl: function(data) {
       var gridHeader = ["<div class='subnode-header'>",
           "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
-          "  <button class='btn-sm btn-default add'>ADD</buttton>",
+          "  <button class='btn-sm btn-default add'>Add</buttton>",
           "</div>"].join("\n");
         gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
 
