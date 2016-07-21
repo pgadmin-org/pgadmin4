@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% if data %}
 {% set name = o_data.name %}
 {% if data.name %}
@@ -55,19 +55,19 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.UNSET(conn, 'DOMAIN', name, r.provider, o_data.basensp) }}
+{{ SECLABEL.UNSET(conn, 'DOMAIN', name, r.provider, o_data.basensp) }}
 
 {% endfor %}
 {% endif -%}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
 
-{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
+{{ SECLABEL.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
 {% endfor %}
 {% endif -%}{% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
 
-{{ SECLABLE.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
+{{ SECLABEL.SET(conn, 'DOMAIN', name, r.provider, r.label, o_data.basensp) }}
 {% endfor %}
 {% endif -%}{% if data.description is defined and data.description != o_data.description %}
 

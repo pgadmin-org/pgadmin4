@@ -307,8 +307,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'seclabels', label: '{{ _('Security Labels') }}', canAdd: true,
           model: pgBrowser.SecLabelModel, type: 'collection',
           min_version: 90100, group: 'security', mode: ['edit', 'create'],
-          canEdit: true, canDelete: true, uniqueCol : ['provider'],
-          disabled: 'isDisabled', control: 'unique-col-collection'
+          canEdit: false, canDelete: true, uniqueCol : ['provider'],
+          disabled: 'isDisabled', control: 'unique-col-collection',
+          visible: function() {
+            return this.node_data && this.node_data._type != 'procedure';
+          }
         }
         ],
         validate: function()

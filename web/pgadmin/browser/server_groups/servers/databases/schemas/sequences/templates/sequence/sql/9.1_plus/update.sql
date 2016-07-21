@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% if data %}
 {% if data.name != o_data.name %}
@@ -58,17 +58,17 @@ COMMENT ON SEQUENCE {{ seqname }}
 {% set seclabels = data.securities %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.UNSET(conn, 'SEQUENCE', data.name, r.provider, schema) }}
+{{ SECLABEL.UNSET(conn, 'SEQUENCE', data.name, r.provider, schema) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
+{{ SECLABEL.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
+{{ SECLABEL.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, schema) }}
 {% endfor %}
 {% endif %}
 {% endif %}

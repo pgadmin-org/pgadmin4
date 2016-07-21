@@ -325,6 +325,19 @@ class LanguageView(PGChildNodeView):
                 else:
                     res['rows'][0][row['deftype']] = [priv]
 
+        seclabels = []
+        if 'seclabels' in res['rows'][0] and res['rows'][0]['seclabels'] is not None:
+            import re
+            for sec in res['rows'][0]['seclabels']:
+                sec = re.search(r'([^=]+)=(.*$)', sec)
+                seclabels.append({
+                    'provider': sec.group(1),
+                    'label': sec.group(2)
+                })
+
+        res['rows'][0]['seclabels'] = seclabels
+
+
         return ajax_response(
             response=res['rows'][0],
             status=200
@@ -439,7 +452,7 @@ class LanguageView(PGChildNodeView):
                         data[arg] = old_data[arg]
                 sql = render_template("/".join([self.template_path, 'update.sql']), data=data,
                                       o_data=old_data, conn=self.conn)
-            return sql
+            return sql.strip('\n')
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -480,9 +493,33 @@ class LanguageView(PGChildNodeView):
 
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
+
+        sql = render_template("/".join([self.template_path, 'acl.sql']), lid=lid)
+        status, result = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=result)
+
+        for row in result['rows']:
+            priv = parse_priv_from_db(row)
+            if row['deftype'] in old_data:
+                old_data[row['deftype']].append(priv)
+            else:
+                old_data[row['deftype']] = [priv]
+
+        seclabels = []
+        if 'seclabels' in old_data and old_data['seclabels'] is not None:
+            import re
+            for sec in old_data['seclabels']:
+                sec = re.search(r'([^=]+)=(.*$)', sec)
+                seclabels.append({
+                    'provider': sec.group(1),
+                    'label': sec.group(2)
+                })
+
+        old_data['seclabels'] = seclabels
         sql = render_template("/".join([self.template_path, 'sqlpane.sql']), data=old_data, conn=self.conn)
 
-        return ajax_response(response=sql)
+        return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
     def dependents(self, gid, sid, did, lid):

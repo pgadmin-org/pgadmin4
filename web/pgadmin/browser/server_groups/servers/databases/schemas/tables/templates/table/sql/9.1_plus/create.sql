@@ -1,7 +1,7 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
-{% import 'column/macros/security.macros' as COLUMN_SECLABLE %}
+{% import 'column/macros/security.macros' as COLUMN_SECLABEL %}
 {% import 'column/macros/privilege.macros' as COLUMN_PRIVILEGE %}
 {% import 'table/sql/macros/constraints.macro' as CONSTRAINTS %}
 {#===========================================#}
@@ -94,7 +94,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% if data.seclabels and data.seclabels|length > 0 %}
 
 {% for r in data.seclabels %}
-{{ SECLABLE.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {###  ACL on Table ###}
@@ -139,7 +139,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% if c.seclabels and c.seclabels|length > 0 %}
 
 {% for r in c.seclabels %}
-{{ COLUMN_SECLABLE.APPLY(conn, 'COLUMN',data.schema, data.name, c.name, r.provider, r.label) }}
+{{ COLUMN_SECLABEL.APPLY(conn, 'COLUMN',data.schema, data.name, c.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endfor %}

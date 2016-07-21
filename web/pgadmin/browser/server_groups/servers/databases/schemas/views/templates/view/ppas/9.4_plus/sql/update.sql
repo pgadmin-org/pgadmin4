@@ -1,5 +1,5 @@
 {# ============================ Update View ========================= #}
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% if data %}
 {% set view_name = data.name if data.name else o_data.name %}
@@ -64,17 +64,17 @@ COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.DROP(conn, 'VIEW', data.name, r.provider) }}
+{{ SECLABEL.UNSET(conn, 'VIEW', data.name, r.provider, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'VIEW', data.name, r.provider, r.label) }}
+{{ SECLABEL.SET(conn, 'VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'VIEW', data.name, r.provider, r.label) }}
+{{ SECLABEL.SET(conn, 'VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% endif %}

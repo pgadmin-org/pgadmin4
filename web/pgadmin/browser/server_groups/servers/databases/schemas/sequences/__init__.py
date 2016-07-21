@@ -241,16 +241,6 @@ class SequenceView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
-        sec_lbls = []
-        if 'securities' in res and res['securities'] is not None:
-            for sec in res['seclabels']:
-                sec = re.search(r'([^=]+)=(.*$)', sec)
-                sec_lbls.append({
-                    'provider': sec.group(1),
-                    'label': sec.group(2)
-                })
-        res['securities'] = sec_lbls
-
         for row in res['rows']:
             SQL = render_template("/".join([self.template_path, 'get_def.sql']), data=row)
             status, rset1 = self.conn.execute_dict(SQL)
@@ -263,6 +253,17 @@ class SequenceView(PGChildNodeView):
             row['increment'] = rset1['rows'][0]['increment_by']
             row['cache'] = rset1['rows'][0]['cache_value']
             row['cycled'] = rset1['rows'][0]['is_cycled']
+
+            sec_lbls = []
+            if 'securities' in row and row['securities'] is not None:
+                for sec in row['securities']:
+                    import re
+                    sec = re.search(r'([^=]+)=(.*$)', sec)
+                    sec_lbls.append({
+                        'provider': sec.group(1),
+                        'label': sec.group(2)
+                    })
+            row['securities'] = sec_lbls
 
         SQL = render_template("/".join([self.template_path, 'acl.sql']), scid=scid, seid=seid)
         status, dataclres = self.conn.execute_dict(SQL)

@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% if data %}
 CREATE FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}(
 {% if data.columns %}
@@ -29,7 +29,7 @@ COMMENT ON FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
 {% for r in data.seclabels %}
 {% if r.label and r.provider %}
 
-{{ SECLABLE.SET(conn, 'FOREIGN TABLE', data.name, r.provider, r.label, data.basensp) }}
+{{ SECLABEL.SET(conn, 'FOREIGN TABLE', data.name, r.provider, r.label, data.basensp) }}
 {% endif %}
 {% endfor %}
 {% endif %}

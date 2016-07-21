@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% if data %}
 CREATE DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
     AS {{ conn|qtTypeIdent(data.basetype) }}{% if data.typlen %}({{data.typlen}}{% if data.precision %},{{data.precision}}{% endif %}){% endif %}{% if data.collname %}
@@ -23,7 +23,7 @@ COMMENT ON DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
 {% if r.label and r.provider %}
 
 
-{{ SECLABLE.SET(conn, 'DOMAIN', data.name, r.provider, r.label, data.basensp) }}{% endif -%}
+{{ SECLABEL.SET(conn, 'DOMAIN', data.name, r.provider, r.label, data.basensp) }}{% endif -%}
 {% endfor -%}
 {% endif -%}
 

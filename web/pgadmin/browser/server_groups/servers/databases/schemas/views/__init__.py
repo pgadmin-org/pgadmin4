@@ -974,6 +974,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         result = res['rows'][0]
+        # sending result to formtter
+        frmtd_reslt = self.formatter(result)
+
+        # merging formated result with main result again
+        result.update(frmtd_reslt)
 
         # Fetch all privileges for view
         SQL = render_template("/".join(

@@ -418,6 +418,16 @@ class TypeView(PGChildNodeView, DataTypeReader):
             range_dict = dict(res['rows'][0])
             res.update(range_dict)
 
+        if 'seclabels' in copy_dict and copy_dict['seclabels'] is not None:
+            sec_labels = []
+            for sec in copy_dict['seclabels']:
+                sec = re.search(r'([^=]+)=(.*$)', sec)
+                sec_labels.append({
+                    'provider': sec.group(1),
+                    'label': sec.group(2)
+                })
+            res['seclabels'] = sec_labels
+
         # Returning only additional properties only
         return res
 

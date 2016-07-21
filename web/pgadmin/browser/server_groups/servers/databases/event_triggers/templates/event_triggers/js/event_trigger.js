@@ -2,35 +2,6 @@ define(
         ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
 function($, _, S, pgAdmin, pgBrowser, alertify) {
 
-    // Extend the browser's node model class to create a security model
-    var SecurityLabelModel = pgAdmin.Browser.Node.Model.extend({
-        defaults: {
-          provider: undefined,
-          securitylabel: undefined
-        },
-        // Define the schema for the Security Label
-        schema: [
-          {id: 'provider', label:'Provider', type:'text', group: null, editable: true},
-          {id: 'securitylabel', label:'Security Label', type: 'text', group:null, extraHeaderClasses: 'cellwidth-40', editable: true},
-        ],
-        validate: function() {
-            // Clear any existing errors.
-
-            this.errorModel.clear()
-            if (_.isUndefined(this.get('provider')) || String(this.get('provider')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Provider cannot be empty.') }}';
-                this.errorModel.set('provider',msg);
-                return msg;
-            }
-            if (_.isUndefined(this.get('securitylabel')) || String(this.get('securitylabel')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Security Label cannot be empty.') }}';
-                this.errorModel.set('securitylabel',msg);
-                return msg;
-            }
-            return null;
-        }
-    });
-
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {
     var databases = pgAdmin.Browser.Nodes['coll-event_trigger'] =
@@ -145,10 +116,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'when', label:'{{ _('When') }}', type: 'multiline', group: "Definition",
         },{
-          id: 'providers', label: 'Security Labels', type: 'collection', group: "Security Labels",
-          model: SecurityLabelModel, control: 'unique-col-collection', mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, uniqueCol : ['provider'],
-          columns: ['provider','securitylabel']
+          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
+          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          min_version: 90200, canAdd: true,
+          canEdit: false, canDelete: true, control: 'unique-col-collection'
          }
         ],
         // event trigger model data validation.

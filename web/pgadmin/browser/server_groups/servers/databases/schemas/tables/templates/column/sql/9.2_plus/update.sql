@@ -1,4 +1,4 @@
-{% import 'column/macros/security.macros' as SECLABLE %}
+{% import 'column/macros/security.macros' as SECLABEL %}
 {% import 'column/macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {###  Rename column name ###}
@@ -89,17 +89,17 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.DROP(conn, 'COLUMN', data.schema, data.table, data.name, r.provider) }}
+{{ SECLABEL.DROP(conn, 'COLUMN', data.schema, data.table, data.name, r.provider) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endif %}

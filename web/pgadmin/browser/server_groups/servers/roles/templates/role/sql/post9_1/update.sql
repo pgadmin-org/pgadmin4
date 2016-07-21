@@ -90,19 +90,19 @@ GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 
 {% for r in seclabels.deleted %}
-{{ SECLABEL.DROP(conn, 'ROLE', data.rolname, r.provider) }}
+{{ SECLABEL.DROP(conn, 'ROLE', rolname, r.provider) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 
 {% for r in seclabels.added %}
-{{ SECLABEL.APPLY(conn, 'ROLE', data.rolname, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'ROLE', rolname, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 
 {% for r in seclabels.changed %}
-{{ SECLABEL.APPLY(conn, 'ROLE', data.rolname, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'ROLE', rolname, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endif %}

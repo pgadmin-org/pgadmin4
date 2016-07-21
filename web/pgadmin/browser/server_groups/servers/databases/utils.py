@@ -26,6 +26,7 @@ def parse_sec_labels_from_db(db_sec_labels):
 
     if db_sec_labels is not None:
         for sec in db_sec_labels:
+            import re
             sec = re.search(r'([^=]+)=(.*$)', sec)
             sec_lbls.append({
                 'provider': sec.group(1),

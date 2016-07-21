@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% if data %}
 {% if (data.eventfunname and data.eventfunname != o_data.eventfunname) or
   (data.eventname and data.eventname != o_data.eventname) or
@@ -37,25 +37,25 @@ ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% endif %}
 
-{% if data.providers and
-	data.providers|length > 0
-%}{% set seclabels = data.providers %}
+{% if data.seclabels and
+	data.seclabels|length > 0
+%}{% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 
 {% for r in seclabels.deleted %}
-{{ SECLABLE.DROP(conn, 'EVENT TRIGGER', data.name, r.provider) }}
+{{ SECLABEL.DROP(conn, 'EVENT TRIGGER', data.name, r.provider) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.securitylabel) }}
+{{ SECLABEL.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.securitylabel) }}
+{{ SECLABEL.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endif %}

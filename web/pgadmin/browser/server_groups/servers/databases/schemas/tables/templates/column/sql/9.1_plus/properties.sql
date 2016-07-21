@@ -18,7 +18,7 @@ SELECT att.attname as name, att.*, def.*, pg_catalog.pg_get_expr(def.adbin, def.
 	ELSE format_type(ty.oid,att.atttypmod) END AS cltype,
 	-- End pgAdmin4
 	EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,
-	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=att.atttypid AND sl1.objsubid=0) AS seclabels,
+	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
 	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column
 FROM pg_attribute att
   JOIN pg_type ty ON ty.oid=atttypid

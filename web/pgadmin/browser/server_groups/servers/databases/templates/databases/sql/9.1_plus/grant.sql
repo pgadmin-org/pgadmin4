@@ -3,6 +3,7 @@
 # other sql statments along with it, so we wrote
 # seprate sql for rest alter sql statments here
 #}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
@@ -11,6 +12,12 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
     IS {{ data.comments|qtLiteral }};
 {% endif %}
 
+{# Generate the security labels #}
+{% if data.seclabels %}
+{% for r in data.seclabels %}
+{{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.label) }}
+{% endfor %}
+{% endif %}
 {# TO generate Variable SQL using macro #}
 {% if data.variables %}
 {% for var in data.variables %}

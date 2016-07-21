@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% if data %}
 {% if data.enabled and data.enabled != "O" %}
 ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}
@@ -15,10 +15,10 @@ ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}
 COMMENT ON EVENT TRIGGER {{ conn|qtIdent(data.name) }}
     IS {{ data.comment|qtLiteral }};
 {% endif %}
-{% if data.providers and data.providers|length > 0 %}
+{% if data.seclabels and data.seclabels|length > 0 %}
 
-{% for r in data.providers %}
-{{ SECLABLE.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.securitylabel) }}
+{% for r in data.seclabels %}
+{{ SECLABEL.APPLY(conn, 'EVENT TRIGGER', data.name, r.provider, r.label) }}
 {% endfor %}{% endif %}
 
 ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}

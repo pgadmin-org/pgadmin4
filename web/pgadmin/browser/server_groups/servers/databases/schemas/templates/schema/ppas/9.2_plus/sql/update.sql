@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data %}
@@ -26,17 +26,17 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.DROP(conn, 'SCHEMA', data.name, r.provider) }}
+{{ SECLABEL.DROP(conn, 'SCHEMA', data.name, r.provider) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'SCHEMA', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 

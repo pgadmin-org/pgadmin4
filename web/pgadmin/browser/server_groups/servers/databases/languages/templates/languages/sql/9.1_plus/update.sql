@@ -1,4 +1,5 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% if data %}
 {# ============= Update language name ============= #}
 {% if data.name != o_data.name %}
@@ -33,6 +34,29 @@ COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if 'added' in data.lanacl %}
 {% for priv in data.lanacl.added %}
 {{ PRIVILEGE.APPLY(conn, 'LANGUAGE', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if data.seclabels and
+	data.seclabels|length > 0
+%}{% set seclabels = data.seclabels %}
+{% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
+
+{% for r in seclabels.deleted %}
+{{ SECLABEL.DROP(conn, 'PROCEDURAL LANGUAGE', data.name, r.provider) }}
+{% endfor %}
+{% endif %}
+{% if 'added' in seclabels and seclabels.added|length > 0 %}
+
+{% for r in seclabels.added %}
+{{ SECLABEL.APPLY(conn, 'PROCEDURAL LANGUAGE', data.name, r.provider, r.label) }}
+{% endfor %}
+{% endif %}
+{% if 'changed' in seclabels and seclabels.changed|length > 0 %}
+
+{% for r in seclabels.changed %}
+{{ SECLABEL.APPLY(conn, 'PROCEDURAL LANGUAGE', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}
 {% endif %}

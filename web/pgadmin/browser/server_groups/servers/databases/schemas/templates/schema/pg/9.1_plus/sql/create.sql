@@ -1,4 +1,4 @@
-{% import 'macros/security.macros' as SECLABLE %}
+{% import 'macros/security.macros' as SECLABEL %}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data.name %}

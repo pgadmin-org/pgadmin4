@@ -1,4 +1,4 @@
-{% import 'column/macros/security.macros' as SECLABLE %}
+{% import 'column/macros/security.macros' as SECLABEL %}
 {% import 'column/macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {###  Add column ###}
@@ -33,6 +33,6 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {###  Security Lables ###}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
-{{ SECLABLE.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
+{{ SECLABEL.APPLY(conn, 'COLUMN',data.schema, data.table, data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}

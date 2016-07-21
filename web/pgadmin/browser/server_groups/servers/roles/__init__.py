@@ -653,6 +653,7 @@ rolmembership:{
                         'provider': sec.group(1),
                         'label': sec.group(2)
                     })
+                row['seclabels'] = res
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):

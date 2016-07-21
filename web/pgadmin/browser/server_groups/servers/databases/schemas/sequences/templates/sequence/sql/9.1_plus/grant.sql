@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {# Construct sequence name from name and schema #}
 {% set seqname=conn|qtIdent(data.schema, data.name) %}
@@ -15,7 +15,7 @@ COMMENT ON SEQUENCE {{ seqname }}
 {% if data.securities %}
 
 {% for r in data.securities %}
-{{ SECLABLE.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'SEQUENCE', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if data.relacl %}

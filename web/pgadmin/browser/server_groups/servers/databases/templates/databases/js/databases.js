@@ -289,7 +289,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
         },{
-          id: 'securities', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: '{{ _('Security Labels') }}',
           model: pgBrowser.SecLabelModel,
           editable: false, type: 'collection', canEdit: false,
           group: '{{ _('Security') }}', canDelete: true,

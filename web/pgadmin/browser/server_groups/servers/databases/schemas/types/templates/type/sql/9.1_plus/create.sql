@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {## If user selected shell type then just create type template ##}
 {% if data and data.typtype == 'p' %}
@@ -77,7 +77,7 @@ COMMENT ON TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{%
 
 {% for r in data.seclabels %}
 {% if r.provider and r.label %}
-{{ SECLABLE.SET(conn, 'TYPE', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'TYPE', data.name, r.provider, r.label, data.schema) }}
 {% endif %}
 {% endfor %}
 {% endif %}

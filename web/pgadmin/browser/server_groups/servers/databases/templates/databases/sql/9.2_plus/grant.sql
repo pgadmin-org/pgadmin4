@@ -13,8 +13,8 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
 {% endif %}
 
 {# Generate the security labels #}
-{% if data.securities %}
-{% for r in data.securities %}
+{% if data.seclabels %}
+{% for r in data.seclabels %}
 {{ SECLABEL.APPLY(conn, 'DATABASE', data.name, r.provider, r.label) }}
 {% endfor %}
 {% endif %}

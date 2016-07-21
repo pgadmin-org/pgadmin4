@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% if data %}
 {#======================================#}
@@ -85,17 +85,17 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.UNSET(conn, 'TYPE', o_data.name, r.provider, o_data.schema) }}
+{{ SECLABEL.UNSET(conn, 'TYPE', o_data.name, r.provider, o_data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
+{{ SECLABEL.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
+{{ SECLABEL.SET(conn, 'TYPE', o_data.name, r.provider, r.label, o_data.schema) }}
 {% endfor %}
 {% endif %}
 

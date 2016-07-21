@@ -15,18 +15,12 @@ SELECT
     CASE WHEN {{vid}} <= {{datlastsysoid}} THEN True ELSE False END AS system_view,
     {% endif %}
     (SELECT
-        array_agg(label)
+        array_agg(provider || '=' || label)
      FROM
         pg_seclabels sl1
      WHERE
         sl1.objoid=c.oid AND sl1.objsubid=0
-    ) AS labels,
-    (SELECT
-        array_agg(provider)
-     FROM
-        pg_seclabels sl2
-     WHERE sl2.objoid=c.oid AND sl2.objsubid=0
-    ) AS providers
+    ) AS seclabels,
 FROM pg_class c
     LEFT OUTER JOIN pg_namespace nsp on nsp.oid = c.relnamespace
     LEFT OUTER JOIN pg_tablespace spc on spc.oid=c.reltablespace

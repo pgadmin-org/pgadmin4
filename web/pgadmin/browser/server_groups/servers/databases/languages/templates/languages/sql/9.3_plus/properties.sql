@@ -3,8 +3,7 @@ SELECT
     array_to_string(lanacl::text[], ', ') as acl, hp.proname as lanproc,
     vp.proname as lanval, description,
     pg_get_userbyid(lan.lanowner) as lanowner, ip.proname as laninl,
-    (SELECT array_agg(label) FROM pg_seclabels sl1 WHERE sl1.objoid=lan.oid) AS labels,
-    (SELECT array_agg(provider) FROM pg_seclabels sl2 WHERE sl2.objoid=lan.oid) AS providers
+    (SELECT array_agg(provider || '=' || label) FROM pg_seclabel sl1 WHERE sl1.objoid=lan.oid) AS seclabels
 FROM
     pg_language lan JOIN pg_proc hp ON hp.oid=lanplcallfoid
     LEFT OUTER JOIN pg_proc ip ON ip.oid=laninline

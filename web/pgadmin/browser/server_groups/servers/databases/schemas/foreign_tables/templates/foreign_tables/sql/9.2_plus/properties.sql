@@ -4,7 +4,7 @@ SELECT
     (SELECT
         array_agg(provider || '=' || label)
     FROM
-        pg_shseclabel sl1
+        pg_seclabel sl1
     WHERE
         sl1.objoid=c.oid) AS seclabels
 FROM

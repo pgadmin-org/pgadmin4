@@ -1,5 +1,5 @@
 {# ===================== Update View ===================#}
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {%- if data -%}
 {% set view_name = data.name if data.name else o_data.name %}
@@ -197,17 +197,17 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
 {% for r in seclabels.deleted %}
-{{ SECLABLE.UNSET(conn, 'MATERIALIZED VIEW', data.name, r.provider, data.schema) }}
+{{ SECLABEL.UNSET(conn, 'MATERIALIZED VIEW', data.name, r.provider, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% endif %}

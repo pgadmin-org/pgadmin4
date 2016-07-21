@@ -1,4 +1,4 @@
-{% import 'macros/functions/security.macros' as SECLABLE %}
+{% import 'macros/functions/security.macros' as SECLABEL %}
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
@@ -49,7 +49,7 @@ COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func
 {% for r in data.seclabels %}
 {% if r.label and r.provider %}
 
-{{ SECLABLE.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
 {% endif %}
 {% endfor %}
 {% endif -%}

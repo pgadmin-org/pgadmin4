@@ -6,7 +6,7 @@ SELECT t.oid, t.typname AS name,
     description, ct.oid AS taboid,
     nsp.nspname AS schema,
     --MinimumVersion 9.1 START
-    (SELECT array_agg(provider || '=' || label) FROM pg_shseclabel sl1 WHERE sl1.objoid=t.oid) AS seclabels,
+    (SELECT array_agg(provider || '=' || label) FROM pg_seclabel sl1 WHERE sl1.objoid=t.oid) AS seclabels,
     -- END
     (CASE WHEN (t.oid <= {{ datlastsysoid}}::oid OR ct.oid != 0) THEN true ElSE false END) AS is_sys_type
 FROM pg_type t

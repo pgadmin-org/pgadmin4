@@ -269,6 +269,22 @@ class EventTriggerView(PGChildNodeView):
             status=200
         )
 
+    def _formatter(self, result):
+        """
+        This function is ued to parse security lables
+        """
+        seclabels = []
+        if 'seclabels' in result and result['seclabels'] is not None:
+            for sec in result['seclabels']:
+                sec = re.search(r'([^=]+)=(.*$)', sec)
+                seclabels.append({
+                    'provider': sec.group(1),
+                    'label': sec.group(2)
+                })
+
+        result['seclabels'] = seclabels
+        return result
+
     @check_precondition
     def properties(self, gid, sid, did, etid):
         """
@@ -290,16 +306,8 @@ class EventTriggerView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         result = res['rows'][0]
-        sec_labels = []
+        result = self._formatter(result)
 
-        if 'seclabels' in result and result['seclabels'] is not None:
-            for sec in result['seclabels']:
-                sec = re.search(r'([^=]+)=(.*$)', sec)
-                sec_labels.append({
-                    'provider': sec.group(1),
-                    'securitylabel': sec.group(2)
-                })
-        result.update({"seclabels": sec_labels})
         return ajax_response(
             response=result,
             status=200
@@ -517,6 +525,8 @@ class EventTriggerView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
             old_data = res['rows'][0]
+            old_data = self._formatter(old_data)
+
             for arg in required_args:
                 if arg not in data:
                     data[arg] = old_data[arg]
@@ -568,6 +578,7 @@ class EventTriggerView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             result = res['rows'][0]
+            result = self._formatter(result)
 
             sql = render_template("/".join([self.template_path, 'create.sql']), data=result, conn=self.conn)
             sql += "\n\n"

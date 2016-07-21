@@ -14,7 +14,8 @@ SELECT
     ELSE false END AS is_sys_object,
     (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid) AS tblacl,
     (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid) AS seqacl,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl,
+    (SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
 FROM
     pg_namespace nsp
     LEFT OUTER JOIN pg_description des ON

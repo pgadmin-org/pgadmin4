@@ -1,4 +1,4 @@
-{% import 'macros/schemas/security.macros' as SECLABLE %}
+{% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
 {#####################################################}
@@ -189,12 +189,12 @@ COMMENT ON TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% endif %}
 {% if 'added' in seclabels and seclabels.added|length > 0 %}
 {% for r in seclabels.added %}
-{{ SECLABLE.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in seclabels and seclabels.changed|length > 0 %}
 {% for r in seclabels.changed %}
-{{ SECLABLE.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
+{{ SECLABEL.SET(conn, 'TABLE', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
 
