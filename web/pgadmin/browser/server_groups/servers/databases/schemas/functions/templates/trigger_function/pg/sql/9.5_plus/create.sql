@@ -3,22 +3,25 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
+CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proargnames %}{{data.proargnames}}{% endif %})
     RETURNS{% if data.proretset %} SETOF{% endif %} {{ conn|qtTypeIdent(data.prorettypename) }}
     LANGUAGE {{ data.lanname|qtLiteral }}
+{% if data.procost %}
+    COST {{data.procost}}
+{% endif %}
+{% if query_type != 'create' %}
     {% if data.provolatile %}{{ data.provolatile }} {% endif %}{% if data.proleakproof %}LEAKPROOF {% else %}NOT LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
-{% if data.proiswindow %}WINDOW{% endif %}{% if data.procost %}
-
-    COST {{data.procost}}{% endif %}{% if data.prorows %}
+{% if data.proiswindow %}WINDOW{% endif %}
+{% if data.prorows %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 
-AS {% if data.lanname == 'c' %}
+AS {% endif %}{% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
 $BODY$

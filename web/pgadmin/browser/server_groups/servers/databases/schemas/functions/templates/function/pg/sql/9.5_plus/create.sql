@@ -3,26 +3,37 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data
-.args %}
+CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.args %}
 {% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname) }} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %},{% endif %}
 {% endfor %}
 {% endif -%}
-    )
+{% if data.func_args %}
+{% set func_args = data.func_args.split(',') %}
+
+{% for f in func_args %}
+    {{ f|trim }}{% if not loop.last %},
+{% endif %}
+{% endfor %}
+
+{% endif %}
+)
     RETURNS{% if data.proretset %} SETOF{% endif %} {{ conn|qtTypeIdent(data.prorettypename) }}
     LANGUAGE {{ data.lanname|qtLiteral }}
+{% if data.procost %}
+    COST {{data.procost}}
+{% endif %}
+{% if query_type != 'create' %}
     {% if data.provolatile %}{{ data.provolatile }} {% endif %}{% if data.proleakproof %}LEAKPROOF {% else %}NOT LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
-{% if data.proiswindow %}WINDOW{% endif %}{% if data.procost %}
-
-    COST {{data.procost}}{% endif %}{% if data.prorows %}
+{% if data.proiswindow %}WINDOW{% endif %}
+{% if data.prorows %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
-{% endif %}
+{% endif %}{% endif %}
 
 AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}

@@ -3,10 +3,13 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.args %}
+CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% if data.args is defined or data.func_args is defined %}
 ({% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
-{% endfor -%}){% endif %}
+{% endfor -%}
+{% if data.func_args %}{{ data.func_args }}{% endif %}
+){% endif %}
+{% if query_type != 'create' %}
 
     {{ data.provolatile }}{% if data.proleakproof %} LEAKPROOF {% elif not data.proleakproof %} NOT LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
@@ -17,7 +20,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
-{% endif %}
+{% endif %}{% endif %}
 
 AS
 {{ data.prosrc }};

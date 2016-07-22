@@ -3,8 +3,7 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data
-.args %}
+CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.args %}
 {% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname) }} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %},{% endif %}
 {% endfor %}

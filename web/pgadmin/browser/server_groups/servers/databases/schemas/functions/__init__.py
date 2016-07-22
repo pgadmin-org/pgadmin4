@@ -889,10 +889,31 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
             fnid: Function Id
         """
+        resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+        # Fetch the function definition.
+        args = ''
+        cnt = 1
+        if 'arguments' in resp_data:
+            for a in resp_data['arguments']:
+                if (('argmode' in a and a['argmode'] != 'OUT' and
+                    a['argmode'] is not None
+                      ) or 'argnode' not in a):
+                    if 'argmode' in a:
+                        args += a['argmode'] + " "
+                    if 'argname' in a and a['argname'] != ''\
+                            and a['argname'] is not None:
+                        args += self.qtIdent(
+                            self.conn, a['argname']) + " "
+                    if 'argtype' in a:
+                        args += a['argtype']
+                    if cnt < len(resp_data['arguments']):
+                        args += ', '
+                cnt += 1
+
+        resp_data['func_args'] = args.strip(' ')
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
-            resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
 
             # Get SQL to create Function
             status, func_def = self._get_sql(gid, sid, did, scid, resp_data,
@@ -901,16 +922,38 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 return internal_server_error(errormsg=func_def)
 
             name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
+
+            # Create mode
+            func_def = render_template("/".join([self.sql_template_path,
+                                                'create.sql']),
+                                       data=resp_data, query_type="create")
         else:
             object_type = 'function'
-            # Fetch the function definition.
+
+            # Get Schema Name from its OID.
+            if 'pronamespace' in resp_data:
+                resp_data['pronamespace'] = self._get_schema(resp_data[
+                    'pronamespace'])
+
+            # Parse privilege data
+            if 'acl' in resp_data:
+                resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
+
+            # Create mode
             SQL = render_template("/".join([self.sql_template_path,
-                                            'get_definition.sql']), fnid=fnid, scid=scid)
+                                            'get_definition.sql']
+                                           ), data=resp_data,
+                                  fnid=fnid, scid=scid)
+
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             func_def, name = res['rows'][0]
+            # Create mode
+            func_def = render_template("/".join([self.sql_template_path,
+                                                 'create.sql']),
+                                       data=resp_data, query_type="create")
 
         sql_header = """-- {0}: {1}
 
