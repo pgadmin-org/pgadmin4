@@ -22,6 +22,14 @@ from logging import *
 APP_NAME = 'pgAdmin 4'
 APP_ICON = 'icon-postgres-alt'
 
+##########################################################################
+# Application settings
+##########################################################################
+
+# NOTE!!!
+# If you change any of APP_RELEASE, APP_REVISION or APP_SUFFIX, then you
+# must also change APP_VERSION_INT to match.
+
 # Application version number components
 APP_RELEASE = 1
 APP_REVISION = 0
@@ -30,8 +38,21 @@ APP_REVISION = 0
 # for GA releases.
 APP_SUFFIX = 'beta3'
 
+# Numeric application version for upgrade checks. Should be in the format:
+# [X]XYYZZ, where X is the release version, Y is the revision, with a leading
+# zero if needed, and Z represents the suffix, with a leading zero if needed
+APP_VERSION_INT = 10003
+
+# DO NOT CHANGE!
+# The application version string, constructed from the components
+APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
+
 # Copyright string for display in the app
 APP_COPYRIGHT = 'Copyright 2013 - 2016, The pgAdmin Development Team'
+
+##########################################################################
+# Misc stuff
+##########################################################################
 
 # Path to the online help.
 HELP_PATH = '../../../docs/en_US/_build/html/'
@@ -41,10 +62,6 @@ LANGUAGES = {
     'en': 'English',
     'fr': 'Français'
 }
-
-# DO NOT CHANGE!
-# The application version string, constructed from the components
-APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
 # List of modules to skip when dynamically loading

@@ -462,7 +462,7 @@ def index():
             pass
 
         if data is not None:
-            if data['pgadmin4']['version'] != config.APP_VERSION:
+            if data['pgadmin4']['version_int'] > config.APP_VERSION_INT:
                 msg = render_template(
                     MODULE_NAME + "/upgrade.html",
                     current_version=config.APP_VERSION,
