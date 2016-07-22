@@ -15,9 +15,9 @@ side and for getting/setting preferences.
 
 import simplejson as json
 from flask import render_template, url_for, Response, request
-from flask.ext.babel import gettext
-from flask.ext.login import current_user
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_login import current_user
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error

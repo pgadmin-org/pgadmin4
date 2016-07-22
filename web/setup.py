@@ -18,8 +18,8 @@ import string
 import sys
 
 from flask import Flask
-from flask.ext.security import Security, SQLAlchemyUserDatastore
-from flask.ext.security.utils import encrypt_password
+from flask_security import Security, SQLAlchemyUserDatastore
+from flask_security.utils import encrypt_password
 
 from pgadmin.model import db, Role, User, Server, \
     ServerGroup, Version

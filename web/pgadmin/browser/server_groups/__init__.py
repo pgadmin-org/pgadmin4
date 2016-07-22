@@ -13,8 +13,8 @@ from abc import ABCMeta, abstractmethod
 
 import six
 from flask import request, render_template, make_response, jsonify
-from flask.ext.babel import gettext
-from flask.ext.security import current_user
+from flask_babel import gettext
+from flask_security import current_user
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, \

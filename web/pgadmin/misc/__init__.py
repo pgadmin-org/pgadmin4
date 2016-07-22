@@ -11,7 +11,7 @@
 
 import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response
-from flask.ext.babel import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils import PgAdminModule
 
 import config

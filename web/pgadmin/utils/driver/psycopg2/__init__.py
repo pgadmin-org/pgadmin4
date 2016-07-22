@@ -23,8 +23,8 @@ import csv
 import psycopg2
 import psycopg2.extras
 from flask import g, current_app, session
-from flask.ext.babel import gettext
-from flask.ext.security import current_user
+from flask_babel import gettext
+from flask_security import current_user
 from pgadmin.utils.crypto import decrypt
 from psycopg2.extensions import adapt
 

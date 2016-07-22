@@ -16,8 +16,8 @@ import decimal
 
 import dateutil.parser as dateutil_parser
 from flask import current_app
-from flask.ext.babel import gettext
-from flask.ext.security import current_user
+from flask_babel import gettext
+from flask_security import current_user
 
 from pgadmin.model import db, Preferences as PrefTable, \
     ModulePreference as ModulePrefTable, UserPreference as UserPrefTable, \

@@ -13,8 +13,8 @@ import traceback
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
-from flask.ext.babel import gettext
-from flask.ext.security import current_user
+from flask_babel import gettext
+from flask_security import current_user
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \

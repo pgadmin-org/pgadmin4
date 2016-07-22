@@ -18,8 +18,8 @@ from sys import platform as _platform
 
 import simplejson as json
 from flask import render_template, Response, session, request as req, url_for
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response

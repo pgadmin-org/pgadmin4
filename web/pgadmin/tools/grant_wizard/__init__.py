@@ -12,8 +12,8 @@
 import simplejson as json
 from flask import Response, url_for
 from flask import render_template, request, current_app
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \

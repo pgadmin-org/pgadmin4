@@ -15,9 +15,9 @@ from collections import defaultdict
 from importlib import import_module
 
 from flask import Flask, abort, request, current_app
-from flask.ext.babel import Babel, gettext
-from flask.ext.login import user_logged_in
-from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask_babel import Babel, gettext
+from flask_login import user_logged_in
+from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
 from htmlmin.minify import html_minify

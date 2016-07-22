@@ -14,9 +14,9 @@ import re
 
 from flask import render_template, request, \
     url_for, Response, abort
-from flask.ext.babel import gettext as _
-from flask.ext.security import login_required, roles_required, current_user
-from flask.ext.security.utils import encrypt_password
+from flask_babel import gettext as _
+from flask_security import login_required, roles_required, current_user
+from flask_security.utils import encrypt_password
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error

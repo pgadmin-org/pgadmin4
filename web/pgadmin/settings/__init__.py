@@ -12,9 +12,9 @@
 import traceback
 
 from flask import Response, request, render_template, url_for
-from flask.ext.babel import gettext
-from flask.ext.login import current_user
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_login import current_user
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request
 from pgadmin.utils.menu import MenuItem

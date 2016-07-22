@@ -13,8 +13,8 @@ MODULE_NAME = 'about'
 import sys
 
 from flask import Response, render_template, __version__, url_for
-from flask.ext.babel import gettext
-from flask.ext.security import current_user, login_required
+from flask_babel import gettext
+from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 

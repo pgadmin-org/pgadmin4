@@ -8,7 +8,7 @@
 ##########################################################################
 
 from flask import redirect, url_for
-from flask.ext.security import login_required
+from flask_security import login_required
 
 from pgadmin import PgAdminModule
 

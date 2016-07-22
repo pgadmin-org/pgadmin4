@@ -16,8 +16,8 @@ import pickle
 import random
 
 from flask import Response, url_for, render_template, session, request
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory

@@ -12,9 +12,9 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 import six
 from flask import current_app, render_template, url_for, make_response, flash
-from flask.ext.babel import gettext
-from flask.ext.login import current_user
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_login import current_user
+from flask_security import login_required
 from flask_gravatar import Gravatar
 from pgadmin.settings import get_setting
 from pgadmin.utils import PgAdminModule

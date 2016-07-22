@@ -9,7 +9,7 @@
 
 from abc import ABCMeta
 
-from flask.ext.babel import gettext
+from flask_babel import gettext
 
 
 def _decorate_cls_name(module_name):

@@ -13,7 +13,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers as servers
 from flask import render_template, request, jsonify, current_app
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule, PGChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db

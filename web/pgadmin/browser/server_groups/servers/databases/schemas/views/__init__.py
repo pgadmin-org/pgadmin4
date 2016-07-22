@@ -14,7 +14,7 @@ from functools import wraps
 import pgadmin.browser.server_groups.servers.databases as databases
 import simplejson as json
 from flask import render_template, request, jsonify
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings
 from pgadmin.browser.utils import PGChildNodeView

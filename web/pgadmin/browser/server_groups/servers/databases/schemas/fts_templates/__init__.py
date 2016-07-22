@@ -13,7 +13,7 @@ import json
 from functools import wraps
 
 from flask import render_template, make_response, request, jsonify
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases import DatabaseModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView

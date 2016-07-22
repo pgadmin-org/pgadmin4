@@ -11,7 +11,7 @@
 MODULE_NAME = 'help'
 
 from flask import url_for
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from pgadmin.utils.preferences import Preferences

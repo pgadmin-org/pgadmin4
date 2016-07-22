@@ -11,7 +11,7 @@
 
 import os
 
-from flask.ext.security import current_user, login_required
+from flask_security import current_user, login_required
 
 import config
 

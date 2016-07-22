@@ -15,7 +15,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers as servers
 from flask import render_template, make_response, current_app, request, jsonify
-from flask.ext.babel import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db

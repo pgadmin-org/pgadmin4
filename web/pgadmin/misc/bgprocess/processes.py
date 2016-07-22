@@ -24,8 +24,8 @@ from subprocess import Popen, PIPE
 import pytz
 from dateutil import parser
 from flask import current_app as app
-from flask.ext.babel import gettext as _
-from flask.ext.security import current_user
+from flask_babel import gettext as _
+from flask_security import current_user
 
 import config
 from pgadmin.model import Process, db

@@ -13,7 +13,7 @@ from abc import ABCMeta, abstractmethod
 
 import six
 from flask import render_template
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.utils.ajax import forbidden
 from pgadmin.utils.driver import get_driver
 

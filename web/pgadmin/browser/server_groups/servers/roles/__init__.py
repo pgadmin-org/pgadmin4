@@ -13,7 +13,7 @@ from functools import wraps
 import pgadmin.browser.server_groups as sg
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
-from flask.ext.babel import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \

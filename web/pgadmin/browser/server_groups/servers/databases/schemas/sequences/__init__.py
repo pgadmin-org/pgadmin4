@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask.ext.babel import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \

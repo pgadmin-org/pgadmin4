@@ -15,7 +15,7 @@ from functools import wraps
 import pgadmin.browser.server_groups.servers.databases.schemas.domains \
     as domains
 from flask import render_template, make_response, request, jsonify
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \

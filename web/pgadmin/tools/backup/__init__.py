@@ -14,8 +14,8 @@ import os
 
 from flask import render_template, request, current_app, \
     url_for, Response
-from flask.ext.babel import gettext as _
-from flask.ext.security import login_required, current_user
+from flask_babel import gettext as _
+from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html
 from pgadmin.utils.ajax import make_json_response, bad_request

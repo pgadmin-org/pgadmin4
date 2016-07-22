@@ -13,8 +13,8 @@ MODULE_NAME = 'dashboard'
 from functools import wraps
 
 from flask import render_template, url_for, Response, g
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, internal_server_error
 from pgadmin.utils.ajax import precondition_required

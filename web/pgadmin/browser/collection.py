@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 import six
 from flask import url_for, render_template
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import PGChildModule
 from pgadmin.utils import PgAdminModule

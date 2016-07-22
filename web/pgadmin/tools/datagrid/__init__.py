@@ -16,8 +16,8 @@ import random
 
 from flask import Response, url_for, session, request, make_response
 from flask import current_app as app
-from flask.ext.babel import gettext
-from flask.ext.security import login_required
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.tools.sqleditor.command import *
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
