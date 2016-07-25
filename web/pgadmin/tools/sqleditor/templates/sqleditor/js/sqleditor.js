@@ -2065,7 +2065,7 @@ define(
                 self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
                 // disable save button on file save
                 $("#btn-save").prop('disabled', true);
-                $("#btn-file-menu-dropdown").prop('disabled', true);
+                $("#btn-file-menu-save").css('display', 'none');
               }
             },
             error: function(e) {
@@ -2080,6 +2080,7 @@ define(
           var self = this;
           if(query_tool_obj.getValue().length == 0) {
             $("#btn-save").prop('disabled', true);
+            $("#btn-file-menu-save").css('display', 'none');
             $("#btn-file-menu-dropdown").prop('disabled', true);
           } else {
             if(self.gridView.current_file) {
@@ -2087,6 +2088,7 @@ define(
               self.setTitle(title);
             }
             $("#btn-save").prop('disabled', false);
+            $("#btn-file-menu-save").css('display', 'block');
             $("#btn-file-menu-dropdown").prop('disabled', false);
           }
         },
