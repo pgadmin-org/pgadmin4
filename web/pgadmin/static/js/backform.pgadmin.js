@@ -967,7 +967,8 @@
       return this;
     },
     showGridControl: function(data) {
-      var gridHeader = _.template([
+      var self = this,
+          gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
           '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
@@ -976,6 +977,11 @@
             gridHeader(data)
             );
 
+      // Clean up existing grid if any (in case of re-render)
+      if (self.grid) {
+        self.grid.remove();
+      }
+
       if (!(data.subnode)) {
         return '';
       }
@@ -983,8 +989,7 @@
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
             data.node_info, subnode, this.field.get('mode'), data.columns
-            ),
-          self = this;
+            );
 
       // Set visibility of Add button
       if (data.mode == 'properties') {
@@ -1201,7 +1206,8 @@
       return this;
     },
     showGridControl: function(data) {
-      var gridHeader = ["<div class='subnode-header'>",
+      var self = this,
+          gridHeader = ["<div class='subnode-header'>",
           "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add'>Add</buttton>",
           "</div>"].join("\n");
@@ -1210,8 +1216,13 @@
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
           gridSchema = Backform.generateGridColumnsFromModel(
             data.node_info, subnode, this.field.get('mode'), data.columns, data.schema_node
-            ), self = this,
+            ),
           pgBrowser = window.pgAdmin.Browser;
+
+      // Clean up existing grid if any (in case of re-render)
+      if (self.grid) {
+        self.grid.remove();
+      }
 
       // Set visibility of Add button
       if (data.disabled || data.canAdd == false) {

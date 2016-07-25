@@ -371,6 +371,11 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               titleTmpl({label: data.label})
             );
 
+      // Clean up existing grid if any (in case of re-render)
+      if (self.grid) {
+        self.grid.remove();
+      }
+
       $gridBody.append(self.generateHeader(data));
 
       var gridSchema = _.clone(this.gridSchema);

@@ -380,6 +380,11 @@
               titleTmpl(data)
             );
 
+      // Clean up existing grid if any (in case of re-render)
+      if (self.grid) {
+        self.grid.remove();
+      }
+
       var gridSchema = _.clone(this.gridSchema);
 
       _.each(gridSchema.columns, function(col) {
