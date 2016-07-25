@@ -689,7 +689,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                 return internal_server_error(errormsg=r_set)
 
             for row in r_set['rows']:
-                res.append({'label': row['fdwvalue'], 'value': row['fdwvalue']})
+                res.append({'label': row['schema_prefix_fdw_val'], 'value': row['schema_prefix_fdw_val']})
 
             return make_json_response(data=res, status=200)
 
@@ -715,7 +715,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                 return internal_server_error(errormsg=r_set)
 
             for row in r_set['rows']:
-                res.append({'label': row['fdwhan'], 'value': row['fdwhan']})
+                res.append({'label': row['schema_prefix_fdw_hand'], 'value': row['schema_prefix_fdw_hand']})
 
             return make_json_response(
                 data=res,

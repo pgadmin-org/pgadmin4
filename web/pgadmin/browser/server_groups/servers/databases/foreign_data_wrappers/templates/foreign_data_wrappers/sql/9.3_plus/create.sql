@@ -3,9 +3,9 @@
 {% if data.name %}
 CREATE FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}{% if data.fdwvalue %}
 
-    VALIDATOR {{ conn|qtIdent(data.fdwvalue) }}{%endif%}{% if data.fdwhan %}
+    VALIDATOR {{ data.fdwvalue }}{%endif%}{% if data.fdwhan %}
 
-    HANDLER {{ conn|qtIdent(data.fdwhan) }}{% endif %}{% if data.fdwoptions %}
+    HANDLER {{ data.fdwhan }}{% endif %}{% if data.fdwoptions %}
 
 {% set addAlter = "False" %}
 {% for variable in data.fdwoptions %}

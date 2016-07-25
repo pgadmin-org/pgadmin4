@@ -15,7 +15,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 {# ============= Update foreign data wrapper validator ============= #}
 {% if data.fdwvalue and data.fdwvalue != o_data.fdwvalue %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    VALIDATOR {{ conn|qtIdent(data.fdwvalue) }};
+    VALIDATOR {{ data.fdwvalue }};
 
 {% endif %}
 {% if data.fdwvalue == '' and data.fdwvalue != o_data.fdwvalue %}
@@ -26,7 +26,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 {# ============= Update foreign data wrapper handler ============= #}
 {% if data.fdwhan and data.fdwhan != o_data.fdwhan %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    HANDLER {{ conn|qtIdent(data.fdwhan) }};
+    HANDLER {{ data.fdwhan }};
 
 {% endif %}
 {% if data.fdwhan == '' and data.fdwhan != o_data.fdwhan %}
