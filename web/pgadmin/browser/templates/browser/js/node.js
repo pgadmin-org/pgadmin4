@@ -126,7 +126,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           _.each(self.hasScriptTypes, function(stype) {
 
             var type_label = S(
-                "{{ _("%%s Script") }}"
+                "{{ _("%s Script") }}"
                 ).sprintf(stype.toUpperCase()).value(),
               stype = stype.toLowerCase();
 
@@ -284,7 +284,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 Alertify.pgNotifier(
                   error, jqxhr,
                   S(
-                    "{{ _("Error retrieving the properties - %%s.") }}"
+                    "{{ _("Error retrieving properties: %s.") }}"
                     ).sprintf(message).value()
                   );
               });
@@ -437,7 +437,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!d)
             return;
 
-          l = S('{{ _("Create - %%s") }}').sprintf(
+          l = S('{{ _("Create - %s") }}').sprintf(
               [this.label]).value();
           p = addPanel();
 
@@ -454,14 +454,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
              **/
             var mode = p.$container.attr('action-mode');
             if (mode) {
-              var msg = '{{ _('Are you sure want to stop editing the properties of the %%s - "%%s"?') }}';
+              var msg = '{{ _('Are you sure want to stop editing the properties of %s "%s"?') }}';
               if (args.action == 'edit') {
-                msg = '{{ _('Are you sure want to reset the current changes and re-open the panel for %%s - "%%s"?') }}';
+                msg = '{{ _('Are you sure want to reset the current changes and re-open the panel for %s "%s"?') }}';
               }
 
               Alertify.confirm(
                 '{{ _('Edit in progress?') }}',
-                S(msg).sprintf(o.label, d.label).value(),
+                S(msg).sprintf(o.label.toLowerCase(), d.label).value(),
                 function() {
                   setTimeout(function() {
                     o.showProperties(i, d, p, args.action);
@@ -509,9 +509,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         var msg, title;
         if (input.url == 'delete') {
 
-          msg = S('{{ _('Are you sure you want to drop %%s "%%s" and all the objects that depend on it?') }}')
-            .sprintf(obj.label, d.label).value();
-          title = S('{{ _('DROP CASCADE %%s?') }}').sprintf(obj.label).value();
+          msg = S('{{ _('Are you sure you want to drop %s "%s" and all the objects that depend on it?') }}')
+            .sprintf(obj.label.toLowerCase(), d.label).value();
+          title = S('{{ _('DROP CASCADE %s?') }}').sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
@@ -524,9 +524,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             return;
           }
         } else {
-          msg = S('{{ _('Are you sure you want to drop %%s "%%s"?') }}')
-            .sprintf(obj.label, d.label).value();
-          title = S('{{ _('DROP %%s?') }}').sprintf(obj.label).value();
+          msg = S('{{ _('Are you sure you want to drop %s "%s"?') }}')
+            .sprintf(obj.label.toLowerCase(), d.label).value();
+          title = S('{{ _('DROP %s?') }}').sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDrop) ?
                 obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
@@ -572,7 +572,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   } catch (e) {}
                 }
                 pgBrowser.report_error(
-                    S('{{ _('Error dropping %%s: "%%s"') }}')
+                    S('{{ _('Error dropping %s: "%s"') }}')
                       .sprintf(obj.label, objName)
                         .value(), msg);
               }
@@ -1057,7 +1057,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                         Alertify.pgNotifier(
                           "error", jqxhr,
                           S(
-                            "{{ _("Error saving properties: %%s") }}"
+                            "{{ _("Error saving properties: %s") }}"
                             ).sprintf(jqxhr.statusText).value()
                           );
                       }

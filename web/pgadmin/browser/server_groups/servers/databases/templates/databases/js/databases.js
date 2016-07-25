@@ -110,7 +110,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
           Alertify.confirm(
             '{{ _('Disconnect the database') }}',
-            S('{{ _('Are you sure you want to disconnect the database - %%s ?') }}').sprintf(d.label).value(),
+            S('{{ _('Are you sure you want to disconnect the database - %s?') }}').sprintf(d.label).value(),
             function(evt) {
               var data = d;
               $.ajax({

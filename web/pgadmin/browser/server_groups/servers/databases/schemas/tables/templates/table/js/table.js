@@ -159,7 +159,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            S('{{ _('Are you sure you want to truncate table - %%s ?') }}').sprintf(d.label).value(),
+            S('{{ _('Are you sure you want to truncate table %s?') }}').sprintf(d.label).value(),
             function (e) {
             if (e) {
               var data = d;
@@ -208,7 +208,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            S('{{ _('Are you sure you want to reset table statistics - %%s ?') }}').sprintf(d.label).value(),
+            S('{{ _('Are you sure you want to reset table statistics for %s?') }}').sprintf(d.label).value(),
             function (e) {
             if (e) {
               var data = d;

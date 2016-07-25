@@ -181,8 +181,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            '{{ _('Disconnect the server') }}',
-            S('{{ _('Are you sure you want to disconnect the server - %%s ?') }}').sprintf(d.label).value(),
+            '{{ _('Disconnect server') }}',
+            S('{{ _('Are you sure you want to disconnect the server %s?') }}').sprintf(d.label).value(),
             function(evt) {
               $.ajax({
                 url: obj.generate_url(i, 'connect', d, true),
@@ -260,7 +260,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           alertify.confirm(
             '{{ _('Reload server configuration') }}',
-            S('{{ _('Are you sure you want to reload the server configuration on %%s?') }}').sprintf(d.label).value(),
+            S('{{ _('Are you sure you want to reload the server configuration on %s?') }}').sprintf(d.label).value(),
             function(evt) {
               $.ajax({
                 url: obj.generate_url(i, 'reload', d, true),

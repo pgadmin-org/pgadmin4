@@ -167,14 +167,14 @@ define([
                 return errmsg;
               } else if (!!this.get('email') && !email_filter.test(this.get('email'))) {
 
-                errmsg =  S("{{ _("Invalid Email id: %%s")}}").sprintf(
+                errmsg =  S("{{ _("Invalid email address: %s.")}}").sprintf(
                             this.get('email')
                           ).value();
                 this.errorModel.set('email', errmsg);
                 return errmsg;
               } else if (!!this.get('email') && this.collection.where({"email":this.get('email')}).length > 1) {
 
-                errmsg =  S("{{ _("This email id %%s already exist.")}}").sprintf(
+                errmsg =  S("{{ _("The email address %s already exists.")}}").sprintf(
                             this.get('email')
                           ).value();
 
@@ -188,7 +188,7 @@ define([
                     _.isNull(this.get('role')) ||
                     String(this.get('role')).replace(/^\s+|\s+$/g, '') == '')) {
 
-                errmsg =  S("{{ _("Role cannot be empty for user %%s")}}").sprintf(
+                errmsg =  S("{{ _("Role cannot be empty for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -204,7 +204,7 @@ define([
                       _.isNull(this.get('newPassword')) ||
                       this.get('newPassword') == '')) {
 
-                  errmsg =  S("{{ _("Password cannot be empty for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Password cannot be empty for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -214,7 +214,7 @@ define([
                   !_.isNull(this.get('newPassword')) &&
                   this.get('newPassword').length < 6) {
 
-                  errmsg =  S("{{ _("Password must be at least 6 characters for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Password must be at least 6 characters for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -228,7 +228,7 @@ define([
                       _.isNull(this.get('confirmPassword')) ||
                       this.get('confirmPassword') == '')) {
 
-                  errmsg =  S("{{ _("Confirm Password cannot be empty for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Confirm Password cannot be empty for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -241,7 +241,7 @@ define([
                 if(!!this.get('newPassword') && !!this.get('confirmPassword') &&
                     this.get('newPassword') != this.get('confirmPassword')) {
 
-                  errmsg =  S("{{ _("Passwords do not match for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Passwords do not match for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -271,7 +271,7 @@ define([
                     !this.get('newPassword') == '' &&
                     this.get('newPassword').length < 6) {
 
-                  errmsg =  S("{{ _("Password must be at least 6 characters for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Password must be at least 6 characters for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -281,7 +281,7 @@ define([
                       _.isNull(this.get('confirmPassword')) ||
                       this.get('confirmPassword') == '') {
 
-                  errmsg =  S("{{ _("Confirm password cannot be empty for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Confirm Password cannot be empty for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -290,7 +290,7 @@ define([
                 } else if (!!this.get('newPassword') && !!this.get('confirmPassword') &&
                           this.get('newPassword') != this.get('confirmPassword')) {
 
-                  errmsg =  S("{{ _("Passwords do not match for user %%s")}}").sprintf(
+                  errmsg =  S("{{ _("Passwords do not match for user %s.")}}").sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -513,14 +513,14 @@ define([
                                    'confirmPassword':undefined});
 
                             m.startNewSession();
-                            alertify.success(S("{{_("User '%%s' saved.")|safe }}").sprintf(
+                            alertify.success(S("{{_("User '%s' saved.")|safe }}").sprintf(
                               m.get('email')
                             ).value());
                           },
                           error: function(res, jqxhr) {
                             m.startNewSession();
                             alertify.error(
-                              S("{{_("Error during saving user: '%%s'")|safe }}").sprintf(
+                              S("{{_("Error saving user: '%s'")|safe }}").sprintf(
                                 jqxhr.responseJSON.errormsg
                               ).value()
                             );

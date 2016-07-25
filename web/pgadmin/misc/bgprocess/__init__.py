@@ -55,7 +55,7 @@ class BGProcessModule(PgAdminModule):
             'EXECUTION_TIME': _('Execution time'),
             'running': _('Running...'),
             'successfully_finished': _("Successfully completed."),
-            'failed_with_exit_code': _("Failed (exit code: %%s).")
+            'failed_with_exit_code': _("Failed (exit code: %s).")
         }
 
 

@@ -249,7 +249,7 @@ msg = data.errormsg;
 } catch (e) {}
 }
 pgBrowser.report_error(
-S('{{ _('Error fetching sql for script: "%%s"') }}')
+S('{{ _('Error fetching SQL for script: "%s"') }}')
 .sprintf(msg)
 .value(), msg);
 }

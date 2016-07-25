@@ -482,7 +482,7 @@ define(
         // Open the Alertify dialog for the import/export module
         Alertify.ImportDialog(
             S(
-              "{{ _("Import/Export data - table '%%s'") }}"
+              "{{ _("Import/Export data - table '%s'") }}"
             ).sprintf(treeInfo.table.label).value(), node, i, d
          ).set('resizable',true).resizeTo('70%','80%');
       }
