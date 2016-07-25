@@ -98,7 +98,6 @@ private:
     void createActions();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
-    bool checkClientDownload(const QUrl &name, const QNetworkRequest &request);
 };
 
 #endif // BROWSERWINDOW_H
