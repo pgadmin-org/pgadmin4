@@ -430,6 +430,18 @@ class ResourceGroupView(NodeView):
             status, rgname = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=rgname)
+
+            if rgname is None:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified resource group could not be found.\n'
+                    )
+                )
+
             # drop resource group
             sql = render_template("/".join([self.template_path, 'delete.sql']), rgname=rgname, conn=self.conn)
             status, res = self.conn.execute_scalar(sql)

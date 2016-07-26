@@ -383,6 +383,17 @@ class SequenceView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=_(
+                        'Error: Object not found.'
+                    ),
+                    info=_(
+                        'The specified sequence could not be found.\n'
+                    )
+                )
+
             SQL = render_template("/".join([self.template_path, 'delete.sql']), data=res['rows'][0], cascade=cascade)
             status, res = self.conn.execute_scalar(SQL)
             if not status:

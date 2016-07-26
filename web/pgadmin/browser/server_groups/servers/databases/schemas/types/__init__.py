@@ -965,6 +965,17 @@ class TypeView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified type could not be found.\n'
+                    )
+                )
+
             # Making copy of output for future use
             data = dict(res['rows'][0])
 

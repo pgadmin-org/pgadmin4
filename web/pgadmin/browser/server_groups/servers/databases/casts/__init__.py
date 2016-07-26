@@ -454,6 +454,17 @@ class CastView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified cast object could not be found.\n'
+                    )
+                )
+
             # drop cast
             result = res['rows'][0]
             sql = render_template("/".join([self.template_path, 'delete.sql']),

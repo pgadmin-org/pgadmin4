@@ -488,6 +488,18 @@ class ForeignServerView(PGChildNodeView):
             status, name = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=name)
+
+            if name is None:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified foreign server could not be found.\n'
+                    )
+                )
+
             # drop foreign server
             sql = render_template("/".join([self.template_path, 'delete.sql']), name=name, cascade=cascade,
                                   conn=self.conn)

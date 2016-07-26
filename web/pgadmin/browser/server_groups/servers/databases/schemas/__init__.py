@@ -616,6 +616,18 @@ It may have been removed by another user.
             status, name = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=name)
+
+            if name is None:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified schema could not be found.\n'
+                    )
+                )
+
             # drop schema
             SQL = render_template(
                 "/".join([self.template_path, 'sql/delete.sql']),

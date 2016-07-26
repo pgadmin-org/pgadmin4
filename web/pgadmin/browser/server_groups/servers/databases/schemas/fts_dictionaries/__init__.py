@@ -553,10 +553,16 @@ class FtsDictionaryView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            if len(res['rows']) == 0:
-                return gone(_("""
-                        Could not find the FTS Dictionary node to delete.
-                    """))
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=_(
+                        'Error: Object not found.'
+                    ),
+                    info=_(
+                        'The specified FTS dictionary could not be found.\n'
+                    )
+                )
 
             # Drop FTS Dictionary
             result = res['rows'][0]

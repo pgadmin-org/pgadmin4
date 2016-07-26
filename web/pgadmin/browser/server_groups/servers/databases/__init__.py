@@ -599,6 +599,9 @@ class DatabaseView(PGChildNodeView):
                 return make_json_response(
                     success=0,
                     errormsg=_(
+                        'Error: Object not found.'
+                    ),
+                    info=_(
                         'The specified database could not be found.\n'
                     )
                 )

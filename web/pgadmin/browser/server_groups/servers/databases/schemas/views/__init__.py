@@ -575,6 +575,17 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res_data)
 
+            if not res_data['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified view could not be found.\n'
+                    )
+                )
+
             # drop view
             SQL = render_template(
                 "/".join([

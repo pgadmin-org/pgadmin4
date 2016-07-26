@@ -368,9 +368,15 @@ class TablespaceView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=rset)
 
-            if len(rset['rows']) != 1:
-                return gone(
-                    errormsg=gettext("Could not find the tablespace on the server.")
+            if not rset['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified tablespace could not be found.\n'
+                    )
                 )
 
             # drop tablespace

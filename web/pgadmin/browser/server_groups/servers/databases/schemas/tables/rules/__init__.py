@@ -377,6 +377,18 @@ class RuleView(PGChildNodeView):
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res_data)
+
+            if not res_data['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified rule could not be found.\n'
+                    )
+                )
+
             # drop rule
             rset = res_data['rows'][0]
             SQL = render_template("/".join(

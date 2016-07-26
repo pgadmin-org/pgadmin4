@@ -508,6 +508,17 @@ class CheckConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=_(
+                        'Error: Object not found.'
+                    ),
+                    info=_(
+                        'The specified check constraint could not be found.\n'
+                    )
+                )
+
             data = res['rows'][0]
 
             SQL = render_template("/".join([self.template_path,
