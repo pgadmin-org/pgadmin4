@@ -267,6 +267,12 @@ STORAGE_DIR = os.path.join(
 THREADED_MODE = True
 
 ##########################################################################
+# Do not allow SQLALCHEMY to track modification as it is going to be
+# deprecated in future
+##########################################################################
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+##########################################################################
 # Local config settings
 ##########################################################################
 
