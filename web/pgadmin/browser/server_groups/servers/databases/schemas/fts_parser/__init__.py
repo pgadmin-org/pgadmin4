@@ -9,7 +9,7 @@
 
 """Defines views for management of FTS Parser node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 from flask import render_template, request, jsonify, current_app
@@ -345,7 +345,8 @@ class FtsParserView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -413,7 +414,8 @@ class FtsParserView(PGChildNodeView):
         :param pid: fts parser id
         """
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
 
         # Fetch sql query to update fts parser
         sql = self.get_sql(gid, sid, did, scid, data, pid)

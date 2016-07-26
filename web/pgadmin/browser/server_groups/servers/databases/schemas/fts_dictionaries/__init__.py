@@ -9,7 +9,7 @@
 
 """Defines views for management of Fts Dictionary node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -409,7 +409,8 @@ class FtsDictionaryView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -475,7 +476,8 @@ class FtsDictionaryView(PGChildNodeView):
         :param dcid: fts dictionary id
         """
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
 
         # Fetch sql query to update fts dictionary
         sql = self.get_sql(gid, sid, did, scid, data, dcid)
@@ -606,7 +608,7 @@ class FtsDictionaryView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 

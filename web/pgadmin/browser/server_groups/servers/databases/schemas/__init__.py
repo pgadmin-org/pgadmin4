@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import json
+import simplejson as json
 import re
 from functools import wraps
 
@@ -262,7 +262,7 @@ class SchemaView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls)
+            acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -490,8 +490,9 @@ It may have been removed by another user.
            sid: Server ID
            did: Database ID
         """
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         required_args = {
             'name': 'Name'
@@ -559,7 +560,7 @@ It may have been removed by another user.
            scid: Schema ID
         """
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
         try:
             SQL = self.get_sql(gid, sid, data, scid)
@@ -669,7 +670,7 @@ It may have been removed by another user.
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -769,14 +770,16 @@ It may have been removed by another user.
             _=gettext, data=data, conn=self.conn
         )
 
-        sql_header = """
--- SCHEMA: {0}
+        sql_header = "-- SCHEMA: {0}\n\n-- ".format(data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
--- DROP SCHEMA {0};
+        # drop schema
+        sql_header += render_template(
+            "/".join([self.template_path, 'sql/delete.sql']),
+            _=gettext, name=data['name'], conn=self.conn, cascade=False)
 
-""".format(data['name'])
-
-        SQL = sql_header + SQL
+        SQL = sql_header + '\n\n' + SQL
 
         return ajax_response(response=SQL.strip("\n"))
 
@@ -959,6 +962,8 @@ It may have been removed by another user.
 -- DROP SCHEMA {0};
 
 """.format(old_data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
 

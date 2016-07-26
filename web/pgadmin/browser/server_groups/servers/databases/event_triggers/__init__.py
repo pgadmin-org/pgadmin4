@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import json
+import simplejson as json
 import re
 from functools import wraps
 
@@ -327,7 +327,10 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
         required_args = {
             'name': 'Name',
             'eventowner': 'Owner',
@@ -390,7 +393,9 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         try:
             sql = self.get_sql(data, etid)
@@ -500,7 +505,7 @@ class EventTriggerView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
         try:
@@ -601,6 +606,8 @@ class EventTriggerView(PGChildNodeView):
                 return internal_server_error(errormsg=db_name)
 
             sql_header = "-- Event Trigger: {0} on database {1}\n\n-- ".format(result['name'], db_name)
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
 
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),

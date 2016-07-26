@@ -9,7 +9,7 @@
 
 """Implements Cast Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -345,7 +345,9 @@ class CastView(PGChildNodeView):
             'trgtyp'
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -396,7 +398,9 @@ class CastView(PGChildNodeView):
         :param gid: group id
         :return:
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         sql = self.get_sql(gid, sid, did, data, cid)
         try:
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -560,7 +564,10 @@ class CastView(PGChildNodeView):
         :return:
         """
         res = []
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
         sql = render_template("/".join([self.template_path, 'functions.sql']),
                               srctyp=data['srctyp'],
                               trgtyp=data['trgtyp'])

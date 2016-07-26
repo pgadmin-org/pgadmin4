@@ -8,7 +8,7 @@
 ##########################################################################
 """Defines views for management of server groups"""
 
-import json
+import simplejson as json
 from abc import ABCMeta, abstractmethod
 
 import six
@@ -156,7 +156,9 @@ class ServerGroupView(NodeView):
             user_id=current_user.id,
             id=gid).first()
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         if servergroup is None:
             return make_json_response(
@@ -201,7 +203,10 @@ class ServerGroupView(NodeView):
             )
 
     def create(self):
-        data = request.form if request.form else json.loads(request.data.decode())
+        """Creates new server-group """
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         if data[u'name'] != '':
             try:
                 check_sg = ServerGroup.query.filter_by(

@@ -9,7 +9,7 @@
 
 """ Implements Index Node """
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -522,12 +522,12 @@ class IndexesView(PGChildNodeView):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -683,7 +683,9 @@ class IndexesView(PGChildNodeView):
            tid: Table ID
            idx: Index ID
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         data['schema'] = self.schema
         data['table'] = self.table
         try:
@@ -732,7 +734,7 @@ class IndexesView(PGChildNodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -835,6 +837,9 @@ class IndexesView(PGChildNodeView):
             SQL = self.get_sql(scid, tid, None, data)
 
             sql_header = "-- Index: {0}\n\n-- ".format(data['name'])
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
+
             sql_header += render_template("/".join([self.template_path,
                                                     'delete.sql']),
                                           data=data, conn=self.conn)

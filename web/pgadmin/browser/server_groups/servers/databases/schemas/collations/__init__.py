@@ -9,7 +9,7 @@
 
 """ Implements Collation Node """
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -378,7 +378,7 @@ class CollationView(PGChildNodeView):
         """
 
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
 
         required_args = [
@@ -502,7 +502,7 @@ class CollationView(PGChildNodeView):
            coid: Collation ID
         """
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
         SQL = self.get_sql(gid, sid, data, scid, coid)
         try:
@@ -549,7 +549,7 @@ class CollationView(PGChildNodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -622,6 +622,8 @@ class CollationView(PGChildNodeView):
                               data=data, conn=self.conn)
 
         sql_header = "-- Collation: {0};\n\n-- ".format(data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
         sql_header += render_template("/".join([self.template_path,
                                                 'delete.sql']),
                                       name=data['name'])

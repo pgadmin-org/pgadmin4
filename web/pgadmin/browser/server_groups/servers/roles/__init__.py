@@ -111,7 +111,7 @@ class RoleView(PGChildNodeView):
 
             data = None
             if request.data:
-                data = json.loads(request.data)
+                data = json.loads(request.data, encoding='utf-8')
             else:
                 data = dict()
                 req = request.args or request.form
@@ -125,7 +125,7 @@ class RoleView(PGChildNodeView):
                         u'rolcatupdate', u'variables', u'rolmembership',
                         u'seclabels'
                     ]:
-                        data[key] = json.loads(val)
+                        data[key] = json.loads(val, encoding='utf-8')
                     else:
                         data[key] = val
 
@@ -685,7 +685,7 @@ rolmembership:{
     def drop(self, gid, sid, rid):
 
         status, res = self.conn.execute_2darray(
-            "DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
+            u"DROP ROLE {0};".format(self.qtIdent(self.conn, self.role))
         )
         if not status:
             return internal_server_error(

@@ -9,7 +9,7 @@
 
 """ Implements Extension Node """
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -216,8 +216,10 @@ class ExtensionView(PGChildNodeView):
             'name'
         ]
 
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -263,8 +265,9 @@ class ExtensionView(PGChildNodeView):
         """
         This function will update an extension object
         """
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         SQL = self.getSQL(gid, sid, data, did, eid)
 
         try:

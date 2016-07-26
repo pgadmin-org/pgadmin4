@@ -9,7 +9,7 @@
 
 """Implements User Mapping Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers as servers
@@ -361,7 +361,9 @@ class UserMappingView(PGChildNodeView):
             'name'
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -435,7 +437,9 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         sql = self.get_sql(gid, sid, data, did, fid, fsid, umid)
         try:
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -565,7 +569,7 @@ class UserMappingView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -725,6 +729,8 @@ class UserMappingView(PGChildNodeView):
 -- DROP USER MAPPING FOR {0} SERVER {1}
 
 """.format(res['rows'][0]['name'], fdw_data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         sql = sql_header + sql
 

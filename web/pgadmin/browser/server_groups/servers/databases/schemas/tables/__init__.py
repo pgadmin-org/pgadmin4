@@ -9,7 +9,7 @@
 
 """ Implements Table Node """
 
-import json
+import simplejson as json
 import re
 from functools import wraps
 
@@ -1348,11 +1348,13 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
            did: Database ID
            scid: Schema ID
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -1381,7 +1383,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         # We will convert it again to list
         if 'coll_inherits' in data and \
                 isinstance(data['coll_inherits'], str):
-            data['coll_inherits'] = json.loads(data['coll_inherits'])
+            data['coll_inherits'] = json.loads(
+                data['coll_inherits'], encoding='utf-8'
+            )
 
         if 'foreign_key' in data:
             for c in data['foreign_key']:
@@ -1434,12 +1438,12 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -1547,7 +1551,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
            tid: Table ID
         """
         # Below will decide if it's simple drop or drop with cascade call
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         # Convert str 'true' to boolean type
         is_cascade = json.loads(data['cascade'])
 
@@ -1593,7 +1599,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
            tid: Table ID
         """
         # Below will decide if it's simple drop or drop with cascade call
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         # Convert str 'true' to boolean type
         is_enable = json.loads(data['enable'])
 
@@ -1675,7 +1683,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -2397,9 +2405,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 c['cltype'] = self._cltype_formatter(c['cltype'])
                 c['hasSqrBracket'] = self.hasSqrBracket
 
-        sql_header = "-- Table: {0}\n\n-- ".format(self.qtIdent(self.conn,
+        sql_header = u"-- Table: {0}\n\n-- ".format(self.qtIdent(self.conn,
                                                                 data['schema'],
                                                                 data['name']))
+
         sql_header += render_template("/".join([self.template_path,
                                                 'delete.sql']),
                                       data=data, conn=self.conn)
@@ -2490,6 +2499,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             data['cols'] = ', '.join(cols)
 
             sql_header = "\n-- Index: {0}\n\n-- ".format(data['name'])
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
+
             sql_header += render_template("/".join([self.index_template_path,
                                                     'delete.sql']),
                                           data=data, conn=self.conn)
@@ -2559,6 +2571,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             data = trigger_definition(data)
 
             sql_header = "\n-- Trigger: {0}\n\n-- ".format(data['name'])
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
+
             sql_header += render_template("/".join([self.trigger_template_path,
                                                     'delete.sql']),
                                           data=data, conn=self.conn)
@@ -2656,7 +2671,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         else:
             columns = '*'
 
-        sql = "SELECT {0}\n\tFROM {1};".format(
+        sql = u"SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data['schema'], data['name'])
         )
@@ -2700,7 +2715,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
                 columns, values
             )
@@ -2749,7 +2764,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             else:
                 columns = "=?, ".join(columns)
 
-            sql = "UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+            sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
                 columns
             )
@@ -2783,7 +2798,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         data = res['rows'][0]
 
-        sql = "DELETE FROM {0}\n\tWHERE <condition>;".format(
+        sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['schema'], data['name'])
         )
 

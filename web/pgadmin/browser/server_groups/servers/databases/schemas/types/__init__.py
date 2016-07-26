@@ -9,7 +9,7 @@
 
 """ Implements Type Node """
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -793,7 +793,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
            scid: Schema ID
            tid: Type ID
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         required_args = {
             'name': 'Name',
             'typtype': 'Type'
@@ -898,7 +900,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
            tid: Type ID
         """
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         try:
             SQL = self.get_sql(gid, sid, data, scid, tid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
@@ -1015,7 +1019,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
         # converting nested request data in proper json format
         for key, val in req.items():
             if key in ['composite', 'enum', 'seclabels', 'typacl']:
-                data[key] = json.loads(val)
+                data[key] = json.loads(val, encoding='utf-8')
             else:
                 data[key] = val
 
@@ -1191,6 +1195,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         # We are appending headers here for sql panel
         sql_header = "-- Type: {0}\n\n-- ".format(data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
+
         sql_header += render_template("/".join([self.template_path,
                                                 'delete.sql']),
                                       data=data, conn=self.conn)

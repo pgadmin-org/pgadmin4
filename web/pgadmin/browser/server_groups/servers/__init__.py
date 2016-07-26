@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import json
+import simplejson as json
 import traceback
 
 import pgadmin.browser.server_groups as sg
@@ -400,7 +400,9 @@ class ServerNode(PGChildNodeView):
         }
 
         idx = 0
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -554,7 +556,9 @@ class ServerNode(PGChildNodeView):
             u'role'
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for arg in required_args:
             if arg not in data:
@@ -740,8 +744,9 @@ class ServerNode(PGChildNodeView):
         if user is None:
             return unauthorized(gettext("Unauthorized request."))
 
-        data = request.form if request.form else json.loads(request.data) if \
-            request.data else {}
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        ) if request.data else {}
 
         password = None
         save_password = False
@@ -969,7 +974,7 @@ class ServerNode(PGChildNodeView):
             sid: Server id
         """
         try:
-            data = json.loads(request.form['data'])
+            data = json.loads(request.form['data'], encoding='utf-8')
             if data and ('password' not in data or
                                  data['password'] == '' or
                                  'newPassword' not in data or

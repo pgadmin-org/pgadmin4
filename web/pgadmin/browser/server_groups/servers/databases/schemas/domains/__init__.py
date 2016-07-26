@@ -9,7 +9,7 @@
 
 """Implements the Domain Node."""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -189,7 +189,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
 
             data = {}
             if request.data:
-                req = json.loads(request.data.decode())
+                req = json.loads(request.data, encoding='utf-8')
             else:
                 req = request.args or request.form
 
@@ -218,7 +218,7 @@ class DomainView(PGChildNodeView, DataTypeReader):
                     if key in list_params and req[key] != '' \
                             and req[key] is not None:
                         # Coverts string into python list as expected.
-                        data[key] = json.loads(req[key])
+                        data[key] = json.loads(req[key], encoding='utf-8')
                     elif key == 'typnotnull':
                         data[key] = True if req[key] == 'true' or req[key] is \
                                                                   True else \
@@ -706,6 +706,8 @@ AND relkind != 'c'))"""
 -- DROP DOMAIN {0};
 
 """.format(data['basensp'] + '.' + data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
 

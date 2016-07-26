@@ -9,7 +9,7 @@
 
 """Defines views for management of Fts Configuration node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -404,7 +404,8 @@ class FtsConfigurationView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -484,7 +485,8 @@ class FtsConfigurationView(PGChildNodeView):
         :param cfgid: fts Configuration id
         """
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
 
         # Fetch sql query to update fts Configuration
         sql = self.get_sql(gid, sid, did, scid, data, cfgid)
@@ -620,7 +622,7 @@ class FtsConfigurationView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 

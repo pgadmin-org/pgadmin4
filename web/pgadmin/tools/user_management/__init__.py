@@ -9,7 +9,7 @@
 
 """Implements pgAdmin4 User Management Utility"""
 
-import json
+import simplejson as json
 import re
 
 from flask import render_template, request, \
@@ -163,7 +163,9 @@ def create():
     Returns:
 
     """
-    data = request.form if request.form else json.loads(request.data.decode())
+    data = request.form if request.form else json.loads(
+        request.data, encoding='utf-8'
+    )
 
     for f in ('email', 'role', 'active', 'newPassword', 'confirmPassword'):
         if f in data and data[f] != '':
@@ -265,7 +267,9 @@ def update(uid):
     if not usr:
         abort(404)
 
-    data = request.form if request.form else json.loads(request.data.decode())
+    data = request.form if request.form else json.loads(
+        request.data, encoding='utf-8'
+    )
 
     try:
         new_data = validate_user(data)

@@ -11,7 +11,7 @@
 
 MODULE_NAME = 'debugger'
 
-import json
+import simplejson as json
 import random
 
 from flask import url_for, Response, render_template, request, session, current_app
@@ -373,7 +373,7 @@ def initialize_target(debug_type, sid, did, scid, func_id):
     # Here we get the value in case of direct debugging so update the session variables accordingly
     # For indirect debugging user will provide the data from another session so below condition will be be required
     if request.method == 'POST':
-        data = json.loads(request.values['data'])
+        data = json.loads(request.values['data'], encoding='utf-8')
         if data:
             d = session['funcData']
             d['args_value'] = data
@@ -582,7 +582,7 @@ def start_debugger_listener(trans_id):
     # If user again start the same debug function with different arguments then we need to save that values to session
     # variable and database.
     if request.method == 'POST':
-        data = json.loads(request.values['data'])
+        data = json.loads(request.values['data'], encoding='utf-8')
         if data:
             function_data = session['functionData']
             session_obj = function_data[str(trans_id)]
@@ -1080,7 +1080,7 @@ def deposit_parameter_value(trans_id):
 
     if conn.connected():
         # get the data sent through post from client
-        data = json.loads(request.values['data'])
+        data = json.loads(request.values['data'], encoding='utf-8')
 
         if data:
             sql = render_template("/".join([template_path, "deposit_value.sql"]), session_id=obj['session_id'],
@@ -1223,7 +1223,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
     """
 
     if request.values['data']:
-        data = json.loads(request.values['data'])
+        data = json.loads(request.values['data'], encoding='utf-8')
 
     try:
         for i in range(0, len(data)):

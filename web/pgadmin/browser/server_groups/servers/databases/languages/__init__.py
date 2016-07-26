@@ -9,7 +9,7 @@
 
 """Implements Language Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
@@ -354,7 +354,9 @@ class LanguageView(PGChildNodeView):
             did: Database ID
             lid: Language ID
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         sql = self.get_sql(data, lid)
 
         try:
@@ -402,7 +404,7 @@ class LanguageView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 

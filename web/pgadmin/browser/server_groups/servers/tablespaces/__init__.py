@@ -6,7 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import json
+import simplejson as json
 import re
 from functools import wraps
 
@@ -252,7 +252,9 @@ class TablespaceView(PGChildNodeView):
             'spclocation': 'Location'
         }
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for arg in required_args:
             if arg not in data:
@@ -318,7 +320,9 @@ class TablespaceView(PGChildNodeView):
         """
         This function will update tablespace object
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         try:
             SQL = self.get_sql(gid, sid, data, tsid)
@@ -411,7 +415,7 @@ class TablespaceView(PGChildNodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError as ve:
                 current_app.logger.exception(ve)
                 data[k] = v
@@ -526,6 +530,9 @@ class TablespaceView(PGChildNodeView):
 -- DROP TABLESPACE {0};
 
 """.format(old_data['name'])
+
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -729,7 +736,7 @@ class TablespaceView(PGChildNodeView):
             sid: Server ID
             tsid: Tablespace ID
         """
-        data = json.loads(request.form['data'])
+        data = json.loads(request.form['data'], encoding='utf-8')
 
         try:
             SQL = render_template("/".join(
@@ -768,7 +775,7 @@ class TablespaceView(PGChildNodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError as ve:
                 current_app.logger.exception(ve)
                 data[k] = v

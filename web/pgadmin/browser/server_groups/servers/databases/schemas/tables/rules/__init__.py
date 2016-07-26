@@ -9,7 +9,7 @@
 
 """Implements Rule Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas as schemas
@@ -290,8 +290,9 @@ class RuleView(PGChildNodeView):
             'name',
         ]
 
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -331,8 +332,9 @@ class RuleView(PGChildNodeView):
         """
         This function will update a rule object
         """
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         SQL = self.getSQL(gid, sid, data, tid, rid)
         try:
             if SQL and SQL.strip('\n') and SQL.strip(' '):

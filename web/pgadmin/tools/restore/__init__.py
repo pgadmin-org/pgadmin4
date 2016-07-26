@@ -9,7 +9,7 @@
 
 """Implements Restore Utility"""
 
-import json
+import simplejson as json
 import os
 
 from flask import render_template, request, current_app, \
@@ -175,9 +175,9 @@ def create_restore_job(sid):
     if request.form:
         # Convert ImmutableDict to dict
         data = dict(request.form)
-        data = json.loads(data['data'][0])
+        data = json.loads(data['data'][0], encoding='utf-8')
     else:
-        data = json.loads(request.data.decode())
+        data = json.loads(request.data, encoding='utf-8')
 
     backup_file = filename_with_file_manager_path(data['file'])
 

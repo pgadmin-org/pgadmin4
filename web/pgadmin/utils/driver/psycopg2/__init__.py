@@ -250,13 +250,23 @@ class Connection(BaseConnection):
                 password = password.decode()
 
         try:
+            if hasattr(str, 'decode'):
+                database = self.db.encode('utf-8')
+                user = mgr.user.encode('utf-8')
+                conn_id = self.conn_id.encode('utf-8')
+            else:
+                database = self.db
+                user = mgr.user
+                conn_id = self.conn_id
+
             import os
-            os.environ['PGAPPNAME'] = '{0} - {1}'.format(config.APP_NAME, self.conn_id)
+            os.environ['PGAPPNAME'] = '{0} - {1}'.format(config.APP_NAME, conn_id)
+
             pg_conn = psycopg2.connect(
                 host=mgr.host,
                 port=mgr.port,
-                database=self.db,
-                user=mgr.user,
+                database=database,
+                user=user,
                 password=password,
                 async=self.async
             )
@@ -277,7 +287,7 @@ class Connection(BaseConnection):
 Failed to connect to the database server(#{server_id}) for connection ({conn_id}) with error message as below:
 {msg}""".format(
                 server_id=self.manager.sid,
-                conn_id=self.conn_id,
+                conn_id=conn_id,
                 msg=msg
             )
             )
@@ -310,7 +320,7 @@ SET client_encoding='UNICODE';""")
             return False, res
 
         if mgr.role:
-            status, res = self.execute_scalar("SET ROLE TO %s", [mgr.role])
+            status, res = self.execute_scalar(u"SET ROLE TO %s", [mgr.role])
 
             if not status:
                 self.conn.close()
@@ -320,7 +330,7 @@ Connect to the database server (#{server_id}) for connection ({conn_id}), but - 
 {msg}
 """.format(
                     server_id=self.manager.sid,
-                    conn_id=self.conn_id,
+                    conn_id=conn_id,
                     msg=res
                 )
                 )
@@ -343,7 +353,7 @@ Failed to fetch the version information on the established connection to the dat
 {msg}
 """.format(
                     server_id=self.manager.sid,
-                    conn_id=self.conn_id,
+                    conn_id=conn_id,
                     msg=res
                 )
                 )
@@ -395,7 +405,10 @@ WHERE
         return True, None
 
     def __cursor(self, server_cursor=False):
-        cur = getattr(g, str(self.manager.sid) + '#' + self.conn_id, None)
+        cur = getattr(g, "{0}#{1}".format(
+            self.manager.sid,
+            self.conn_id.encode('utf-8')
+        ), None)
 
         if self.connected() and cur and not cur.closed:
             if not server_cursor or (server_cursor and cur.name):
@@ -457,7 +470,7 @@ Attempting to reconnect to the database server (#{server_id}) for the connection
                 status, cur = self.connect()
                 if not status:
                     msg = gettext(
-                        """
+                        u"""
 Connection for server#{0} with database "{1}" was lost.
 Attempt to reconnect it failed with the error:
 {2}"""
@@ -468,7 +481,7 @@ Attempt to reconnect it failed with the error:
             else:
                 return False, errmsg
 
-        setattr(g, str(self.manager.sid) + '#' + self.conn_id, cur)
+        setattr(g, "{0}#{1}".format(self.manager.sid, self.conn_id.encode('utf-8')), cur)
 
         return True, cur
 
@@ -498,7 +511,7 @@ Attempt to reconnect it failed with the error:
         query_id = random.randint(1, 9999999)
 
         current_app.logger.log(25,
-                               "Execute (with server cursor) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+                               u"Execute (with server cursor) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                                    server_id=self.manager.sid,
                                    conn_id=self.conn_id,
                                    query=query,
@@ -511,7 +524,7 @@ Attempt to reconnect it failed with the error:
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
-                "Failed to execute query ((with server cursor) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                u"Failed to execute query ((with server cursor) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
                     query=query,
@@ -568,7 +581,7 @@ Attempt to reconnect it failed with the error:
 
         current_app.logger.log(
             25,
-            "Execute (scalar) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+            u"Execute (scalar) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -582,7 +595,7 @@ Attempt to reconnect it failed with the error:
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
-                "Failed to execute query (execute_scalar) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                u"Failed to execute query (execute_scalar) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
                     query=query,
@@ -618,7 +631,7 @@ Attempt to reconnect it failed with the error:
 
         current_app.logger.log(
             25,
-            "Execute (async) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+            u"Execute (async) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -632,7 +645,7 @@ Attempt to reconnect it failed with the error:
             res = self._wait_timeout(cur.connection, ASYNC_WAIT_TIMEOUT)
         except psycopg2.Error as pe:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
-            current_app.logger.error("""
+            current_app.logger.error(u"""
 Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
 (Query-id: {query_id}):\nError Message:{errmsg}
 """.format(
@@ -668,7 +681,7 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
 
         current_app.logger.log(
             25,
-            "Execute (void) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+            u"Execute (void) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -681,7 +694,7 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
         except psycopg2.Error as pe:
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
-            current_app.logger.error("""
+            current_app.logger.error(u"""
 Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
 (Query-id: {query_id}):\nError Message:{errmsg}
 """.format(
@@ -708,7 +721,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
         query_id = random.randint(1, 9999999)
         current_app.logger.log(
             25,
-            "Execute (2darray) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+            u"Execute (2darray) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -721,7 +734,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
-                "Failed to execute query (execute_2darray) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                u"Failed to execute query (execute_2darray) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
                     query=query,
@@ -753,7 +766,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
         query_id = random.randint(1, 9999999)
         current_app.logger.log(
             25,
-            "Execute (dict) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
+            u"Execute (dict) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -766,7 +779,7 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
-                "Failed to execute query (execute_dict) for the server #{server_id}- {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
+                u"Failed to execute query (execute_dict) for the server #{server_id}- {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
                     query_id=query_id,
@@ -1245,17 +1258,23 @@ class ServerManager(object):
             "Server has no active connection. Please connect to the server."
         )
 
-        if database is None:
+        if database is not None:
+            if hasattr(str, 'decode') and \
+                    not isinstance(database, unicode):
+                database = database.decode('utf-8')
+        else:
             if did is None:
                 database = self.db
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
+                if hasattr(str, 'decode'):
+                    database = database.decode('utf-8')
             else:
-                maintenance_db_id = 'DB:' + self.db
+                maintenance_db_id = u'DB:{0}'.format(self.db)
                 if maintenance_db_id in self.connections:
                     conn = self.connections[maintenance_db_id]
                     if conn.connected():
-                        status, res = conn.execute_dict("""
+                        status, res = conn.execute_dict(u"""
 SELECT
     db.oid as did, db.datname, db.datallowconn,
     pg_encoding_to_char(db.encoding) AS serverencoding,
@@ -1267,6 +1286,9 @@ WHERE db.oid = {0}""".format(did))
                         if status and len(res['rows']) > 0:
                             for row in res['rows']:
                                 self.db_info[did] = row
+                                if hasattr(str, 'decode'):
+                                    self.db_info[did]['datname'] = \
+                                        self.db_info[did]['datname'].decode('utf-8')
                                 database = self.db_info[did]['datname']
 
                         if did not in self.db_info:
@@ -1277,8 +1299,8 @@ WHERE db.oid = {0}""".format(did))
         if database is None:
             raise Exception(msg_active_conn)
 
-        my_id = ('CONN:' + str(conn_id)) if conn_id is not None else \
-            ('DB:' + str(database))
+        my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
+            (u'DB:{0}'.format(database))
 
         self.pinged = datetime.datetime.now()
 
@@ -1335,13 +1357,15 @@ WHERE db.oid = {0}""".format(did))
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
+                if hasattr(str, 'decode'):
+                    database = database.decode('utf-8')
                 if database is None:
                     return False
             else:
                 return False
 
-        my_id = ('CONN:' + str(conn_id)) if conn_id is not None else \
-            ('DB:' + str(database)) if database is not None else None
+        my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
+            (u'DB:{0}'.format(database)) if database is not None else None
 
         if my_id is not None:
             if my_id in self.connections:
@@ -1564,14 +1588,22 @@ class Driver(BaseDriver):
 
     @staticmethod
     def qtLiteral(value):
-
-        res = adapt(value).getquoted()
+        try:
+            res = adapt(value).getquoted()
+        except UnicodeEncodeError:
+            # We will handle special characters with utf8 encoding
+            adapted = adapt(value)
+            adapted.encoding = 'utf8'
+            res = adapted.getquoted()
 
         # Returns in bytes, we need to convert it in string
         if isinstance(res, bytes):
-            return res.decode()
-        else:
-            return res
+            try:
+                res = res.decode()
+            except UnicodeDecodeError:
+                res = res.decode('utf-8')
+
+        return res
 
     @staticmethod
     def ScanKeywordExtraLookup(key):
@@ -1607,17 +1639,12 @@ class Driver(BaseDriver):
 
     @staticmethod
     def needsQuoting(key, forTypes):
-
-        # Python 3 does not require the decoding of value
-        if hasattr(str, 'decode'):
-            value = key.decode()
-        else:
-            value = key
+        value = key
         valNoArray = value
 
         # check if the string is number or not
-        if (isinstance(value, int)):
-            return True;
+        if isinstance(value, int):
+            return True
         # certain types should not be quoted even though it contains a space. Evilness.
         elif forTypes and value[-2:] == u"[]":
             valNoArray = value[:-2]
@@ -1691,8 +1718,14 @@ class Driver(BaseDriver):
         for val in args:
             if type(val) == list:
                 return map(lambda w: Driver.qtIdent(conn, w), val)
+            if hasattr(str, 'decode') and not isinstance(val, unicode):
+                # Handling for python2
+                try:
+                    val = str(val).encode('utf-8')
+                except UnicodeDecodeError:
+                    # If already unicode, most likely coming from db
+                    val = str(val).decode('utf-8')
 
-            val = str(val)
             if len(val) == 0:
                 continue
 

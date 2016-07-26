@@ -466,8 +466,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             'definition'
         ]
 
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -511,8 +512,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         This function will update a view object
         """
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         SQL = self.getSQL(gid, sid, data, vid)
         try:
             if SQL and SQL.strip('\n') and SQL.strip(' '):
@@ -637,7 +639,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -1139,7 +1141,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         else:
             columns = '*'
 
-        sql = "SELECT {0}\n\tFROM {1};".format(
+        sql = u"SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data_view['schema'], data_view['name'])
         )
@@ -1196,7 +1198,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(
                     self.conn, data_view['schema'], data_view['name']
                 ),
@@ -1607,8 +1609,9 @@ class MViewNode(ViewNode, VacuumSettings):
         """
 
         # Below will decide if it's refresh data or refresh concurrently
-        data = request.form if request.form else \
-            json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         is_concurrent = json.loads(data['concurrent'])
         with_data = json.loads(data['with_data'])

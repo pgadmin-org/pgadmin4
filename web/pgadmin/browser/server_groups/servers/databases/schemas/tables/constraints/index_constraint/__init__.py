@@ -9,7 +9,7 @@
 
 """Implements Primary key constraint Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -444,11 +444,13 @@ class IndexConstraintView(PGChildNodeView):
             [u'columns', u'index']  # Either of one should be there.
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -563,7 +565,9 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         try:
             data['schema'] = self.schema
@@ -699,7 +703,7 @@ class IndexConstraintView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -827,6 +831,8 @@ class IndexConstraintView(PGChildNodeView):
                 constraint_name=self.constraint_name)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
 
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),

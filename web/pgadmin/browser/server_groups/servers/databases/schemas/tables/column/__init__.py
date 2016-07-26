@@ -9,7 +9,7 @@
 
 """ Implements Column Node """
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -505,12 +505,12 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -642,7 +642,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
            clid: Column ID
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
@@ -699,7 +701,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -824,10 +826,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             SQL = self.get_sql(scid, tid, None, data)
 
-            sql_header = "-- Column: {0}\n\n-- ".format(self.qtIdent(self.conn,
+            sql_header = u"-- Column: {0}\n\n-- ".format(self.qtIdent(self.conn,
                                                                      data['schema'],
                                                                      data['table'],
                                                                      data['name']))
+
             sql_header += render_template("/".join([self.template_path,
                                                     'delete.sql']),
                                           data=data, conn=self.conn)

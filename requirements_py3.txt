@@ -20,7 +20,7 @@ linecache2==1.0.0
 MarkupSafe==0.23
 passlib==1.6.2
 pbr==1.9.1
-psycopg2==2.5.2
+psycopg2==2.6.2
 pycrypto==2.6.1
 pyrsistent==0.11.13
 python-dateutil==2.5.0

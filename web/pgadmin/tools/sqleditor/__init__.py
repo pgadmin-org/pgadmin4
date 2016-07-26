@@ -10,7 +10,7 @@
 """A blueprint module implementing the sqleditor frame."""
 MODULE_NAME = 'sqleditor'
 
-import json
+import simplejson as json
 import os
 import pickle
 import random
@@ -238,7 +238,7 @@ def start_query_tool(trans_id):
     """
 
     if request.data:
-        sql = json.loads(request.data.decode())
+        sql = json.loads(request.data, encoding='utf-8')
     else:
         sql = request.args or request.form
 
@@ -366,7 +366,7 @@ def preferences(trans_id):
     else:
         data = None
         if request.data:
-            data = json.loads(request.data.decode())
+            data = json.loads(request.data, encoding='utf-8')
         else:
             data = request.args or request.form
         for k, v in data.items():
@@ -516,7 +516,7 @@ def save(trans_id):
     """
 
     if request.data:
-        changed_data = json.loads(request.data.decode())
+        changed_data = json.loads(request.data, encoding='utf-8')
     else:
         changed_data = request.args or request.form
 
@@ -574,7 +574,7 @@ def apply_filter(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_sql = json.loads(request.data.decode())
+        filter_sql = json.loads(request.data, encoding='utf-8')
     else:
         filter_sql = request.args or request.form
 
@@ -606,7 +606,7 @@ def append_filter_inclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data.decode())
+        filter_data = json.loads(request.data, encoding='utf-8')
     else:
         filter_data = request.args or request.form
 
@@ -649,7 +649,7 @@ def append_filter_exclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data.decode())
+        filter_data = json.loads(request.data, encoding='utf-8')
     else:
         filter_data = request.args or request.form
 
@@ -724,7 +724,7 @@ def set_limit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        limit = json.loads(request.data.decode())
+        limit = json.loads(request.data, encoding='utf-8')
     else:
         limit = request.args or request.form
 
@@ -847,7 +847,7 @@ def set_auto_commit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_commit = json.loads(request.data.decode())
+        auto_commit = json.loads(request.data, encoding='utf-8')
     else:
         auto_commit = request.args or request.form
 
@@ -885,7 +885,7 @@ def set_auto_rollback(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_rollback = json.loads(request.data.decode())
+        auto_rollback = json.loads(request.data, encoding='utf-8')
     else:
         auto_rollback = request.args or request.form
 
@@ -926,7 +926,7 @@ def auto_complete(trans_id):
     text_before_cursor = ''
 
     if request.data:
-        data = json.loads(request.data.decode())
+        data = json.loads(request.data, encoding='utf-8')
     else:
         data = request.args or request.form
 
@@ -1125,7 +1125,7 @@ def load_file():
     reads the data and sends back in reponse
     """
     if request.data:
-        file_data = json.loads(request.data.decode())
+        file_data = json.loads(request.data, encoding='utf-8')
 
     file_path = unquote(file_data['file_name'])
     # retrieve storage directory path
@@ -1182,7 +1182,7 @@ def save_file():
     and then save the data to the file
     """
     if request.data:
-        file_data = json.loads(request.data.decode())
+        file_data = json.loads(request.data, encoding='utf-8')
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()

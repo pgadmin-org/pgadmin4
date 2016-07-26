@@ -9,7 +9,7 @@
 
 """Implements the Foreign Table Module."""
 
-import json
+import simplejson as json
 import sys
 import traceback
 from functools import wraps
@@ -232,7 +232,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             data = {}
 
             if request.data:
-                req = json.loads(request.data.decode())
+                req = json.loads(request.data, encoding='utf-8')
             else:
                 req = request.args or request.form
 
@@ -267,7 +267,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                         # Coverts string into python list as expected.
                         data[key] = [] if \
                             type(req[key]) == list and len(req[key]) == 0 else \
-                            json.loads(req[key])
+                            json.loads(req[key], encoding='utf-8')
 
                         if key == 'inherits':
                             # Convert Table ids from unicode/string to int
@@ -833,6 +833,8 @@ AND relkind != 'c'))"""
 -- DROP {0} {1};
 
 """.format('FOREIGN TABLE', data['basensp'] + "." + data['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
 
@@ -1205,7 +1207,7 @@ AND relkind != 'c'))"""
         else:
             columns = '*'
 
-        sql = "SELECT {0}\n\tFROM {1};".format(
+        sql = u"SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data['basensp'], data['name'])
         )
@@ -1241,7 +1243,7 @@ AND relkind != 'c'))"""
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(self.conn, data['basensp'], data['name']),
                 columns, values
             )
@@ -1282,7 +1284,7 @@ AND relkind != 'c'))"""
                 columns = "=?, ".join(columns)
                 columns += "=?"
 
-            sql = "UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+            sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['basensp'], data['name']),
                 columns
             )
@@ -1308,7 +1310,7 @@ AND relkind != 'c'))"""
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
 
-        sql = "DELETE FROM {0}\n\tWHERE <condition>;".format(
+        sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['basensp'], data['name'])
         )
 

@@ -9,7 +9,7 @@
 
 """Implements Exclusion constraint Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -441,11 +441,13 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         required_args = ['columns']
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for k, v in data.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError):
                 data[k] = v
 
@@ -546,7 +548,9 @@ class ExclusionConstraintView(PGChildNodeView):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         try:
             data['schema'] = self.schema
@@ -677,7 +681,7 @@ class ExclusionConstraintView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 
@@ -800,6 +804,8 @@ class ExclusionConstraintView(PGChildNodeView):
                 "/".join([self.template_path, 'create.sql']), data=data)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
 
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),

@@ -10,7 +10,7 @@
 """Implements Functions/Procedures Node."""
 
 import copy
-import json
+import simplejson as json
 import re
 import sys
 import traceback
@@ -252,7 +252,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             data = {}
             if request.data:
-                req = json.loads(request.data.decode())
+                req = json.loads(request.data, encoding='utf-8')
             else:
                 req = request.args or request.form
 
@@ -280,7 +280,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                     if key in list_params and req[key] != '' \
                             and req[key] is not None:
                         # Coverts string into python list as expected.
-                        data[key] = json.loads(req[key])
+                        data[key] = json.loads(req[key], encoding='utf-8')
                     elif (
                                                 key == 'proretset' or key == 'proisstrict' or
                                             key == 'prosecdef' or key == 'proiswindow' or
@@ -971,6 +971,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 -- DROP {0} {1};
 
 """.format(object_type.upper(), name)
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + func_def
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -1135,7 +1137,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 if 'acl' in data:
                     data['acl'] = parse_priv_to_db(data['acl'], ["X"])
 
-                args = ''
+                args = u''
                 cnt = 1
                 if 'arguments' in data:
                     for a in data['arguments']:

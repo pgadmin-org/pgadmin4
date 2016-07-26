@@ -9,7 +9,7 @@
 
 """Implements the Database Node"""
 
-import json
+import simplejson as json
 import re
 from functools import wraps
 
@@ -186,11 +186,12 @@ class DatabaseView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            if self.manager.db == row['name']:
+            dbname = row['name']
+            if self.manager.db == dbname:
                 connected = True
                 canDrop = canDisConn = False
             else:
-                conn = self.manager.connection(row['name'])
+                conn = self.manager.connection(dbname)
                 connected = conn.connected()
                 canDrop = canDisConn = True
 
@@ -441,7 +442,9 @@ class DatabaseView(PGChildNodeView):
             u'name'
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for arg in required_args:
             if arg not in data:
@@ -516,7 +519,7 @@ class DatabaseView(PGChildNodeView):
         """Update the database."""
 
         data = request.form if request.form else json.loads(
-            request.data.decode()
+            request.data, encoding='utf-8'
         )
         info = "nothing to update."
 
@@ -636,7 +639,7 @@ class DatabaseView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
         try:
@@ -708,7 +711,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls)
+            acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -741,7 +744,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls)
+            acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -864,17 +867,20 @@ class DatabaseView(PGChildNodeView):
         frmtd_variables = parse_variables_from_db(res1['rows'])
         result.update(frmtd_variables)
 
-        sql_header = """
--- Database: {0}
+        sql_header = "-- Database: {0}\n\n-- ".format(result['name'])
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
--- DROP DATABASE {0};
-
-""".format(result['name'])
+        sql_header += render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            datname=result['name'], conn=self.conn
+        )
 
         SQL = self.get_new_sql(gid, sid, result, did)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
-        SQL = sql_header + SQL
+        SQL = sql_header + '\n' + SQL
         SQL = SQL.strip('\n')
+
         return ajax_response(response=SQL)
 
     @check_precondition()

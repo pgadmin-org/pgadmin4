@@ -10,7 +10,7 @@
 """A blueprint module implementing the datagrid frame."""
 MODULE_NAME = 'datagrid'
 
-import json
+import simplejson as json
 import pickle
 import random
 
@@ -93,7 +93,7 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     """
 
     if request.data:
-        filter_sql = json.loads(request.data.decode())
+        filter_sql = json.loads(request.data, encoding='utf-8')
     else:
         filter_sql = request.args or request.form
 
@@ -289,7 +289,7 @@ def validate_filter(sid, did, obj_id):
         obj_id: Id of currently selected object
     """
     if request.data:
-        filter_sql = json.loads(request.data.decode())
+        filter_sql = json.loads(request.data, encoding='utf-8')
     else:
         filter_sql = request.args or request.form
 

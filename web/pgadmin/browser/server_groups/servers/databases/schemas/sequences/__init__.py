@@ -9,7 +9,7 @@
 
 """Implements Sequence Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -302,7 +302,9 @@ class SequenceView(PGChildNodeView):
             u'seqowner',
         ]
 
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
 
         for arg in required_args:
             if arg not in data:
@@ -429,7 +431,9 @@ class SequenceView(PGChildNodeView):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         try:
             SQL = self.getSQL(gid, sid, did, data, scid, seid)
             SQL = SQL.strip('\n').strip(' ')
@@ -481,7 +485,7 @@ class SequenceView(PGChildNodeView):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v)
+                data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
 

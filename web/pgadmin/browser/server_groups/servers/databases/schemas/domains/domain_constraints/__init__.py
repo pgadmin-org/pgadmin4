@@ -9,7 +9,7 @@
 
 """Implements the Domain Constraint Module."""
 
-import json
+import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas.domains \
@@ -193,7 +193,7 @@ class DomainConstraintView(PGChildNodeView):
 
             data = {}
             if request.data:
-                req = json.loads(request.data.decode())
+                req = json.loads(request.data, encoding='utf-8')
             else:
                 req = request.args or request.form
 
@@ -571,6 +571,8 @@ class DomainConstraintView(PGChildNodeView):
 -- ALTER DOMAIN {1} DROP CONSTRAINT {0};
 
 """.format(data['name'], schema + '.' + domain)
+        if hasattr(str, 'decode'):
+            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
 

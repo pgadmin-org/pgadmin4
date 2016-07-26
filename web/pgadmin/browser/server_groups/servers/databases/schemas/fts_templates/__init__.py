@@ -9,7 +9,7 @@
 
 """Defines views for management of Fts Template node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 from flask import render_template, make_response, request, jsonify
@@ -322,7 +322,8 @@ class FtsTemplateView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
@@ -387,7 +388,8 @@ class FtsTemplateView(PGChildNodeView):
         :param tid: fts tempate id
         """
         data = request.form if request.form else json.loads(
-            request.data.decode())
+            request.data, encoding='utf-8'
+        )
 
         # Fetch sql query to update fts template
         sql = self.get_sql(gid, sid, did, scid, data, tid)

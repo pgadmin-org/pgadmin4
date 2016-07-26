@@ -147,7 +147,7 @@ def create_app(app_name=config.APP_NAME):
     logger.setLevel(logging.INFO)
 
     # File logging
-    fh = logging.FileHandler(config.LOG_FILE)
+    fh = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
     fh.setLevel(config.FILE_LOG_LEVEL)
     fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
     app.logger.addHandler(fh)
