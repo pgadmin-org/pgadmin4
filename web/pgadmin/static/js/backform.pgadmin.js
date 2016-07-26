@@ -948,7 +948,7 @@
         canDelete: evalF.apply(this.field, [data.canDelete, data, this.model]),
         canEdit: evalF.apply(this.field, [data.canEdit, data, this.model])
       });
-      _.extend(data, {add_label: "Add"});
+      _.extend(data, {add_label: ""});
 
       // This control is not visible, we should remove it.
       if (!data.visible) {
@@ -971,7 +971,7 @@
           gridHeader = _.template([
           '<div class="subnode-header">',
           '  <label class="control-label pg-el-sm-10"><%-label%></label>',
-          '  <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
+          '  <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%>><%-add_label%></buttton>',
           '</div>'].join("\n")),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode"></div>').append(
             gridHeader(data)
@@ -1209,7 +1209,7 @@
       var self = this,
           gridHeader = ["<div class='subnode-header'>",
           "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
-          "  <button class='btn-sm btn-default add'>Add</buttton>",
+          "  <button class='btn-sm btn-default add fa fa-plus'></buttton>",
           "</div>"].join("\n");
         gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
 

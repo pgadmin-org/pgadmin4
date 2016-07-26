@@ -532,14 +532,13 @@ define([
                   userCollection = this.userCollection = new UserCollection(),
                   header = [
                     '<div class="subnode-header">',
-                    '  <button class="btn-sm btn-default add" title="<%-add_title%>" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%=add_label ? add_label : "" %></button>',
+                    '  <button class="btn-sm btn-default add fa fa-plus" title="<%-add_title%>" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
                     '  <div class="control-label search_users"></div>',
                     '</div>',].join("\n"),
                   headerTpl = _.template(header),
                   data = {
                     canAdd: true,
-                    add_title: '{{ _("Add new user") }}',
-                    add_label:'{{ _('Add') }}'
+                    add_title: '{{ _("Add new user") }}'
                   },
                   $gridBody = $("<div></div>", {
                     class: "user_container"

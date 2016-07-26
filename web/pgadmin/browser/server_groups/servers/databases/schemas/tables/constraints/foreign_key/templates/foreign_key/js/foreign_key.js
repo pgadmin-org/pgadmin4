@@ -301,7 +301,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '   </div>',
         '   <div class="col-md-4" header="local_column"></div>',
         '   <div class="col-md-4">',
-        '     <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%-add_label%></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
         '   </div>',
         '  </div>',
         '  <div class="row">',
@@ -321,7 +321,6 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
       _.extend(data, {
         column_label: '{{ _('Local column') }}',
-        add_label: '{{ _('Add') }}',
         references_label: '{{ _('References') }}',
         referenced_label: '{{ _('Referencing') }}'
       });

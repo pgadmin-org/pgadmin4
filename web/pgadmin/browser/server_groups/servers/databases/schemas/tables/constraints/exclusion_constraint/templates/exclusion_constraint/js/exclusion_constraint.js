@@ -402,15 +402,14 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '   </div>',
         '   <div class="col-xs-4" header="column"></div>',
         '   <div class="col-xs-4">',
-        '     <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%-add_label%></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
         '   </div>',
         '  </div>',
         ' </div>',
         '</div>',].join("\n")
 
       _.extend(data, {
-        column_label: '{{ _('Column') }}',
-        add_label: '{{ _('Add') }}'
+        column_label: '{{ _('Column') }}'
       });
 
       var self = this,

@@ -201,15 +201,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         '   </div>',
         '   <div class="col-xs-6" header="token"></div>',
         '   <div class="col-xs-2">',
-        '     <button class="btn-sm btn-default add" <%=canAdd ? "" : "disabled=\'disabled\'"%> ><%-add_label%></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
         '   </div>',
         '  </div>',
         ' </div>',
         '</div>',].join("\n")
 
       _.extend(data, {
-        token_label: '{{ _('Tokens') }}',
-        add_label: '{{ _('Add') }}'
+        token_label: '{{ _('Tokens') }}'
       });
 
       var self = this,
