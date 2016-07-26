@@ -36,7 +36,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
-    URL: {{ url_for('browser.index') }},
+    URL: '{{ url_for('browser.index') }}',
     // We do have docker of type wcDocker to take care of different
     // containers. (i.e. panels, tabs, frames, etc.)
     docker:null,
