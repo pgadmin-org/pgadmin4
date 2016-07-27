@@ -11,8 +11,6 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression.test_setup import config_data
-from regression.test_utils import get_ids
 
 
 class ServersAddTestCase(BaseTestGenerator):
@@ -24,12 +22,7 @@ class ServersAddTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        """
-        This function login the test account before running the logout
-        test case
-        """
-
-        utils.login_tester_account(self.tester)
+        pass
 
     def runTest(self):
         """ This function will add the server under default server group."""
@@ -47,12 +40,11 @@ class ServersAddTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        This function deletes the added server and the 'parent_id.pkl' file
+        which is created in setup() function.
 
         :return: None
         """
 
         utils.delete_server(self.tester)
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)

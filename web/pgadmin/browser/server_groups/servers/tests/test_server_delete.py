@@ -25,14 +25,11 @@ class ServerDeleteTestCase(BaseTestGenerator):
 
     def setUp(self):
         """
-        This function perform the two tasks
-         1. Login to test client
-         2. Add the test server
+        This function is used to add the server
 
         :return: None
         """
 
-        utils.login_tester_account(self.tester)
         # Firstly, add the server
         utils.add_server(self.tester)
 
@@ -58,10 +55,9 @@ class ServerDeleteTestCase(BaseTestGenerator):
     def tearDown(self):
         """
         This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        setup() function.
 
         :return: None
         """
 
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)

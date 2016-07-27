@@ -41,7 +41,7 @@ class LoginTestCase(BaseTestGenerator):
             respdata='Email not provided')),
 
         # This test case validates empty email and password
-        ('Empty_Creadentials', dict(
+        ('Empty_Credentials', dict(
             email='', password='',
             respdata='Email not provided')),
 
@@ -53,14 +53,14 @@ class LoginTestCase(BaseTestGenerator):
             respdata='Specified user does not exist')),
 
         # This test case validates invalid email and password
-        ('Invalid_Creadentials', dict(
+        ('Invalid_Credentials', dict(
             email=str(uuid.uuid4())[1:6] + '@xyz.com',
             password=str(uuid.uuid4())[4:8],
             respdata='Specified user does not exist')),
 
         # This test case validates the valid/correct credentials and allow user
         # to login pgAdmin 4
-        ('Valid_Creadentials', dict(
+        ('Valid_Credentials', dict(
             email=(config_data['pgAdmin4_login_credentials']
                    ['test_login_username']),
             password=(config_data['pgAdmin4_login_credentials']
@@ -71,7 +71,12 @@ class LoginTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        pass
+        """
+        We need to logout the test client as we are testing scenarios of
+        logging in the client like invalid password, invalid emails,
+        empty credentials etc.
+        """
+        utils.logout_tester_account(self.tester)
 
     def runTest(self):
         """This function checks login functionality."""
@@ -83,10 +88,7 @@ class LoginTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
-
-        :return: None
+        We need to again login the test client as soon as test scenarios
+        finishes.
         """
-
-        utils.logout_tester_account(self.tester)
+        utils.login_tester_account(self.tester)

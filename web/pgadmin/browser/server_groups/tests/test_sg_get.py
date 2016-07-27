@@ -10,7 +10,6 @@
 import json
 
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
 from regression.test_setup import config_data
 
 
@@ -24,14 +23,6 @@ class SgNodeTestCase(BaseTestGenerator):
         ('Check Server Group Node', dict(url='/browser/server-group/obj/'))
     ]
 
-    def setUp(self):
-        """
-        This function login the test account before running the logout
-        test case
-        """
-
-        utils.login_tester_account(self.tester)
-
     def runTest(self):
         """This function will check available server groups."""
 
@@ -41,8 +32,3 @@ class SgNodeTestCase(BaseTestGenerator):
         self.assertTrue(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf8'))
         self.assertTrue(response_data['id'], server_group_id)
-
-    def tearDown(self):
-        """This function logout the test account """
-
-        utils.logout_tester_account(self.tester)

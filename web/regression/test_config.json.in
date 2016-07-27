@@ -15,7 +15,17 @@
       "test_db_port": 5432,
       "test_maintenance_db": "postgres",
       "test_sslmode": "prefer"
-    }
+    },
+     {
+       "test_name": "Postgres Plus Advanced Server 9.4",
+       "test_comment": "Postgres Plus Advanced 9.4 Server (EDB Installer)",
+       "test_db_username": "enterprisedb",
+       "test_host": "localhost",
+       "test_db_password": "edb",
+       "test_db_port": 5444,
+       "test_maintenance_db": "edb",
+       "test_sslmode": "prefer"
+     }
   ],
   "test_server_update_data": [
     {

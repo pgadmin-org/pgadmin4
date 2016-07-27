@@ -11,7 +11,6 @@ import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.test_setup import config_data
-from regression import test_utils as utils
 
 
 class ChangePasswordTestCase(BaseTestGenerator):
@@ -80,14 +79,6 @@ class ChangePasswordTestCase(BaseTestGenerator):
 
     ]
 
-    def setUp(self):
-        """
-        This function login the test account before running the logout
-        test case
-        """
-
-        utils.login_tester_account(self.tester)
-
     def runTest(self):
         """This function will check change password functionality."""
 
@@ -104,7 +95,8 @@ class ChangePasswordTestCase(BaseTestGenerator):
                 email=email, password=password), follow_redirects=True)
 
         response = self.tester.get('/change', follow_redirects=True)
-        self.assertIn('pgAdmin 4 Password Change', response.data.decode())
+        self.assertIn('pgAdmin 4 Password Change', response.data.decode(
+            'utf-8'))
 
         response = self.tester.post('/change', data=dict(
             password=self.password,
@@ -112,12 +104,3 @@ class ChangePasswordTestCase(BaseTestGenerator):
             new_password_confirm=self.new_password_confirm),
                                     follow_redirects=True)
         self.assertIn(self.respdata, response.data.decode('utf-8'))
-
-    def tearDown(self):
-        """
-        This function logout the test client
-
-        :return: None
-        """
-
-        utils.logout_tester_account(self.tester)

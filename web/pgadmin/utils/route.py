@@ -50,12 +50,24 @@ class TestsGeneratorRegistry(ABCMeta):
 
         from importlib import import_module
         from werkzeug.utils import find_modules
+        import config
 
-        for module_name in find_modules(pkg, False, True):
-            try:
-                module = import_module(module_name)
-            except ImportError:
-                pass
+        # Check for SERVER mode
+        if config.SERVER_MODE:
+            for module_name in find_modules(pkg, False, True):
+                try:
+                    module = import_module(module_name)
+                except ImportError:
+                    pass
+        else:
+            for module_name in find_modules(pkg, False, True):
+                try:
+                    # Exclude the test cases in browser node if SERVER_MODE
+                    # is False
+                    if "pgadmin.browser.tests" not in module_name:
+                        module = import_module(module_name)
+                except ImportError:
+                    pass
 
 import six
 

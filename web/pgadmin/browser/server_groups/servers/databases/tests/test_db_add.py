@@ -8,11 +8,9 @@
 # ##################################################################
 
 import json
-import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression.test_setup import advanced_config_data
 
 
 class DatabaseAddTestCase(BaseTestGenerator):
@@ -28,14 +26,11 @@ class DatabaseAddTestCase(BaseTestGenerator):
 
     def setUp(self):
         """
-        This function perform the two tasks
-         1. Login to test client
-         2. Add the test server
+        This function used to add the sever
 
         :return: None
         """
 
-        utils.login_tester_account(self.tester)
         # Add the server
         utils.add_server(self.tester)
 
@@ -45,8 +40,6 @@ class DatabaseAddTestCase(BaseTestGenerator):
         server_connect_response, server_group, server_ids = \
             utils.connect_server(self.tester)
 
-        # Store db id. Which is use to delete in tearDown()
-        self.db_id = ''
         for server_connect, server_id in zip(server_connect_response,
                                              server_ids):
             if server_connect['data']['connected']:
@@ -58,17 +51,15 @@ class DatabaseAddTestCase(BaseTestGenerator):
                 self.assertTrue(db_response.status_code, 200)
                 response_data = json.loads(db_response.data.decode('utf-8'))
                 utils.write_db_parent_id(response_data)
-                self.db_id = response_data['node']['_id']
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        This function deletes the added database, added server and the
+        'parent_id.pkl' file which is created in setup()
 
         :return: None
         """
 
-        utils.delete_database(self.tester, self.db_id)
+        utils.delete_database(self.tester)
         utils.delete_server(self.tester)
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)

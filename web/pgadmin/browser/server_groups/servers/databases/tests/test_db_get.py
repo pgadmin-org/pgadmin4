@@ -10,7 +10,7 @@
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
 from regression.test_setup import config_data
-from regression.test_utils import get_ids, test_getnodes
+from regression.test_utils import get_ids
 
 
 class DatabasesGetTestCase(BaseTestGenerator):
@@ -26,14 +26,12 @@ class DatabasesGetTestCase(BaseTestGenerator):
     def setUp(self):
         """
         This function perform the three tasks
-         1. Login to test client
-         2. Add the test server
-         3. Connect to server
+         1. Add the test server
+         2. Connect to server
 
         :return: None
         """
 
-        utils.login_tester_account(self.tester)
         # Firstly, add the server
         utils.add_server(self.tester)
         # Secondly, connect to server/database
@@ -45,28 +43,27 @@ class DatabasesGetTestCase(BaseTestGenerator):
         all_id = get_ids()
         server_ids = all_id["sid"]
 
-        # TODO: Code is remaining to get all databases of all servers
-        self.db_id = all_id["did"][0]
+        db_ids_dict = all_id["did"][0]
         srv_grp = config_data['test_server_group']
 
         for server_id in server_ids:
-            db_con = test_getnodes(self.tester)
+            db_id = db_ids_dict[int(server_id)]
+            db_con = utils.verify_database(self.tester, srv_grp, server_id,
+                                           db_id)
             if db_con["info"] == "Database connected.":
-                response = self.tester.get(self.url + str(srv_grp) + '/' +
-                                           str(server_id) + '/' + str(
-                    self.db_id),
-                                           follow_redirects=True)
+                response = self.tester.get(
+                    self.url + str(srv_grp) + '/' + str(server_id) + '/' +
+                    str(db_id), follow_redirects=True)
                 self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        This function deletes the added database, added server
+        and the 'parent_id.pkl' file which is created in setup() function.
 
         :return: None
         """
 
-        utils.delete_database(self.tester, self.db_id)
+        utils.delete_database(self.tester)
         utils.delete_server(self.tester)
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)

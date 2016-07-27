@@ -12,7 +12,7 @@ import json
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
 from regression.test_setup import config_data, advanced_config_data
-from regression.test_utils import get_ids, test_getnodes
+from regression.test_utils import get_ids
 
 
 class DatabasesUpdateTestCase(BaseTestGenerator):
@@ -28,14 +28,12 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
     def setUp(self):
         """
         This function perform the three tasks
-         1. Login to test client
-         2. Add the test server
-         3. Connect to server
+         1. Add the test server
+         2. Connect to server
 
         :return: None
         """
 
-        utils.login_tester_account(self.tester)
         # Firstly, add the server
         utils.add_server(self.tester)
         # Secondly, connect to server/database
@@ -47,33 +45,30 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
         srv_grp = config_data['test_server_group']
         all_id = get_ids()
         server_ids = all_id["sid"]
-
-        # TODO: Need to modify the code , to delete the databases for all
-        # TODO: servers. Currently it delete only one database.
-        db_id = all_id["did"][0]
-        test_getnodes(self.tester)
-
-        data = {
-            "comments": advanced_config_data["test_db_update_data"][0]
-            ["test_comment"],
-            "id": db_id
-        }
+        db_ids_dict = all_id["did"][0]
 
         for server_id in server_ids:
-            put_response = self.tester.put(self.url + str(srv_grp) + '/' +
-                                           str(server_id) + '/' + str(db_id),
-                                           data=json.dumps(data),
-                                           follow_redirects=True)
-            self.assertEquals(put_response.status_code, 200)
+            db_id = db_ids_dict[int(server_id)]
+            db_con = utils.verify_database(self.tester, srv_grp, server_id,
+                                           db_id)
+            if db_con["info"] == "Database connected.":
+                data = {
+                    "comments": advanced_config_data["test_db_update_data"][0]
+                    ["test_comment"],
+                    "id": db_id
+                }
+                put_response = self.tester.put(
+                    self.url + str(srv_grp) + '/' + str(server_id) + '/' +
+                    str(db_id), data=json.dumps(data), follow_redirects=True)
+                self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        This function deletes the added server and 'parent_id.pkl' file
+        which is created in setup() function.
 
         :return: None
         """
 
         utils.delete_server(self.tester)
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)

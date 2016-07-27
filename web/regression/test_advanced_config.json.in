@@ -93,7 +93,101 @@
     "test_privileges": [],
     "test_securities": [],
     "test_variables": []
-  }
+  },
+       {
+         "test_privileges_acl": [
+           {
+             "grantee": "enterprisedb",
+             "grantor": "enterprisedb",
+             "privileges": [
+               {
+                 "privilege_type": "C",
+                 "privilege": true,
+                 "with_grant": true
+               },
+               {
+                 "privilege_type": "T",
+                 "privilege": true,
+                 "with_grant": false
+               }
+             ]
+           }
+         ],
+         "test_conn_limit": -1,
+         "test_owner": "enterprisedb",
+         "test_fun_acl": [
+           {
+             "grantee": "enterprisedb",
+             "grantor": "enterprisedb",
+             "privileges": [
+               {
+                 "privilege_type": "X",
+                 "privilege": true,
+                 "with_grant": false
+               }
+             ]
+           }
+         ],
+         "test_seq_acl": [
+           {
+             "grantee": "enterprisedb",
+             "grantor": "enterprisedb",
+             "privileges": [
+               {
+                 "privilege_type": "r",
+                 "privilege": true,
+                 "with_grant": false
+               },
+               {
+                 "privilege_type": "w",
+                 "privilege": true,
+                 "with_grant": false
+               },
+               {
+                 "privilege_type": "U",
+                 "privilege": true,
+                 "with_grant": false
+               }
+             ]
+           }
+         ],
+         "test_tbl_acl": [
+           {
+             "grantee": "enterprisedb",
+             "grantor": "enterprisedb",
+             "privileges": [
+               {
+                 "privilege_type": "a",
+                 "privilege": true,
+                 "with_grant": true
+               },
+               {
+                 "privilege_type": "r",
+                 "privilege": true,
+                 "with_grant": false
+               }
+             ]
+           }
+         ],
+         "test_type_acl": [
+           {
+             "grantee": "enterprisedb",
+             "grantor": "enterprisedb",
+             "privileges": [
+               {
+                 "privilege_type": "U",
+                 "privilege": true,
+                 "with_grant": false
+               }
+             ]
+           }
+         ],
+         "test_encoding": "UTF8",
+         "test_name": "test_db_automation",
+         "test_privileges": [],
+         "test_securities": [],
+         "test_variables": []
+       }
  ],
 
   "test_db_update_data": [

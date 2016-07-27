@@ -25,15 +25,17 @@ class LogoutTest(BaseTestGenerator):
     ]
 
     def setUp(self):
-        """
-        This function login the test account before running the logout
-        test case
-        """
-
-        utils.login_tester_account(self.tester)
+        pass
 
     def runTest(self):
         """This function checks the logout functionality."""
 
         response = self.tester.get('/logout')
         self.assertIn(self.respdata, response.data.decode('utf8'))
+
+    def tearDown(self):
+        """
+        We need to again login the test client as soon as test scenarios
+        finishes.
+        """
+        utils.login_tester_account(self.tester)

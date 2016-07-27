@@ -25,15 +25,13 @@ class ServerUpdateTestCase(BaseTestGenerator):
     def setUp(self):
         """
         This function perform the four tasks
-         1. Login to test client
-         2. Add the test server
-         3. Get the server
-         4. Connect to server
+         1. Add the test server
+         2. Get the server
+         3. Connect to server
 
         :return: None
         """
 
-        utils.login_tester_account(self.tester)
         # Firstly, add the server
         utils.add_server(self.tester)
         # Get the server
@@ -64,12 +62,11 @@ class ServerUpdateTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """
-        This function deletes the 'parent_id.pkl' file which is created in
-        setup() function. Also this function logout the test client
+        This function deletes the added server and the 'parent_id.pkl' file
+        which is created in setup() function.
 
         :return: None
         """
 
         utils.delete_server(self.tester)
         utils.delete_parent_id_file()
-        utils.logout_tester_account(self.tester)
