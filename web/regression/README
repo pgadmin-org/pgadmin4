@@ -7,7 +7,7 @@ help catch regressions in the code.
 Assumptions
 -----------
 
-- pgAdmin must be configured to run in Server mode, with SMTP configured.
+- pgAdmin must have SMTP configured if SERVER_MODE == True.
 - There should be a single server group present in the browser.
 - Currently each module will have testcases related to ONLY GET, POST, PUT,
   and DELETE api’s.
