@@ -23,14 +23,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           errmsg = null;
         this.errorModel.clear();
 
-        if (_.isUndefined(this.get('provider')) ||
-          _.isNull(this.get('provider')) ||
-          String(this.get('provider')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = '{{ _('Provider must be specified.') }}';
-            this.errorModel.set('provider', errmsg);
-            return errmsg;
-        }
-
         if (_.isUndefined(this.get('label')) ||
           _.isNull(this.get('label')) ||
           String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
