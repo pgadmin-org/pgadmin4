@@ -1179,7 +1179,8 @@ define(
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
                 self.items_per_page = res.data.items_per_page;
-                self.gridView.items_per_page = self.items_per_page
+                self.gridView.items_per_page = self.items_per_page;
+                self.info_notifier_timeout = res.data.info_notifier_timeout;
 
                 // Set the sql query to the SQL panel
                 self.gridView.query_tool_obj.setValue(res.data.sql);
@@ -1423,8 +1424,15 @@ define(
           // Show message in message and history tab in case of query tool
           self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
           self.update_msg_history(true, "", false);
-          var message = 'Total query runtime: ' + self.total_time + '\n' + self.rows_affected + ' rows retrieved.';
-          $('.sql-editor-message').text(message);
+          var msg1 = S('{{ _('Total query runtime: %s.') }}').sprintf(self.total_time).value();
+          var msg2 = S('{{ _('%s rows retrieved.') }}').sprintf(self.rows_affected).value();
+
+          // Display the notifier if the timeout is set to >= 0
+          if (self.info_notifier_timeout >= 0) {
+              alertify.success(msg1 + '<br />' + msg2, self.info_notifier_timeout);
+          }
+
+          $('.sql-editor-message').text(msg1 + '\n' + msg2);
 
           /* Add the data to the collection and render the grid.
            * In case of Explain draw the graph on explain panel
@@ -2510,7 +2518,8 @@ define(
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
                 self.items_per_page = res.data.items_per_page;
-                self.gridView.items_per_page = self.items_per_page
+                self.gridView.items_per_page = self.items_per_page;
+                self.info_notifier_timeout = res.data.info_notifier_timeout;
 
                 // If status is True then poll the result.
                 self._poll();

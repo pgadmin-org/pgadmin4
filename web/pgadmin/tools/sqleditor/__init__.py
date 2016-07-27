@@ -81,6 +81,17 @@ class SqlEditorModule(PgAdminModule):
                              'Value should be between 50 and 2000.')
         )
 
+        self.info_notifier_timeout = self.preference.register(
+            'display', 'info_notifier_timeout',
+            gettext("Query info notifier timeout"), 'integer', 5,
+            category_label=gettext('Display'),
+            min_val=-1,
+            max_val=999999,
+            help_str=gettext('The length of time to display the query info notifier after execution has completed. '
+                             'A value of -1 disables the notifier and a value of 0 displays it until clicked. '
+                             'Values greater than 1 display the notifier for the number of seconds specified.')
+        )
+
         self.explain_verbose = self.preference.register(
             'Explain Options', 'explain_verbose',
             gettext("Verbose"), 'boolean', False,
@@ -222,7 +233,8 @@ def start_view_data(trans_id):
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
-            'items_per_page': blueprint.items_per_page.get()
+            'items_per_page': blueprint.items_per_page.get(),
+            'info_notifier_timeout': blueprint.info_notifier_timeout.get()
         }
     )
 
@@ -324,7 +336,8 @@ def start_query_tool(trans_id):
         data={
             'status': status, 'result': result,
             'can_edit': can_edit, 'can_filter': can_filter,
-            'items_per_page': blueprint.items_per_page.get()
+            'items_per_page': blueprint.items_per_page.get(),
+            'info_notifier_timeout': blueprint.info_notifier_timeout.get()
         }
     )
 
