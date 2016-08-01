@@ -27,6 +27,11 @@ define(
      */
     function epicRandomString(b){for(var a=(Math.random()*eval("1e"+~~(50*Math.random()+50))).toString(36).split(""),c=3;c<a.length;c++)c==~~(Math.random()*c)+1&&a[c].match(/[a-z]/)&&(a[c]=a[c].toUpperCase());a=a.join("");a=a.substr(~~(Math.random()*~~(a.length/3)),~~(Math.random()*(a.length-~~(a.length/3*2)+1))+~~(a.length/3*2));if(24>b)return b?a.substr(a,b):a;a=a.substr(a,b);if(a.length==b)return a;for(;a.length<b;)a+=epicRandomString();return a.substr(0,b)};
 
+    // Define key codes for shortcut keys
+    var F5_KEY = 116,
+        F7_KEY = 118,
+        F8_KEY = 119;
+
     // Defining the backbone model for the sql grid
     var sqlEditorViewModel = Backbone.Model.extend({
 
@@ -1030,22 +1035,33 @@ define(
         );
       },
 
-      // Callback for keyboard event
+      /*
+       * Callbacks for keyboard events bind to the
+       * query tool buttons.
+       * Following are the keyboard shortcuts:
+       *  F5 - Execute query
+       *  F7 - Explain query
+       *  F8 - Download result as CSV
+       *  Shift+F7 - Explain analyze query
+       */
       keyAction: function(ev) {
-        if(ev.ctrlKey && ev.shiftKey) {
-          if(ev.keyCode == 69) {
-            // char e/E
-            // Execute query.
-            this.on_flash(ev);
-          } else if(ev.keyCode == 88) {
-            // char x/X
-            // Explain query.
-            this.on_explain(ev);
-          } else if(ev.keyCode == 78) {
-            // char n/N
-            // Explain analyze query.
-            this.on_explain_analyze(ev);
-          }
+        var keyCode = ev.which || ev.keyCode;
+        if (ev.shiftKey && keyCode == F7_KEY) {
+          // Explain analyze query.
+          this.on_explain_analyze(ev);
+          ev.preventDefault();
+        } else if (keyCode == F5_KEY) {
+          // Execute query.
+          this.on_flash(ev);
+          ev.preventDefault();
+        } else if (keyCode == F7_KEY) {
+          // Explain query.
+          this.on_explain(ev);
+          ev.preventDefault();
+        } else if (keyCode == F8_KEY) {
+          // Download query result as CSV.
+          this.on_download(ev);
+          ev.preventDefault();
         }
       }
     });
@@ -1440,7 +1456,7 @@ define(
            */
           var explain_data_array = [];
           if(data.result &&
-              'QUERY PLAN' in data.result[0] &&
+              data.result[0] && data.result[0].hasOwnProperty('QUERY PLAN') &&
               _.isObject(data.result[0]['QUERY PLAN'])) {
               var explain_data = {'QUERY PLAN' : JSON.stringify(data.result[0]['QUERY PLAN'], null, 2)};
               explain_data_array.push(explain_data);
