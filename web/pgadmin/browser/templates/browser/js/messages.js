@@ -13,7 +13,7 @@ function(_, S, pgAdmin) {
     'GENERAL_CATEGORY': '{{ _("General")|safe }}',
     'SQL_TAB': '{{ _('SQL') }}',
     'SQL_INCOMPLETE': '{{ _('Incomplete definition') }}',
-    'SQL_NO_CHANGE': '-- ' + '{{ _('Nothing changed')|safe }}',
+    'SQL_NO_CHANGE': '{{ _('Nothing changed')|safe }}',
     'MUST_BE_INT' : "{{ _("'%s' must be an integer.")|safe }}",
     'MUST_BE_NUM' : "{{ _("'%s' must be a numeric.")|safe }}",
     'MUST_GR_EQ' : "{{ _("'%s' must be greater than or equal to %d.")|safe }}",
