@@ -252,6 +252,10 @@
   });
 
   var DeleteCell = Backgrid.Extension.DeleteCell = Backgrid.Cell.extend({
+      defaults: _.defaults({
+        defaultDeleteMsg: 'Are you sure you wish to delete this row?'
+      }, Backgrid.Cell.prototype.defaults),
+
       /** @property */
       className: "delete-cell",
       events: {
@@ -266,9 +270,11 @@
                              Backgrid.callByNeed(this.column.get('canDeleteRow'),
                               this.column, this.model) : true;
         if (canDeleteRow) {
+          var delete_msg = !_.isUndefined(this.column.get('customDeleteMsg')) ?
+                           this.column.get('customDeleteMsg'): that.defaults.defaultDeleteMsg;
           Alertify.confirm(
             'Delete Row',
-            'Are you sure you wish to delete this row?',
+            delete_msg,
             function(evt) {
               that.model.collection.remove(that.model);
             },
