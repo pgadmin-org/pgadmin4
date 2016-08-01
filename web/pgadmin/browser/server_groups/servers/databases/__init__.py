@@ -187,6 +187,8 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             dbname = row['name']
+            if hasattr(str, 'decode'):
+                dbname = dbname.decode('utf-8')
             if self.manager.db == dbname:
                 connected = True
                 canDrop = canDisConn = False
@@ -228,7 +230,10 @@ class DatabaseView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            if self.manager.db == row['name']:
+            db = row['name']
+            if hasattr(str, 'decode'):
+                db = db.decode('utf-8')
+            if self.manager.db == db:
                 connected = True
             else:
                 conn = self.manager.connection(row['name'])

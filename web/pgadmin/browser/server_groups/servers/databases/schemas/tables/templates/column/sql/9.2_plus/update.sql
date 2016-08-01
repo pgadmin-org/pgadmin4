@@ -10,7 +10,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {###  Alter column type and collation ###}
 {% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen and data.attlen != o_data.attlen) or (data.attprecision and data.attprecision != o_data.attprecision) %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {{conn|qtIdent(data.name)}} TYPE {% if data.cltype %}{{data.cltype}} {% else %}{{o_data.cltype}} {% endif %}{% if data.attlen %}
+    ALTER COLUMN {{conn|qtIdent(data.name)}} TYPE {% if data.cltype %}{{conn|qtTypeIdent(data.cltype)}} {% else %}{{o_data.cltype}} {% endif %}{% if data.attlen %}
 ({{data.attlen}}{% if data.attprecision%}, {{data.attprecision}}{% endif %}){% endif %}{% if data.hasSqrBracket %}
 []{% endif %}{% if data.collspcname and data.collspcname != o_data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %};

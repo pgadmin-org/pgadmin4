@@ -681,6 +681,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 if isArray:
                     column['cltype'] += "[]"
 
+                if column['typnspname'] != 'pg_catalog':
+                    column['cltype'] = self.qtIdent(self.conn, column['typnspname']) \
+                                       + '.' + column['cltype']
+
                 if 'indkey' in column:
                     # Current column
                     attnum = str(column['attnum'])

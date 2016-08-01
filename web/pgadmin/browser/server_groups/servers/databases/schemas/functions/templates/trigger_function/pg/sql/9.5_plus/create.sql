@@ -40,7 +40,7 @@ ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args
 {% if data.description %}
 
 COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
-    IS '{{ data.description }}';
+    IS {{ data.description|qtLiteral  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}

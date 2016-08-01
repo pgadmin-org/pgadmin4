@@ -4,7 +4,7 @@
 {###  Add column ###}
 {% if data.name and  data.cltype %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ADD COLUMN {{conn|qtIdent(data.name)}} {{data.cltype}}{% if data.attlen %}
+    ADD COLUMN {{conn|qtIdent(data.name)}} {{conn|qtTypeIdent(data.cltype)}}{% if data.attlen %}
 ({{data.attlen}}{% if data.attprecision%}, {{data.attprecision}}{% endif %}){% endif %}{% if data.hasSqrBracket %}
 []{% endif %}{% if data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %}{% if data.attnotnull %}

@@ -902,26 +902,35 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Fetch the function definition.
-        args = ''
+        args = u''
+        args_without_name = u''
         cnt = 1
-        if 'arguments' in resp_data:
-            for a in resp_data['arguments']:
-                if (('argmode' in a and a['argmode'] != 'OUT' and
-                    a['argmode'] is not None
-                      ) or 'argnode' not in a):
-                    if 'argmode' in a:
-                        args += a['argmode'] + " "
-                    if 'argname' in a and a['argname'] != ''\
-                            and a['argname'] is not None:
-                        args += self.qtIdent(
-                            self.conn, a['argname']) + " "
-                    if 'argtype' in a:
-                        args += a['argtype']
-                    if cnt < len(resp_data['arguments']):
-                        args += ', '
-                cnt += 1
+        args_list = []
+        if 'arguments' in resp_data and len(resp_data['arguments']) > 0:
+            args_list = resp_data['arguments']
+            resp_data['args'] = resp_data['arguments']
+
+        for a in args_list:
+            if (('argmode' in a and a['argmode'] != 'OUT' and
+                         a['argmode'] is not None
+                 ) or 'argmode' not in a):
+                if 'argmode' in a:
+                    args += a['argmode'] + " "
+                    args_without_name += a['argmode'] + " "
+                if 'argname' in a and a['argname'] != '' \
+                        and a['argname'] is not None:
+                    args += self.qtIdent(
+                        self.conn, a['argname']) + " "
+                if 'argtype' in a:
+                    args += a['argtype']
+                    args_without_name += a['argtype']
+                if cnt < len(args_list):
+                    args += ', '
+                    args_without_name += ', '
+            cnt += 1
 
         resp_data['func_args'] = args.strip(' ')
+        resp_data['func_args_without'] = args_without_name.strip(' ')
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
@@ -960,8 +969,17 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            func_def, name = res['rows'][0]
+            name = res['rows'][0]['name']
             # Create mode
+            if hasattr(str, 'decode'):
+                if resp_data['prosrc']:
+                    resp_data['prosrc'] = resp_data['prosrc'].decode(
+                        'utf-8'
+                    )
+                if resp_data['prosrc_c']:
+                    resp_data['prosrc_c'] = resp_data['prosrc_c'].decode(
+                        'utf-8'
+                    )
             func_def = render_template("/".join([self.sql_template_path,
                                                  'create.sql']),
                                        data=resp_data, query_type="create")
@@ -1138,25 +1156,34 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                     data['acl'] = parse_priv_to_db(data['acl'], ["X"])
 
                 args = u''
+                args_without_name = u''
                 cnt = 1
-                if 'arguments' in data:
-                    for a in data['arguments']:
-                        if (('argmode' in a and a['argmode'] != 'OUT' and
-                                     a['argmode'] is not None
-                             ) or 'argnode' not in a):
-                            if 'argmode' in a:
-                                args += a['argmode'] + " "
-                            if 'argname' in a and a['argname'] != '' \
-                                    and a['argname'] is not None:
-                                args += self.qtIdent(
-                                    self.conn, a['argname']) + " "
-                            if 'argtype' in a:
-                                args += a['argtype']
-                            if cnt < len(data['arguments']):
-                                args += ', '
-                        cnt += 1
+                args_list = []
+                if 'arguments' in data and len(data['arguments']) > 0:
+                    args_list = data['arguments']
+                elif 'args' in data and len(data['args']) > 0:
+                    args_list = data['args']
+                for a in args_list:
+                    if (('argmode' in a and a['argmode'] != 'OUT' and
+                                 a['argmode'] is not None
+                         ) or 'argmode' not in a):
+                        if 'argmode' in a:
+                            args += a['argmode'] + " "
+                            args_without_name += a['argmode'] + " "
+                        if 'argname' in a and a['argname'] != '' \
+                                and a['argname'] is not None:
+                            args += self.qtIdent(
+                                self.conn, a['argname']) + " "
+                        if 'argtype' in a:
+                            args += a['argtype']
+                            args_without_name += a['argtype']
+                        if cnt < len(args_list):
+                            args += ', '
+                            args_without_name += ', '
+                    cnt += 1
 
                 data['func_args'] = args.strip(' ')
+                data['func_args_without'] = args_without_name.strip(' ')
                 # Create mode
                 SQL = render_template("/".join([self.sql_template_path,
                                                 'create.sql']),

@@ -21,7 +21,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 
-+AS {% endif %}{% if data.lanname == 'c' %}
+AS {% endif %}{% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
 $BODY$
@@ -40,7 +40,7 @@ ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args
 {% if data.description %}
 
 COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
-    IS '{{ data.description }}';
+    IS {{ data.description|qtLiteral  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}

@@ -134,8 +134,14 @@ class DataTypeReader:
                     else:
                         max_val = 10
 
+                # If schema is public, prefix it. Otherwise, we should already have it.
+                if row['nspname'] == 'public':
+                    rtn_type = "public." + row['typname']
+                else:
+                    rtn_type = row['typname']
+
                 res.append({
-                    'label': row['typname'], 'value': row['typname'],
+                    'label': rtn_type, 'value': rtn_type,
                     'typval': typeval, 'precision': precision,
                     'length': length, 'min_val': min_val, 'max_val': max_val,
                     'is_collatable': row['is_collatable']

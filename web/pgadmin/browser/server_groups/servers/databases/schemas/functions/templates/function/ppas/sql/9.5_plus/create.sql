@@ -31,24 +31,24 @@ $function$
 $function${% endif -%};
 {% if data.funcowner %}
 
-ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
+ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
     OWNER TO {{ data.funcowner }};
 {% endif -%}
 {% if data.acl %}
 {% for p in data.acl %}
 
-{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args)}}
+{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args_without)}}
 {% endfor %}{% endif %}
 {% if data.description %}
 
-COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
-    IS '{{ data.description }}';
+COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    IS {{ data.description|qtLiteral  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
 {% if r.label and r.provider %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args_without) }}
 {% endif %}
 {% endfor %}
 {% endif -%}

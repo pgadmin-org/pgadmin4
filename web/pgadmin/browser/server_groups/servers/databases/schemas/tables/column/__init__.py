@@ -435,6 +435,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if isArray:
             data['cltype'] += "[]"
 
+        if data['typnspname'] != 'pg_catalog':
+            data['cltype'] = self.qtIdent(self.conn, data['typnspname'])\
+                             + '.' + data['cltype']
+
         return data
 
     @check_precondition

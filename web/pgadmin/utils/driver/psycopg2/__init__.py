@@ -591,7 +591,6 @@ Attempt to reconnect it failed with the error:
         try:
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
-            current_app.logger.exception(pe)
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
@@ -1115,6 +1114,9 @@ Failed to reset the connection to the server due to following error:
             errmsg = exception_obj.diag.message_detail
         else:
             errmsg = str(exception_obj)
+        # errmsg might contains encoded value, lets decode it
+        if hasattr(str, 'decode'):
+            errmsg = errmsg.decode('utf-8')
 
         # if formatted_msg is false then return from the function
         if not formatted_msg:
@@ -1663,6 +1665,12 @@ class Driver(BaseDriver):
         ]:
             return False
 
+        # If already quoted?, If yes then do not quote again
+        if forTypes and valNoArray:
+            if valNoArray.startswith('"') \
+                    or valNoArray.endswith('"'):
+                return False
+
         if u'0' <= valNoArray[0] <= u'9':
             return True
 
@@ -1697,7 +1705,13 @@ class Driver(BaseDriver):
         for val in args:
             if len(val) == 0:
                 continue
-
+            if hasattr(str, 'decode') and not isinstance(val, unicode):
+                # Handling for python2
+                try:
+                    val = str(val).encode('utf-8')
+                except UnicodeDecodeError:
+                    # If already unicode, most likely coming from db
+                    val = str(val).decode('utf-8')
             value = val
 
             if (Driver.needsQuoting(val, True)):

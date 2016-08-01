@@ -4,19 +4,10 @@
 {% set is_columns = [] %}
 {% if data %}
 CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.args %}
-{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}}{% endif %}{% if p.argtype %}{{ conn|qtIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %},{% endif %}
 {% endfor %}
 {% endif -%}
-{% if data.func_args %}
-{% set func_args = data.func_args.split(',') %}
-
-{% for f in func_args %}
-    {{ f|trim }}{% if not loop.last %},
-{% endif %}
-{% endfor %}
-
-{% endif %}
 )
     RETURNS{% if data.proretset %} SETOF{% endif %} {{ conn|qtTypeIdent(data.prorettypename) }}
     LANGUAGE {{ data.lanname|qtLiteral }}
@@ -43,25 +34,25 @@ $function$
 $function${% endif -%};
 {% if data.funcowner %}
 
-ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
+ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
     OWNER TO {{ data.funcowner }};
 {% endif -%}
 {% if data.acl %}
 {% for p in data.acl %}
 
-{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args)}}
+{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args_withouts)}}
 {% endfor -%}
 {% endif -%}
 {% if data.description %}
 
-COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
-    IS '{{ data.description }}';
+COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    IS {{ data.description|qtLiteral  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}
 {% if r.label and r.provider %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args_withouts) }}
 {% endif %}
 {% endfor %}
 {% endif -%}

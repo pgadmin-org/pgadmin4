@@ -17,7 +17,7 @@
 {% endif %}
 CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}
 {% if data.typname %}
-    OF {{ data.typname }}
+    OF {{ conn|qtTypeIdent(data.typname) }}
 {% endif %}
 {% if data.like_relation or data.coll_inherits or data.columns|length > 0 or data.primary_key|length > 0 or data.unique_constraint|length > 0 or data.foreign_key|length > 0 or data.check_constraint|length > 0 or data.exclude_constraint|length > 0 %}
 (
@@ -43,7 +43,7 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {% if c.name and c.cltype %}
 {% if loop.index != 1 %},
 {% endif %}
-    {{conn|qtIdent(c.name)}} {{c.cltype}}{% if c.attlen %}
+    {{conn|qtIdent(c.name)}} {{conn|qtTypeIdent(c.cltype)}}{% if c.attlen %}
 ({{c.attlen}}{% if c.attprecision%}, {{c.attprecision}}{% endif %}){% endif %}{% if c.hasSqrBracket %}
 []{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval %} DEFAULT {{c.defval}}{% endif %}
 {% endif %}
