@@ -402,7 +402,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '   </div>',
         '   <div class="col-xs-4" header="column"></div>',
         '   <div class="col-xs-4">',
-        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
         '   </div>',
         '  </div>',
         ' </div>',

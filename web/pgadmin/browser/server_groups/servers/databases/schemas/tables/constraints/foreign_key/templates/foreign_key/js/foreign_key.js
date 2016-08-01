@@ -301,7 +301,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '   </div>',
         '   <div class="col-md-4" header="local_column"></div>',
         '   <div class="col-md-4">',
-        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
         '   </div>',
         '  </div>',
         '  <div class="row">',

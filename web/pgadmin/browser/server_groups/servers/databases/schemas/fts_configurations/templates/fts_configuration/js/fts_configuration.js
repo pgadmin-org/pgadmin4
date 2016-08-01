@@ -201,7 +201,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         '   </div>',
         '   <div class="col-xs-6" header="token"></div>',
         '   <div class="col-xs-2">',
-        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></buttton>',
+        '     <button class="btn-sm btn-default add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> ></button>',
         '   </div>',
         '  </div>',
         ' </div>',

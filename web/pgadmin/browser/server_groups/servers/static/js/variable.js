@@ -373,7 +373,7 @@
           titleTmpl = _.template([
             "<div class='subnode-header'>",
             "<label class='control-label'><%-label%></label>",
-            "<button class='btn-sm btn-default add fa fa-plus' <%=canAdd ? '' : 'disabled=\"disabled\"'%>></buttton>",
+            "<button class='btn-sm btn-default add fa fa-plus' <%=canAdd ? '' : 'disabled=\"disabled\"'%>></button>",
             "</div>"].join("\n")),
           $gridBody =
             $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(
