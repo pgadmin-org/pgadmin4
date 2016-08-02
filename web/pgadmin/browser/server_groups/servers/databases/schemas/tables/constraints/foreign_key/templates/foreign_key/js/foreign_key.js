@@ -21,6 +21,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       headerSelectControlTemplate =  _.template([
                               '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
                               '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+                              '    <%=select2.first_empty ? " <option></option>" : ""%>',
                               '    <% for (var i=0; i < options.length; i++) { %>',
                               '    <% var option = options[i]; %>',
                               '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
@@ -134,8 +135,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }),
           select2: {
             allowClear: false, width: 'style',
-            placeholder: 'Select column'
-          }, first_empty: !_.isUndefined(self.model.get('oid')),
+            placeholder: '{{ _('Select column') }}',
+            first_empty: !_.isUndefined(self.model.get('oid'))
+          },
           version_compatible: self.field.get('version_compatible'),
           disabled: function(m) {
             return !_.isUndefined(self.model.get('oid'));
@@ -234,10 +236,11 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               Backform.Select2Control.prototype.render.apply(this, arguments);
               return this;
             }
-          }), url: 'get_columns', first_empty: true,
+          }), url: 'get_columns',
           select2: {
+            allowClear: false,
             width: "style",
-            placeholder: 'Select column',
+            placeholder: '{{ _('Select column') }}',
             templateResult: formatNode,
             templateSelection: formatNode
           },

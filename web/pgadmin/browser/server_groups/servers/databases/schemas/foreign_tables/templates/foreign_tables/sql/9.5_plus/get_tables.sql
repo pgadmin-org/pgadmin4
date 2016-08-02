@@ -9,7 +9,7 @@ WHERE
 
 {% else %}
 SELECT
-    c.oid AS id, quote_ident(n.nspname) || '.' || quote_ident(c.relname) as text
+    c.oid AS value, quote_ident(n.nspname) || '.' || quote_ident(c.relname) as label
 FROM
     pg_class c, pg_namespace n
 WHERE

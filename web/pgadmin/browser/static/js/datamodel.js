@@ -124,7 +124,7 @@ function(_, pgAdmin, $, Backbone) {
         var self = this;
         self._previous_key_values = {};
 
-        if ('on_server' in options && options.on_server) {
+        if (!_.isUndefined(options) && 'on_server' in options && options.on_server) {
           self.on_server = true;
         }
 

@@ -668,7 +668,8 @@ AND relkind != 'c'))"""
             if not status:
                 return internal_server_error(errormsg=res)
 
-            foid, scid = res['rows'][0]
+            foid = res['rows'][0]['oid']
+            scid = res['rows'][0]['scid']
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -718,7 +719,8 @@ AND relkind != 'c'))"""
                     )
                 )
 
-            name, basensp = res['rows'][0]
+            name =  res['rows'][0]['name']
+            basensp = res['rows'][0]['basensp']
 
             SQL = render_template("/".join([self.template_path,
                                             'delete.sql']),
@@ -1102,13 +1104,6 @@ AND relkind != 'c'))"""
 
         if cols and 'rows' in cols:
             data['columns'] = cols['rows']
-
-        data['strcolumn'] = ''
-        str_cols = []
-        if 'columns' in data:
-            for c in data['columns']:
-                str_cols.append(c['strcolumn'])
-            data['strcolumn'] = ', '.join(str_cols)
 
         # Get Inherited table names from their OID
         if inherits:

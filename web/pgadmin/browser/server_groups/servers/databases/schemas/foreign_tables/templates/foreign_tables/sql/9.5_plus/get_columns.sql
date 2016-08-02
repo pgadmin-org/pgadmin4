@@ -20,25 +20,6 @@ SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, attfdwoptions,
     concat(cn.nspname, '."', cl.collname,'"')
     ELSE '' END AS collname,
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,
-    (
-        att.attname || ' ' || format_type(t.oid, att.atttypmod) || ' ' ||
-        (
-            CASE WHEN array_length(attfdwoptions, 1)>0
-            THEN concat('OPTIONS (', array_to_string(attfdwoptions, ', '), ')') ELSE ''
-            END
-        ) || ' ' ||
-        (
-            CASE WHEN attnotnull='true'
-            THEN 'NOT NULL' ELSE 'NULL'
-            END
-        ) || ' ' ||
-        (
-            CASE WHEN pg_catalog.pg_get_expr(def.adbin, def.adrelid)<>''
-            THEN 'DEFAULT ' || pg_catalog.pg_get_expr(def.adbin, def.adrelid)
-            ELSE '' END
-        )
-    ) as strcolumn,
-
     (SELECT COUNT(1) from pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup
 FROM
     pg_attribute att

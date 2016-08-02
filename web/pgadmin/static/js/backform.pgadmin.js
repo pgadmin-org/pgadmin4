@@ -1804,7 +1804,11 @@
       if (_.isArray(formattedData)) {
         return _.map(formattedData, decodeURIComponent);
       } else {
-        return decodeURIComponent(formattedData);
+        if(!_.isNull(formattedData) && !_.isUndefined(formattedData)) {
+          return decodeURIComponent(formattedData);
+        } else {
+          return null;
+        }
       }
     }
   });
@@ -1915,9 +1919,15 @@
       return this;
     },
     getValueFromDOM: function() {
-      return Backform.SelectControl.prototype.getValueFromDOM.apply(
-        this, arguments
-      );
+      var val = Backform.SelectControl.prototype.getValueFromDOM.apply(
+                  this, arguments
+                ),
+        select2Opts = _.extend({}, this.field.get("select2") || this.defaults.select2);
+
+      if (select2Opts.multiple && val == null) {
+        return [];
+      }
+      return val;
     }
   });
 

@@ -241,22 +241,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     toJSON: Backbone.Model.prototype.toJSON
   });
 
-  var formatNode = function(opt) {
-    if (!opt.id) {
-      return opt.text;
-    }
-
-    var optimage = $(opt.element).data('image');
-
-    if(!optimage){
-      return opt.text;
-    } else {
-      return $(
-          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
-          );
-    }
-  };
-
 
   /* NodeAjaxOptionsMultipleControl is for multiple selection of Combobox.
   *  This control is used to select Multiple Parent Tables to be inherited.
@@ -264,83 +248,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   *  To populates the column, it calls the server and fetch the columns data
   *  for the selected table.
   */
-
-  var NodeAjaxOptionsMultipleControl = Backform.NodeAjaxOptionsMultipleControl = Backform.NodeAjaxOptionsControl.extend({
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value=<%-value%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-      '  </select>',
-      '</div>'].join("\n")),
-    defaults: _.extend(
-      {}, Backform.NodeAjaxOptionsControl.prototype.defaults,
-      {
-        select2: {
-          allowClear: true,
-          placeholder: 'Select from the list',
-          width: 'style',
-          templateResult: formatNode,
-          templateSelection: formatNode
-        }
-      }),
-    render: function() {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-        attributes = this.model.toJSON(),
-        attrArr = field.name.split('.'),
-        name = attrArr.shift(),
-        path = attrArr.join('.'),
-        rawValue = this.keyPathAccessor(attributes[name], path),
-        data = _.extend(field, {
-          rawValue: rawValue,
-          value: this.formatter.fromRaw(rawValue, this.model),
-          attributes: attributes,
-          formatter: this.formatter
-        }),
-        evalF = function(f, d, m) {
-          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
-        };
-
-      // Evaluate the disabled, visible, and required option
-      _.extend(data, {
-        disabled: evalF(data.disabled, data, this.model),
-        visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
-      });
-
-      if (field.node_info.server.version < field.min_version) {
-        field.version_compatible = false
-        return this;
-      }
-      else {
-        // Evaluation the options
-        if (_.isFunction(data.options)) {
-        try {
-          data.options = data.options.apply(this)
-        } catch(e) {
-          // Do nothing
-          data.options = []
-          this.model.trigger('pgadmin-view:transform:error', self.model, self.field, e);
-        }
-        }
-
-        // Clean up first
-        this.$el.removeClass(Backform.hiddenClassname);
-        this.$el.html(this.template(data)).addClass(field.name);
-
-        if (!data.visible) {
-        this.$el.addClass(Backform.hiddenClassname);
-        } else {
-        var opts = _.extend(
-          {}, this.defaults.select2, data.select2,
-          {
-            'data': data.options
-          });
-        this.$el.find("select").select2(opts).val(data.rawValue).trigger("change");
-        this.updateInvalid();
-        }
-      }
-      return this;
-    },
+  var NodeAjaxOptionsMultipleControl = Backform.NodeAjaxOptionsControl.extend({
     onChange: function(e) {
       var model = this.model,
           $el = $(e.target),
@@ -370,7 +278,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
       // Remove Columns if inherit option is deselected from the combobox
       if(_.size(value) < _.size(inherits)) {
-        var dif =  _.difference(inherits, JSON.parse(value));
+        var dif =  _.difference(inherits, value);
         var rmv_columns = columns.where({inheritedid: parseInt(dif[0])});
         columns.remove(rmv_columns);
       }
@@ -600,7 +508,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           basensp: undefined,
           description: undefined,
           ftsrvname: undefined,
-          strcolumn: undefined,
           strftoptions: undefined,
           inherits: [],
           columns: [],
@@ -632,7 +539,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           type: 'text', group: 'Definition', url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); }
         },{
           id: 'inherits', label:'{{ _('Inherits') }}', group: 'Definition',
-          type: 'array', min_version: 90500, control: 'node-ajax-options-multiple',
+          type: 'array', min_version: 90500, control: NodeAjaxOptionsMultipleControl,
           url: 'get_tables', select2: {multiple: true},
           'cache_level': 'database',
           transform: function(d, self){
@@ -645,9 +552,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             }
             return d;
           }
-        },{
-          id: 'strcolumn', label:'{{ _('Columns') }}', cell: 'string', group: 'Definition',
-          type: 'text', min_version: 90500, mode: ['properties']
         },{
           id: 'columns', label:'{{ _('Columns') }}', cell: 'string',
           type: 'collection', group: 'Columns', visible: false, mode: ['edit', 'create'],
