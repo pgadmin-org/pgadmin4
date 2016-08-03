@@ -42,6 +42,31 @@
     line-height: 30px;
 }
 
+.dashboard-tab-btn-group {
+    background-color: #D2D2D2;
+    border: 2px solid #A9A9A9;
+    left: 0px;
+    right: 0px;
+    padding: 2px;
+}
+
+.dashboard-tab-btn-group button {
+    padding: 5px;
+}
+
+.dashboard-tab-btn-group > button {
+    margin: 2px 3px 2px 0px;
+    min-width: 40px;
+}
+
+.dashboard-tab-btn-group > button:first-child {
+    margin-left: 3px;
+}
+
+.dashboard-tab-btn-group > button:last-child {
+    margin-right: 3px;
+}
+
 .graph-container {
     margin-top: 10px;
     height: 150px;

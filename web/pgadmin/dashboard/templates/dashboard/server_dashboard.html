@@ -64,31 +64,47 @@
                 <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
                     <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_server_activity"
                                                                             aria-controls="tab_server_activity"
-                                                                            role="tab" data-toggle="tab">Sessions</a>
+                                                                            role="tab" data-toggle="tab">{{ gettext('Sessions') }}</a>
                     </li>
                     <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_locks"
                                                                      aria-controls="tab_server_locks" role="tab"
-                                                                     data-toggle="tab">Locks</a></li>
+                                                                     data-toggle="tab">{{ gettext('Locks') }}</a></li>
                     <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_prepared"
                                                                      aria-controls="tab_server_prepared" role="tab"
-                                                                     data-toggle="tab">Prepared Transactions</a></li>
+                                                                     data-toggle="tab">{{ gettext('Prepared Transactions') }}</a></li>
                     <li role="presentation" class="dashboard-tab"><a href="#tab_panel_server_config"
                                                                      aria-controls="tab_server_config" role="tab"
-                                                                     data-toggle="tab">Configuration</a></li>
+                                                                     data-toggle="tab">{{ gettext('Configuration') }}</a></li>
                 </ul>
 
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="tab_panel_server_activity">
+                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                            <button id="btn_server_activity_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <div id="server_activity_filter"></div>
+                        </div>
                         <div id="server_activity" class="grid-container"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="tab_panel_server_locks">
+                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                            <button id="btn_server_locks_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <div id="server_locks_filter"></div>
+                        </div>
                         <div id="server_locks" class="grid-container"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="tab_panel_server_prepared">
+                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                            <button id="btn_server_prepared_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <div id="server_prepared_filter"></div>
+                        </div>
                         <div id="server_prepared" class="grid-container"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="tab_panel_server_config">
+                        <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
+                            <button id="btn_server_config_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <div id="server_config_filter"></div>
+                        </div>
                         <div id="server_config" class="grid-container"></div>
                     </div>
                 </div>

@@ -290,10 +290,10 @@ function(r, $, pgAdmin, _, Backbone) {
             });
 
             // Render the filter
-            $(container).before(filter.render().el);
+            $('#' + container.id + '_filter').before(filter.render().el);
 
             // Add some space to the filter and move it to the right
-            $(filter.el).css({float: "right", margin: "5px", "margin-right": "0px"});
+            $(filter.el).css({float: "right", margin: "5px", "margin-right": "2px", "margin-top": "3px"});
 
             // Stash objects for future use
             $(container).data('data', data);
@@ -592,6 +592,27 @@ function(r, $, pgAdmin, _, Backbone) {
                 }
             });
 
+            // Handle button clicks
+            $("button").click(function(e){
+                switch(this.id) {
+                    case "btn_server_activity_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_server_activity);
+                        break;
+
+                    case "btn_server_locks_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_server_locks);
+                        break;
+
+                    case "btn_server_prepared_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_server_prepared);
+                        break;
+
+                    case "btn_server_config_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_server_config);
+                        break;
+                }
+            });
+
         },
 
         // Rock n' roll on the database dashboard
@@ -778,6 +799,23 @@ function(r, $, pgAdmin, _, Backbone) {
                         break;
 
                     case "tab_database_prepared":
+                        pgAdmin.Dashboard.render_grid_data(div_database_prepared);
+                        break;
+                }
+            });
+
+            // Handle button clicks
+            $("button").click(function(e){
+                switch(this.id) {
+                    case "btn_database_activity_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_database_activity);
+                        break;
+
+                    case "btn_database_locks_refresh":
+                        pgAdmin.Dashboard.render_grid_data(div_database_locks);
+                        break;
+
+                    case "btn_database_prepared_refresh":
                         pgAdmin.Dashboard.render_grid_data(div_database_prepared);
                         break;
                 }
