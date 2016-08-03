@@ -580,7 +580,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           username: '{{ username }}',
           role: null,
           connect_now: true,
-          password: undefined
+          password: undefined,
+          save_password: false
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -594,21 +595,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         schema: [{
           id: 'id', label: '{{ _('ID') }}', type: 'int', mode: ['properties']
         },{
-          id: 'gid', label: '{{ _('Server Group') }}', type: 'int',
-          control: 'node-list-by-id', node: 'server-group',
-          mode: ['create', 'edit'], select2: {allowClear: false}
-        },{
           id: 'name', label:'{{ _('Name') }}', type: 'text',
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'server_type', label: '{{ _('Server Type') }}', type: 'options',
+          id: 'gid', label: '{{ _('Server group') }}', type: 'int',
+          control: 'node-list-by-id', node: 'server-group',
+          mode: ['create', 'edit'], select2: {allowClear: false}
+        },{
+          id: 'server_type', label: '{{ _('Server type') }}', type: 'options',
           mode: ['properties'], visible: 'isConnected',
           'options': [{% for st in server_types %}
             {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
             {label: '{{ _('Unknown') }}', value: ''}
           ]
         },{
-          id: 'connected', label:'{{ _('Connected') }}', type: 'switch',
+          id: 'connected', label:'{{ _('Connected?') }}', type: 'switch',
           mode: ['properties'], group: "{{ 'Connection' }}", 'options': {
             'onText':   'True', 'offText':  'False', 'onColor':  'success',
             'offColor': 'danger', 'size': 'small'
@@ -623,16 +624,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'host', label:'{{ _('Host Name/Address') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'host', label:'{{ _('Host name/address') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'port', label:'{{ _('Port') }}', type: 'int', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535
         },{
-          id: 'db', label:'{{ _('Maintenance Database') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'db', label:'{{ _('Maintenance database') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'username', label:'{{ _('User Name') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'username', label:'{{ _('User name') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'password', label:'{{ _('Password') }}', type: 'password',
@@ -641,10 +642,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return m.get('connect_now') && m.isNew();
           }
         },{
+          id: 'save_password', controlLabel:'{{ _('Save password?') }}', type: 'checkbox',
+          group: "{{ 'Connection' }}", mode: ['create'], deps: ['connect_now'],
+          visible: function(m) {
+            return m.get('connect_now') && m.isNew();
+          }
+        },{
           id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'sslmode', label:'{{ _('SSL Mode') }}', type: 'options', group: "{{ 'Connection' }}",
+          id: 'sslmode', label:'{{ _('SSL mode') }}', type: 'options', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           'options': [
             {label: 'Allow', value: 'allow'},

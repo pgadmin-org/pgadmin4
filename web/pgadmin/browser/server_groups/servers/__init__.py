@@ -570,6 +570,8 @@ class ServerNode(PGChildNodeView):
                     )
                 )
 
+        server = None
+
         try:
             server = Server(
                 user_id=current_user.id,
@@ -596,8 +598,10 @@ class ServerNode(PGChildNodeView):
                 manager.update(server)
                 conn = manager.connection()
 
+                have_password =  False
                 if 'password' in data and data["password"] != '':
                     # login with password
+                    have_password = True
                     password = data['password']
                     password = encrypt(password, current_user.password)
                 else:
@@ -618,6 +622,10 @@ class ServerNode(PGChildNodeView):
                         errormsg=gettext("Unable to connect to server:\n\n%s" % errmsg)
                     )
                 else:
+                    if 'save_password' in data and data['save_password'] and have_password:
+                        setattr(server, 'password', password)
+                        db.session.commit()
+
                     user = manager.user_info
                     connected = True
                     icon = "icon-pg"
