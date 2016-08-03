@@ -578,7 +578,8 @@ AND relkind != 'c'))"""
                     )
                 )
 
-            name, basensp = res['rows'][0]
+            name  = res['rows'][0]['name']
+            basensp = res['rows'][0]['basensp']
 
             SQL = render_template("/".join([self.template_path,
                                             'delete.sql']),
