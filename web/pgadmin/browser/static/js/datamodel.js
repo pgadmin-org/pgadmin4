@@ -1065,8 +1065,10 @@ function(_, pgAdmin, $, Backbone) {
           return true;
         }
 
-        self.sessAttrs['changed'].push(obj);
-        (self.handler || self).trigger('pgadmin-session:changed', self, obj);
+        if (obj.sessChanged()) {
+          self.sessAttrs['changed'].push(obj);
+          (self.handler || self).trigger('pgadmin-session:changed', self, obj);
+        }
 
         return true;
       },

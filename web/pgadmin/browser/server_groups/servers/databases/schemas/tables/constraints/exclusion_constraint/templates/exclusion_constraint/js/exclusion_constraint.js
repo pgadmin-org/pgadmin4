@@ -639,6 +639,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       },
       // Define the model for exclusion constraint node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
+
         defaults: {
           name: undefined,
           oid: undefined,

@@ -79,6 +79,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
       // Define the model for index constraint node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
+
         defaults: {
           name: undefined,
           oid: undefined,

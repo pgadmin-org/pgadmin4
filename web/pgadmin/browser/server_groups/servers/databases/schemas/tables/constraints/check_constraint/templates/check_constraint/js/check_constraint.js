@@ -90,6 +90,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
+
         defaults: {
           name: undefined,
           oid: undefined,

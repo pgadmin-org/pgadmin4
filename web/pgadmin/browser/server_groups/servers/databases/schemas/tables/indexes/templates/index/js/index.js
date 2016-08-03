@@ -238,8 +238,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
+
         defaults: {
           name: undefined,
+          oid: undefined,
           nspname: undefined,
           tabname: undefined,
           spcname: 'pg_default',

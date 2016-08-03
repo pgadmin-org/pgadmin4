@@ -451,7 +451,7 @@ class IndexConstraintView(PGChildNodeView):
         for k, v in data.items():
             try:
                 data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, KeyError):
                 data[k] = v
 
         for arg in required_args:

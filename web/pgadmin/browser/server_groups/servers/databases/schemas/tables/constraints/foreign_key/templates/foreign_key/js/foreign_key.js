@@ -672,6 +672,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       },
       // Define the model for foreign key node
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
+
         defaults: {
           name: undefined,
           oid: undefined,
