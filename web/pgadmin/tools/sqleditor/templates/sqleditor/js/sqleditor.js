@@ -1597,13 +1597,19 @@ define(
                   // Identify cell type of column.
                   switch(type) {
                     case "integer":
+                    case "bigint":
+                    case "smallint":
                       col_cell = 'integer';
                       break;
                     case "boolean":
                       col_cell = 'boolean';
                       break;
                     case "numeric":
-                      col_cell = 'number';
+                    case "double precision":
+                    case "real":
+                        col_cell = Backgrid.NumberCell.extend({
+                          formatter: Backgrid.StringFormatter
+                        });
                       break;
                     case "date":
                     case "reltime":
