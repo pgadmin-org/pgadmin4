@@ -799,13 +799,11 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                     )
                 )
 
-            name, func_args, nspname = res['rows'][0]
-
             SQL = render_template("/".join([self.sql_template_path,
                                             'delete.sql']),
-                                  name=name,
-                                  func_args=func_args,
-                                  nspname=nspname,
+                                  name=res['rows'][0]['name'],
+                                  func_args=res['rows'][0]['func_args'],
+                                  nspname=res['rows'][0]['nspname'],
                                   cascade=cascade)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -1327,7 +1325,8 @@ It may have been removed by another user or moved to another schema.
         if not status:
             return internal_server_error(errormsg=res)
 
-        func_def, name = res['rows'][0]
+        func_def = res['rows'][0]['func_def']
+        name = res['rows'][0]['name']
 
         # Fetch only arguments
         argString = name[name.rfind('('):].strip('(').strip(')')
