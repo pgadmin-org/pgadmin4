@@ -461,7 +461,7 @@ def poll(trans_id):
             """
             if isinstance(additional_result, list) \
                     and len(additional_result) > 0:
-                result = str(additional_result[-1]) + result
+                result = "{0} {1}".format(additional_result[-1], result)
 
             rows_affected = conn.rows_affected()
 
