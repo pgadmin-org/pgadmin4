@@ -242,13 +242,15 @@ class Filemanager(object):
         self.trans_id = trans_id
         self.patherror = encode_json(
             {
-                'Error': gettext('No permission to operate on specified path.'),
+                'Error': gettext('No permission to operate on \
+                                  specified path.'),
                 'Code': -1
             }
         )
         self.dir = get_storage_directory()
 
-        if self.dir is not None and isinstance(self.dir, list):
+        if ((self.dir is not None and isinstance(self.dir, list)) or
+           self.dir is None):
             self.dir = ""
 
     @staticmethod
