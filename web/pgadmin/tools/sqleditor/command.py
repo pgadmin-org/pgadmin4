@@ -365,8 +365,8 @@ class TableCommand(GridCommand):
         """
         This function is used to fetch the primary key columns.
         """
-
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(self.sid)
         conn = manager.connection(did=self.did, conn_id=self.conn_id)
 
         pk_names = ''
@@ -382,7 +382,7 @@ class TableCommand(GridCommand):
                 raise Exception(result)
 
             for row in result['rows']:
-                pk_names += row['attname'] + ','
+                pk_names += driver.qtIdent(conn, row['attname']) + ','
                 primary_keys[row['attname']] = row['typname']
 
             if pk_names != '':
