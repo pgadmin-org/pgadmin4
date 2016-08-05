@@ -190,7 +190,7 @@ define(
       render: function() {
         var self = this;
 
-        $('.editor-title').text(self.editor_title);
+        $('.editor-title').text(_.unescape(self.editor_title));
 
         var filter = self.$el.find('#sql_filter');
 
@@ -1108,7 +1108,7 @@ define(
           });
           self.transId = self.gridView.transId = self.container.data('transId');
 
-          self.gridView.editor_title = editor_title;
+          self.gridView.editor_title = _.unescape(editor_title);
           self.gridView.current_file = undefined;
           self.gridView.items_per_page = self.items_per_page
 

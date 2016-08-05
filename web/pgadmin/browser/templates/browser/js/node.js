@@ -1119,10 +1119,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 newNodeData = view.model.tnode;
 
             tree.addIcon(item, {icon: newNodeData.icon});
-            tree.setLabel(item, {label: newNodeData.label});
+            tree.setLabel(item, {label: _.escape(newNodeData.label)});
             _.extend(itemData, newNodeData);
           } else if (view.model.get('name')) {
-            tree.setLabel(item, {label: view.model.get("name")});
+            tree.setLabel(item, {label: _.escape(view.model.get("name"))});
             if (
               view.model.get('data').icon && view.model.get('data').icon != ''
             )
@@ -1145,6 +1145,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
           /* TODO:: Create new tree node for this */
           if (view.model.tnode && '_id' in view.model.tnode) {
+            view.model.tnode.label = _.escape(view.model.tnode.label);
             var d = _.extend({}, view.model.tnode),
               func = function(i) {
                 setTimeout(function() {closePanel();}, 0);

@@ -333,8 +333,12 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           url: '{{ url_for('browser.get_nodes') }}',
           converters: {
             'text json': function(payload) {
-              return $.parseJSON(payload).data;
-            }
+              data = JSON.parse(payload).data;
+              _.each(data, function(d){
+                d.label = _.escape(d.label);
+              })
+              return data;
+            },
           }
         },
         ajaxHook: function(item, settings) {

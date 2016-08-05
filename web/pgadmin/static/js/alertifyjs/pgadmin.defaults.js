@@ -102,7 +102,7 @@ function(alertify, S) {
                 onJSONResult && typeof(onJSONResult) == 'function') {
               return onJSONResult(resp.result);
             }
-            msg = resp.result || resp.errormsg || "Unknown error";
+            msg = _.escape(resp.result) || _.escape(resp.errormsg) || "Unknown error";
           }
         } catch (exc) {
         }

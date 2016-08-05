@@ -162,7 +162,7 @@
                   '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
                   '<div class="<%=Backform.controlsClassName%>">',
                   '  <span class="<%=Backform.controlClassName%> uneditable-input" <%=disabled ? "disabled" : ""%>>',
-                  '    <%=value%>',
+                  '    <%-value%>',
                   '  </span>',
                   '</div>',
                   '<% if (helpMessage && helpMessage.length) { %>',
