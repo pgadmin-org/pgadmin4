@@ -694,8 +694,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       }
     },
 
-    get_preference(module, preference_name) {
-      preference = null;
+    get_preference: function (module, preference_name) {
+      var preference = null;
       $.ajax({
         async: false,
         url: "{{ url_for('preferences.preferences') }}" +"/"+ module +"/"+ preference_name,
