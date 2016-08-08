@@ -58,6 +58,7 @@
    *  + privileges - Privileges for that role.
    **/
   var PrivilegeRoleModel = pgNode.PrivilegeRoleModel = pgNode.Model.extend({
+    idAttribute: 'grantee',
     defaults: {
       grantee: undefined,
       grantor: undefined,
