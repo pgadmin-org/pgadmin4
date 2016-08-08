@@ -82,18 +82,37 @@ def script():
 
 
 @blueprint.route("/preferences", methods=["GET"])
+@blueprint.route("/preferences/<module>/<preference>")
 @login_required
-def preferences():
-    """Fetch all the preferences of pgAdmin IV."""
+def preferences(module=None, preference=None):
+    """Fetch all/or requested preferences of pgAdmin IV."""
+
+    if module is not None and preference is not None:
+        try:
+            m = Preferences.module(module, create=False)
+            if m is None:
+                return Response(status=404)
+
+            p = m.preference(preference)
+            if p is None:
+                return Response(status=404)
+
+            return ajax_response(
+                response=p.to_json(),
+                status=200
+            )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     # Load Preferences
-    preferences = Preferences.preferences()
+    pref = Preferences.preferences()
     res = []
 
     def label(p):
         return p['label']
 
-    for m in preferences:
+    for m in pref:
         if len(m['categories']):
             om = {
                 "id": m['id'],

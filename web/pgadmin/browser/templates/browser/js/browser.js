@@ -692,7 +692,24 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         pnlDialogHelp.focus();
         iframe.openURL(url);
       }
+    },
+
+    get_preference(module, preference_name) {
+      preference = null;
+      $.ajax({
+        async: false,
+        url: "{{ url_for('preferences.preferences') }}" +"/"+ module +"/"+ preference_name,
+        success: function(res) {
+          preference = res;
+        },
+        error: function(xhr, status, error) {
+
+        }
+      });
+
+      return preference;
     }
+
   });
 
   window.onbeforeunload = function(ev) {

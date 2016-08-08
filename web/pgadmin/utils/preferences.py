@@ -394,8 +394,7 @@ class Preferences(object):
             if name in cat['preferences']:
                 return (cat['preferences'])[name]
 
-        assert False, """Couldn't find the preference in this preference!
-Did you forget to register it?"""
+        return None
 
     @classmethod
     def preferences(cls):
@@ -452,12 +451,13 @@ Did you forget to register it?"""
         )
 
     @classmethod
-    def module(cls, name):
+    def module(cls, name, create=True):
         """
         module (classmethod)
         Get the module preferences object
 
         :param name: Name of the module
+        :param create: Flag to create Preferences object
         :returns: a Preferences object representing for the module.
         """
         if name in Preferences.modules:
@@ -466,10 +466,11 @@ Did you forget to register it?"""
             if m.label is None:
                 m.label = name
             return m
-        else:
-            m = Preferences(name, None)
 
-        return m
+        if create:
+            return Preferences(name, None)
+
+        return None
 
     @classmethod
     def save(cls, mid, cid, pid, value):

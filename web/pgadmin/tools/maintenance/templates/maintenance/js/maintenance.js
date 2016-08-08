@@ -187,8 +187,51 @@ define(
         Open the dialog for the maintenance functionality
       */
       callback_maintenace: function(args, item) {
-        var self = this;
-        var input = args || {},
+        var i = item || pgBrowser.tree.selected(),
+          server_data = null;
+
+        while (i) {
+          var node_data = pgBrowser.tree.itemData(i);
+          if (node_data._type == 'server') {
+            server_data = node_data;
+            break;
+          }
+
+          if (pgBrowser.tree.hasParent(i)) {
+            i = $(pgBrowser.tree.parent(i));
+          } else {
+            Alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            break;
+          }
+        }
+
+        if (!server_data) {
+          return;
+        }
+
+        var module = 'paths',
+          preference_name = 'pg_bin_dir',
+          msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
+
+        if (server_data.server_type == 'ppas') {
+          preference_name = 'ppas_bin_dir';
+          msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
+        }
+
+        var preference = pgBrowser.get_preference(module, preference_name);
+
+        if(preference) {
+          if (!preference.value) {
+            Alertify.alert('{{ _("Configuration required") }}', msg);
+            return;
+          }
+        } else {
+          Alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          return;
+        }
+
+        var self = this,
+          input = args || {},
           t = pgBrowser.tree,
           i = item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined,
