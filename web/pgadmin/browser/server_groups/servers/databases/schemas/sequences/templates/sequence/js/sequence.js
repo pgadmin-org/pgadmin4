@@ -146,7 +146,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['properties', 'create', 'edit']
         },{
           id: 'increment', label: '{{ _('Increment') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
+          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          min: 1
         },{
           id: 'start', label: '{{ _('Start') }}', type: 'int',
           mode: ['create'], group: '{{ _('Definition') }}'
@@ -161,7 +162,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
         },{
           id: 'cache', label: '{{ _('Cache') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
+          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          min: 1
         },{
           id: 'cycled', label: '{{ _('Cycled') }}', type: 'switch',
           mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
@@ -193,11 +195,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
          * the GUI for the respective control.
          */
         validate: function() {
-          var msg = undefined;
+          var msg = undefined,
+              minimum = this.get('minimum'),
+              maximum = this.get('maximum');
+              start = this.get('start');
           // Clear any existing error msg.
-          this.errorModel.unset('name');
-          this.errorModel.unset('seqowner');
-          this.errorModel.unset('schema');
+          this.errorModel.clear();
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
@@ -217,6 +220,26 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               || String(this.get('schema')).replace(/^\s+|\s+$/g, '') == '') {
             msg = '{{ _('Schema cannot be empty.') }}';
             this.errorModel.set('schema', msg);
+            return msg;
+          }
+
+          var min_lt = '{{ _('Minimum value must be less than maximum value.') }}',
+              start_lt = '{{ _('Start value cannot be less than minimum value.') }}',
+              start_gt = '{{ _('Start value cannot be greater than maximum value.') }}';
+          if ((minimum == 0 && maximum == 0) ||
+              (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
+            msg = min_lt
+            this.errorModel.set('minimum', msg);
+            return msg;
+          }
+          else if (start < minimum) {
+            msg = start_lt
+            this.errorModel.set('start', msg);
+            return msg;
+          }
+          else if (start > maximum) {
+            msg = start_gt
+            this.errorModel.set('start', msg);
             return msg;
           }
           return null;
