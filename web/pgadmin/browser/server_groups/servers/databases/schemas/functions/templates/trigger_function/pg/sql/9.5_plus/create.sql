@@ -21,7 +21,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proa
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 
-AS {% endif %}{% if data.lanname == 'c' %}
+{% endif %}AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
 $BODY$
