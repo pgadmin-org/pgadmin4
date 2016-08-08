@@ -243,7 +243,8 @@ define(
                   lineWrapping: true,
                   matchBrackets: true,
                   indentUnit: 4,
-                  mode: "text/x-pgsql"
+                  mode: "text/x-pgsql",
+                  extraKeys: pgBrowser.editor_shortcut_keys
                 });
               },
 

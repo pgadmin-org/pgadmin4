@@ -1392,7 +1392,8 @@
         lineNumbers: true,
         lineWrapping: true,
         mode: "text/x-pgsql",
-        readOnly: true
+        readOnly: true,
+        extraKeys: pgAdmin.Browser.editor_shortcut_keys
       });
 
       return this;
@@ -2118,7 +2119,8 @@
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
             mode: "text/x-sql",
-            readOnly: isDisabled
+            readOnly: isDisabled,
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys
           });
 
       if (!isVisible)

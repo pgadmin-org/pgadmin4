@@ -206,7 +206,8 @@ define(
               rangeFinder: CodeMirror.fold.combine(CodeMirror.pgadminBeginRangeFinder, CodeMirror.pgadminIfRangeFinder,
                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
             },
-            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            extraKeys: pgBrowser.editor_shortcut_keys
         });
 
         // Create main wcDocker instance
@@ -248,7 +249,7 @@ define(
                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
             },
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            extraKeys: {"Ctrl-Space": "autocomplete"}
+            extraKeys: pgBrowser.editor_shortcut_keys
         });
 
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'

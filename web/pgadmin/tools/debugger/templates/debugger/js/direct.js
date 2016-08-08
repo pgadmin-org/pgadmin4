@@ -1422,7 +1422,8 @@ define(
           },
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "breakpoints"],
           mode: "text/x-pgsql",
-          readOnly: true
+          readOnly: true,
+          extraKeys: pgAdmin.Browser.editor_shortcut_keys
         });
 
         // On loading the docker, register the callbacks

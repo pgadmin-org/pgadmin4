@@ -320,7 +320,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             lineNumbers: true,
             lineWrapping: true,
             mode: "text/x-pgsql",
-            readOnly: true
+            readOnly: true,
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys
           });
 
       setTimeout(function() {
@@ -708,6 +709,38 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       });
 
       return preference;
+    },
+
+    editor_shortcut_keys:  {
+      // Autocomplete sql command
+      "Ctrl-Space": "autocomplete",
+      "Cmd-Space": "autocomplete",
+
+      // Select All text
+      "Ctrl-A": "selectAll",
+      "Cmd-A": "selectAll",
+
+      // Redo text
+      "Ctrl-Y": "redo",
+      "Cmd-Y": "redo",
+
+      // Undo text
+      "Ctrl-Z": "undo",
+      "Cmd-Z": "undo",
+
+      // Delete Line
+      "Ctrl-D": "deleteLine",
+      "Cmd-D": "deleteLine",
+
+      // Go to start/end of Line
+      "Alt-Left": "goLineStart",
+      "Alt-Right": "goLineEnd",
+
+      // Move word by word left/right
+      "Ctrl-Alt-Left": "goGroupLeft",
+      "Cmd-Alt-Left": "goGroupLeft",
+      "Ctrl-Alt-Right": "goGroupRight"
+      "Cmd-Alt-Right": "goGroupRight"
     }
 
   });
