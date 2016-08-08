@@ -36,12 +36,12 @@ APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
-APP_SUFFIX = 'beta3'
+APP_SUFFIX = 'beta4'
 
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 10003
+APP_VERSION_INT = 10004
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -59,8 +59,7 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
 LANGUAGES = {
-    'en': 'English',
-    'fr': 'Français'
+    'en': 'English'
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
