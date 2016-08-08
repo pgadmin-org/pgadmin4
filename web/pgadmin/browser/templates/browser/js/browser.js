@@ -739,7 +739,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       // Move word by word left/right
       "Ctrl-Alt-Left": "goGroupLeft",
       "Cmd-Alt-Left": "goGroupLeft",
-      "Ctrl-Alt-Right": "goGroupRight"
+      "Ctrl-Alt-Right": "goGroupRight",
       "Cmd-Alt-Right": "goGroupRight"
     }
 
