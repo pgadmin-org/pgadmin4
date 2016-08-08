@@ -1,10 +1,10 @@
 .. _backup_globals_dialog:
 
-****************************
-The Backup Globals... Dialog
-****************************
+*************************
+The Backup Globals Dialog
+*************************
 
-Use the *Backup Globals...* dialog to create a plain-text script that recreates all of the database objects within a cluster, and the global objects that are shared by those databases. Global objects include tablespaces, roles, and object properties. You can use the pgAdmin *Query Tool* to play back a plain-text script, and recreate the objects in the backup.
+Use the *Backup Globals* dialog to create a plain-text script that recreates all of the database objects within a cluster, and the global objects that are shared by those databases. Global objects include tablespaces, roles, and object properties. You can use the pgAdmin *Query Tool* to play back a plain-text script, and recreate the objects in the backup.
 
 .. image:: images/backup_globals_general.png
 

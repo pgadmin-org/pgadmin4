@@ -1,10 +1,10 @@
 .. _maintenance_dialog:
 
-*************************
-The Maintenance... Dialog
-*************************
+**********************
+The Maintenance Dialog
+**********************
 
-Use the *Maintenance...* dialog to VACUUM, ANALYZE, REINDEX or CLUSTER a database or selected database objects. 
+Use the *Maintenance* dialog to VACUUM, ANALYZE, REINDEX or CLUSTER a database or selected database objects.
 
 .. image:: images/maintenance.png
 

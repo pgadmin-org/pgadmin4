@@ -1,10 +1,10 @@
 .. _backup_server_dialog:
 
-****************************
-The Backup Server... Dialog
-****************************
+*************************
+The Backup Server Dialog
+*************************
 
-Use the *Backup Server...* dialog to create a plain-text script that will recreate the selected server. You can use the pgAdmin *Query Tool* to play back a plain-text script, and recreate the server.
+Use the *Backup Server* dialog to create a plain-text script that will recreate the selected server. You can use the pgAdmin *Query Tool* to play back a plain-text script, and recreate the server.
 
 .. image:: images/backup_server_general.png
 
@@ -25,4 +25,5 @@ Click the *Backup* button to build and execute a command based on your selection
 If the backup is successful, a popup window will confirm success. Click *Click here for details* on the popup window to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the backup and provides additional information for troubleshooting.
 
 .. image:: images/backup_server_process_watcher.png
-   If the backup is unsuccessful, review the error message returned by the *Process Watcher* to resolve any issue.
+   
+If the backup is unsuccessful, review the error message returned by the *Process Watcher* to resolve any issue.
