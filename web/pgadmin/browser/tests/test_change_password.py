@@ -8,9 +8,12 @@
 # ##########################################################################
 
 import uuid
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.test_setup import config_data
+from regression import test_utils as utils
+from utils import change_password
 
 
 class ChangePasswordTestCase(BaseTestGenerator):
@@ -24,9 +27,9 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # This testcase validates invalid confirmation password
         ('TestCase for Validating Incorrect_New_Password', dict(
             password=(config_data['pgAdmin4_login_credentials']
-                      ['test_login_password']),
+                      ['login_password']),
             new_password=(config_data['pgAdmin4_login_credentials']
-                          ['test_new_password']),
+                          ['new_password']),
             new_password_confirm=str(uuid.uuid4())[4:8],
             respdata='Passwords do not match')),
 
@@ -34,7 +37,7 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # minimum length
         ('TestCase for Validating New_Password_Less_Than_Min_Length',
          dict(password=(config_data['pgAdmin4_login_credentials']
-                        ['test_login_password']),
+                        ['login_password']),
               new_password=str(uuid.uuid4())[4:8],
               new_password_confirm=str(uuid.uuid4())[4:8],
               respdata='Password must be at least 6 characters')),
@@ -42,7 +45,7 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # This testcase validates if both password fields are left blank
         ('TestCase for Validating Empty_New_Password', dict(
             password=(config_data['pgAdmin4_login_credentials']
-                      ['test_login_password']),
+                      ['login_password']),
             new_password='', new_password_confirm='',
             respdata='Password not provided')),
 
@@ -50,57 +53,66 @@ class ChangePasswordTestCase(BaseTestGenerator):
         ('TestCase for Validating Incorrect_Current_Password', dict(
             password=str(uuid.uuid4())[4:8],
             new_password=(config_data['pgAdmin4_login_credentials']
-                          ['test_new_password']),
+                          ['new_password']),
             new_password_confirm=(
                 config_data['pgAdmin4_login_credentials']
-                ['test_new_password']),
+                ['new_password']),
             respdata='Invalid password')),
 
-        # This testcase checks for valid password
+        # This test case checks for valid password
         ('TestCase for Changing Valid_Password', dict(
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['test_login_password']),
-            new_password=(config_data['pgAdmin4_login_credentials']
-                          ['test_new_password']),
+            valid_password='reassigning_password',
+            username=(config_data['pgAdmin4_test_user_credentials']
+                      ['login_username']),
+            password=(config_data['pgAdmin4_test_user_credentials']
+                      ['login_password']),
+            new_password=(config_data['pgAdmin4_test_user_credentials']
+                          ['new_password']),
             new_password_confirm=(
-                config_data['pgAdmin4_login_credentials']
-                ['test_new_password']),
-            respdata='You successfully changed your password.')),
-        ('Reassigning_Password', dict(
-            test_case='reassigning_password',
-            password=(config_data['pgAdmin4_login_credentials']
-                      ['test_new_password']),
-            new_password=(config_data['pgAdmin4_login_credentials']
-                          ['test_login_password']),
-            new_password_confirm=(
-                config_data['pgAdmin4_login_credentials']
-                ['test_login_password']),
+                config_data['pgAdmin4_test_user_credentials']
+                ['new_password']),
             respdata='You successfully changed your password.'))
-
     ]
+
+    @classmethod
+    def setUpClass(cls):
+        pass
 
     def runTest(self):
         """This function will check change password functionality."""
 
-        # Check for 'test_case' exists in self For reassigning the password.
-        # Password gets change in change password test case.
-        if 'test_case' in dir(self):
-            email = \
-                config_data['pgAdmin4_login_credentials'][
-                    'test_login_username']
-            password = \
-                config_data['pgAdmin4_login_credentials'][
-                    'test_new_password']
+        # Check for 'valid_password' exists in self to test 'valid password'
+        # test case
+        if 'valid_password' in dir(self):
+            response = self.tester.post('/user_management/user/', data=dict(
+                email=self.username, newPassword=self.password,
+                confirmPassword=self.password, active=1, role="2"),
+                                        follow_redirects=True)
+            user_id = json.loads(response.data.decode('utf-8'))['id']
+
+            # Logout the Administrator before login normal user
+            utils.logout_tester_account(self.tester)
+
             response = self.tester.post('/login', data=dict(
-                email=email, password=password), follow_redirects=True)
+                email=self.username, password=self.password),
+                                        follow_redirects=True)
+            assert response.status_code == 200
 
-        response = self.tester.get('/change', follow_redirects=True)
-        self.assertIn('pgAdmin 4 Password Change', response.data.decode(
-            'utf-8'))
+            # test the 'change password' test case
+            change_password(self)
 
-        response = self.tester.post('/change', data=dict(
-            password=self.password,
-            new_password=self.new_password,
-            new_password_confirm=self.new_password_confirm),
-                                    follow_redirects=True)
-        self.assertIn(self.respdata, response.data.decode('utf-8'))
+            # Delete the normal user after changing it's password
+            utils.logout_tester_account(self.tester)
+
+            # Login the Administrator before deleting normal user
+            utils.login_tester_account(self.tester)
+            response = self.tester.delete(
+                '/user_management/user/' + str(user_id),
+                follow_redirects=True)
+            assert response.status_code == 200
+        else:
+            change_password(self)
+
+    @classmethod
+    def tearDownClass(cls):
+        utils.login_tester_account(cls.tester)

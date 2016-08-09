@@ -1,7 +1,7 @@
 {
-  "test_add_database_data": [
+  "add_database_data": [
    {
-    "test_privileges_acl": [
+    "privileges_acl": [
       {
         "grantee": "postgres",
         "grantor": "postgres",
@@ -19,9 +19,9 @@
         ]
       }
     ],
-    "test_conn_limit": -1,
-    "test_owner": "postgres",
-    "test_fun_acl": [
+    "conn_limit": -1,
+    "owner": "postgres",
+    "fun_acl": [
       {
         "grantee": "postgres",
         "grantor": "postgres",
@@ -34,7 +34,7 @@
         ]
       }
     ],
-    "test_seq_acl": [
+    "seq_acl": [
       {
         "grantee": "postgres",
         "grantor": "postgres",
@@ -57,7 +57,7 @@
         ]
       }
     ],
-    "test_tbl_acl": [
+    "tbl_acl": [
       {
         "grantee": "postgres",
         "grantor": "postgres",
@@ -75,7 +75,7 @@
         ]
       }
     ],
-    "test_type_acl": [
+    "type_acl": [
       {
         "grantee": "postgres",
         "grantor": "postgres",
@@ -88,112 +88,60 @@
         ]
       }
     ],
-    "test_encoding": "UTF8",
-    "test_name": "test_db_automation",
-    "test_privileges": [],
-    "test_securities": [],
-    "test_variables": []
-  },
-       {
-         "test_privileges_acl": [
-           {
-             "grantee": "enterprisedb",
-             "grantor": "enterprisedb",
-             "privileges": [
-               {
-                 "privilege_type": "C",
-                 "privilege": true,
-                 "with_grant": true
-               },
-               {
-                 "privilege_type": "T",
-                 "privilege": true,
-                 "with_grant": false
-               }
-             ]
-           }
-         ],
-         "test_conn_limit": -1,
-         "test_owner": "enterprisedb",
-         "test_fun_acl": [
-           {
-             "grantee": "enterprisedb",
-             "grantor": "enterprisedb",
-             "privileges": [
-               {
-                 "privilege_type": "X",
-                 "privilege": true,
-                 "with_grant": false
-               }
-             ]
-           }
-         ],
-         "test_seq_acl": [
-           {
-             "grantee": "enterprisedb",
-             "grantor": "enterprisedb",
-             "privileges": [
-               {
-                 "privilege_type": "r",
-                 "privilege": true,
-                 "with_grant": false
-               },
-               {
-                 "privilege_type": "w",
-                 "privilege": true,
-                 "with_grant": false
-               },
-               {
-                 "privilege_type": "U",
-                 "privilege": true,
-                 "with_grant": false
-               }
-             ]
-           }
-         ],
-         "test_tbl_acl": [
-           {
-             "grantee": "enterprisedb",
-             "grantor": "enterprisedb",
-             "privileges": [
-               {
-                 "privilege_type": "a",
-                 "privilege": true,
-                 "with_grant": true
-               },
-               {
-                 "privilege_type": "r",
-                 "privilege": true,
-                 "with_grant": false
-               }
-             ]
-           }
-         ],
-         "test_type_acl": [
-           {
-             "grantee": "enterprisedb",
-             "grantor": "enterprisedb",
-             "privileges": [
-               {
-                 "privilege_type": "U",
-                 "privilege": true,
-                 "with_grant": false
-               }
-             ]
-           }
-         ],
-         "test_encoding": "UTF8",
-         "test_name": "test_db_automation",
-         "test_privileges": [],
-         "test_securities": [],
-         "test_variables": []
-       }
+    "encoding": "UTF8",
+    "name": "test_db_automation",
+    "privileges": [],
+    "securities": [],
+    "variables": []
+  }
+ ],
+  "db_update_data": [
+  {
+      "comment": "This is db update comment"
+  }
  ],
 
-  "test_db_update_data": [
-  {
-      "test_comment": "This is db update comment"
-  }
- ]
+  "lr_credentials": {
+      "can_login": "true",
+      "conn_limit": -1,
+      "create_role": "true",
+      "role_inherit": "true",
+      "role_membership": [],
+      "lr_name":  "testlrg1",
+      "lr_password": "edb",
+      "lr_validity": "12/27/2016",
+      "sec_lable": [],
+      "variable":[
+                        {"name":"work_mem",
+                          "database":"postgres",
+                          "value":65
+                        }]
+    },
+  "lr_update_data": {
+      "comment": "This is db update comment"
+  },
 
+  "tablespc_credentials":[{
+    "tblspace_name": "test_tablespace",
+    "spc_seclable": [],
+    "spc_acl": [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":[
+          {
+            "privilege_type":"C",
+            "privilege":true,
+            "with_grant":false
+          }
+        ]
+      }
+    ],
+    "spc_opts": [],
+    "spc_user": "postgres"
+  }],
+
+    "tbspc_update_data": {
+    "comment": "This is tablespace update comment"
+  }
 }

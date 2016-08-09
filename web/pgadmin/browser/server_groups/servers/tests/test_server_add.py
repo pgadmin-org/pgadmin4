@@ -7,10 +7,9 @@
 #
 # ##########################################################################
 
-import json
-
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
+from . import utils as server_utils
 
 
 class ServersAddTestCase(BaseTestGenerator):
@@ -21,24 +20,17 @@ class ServersAddTestCase(BaseTestGenerator):
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pass
 
     def runTest(self):
         """ This function will add the server under default server group."""
 
-        server_group, config_data, pickle_id_dict = utils.get_config_data()
-        for server_data in config_data:
-            url = "{0}{1}/".format(self.url, server_group)
-            response = self.tester.post(url, data=json.dumps(server_data),
-                                        content_type='html/json')
+        server_utils.add_server(self.tester)
 
-            self.assertTrue(response.status_code, 200)
-
-            response_data = json.loads(response.data.decode())
-            utils.write_parent_id(response_data, pickle_id_dict)
-
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         """
         This function deletes the added server and the 'parent_id.pkl' file
         which is created in setup() function.
@@ -46,5 +38,5 @@ class ServersAddTestCase(BaseTestGenerator):
         :return: None
         """
 
-        utils.delete_server(self.tester)
+        server_utils.delete_server(cls.tester)
         utils.delete_parent_id_file()

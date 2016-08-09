@@ -75,22 +75,29 @@ General Information
 Test Data Details
 -----------------
 
-	"pgAdmin4 Login Credentials":
+	"pgAdmin4 Login Credentials" (used to login to pgAdmin):
 
-	 test_login_username = login id
-	 test_login_password = login password
-	 test_new_password = new login password
+	 login_username = login id
+	 login_password = login password
+	 new_password = new login password
 
-	 "test_server_credentials":
+	"pgAdmin4 Test User Credentials" (dummy user used for testing user management):
 
-     test_name = Server/database Name
-     test_db_username = Database Username
-     test_host = IP Address of Server
-     test_db_password = Database Password
-     test_db_port = Database Port
-     test_maintenance_db = Maintenance Database
-     test_sslmode = SSL Mode
-     test_comment = Any Comments to add
+	 login_username = login id
+	 login_password = login password
+	 new_password = new login password
+
+	 "server_credentials":
+
+     name = Server/database Name
+     db_username = Database Username
+     host = IP Address of Server
+     db_password = Database Password
+     db_port = Database Port
+     maintenance_db = Maintenance Database
+     sslmode = SSL Mode
+     comment = Any Comments to add
+     tablespace_path = A path under which a tablespace can be created
 
 
 Execution:

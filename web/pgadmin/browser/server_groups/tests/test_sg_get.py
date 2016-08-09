@@ -26,7 +26,7 @@ class SgNodeTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will check available server groups."""
 
-        server_group_id = config_data['test_server_group']
+        server_group_id = config_data['server_group']
         response = self.tester.get(self.url + str(server_group_id),
                                    content_type='html/json')
         self.assertTrue(response.status_code, 200)

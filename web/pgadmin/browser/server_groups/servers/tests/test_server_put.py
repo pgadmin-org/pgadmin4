@@ -8,10 +8,9 @@
 # ##########################################################################
 
 import json
-
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression.test_setup import config_data
+from . import utils as server_utils
 
 
 class ServerUpdateTestCase(BaseTestGenerator):
@@ -22,7 +21,8 @@ class ServerUpdateTestCase(BaseTestGenerator):
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """
         This function perform the four tasks
          1. Add the test server
@@ -33,13 +33,16 @@ class ServerUpdateTestCase(BaseTestGenerator):
         """
 
         # Firstly, add the server
-        utils.add_server(self.tester)
+        server_utils.add_server(cls.tester)
+
         # Get the server
-        utils.get_server(self.tester)
+        server_utils.get_server(cls.tester)
+
         # Connect to server
-        self.server_connect, self.server_group, self.server_ids = \
-            utils.connect_server(self.tester)
-        if len(self.server_connect) == 0:
+        cls.server_connect, cls.server_group, cls.server_ids = \
+            server_utils.connect_server(cls.tester)
+
+        if len(cls.server_connect) == 0:
             raise Exception("No Server(s) connected to update!!!")
 
     def runTest(self):
@@ -48,7 +51,8 @@ class ServerUpdateTestCase(BaseTestGenerator):
         for server_id in self.server_ids:
             data = {
                 "comment":
-                    config_data['test_server_update_data'][0]['test_comment'],
+                    server_utils.config_data['server_update_data'][0][
+                        'comment'],
                 "id": server_id
             }
             put_response = self.tester.put(
@@ -60,7 +64,8 @@ class ServerUpdateTestCase(BaseTestGenerator):
             response_data = json.loads(put_response.data.decode())
             self.assertTrue(response_data['success'], 1)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         """
         This function deletes the added server and the 'parent_id.pkl' file
         which is created in setup() function.
@@ -68,5 +73,5 @@ class ServerUpdateTestCase(BaseTestGenerator):
         :return: None
         """
 
-        utils.delete_server(self.tester)
+        server_utils.delete_server(cls.tester)
         utils.delete_parent_id_file()

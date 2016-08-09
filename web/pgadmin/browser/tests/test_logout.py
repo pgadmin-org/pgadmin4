@@ -24,7 +24,8 @@ class LogoutTest(BaseTestGenerator):
         ('Logging Out', dict(respdata='Redirecting...'))
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pass
 
     def runTest(self):
@@ -33,9 +34,10 @@ class LogoutTest(BaseTestGenerator):
         response = self.tester.get('/logout')
         self.assertIn(self.respdata, response.data.decode('utf8'))
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         """
         We need to again login the test client as soon as test scenarios
         finishes.
         """
-        utils.login_tester_account(self.tester)
+        utils.login_tester_account(cls.tester)

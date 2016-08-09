@@ -84,5 +84,6 @@ class BaseTestGenerator(unittest.TestCase):
         self.app = app
 
     # Initializing test_client.
-    def setTestClient(self, test_client):
-        self.tester = test_client
+    @classmethod
+    def setTestClient(cls, test_client):
+        cls.tester = test_client

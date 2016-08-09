@@ -24,20 +24,20 @@ class LoginTestCase(BaseTestGenerator):
         # This test case validates the invalid/incorrect password
         ('TestCase for Checking Invalid_Password', dict(
             email=(config_data['pgAdmin4_login_credentials']
-                   ['test_login_username']),
+                   ['login_username']),
             password=str(uuid.uuid4())[4:8],
             respdata='Invalid password')),
 
         # This test case validates the empty password field
         ('Empty_Password', dict(
             email=(config_data['pgAdmin4_login_credentials']
-                   ['test_login_username']), password='',
+                   ['login_username']), password='',
             respdata='Password not provided')),
 
         # This test case validates blank email field
         ('Empty_Email', dict(
             email='', password=(config_data['pgAdmin4_login_credentials']
-                                ['test_login_password']),
+                                ['login_password']),
             respdata='Email not provided')),
 
         # This test case validates empty email and password
@@ -49,7 +49,7 @@ class LoginTestCase(BaseTestGenerator):
         ('Invalid_Email', dict(
             email=str(uuid.uuid4())[1:6] + '@xyz.com',
             password=(config_data['pgAdmin4_login_credentials']
-                      ['test_login_password']),
+                      ['login_password']),
             respdata='Specified user does not exist')),
 
         # This test case validates invalid email and password
@@ -62,21 +62,22 @@ class LoginTestCase(BaseTestGenerator):
         # to login pgAdmin 4
         ('Valid_Credentials', dict(
             email=(config_data['pgAdmin4_login_credentials']
-                   ['test_login_username']),
+                   ['login_username']),
             password=(config_data['pgAdmin4_login_credentials']
-                      ['test_login_password']),
+                      ['login_password']),
             respdata='Gravatar image for %s' %
                      config_data['pgAdmin4_login_credentials']
-                     ['test_login_username']))
+                     ['login_username']))
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """
         We need to logout the test client as we are testing scenarios of
         logging in the client like invalid password, invalid emails,
         empty credentials etc.
         """
-        utils.logout_tester_account(self.tester)
+        utils.logout_tester_account(cls.tester)
 
     def runTest(self):
         """This function checks login functionality."""
@@ -86,9 +87,10 @@ class LoginTestCase(BaseTestGenerator):
                                     follow_redirects=True)
         self.assertIn(self.respdata, response.data.decode('utf8'))
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         """
         We need to again login the test client as soon as test scenarios
         finishes.
         """
-        utils.login_tester_account(self.tester)
+        utils.login_tester_account(cls.tester)

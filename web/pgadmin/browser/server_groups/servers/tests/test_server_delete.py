@@ -7,12 +7,11 @@
 #
 # ##################################################################
 
-import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression.test_setup import config_data
-from regression.test_utils import get_ids
+
+from . import utils as server_utils
 
 
 class ServerDeleteTestCase(BaseTestGenerator):
@@ -23,7 +22,8 @@ class ServerDeleteTestCase(BaseTestGenerator):
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """
         This function is used to add the server
 
@@ -31,28 +31,16 @@ class ServerDeleteTestCase(BaseTestGenerator):
         """
 
         # Firstly, add the server
-        utils.add_server(self.tester)
+        server_utils.add_server(cls.tester)
 
     def runTest(self):
         """ This function will get all available servers under object browser
         and delete the last server using server id."""
 
-        srv_grp = config_data['test_server_group']
-        all_id = get_ids()
-        server_ids = all_id["sid"]
+        server_utils.delete_server(self.tester)
 
-        url = self.url + str(srv_grp) + "/"
-        if len(server_ids) == 0:
-            raise Exception("No server(s) to delete!!!")
-
-        # Call api to delete the servers
-        for server_id in server_ids:
-            response = self.tester.delete(url + str(server_id))
-            self.assertTrue(response.status_code, 200)
-            response_data = json.loads(response.data.decode())
-            self.assertTrue(response_data['success'], 1)
-
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         """
         This function deletes the 'parent_id.pkl' file which is created in
         setup() function.

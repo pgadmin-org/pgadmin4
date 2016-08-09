@@ -34,11 +34,12 @@ class ResetPasswordTestCase(BaseTestGenerator):
         # This test case validates the valid email id
         ('TestCase for Validating Valid_Email', dict(
             email=config_data['pgAdmin4_login_credentials']
-            ['test_login_username'], respdata='pgAdmin 4'))
+            ['login_username'], respdata='pgAdmin 4'))
     ]
 
-    def setUp(self):
-        logout_tester_account(self.tester)
+    @classmethod
+    def setUpClass(cls):
+        logout_tester_account(cls.tester)
 
     def runTest(self):
         """This function checks reset password functionality."""
@@ -51,5 +52,6 @@ class ResetPasswordTestCase(BaseTestGenerator):
             follow_redirects=True)
         self.assertIn(self.respdata, response.data.decode('utf-8'))
 
-    def tearDown(self):
-        login_tester_account(self.tester)
+    @classmethod
+    def tearDownClass(cls):
+        login_tester_account(cls.tester)

@@ -7,22 +7,18 @@
 #
 # ##################################################################
 
-
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from . import utils as database_utils
+from . import utils as tablespace_utils
 
 
-class DatabaseAddTestCase(BaseTestGenerator):
-    """
-    This class will check server group node present on the object browser's
-    tree node by response code.
-    """
+class TableSpaceAddTestCase(BaseTestGenerator):
+    """This class will add tablespace node under server"""
 
     scenarios = [
-        # Fetching default URL for database node.
-        ('Check Databases Node URL', dict(url='/browser/database/obj/'))
+        # Fetching default URL for tablespace node.
+        ('Check Tablespace Node', dict(url='/browser/tablespace/obj/'))
     ]
 
     @classmethod
@@ -41,23 +37,19 @@ class DatabaseAddTestCase(BaseTestGenerator):
             server_utils.connect_server(cls.tester)
 
         if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
+            raise Exception("No Server(s) connected to add the roles!!!")
 
     def runTest(self):
-        """ This function will add database under 1st server of tree node. """
+        """This function test the add tablespace scenario"""
 
-        database_utils.add_database(self.tester, self.server_connect_response,
-                                    self.server_ids)
+        tablespace_status = tablespace_utils.add_table_space(
+            self.tester, self.server_connect_response, self.server_group,
+            self.server_ids)
 
     @classmethod
     def tearDownClass(cls):
-        """
-        This function deletes the added database, added server and the
-        'parent_id.pkl' file which is created in setup()
+        """This function deletes the tablespaces,server and parent_id file"""
 
-        :return: None
-        """
-
-        database_utils.delete_database(cls.tester)
+        tablespace_utils.delete_table_space(cls.tester)
         server_utils.delete_server(cls.tester)
         utils.delete_parent_id_file()
