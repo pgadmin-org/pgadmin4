@@ -50,6 +50,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       }
     },
     hasId: false,
+    is_collection: true,
     // A collection will always have a collection of statistics, when the node
     // it represent will have some statistics.
     hasCollectiveStatistics: true,

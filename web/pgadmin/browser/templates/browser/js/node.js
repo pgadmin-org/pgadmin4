@@ -633,6 +633,27 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           this, [undefined, i]
         );
       },
+      added: function(item, data, browser) {
+        var b = browser || pgBrowser,
+            t = b.tree,
+            pItem = t.parent(item),
+            pData = pItem && t.itemData(pItem),
+            pNode = pData && pgBrowser.Nodes[pData._type];
+
+        // Check node is a collection or not.
+        if (pNode && pNode.is_collection) {
+          /* If 'collection_count' is not present in data
+           * it means tree node expanded first time, so we will
+           * kept collection count and label in data itself.
+           */
+          if (!('collection_count' in pData)) {
+            pData.collection_count = 0;
+            pData._label = pData.label;
+          }
+          pData.collection_count++;
+          t.setLabel(pItem, {label: (pData._label + ' <span>(' + pData.collection_count + ')</span>')});
+        }
+      },
       // Callback called - when a node is selected in browser tree.
       selected: function(item, data, browser) {
         // Show the information about the selected node in the below panels,
@@ -691,8 +712,33 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         return true;
       },
       removed: function(item) {
-        var self = this;
+        var self = this,
+            t = pgBrowser.tree,
+            pItem = t.parent(item),
+            pData = pItem && t.itemData(pItem),
+            pNode = pData && pgBrowser.Nodes[pData._type];
+
+        // Check node is a collection or not.
+        if (pNode && pNode.is_collection &&
+            'collection_count' in pData)
+        {
+          pData.collection_count--;
+          t.setLabel(pItem, {label: (pData._label + ' <span>(' + pData.collection_count + ')</span>')});
+        }
+
         setTimeout(function() { self.clear_cache.apply(self, item); }, 0);
+      },
+      unloaded: function(item) {
+        var self = this,
+            t = pgBrowser.tree,
+            data = item && t.itemData(item);
+
+        // In case of unload remove the collection counter
+        if (self.is_collection && 'collection_count' in data)
+        {
+          delete data.collection_count;
+          t.setLabel(item, {label: data._label});
+        }
       },
       refresh: function(n, i) {
         var self = this,
