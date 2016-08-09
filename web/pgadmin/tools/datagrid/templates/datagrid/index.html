@@ -70,9 +70,10 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li>
-                        <a id="btn-remove-filter" href="#">{{ _('Remove') }}</a>
-                        <a id="btn-include-filter" href="#">{{ _('By selection') }}</a>
-                        <a id="btn-exclude-filter" href="#">{{ _('Exclude selection') }}</a>
+                        <a id="btn-filter-menu" href="#">{{ _('Filter') }}</a>
+                        <a id="btn-remove-filter" href="#">{{ _('Remove Filter') }}</a>
+                        <a id="btn-include-filter" href="#">{{ _('By Selection') }}</a>
+                        <a id="btn-exclude-filter" href="#">{{ _('Exclude Selection') }}</a>
                     </li>
                 </ul>
             </div>
@@ -95,13 +96,18 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu">
                     <li>
+                        <a id="btn-flash-menu" href="#">
+                            <span>{{ _('Execute/Refresh (F5)') }}</span>
+                        </a>
+                    </li>
+                    <li>
                         <a id="btn-explain" href="#">
                             <span>{{ _('Explain (F7)') }}</span>
                         </a>
                     </li>
                     <li>
                         <a id="btn-explain-analyze" href="#">
-                            <span>{{ _('Explain analyze (Shift+F7)') }}</span>
+                            <span>{{ _('Explain Analyze (Shift+F7)') }}</span>
                         </a>
                     </li>
                     <li class="divider"></li>
@@ -154,7 +160,7 @@
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-edit" type="button" class="btn btn-default" title="{{ _('Edit') }}">
+                <button id="btn-edit" type="button" class="btn btn-default" title="{{ _('Clear query window') }}">
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle"
@@ -165,11 +171,11 @@
                     <li>
                         <a id="btn-clear" href="#">
                             <i class="fa fa-eraser" aria-hidden="true"></i>
-                            <span> {{ _('Clear query window') }} </span>
+                            <span> {{ _('Clear Query Window') }} </span>
                         </a>
                         <a id="btn-clear-history" href="#">
                             <i class="fa fa-eraser" aria-hidden="true"></i>
-                            <span> {{ _('Clear history') }} </span>
+                            <span> {{ _('Clear History') }} </span>
                         </a>
                     </li>
                 </ul>
