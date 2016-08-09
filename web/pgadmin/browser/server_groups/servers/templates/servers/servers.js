@@ -237,6 +237,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           pgBrowser.serverInfo = pgBrowser.serverInfo || {};
           pgBrowser.serverInfo[data._id] = _.extend({}, data);
 
+          // Call added method of node.js
+          pgAdmin.Browser.Node.callbacks.added.apply(this, arguments);
           return true;
         },
         /* Reload configuration */

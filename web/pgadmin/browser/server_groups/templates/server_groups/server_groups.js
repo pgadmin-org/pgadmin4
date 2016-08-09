@@ -10,6 +10,7 @@ function($, _, pgAdmin, Backbone) {
       label: '{{ _('Server Group') }}',
       width: '350px',
       height: '250px',
+      is_collection: true,
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
