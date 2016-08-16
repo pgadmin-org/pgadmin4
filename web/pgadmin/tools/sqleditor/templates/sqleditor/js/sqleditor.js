@@ -32,6 +32,8 @@ define(
         F7_KEY = 118,
         F8_KEY = 119;
 
+    var is_query_running = false;
+
     // Defining the backbone model for the sql grid
     var sqlEditorViewModel = Backbone.Model.extend({
 
@@ -1049,6 +1051,9 @@ define(
        *  Shift+F7 - Explain analyze query
        */
       keyAction: function(ev) {
+        // return if query is running
+        if (is_query_running) return;
+
         var keyCode = ev.which || ev.keyCode;
         if (ev.shiftKey && keyCode == F7_KEY) {
           // Explain analyze query.
@@ -1294,10 +1299,12 @@ define(
                       self.disable_tool_buttons(false);
                       $("#btn-cancel-query").prop('disabled', true);
                     }
+                    is_query_running = false;
                   }
                   else if (res.data.status === 'Busy') {
                     // If status is Busy then poll the result by recursive call to the poll function
                     self._poll();
+                    is_query_running = true;
                   }
                   else if (res.data.status === 'NotConnected') {
 
