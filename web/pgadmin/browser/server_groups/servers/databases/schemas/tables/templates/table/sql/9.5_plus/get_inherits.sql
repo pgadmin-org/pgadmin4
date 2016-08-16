@@ -1,3 +1,4 @@
+{% import 'table/sql/macros/db_catalogs.macro' as CATALOG %}
 SELECT c.oid, c.relname , nspname,
 CASE WHEN nspname NOT LIKE E'pg\_%' THEN
  quote_ident(nspname)||'.'||quote_ident(c.relname)
@@ -8,7 +9,7 @@ JOIN pg_namespace n
 ON n.oid=c.relnamespace
 WHERE relkind='r'
 {% if not show_system_objects %}
-AND (n.nspname NOT LIKE E'pg\_%' AND n.nspname NOT in ('information_schema'))
+{{ CATALOG.VALID_CATALOGS(server_type) }}
 {% endif %}
 {% if tid %}
 AND c.oid != tid

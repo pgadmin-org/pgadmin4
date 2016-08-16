@@ -277,7 +277,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             self.qtIdent = driver.qtIdent
             # We need datlastsysoid to check if current table is system table
             self.datlastsysoid = self.manager.db_info[kwargs['did']]['datlastsysoid']
-
+            self.server_type = self.manager.server_type
             # If DB not connected then return error to browser
             if not self.conn.connected():
                 return precondition_required(
@@ -285,10 +285,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         "Connection to the server has been lost!"
                     )
                 )
-
-            # We need datlastsysoid to check if current index is system index
-            self.datlastsysoid = self.manager.db_info[kwargs['did']]['datlastsysoid']
-
             # we will set template path for sql scripts
             ver = self.manager.version
             # Template for Column node
@@ -1196,7 +1192,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'get_oftype.sql']), scid=scid)
+                                            'get_oftype.sql']), scid=scid,
+                                  server_type=self.server_type,
+                                  show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1225,7 +1223,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             res = []
             SQL = render_template("/".join([self.template_path, 'get_inherits.sql']),
                                   show_system_objects=self.blueprint.show_system_objects,
-                                  tid=tid)
+                                  tid=tid,
+                                  server_type=self.server_type)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1253,7 +1252,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template("/".join([self.template_path, 'get_relations.sql']),
-                                  show_sys_objects=self.blueprint.show_system_objects)
+                                  show_sys_objects=self.blueprint.show_system_objects,
+                                  server_type=self.server_type)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
