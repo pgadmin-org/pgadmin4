@@ -143,5 +143,162 @@
 
     "tbspc_update_data": {
     "comment": "This is tablespace update comment"
+  },
+  "schema_credentials":[
+  {
+    "func_acl": [],
+    "seq_acl": [],
+    "tbl_acl": [],
+    "type_acl": [],
+    "name": "test_schema",
+    "owner": "postgres",
+    "privilege":
+    [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":
+        [
+          {
+            "privilege_type":"C",
+            "privilege":true,
+            "with_grant":false
+          },
+          {
+            "privilege_type":"U",
+            "privilege":true,
+            "with_grant":false
+          }
+        ]
+      }
+    ],
+    "sec_label": []
+  }],
+  "schema_update_data":[
+  {
+  "owner": "postgres",
+  "tbl_acl":
+    {
+    "added":
+    [
+      {
+        "grantee": "public",
+        "grantor": "postgres",
+        "privileges":
+        [
+          {
+            "privilege_type": "D",
+            "privilege": true,
+            "with_grant": false
+          },
+          {
+            "privilege_type": "x",
+            "privilege": true,
+            "with_grant": false
+          }
+        ]
+      }
+    ]
+  },
+    "func_acl":
+    {
+      "added":
+      [
+        {
+          "grantee":"postgres",
+          "grantor":"postgres",
+          "privileges":
+          [
+            {
+              "privilege_type":"X",
+              "privilege":true,
+              "with_grant":true
+            }
+          ]
+        }
+      ]
+    },
+    "seq_acl":
+    {
+      "added":
+      [
+        {
+          "grantee":"postgres",
+          "grantor":"postgres",
+          "privileges":
+          [
+            {
+              "privilege_type":"r",
+              "privilege":true,
+              "with_grant":false
+            },
+            {
+              "privilege_type":"w",
+              "privilege":true,
+              "with_grant":false
+            },
+            {
+              "privilege_type":"U",
+              "privilege":true,
+              "with_grant":false
+            }
+          ]
+        }
+      ]
+    }
+  }],
+
+  "trigger_function_credentials":[
+  {
+    "acl":
+    [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":
+        [
+          {
+            "privilege_type":"X",
+            "privilege":true,
+            "with_grant":true
+          }
+        ]
+      }
+    ],
+    "args": [],
+    "fun_owner": "postgres",
+    "language": "plpgsql",
+    "name": "test_abort_any_command",
+    "options": [],
+    "leak_proof": true,
+    "namespace": 2200,
+    "type": "event_trigger/trigger",
+    "sec_def": true,
+    "code": "BEGIN   RAISE EXCEPTION 'command % is disabled', tg_tag; END;",
+    "volitile": "s",
+    "sec_label": [],
+    "Variable":
+    [
+      {
+        "name":"enable_sort",
+        "value":true
+      }
+    ]
+  }],
+  "trigger_func_update_data": {
+    "comment": "This is trigger function update comment"
+  },
+
+  "collation_credentials":[
+  {
+    "copy_collation": "pg_catalog.\"POSIX\"",
+    "name": "test_collation",
+    "owner": "postgres",
+    "schema": ""
+  }],
+
+   "collation_update_data": {
+    "comment": "This is collation update comment"
   }
+
 }

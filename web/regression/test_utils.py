@@ -24,7 +24,9 @@ def get_pickle_id_dict():
         "did": [],  # database
         "lrid": [],  # role
         "tsid": [],  # tablespace
-        "scid": []  # schema
+        "scid": [],  # schema
+        "tfnid": [],  # trigger functions
+        "coid": []  # collation
     }
     return pickle_id_dict
 
@@ -45,22 +47,22 @@ def get_ids(url=pickle_path):
     return ids
 
 
-def test_getnodes(tester=None):
-    # Connect to server and database.
-
-    if not tester:
-        return None
-
-    all_id = get_ids()
-
-    server_ids = all_id["sid"]
-    db_ids_dict = all_id["did"][0]
-
-    db_con = []
-    for server_id in server_ids:
-        db_id = db_ids_dict[int(server_id)]
-        db_con.append(verify_database(tester, SERVER_GROUP, server_id, db_id))
-    return db_con
+# def test_getnodes(tester=None):
+#     # Connect to server and database.
+#
+#     if not tester:
+#         return None
+#
+#     all_id = get_ids()
+#
+#     server_ids = all_id["sid"]
+#     db_ids_dict = all_id["did"][0]
+#
+#     db_con = []
+#     for server_id in server_ids:
+#         db_id = db_ids_dict[int(server_id)]
+#         db_con.append(verify_database(tester, SERVER_GROUP, server_id, db_id))
+#     return db_con
 
 
 def login_tester_account(tester):

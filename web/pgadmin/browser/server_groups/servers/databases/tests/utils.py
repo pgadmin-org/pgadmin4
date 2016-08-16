@@ -12,7 +12,7 @@ import os
 import pickle
 import uuid
 
-from regression.test_setup import pickle_path, config_data, advanced_config_data
+from regression.test_setup import pickle_path, advanced_config_data
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from regression import test_utils as utils
 
@@ -130,7 +130,7 @@ def verify_database(tester, server_group, server_id, db_id):
     """
 
     # Verify servers
-    server_utils.verify_server(tester,server_group,server_id)
+    server_utils.verify_server(tester, server_group, server_id)
 
     # Connect to database
     con_response = tester.post('{0}{1}/{2}/{3}'.format(
