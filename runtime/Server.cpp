@@ -69,8 +69,9 @@ Server::Server(quint16 port)
     QString python_path = settings.value("PythonPath").toString();
 
     // Get the application directory
-    QString app_dir = qApp->applicationDirPath();
-    QString path_env = qgetenv("PATH");
+    QString app_dir = qApp->applicationDirPath(),
+            path_env = qgetenv("PATH"),
+            pythonHome;
     QStringList path_list;
     int i;
 
@@ -85,6 +86,7 @@ Server::Server(quint16 port)
     QFileInfo venvLibPath(app_dir + "/../Resources/venv/lib/python");
     QFileInfo venvDynLibPath(app_dir + "/../Resources/venv/lib/python/lib-dynload");
     QFileInfo venvSitePackagesPath(app_dir + "/../Resources/venv/lib/python/site-packages");
+    QFileInfo venvPath(app_dir + "/../Resources/venv");
 
     // Prepend the bin directory to the path
     add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
@@ -92,6 +94,7 @@ Server::Server(quint16 port)
     add_to_path(python_path, venvLibPath.canonicalFilePath());
     add_to_path(python_path, venvDynLibPath.canonicalFilePath());
     add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
+    add_to_path(pythonHome, venvPath.canonicalFilePath());
 #elif defined(Q_OS_WIN)
 
     // In the case we're running in a release application, we need to ensure the
@@ -103,6 +106,7 @@ Server::Server(quint16 port)
     QFileInfo venvLibPath(app_dir + "/../venv/Lib");
     QFileInfo venvDLLsPath(app_dir + "/../venv/DLLs");
     QFileInfo venvSitePackagesPath(app_dir + "/../venv/Lib/site-packages");
+    QFileInfo venvPath(app_dir + "/../venv");
 
     // Prepend the bin directory to the path
     add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
@@ -110,12 +114,14 @@ Server::Server(quint16 port)
     add_to_path(python_path, venvLibPath.canonicalFilePath());
     add_to_path(python_path, venvDLLsPath.canonicalFilePath());
     add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
+    add_to_path(pythonHome, venvPath.canonicalFilePath());
 #else
     // Build (and canonicalise) the virtual environment path
     QFileInfo venvBinPath(app_dir + "/../venv/bin");
     QFileInfo venvLibPath(app_dir + "/../venv/lib/python");
     QFileInfo venvDynLibPath(app_dir + "/../venv/lib/python/lib-dynload");
     QFileInfo venvSitePackagesPath(app_dir + "/../venv/lib/python/site-packages");
+    QFileInfo venvPath(app_dir + "/../venv");
 
     // Prepend the bin directory to the path
     add_to_path(path_env, venvBinPath.canonicalFilePath(), true);
@@ -123,6 +129,7 @@ Server::Server(quint16 port)
     add_to_path(python_path, venvLibPath.canonicalFilePath());
     add_to_path(python_path, venvDynLibPath.canonicalFilePath());
     add_to_path(python_path, venvSitePackagesPath.canonicalFilePath());
+    add_to_path(pythonHome, venvPath.canonicalFilePath());
 #endif
 
     qputenv("PATH", path_env.toUtf8().data());
@@ -149,10 +156,21 @@ Server::Server(quint16 port)
         qputenv("PYTHONPATH", python_path.toUtf8().data());
     }
 
-    qDebug() << "Full Python path: " << python_path;
+    qDebug() << "Python path: " << python_path
+             << "\nPython Home: " << pythonHome;
+    if (!pythonHome.isEmpty())
+    {
+#ifdef PYTHON2
+        Py_SetPythonHome(pythonHome.toUtf8().data());
+#else
+        char *python_home = pythonHome.toUtf8().data();
+        const size_t cSize = strlen(python_home) + 1;
+        wchar_t* wcPythonHome = new wchar_t[cSize];
+        mbstowcs (wcPythonHome, python_home, cSize);
 
-    python_path = settings.value("PythonPath").toString();
-    qDebug() << "User Python path: " << python_path;
+        Py_SetPythonHome(wcPythonHome);
+#endif
+    }
 
     Py_Initialize();
 
@@ -234,10 +252,33 @@ void Server::run()
 
     // Run the app!
 #ifdef PYTHON2
+    /*
+     * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
+     * versions, prepends an empty string to sys.path when the argv[0] argument does not contain a path separator,
+     * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
+     * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
+     */
+    char* n_argv[] = { m_appfile.toUtf8().data() };
+    PySys_SetArgv(1, n_argv);
+
     PyObject* PyFileObject = PyFile_FromString(m_appfile.toUtf8().data(), (char *)"r");
-    if (PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile.toUtf8().data()) != 0)
+    int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile.toUtf8().data());
+    if (ret != 0)
         setError(tr("Failed to launch the application server, server thread exiting."));
 #else
+    /*
+     * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
+     * versions, prepends an empty string to sys.path when the argv[0] argument does not contain a path separator,
+     * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
+     * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
+     */
+    char *appName = m_appfile.toUtf8().data();
+    const size_t cSize = strlen(appName)+1;
+    wchar_t* wcAppName = new wchar_t[cSize];
+    mbstowcs (wcAppName, appName, cSize);
+    wchar_t* n_argv[] = { wcAppName };
+    PySys_SetArgv(1, n_argv);
+
     int fd = fileno(cp);
     PyObject* PyFileObject = PyFile_FromFd(fd, m_appfile.toUtf8().data(), (char *)"r", -1, NULL, NULL,NULL,1);
     if (PyRun_SimpleFile(fdopen(PyObject_AsFileDescriptor(PyFileObject),"r"), m_appfile.toUtf8().data()) != 0)
