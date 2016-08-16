@@ -1,0 +1,11 @@
+{% macro VALID_CATALOGS(server_type) -%}
+ AND n.nspname NOT LIKE E'pg\_%' {% if server_type == 'ppas' %}
+AND n.nspname NOT IN ('information_schema', 'pgagent', 'dbo', 'sys') {% else %}
+AND n.nspname NOT IN ('information_schema') {% endif %}
+{%- endmacro %}
+{### Below macro is used in types fetching sql ###}
+{% macro VALID_TYPE_CATALOGS(server_type) -%}
+{% if server_type == 'ppas' %}
+ AND nsp.nspname NOT IN ('information_schema', 'pgagent', 'dbo', 'sys') {% else %}
+ AND nsp.nspname NOT IN ('information_schema') {% endif %}
+{%- endmacro %}

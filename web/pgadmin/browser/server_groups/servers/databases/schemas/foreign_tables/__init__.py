@@ -349,8 +349,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                 )
 
             ver = self.manager.version
-            server_type = self.manager.server_type
-
             # Set template path for sql scripts depending
             # on the server version.
 
@@ -495,15 +493,10 @@ shifted to the another schema.
             foid: Foreign Table Id
         """
 
-        condition = """typisdefined AND typtype IN ('b', 'c', 'd', 'e', 'r')
-AND NOT EXISTS (SELECT 1 FROM pg_class WHERE relnamespace=typnamespace
-AND relname = typname AND relkind != 'c') AND
-(typname NOT LIKE '_%' OR NOT EXISTS (SELECT 1 FROM pg_class WHERE
-relnamespace=typnamespace AND relname = substring(typname FROM 2)::name
-AND relkind != 'c'))"""
-
-        if self.blueprint.show_system_objects:
-            condition += " AND nsp.nspname != 'information_schema'"
+        condition = render_template("/".join(
+            [self.template_path, 'types_condition.sql']),
+            server_type=self.manager.server_type,
+            show_sys_objects=self.blueprint.show_system_objects)
 
         # Get Types
         status, types = self.get_types(self.conn, condition)
@@ -562,8 +555,10 @@ AND relkind != 'c'))"""
         """
         res = []
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_tables.sql']), foid=foid)
+            SQL = render_template("/".join(
+                [self.template_path,'get_tables.sql']),
+                foid=foid, server_type=self.manager.server_type,
+                show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
