@@ -39,17 +39,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'create_fts_template_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'}
+          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
+          enable: 'canCreate'
           },{
           name: 'create_fts_template_on_coll', node: 'coll-fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'}
+          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
+          enable: 'canCreate'
           },{
           name: 'create_fts_template', node: 'fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'}
+          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
+          enable: 'canCreate'
           }]);
 
       },
@@ -132,7 +135,35 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           this.trigger('on-status-clear');
           return null;
         }
-      })
+      }),
+      canCreate: function(itemData, item, data) {
+        //If check is false then , we will allow create menu
+        if (data && data.check == false)
+          return true;
+
+        var t = pgBrowser.tree, i = item, d = itemData;
+        // To iterate over tree to check parent node
+        while (i) {
+          // If it is schema then allow user to create fts fts_template
+          if (_.indexOf(['schema'], d._type) > -1)
+            return true;
+
+          if ('coll-fts_template' == d._type) {
+            //Check if we are not child of catalog
+            prev_i = t.hasParent(i) ? t.parent(i) : null;
+            prev_d = prev_i ? t.itemData(prev_i) : null;
+            if( prev_d._type == 'catalog') {
+              return false;
+            } else {
+              return true;
+            }
+          }
+          i = t.hasParent(i) ? t.parent(i) : null;
+          d = i ? t.itemData(i) : null;
+        }
+        // by default we do not want to allow create menu
+        return true;
+      }
     });
   }
 

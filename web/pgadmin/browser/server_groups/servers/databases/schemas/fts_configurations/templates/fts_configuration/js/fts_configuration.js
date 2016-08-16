@@ -436,19 +436,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           module: this, category: 'create', priority: 4,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           label: '{{_('FTS Configuration...')}}',
-          icon: 'wcTabIcon icon-fts_configuration', data: {action: 'create'}
+          icon: 'wcTabIcon icon-fts_configuration', data: {action: 'create'},
+          enable: 'canCreate'
           },{
           name: 'create_fts_configuration_on_coll', module: this, priority: 4,
           node: 'coll-fts_configuration', applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create',
           label: '{{ _('FTS Configuration...') }}', data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_configuration'
+          icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate'
           },{
           name: 'create_fts_configuration', node: 'fts_configuration',
           module: this, applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create', priority: 4,
           label: '{{_('FTS Configuration...')}}', data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_configuration'
+          icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate'
           }]);
       },
 
@@ -575,7 +576,35 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           return null;
         }
-      })
+      }),
+      canCreate: function(itemData, item, data) {
+        //If check is false then , we will allow create menu
+        if (data && data.check == false)
+          return true;
+
+        var t = pgBrowser.tree, i = item, d = itemData;
+        // To iterate over tree to check parent node
+        while (i) {
+          // If it is schema then allow user to create fts configuration
+          if (_.indexOf(['schema'], d._type) > -1)
+            return true;
+
+          if ('coll-fts_configuration' == d._type) {
+            //Check if we are not child of catalog
+            prev_i = t.hasParent(i) ? t.parent(i) : null;
+            prev_d = prev_i ? t.itemData(prev_i) : null;
+            if( prev_d._type == 'catalog') {
+              return false;
+            } else {
+              return true;
+            }
+          }
+          i = t.hasParent(i) ? t.parent(i) : null;
+          d = i ? t.itemData(i) : null;
+        }
+        // by default we do not want to allow create menu
+        return true;
+      }
     });
   }
 
