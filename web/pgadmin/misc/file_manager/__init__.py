@@ -143,7 +143,7 @@ class FileManagerModule(PgAdminModule):
         # Register 'file upload size' preference
         self.file_upload_size = self.preference.register(
             'options', 'file_upload_size',
-            gettext("Maximum file upload size(MB)"), 'integer', 50,
+            gettext("Maximum file upload size (MB)"), 'integer', 50,
             category_label=gettext('Options')
         )
 
