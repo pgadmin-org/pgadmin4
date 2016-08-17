@@ -231,6 +231,18 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
+          id: 'tblacl', label: '{{ _('Default TABLE Privileges') }}', type: 'text',
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+        },{
+          id: 'seqacl', label: '{{ _('Default SEQUENCE Privileges') }}', type: 'text',
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+        },{
+          id: 'funcacl', label: '{{ _('Default FUNCTION Privileges') }}', type: 'text',
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+        },{
+          id: 'typeacl', label: '{{ _('Default TYPE Privileges') }}', type: 'text',
+          group: '{{ _('Security') }}', mode: ['properties'], disabled: true, min_version: 90200
+        },{
           id: 'comments', label:'{{ _('Comment') }}',
           editable: false, type: 'multiline'
         },{

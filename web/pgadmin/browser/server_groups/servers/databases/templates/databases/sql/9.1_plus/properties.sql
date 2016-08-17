@@ -5,6 +5,9 @@ SELECT
     has_database_privilege(db.oid, 'CREATE') as cancreate,
     current_setting('default_tablespace') AS default_tablespace,
     descr.description as comments,
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = 0::OID) AS tblacl,
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = 0::OID) AS seqacl,
+    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = 0::OID) AS funcacl,
     array_to_string(datacl::text[], ', ') AS acl
 FROM pg_database db
     LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace=ta.OID
