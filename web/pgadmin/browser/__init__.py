@@ -195,11 +195,14 @@ class BrowserModule(PgAdminModule):
 
         self.sql_font_size = self.preference.register(
             'display', 'sql_font_size',
-            gettext("Font size"), 'text', '1em',
+            gettext("Font size"), 'numeric', '1',
+            min_val=0.1,
+            max_val=10,
             category_label=gettext('Display'),
-            help_str=gettext('The font size (and unit) to use for the SQL text boxes and editors. '
-                             'Specify a value and unit; for example "1.2em" for 1.2x the primary font size '
-                             'or "12px" for 12 pixels. Use of "em" units is highly recommended.')
+            help_str=gettext('The font size to use for the SQL text boxes and editors. '
+                             'The value specified is in "em" units, in which 1 is the default relative font size. '
+                             'For example, to increase the font size by 20% use a value of 1.2. '
+                             'Minimum 0.1, maximum 10.')
         )
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -570,10 +573,10 @@ def browser_css():
     prefs = Preferences.module('browser')
 
     sql_font_size_pref = prefs.preference('sql_font_size')
-    sql_font_size = sql_font_size_pref.get()
+    sql_font_size = round(float(sql_font_size_pref.get()), 2)
 
-    if sql_font_size != '':
-        snippets.append('.CodeMirror { font-size: %s; }' % sql_font_size)
+    if sql_font_size != 0:
+        snippets.append('.CodeMirror { font-size: %dem; }' % sql_font_size)
 
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
