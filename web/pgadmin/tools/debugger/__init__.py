@@ -158,17 +158,20 @@ def init_function(node_type, sid, did, scid, fid):
 
     ret_status = status
 
-    # Check the condition that function is actually debuggable or not....
+    # Check that the function is actually debuggable...
     if r_set['rows'][0]:
         # Function with a colon in the name cannot be debugged.
         # If this is an EDB wrapped function, no debugging allowed
         # Function with return type "trigger" can not be debugged.
         if ":" in r_set['rows'][0]['name']:
             ret_status = False
-        elif r_set['rows'][0]['rettype'] == 'trigger':
+            msg = gettext("Functions with a colon in the name cannot be debugged.")
+        elif node_type != 'trigger' and r_set['rows'][0]['rettype'] == 'trigger':
             ret_status = False
+            msg = gettext("Functions with return type of 'trigger' cannot be debugged.")
         elif ppas_server and r_set['rows'][0]['prosrc'].lstrip().startswith('$__EDBwrapped__$'):
             ret_status = False
+            msg = gettext("EDB Advanced Server wrapped functions cannot be debugged.")
         else:
             # If user is super user then we should check debugger library is loaded or not
             if user['is_superuser']:
@@ -177,25 +180,27 @@ def init_function(node_type, sid, did, scid, fid):
                     return internal_server_error(gettext("Could not fetch debugger plugin information."))
 
                 # Need to check if plugin is really loaded or not with "plugin_debugger" string
-                if rid_pre:
-                    if "plugin_debugger" not in rid_pre:
-                        ret_status = False
+                if "plugin_debugger" not in rid_pre:
+                    ret_status = False
+                    msg = gettext("The debugger plugin is not enabled. Please add the plugin to the shared_preload_libraries setting in the postgresql.conf file and restart the database server.")
 
             status_in, rid_tar = conn.execute_scalar(
                 "SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
-                current_app.logger.debug("Could not fetch debugger target information.")
-                return internal_server_error(gettext("Could not fetch debugger target information."))
+                current_app.logger.debug("Failed to check for the pldbg_get_target_info function.")
+                return internal_server_error(gettext("Failed to check for the pldbg_get_target_info function."))
 
             if rid_tar == 0:
+                msg = gettext("The debugger plugin is not enabled. Please create the pldbgapi extension in this database.")
                 ret_status = False
     else:
         ret_status = False
+        msg = gettext("The function/procedure cannot be debugged")
 
     # Return the response that function can not be debug...
     if not ret_status:
-        current_app.logger.debug(".Function/Procedure can not be debugged.")
-        return internal_server_error(gettext("Function/Procedure cannot be debugged."))
+        current_app.logger.debug(msg)
+        return internal_server_error(msg)
 
     # Store the function information in session variable
     if 'funcData' not in session:
