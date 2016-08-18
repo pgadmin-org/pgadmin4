@@ -387,7 +387,8 @@ TODO LIST FOR BACKUP:
           preference_name = 'pg_bin_dir',
           msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
 
-        if (server_data.server_type == 'ppas') {
+        if ((server_data.type && server_data.type == 'ppas') ||
+            server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
           msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
         }
@@ -602,7 +603,8 @@ TODO LIST FOR BACKUP:
           preference_name = 'pg_bin_dir',
           msg = '{{ _('Please set binary path for PostgreSQL Server from preferences.') }}';
 
-        if (server_data.server_type == 'ppas') {
+        if ((server_data.type && server_data.type == 'ppas') ||
+            server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
           msg = '{{ _('Please set binary path for EDB Advanced Server from preferences.') }}';
         }
