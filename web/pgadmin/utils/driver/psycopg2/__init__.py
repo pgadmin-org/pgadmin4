@@ -178,6 +178,7 @@ class Connection(BaseConnection):
         self.__backend_pid = None
         self.execution_aborted = False
         self.row_count = 0
+        self.__notices = None
 
         super(Connection, self).__init__()
 
@@ -639,6 +640,7 @@ Attempt to reconnect it failed with the error:
         )
 
         try:
+            self.__notices = []
             self.execution_aborted = False
             cur.execute(query, params)
             res = self._wait_timeout(cur.connection, ASYNC_WAIT_TIMEOUT)
@@ -904,31 +906,9 @@ Failed to reset the connection to the server due to following error:
         if state == psycopg2.extensions.POLL_OK:
             return self.ASYNC_OK
         elif state == psycopg2.extensions.POLL_WRITE:
-            # Wait for the given time and then check the return status
-            # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([], [conn.fileno()], [], time)
-            if timeout_status == ([], [], []):
-                return self.ASYNC_WRITE_TIMEOUT
-
-            # poll again to check the state if it is still POLL_WRITE
-            # then return ASYNC_WRITE_TIMEOUT else return ASYNC_OK.
-            state = conn.poll()
-            if state == psycopg2.extensions.POLL_WRITE:
-                return self.ASYNC_WRITE_TIMEOUT
-            return self.ASYNC_OK
+            return self.ASYNC_WRITE_TIMEOUT
         elif state == psycopg2.extensions.POLL_READ:
-            # Wait for the given time and then check the return status
-            # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([conn.fileno()], [], [], time)
-            if timeout_status == ([], [], []):
-                return self.ASYNC_READ_TIMEOUT
-
-            # poll again to check the state if it is still POLL_READ
-            # then return ASYNC_READ_TIMEOUT else return ASYNC_OK.
-            state = conn.poll()
-            if state == psycopg2.extensions.POLL_READ:
-                return self.ASYNC_READ_TIMEOUT
-            return self.ASYNC_OK
+            return self.ASYNC_READ_TIMEOUT
         else:
             raise psycopg2.OperationalError(
                 "poll() returned %s from _wait_timeout function" % state
@@ -965,6 +945,10 @@ Failed to reset the connection to the server due to following error:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             return False, errmsg, None
 
+        if self.conn.notices and self.__notices is not None:
+            while self.conn.notices:
+                self.__notices.append(self.conn.notices.pop(0)[:])
+
         colinfo = None
         result = None
         self.row_count = 0
@@ -996,7 +980,6 @@ Failed to reset the connection to the server due to following error:
                         result.append(dict(row))
                 except psycopg2.ProgrammingError:
                     result = None
-
         return status, result, colinfo
 
     def status_message(self):
@@ -1094,7 +1077,10 @@ Failed to reset the connection to the server due to following error:
         """
         Returns the list of the messages/notices send from the database server.
         """
-        return self.conn.notices if self.conn else []
+        resp = []
+        while self.__notices:
+            resp.append(self.__notices.pop(0))
+        return resp
 
     def _formatted_exception_msg(self, exception_obj, formatted_msg):
         """

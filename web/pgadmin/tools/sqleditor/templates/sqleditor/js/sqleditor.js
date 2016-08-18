@@ -1291,7 +1291,13 @@ define(
                     else {
                       // Show message in message and history tab in case of query tool
                       self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-                      self.update_msg_history(true, res.data.result);
+                      var msg = S('{{ _('Query returned successfully in %s.') }}').sprintf(self.total_time).value();
+                      res.data.result += "\n\n" + msg;
+                      self.update_msg_history(true, res.data.result, false);
+                      // Display the notifier if the timeout is set to >= 0
+                      if (self.info_notifier_timeout >= 0) {
+                          alertify.success(msg, self.info_notifier_timeout);
+                      }
                     }
 
                     // Enable/Disable query tool button only if is_query_tool is true.
@@ -1305,6 +1311,9 @@ define(
                     // If status is Busy then poll the result by recursive call to the poll function
                     self._poll();
                     is_query_running = true;
+                    if (res.data.result) {
+                      self.update_msg_history(res.data.status, res.data.result, false);
+                    }
                   }
                   else if (res.data.status === 'NotConnected') {
 
@@ -1313,10 +1322,10 @@ define(
                       self.disable_tool_buttons(false);
                       $("#btn-cancel-query").prop('disabled', true);
                     }
-                    self.update_msg_history(false, res.data.result);
+                    self.update_msg_history(false, res.data.result, true);
                   }
                   else if (res.data.status === 'Cancel') {
-                    self.update_msg_history(false, "Execution Cancelled!")
+                    self.update_msg_history(false, "Execution Cancelled!", true)
                   }
                 },
                 error: function(e) {
@@ -1687,35 +1696,43 @@ define(
         // This function is used to raise appropriate message.
         update_msg_history: function(status, msg, clear_grid) {
           var self = this;
-
           if (clear_grid === undefined)
             clear_grid = true;
 
-          self.trigger('pgadmin-sqleditor:loading-icon:hide');
-          $("#btn-flash").prop('disabled', false);
-
-          $('.sql-editor-message').text(msg);
           self.gridView.messages_panel.focus();
 
-          if (self.is_query_tool && clear_grid) {
-            // Delete grid and paginator
-            if (self.gridView.grid) {
-              self.gridView.grid.remove();
+          if (self.is_query_tool) {
+            if (clear_grid) {
+              // Delete grid and paginator
+              if (self.gridView.grid) {
+                self.gridView.grid.remove();
+              }
+              // Misc cleaning
               self.columns = undefined;
               self.collection = undefined;
+
+              if (self.gridView.paginator)
+                self.gridView.paginator.remove();
+              $('.sql-editor-message').text(msg);
+            } else {
+              $('.sql-editor-message').append(msg);
             }
-
-            if (self.gridView.paginator)
-             self.gridView.paginator.remove();
           }
+          // Scroll automatically when msgs appends to element
+          setTimeout(function(){
+            $(".sql-editor-message").scrollTop($(".sql-editor-message")[0].scrollHeight);;
+          }, 10);
 
-          self.gridView.history_collection.add(
-            {'status' : status, 'start_time': self.query_start_time.toString(),
-             'query': self.query, 'row_affected': self.rows_affected,
-             'total_time': self.total_time, 'message':msg
-          });
-
-          self.gridView.history_collection.sort();
+          if(status != 'Busy') {
+            $("#btn-flash").prop('disabled', false);
+            self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            self.gridView.history_collection.add({
+              'status' : status, 'start_time': self.query_start_time.toString(),
+              'query': self.query, 'row_affected': self.rows_affected,
+              'total_time': self.total_time, 'message':msg
+            });
+            self.gridView.history_collection.sort();
+          }
         },
 
         // This function will return the total query execution Time.
@@ -2140,10 +2157,12 @@ define(
           var self = this;
 
           // Start execution of the query.
-          if (self.is_query_tool)
+          if (self.is_query_tool) {
+            $('.sql-editor-message').html('');
             self._execute();
-          else
+          } else {
             self._execute_data_query();
+          }
         },
 
         // This function will show the filter in the text area.

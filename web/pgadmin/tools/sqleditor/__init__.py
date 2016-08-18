@@ -406,8 +406,10 @@ def poll(trans_id):
         trans_id: unique transaction id
     """
     col_info = None
+    result = None
     primary_keys = None
     rows_affected = 0
+    additional_result = []
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
@@ -430,6 +432,10 @@ def poll(trans_id):
             status = 'Cancel'
         else:
             status = 'Busy'
+            messages = conn.messages()
+            if messages and len(messages) > 0:
+                result = ''.join(messages)
+
     else:
         status = 'NotConnected'
         result = error_msg
@@ -450,20 +456,25 @@ def poll(trans_id):
         # restore it and update the session variable.
         session_obj['columns_info'] = columns
         update_session_grid_transaction(trans_id, session_obj)
-    else:
-        if result is None:
-            result = conn.status_message()
-            additional_result = conn.messages()
-            """
-            Procedure/Function output may comes in the form of Notices from the
-            database server, so we need to append those outputs with the
-            original result.
-            """
-            if isinstance(additional_result, list) \
-                    and len(additional_result) > 0:
-                result = "{0} {1}".format(additional_result[-1], result)
 
-            rows_affected = conn.rows_affected()
+    """
+        Procedure/Function output may comes in the form of Notices from the
+        database server, so we need to append those outputs with the
+        original result.
+    """
+    if status == 'Success' and result is None:
+        result = conn.status_message()
+        messages = conn.messages()
+        if messages:
+            additional_result = ''.join(messages)
+        else:
+            additional_result = ''
+        if result != 'SELECT 1' and result is not None:
+            result = additional_result + result
+        else:
+            result = additional_result
+
+        rows_affected = conn.rows_affected()
 
     return make_json_response(
         data={

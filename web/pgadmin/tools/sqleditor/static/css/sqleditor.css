@@ -160,6 +160,9 @@
   font-family: monospace;
   padding-top: 5px;
   padding-left: 10px;
+  overflow: auto;
+  height: 100%;
+  font-size: 0.925em;
 }
 
 .limit-enabled {
