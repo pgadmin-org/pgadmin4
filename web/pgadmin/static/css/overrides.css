@@ -6,6 +6,34 @@ body {
     padding-bottom: 20px;
 }
 
+@media (min-width: 768px) {
+  .pg-navbar {
+    height: 40px;
+  }
+
+  .pg-navbar .navbar-brand {
+    padding: 10px 15px;
+    height: 40px;
+  }
+
+  .pg-navbar .navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .pg-docker {
+    top: 40px !important;
+  }
+}
+
+.pg-docker {
+  position:absolute;
+  left:0px;
+  right:0px;
+  top:50px;
+  bottom:0px;
+}
+
 .app-icon {
     vertical-align: middle;
     font-size: 25px;

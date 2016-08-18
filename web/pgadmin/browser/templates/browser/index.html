@@ -93,7 +93,7 @@ require.onResourceLoad = function (context, map, depMaps) {
   <span class="pg-sp-icon fa fa-spinner fa-pulse"></span>
   <span class="pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</span>
 </div>
-<nav class="navbar-inverse navbar-fixed-top">
+<nav class="navbar-inverse navbar-fixed-top pg-navbar">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu">
@@ -166,7 +166,7 @@ require.onResourceLoad = function (context, map, depMaps) {
     </div>
 </nav>
 
-<div id="dockerContainer" style="position:absolute;left:0px;right:0px;top:50px;bottom:0px;"></div>
+<div id="dockerContainer" class="pg-docker"></div>
 
 {% include 'browser/messages.html' %}
 
