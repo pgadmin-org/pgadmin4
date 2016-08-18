@@ -71,7 +71,7 @@ application may be configured similarly to the example below:
     <VirtualHost *>
         ServerName pgadmin.example.com
 
-        WSGIDaemonProcess pgadmin processes=1
+        WSGIDaemonProcess pgadmin processes=1 threads=25
         WSGIScriptAlias / /opt/pgAdmin4/web/pgAdmin4.wsgi
 
         <Directory /opt/pgAdmin4/web>
@@ -81,3 +81,18 @@ application may be configured similarly to the example below:
             Allow from all
         </Directory>
     </VirtualHost>
+
+**Note:** If you're using Apache HTTPD 2.4 or later, replace the lines:
+
+.. code-block:: apache
+
+            Order deny,allow
+            Allow from all
+
+with:
+
+.. code-block:: apache
+
+            Require all granted
+
+Adjust as needed to suit your access control requirements.

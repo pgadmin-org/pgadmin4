@@ -80,18 +80,20 @@ else:
 # Let the application save the status about the runtime for using it later.
 app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
 
-# Output a startup message if we're not under the runtime
-if not PGADMIN_RUNTIME:
-    print("Starting %s. Please navigate to http://localhost:%d in your browser." %
-          (config.APP_NAME, server_port))
-    sys.stdout.flush()
+# Output a startup message if we're not under the runtime and startup.
+# If we're under WSGI, we don't need to worry about this
+if __name__ == '__main__':
+    if not PGADMIN_RUNTIME:
+        print("Starting %s. Please navigate to http://localhost:%d in your browser." %
+              (config.APP_NAME, server_port))
+        sys.stdout.flush()
 
-try:
-    app.run(
-        host=config.DEFAULT_SERVER,
-        port=server_port,
-        use_reloader=((not PGADMIN_RUNTIME) and app.debug),
-        threaded=config.THREADED_MODE
-    )
-except IOError:
-    app.logger.error("Error starting the app server: %s", sys.exc_info())
+    try:
+        app.run(
+            host=config.DEFAULT_SERVER,
+            port=server_port,
+            use_reloader=((not PGADMIN_RUNTIME) and app.debug),
+            threaded=config.THREADED_MODE
+        )
+    except IOError:
+        app.logger.error("Error starting the app server: %s", sys.exc_info())
