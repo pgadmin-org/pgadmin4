@@ -254,8 +254,26 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'template', label: '{{ _('Template') }}',
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); },
-          control: 'node-list-by-name', node: 'database', cache_level: 'server',
-          select2: { allowClear: false }
+          control: 'node-list-by-name', url: 'get_databases', cache_level: 'server',
+          select2: { allowClear: false },
+          transform: function(data, cell) {
+            var res = [],
+                control = cell || this,
+                label = control.model.get('name');
+
+            if (!control.model.isNew()) {
+              res.push({label: label, value: label});
+            }
+            else {
+              if (data && _.isArray(data)) {
+                _.each(data, function(d) {
+                  res.push({label: d.label, value: d.label,
+                            image: 'pg-icon-database'});
+                })
+              }
+            }
+            return res;
+          }
         },{
           id: 'spcname', label: '{{ _('Tablespace') }}',
           editable: false, type: 'text', group: 'Definition',

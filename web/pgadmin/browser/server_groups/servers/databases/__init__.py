@@ -99,6 +99,7 @@ class DatabaseView(PGChildNodeView):
             {'get': 'list', 'post': 'create'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'get_databases': [{'get': 'get_databases'}, {'get': 'get_databases'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
@@ -170,11 +171,12 @@ class DatabaseView(PGChildNodeView):
             status=200
         )
 
-    @check_precondition(action="nodes")
-    def nodes(self, gid, sid):
+    def get_nodes(self, gid, sid, show_system_templates=False):
         res = []
-        last_system_oid = 0 if self.blueprint.show_system_objects else \
-            (self.manager.db_info[self.manager.did])['datlastsysoid']
+        last_system_oid = 0 if self.blueprint.show_system_objects or \
+            show_system_templates else (
+                self.manager.db_info[self.manager.did]
+            )['datlastsysoid']
 
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
@@ -213,6 +215,19 @@ class DatabaseView(PGChildNodeView):
                 )
             )
 
+        return res
+
+    @check_precondition(action="nodes")
+    def nodes(self, gid, sid):
+        res = self.get_nodes(gid, sid)
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition(action="get_databases")
+    def get_databases(self, gid, sid):
+        res = self.get_nodes(gid, sid, True)
         return make_json_response(
             data=res,
             status=200
