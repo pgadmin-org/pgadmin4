@@ -149,10 +149,22 @@ class _Preference(object):
                 return False, gettext("Invalid value for a boolean option.")
         elif self._type == 'integer':
             value = int(value)
+
+            if self.min_val is not None and value < self.min_val:
+                value = self.min_val
+            if self.max_val is not None and value > self.max_val:
+                value = self.max_val
+
             if type(value) != int:
                 return False, gettext("Invalid value for an integer option.")
         elif self._type == 'numeric':
             value = float(value)
+
+            if self.min_val is not None and value < self.min_val:
+                value = self.min_val
+            if self.max_val is not None and value > self.max_val:
+                value = self.max_val
+
             t = type(value)
             if t != float and t != int and t != decimal.Decimal:
                 return False, gettext("Invalid value for a numeric option.")
@@ -526,10 +538,6 @@ class Preferences(object):
             )
 
         try:
-            if pref.min_val is not None and int(value) < int(pref.min_val):
-                value = pref.min_val
-            if pref.max_val is not None and int(value) > int(pref.max_val):
-                value = pref.max_val
             pref.set(value)
         except Exception as e:
             current_app.logger.exeception(e)
