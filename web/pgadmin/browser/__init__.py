@@ -576,7 +576,7 @@ def browser_css():
     sql_font_size = round(float(sql_font_size_pref.get()), 2)
 
     if sql_font_size != 0:
-        snippets.append('.CodeMirror { font-size: %dem; }' % sql_font_size)
+        snippets.append('.CodeMirror { font-size: %sem; }' % str(sql_font_size))
 
     for submodule in blueprint.submodules:
         snippets.extend(submodule.csssnippets)
