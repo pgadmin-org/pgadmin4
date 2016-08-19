@@ -30,6 +30,19 @@
   // Add new property cellFunction in Backgrid.Column.
   _.extend(Backgrid.Column.prototype.defaults, { cellFunction: undefined });
 
+  // Add tooltip to cell if cell content is larger than
+  // cell width
+  _.extend(Backgrid.Cell.prototype.events, {
+    'mouseover': function(e) {
+      var $el = $(this.el);
+      if($el.text().length > 0 && !$el.attr('title') &&
+        ($el.innerWidth() + 1) < $el[0].scrollWidth
+      ) {
+        $el.attr('title', $.trim($el.text()));
+      }
+    }
+  });
+
   _.extend(Backgrid.Row.prototype, {
     makeCell: function (column) {
       return new (this.getCell(column))({
