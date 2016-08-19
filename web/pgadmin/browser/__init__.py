@@ -201,8 +201,8 @@ class BrowserModule(PgAdminModule):
             category_label=gettext('Display'),
             help_str=gettext('The font size to use for the SQL text boxes and editors. '
                              'The value specified is in "em" units, in which 1 is the default relative font size. '
-                             'For example, to increase the font size by 20% use a value of 1.2. '
-                             'Minimum 0.1, maximum 10.')
+                             'For example, to increase the font size by 20% use a value of 1.2, or to reduce by 20%, '
+                             'use a value of 0.8. Minimum 0.1, maximum 10.')
         )
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
