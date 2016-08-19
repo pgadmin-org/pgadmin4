@@ -93,38 +93,38 @@ class SqlEditorModule(PgAdminModule):
         )
 
         self.explain_verbose = self.preference.register(
-            'Explain Options', 'explain_verbose',
-            gettext("Verbose"), 'boolean', False,
-            category_label=gettext('Explain Options')
+            'Explain', 'explain_verbose',
+            gettext("Verbose output?"), 'boolean', False,
+            category_label=gettext('Explain')
         )
 
         self.explain_costs = self.preference.register(
-            'Explain Options', 'explain_costs',
-            gettext("Costs"), 'boolean', False,
-            category_label=gettext('Explain Options')
+            'Explain', 'explain_costs',
+            gettext("Show costs?"), 'boolean', False,
+            category_label=gettext('Explain')
         )
 
         self.explain_buffers = self.preference.register(
-            'Explain Options', 'explain_buffers',
-            gettext("Buffers"), 'boolean', False,
-            category_label=gettext('Explain Options')
+            'Explain', 'explain_buffers',
+            gettext("Show buffers?"), 'boolean', False,
+            category_label=gettext('Explain')
         )
 
         self.explain_timing = self.preference.register(
-            'Explain Options', 'explain_timing',
-            gettext("Timing"), 'boolean', False,
-            category_label=gettext('Explain Options')
+            'Explain', 'explain_timing',
+            gettext("Show timing"), 'boolean', False,
+            category_label=gettext('Explain')
         )
 
         self.auto_commit = self.preference.register(
             'Options', 'auto_commit',
-            gettext("Auto-Commit"), 'boolean', True,
+            gettext("Auto commit?"), 'boolean', True,
             category_label=gettext('Options')
         )
 
         self.auto_rollback = self.preference.register(
             'Options', 'auto_rollback',
-            gettext("Auto-Rollback"), 'boolean', False,
+            gettext("Auto rollback?"), 'boolean', False,
             category_label=gettext('Options')
         )
 
