@@ -12,7 +12,7 @@ ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
     OWNER TO {{ conn|qtIdent(data.lanowner) }};
 {% endif %}
 {# ============= Update language comments ============= #}
-{% if data.description and data.description != o_data.description %}
+{% if data.description is defined and data.description != o_data.description %}
 COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
     IS '{{ data.description }}';
 {% endif %}

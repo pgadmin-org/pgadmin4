@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
-from flask import render_template, make_response, request
+from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -133,6 +133,12 @@ class LanguageView(PGChildNodeView):
     * update(gid, sid, did, lid)
       - This function will update the data for the selected language node
 
+    * create(gid, sid, did)
+      - This function will create the new language node
+
+    * delete(gid, sid, did, lid)
+      - This function will delete the selected language node
+
     * msql(gid, sid, did, lid)
       - This function is used to return modified SQL for the selected language node
 
@@ -141,6 +147,9 @@ class LanguageView(PGChildNodeView):
 
     * get_functions(gid, sid, did)
       - This function returns the handler and inline functions for the selected language node
+
+    * get_templates(gid, sid, did)
+      - This function returns language templates.
 
     * sql(gid, sid, did, lid):
       - This function will generate sql to show it in sql pane for the selected language node.
@@ -165,8 +174,8 @@ class LanguageView(PGChildNodeView):
 
     operations = dict({
         'obj': [
-            {'get': 'properties', 'put': 'update'},
-            {'get': 'list'}
+            {'get': 'properties', 'delete': 'delete', 'put': 'update'},
+            {'get': 'list', 'post': 'create'}
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -175,7 +184,9 @@ class LanguageView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'module.js': [{}, {}, {'get': 'module_js'}],
-        'get_functions': [{}, {'get': 'get_functions'}]
+        'get_functions': [{}, {'get': 'get_functions'}],
+        'get_templates': [{}, {'get': 'get_templates'}],
+        'delete': [{'delete': 'delete'}]
     })
 
     def _init_(self, **kwargs):
@@ -337,7 +348,6 @@ class LanguageView(PGChildNodeView):
 
         res['rows'][0]['seclabels'] = seclabels
 
-
         return ajax_response(
             response=res['rows'][0],
             status=200
@@ -386,6 +396,110 @@ class LanguageView(PGChildNodeView):
                         'gid': gid
                     }
                 )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    @check_precondition
+    def create(self, gid, sid, did):
+        """
+        This function will create the language object
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        required_args = [
+            'name'
+        ]
+
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+        for arg in required_args:
+            if arg not in data:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter (%s)." % arg
+                    )
+                )
+
+        try:
+            if 'lanacl' in data:
+                data['lanacl'] = parse_priv_to_db(data['lanacl'], ['U'])
+
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  lanname=data['name'], conn=self.conn)
+
+            status, r_set = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=r_set)
+
+            for row in r_set['rows']:
+                return jsonify(
+                    node=self.blueprint.generate_browser_node(
+                        row['oid'],
+                        did,
+                        row['name'],
+                        icon='icon-language'
+                    )
+                )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    @check_precondition
+    def delete(self, gid, sid, did, lid):
+        """
+        This function will drop the language object
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            lid: Language ID
+        """
+        if self.cmd == 'delete':
+            # This is a cascade operation
+            cascade = True
+        else:
+            cascade = False
+
+        try:
+            # Get name for language from lid
+            sql = render_template("/".join([self.template_path, 'delete.sql']), lid=lid, conn=self.conn)
+            status, lname = self.conn.execute_scalar(sql)
+
+            if not status:
+                return internal_server_error(errormsg=lname)
+
+            # drop language
+            sql = render_template("/".join([self.template_path, 'delete.sql']), lname=lname,
+                                  cascade=cascade, conn=self.conn)
+            status, res = self.conn.execute_scalar(sql)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Language dropped"),
+                data={
+                    'id': lid,
+                    'did': did,
+                    'sid': sid,
+                    'gid': gid,
+                }
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -454,6 +568,13 @@ class LanguageView(PGChildNodeView):
                         data[arg] = old_data[arg]
                 sql = render_template("/".join([self.template_path, 'update.sql']), data=data,
                                       o_data=old_data, conn=self.conn)
+            else:
+
+                if 'lanacl' in data:
+                    data['lanacl'] = parse_priv_to_db(data['lanacl'], 'LANGUAGE')
+
+                sql = render_template("/".join([self.template_path, 'create.sql']),
+                                      data=data, conn=self.conn)
             return sql.strip('\n')
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -469,6 +590,25 @@ class LanguageView(PGChildNodeView):
             did: Database ID
         """
         sql = render_template("/".join([self.template_path, 'functions.sql']))
+        status, result = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=result)
+        return make_json_response(
+            data=result['rows'],
+            status=200
+        )
+
+    @check_precondition
+    def get_templates(self, gid, sid, did):
+        """
+        This function returns the language template.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        sql = render_template("/".join([self.template_path, 'templates.sql']))
         status, result = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=result)

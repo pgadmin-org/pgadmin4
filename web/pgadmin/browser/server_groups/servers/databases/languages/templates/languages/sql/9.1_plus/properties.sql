@@ -16,4 +16,8 @@ FROM
 WHERE lanispl IS TRUE
 {% if lid %} AND
     lan.oid={{lid}}::int
-{% endif %} ORDER BY lanname
+{% endif %}
+{% if lanname %} AND
+    lanname={{ lanname|qtLiteral }}::text
+{% endif %}
+ORDER BY lanname
