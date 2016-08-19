@@ -128,6 +128,34 @@ class SqlEditorModule(PgAdminModule):
             category_label=gettext('Options')
         )
 
+        self.sql_font_size = self.preference.register(
+            'Options', 'sql_font_size',
+            gettext("Font size"), 'numeric', '1',
+            min_val=0.1,
+            max_val=10,
+            category_label=gettext('Display'),
+            help_str=gettext('The font size to use for the SQL text boxes and editors. '
+                             'The value specified is in "em" units, in which 1 is the default relative font size. '
+                             'For example, to increase the font size by 20% use a value of 1.2, or to reduce by 20%, '
+                             'use a value of 0.8. Minimum 0.1, maximum 10.')
+        )
+
+        self.tab_size = self.preference.register(
+            'Options', 'tab_size',
+            gettext("Tab size"), 'integer', 4,
+            min_val=2,
+            max_val=8,
+            category_label=gettext('Options'),
+            help_str=gettext('The number of spaces per tab. Minimum 2, maximum 8.')
+        )
+
+        self.use_spaces = self.preference.register(
+            'Options', 'use_spaces',
+            gettext("Use spaces?"), 'boolean', False,
+            category_label=gettext('Options'),
+            help_str=gettext('Specifies whether or not to insert spaces instead of tabs when the tab key is used.')
+        )
+
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -979,9 +1007,13 @@ def auto_complete(trans_id):
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("sqleditor/js/sqleditor.js", _=gettext),
+    return Response(response=render_template("sqleditor/js/sqleditor.js",
+                    tab_size=blueprint.tab_size.get(),
+                    use_spaces=blueprint.use_spaces.get(),
+                    _=gettext),
                     status=200,
-                    mimetype="application/javascript")
+                    mimetype="application/javascript"
+           )
 
 
 def is_begin_required(query):

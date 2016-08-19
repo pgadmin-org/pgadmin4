@@ -189,20 +189,8 @@ class BrowserModule(PgAdminModule):
     def register_preferences(self):
         self.show_system_objects = self.preference.register(
             'display', 'show_system_objects',
-            gettext("Show system objects"), 'boolean', False,
+            gettext("Show system objects?"), 'boolean', False,
             category_label=gettext('Display')
-        )
-
-        self.sql_font_size = self.preference.register(
-            'display', 'sql_font_size',
-            gettext("Font size"), 'numeric', '1',
-            min_val=0.1,
-            max_val=10,
-            category_label=gettext('Display'),
-            help_str=gettext('The font size to use for the SQL text boxes and editors. '
-                             'The value specified is in "em" units, in which 1 is the default relative font size. '
-                             'For example, to increase the font size by 20% use a value of 1.2, or to reduce by 20%, '
-                             'use a value of 0.8. Minimum 0.1, maximum 10.')
         )
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -506,6 +494,15 @@ def browser_js():
     edbas_help_path_pref = prefs.preference('edbas_help_path')
     edbas_help_path = edbas_help_path_pref.get()
 
+    # Get sqleditor options
+    prefs = Preferences.module('sqleditor')
+
+    editor_tab_size_pref = prefs.preference('tab_size')
+    editor_tab_size = editor_tab_size_pref.get()
+
+    editor_use_spaces_pref = prefs.preference('use_spaces')
+    editor_use_spaces = editor_use_spaces_pref.get()
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -515,6 +512,8 @@ def browser_js():
             jssnippets=snippets,
             pg_help_path=pg_help_path,
             edbas_help_path=edbas_help_path,
+            editor_tab_size=editor_tab_size,
+            editor_use_spaces=editor_use_spaces,
             _=gettext
         ),
         200, {'Content-Type': 'application/x-javascript'})
@@ -570,7 +569,7 @@ def browser_css():
     snippets = []
 
     # Get configurable options
-    prefs = Preferences.module('browser')
+    prefs = Preferences.module('sqleditor')
 
     sql_font_size_pref = prefs.preference('sql_font_size')
     sql_font_size = round(float(sql_font_size_pref.get()), 2)

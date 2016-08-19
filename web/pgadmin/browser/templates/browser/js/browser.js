@@ -321,7 +321,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
             lineWrapping: true,
             mode: "text/x-pgsql",
             readOnly: true,
-            extraKeys: pgAdmin.Browser.editor_shortcut_keys
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+            tabSize: pgAdmin.Browser.editor_options.tabSize
           });
 
       setTimeout(function() {
@@ -711,7 +712,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       return preference;
     },
 
-    editor_shortcut_keys:  {
+    editor_shortcut_keys: {
       // Autocomplete sql command
       "Ctrl-Space": "autocomplete",
       "Cmd-Space": "autocomplete",
@@ -741,9 +742,17 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       "Cmd-Alt-Left": "goGroupLeft",
       "Ctrl-Alt-Right": "goGroupRight",
       "Cmd-Alt-Right": "goGroupRight"
+    },
+    editor_options: {
+      tabSize: '{{ editor_tab_size }}'
     }
 
   });
+
+  // Use spaces instead of tab
+  if ('{{ editor_use_spaces }}' == 'True') {
+    pgAdmin.Browser.editor_shortcut_keys.Tab = "insertSoftTab";
+  }
 
   window.onbeforeunload = function(ev) {
     var e = ev || window.event,

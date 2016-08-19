@@ -212,7 +212,8 @@ define(
                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
             },
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            extraKeys: pgBrowser.editor_shortcut_keys
+            extraKeys: pgBrowser.editor_shortcut_keys,
+            tabSize: pgAdmin.Browser.editor_options.tabSize
         });
 
         // Create main wcDocker instance
@@ -254,7 +255,8 @@ define(
                                 CodeMirror.pgadminLoopRangeFinder, CodeMirror.pgadminCaseRangeFinder)
             },
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            extraKeys: pgBrowser.editor_shortcut_keys
+            extraKeys: pgBrowser.editor_shortcut_keys,
+            tabSize: pgAdmin.Browser.editor_options.tabSize
         });
 
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'

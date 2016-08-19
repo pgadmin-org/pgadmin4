@@ -438,11 +438,11 @@
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    </label>',
+      '   <% if (helpMessage && helpMessage.length) { %>',
+      '     <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '   <% } %>',
       '  </div>',
       '</div>',
-      '<% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '<% } %>'
     ].join("\n")),
     getValueFromDOM: function() {
       return this.formatter.toRaw(
@@ -1393,7 +1393,8 @@
         lineWrapping: true,
         mode: "text/x-pgsql",
         readOnly: true,
-        extraKeys: pgAdmin.Browser.editor_shortcut_keys
+        extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+        tabSize: pgAdmin.Browser.editor_options.tabSize
       });
 
       return this;
@@ -2120,7 +2121,8 @@
             lineNumbers: true,
             mode: "text/x-sql",
             readOnly: isDisabled,
-            extraKeys: pgAdmin.Browser.editor_shortcut_keys
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+            tabSize: pgAdmin.Browser.editor_options.tabSize
           });
 
       if (!isVisible)
