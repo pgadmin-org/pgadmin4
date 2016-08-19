@@ -1851,7 +1851,7 @@
     render: function() {
 
       if(this.$sel && this.$sel.select2) {
-        this.$sel.select2('destroy')
+        this.$sel.select2('destroy');
       }
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
@@ -1915,6 +1915,17 @@
        * some of its functionality to work and initialize select2 control.
        */
       this.$sel = this.$el.find("select").select2(select2Opts);
+
+      // Select the highlighted item on Tab press.
+      if (this.$sel) {
+        this.$sel.data('select2').on("keypress", function(ev) {
+          var self = this;
+          if (ev.which === 9) { // keycode 9 is for TAB key
+            ev.preventDefault();
+            self.trigger('results:select', {});
+          }
+        });
+      }
 
       this.updateInvalid();
 

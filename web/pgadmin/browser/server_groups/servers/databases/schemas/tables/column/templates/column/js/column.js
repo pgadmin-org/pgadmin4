@@ -234,20 +234,25 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'cltype', label:'{{ _('Data type') }}',
           cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
             exitEditMode: function(e) {
+                var self = this;
                 this.$select.off('blur', this.exitEditMode);
                 this.$select.select2('close');
                 this.$el.removeClass('editor');
                 // Once user have selected a value
                 // we can shift to next cell if it is editable
                 var el_length_cell = this.$el.next();
-                if(el_length_cell && el_length_cell.hasClass('editable') && e) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      var command = new Backgrid.Command({key: "Tab", keyCode: 9, which: 9});
-                      this.model.trigger("backgrid:edited", this.model, this.column,
-                                        command);
-                      el_length_cell.focus();
-                }
+                // Add delay so that Select2 cell tab event is captured
+                // first before triggerring backgrid:edited event.
+                setTimeout(function() {
+                  if(el_length_cell && el_length_cell.hasClass('editable') && e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var command = new Backgrid.Command({key: "Tab", keyCode: 9, which: 9});
+                    self.model.trigger("backgrid:edited", self.model, self.column,
+                                      command);
+                    el_length_cell.focus();
+                  }
+                }, 20);
             }
           }),
           type: 'text', disabled: 'inSchemaWithColumnCheck',

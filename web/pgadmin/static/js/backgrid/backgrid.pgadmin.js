@@ -538,7 +538,18 @@
       this.delegateEvents();
 
       // Initialize select2 control.
-      this.$select.select2(select2_opts);
+      this.$sel = this.$select.select2(select2_opts);
+
+      // Select the highlighted item on Tab press.
+      if (this.$sel) {
+        this.$sel.data('select2').on("keypress", function(ev) {
+          var self = this;
+          if (ev.which === 9) { // keycode 9 is for TAB key
+            self.trigger('results:select', {});
+            ev.preventDefault();
+          }
+        });
+      }
 
       return this;
     },
