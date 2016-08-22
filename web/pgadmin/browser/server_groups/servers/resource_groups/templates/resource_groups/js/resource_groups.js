@@ -39,12 +39,11 @@ define(
           /* Function is used to check the server type and version.
            * Resource Group only supported in PPAS 9.4 and above.
            */
-          enable: function() {
-            var server_obj = arguments[0];
-            if (server_obj.server_type === 'ppas' && server_obj.version >= 90400)
-              return true;
-            else
-              return false;
+          enable: function(node, item) {
+            var treeData = this.getTreeNodeHierarchy(item),
+                server = treeData['server'];
+            return server.connected && node.server_type === 'ppas' &&
+                   node.version >= 90400;
           }
         },{
           name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,

@@ -868,6 +868,7 @@ class ServerNode(PGChildNodeView):
                         manager.server_type
                     ),
                     'connected': True,
+                    'server_type': manager.server_type,
                     'type': manager.server_type,
                     'version': manager.version,
                     'db': manager.db,
