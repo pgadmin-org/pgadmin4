@@ -10,6 +10,7 @@
 """Implements Edb Functions/Edb Procedures Node."""
 
 import copy
+import re
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas.packages as packages
@@ -563,17 +564,19 @@ It may have been removed by another user or moved to another schema.
     def get_inner(sql):
         if sql is None:
             return None
+        start = 0
+        start_position = re.search("\s+[is|as]+\s+", sql, flags=re.I)
 
-        sql = sql.lower()
-        start = sql.find('is')
-        if start == -1:
-            start = sql.find('as')
+        if start_position:
+            start = start_position.start() + 4
 
-        end = max(sql.rfind('end;'), sql.rfind('end'))
+        try:
+            end_position = [i for i in re.finditer("end", sql, flags=re.I)][-1]
+            end = end_position.start()
+        except IndexError:
+            return sql[start:].strip("\n")
 
-        if start == -1:
-            return sql[0: end].strip("\n")
-        return sql[start+2: end].strip("\n")
+        return sql[start:end].strip("\n")
 
 EdbFuncView.register_node_view(blueprint)
 

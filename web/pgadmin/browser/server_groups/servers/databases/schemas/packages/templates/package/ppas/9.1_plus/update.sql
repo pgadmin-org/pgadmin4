@@ -10,13 +10,23 @@ CREATE OR REPLACE PACKAGE {{ conn|qtIdent(data.schema,data.name) }}
 IS
 {{data.pkgheadsrc}}
 END {{ conn|qtIdent(data.name) }};
+
+CREATE OR REPLACE PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }}
+IS
+{% if data.pkgbodysrc %}
+{{data.pkgbodysrc}}
+{% else %}
+{{o_data.pkgbodysrc}}
 {% endif %}
+END {{ conn|qtIdent(data.name) }};
+{% else %}
 {% if data.pkgbodysrc %}
 
 CREATE OR REPLACE PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }}
 IS
 {{data.pkgbodysrc}}
 END {{ conn|qtIdent(data.name) }};
+{% endif %}
 {% endif %}
 {% if data.pkgacl %}
 {% if 'deleted' in data.pkgacl %}
