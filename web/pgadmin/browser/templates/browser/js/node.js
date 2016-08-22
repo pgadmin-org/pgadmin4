@@ -73,16 +73,20 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       self.node_initialized = true;
 
       pgAdmin.Browser.add_menus([{
-        name: 'show_obj_properties', node: self.type, module: self,
-        applies: ['object', 'context'], callback: 'show_obj_properties',
-        priority: 999, label: '{{ _("Properties...") }}',
-        data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
-      }, {
         name: 'refresh', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'refresh',
         priority: 1, label: '{{ _("Refresh...") }}',
         icon: 'fa fa-refresh'
       }]);
+
+      if (self.canEdit) {
+        pgAdmin.Browser.add_menus([{
+        name: 'show_obj_properties', node: self.type, module: self,
+        applies: ['object', 'context'], callback: 'show_obj_properties',
+        priority: 999, label: '{{ _("Properties...") }}',
+        data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
+      }]);
+      }
 
       if (self.canDrop) {
         pgAdmin.Browser.add_menus([{
@@ -139,15 +143,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               enable: this.check_user_permission
             }]);
           });
-      // If node has hasSQL then provide CREATE Script by default
-      } else if(self.hasSQL) {
-          pgAdmin.Browser.add_menus([{
-            name: 'show_script_create', node: self.type, module: self,
-            applies: ['object', 'context'], callback: 'show_script',
-            priority: 4, label: 'CREATE Script', category: 'Scripts',
-            data: {'script': 'create'}, icon: 'fa fa-pencil',
-            enable: this.check_user_permission
-          }]);
       }
     },
     ///////
@@ -320,6 +315,20 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         });
       p.load(pgBrowser.docker);
     },
+    /*
+     * Default script type menu for node.
+     *
+     * Override this, to show more script type menus (e.g hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'])
+     *
+     * Or set it to empty array to disable script type menu on node (e.g hasScriptTypes: [])
+     */
+    hasScriptTypes: ['create'],
+    /******************************************************************
+     * This function determines the given item is editable or not.
+     *
+     * Override this, when a node is not editable.
+     */
+    canEdit: true,
     /******************************************************************
      * This function determines the given item is deletable or not.
      *
@@ -884,18 +893,20 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Create proper buttons
 
             var buttons = [];
+
             buttons.push({
               label: '', type: 'edit',
               tooltip: '{{ _("Edit") }}',
               extraClasses: ['btn-default'],
               icon: 'fa fa-lg fa-pencil-square-o',
-              disabled: false,
+              disabled: !that.canEdit,
               register: function(btn) {
                 btn.click(function() {
                   onEdit();
                 });
               }
             });
+
             buttons.push({
               label: '', type: 'help',
               tooltip: '{{ _("SQL help for this object type.") }}',

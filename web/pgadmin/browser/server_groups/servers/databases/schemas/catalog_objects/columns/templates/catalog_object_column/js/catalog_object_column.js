@@ -19,6 +19,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'catalog_object_column',
       label: '{{ _('catalog_object_column') }}',
       hasSQL:  false,
+      hasScriptTypes: [],
       hasDepends: true,
       Init: function() {
         /* Avoid mulitple registration of menus */
