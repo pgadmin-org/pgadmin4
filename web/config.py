@@ -219,11 +219,14 @@ SESSION_COOKIE_NAME = 'pga4_session'
 
 # These settings are used when running in web server mode for confirming
 # and resetting passwords etc.
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USE_SSL = True
-MAIL_USERNAME = 'username'
-MAIL_PASSWORD = 'SuperSecret'
+# See: http://pythonhosted.org/Flask-Mail/ for more info
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USE_SSL = False
+MAIL_USE_TLS = False
+MAIL_USERNAME = ''
+MAIL_PASSWORD = ''
+MAIL_DEBUG = False
 
 ##########################################################################
 # Mail content settings
