@@ -84,8 +84,8 @@ app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
 # If we're under WSGI, we don't need to worry about this
 if __name__ == '__main__':
     if not PGADMIN_RUNTIME:
-        print("Starting %s. Please navigate to http://localhost:%d in your browser." %
-              (config.APP_NAME, server_port))
+        print("Starting %s. Please navigate to http://%s:%d in your browser." %
+              (config.APP_NAME, config.DEFAULT_SERVER, server_port))
         sys.stdout.flush()
 
     try:
