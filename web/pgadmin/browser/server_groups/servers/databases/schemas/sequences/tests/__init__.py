@@ -10,7 +10,7 @@
 from pgadmin.utils.route import BaseTestGenerator
 
 
-class TriggerFunctionTestGenerator(BaseTestGenerator):
+class SequenceTestGenerator(BaseTestGenerator):
 
-    def runTest(self):
-        return
+   def runTest(self):
+       return []

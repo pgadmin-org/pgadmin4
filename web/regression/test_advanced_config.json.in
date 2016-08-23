@@ -299,6 +299,198 @@
 
    "collation_update_data": {
     "comment": "This is collation update comment"
+  },
+
+  "casts_credentials":
+  [{
+    "cast_context": "IMPLICIT",
+    "encoding": "UTF8",
+    "name": "money->bigint",
+    "source_type": "money",
+    "target_type": "bigint",
+    "owner": "postgres"
+  }],
+
+  "cast_update_data":
+  {
+    "comment": "This is cast update comment"
+  },
+
+  "extension_credentials":[
+  {
+    "name": "postgres_fdw",
+    "relocate": true,
+    "schema": "",
+    "version": "1.0",
+    "owner": "postgres"
+  }],
+
+   "extension_update_data":
+  {
+    "schema": "schema"
+  },
+
+    "fdw_credentials":[
+  {
+    "acl":
+    [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":
+        [
+          {
+            "privilege_type":"U",
+            "privilege":true,
+            "with_grant":true
+          }
+        ]
+      }
+    ],
+    "handler": "postgres_fdw_handler",
+    "options": [],
+    "owner": "postgres",
+    "validator": "postgres_fdw_validator",
+    "name": "fdw"
+  }],
+
+    "fdw_update_data":
+  {
+    "comment": "This is FDW update comment"
+  },
+
+   "fsrv_credentials":[
+  {
+    "fsrv_acl":
+    [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":
+        [
+          {
+            "privilege_type":"U",
+            "privilege":true,
+            "with_grant":false
+          }
+        ]
+      }
+    ],
+    "fsrv_options":
+    [
+      {
+        "fsrvoption":"host",
+        "fsrvvalue":"localhost"
+      },
+      {
+        "fsrvoption":"port",
+        "fsrvvalue":"5433"
+      },
+      {
+        "fsrvoption":"dbname",
+        "fsrvvalue":"postgres"
+      }
+    ],
+    "owner": "postgres",
+    "name": "foreign_server1"
+  }],
+
+  "FSRV_update_data":
+  {
+    "comment": "This is foreign server update comment"
+  },
+
+  "user_mapping_credentials":[
+  {
+    "name": "postgres",
+    "option": [],
+    "owner": "postgres",
+    "options":
+    [
+      {
+        "umoption":"user",
+        "umvalue":"postgres"
+      },
+      {
+        "umoption":"password",
+        "umvalue":"edb"
+      }
+    ]
+  }],
+
+  "user_mapping_update_data":
+  {
+    "options":
+    {
+      "changed":
+      [
+        {"umoption":"password",
+          "umvalue":"edb1"
+        }
+      ]
+    }
+  },
+
+     "event_trigger_credentials":
+  [{
+    "enable": "O",
+    "event_func": "test_schema.test_abort_any_command",
+    "event_name":  "DDL_COMMAND_END",
+    "owner":  "postgres",
+    "name": "test_event_trg",
+    "provider": []
+  }],
+
+   "event_trigger_update_data":
+  {
+    "comment": "This is event trigger update comment"
+  },
+  
+    "sequence_credentials":
+  [{
+    "cache": "1",
+    "cycled": true,
+    "increment":  "1",
+    "max_value": "100000",
+    "min_value": "1",
+    "name": "test_empno",
+    "acl":
+    [
+      {
+        "grantee":"postgres",
+        "grantor":"postgres",
+        "privileges":
+        [
+          {
+            "privilege_type":"r",
+            "privilege":true,
+            "with_grant":false
+          },
+          {
+            "privilege_type":"w",
+            "privilege":true,
+            "with_grant":false
+          },
+          {
+            "privilege_type":"U",
+            "privilege":true,
+            "with_grant":false
+          }
+        ]
+      }
+    ],
+    "schema_name": "test_schema",
+    "security":  [],
+    "owner":  "postgres",
+    "start_val": "100"
+  }],
+
+    "sequnce_update_data":
+  {
+    "comment": "This is sequence update comment"
   }
 
-}
+
+ }
+
+

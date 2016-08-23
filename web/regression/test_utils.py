@@ -9,7 +9,6 @@
 
 import os
 import pickle
-
 from test_setup import config_data, pickle_path
 
 
@@ -26,7 +25,14 @@ def get_pickle_id_dict():
         "tsid": [],  # tablespace
         "scid": [],  # schema
         "tfnid": [],  # trigger functions
-        "coid": []  # collation
+        "coid": [],  # collation
+        "cid": [],  # casts
+        "etid": [], # event_trigger
+        "eid": [],  # extension
+        "fid": [],  # FDW
+        "fsid": [],  # FRS
+        "umid": [],  # user_mapping
+        "seid": []  # sequence
     }
     return pickle_id_dict
 

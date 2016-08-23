@@ -12,6 +12,5 @@ from pgadmin.utils.route import BaseTestGenerator
 
 class SchemaTestGenerator(BaseTestGenerator):
 
-    def generate_tests(self):
+    def runTest(self):
         return []
-

@@ -20,6 +20,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
 from regression import test_utils as utils
 
 TRIGGER_FUNCTIONS_URL = '/browser/trigger_function/obj/'
+TRIGGER_FUNCTIONS_DELETE_URL = '/browser/trigger_function/delete/'
 
 
 def get_trigger_func_data(server_connect_data):
@@ -68,6 +69,7 @@ def write_trigger_func_id(trigger_func_ids_list, server_id):
     """
 
     pickle_id_dict = utils.get_pickle_id_dict()
+
     if os.path.isfile(pickle_path):
         existing_server_id = open(pickle_path, 'rb')
         tol_server_id = pickle.load(existing_server_id)
@@ -100,7 +102,7 @@ def add_trigger_function(tester, server_connect_response, server_ids):
         if db_con['data']["connected"]:
             schema_id = schema_ids_dict[int(server_id)][0]
             schema_utils.verify_schemas(tester, server_id, db_id,
-                                                   schema_id)
+                                        schema_id)
             data = get_trigger_func_data(server_connect_response)
             # Get the type from config data. We are adding two types
             # i.e. event_trigger and trigger.
@@ -108,7 +110,7 @@ def add_trigger_function(tester, server_connect_response, server_ids):
             trigger_func_ids_list = []
             for func_type in trigger_func_types:
                 data['prorettypename'] = func_type
-                data["name"] = str(uuid.uuid4())[1:8]
+                data["name"] = "event_{}".format(str(uuid.uuid4())[1:8])
                 if schema_id:
                     data['pronamespace'] = schema_id
                 else:
@@ -122,7 +124,9 @@ def add_trigger_function(tester, server_connect_response, server_ids):
                 assert response.status_code == 200
                 response_data = json.loads(response.data.decode('utf-8'))
                 trigger_func_id = response_data['node']['_id']
-                trigger_func_ids_list.append(trigger_func_id)
+                event_trigger_name = str(response_data['node']['label'])
+                trigger_func_ids_list.append(
+                    (trigger_func_id, event_trigger_name, func_type))
 
             write_trigger_func_id(trigger_func_ids_list, server_id)
 
@@ -157,13 +161,14 @@ def delete_trigger_function(tester):
             schema_response = schema_utils.verify_schemas(
                 tester, server_id, db_id, schema_id)
             if schema_response.status_code == 200:
-                trigger_func_ids = trigger_ids_dict[int(server_id)]
-                for trigger_func_id in trigger_func_ids:
+                trigger_func_list = trigger_ids_dict[int(server_id)]
+                for trigger_func in trigger_func_list:
+                    trigger_func_id = trigger_func[0]
                     trigger_response = verify_trigger_function(
                         tester, server_id, db_id, schema_id, trigger_func_id)
                     if trigger_response.status_code == 200:
                         del_response = tester.delete(
-                            TRIGGER_FUNCTIONS_URL + str(
+                            TRIGGER_FUNCTIONS_DELETE_URL + str(
                                 utils.SERVER_GROUP) + '/' +
                             str(server_id) + '/' + str(db_id) + '/' +
                             str(schema_id) + '/' + str(trigger_func_id),

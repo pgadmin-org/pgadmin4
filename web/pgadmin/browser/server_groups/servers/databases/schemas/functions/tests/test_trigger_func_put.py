@@ -78,8 +78,9 @@ class TriggerFuncPutTestCase(BaseTestGenerator):
                                                               db_id,
                                                               schema_id)
                 if schema_response.status_code == 200:
-                    trigger_func_ids = trigger_ids_dict[int(server_id)]
-                    for trigger_func_id in trigger_func_ids:
+                    trigger_func_list = trigger_ids_dict[int(server_id)]
+                    for trigger_func in trigger_func_list:
+                        trigger_func_id = trigger_func[0]
                         trigger_response = \
                             trigger_funcs_utils.verify_trigger_function(
                                 self.tester, server_id, db_id, schema_id,

@@ -19,6 +19,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression import test_utils as utils
 
 SCHEMA_URL = '/browser/schema/obj/'
+SCHEMA_DELETE_URL = '/browser/schema/delete/'
 
 
 def get_schema_config_data(server_connect_response):
@@ -39,7 +40,7 @@ def get_schema_config_data(server_connect_response):
             "defseqacl": adv_config_data['seq_acl'],
             "deftblacl": adv_config_data['tbl_acl'],
             "deftypeacl": adv_config_data['type_acl'],
-            "name": "test_{0}".format(str(uuid.uuid4())[1:8]),
+            "name": "schema_{0}".format(str(uuid.uuid4())[1:8]),
             "namespaceowner": adv_config_data['owner'],
             "nspacl": adv_config_data['privilege'],
             "seclabels": adv_config_data['sec_label']
@@ -138,7 +139,7 @@ def delete_schema(tester):
                 raise Exception("No schema(s) to delete.")
 
             del_response = tester.delete(
-                SCHEMA_URL + str(utils.SERVER_GROUP) + '/' +
+                SCHEMA_DELETE_URL + str(utils.SERVER_GROUP) + '/' +
                 str(server_id) + '/' +
                 str(db_id) + '/' +
                 str(schema_id),
