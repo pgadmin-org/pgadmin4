@@ -41,6 +41,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       label: '{{ _('Trigger') }}',
       hasSQL:  true,
       hasDepends: true,
+      width: '650px',
       sqlAlterHelp: 'sql-altertrigger.html',
       sqlCreateHelp: 'sql-createtrigger.html',
       dialogHelp: '{{ url_for('help.static', filename='trigger_dialog.html') }}',
@@ -328,7 +329,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         if(!m.inSchemaWithModelCheck.apply(this, [m])) {
             if(!_.isUndefined(is_constraint_trigger) &&
             is_constraint_trigger === true) {
-                setTimeout(function() { m.set('fires', 'AFTER', {silent: true}) }, 10);
+                setTimeout(function() { m.set('fires', 'AFTER') }, 10);
                 return true;
             } else {
                 return false;
@@ -419,7 +420,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              return true;
             }
         },{
-            id: 'code', label:'{{ _('Code') }}', group: '{{ _('Code') }}',
+            id: 'prosrc', label:'{{ _('Code') }}', group: '{{ _('Code') }}',
             type: 'text', mode: ['create', 'edit'], deps: ['tfunction'],
             control: 'sql-field', visible: true,
             disabled: function(m) {
@@ -427,19 +428,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 // set to Inline EDB-SPL
                 var tfunction = m.get('tfunction'),
                     server_type = m.node_info['server']['server_type'];
-                if(!m.inSchemaWithModelCheck.apply(this, [m])) {
-                    if(server_type === 'ppas' &&
-                        !_.isUndefined(tfunction) &&
-                    tfunction === 'Inline EDB-SPL') {
-                        return false;
-                        // Also clear and disable Argument field
-                    } else {
-                        return true;
-                    }
-                } else {
-                    // Disable it
-                      return true;
-                }
+
+                if(server_type === 'ppas' &&
+                    !_.isUndefined(tfunction) &&
+                    tfunction === 'Inline EDB-SPL')
+                  return false;
+                else
+                  return true;
             }
         },{
           id: 'is_sys_trigger', label:'{{ _('System trigger?') }}', cell: 'string',
@@ -476,13 +471,24 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             return msg;
           }
 
-          if(!this.get('evnt_turncate') && !this.get('evnt_delete') && !this.get('evnt_update') && !this.get('evnt_insert')) {
-          msg = '{{ _('Specify atleast one event.') }}';
-          this.errorModel.set('evnt_turncate', " ");
-          this.errorModel.set('evnt_delete', " ");
-          this.errorModel.set('evnt_update', " ");
-          this.errorModel.set('evnt_insert', msg);
-          return msg;
+          if(!this.get('evnt_turncate') && !this.get('evnt_delete') &&
+            !this.get('evnt_update') && !this.get('evnt_insert')) {
+            msg = '{{ _('Specify atleast one event.') }}';
+            this.errorModel.set('evnt_turncate', " ");
+            this.errorModel.set('evnt_delete', " ");
+            this.errorModel.set('evnt_update', " ");
+            this.errorModel.set('evnt_insert', msg);
+            return msg;
+          }
+
+          if(!_.isUndefined(this.get('tfunction')) &&
+            this.get('tfunction') === 'Inline EDB-SPL' &&
+            (_.isUndefined(this.get('prosrc'))
+              || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == ''))
+          {
+            msg = '{{ _('Trigger code can not be empty.') }}';
+            this.errorModel.set('prosrc', msg);
+            return msg;
           }
           return null;
         },

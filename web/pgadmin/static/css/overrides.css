@@ -767,7 +767,7 @@ fieldset.inline-fieldset-without-border {
 fieldset.inline-fieldset > legend {
     display: block; border: 0px solid black; box-shadow: none;
     box-sizing: content-box; top: auto; bottom: auto; left: auto;
-    font-size: 16px; font-style: normal; font-weight: 600;
+    font-size: 14px; font-style: normal; font-weight: 600;
     height: 20px; line-height: 20px; margin: 0px; padding-bottom: 0px;
     padding-left: 5px; padding-right: 5px; padding-top: 0px;
     vertical-align: middle; width: auto;

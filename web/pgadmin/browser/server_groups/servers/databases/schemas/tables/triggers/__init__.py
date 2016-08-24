@@ -508,6 +508,26 @@ class TriggerView(PGChildNodeView):
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
+
+        # If language is 'edbspl' then trigger function should be 'Inline EDB-SPL'
+        # else we will find the trigger function with schema name.
+        if data['lanname'] == 'edbspl':
+            data['tfunction'] = 'Inline EDB-SPL'
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'get_triggerfunctions.sql']),
+                                  tgfoid=data['tgfoid'],
+                                  show_system_objects=self.blueprint.show_system_objects)
+
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Update the trigger function which we have fetched with schema name
+            if 'rows' in result and len(result['rows']) > 0 and \
+                            'tfunctions' in result['rows'][0]:
+                data['tfunction'] = result['rows'][0]['tfunctions']
+
         if data['tgnargs'] > 1:
             # We know that trigger has more than 1 arguments, let's join them
             # and convert it as string
@@ -673,21 +693,43 @@ class TriggerView(PGChildNodeView):
         )
 
         try:
+            data['schema'] = self.schema
+            data['table'] = self.table
+
             SQL = self.get_sql(scid, tid, trid, data)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Trigger updated",
-                    data={
-                        'id': trid,
-                        'tid': tid,
-                        'scid': scid
-                    }
-                )
+                if hasattr(self, 'lanname') and self.lanname == 'edbspl' \
+                        and 'prosrc' in data:
+                    data['name'] = self.trigger_name
+                    SQL = render_template("/".join([self.template_path,
+                                                    'get_oid.sql']),
+                                          tid=tid, data=data)
+                    status, trid = self.conn.execute_scalar(SQL)
+                    if not status:
+                        return internal_server_error(errormsg=tid)
+
+                    return jsonify(
+                        node=self.blueprint.generate_browser_node(
+                            trid,
+                            scid,
+                            data['name'],
+                            icon="icon-trigger"
+                        )
+                    )
+                else:
+                    return make_json_response(
+                        success=1,
+                        info="Trigger updated",
+                        data={
+                            'id': trid,
+                            'tid': tid,
+                            'scid': scid
+                        }
+                    )
             else:
                 return make_json_response(
                     success=1,
@@ -757,6 +799,9 @@ class TriggerView(PGChildNodeView):
             # we will fetch it from old data, we also need schema & table name
             if 'name' not in data:
                 data['name'] = old_data['name']
+
+            self.trigger_name = data['name']
+            self.lanname = old_data['lanname']
 
             if old_data['tgnargs'] > 1:
                 # We know that trigger has more than 1 arguments, let's join them

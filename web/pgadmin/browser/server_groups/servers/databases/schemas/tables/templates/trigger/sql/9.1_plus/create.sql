@@ -1,6 +1,10 @@
 {### Set a flag which allows us to put OR between events ###}
 {% set or_flag = False %}
+{% if data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL' %}
+CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
+{% else %}
 CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|qtIdent(data.name) }}
+{% endif %}
     {{data.fires}} {% if data.evnt_insert %}INSERT{% set or_flag = True %}
 {% endif %}{% if data.evnt_delete %}
 {% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}
@@ -19,7 +23,8 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
 
     WHEN {{ data.whenclause }}{% endif %}
 
-    {% if data.code %}{{ data.code }}{% else %}EXECUTE PROCEDURE {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%}{% endif%};
+    {% if data.prosrc is defined and
+    (data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL') %}{{ data.prosrc }}{% else %}EXECUTE PROCEDURE {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%}{% endif%};
 
 {% if data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
