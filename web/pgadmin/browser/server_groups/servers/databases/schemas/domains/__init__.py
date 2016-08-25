@@ -523,11 +523,9 @@ AND relkind != 'c'))"""
                                             'get_oid.sql']),
                                   basensp=data['basensp'],
                                   name=data['name'])
-            status, res = self.conn.execute_2darray(SQL)
+            status, doid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            doid, scid = res['rows'][0]
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

@@ -7,7 +7,7 @@ WHERE
     d.oid={{ doid }}::oid;
 {% else %}
 SELECT
-    d.oid, d.typnamespace
+    d.oid
 FROM
     pg_type d
 JOIN
