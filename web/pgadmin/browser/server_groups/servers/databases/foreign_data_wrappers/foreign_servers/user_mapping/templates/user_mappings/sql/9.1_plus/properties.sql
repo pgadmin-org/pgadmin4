@@ -14,7 +14,7 @@ WITH umapData AS
     )
     SELECT * FROM umapData
 {% if data %}
-    WHERE {% if data.name == "CURRENT_USER" %} name = {{data.name}} {% elif data.name == "PUBLIC" %} name = {{data.name.lower()|qtLiteral}} {% else %} name = {{data.name|qtLiteral}} {% endif %}
+    WHERE {% if data.name == "CURRENT_USER" %} name = {{data.name}} {% elif data.name == "PUBLIC" %} name = {{data.name|qtLiteral}} {% else %} name = {{data.name|qtLiteral}} {% endif %}
 {% endif %}
 {% if fdwdata %}
     WHERE fdw.fdwname = {{fdwdata.name|qtLiteral}}::text
