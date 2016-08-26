@@ -8,7 +8,6 @@
 ##########################################################################
 
 import simplejson as json
-import traceback
 
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
@@ -355,14 +354,8 @@ class ServerNode(PGChildNodeView):
                     success=0,
                     errormsg=e.message)
 
-        try:
-            info = traceback.format_exc()
-        except Exception as e:
-            current_app.logger.exception(e)
-            info = str(e)
-
         return make_json_response(success=1,
-                                  info=info)
+                                  info=gettext("Server deleted"))
 
     def update(self, gid, sid):
         """Update the server settings"""
