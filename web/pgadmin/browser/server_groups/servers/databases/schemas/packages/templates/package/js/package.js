@@ -46,7 +46,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'create_package', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Package...') }}',
-          icon: 'wcTabIcon icon-package', data: {action: 'create', check: false},
+          icon: 'wcTabIcon icon-package', data: {action: 'create', check: true},
           enable: 'canCreate'
         }
         ]);
@@ -59,26 +59,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (data && data.check == false)
             return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData;
-          // To iterate over tree to check parent node
-          while (i) {
-            // If it is schema then allow user to create collation
-            if (_.indexOf(['schema'], d._type) > -1)
-              return true;
+          var treeData = this.getTreeNodeHierarchy(item),
+                server = treeData['server'];
 
-            if ('coll-package' == d._type) {
-              //Check if we are not child of catalog
-              prev_i = t.hasParent(i) ? t.parent(i) : null;
-              prev_d = prev_i ? t.itemData(prev_i) : null;
-              if( prev_d._type == 'catalog') {
-                return false;
-              } else {
-                return true;
-              }
-            }
-            i = t.hasParent(i) ? t.parent(i) : null;
-            d = i ? t.itemData(i) : null;
-          }
+          if (server && server.server_type === 'pg')
+            return false;
+
+          // If it is catalog then don't allow user to create package
+          if (treeData['catalog'] != undefined)
+            return false;
+
           // by default we want to allow create menu
           return true;
       },
