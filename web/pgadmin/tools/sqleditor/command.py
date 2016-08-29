@@ -416,6 +416,7 @@ class TableCommand(GridCommand):
         res = None
         query_res = dict()
         count = 0
+        list_of_sql = []
 
         if conn.connected():
 
@@ -423,45 +424,70 @@ class TableCommand(GridCommand):
             conn.execute_void('BEGIN;')
 
             # Iterate total number of records to be updated/inserted
-            for row in changed_data:
+            for of_type in changed_data:
 
                 # if no data to be saved then continue
-                if 'data' not in row:
+                if len(changed_data[of_type]) < 1:
                     continue
 
-                # if 'keys' is present in row then it is and update query
-                # else it is an insert query.
-                if 'keys' in row:
-                    # if 'marked_for_deletion' is present in row and it is true then delete
-                    if 'marked_for_deletion' in row and row['marked_for_deletion']:
+                # For newly added rows
+                if of_type == 'added':
+                    for each_row in changed_data[of_type]:
+                        data = changed_data[of_type][each_row]['data']
+                        data_type = changed_data[of_type][each_row]['data_type']
+                        # Remove our unique tracking key
+                        data.pop('__temp_PK', None)
+                        sql = render_template("/".join([self.sql_path, 'insert.sql']),
+                                              data_to_be_saved=data,
+                                              primary_keys=None,
+                                              object_name=self.object_name,
+                                              nsp_name=self.nsp_name,
+                                              data_type=data_type)
+                        list_of_sql.append(sql)
+
+                # For updated rows
+                elif of_type == 'updated':
+                    for each_row in changed_data[of_type]:
+                        data = changed_data[of_type][each_row]['data']
+                        pk = changed_data[of_type][each_row]['primary_keys']
+                        data_type = changed_data[of_type][each_row]['data_type']
+                        sql = render_template("/".join([self.sql_path, 'update.sql']),
+                                              data_to_be_saved=data,
+                                              primary_keys=pk,
+                                              object_name=self.object_name,
+                                              nsp_name=self.nsp_name,
+                                              data_type=data_type)
+                        list_of_sql.append(sql)
+
+                # For deleted rows
+                elif of_type == 'deleted':
+                    for each_row in changed_data[of_type]:
+                        data = changed_data[of_type][each_row]
                         sql = render_template("/".join([self.sql_path, 'delete.sql']),
-                                              primary_keys=row['keys'], object_name=self.object_name,
+                                              data=data,
+                                              object_name=self.object_name,
                                               nsp_name=self.nsp_name)
-                    else:
-                        sql = render_template("/".join([self.sql_path, 'update.sql']), object_name=self.object_name,
-                                              data_to_be_saved=row['data'], primary_keys=row['keys'],
-                                              nsp_name=self.nsp_name)
-                else:
-                    sql = render_template("/".join([self.sql_path, 'insert.sql']), object_name=self.object_name,
-                                          data_to_be_saved=row['data'], nsp_name=self.nsp_name)
+                        list_of_sql.append(sql)
 
-                status, res = conn.execute_void(sql)
-                rows_affected = conn.rows_affected()
+            for sql in list_of_sql:
+                if sql:
+                    status, res = conn.execute_void(sql)
+                    rows_affected = conn.rows_affected()
 
-                # store the result of each query in dictionary
-                query_res[count] = {'status': status, 'result': res,
-                                    'sql': sql, 'rows_affected': rows_affected}
-                count += 1
+                    # store the result of each query in dictionary
+                    query_res[count] = {'status': status, 'result': res,
+                                        'sql': sql, 'rows_affected': rows_affected}
+                    count += 1
 
-                if not status:
-                    conn.execute_void('ROLLBACK;')
-                    # If we roll backed every thing then update the message for
-                    # each sql query.
-                    for val in query_res:
-                        if query_res[val]['status']:
-                            query_res[val]['result'] = 'Transaction ROLLBACK'
+                    if not status:
+                        conn.execute_void('ROLLBACK;')
+                        # If we roll backed every thing then update the message for
+                        # each sql query.
+                        for val in query_res:
+                            if query_res[val]['status']:
+                                query_res[val]['result'] = 'Transaction ROLLBACK'
 
-                    return status, res, query_res
+                        return status, res, query_res
 
             # Commit the transaction if there is no error found
             conn.execute_void('COMMIT;')

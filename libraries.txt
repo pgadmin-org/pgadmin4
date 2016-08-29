@@ -31,3 +31,5 @@ dropzone            4e20bd4     MIT          https://github.com/enyo/dropzone
 Filemanager         7e060c2     MIT          https://github.com/simogeo/Filemanager
 Unit (Length)       d8e6237     MIT          https://github.com/heygrady/Units/blob/master/Length.min.js
 Natural Sort        9565816     MIT          https://github.com/javve/natural-sort/blob/master/index.js
+SlickGrid           2.2.4       MIT          https://github.com/6pac/SlickGrid
+jQuery-UI           1.11.3      MIT          https://jqueryui.com/
