@@ -20,11 +20,11 @@ ON
 WHERE
 {% if scid %}
     prs.prsnamespace = {{scid}}::OID
-{% elif name %}
-    prs.prsname = {{name|qtLiteral}}
+{% endif %}
+{% if name %}
+    {% if scid %}AND {% endif %}prs.prsname = {{name|qtLiteral}}
 {% endif %}
 {% if pid %}
-    AND prs.oid = {{pid}}::OID
+    {% if name %}AND {% else %}{% if scid %}AND {% endif %}{% endif %}prs.oid = {{pid}}::OID
 {% endif %}
-ORDER BY
-    prs.prsname
+ORDER BY prs.prsname;

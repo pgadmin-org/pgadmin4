@@ -9,13 +9,16 @@
 
 """Implements Constraint Node"""
 
+from functools import wraps
+from pgadmin.utils.driver import get_driver
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response
+    make_response as ajax_response, internal_server_error
 
+from config import PG_DEFAULT_DRIVER
 from .type import ConstraintRegistry
 
 
@@ -53,7 +56,13 @@ class ConstraintsModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(tid)
+        nodes = []
+        for name in ConstraintRegistry.registry:
+            view = (ConstraintRegistry.registry[name])['nodeview']
+            nodes.append(view.node_type)
+        node = self.generate_browser_collection_node(tid)
+        node['nodes'] = nodes
+        yield node
 
     @property
     def script_load(self):
@@ -90,7 +99,6 @@ def nodes(**kwargs):
         data=res,
         status=200
     )
-
 
 @blueprint.route('/obj/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/')
 def proplist(**kwargs):

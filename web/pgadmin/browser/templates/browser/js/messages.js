@@ -25,7 +25,7 @@ function(_, S, pgAdmin) {
     'TRUE': "{{ _("True") }}",
     'FALSE': "{{ _("False") }}",
     'NOTE_CTRL_LABEL': "{{ _("Note") }}",
-    'ERR_RETRIEVAL_INFO': "{{ _("Error retrieving the information- %s") }}",
+    'ERR_RETRIEVAL_INFO': "{{ _("Error retrieving the information - %s") }}",
     'CONNECTION_LOST': "{{ _("Connection to the server has been lost!") }}"
   };
 

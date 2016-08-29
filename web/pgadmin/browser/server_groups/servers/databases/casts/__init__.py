@@ -278,7 +278,9 @@ class CastView(PGChildNodeView):
 
     @check_precondition
     def node(self, gid, sid, did, cid):
-        res = []
+        """
+        This function will fetch properties of the cast node
+        """
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
             cid=cid
@@ -288,18 +290,17 @@ class CastView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            res.append(
-                self.blueprint.generate_browser_node(
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
                     row['oid'],
                     did,
                     row['name'],
                     icon="icon-fts_template"
-                ))
+                ),
+                status=200
+            )
 
-        return make_json_response(
-            data=res,
-            status=200
-        )
+        return gone(errormsg=gettext("Could not find the specified cast."))
 
     @check_precondition
     def properties(self, gid, sid, did, cid):
@@ -324,6 +325,11 @@ class CastView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the cast information.")
+            )
 
         return ajax_response(
             response=res['rows'][0],
@@ -405,34 +411,20 @@ class CastView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        sql = self.get_sql(gid, sid, did, data, cid)
         try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            sql, name = self.get_sql(gid, sid, did, data, cid)
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Cast updated",
-                    data={
-                        'id': cid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    cid,
+                    did,
+                    name,
+                    "icon-{0}".format(self.node_type)
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': cid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -464,6 +456,7 @@ class CastView(PGChildNodeView):
 
             if not res['rows']:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -509,17 +502,18 @@ class CastView(PGChildNodeView):
          :return:
         """
         data = request.args
-        sql = self.get_sql(gid, sid, did, data, cid)
-        if isinstance(sql, str) and sql and sql.strip('\n') and sql.strip(' '):
+        try:
+            sql, name = self.get_sql(gid, sid, did, data, cid)
+            sql = sql.strip('\n').strip(' ')
+            if sql == '':
+                sql = "--modified SQL"
+
             return make_json_response(
                 data=sql,
                 status=200
             )
-        else:
-            return make_json_response(
-                data="--modified SQL",
-                status=200
-            )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, did, data, cid=None):
         """
@@ -531,35 +525,32 @@ class CastView(PGChildNodeView):
         :param data: model data
         :return:
         """
-        try:
-            if cid is not None:
-                last_system_oid = 0 if self.blueprint.show_system_objects else \
-                    (self.manager.db_info[did])['datlastsysoid'] \
-                    if self.manager.db_info is not none and \
-                    did in self.manager.db_info else 0
-                sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                      cid=cid,
-                                      datlastsysoid=last_system_oid,
-                                      showsysobj=self.blueprint.show_system_objects)
-                status, res = self.conn.execute_dict(sql)
+        if cid is not None:
+            last_system_oid = 0 if self.blueprint.show_system_objects else \
+                (self.manager.db_info[did])['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                did in self.manager.db_info else 0
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  cid=cid,
+                                  datlastsysoid=last_system_oid,
+                                  showsysobj=self.blueprint.show_system_objects)
+            status, res = self.conn.execute_dict(sql)
 
-                if not status:
-                    return internal_server_error(errormsg=res)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                old_data = res['rows'][0]
-                sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=data, o_data=old_data
-                )
+            old_data = res['rows'][0]
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data
+            )
+            return str(sql), data['name'] if 'name' in data else old_data['name']
+        else:
+            if 'srctyp' in data and 'trgtyp' in data:
+                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             else:
-                if 'srctyp' in data and 'trgtyp' in data:
-                    sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
-                else:
-                    sql = "-- incomplete definition"
-            return str(sql)
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                return "-- incomplete definition", None
+            return str(sql), data['srctyp'] + "->" + data["trgtyp"]
 
     @check_precondition
     def get_functions(self, gid, sid, did, cid=None):

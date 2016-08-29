@@ -150,7 +150,7 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             {'get': 'properties'},
             {'get': 'list'}
         ],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'module.js': [{}, {}, {'get': 'module_js'}]
     })
@@ -238,8 +238,10 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
         """
 
         res = []
-        SQL = render_template("/".join([self.sql_template_path,
-                                        'node.sql']), pkgid=pkgid)
+        SQL = render_template(
+            "/".join([self.sql_template_path, 'node.sql']),
+            pkgid=pkgid
+        )
         status, rset = self.conn.execute_2darray(SQL)
 
         if not status:

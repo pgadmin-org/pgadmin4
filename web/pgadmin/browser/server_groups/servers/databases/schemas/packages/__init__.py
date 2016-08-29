@@ -22,7 +22,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import precondition_required, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -98,7 +98,7 @@ class PackageView(PGChildNodeView):
         ],
         'delete': [{'delete': 'delete'}],
         'children': [{'get': 'children'}],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
@@ -149,9 +149,10 @@ class PackageView(PGChildNodeView):
                 if self.manager.version < 90200:
                     self.template_path = 'package/ppas/9.1_plus'
 
-                SQL = render_template("/".join([self.template_path,
-                                                'get_schema.sql']),
-                                      scid=kwargs['scid'])
+                SQL = render_template(
+                    "/".join([self.template_path, 'get_schema.sql']),
+                    scid=kwargs['scid']
+                )
                 status, rset = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=rset)
@@ -191,7 +192,7 @@ class PackageView(PGChildNodeView):
         )
 
     @check_precondition(action='nodes')
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid, pkgid=None):
         """
         This function is used to create all the child nodes within the collection.
         Here it will create all the package nodes.
@@ -206,10 +207,30 @@ class PackageView(PGChildNodeView):
 
         """
         res = []
-        SQL = render_template("/".join([self.template_path, 'nodes.sql']), scid=scid)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            scid=scid,
+            pkgid=pkgid
+        )
         status, rset = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
+
+        if pkgid is not None:
+            if len(rset['rows']) == 0:
+                return gone(
+                     errormsg=_("Couldn't find the package.")
+                )
+
+            row = rset['rows'][0]
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    sid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                )
+            )
 
         for row in rset['rows']:
             res.append(
@@ -245,6 +266,11 @@ class PackageView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                errormsg=_("Could not find the package in the database.")
+            )
 
         res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
         res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
@@ -298,39 +324,39 @@ class PackageView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        try:
-            data['schema'] = self.schema
-            # The SQL below will execute CREATE DDL only
-            SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
-            status, msg = self.conn.execute_scalar(SQL)
+        data['schema'] = self.schema
+        # The SQL below will execute CREATE DDL only
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data, conn=self.conn
+        )
+
+        status, msg = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=msg)
+
+        # We need oid of newly created package.
+        SQL = render_template(
+            "/".join([
+                self.template_path, 'get_oid.sql'
+            ]),
+            name=data['name'], scid=scid
+        )
+
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL and SQL != "":
+            status, pkgid = self.conn.execute_scalar(SQL)
             if not status:
-                return internal_server_error(errormsg=msg)
+                return internal_server_error(errormsg=pkgid)
 
-            # We need oid of newly created package.
-            SQL = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                  name=data['name'], scid=scid)
-
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, pkgid = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=pkgid)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    pkgid,
-                    scid,
-                    data['name'],
-                    icon="icon-%s" % self.node_type
-                )
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                pkgid,
+                scid,
+                data['name'],
+                icon="icon-%s" % self.node_type
             )
-
-        except Exception as e:
-            return make_json_response(
-                status=500,
-                success=0,
-                errormsg=str(e)
-            )
+        )
 
     @check_precondition(action='delete')
     def delete(self, gid, sid, did, scid, pkgid):
@@ -414,40 +440,21 @@ class PackageView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        try:
-            SQL = self.getSQL(gid, sid, did, data, scid, pkgid)
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL != "":
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Package updated",
-                    data={
-                        'id': pkgid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': pkgid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+        SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        SQL = SQL.strip('\n').strip(' ')
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                pkgid,
+                scid,
+                name,
+                icon="icon-%s" % self.node_type
+            )
+        )
 
     @check_precondition(action='msql')
     def msql(self, gid, sid, did, scid, pkgid=None):
@@ -484,18 +491,15 @@ class PackageView(PGChildNodeView):
                             "Could not find the required parameter (%s)." % arg
                         )
                     )
-        try:
-            SQL = self.getSQL(gid, sid, did, data, scid, pkgid)
-            SQL = SQL.strip('\n').strip(' ')
-            return make_json_response(
-                data=SQL,
-                status=200
-            )
-        except Exception as e:
-            return make_json_response(
-                data="-- modified SQL",
-                status=200
-            )
+
+        SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL == '':
+            SQL = "--modified SQL"
+        return make_json_response(
+            data=SQL,
+            status=200
+        )
 
     def getSQL(self, gid, sid, did, data, scid, pkgid=None):
         """
@@ -558,6 +562,7 @@ class PackageView(PGChildNodeView):
 
             SQL = render_template("/".join([self.template_path, 'update.sql']),
                                   data=data, o_data=old_data, conn=self.conn)
+            return SQL, data['name'] if 'name' in data else old_data['name']
         else:
             # To format privileges coming from client
             if 'pkgacl' in data:
@@ -565,7 +570,7 @@ class PackageView(PGChildNodeView):
 
             SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
 
-        return SQL
+            return SQL, data['name']
 
     @check_precondition(action="sql")
     def sql(self, gid, sid, did, scid, pkgid):
@@ -579,45 +584,48 @@ class PackageView(PGChildNodeView):
             scid: Schema ID
             pkgid: Package ID
         """
+        try:
+            SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-        SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+            res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
+            res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
 
-        res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
-        res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
+            SQL = render_template("/".join([self.template_path, 'acl.sql']),
+                                  scid=scid,
+                                  pkgid=pkgid)
+            status, rset1 = self.conn.execute_dict(SQL)
 
-        SQL = render_template("/".join([self.template_path, 'acl.sql']),
-                              scid=scid,
-                              pkgid=pkgid)
-        status, rset1 = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=rset1)
 
-        if not status:
-            return internal_server_error(errormsg=rset1)
+            for row in rset1['rows']:
+                priv = parse_priv_from_db(row)
+                res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
-        for row in rset1['rows']:
-            priv = parse_priv_from_db(row)
-            res['rows'][0].setdefault(row['deftype'], []).append(priv)
+            result = res['rows'][0]
+            sql, name = self.getSQL(gid, sid, did, result, scid)
+            sql = sql.strip('\n').strip(' ')
 
-        result = res['rows'][0]
-        sql = self.getSQL(gid, sid, did, result, scid)
-        sql = sql.strip('\n').strip(' ')
+            sql_header = "-- Package: {}\n\n-- ".format(
+                self.qtIdent(self.conn, self.schema, result['name'])
+            )
+            if hasattr(str, 'decode'):
+                sql_header = sql_header.decode('utf-8')
 
-        sql_header = "-- Package: {}\n\n-- ".format(self.qtIdent(self.conn,
-                                                                 self.schema,
-                                                                 result['name']))
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+            sql_header += render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                data=result)
+            sql_header += "\n\n"
 
-        sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
-            data=result)
-        sql_header += "\n\n"
+            sql = sql_header + sql
 
-        sql = sql_header + sql
+            return ajax_response(response=sql)
 
-        return ajax_response(response=sql)
+        except Exception as e:
+                return internal_server_error(errormsg=str(e))
 
     @check_precondition(action="dependents")
     def dependents(self, gid, sid, did, scid, pkgid):

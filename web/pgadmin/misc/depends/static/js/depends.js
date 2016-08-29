@@ -123,6 +123,18 @@ define([
                         this.dependenciesPanelVisibilityChanged);
       pgBrowser.Events.on('pgadmin-browser:panel-dependents:' + wcDocker.EVENT.VISIBILITY_CHANGED,
                         this.dependentsPanelVisibilityChanged);
+      pgBrowser.Events.on(
+        'pgadmin:browser:node:updated', function() {
+          if (this.dependenciesPanels && this.dependenciesPanels.length) {
+            $(this.dependenciesPanels[0]).data('node-prop', '');
+            this.dependenciesPanelVisibilityChanged(this.dependenciesPanels[0]);
+          }
+          if (this.dependentsPanels && this.dependentsPanels.length) {
+            $(this.dependentsPanels[0]).data('node-prop', '');
+            this.dependentsPanelVisibilityChanged(this.dependentsPanels[0]);
+          }
+        }, this
+      );
 
       // We will render the grid objects in the panel after some time, because -
       // it is possible, it is not yet available.
@@ -232,7 +244,7 @@ define([
             error: function(coll, xhr, error, message) {
               var _label = treeHierarchy[n_type].label;
               pgBrowser.Events.trigger(
-                'pgadmin:node:retrieval:error', 'depends', xhr, status, error
+                'pgadmin:node:retrieval:error', 'depends', xhr, error, message
               );
               if (
                 !Alertify.pgHandleItemError(xhr, error, message, {
@@ -240,7 +252,7 @@ define([
                 })
               ) {
                 Alertify.pgNotifier(
-                  status, xhr,
+                  error, xhr,
                   S(
                     pgBrowser.messages['ERR_RETRIEVAL_INFO']
                   ).sprintf(message || _label).value(),

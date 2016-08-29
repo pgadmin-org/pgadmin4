@@ -1,4 +1,11 @@
-SELECT cl.oid as oid, relname as name
+SELECT cl.oid as oid, relname as name, relnamespace as schema
 FROM pg_class cl
-WHERE relkind = 'S' AND relnamespace = {{scid}}::oid
+WHERE
+    relkind = 'S'
+{% if scid %}
+    AND relnamespace = {{scid|qtLiteral}}::oid
+{% endif %}
+{% if seid %}
+    AND cl.oid = {{seid|qtLiteral}}::oid
+{% endif %}
 ORDER BY relname

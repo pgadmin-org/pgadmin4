@@ -284,8 +284,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             })
             .error(function(xhr, error, message) {
               var _label = that && item ?
-                                that.getTreeNodeHierarchy(item)[that.type].label :
-                                '';
+                            that.getTreeNodeHierarchy(
+                              item
+                            )[that.type].label : '';
               pgBrowser.Events.trigger(
                 'pgadmin:node:retrieval:error', 'properties',
                 xhr, error, message, item
@@ -298,7 +299,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 Alertify.pgNotifier(
                   error, xhr,
                   S(
-                    "{{ _("Error retrieving properties- %s") }}"
+                    "{{ _("Error retrieving properties - %s") }}"
                   ).sprintf(message || _label).value(),
                   function() {
                     console.log(arguments);
@@ -684,10 +685,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
            */
           if (!('collection_count' in pData)) {
             pData.collection_count = 0;
-            pData._label = pData.label;
           }
           pData.collection_count++;
-          t.setLabel(pItem, {label: (pData._label + ' <span>(' + pData.collection_count + ')</span>')});
+          t.setLabel(
+            pItem, {
+              label: (
+                pData._label + ' <span>(' + pData.collection_count + ')</span>'
+              )
+            }
+          );
         }
       },
       // Callback called - when a node is selected in browser tree.
@@ -755,11 +761,17 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             pNode = pData && pgBrowser.Nodes[pData._type];
 
         // Check node is a collection or not.
-        if (pNode && pNode.is_collection &&
-            'collection_count' in pData)
-        {
+        if (
+          pNode && pNode.is_collection && 'collection_count' in pData
+        ) {
           pData.collection_count--;
-          t.setLabel(pItem, {label: (pData._label + ' <span>(' + pData.collection_count + ')</span>')});
+          t.setLabel(
+            pItem, {
+              label: (
+                pData._label + ' <span>(' + pData.collection_count + ')</span>'
+              )
+            }
+          );
         }
 
         setTimeout(function() { self.clear_cache.apply(self, item); }, 0);
@@ -776,19 +788,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           t.setLabel(item, {label: data._label});
         }
       },
-      refresh: function(n, i) {
+      refresh: function(cmd, i) {
         var self = this,
             t = pgBrowser.tree,
-            d = t.itemData(i);
+            item = i || t.selected(),
+            d = t.itemData(item);
 
-        if (t.isInode(i) && t.wasLoad(i))
-            t.unload(i);
-        t.setInode(i, (d && d.inode) || false);
-        t.deselect(i);
-
-        setTimeout(function() {
-          t.select(i);
-        }, 10);
+        pgBrowser.Events.trigger('pgadmin:browser:tree:refresh', item);
       }
     },
     /**********************************************************************
@@ -1191,283 +1197,41 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           this.close();
         }.bind(panel),
         updateTreeItem = function(that) {
-          var panel = this;
+          var _old = data,
+              _new = _.clone(view.model.tnode),
+              info = _.clone(view.model.node_info);
 
           // Clear the cache for this node now.
           setTimeout(function() { that.clear_cache.apply(that, item); }, 0);
-
-          // Update the item lable (if label is modified.)
-          if (view.model.tnode) {
-            var itemData = tree.itemData(item),
-                icon = itemData.icon,
-                newNodeData = view.model.tnode;
-
-            tree.addIcon(item, {icon: newNodeData.icon});
-            tree.setLabel(item, {label: _.escape(newNodeData.label)});
-            _.extend(itemData, newNodeData);
-          } else if (view.model.get('name')) {
-            tree.setLabel(item, {label: _.escape(view.model.get("name"))});
-            if (
-              view.model.get('data').icon && view.model.get('data').icon != ''
-            )
-              tree.addIcon(item, {icon: view.model.get('data').icon});
-          }
-          tree.deselect(item);
-          panel.$container.removeAttr('action-mode');
-          setTimeout(function() { closePanel(); }, 0);
-          setTimeout(function() { tree.select(item, {focus: true}); }, 10);
 
           pgBrowser.Events.trigger(
-            'pgadmin-node:updated:' + that.type, item, that
+            'pgadmin:browser:tree:update',
+            _old, _new, info, {
+              success: function() {
+                pgBrowser.Events.trigger(
+                  'pgadmin:browser:node:updated', _new
+                );
+              }
+            }
           );
+          closePanel();
         },
         saveNewNode = function(that) {
-          var panel = this;
+          var panel = this,
+              j = panel.$container.find('.obj_properties').first(),
+              view = j.data('obj-view');
 
           // Clear the cache for this node now.
           setTimeout(function() { that.clear_cache.apply(that, item); }, 0);
-
-          /* TODO:: Create new tree node for this */
-          if (view.model.tnode && '_id' in view.model.tnode) {
-            view.model.tnode.label = _.escape(view.model.tnode.label);
-            var d = _.extend({}, view.model.tnode),
-              func = function(i) {
-                setTimeout(function() {closePanel();}, 0);
-                if (i) {
-                  tree.select(i, {focus: true});
-                }
-                pgBrowser.Events.trigger(
-                  'pgadmin-node:created:' + that.type, i, that
-                );
-              }, found = false;
-
-            delete view.model.tnode;
-
-            if (that.parent_type) {
-              var cdata = tree.itemData(item),
-                  p =  that._find_parent_node.apply(
-                    that, [tree, item, cdata]
-                  );
-
-              // Fixes# 1104
-              // Adding 1st database server connection does not
-              // show up in tree view.
-
-              // If the parent do not have any children, I won't care to add it
-              // manually.
-              if (p && !tree.hasChildren(p)) {
-                // It is most likely a top level node, which has no children.
-                tree.close(p);
-                tree.unload(p);
-                tree.setInode(p, false);
-                tree.open(p, {
-                  success: function() {
-                    var children = tree.children(p, false, false);
-
-                    for (var idx in children) {
-                      var c = $(children[idx]),
-                          cdata = tree.itemData(c);
-
-                      if (cdata._id == d._id) {
-                        tree.select(c);
-                        break;
-                      }
-                    }
-                  }
-                });
-                func(null);
-
-                return;
-              }
-
-              if (tree.wasLoad(item)) {
-                var first = tree.first(item, false),
-                    data = first && first.length && tree.itemData(first);
-
-                // We found the same type of object here, we can append it
-                // here.
-                if (data && data._type == that.type) {
-                  tree.append(item, {
-                    itemData: d,
-                    success: function(i, o) {
-                      func(o.items.eq(0));
-                    },
-                    fail: function() {
-                      // We still want to close the panel
-                      console.log(arguments);
-                      func(null);
-                    }
-                  });
-                  return;
-                } else {
-                  var children = tree.children(item, false, false);
-
-                  if (children) {
-                    _.each(children, function(child) {
-                      if (found)
-                        return;
-                      var j = $(child);
-                      data = tree.itemData(j);
-
-                      if (data && data._type && data._type in pgBrowser.Nodes) {
-                        node = pgBrowser.Nodes[data._type];
-
-                        if (node && ((node.node && node.node == that.type) ||
-                                node.type == that.collection_type)) {
-                          found = true;
-                          if (tree.wasLoad(j)) {
-                            tree.append(j, {
-                              itemData: d,
-                              success: function(i, o) {
-                                func(o.items.eq(0));
-                              }
-                            });
-                          } else {
-                            /*
-                             * This is not yet loaded, hence - we need to expand
-                             * it, and find the actual object.
-                             */
-                            if (!tree.isInode(j)) {
-                              tree.setInode(j);
-                            }
-                            tree.open(j, {
-                              success: function() {
-                                var children = tree.children(j, false, false),
-                                    stop = false;
-
-                                _.each(children, function(child) {
-
-                                  if (stop)
-                                    return;
-
-                                  var j = $(child),
-                                      data = tree.itemData(j);
-
-                                  if (d._id == data._id) {
-                                    stop = true;
-                                    func(j);
-                                  }
-                                });
-                                func(null);
-                              },
-                              fail: function() {
-                                // We would still like to close it.
-                                console.log(arguments);
-                                func(null);
-                              }
-                            });
-                          }
-                        }
-                      }
-                    });
-                  }
-                }
-                /*
-                 * We already added the node at required place, stop going
-                 * ahead.
-                 */
-                if (found)
-                  return;
-
-                /* When no children found, it was loaded.
-                 * It sets the item to non-inode.
-                 */
-                if (!tree.isInode(item)) {
-                    tree.setInode(item);
-                }
-                tree.open(item, {
-                  success: function() {
-                    var s = tree.search(item, {
-                      search: d.id,
-                      callback: function(i, s) {
-                        var data = tree.itemData(i);
-
-                        return (d._id == data._id);
-                      },
-                      success: function(i, o) {
-                        func(i);
-                      },
-                      fail: function() {
-                        // We would still like to close it.
-                        console.log(arguments);
-                        func(null);
-                      }
-                    });
-
-                  },
-                  fail: function() {
-                    // We would still like to close it.
-                    console.log(arguments);
-                    func(null);
-                  }
-                });
-              } else {
-                func(null);
-              }
-            } else {
-              tree.append(null, {
-                itemData: d,
-                success: function(i, o) {
-                  func(i);
-                },
-                fail: function() {
-                  // We would still like to close it.
-                  console.log(arguments);
-                  func(null);
-                }
-              });
-            }
-          } else {
-            /*
-             * Sometime we don't get node in response even though it's saved
-             * on server. In such case just reload the collection to get newly
-             * created nodes.
-             */
-
-            var children = tree.children(item, false, false),
-                openNode = function(item, animation){
-                  tree.open(item, {
-                    success: function (item, options){
-                      setTimeout(function() {closePanel();}, 0);
-                      pgBrowser.Events.trigger(
-                        'pgadmin-node:created:' + that.type, item, that
-                      );
-                    },
-                    fail: function (item, options){
-                      setTimeout(function() {closePanel();}, 0);
-                      pgBrowser.Events.trigger(
-                        'pgadmin-node:created:' + that.type, item, that
-                      );
-                    },
-                    unanimated: animation
-                  });
-                };
-
-            if (children) {
-              _.each(children, function(child) {
-                var $child = $(child),
-                    data = tree.itemData($child);
-                if (data._type == that.collection_type){
-                  // We found collection which need to reload.
-                  if (tree.wasLoad($child)) {
-                    tree.unload($child, {
-                      success: function (item, options){
-                        openNode(item, true);
-                      },
-                      fail: function (item, options){
-                        setTimeout(function() {closePanel();}, 0);
-                      },
-                      unanimated: true
-                    });
-                  } else {
-                    openNode($child, false);
-                  }
-                }
-              });
-              return;
-            }
-            setTimeout(function() {closePanel();}, 0);
+          try {
+            pgBrowser.Events.trigger(
+              'pgadmin:browser:tree:add', _.clone(view.model.tnode),
+              _.clone(view.model.node_info)
+            );
+          } catch (e) {
+            console.log(e);
           }
+          closePanel();
         }.bind(panel, that),
         editInNewPanel = function() {
           // Open edit in separate panel

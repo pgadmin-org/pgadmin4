@@ -1,5 +1,5 @@
 SELECT
-    oid, tmplname as name
+    oid, tmplname as name, tmpl.tmplnamespace AS schema
 FROM
     pg_ts_template tmpl
 WHERE

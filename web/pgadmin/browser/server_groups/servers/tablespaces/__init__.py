@@ -67,7 +67,7 @@ class TablespaceView(PGChildNodeView):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
-        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
@@ -145,6 +145,31 @@ class TablespaceView(PGChildNodeView):
             return internal_server_error(errormsg=res)
         return ajax_response(
             response=res['rows'],
+            status=200
+        )
+
+    @check_precondition
+    def node(self, gid, sid, tsid):
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            tsid=tsid, conn=self.conn
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(gettext("""Could not find the tablespace."""))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                sid,
+                rset['rows'][0]['name'],
+                icon="icon-tablespace"
+            )
+
+        return make_json_response(
+            data=res,
             status=200
         )
 
@@ -231,6 +256,9 @@ class TablespaceView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the tablespace information."""))
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
@@ -325,32 +353,20 @@ class TablespaceView(PGChildNodeView):
         )
 
         try:
-            SQL = self.get_sql(gid, sid, data, tsid)
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.get_sql(gid, sid, data, tsid)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Tablespace updated",
-                    data={
-                        'id': tsid,
-                        'sid': sid,
-                        'gid': gid
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    tsid,
+                    sid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': tsid,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
-
+            )
         except Exception as e:
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
@@ -419,17 +435,15 @@ class TablespaceView(PGChildNodeView):
             except ValueError as ve:
                 current_app.logger.exception(ve)
                 data[k] = v
-        try:
-            SQL = self.get_sql(gid, sid, data, tsid)
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
 
-        if SQL and SQL.strip('\n') and SQL.strip(' '):
-            return make_json_response(
-                data=SQL.strip('\n'),
-                status=200
-            )
+        sql, name = self.get_sql(gid, sid, data, tsid)
+        sql = sql.strip('\n').strip(' ')
+        if sql == '':
+            sql = "--modified SQL"
+        return make_json_response(
+            data=sql,
+            status=200
+        )
 
     def get_sql(self, gid, sid, data, tsid=None):
         """
@@ -487,7 +501,7 @@ class TablespaceView(PGChildNodeView):
                 data=data, conn=self.conn
             )
         SQL = re.sub('\n{2,}', '\n\n', SQL)
-        return SQL
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, tsid):

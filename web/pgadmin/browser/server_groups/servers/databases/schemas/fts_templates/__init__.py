@@ -244,7 +244,7 @@ class FtsTemplateView(PGChildNodeView):
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    did,
+                    scid,
                     row['name'],
                     icon="icon-fts_template"
                 ))
@@ -268,7 +268,7 @@ class FtsTemplateView(PGChildNodeView):
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     row['oid'],
-                    did,
+                    row['schema'],
                     row['name'],
                     icon="icon-fts_template"
                 ),
@@ -289,6 +289,9 @@ class FtsTemplateView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the FTS template node in the database."""))
 
         return ajax_response(
             response=res['rows'][0],
@@ -324,49 +327,47 @@ class FtsTemplateView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        try:
-            # Fetch schema name from schema oid
-            sql = render_template("/".join([self.template_path, 'schema.sql']),
-                                  data=data,
-                                  conn=self.conn,
-                                  )
+        # Fetch schema name from schema oid
+        sql = render_template("/".join([self.template_path, 'schema.sql']),
+                              data=data,
+                              conn=self.conn,
+                              )
 
-            status, schema = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=schema)
+        status, schema = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=schema)
 
-            # replace schema oid with schema name before passing to create.sql
-            # to generate proper sql query
-            new_data = data.copy()
-            new_data['schema'] = schema
-            sql = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=new_data,
-                                  conn=self.conn,
-                                  )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # replace schema oid with schema name before passing to create.sql
+        # to generate proper sql query
+        new_data = data.copy()
+        new_data['schema'] = schema
+        sql = render_template("/".join([self.template_path, 'create.sql']),
+                              data=new_data,
+                              conn=self.conn,
+                              )
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # we need fts_template id to to add object in tree at browser,
-            # below sql will give the same
-            sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                name=data['name']
+        # we need fts_template id to to add object in tree at browser,
+        # below sql will give the same
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            name=data['name'],
+            scid=data['schema'] if 'schema' in data else scid
+        )
+        status, tid = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=tid)
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                tid,
+                data['schema'] if 'schema' in data else scid,
+                data['name'],
+                icon="icon-fts_template"
             )
-            status, tid = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=tid)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    tid,
-                    did,
-                    data['name'],
-                    icon="icon-fts_template"
-                )
-            )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        )
 
     @check_precondition
     def update(self, gid, sid, did, scid, tid):
@@ -383,39 +384,30 @@ class FtsTemplateView(PGChildNodeView):
         )
 
         # Fetch sql query to update fts template
-        sql = self.get_sql(gid, sid, did, scid, data, tid)
-        try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+        sql, name = self.get_sql(gid, sid, did, scid, data, tid)
+        sql = sql.strip('\n').strip(' ')
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="FTS Template updated",
-                    data={
-                        'id': tid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'scid': scid
-                    }
-                )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': tid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'scid': scid
-                    }
-                )
+        sql = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            tid=tid
+        )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        rset = rset['rows'][0]
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                tid,
+                rset['schema'],
+                rset['name'],
+                icon="icon-%s" % self.node_type
+            )
+        )
 
     @check_precondition
     def delete(self, gid, sid, did, scid, tid):
@@ -434,51 +426,47 @@ class FtsTemplateView(PGChildNodeView):
         else:
             cascade = False
 
-        try:
-            # Get name for template from tid
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  tid=tid)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # Get name for template from tid
+        sql = render_template("/".join([self.template_path, 'delete.sql']),
+                              tid=tid)
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified FTS template could not be found.\n'
-                    )
-                )
-
-            # Drop fts template
-            result = res['rows'][0]
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
-                                  name=result['name'],
-                                  schema=result['schema'],
-                                  cascade=cascade
-                                  )
-
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-
+        if not res['rows']:
             return make_json_response(
-                success=1,
-                info=gettext("FTS template dropped"),
-                data={
-                    'id': tid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did,
-                    'scid': scid
-                }
+                success=0,
+                errormsg=gettext(
+                    'Error: Object not found.'
+                ),
+                info=gettext(
+                    'The specified FTS template could not be found.\n'
+                )
             )
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        # Drop fts template
+        result = res['rows'][0]
+        sql = render_template("/".join([self.template_path, 'delete.sql']),
+                              name=result['name'],
+                              schema=result['schema'],
+                              cascade=cascade
+                              )
+
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+            success=1,
+            info=gettext("FTS template dropped"),
+            data={
+                'id': tid,
+                'sid': sid,
+                'gid': gid,
+                'did': did,
+                'scid': scid
+            }
+        )
 
     @check_precondition
     def msql(self, gid, sid, did, scid, tid=None):
@@ -493,17 +481,14 @@ class FtsTemplateView(PGChildNodeView):
         data = request.args
 
         # Fetch sql query for modified data
-        sql = self.get_sql(gid, sid, did, scid, data, tid)
+        # Fetch sql query for modified data
+        SQL, name = self.get_sql(gid, sid, did, scid, data, tid)
+        if SQL == '':
+            SQL = "--modified SQL"
 
-        if isinstance(sql, str) and sql and sql.strip('\n') and sql.strip(' '):
-            return make_json_response(
-                data=sql,
-                status=200
-            )
-        else:
-            return make_json_response(
-                data="--modified SQL",
-                status=200
+        return make_json_response(
+            data=SQL,
+            status=200
             )
 
     def get_sql(self, gid, sid, did, scid, data, tid=None):
@@ -515,80 +500,78 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
-        try:
-            # Fetch sql for update
-            if tid is not None:
-                sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
-                    tid=tid,
-                    scid=scid
-                )
 
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+        # Fetch sql for update
+        if tid is not None:
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                tid=tid,
+                scid=scid
+            )
 
-                old_data = res['rows'][0]
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                # If user has changed the schema then fetch new schema directly
-                # using its oid otherwise fetch old schema name using fts template oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=data)
+            old_data = res['rows'][0]
 
-                status, new_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=new_schema)
+            # If user has changed the schema then fetch new schema directly
+            # using its oid otherwise fetch old schema name using fts template oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=data)
 
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                if 'schema' in new_data:
-                    new_data['schema'] = new_schema
+            status, new_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=new_schema)
 
-                # Fetch old schema name using old schema oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=old_data)
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            if 'schema' in new_data:
+                new_data['schema'] = new_schema
 
-                status, old_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=old_schema)
+            # Fetch old schema name using old schema oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=old_data)
 
-                # Replace old schema oid with old schema name
-                old_data['schema'] = old_schema
+            status, old_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=old_schema)
 
-                sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=new_data, o_data=old_data
-                )
-                # Fetch sql query for modified data
+            # Replace old schema oid with old schema name
+            old_data['schema'] = old_schema
+
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=new_data, o_data=old_data
+            )
+            # Fetch sql query for modified data
+            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+        else:
+            # Fetch schema name from schema oid
+            sql = render_template("/".join([self.template_path, 'schema.sql']),
+                                  data=data)
+
+            status, schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=schema)
+
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            new_data['schema'] = schema
+
+            if 'tmpllexize' in new_data and \
+                            'name' in new_data and \
+                            'schema' in new_data:
+                sql = render_template("/".join([self.template_path,
+                                                'create.sql']),
+                                      data=new_data,
+                                      conn=self.conn
+                                      )
             else:
-                # Fetch schema name from schema oid
-                sql = render_template("/".join([self.template_path, 'schema.sql']),
-                                      data=data)
-
-                status, schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=schema)
-
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                new_data['schema'] = schema
-
-                if 'tmpllexize' in new_data and \
-                                'name' in new_data and \
-                                'schema' in new_data:
-                    sql = render_template("/".join([self.template_path,
-                                                    'create.sql']),
-                                          data=new_data,
-                                          conn=self.conn
-                                          )
-                else:
-                    sql = "-- incomplete definition"
-            return str(sql.strip('\n'))
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                sql = "-- incomplete definition"
+            return str(sql.strip('\n')), data['name']
 
     @check_precondition
     def get_lexize(self, gid, sid, did, scid, tid=None):
@@ -657,32 +640,28 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
-        try:
-            sql = render_template(
-                "/".join([self.template_path, 'sql.sql']),
-                tid=tid,
-                scid=scid,
-                conn=self.conn
+        sql = render_template(
+            "/".join([self.template_path, 'sql.sql']),
+            tid=tid,
+            scid=scid,
+            conn=self.conn
+        )
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(
+                _(
+                    "Could not generate reversed engineered Query for the FTS Template.\n{0}").format(
+                    res
+                )
             )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(
-                    _(
-                        "Could not generate reversed engineered Query for the FTS Template.\n{0}").format(
-                        res
-                    )
-                )
 
-            if res is None:
-                return gone(
-                    _(
-                        "Could not generate reversed engineered Query for FTS Template node.")
-                )
+        if res is None:
+            return gone(
+                _(
+                    "Could not generate reversed engineered Query for FTS Template node.")
+            )
 
-            return ajax_response(response=res)
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return ajax_response(response=res)
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid):

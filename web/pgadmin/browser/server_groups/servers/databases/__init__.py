@@ -127,6 +127,9 @@ class DatabaseView(PGChildNodeView):
             def wrapped(self, *args, **kwargs):
 
                 self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+                if self.manager is None:
+                    return gone(errormsg="Couldn't find the server.")
+
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
                 elif 'did' in kwargs:
@@ -220,6 +223,7 @@ class DatabaseView(PGChildNodeView):
     @check_precondition(action="nodes")
     def nodes(self, gid, sid):
         res = self.get_nodes(gid, sid)
+
         return make_json_response(
             data=res,
             status=200
@@ -277,6 +281,11 @@ class DatabaseView(PGChildNodeView):
             did=did, conn=self.conn, last_system_oid=0
         )
         status, res = self.conn.execute_dict(SQL)
+
+        if len(res['rows']) == 0:
+            return gone(
+                _("Couldnot find the database on the server.")
+            )
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -525,7 +534,6 @@ class DatabaseView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        info = "nothing to update."
 
         if did is not None:
             # Fetch the name of database for comparison
@@ -540,7 +548,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return gone(
-                    _("Couldnot find the database on the server.")
+                    _("Could not find the database on the server.")
                 )
 
             data['old_name'] = (rset['rows'][0])['name']
@@ -557,8 +565,6 @@ class DatabaseView(PGChildNodeView):
                 if not status:
                     return internal_server_error(errormsg=msg)
 
-                info = "Database updated."
-
         self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
         status, errmsg = self.conn.connect()
 
@@ -569,16 +575,13 @@ class DatabaseView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=msg)
 
-            info = "Database updated."
-
-        return make_json_response(
-            success=1,
-            info=info,
-            data={
-                'id': did,
-                'sid': sid,
-                'gid': gid,
-            }
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                did,
+                sid,
+                data['name'],
+                "pg-icon-{0}".format(self.node_type)
+            )
         )
 
     @check_precondition(action="drop")
@@ -595,6 +598,7 @@ class DatabaseView(PGChildNodeView):
 
         if res is None:
             return make_json_response(
+                status=410,
                 success=0,
                 errormsg=_(
                     'Error: Object not found.'
@@ -661,7 +665,7 @@ class DatabaseView(PGChildNodeView):
                 return False, internal_server_error(errormsg=rset)
 
             if len(rset['rows']) == 0:
-                return False, gone(
+                return gone(
                     _("Could not find the database on the server.")
                 )
 

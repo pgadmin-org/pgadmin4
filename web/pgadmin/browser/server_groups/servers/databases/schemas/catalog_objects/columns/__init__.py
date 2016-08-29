@@ -19,6 +19,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 from pgadmin.utils.preferences import Preferences
 
 from config import PG_DEFAULT_DRIVER
@@ -253,11 +254,14 @@ class CatalogObjectColumnsView(PGChildNodeView):
             JSON of selected column node
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), coid=coid, clid=clid)
+                              'properties.sql']), coid=coid, clid=clid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the specified column."""))
 
         return ajax_response(
             response=res['rows'][0],

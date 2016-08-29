@@ -7,8 +7,13 @@ JOIN
     pg_type t ON t.oid=contypid
 JOIN
     pg_namespace nl ON nl.oid=typnamespace
+{% if doid %}
 WHERE
     contype = 'c' AND contypid =  {{doid}}::oid
 {% if coid %}
     AND c.oid = {{ coid }}
+{% endif %}
+{% elif coid %}
+WHERE
+c.oid = {{ coid }}
 {% endif %}

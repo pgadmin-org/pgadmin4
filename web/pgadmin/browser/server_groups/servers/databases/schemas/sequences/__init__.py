@@ -25,6 +25,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class SequenceModule(SchemaChildModule):
@@ -105,7 +106,7 @@ class SequenceView(PGChildNodeView):
         ],
         'delete': [{'delete': 'delete'}],
         'children': [{'get': 'children'}],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
@@ -176,7 +177,7 @@ class SequenceView(PGChildNodeView):
         )
 
     @check_precondition(action='nodes')
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid, seid=None):
         """
         This function is used to create all the child nodes within the collection.
         Here it will create all the sequence nodes.
@@ -191,10 +192,31 @@ class SequenceView(PGChildNodeView):
 
         """
         res = []
-        SQL = render_template("/".join([self.template_path, 'nodes.sql']), scid=scid)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            scid=scid,
+            seid=seid
+        )
         status, rset = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
+
+        if seid is not None:
+            if len(rset['rows']) == 0:
+                return gone(
+                     errormsg=_("Couldn't find the sequence.")
+                )
+            row = rset['rows'][0]
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    sid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ),
+                status=200
+            )
+
 
         for row in rset['rows']:
             res.append(
@@ -230,6 +252,9 @@ class SequenceView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(_("""could not find the sequence in the database."""))
 
         for row in res['rows']:
             SQL = render_template("/".join([self.template_path, 'get_def.sql']), data=row)
@@ -305,47 +330,47 @@ class SequenceView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        try:
-            # The SQL below will execute CREATE DDL only
-            SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+        # The SQL below will execute CREATE DDL only
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data, conn=self.conn
+        )
+        status, msg = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=msg)
+
+        if 'relacl' in data:
+            data['relacl'] = parse_priv_to_db(data['relacl'], 'DATABASE')
+
+        # The SQL below will execute rest DMLs because we can not execute CREATE with any other
+        SQL = render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL and SQL != "":
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=msg)
 
-            if 'relacl' in data:
-                data['relacl'] = parse_priv_to_db(data['relacl'], 'DATABASE')
+        # We need oid of newly created sequence.
+        SQL = render_template(
+            "/".join([self.template_path, 'get_oid.sql']),
+            name=data['name'],
+            schema=data['schema']
+        )
+        SQL = SQL.strip('\n').strip(' ')
 
-            # The SQL below will execute rest DMLs because we can not execute CREATE with any other
-            SQL = render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, msg = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=msg)
+        status, rset= self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-            # We need oid of newly created sequence.
-            SQL = render_template("/".join([self.template_path, 'get_oid.sql']), name=data['name'], scid=scid)
-            SQL = SQL.strip('\n').strip(' ')
-
-            status, seid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=seid)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    seid,
-                    scid,
-                    data['name'],
-                    icon="icon-%s" % self.node_type
-                )
+        row=rset['rows'][0]
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                row['oid'],
+                row['relnamespace'],
+                data['name'],
+                icon="icon-%s" % self.node_type
             )
-
-        except Exception as e:
-            return make_json_response(
-                status=500,
-                success=0,
-                errormsg=str(e)
-            )
+        )
 
     @check_precondition(action='delete')
     def delete(self, gid, sid, did, scid, seid):
@@ -424,40 +449,30 @@ class SequenceView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        try:
-            SQL = self.getSQL(gid, sid, did, data, scid, seid)
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL != "":
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+        SQL, name = self.getSQL(gid, sid, did, data, scid, seid)
+        SQL = SQL.strip('\n').strip(' ')
 
-                return make_json_response(
-                    success=1,
-                    info="Sequence updated",
-                    data={
-                        'id': seid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': seid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            seid=seid
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+        row = rset['rows'][0]
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                seid,
+                row['schema'],
+                row['name'],
+                icon="icon-%s" % self.node_type
+            )
+        )
 
     @check_precondition(action='msql')
     def msql(self, gid, sid, did, scid, seid=None):
@@ -494,8 +509,10 @@ class SequenceView(PGChildNodeView):
                             "Could not find the required parameter (%s)." % arg
                         )
                     )
-        SQL = self.getSQL(gid, sid, did, data, scid, seid)
+        SQL, name = self.getSQL(gid, sid, did, data, scid, seid)
         SQL = SQL.strip('\n').strip(' ')
+        if SQL == '':
+            SQL = "--modified SQL"
 
         return make_json_response(
             data=SQL,
@@ -544,6 +561,7 @@ class SequenceView(PGChildNodeView):
                     data[arg] = old_data[arg]
             SQL = render_template("/".join([self.template_path, 'update.sql']),
                                   data=data, o_data=old_data, conn=self.conn)
+            return SQL, data['name'] if 'name' in data else old_data['name']
         else:
             # To format privileges coming from client
             if 'relacl' in data:
@@ -551,7 +569,7 @@ class SequenceView(PGChildNodeView):
 
             SQL = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             SQL += render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
-        return SQL
+            return SQL, data['name']
 
     @check_precondition(action="sql")
     def sql(self, gid, sid, did, scid, seid):
@@ -586,7 +604,7 @@ class SequenceView(PGChildNodeView):
 
         result = res['rows'][0]
         result = self._formatter(result, scid, seid)
-        SQL = self.getSQL(gid, sid, did, result, scid)
+        SQL, name = self.getSQL(gid, sid, did, result, scid)
         SQL = SQL.strip('\n').strip(' ')
         return ajax_response(response=SQL)
 

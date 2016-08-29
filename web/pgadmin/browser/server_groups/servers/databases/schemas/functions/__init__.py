@@ -202,7 +202,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         ],
         'delete': [{'delete': 'delete'}],
         'children': [{'get': 'children'}],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
@@ -269,31 +269,27 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                             )
                         )
 
-            try:
-                list_params = []
-                if request.method == 'GET':
-                    list_params = ['arguments', 'variables', 'proacl',
-                                   'seclabels', 'acl', 'args']
+            list_params = []
+            if request.method == 'GET':
+                list_params = ['arguments', 'variables', 'proacl',
+                               'seclabels', 'acl', 'args']
 
-                for key in req:
-                    if key in list_params and req[key] != '' \
-                            and req[key] is not None:
-                        # Coverts string into python list as expected.
-                        data[key] = json.loads(req[key], encoding='utf-8')
-                    elif (
-                                                key == 'proretset' or key == 'proisstrict' or
-                                            key == 'prosecdef' or key == 'proiswindow' or
-                                    key == 'proleakproof'
-                    ):
-                        data[key] = True if (
-                            req[key] == 'true' or req[key] is True) \
-                            else False if (req[key] == 'false' or
-                                           req[key] is False) else ''
-                    else:
-                        data[key] = req[key]
-
-            except Exception as e:
-                return internal_server_error(errormsg=str(e))
+            for key in req:
+                if key in list_params and req[key] != '' \
+                        and req[key] is not None:
+                    # Coverts string into python list as expected.
+                    data[key] = json.loads(req[key], encoding='utf-8')
+                elif (
+                                            key == 'proretset' or key == 'proisstrict' or
+                                        key == 'prosecdef' or key == 'proiswindow' or
+                                key == 'proleakproof'
+                ):
+                    data[key] = True if (
+                        req[key] == 'true' or req[key] is True) \
+                        else False if (req[key] == 'false' or
+                                       req[key] is False) else ''
+                else:
+                    data[key] = req[key]
 
             self.request = data
             return f(self, **kwargs)
@@ -374,7 +370,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid, fnid=None):
         """
         Returns all the Functions to generate the Nodes.
 
@@ -386,12 +382,33 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         res = []
-        SQL = render_template("/".join([self.sql_template_path,
-                                        'node.sql']), scid=scid)
+        SQL = render_template(
+            "/".join([self.sql_template_path, 'node.sql']),
+            scid=scid,
+            fnid=fnid
+        )
         status, rset = self.conn.execute_2darray(SQL)
 
         if not status:
             return internal_server_error(errormsg=rset)
+
+        if fnid is not None:
+            if len(rset['rows']) == 0:
+                return gone(
+                     _("Couldn't find the specified %s").format(self.node_type)
+                )
+
+            row = rset['rows'][0]
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-" + self.node_type,
+                    funcowner=row['funcowner'],
+                    language=row['lanname']
+                )
+            )
 
         for row in rset['rows']:
             res.append(
@@ -423,6 +440,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+
+        if len(resp_data) == 0:
+            return gone(gettext("""Could not find the function node in the database."""))
 
         return ajax_response(
             response=resp_data,
@@ -717,38 +737,38 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             Function object in json format.
         """
 
-        try:
-            # Get SQL to create Function
-            status, SQL = self._get_sql(gid, sid, did, scid, self.request)
-            if not status:
-                return internal_server_error(errormsg=SQL)
+        # Get SQL to create Function
+        status, SQL = self._get_sql(gid, sid, did, scid, self.request)
+        if not status:
+            return internal_server_error(errormsg=SQL)
 
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            SQL = render_template("/".join([self.sql_template_path,
-                                            'get_oid.sql']),
-                                  nspname=self.request['pronamespace'],
-                                  name=self.request['name'])
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template(
+            "/".join(
+                [self.sql_template_path, 'get_oid.sql']
+            ),
+            nspname=self.request['pronamespace'],
+            name=self.request['name']
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            res = res['rows'][0]
+        res = res['rows'][0]
 
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    res['oid'],
-                    self.request['pronamespace'],
-                    res['name'],
-                    icon="icon-" + self.node_type,
-                    language=res['lanname'],
-                    funcowner=res['funcowner']
-                )
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                res['oid'],
+                res['nsp'],
+                res['name'],
+                icon="icon-" + self.node_type,
+                language=res['lanname'],
+                funcowner=res['funcowner']
             )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        )
 
     @check_precondition
     def delete(self, gid, sid, did, scid, fnid):
@@ -832,48 +852,44 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=SQL)
 
-        try:
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
+        if SQL and SQL.strip('\n') and SQL.strip(' '):
 
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+            resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
 
-                if self.node_type == 'procedure':
-                    obj_name = resp_data['name_with_args']
-                elif self.node_type == 'function':
-                    args = resp_data['proargs'] if resp_data['proargs'] else ''
-                    obj_name = resp_data['name'] + '({0})'.format(args)
-                else:
-                    obj_name = resp_data['name'] + '()'
-
-                return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        fnid,
-                        resp_data['pronamespace'],
-                        obj_name,
-                        icon="icon-" + self.node_type,
-                        language=resp_data['lanname'],
-                        funcowner=resp_data['funcowner']
-                    )
-                )
+            if self.node_type == 'procedure':
+                obj_name = resp_data['name_with_args']
+            elif self.node_type == 'function':
+                args = resp_data['proargs'] if resp_data['proargs'] else ''
+                obj_name = resp_data['name'] + '({0})'.format(args)
             else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update.",
-                    data={
-                        'id': fnid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+                obj_name = resp_data['name'] + '()'
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    fnid,
+                    resp_data['pronamespace'],
+                    obj_name,
+                    icon="icon-" + self.node_type,
+                    language=resp_data['lanname'],
+                    funcowner=resp_data['funcowner']
+                )
+            )
+        else:
+            return make_json_response(
+                success=1,
+                info="Nothing to update.",
+                data={
+                    'id': fnid,
+                    'scid': scid,
+                    'sid': sid,
+                    'gid': gid,
+                    'did': did
+                }
+            )
 
     @check_precondition
     def sql(self, gid, sid, did, scid, fnid=None):
@@ -1025,160 +1041,157 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             fnid: Function Id
         """
 
-        try:
-            vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
+        vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
 
-            # Get Schema Name from its OID.
-            if 'pronamespace' in data:
-                data['pronamespace'] = self._get_schema(data[
+        # Get Schema Name from its OID.
+        if 'pronamespace' in data:
+            data['pronamespace'] = self._get_schema(data[
+                                                        'pronamespace'])
+        if 'provolatile' in data:
+            data['provolatile'] = vol_dict[data['provolatile']]
+
+        if fnid is not None:
+            # Edit Mode
+
+            # Fetch Old Data from database.
+            old_data = self._fetch_properties(gid, sid, did, scid, fnid)
+
+            # Get Schema Name
+            old_data['pronamespace'] = self._get_schema(old_data[
                                                             'pronamespace'])
-            if 'provolatile' in data:
-                data['provolatile'] = vol_dict[data['provolatile']]
 
-            if fnid is not None:
-                # Edit Mode
+            if 'provolatile' in old_data:
+                old_data['provolatile'] = vol_dict[old_data['provolatile']]
 
-                # Fetch Old Data from database.
-                old_data = self._fetch_properties(gid, sid, did, scid, fnid)
+            # If any of the below argument is changed,
+            # then CREATE OR REPLACE SQL statement should be called
+            fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
+                               'provolatile', 'proisstrict', 'prosecdef',
+                               'procost', 'proleakproof', 'arguments']
 
-                # Get Schema Name
-                old_data['pronamespace'] = self._get_schema(old_data[
-                                                                'pronamespace'])
+            data['change_func'] = False
+            for arg in fun_change_args:
+                if arg == 'arguments' and arg in data and len(data[arg]) \
+                        > 0:
+                    data['change_func'] = True
+                elif arg in data:
+                    data['change_func'] = True
 
-                if 'provolatile' in old_data:
-                    old_data['provolatile'] = vol_dict[old_data['provolatile']]
+            # If Function Definition/Arguments are changed then merge old
+            #  Arguments with changed ones for Create/Replace Function
+            # SQL statement
+            if 'arguments' in data and len(data['arguments']) > 0:
+                for arg in data['arguments']['changed']:
+                    for old_arg in old_data['arguments']:
+                        if arg['argid'] == old_arg['argid']:
+                            old_arg.update(arg)
+                            break
+                data['arguments'] = old_data['arguments']
+            elif data['change_func']:
+                data['arguments'] = old_data['arguments']
 
-                # If any of the below argument is changed,
-                # then CREATE OR REPLACE SQL statement should be called
-                fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
-                                   'provolatile', 'proisstrict', 'prosecdef',
-                                   'procost', 'proleakproof', 'arguments']
+            # Parse Privileges
+            if 'acl' in data:
+                for key in ['added', 'deleted', 'changed']:
+                    if key in data['acl']:
+                        data['acl'][key] = parse_priv_to_db(
+                            data['acl'][key], ["X"])
 
-                data['change_func'] = False
-                for arg in fun_change_args:
-                    if arg == 'arguments' and arg in data and len(data[arg]) \
-                            > 0:
-                        data['change_func'] = True
-                    elif arg in data:
-                        data['change_func'] = True
+            # Parse Variables
+            chngd_variables = {}
+            data['merged_variables'] = []
+            old_data['chngd_variables'] = {}
+            del_variables = {}
 
-                # If Function Definition/Arguments are changed then merge old
-                #  Arguments with changed ones for Create/Replace Function
-                # SQL statement
-                if 'arguments' in data and len(data['arguments']) > 0:
-                    for arg in data['arguments']['changed']:
-                        for old_arg in old_data['arguments']:
-                            if arg['argid'] == old_arg['argid']:
-                                old_arg.update(arg)
-                                break
-                    data['arguments'] = old_data['arguments']
-                elif data['change_func']:
-                    data['arguments'] = old_data['arguments']
+            # If Function Definition/Arguments are changed then,
+            # Merge old, new (added, changed, deleted) variables,
+            # which will be used in the CREATE or REPLACE Function sql
+            # statement
 
-                # Parse Privileges
-                if 'acl' in data:
-                    for key in ['added', 'deleted', 'changed']:
-                        if key in data['acl']:
-                            data['acl'][key] = parse_priv_to_db(
-                                data['acl'][key], ["X"])
+            if data['change_func']:
+                # To compare old and new variables, preparing name :
+                # value dict
 
-                # Parse Variables
-                chngd_variables = {}
-                data['merged_variables'] = []
-                old_data['chngd_variables'] = {}
-                del_variables = {}
+                # Deleted Variables
+                if 'variables' in data and 'deleted' in data['variables']:
+                    for v in data['variables']['deleted']:
+                        del_variables[v['name']] = v['value']
 
-                # If Function Definition/Arguments are changed then,
-                # Merge old, new (added, changed, deleted) variables,
-                # which will be used in the CREATE or REPLACE Function sql
-                # statement
+                if 'variables' in data and 'changed' in data['variables']:
+                    for v in data['variables']['changed']:
+                        chngd_variables[v['name']] = v['value']
 
-                if data['change_func']:
-                    # To compare old and new variables, preparing name :
-                    # value dict
+                if 'variables' in data and 'added' in data['variables']:
+                    for v in data['variables']['added']:
+                        chngd_variables[v['name']] = v['value']
 
-                    # Deleted Variables
-                    if 'variables' in data and 'deleted' in data['variables']:
-                        for v in data['variables']['deleted']:
-                            del_variables[v['name']] = v['value']
+                for v in old_data['variables']:
+                    old_data['chngd_variables'][v['name']] = v['value']
 
-                    if 'variables' in data and 'changed' in data['variables']:
-                        for v in data['variables']['changed']:
-                            chngd_variables[v['name']] = v['value']
+                # Prepare final dict of new and old variables
+                for name, val in old_data['chngd_variables'].items():
+                    if name not in chngd_variables and name not in \
+                            del_variables:
+                        chngd_variables[name] = val
 
-                    if 'variables' in data and 'added' in data['variables']:
-                        for v in data['variables']['added']:
-                            chngd_variables[v['name']] = v['value']
-
-                    for v in old_data['variables']:
-                        old_data['chngd_variables'][v['name']] = v['value']
-
-                    # Prepare final dict of new and old variables
-                    for name, val in old_data['chngd_variables'].items():
-                        if name not in chngd_variables and name not in \
-                                del_variables:
-                            chngd_variables[name] = val
-
-                    # Prepare dict in [{'name': var_name, 'value': var_val},..]
-                    # format
-                    for name, val in chngd_variables.items():
-                        data['merged_variables'].append({'name': name,
-                                                         'value': val})
-                else:
-                    if 'variables' in data and 'changed' in data['variables']:
-                        for v in data['variables']['changed']:
-                            data['merged_variables'].append(v)
-
-                    if 'variables' in data and 'added' in data['variables']:
-                        for v in data['variables']['added']:
-                            data['merged_variables'].append(v)
-
-                SQL = render_template(
-                    "/".join([self.sql_template_path, 'update.sql']),
-                    data=data, o_data=old_data
-                )
+                # Prepare dict in [{'name': var_name, 'value': var_val},..]
+                # format
+                for name, val in chngd_variables.items():
+                    data['merged_variables'].append({'name': name,
+                                                     'value': val})
             else:
-                # Parse Privileges
-                if 'acl' in data:
-                    data['acl'] = parse_priv_to_db(data['acl'], ["X"])
+                if 'variables' in data and 'changed' in data['variables']:
+                    for v in data['variables']['changed']:
+                        data['merged_variables'].append(v)
 
-                args = u''
-                args_without_name = u''
-                cnt = 1
-                args_list = []
-                if 'arguments' in data and len(data['arguments']) > 0:
-                    args_list = data['arguments']
-                elif 'args' in data and len(data['args']) > 0:
-                    args_list = data['args']
-                for a in args_list:
-                    if (('argmode' in a and a['argmode'] != 'OUT' and
-                                 a['argmode'] is not None
-                         ) or 'argmode' not in a):
-                        if 'argmode' in a:
-                            args += a['argmode'] + " "
-                            args_without_name += a['argmode'] + " "
-                        if 'argname' in a and a['argname'] != '' \
-                                and a['argname'] is not None:
-                            args += self.qtIdent(
-                                self.conn, a['argname']) + " "
-                        if 'argtype' in a:
-                            args += a['argtype']
-                            args_without_name += a['argtype']
-                        if cnt < len(args_list):
-                            args += ', '
-                            args_without_name += ', '
-                    cnt += 1
+                if 'variables' in data and 'added' in data['variables']:
+                    for v in data['variables']['added']:
+                        data['merged_variables'].append(v)
 
-                data['func_args'] = args.strip(' ')
-                data['func_args_without'] = args_without_name.strip(' ')
-                # Create mode
-                SQL = render_template("/".join([self.sql_template_path,
-                                                'create.sql']),
-                                      data=data, is_sql=is_sql)
-            return True, SQL.strip('\n')
+            SQL = render_template(
+                "/".join([self.sql_template_path, 'update.sql']),
+                data=data, o_data=old_data
+            )
+        else:
+            # Parse Privileges
+            if 'acl' in data:
+                data['acl'] = parse_priv_to_db(data['acl'], ["X"])
 
-        except Exception as e:
-            return False, e
+            args = u''
+            args_without_name = u''
+            cnt = 1
+            args_list = []
+            if 'arguments' in data and len(data['arguments']) > 0:
+                args_list = data['arguments']
+            elif 'args' in data and len(data['args']) > 0:
+                args_list = data['args']
+            for a in args_list:
+                if (('argmode' in a and a['argmode'] != 'OUT' and
+                             a['argmode'] is not None
+                     ) or 'argmode' not in a):
+                    if 'argmode' in a:
+                        args += a['argmode'] + " "
+                        args_without_name += a['argmode'] + " "
+                    if 'argname' in a and a['argname'] != '' \
+                            and a['argname'] is not None:
+                        args += self.qtIdent(
+                            self.conn, a['argname']) + " "
+                    if 'argtype' in a:
+                        args += a['argtype']
+                        args_without_name += a['argtype']
+                    if cnt < len(args_list):
+                        args += ', '
+                        args_without_name += ', '
+                cnt += 1
+
+            data['func_args'] = args.strip(' ')
+            data['func_args_without'] = args_without_name.strip(' ')
+            # Create mode
+            SQL = render_template("/".join([self.sql_template_path,
+                                            'create.sql']),
+                                  data=data, is_sql=is_sql)
+        return True, SQL.strip('\n')
+
 
     def _fetch_properties(self, gid, sid, did, scid, fnid=None):
         """

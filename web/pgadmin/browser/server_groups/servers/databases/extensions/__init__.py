@@ -20,6 +20,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -192,6 +193,30 @@ class ExtensionView(PGChildNodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, eid):
+        """
+        This function will fetch the properties of extension
+        """
+        SQL = render_template("/".join([self.template_path, 'properties.sql']),
+                              eid=eid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['eid'],
+                    did,
+                    row['name'],
+                    'icon-extension'
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified event trigger."))
+
+    @check_precondition
     def properties(self, gid, sid, did, eid):
         """
         Fetch the properties of a single extension and render in properties tab
@@ -201,6 +226,11 @@ class ExtensionView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Couldnot find the extension information.")
+            )
 
         return ajax_response(
             response=res['rows'][0],
@@ -268,35 +298,22 @@ class ExtensionView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        SQL = self.getSQL(gid, sid, data, did, eid)
 
         try:
-            if SQL and isinstance(SQL, basestring) and \
-                    SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.getSQL(gid, sid, data, did, eid)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Extension updated",
-                    data={
-                        'id': eid,
-                        'sid': sid,
-                        'gid': gid
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    eid,
+                    did,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -316,6 +333,7 @@ class ExtensionView(PGChildNodeView):
 
             if name is None:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -352,18 +370,18 @@ class ExtensionView(PGChildNodeView):
         This function returns modified SQL
         """
         data = request.args.copy()
-        SQL = self.getSQL(gid, sid, data, did, eid)
-        if SQL and isinstance(SQL, basestring) and SQL.strip('\n') \
-                and SQL.strip(' '):
+        try:
+            SQL, name = self.getSQL(gid, sid, data, did, eid)
+            SQL = SQL.strip('\n').strip(' ')
+            if SQL == '':
+                SQL = "--modified SQL"
+
             return make_json_response(
                 data=SQL,
                 status=200
             )
-        else:
-            return make_json_response(
-                data=gettext('-- Modified SQL --'),
-                status=200
-            )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def getSQL(self, gid, sid, data, did, eid=None):
         """
@@ -372,28 +390,33 @@ class ExtensionView(PGChildNodeView):
         required_args = [
             'name'
         ]
-        try:
-            if eid is not None:
-                SQL = render_template("/".join(
-                    [self.template_path, 'properties.sql']
-                ), eid=eid)
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                old_data = res['rows'][0]
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
-                SQL = render_template("/".join(
-                    [self.template_path, 'update.sql']
-                ), data=data, o_data=old_data)
-            else:
-                SQL = render_template("/".join(
-                    [self.template_path, 'create.sql']
-                ), data=data)
-            return SQL
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+
+        if eid is not None:
+            SQL = render_template("/".join(
+                [self.template_path, 'properties.sql']
+            ), eid=eid)
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Couldnot find the extension information.")
+                )
+
+            old_data = res['rows'][0]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
+            SQL = render_template("/".join(
+                [self.template_path, 'update.sql']
+            ), data=data, o_data=old_data)
+            return SQL, data['name'] if 'name' in data else old_data['name']
+        else:
+            SQL = render_template("/".join(
+                [self.template_path, 'create.sql']
+            ), data=data)
+            return SQL, data['name']
 
     @check_precondition
     def avails(self, gid, sid, did):

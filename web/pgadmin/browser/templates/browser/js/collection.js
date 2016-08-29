@@ -51,6 +51,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
     },
     hasId: false,
     is_collection: true,
+    collection_node: true,
     // A collection will always have a collection of statistics, when the node
     // it represent will have some statistics.
     hasCollectiveStatistics: true,
@@ -124,7 +125,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           Alertify.pgNotifier(
             error, xhr,
             S(
-              "{{ _("Error retrieving properties- %s") }}"
+              "{{ _("Error retrieving properties - %s.") }}"
             ).sprintf(message || that.label).value(),
             function() {
               console.log(arguments);

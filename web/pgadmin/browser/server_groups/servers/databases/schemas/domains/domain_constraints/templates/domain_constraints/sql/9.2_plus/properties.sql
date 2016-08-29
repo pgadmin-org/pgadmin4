@@ -10,8 +10,13 @@ JOIN
     pg_namespace nl ON nl.oid=typnamespace
 LEFT OUTER JOIN
     pg_description des ON (des.objoid=c.oid AND des.classoid='pg_constraint'::regclass)
+{% if doid %}
 WHERE
     contype = 'c' AND contypid =  {{doid}}::oid
 {% if coid %}
     AND c.oid = {{ coid }}
+{% endif %}
+{% elif coid %}
+WHERE
+c.oid = {{ coid }}
 {% endif %}

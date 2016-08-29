@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 """
     This module is responsible for generating two nodes
@@ -343,13 +344,40 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, vid):
+        """
+        Lists all views under the Views Collection node
+        """
+        SQL = render_template("/".join(
+            [self.template_path, 'sql/nodes.sql']),
+            vid=vid, datlastsysoid=self.datlastsysoid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(gettext("""Could not find the view."""))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                scid,
+                rset['rows'][0]['name'],
+                icon="icon-view"
+            )
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
     def nodes(self, gid, sid, did, scid):
         """
         Lists all views under the Views Collection node
         """
         res = []
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']), scid=scid)
+            [self.template_path, 'sql/nodes.sql']), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -407,6 +435,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the view."""))
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/acl.sql']), vid=vid)
@@ -473,32 +504,24 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                         "Couldn't find the required parameter (%s)." % arg
                     )
                 )
-
-        SQL = self.getSQL(gid, sid, data)
         try:
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.getSQL(gid, sid, data)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                SQL = render_template("/".join(
-                    [self.template_path, 'sql/view_id.sql']), data=data)
-                status, view_id = self.conn.execute_scalar(SQL)
-                return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        view_id,
-                        scid,
-                        data['name'],
-                        icon="icon-view"
-                    )
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/view_id.sql']), data=data)
+            status, view_id = self.conn.execute_scalar(SQL)
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    view_id,
+                    scid,
+                    data['name'],
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info=gettext("Nothing to update"),
-                    data=SQL,
-                )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -510,43 +533,39 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        SQL = self.getSQL(gid, sid, data, vid)
         try:
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.getSQL(gid, sid, data, vid)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                SQL = render_template("/".join(
-                    [self.template_path, 'sql/view_id.sql']), data=data)
-                status, res_data = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/view_id.sql']), data=data)
+            status, res_data = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                view_id = res_data['rows'][0]['oid']
-                new_view_name = res_data['rows'][0]['relname']
-                if vid != view_id:
-                    return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            view_id,
-                            scid,
-                            new_view_name,
-                            icon="icon-view"
-                        )
-                    )
-                else:
-                    return make_json_response(
-                        success=1,
-                        info=gettext("Nothing to update"),
-                        data=SQL
-                    )
-            else:
-                return make_json_response(
-                    success=1,
-                    info=gettext("Nothing to update"),
-                    data=SQL
+            view_id = res_data['rows'][0]['oid']
+            new_view_name = res_data['rows'][0]['relname']
+
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
+            status, res = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # new schema id
+            scid = res['rows'][0]['scid']
+
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    view_id,
+                    scid,
+                    new_view_name,
+                    icon="icon-view"
                 )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -638,18 +657,16 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             except ValueError:
                 data[k] = v
 
-        SQL = self.getSQL(gid, sid, data, vid)
-        SQL = SQL.strip('\n')
-        if (SQL):
-            return make_json_response(
-                data=SQL,
-                status=200
-            )
-        else:
-            return make_json_response(
-                data=gettext("-- Nothing changed"),
-                status=200
-            )
+        sql, name = self.getSQL(gid, sid, data, vid)
+
+        sql = sql.strip('\n').strip(' ')
+
+        if sql == '':
+            sql = "--modified SQL"
+        return make_json_response(
+            data=sql,
+            status=200
+        )
 
     @staticmethod
     def parse_privileges(str_privileges, object_type='VIEW'):
@@ -698,67 +715,63 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         This function will generate sql from model data
         """
-        try:
-            if vid is not None:
+        if vid is not None:
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/properties.sql']),
+                vid=vid,
+                datlastsysoid=self.datlastsysoid
+            )
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            old_data = res['rows'][0]
+
+            if 'name' not in data:
+                data['name'] = res['rows'][0]['name']
+            if 'schema' not in data:
+                data['schema'] = res['rows'][0]['schema']
+
+            key = 'datacl'
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = self.parse_privileges(
+                        data[key]['added'])
+                if 'changed' in data[key]:
+                    data[key]['changed'] = self.parse_privileges(
+                        data[key]['changed'])
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = self.parse_privileges(
+                        data[key]['deleted'])
+            try:
                 SQL = render_template("/".join(
-                    [self.template_path, 'sql/properties.sql']),
-                    vid=vid,
-                    datlastsysoid=self.datlastsysoid
-                )
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+                    [self.template_path, 'sql/update.sql']), data=data,
+                    o_data=old_data, conn=self.conn)
+            except Exception as e:
+                return internal_server_error(errormsg=str(e))
+        else:
+            required_args = [
+                'name',
+                'schema',
+                'definition'
+            ]
+            for arg in required_args:
+                if arg not in data:
+                    return " -- definition incomplete"
 
-                old_data = res['rows'][0]
+            # Get Schema Name from its OID.
+            if 'schema' in data and isinstance(data['schema'], int):
+                data['schema'] = self._get_schema(data['schema'])
 
-                if 'name' not in data:
-                    data['name'] = res['rows'][0]['name']
-                if 'schema' not in data:
-                    data['schema'] = res['rows'][0]['schema']
-
-                key = 'datacl'
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = self.parse_privileges(
-                            data[key]['added'])
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = self.parse_privileges(
-                            data[key]['changed'])
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = self.parse_privileges(
-                            data[key]['deleted'])
-                try:
-                    SQL = render_template("/".join(
-                        [self.template_path, 'sql/update.sql']), data=data,
-                        o_data=old_data, conn=self.conn)
-                except Exception as e:
-                    return internal_server_error(errormsg=str(e))
-            else:
-                required_args = [
-                    'name',
-                    'schema',
-                    'definition'
-                ]
-                for arg in required_args:
-                    if arg not in data:
-                        return " -- definition incomplete"
-
-                # Get Schema Name from its OID.
-                if 'schema' in data and isinstance(data['schema'], int):
-                    data['schema'] = self._get_schema(data['schema'])
-
-                if 'datacl' in data and data['datacl'] is not None:
-                    data['datacl'] = self.parse_privileges(data['datacl'])
-                SQL = render_template("/".join(
-                    [self.template_path, 'sql/create.sql']), data=data)
-                if data['definition']:
-                    SQL += "\n"
-                    SQL += render_template("/".join(
-                        [self.template_path, 'sql/grant.sql']), data=data)
-            return SQL
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            if 'datacl' in data and data['datacl'] is not None:
+                data['datacl'] = self.parse_privileges(data['datacl'])
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/create.sql']), data=data)
+            if data['definition']:
+                SQL += "\n"
+                SQL += render_template("/".join(
+                    [self.template_path, 'sql/grant.sql']), data=data)
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     def get_index_column_details(self, idx, data):
         """
@@ -1283,162 +1296,158 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         This function will genrate sql from model data
         """
-        try:
-            if vid is not None:
-                SQL = render_template("/".join(
-                    [self.template_path, 'sql/properties.sql']),
-                    vid=vid,
-                    datlastsysoid=self.datlastsysoid
-                )
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                old_data = res['rows'][0]
+        if vid is not None:
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/properties.sql']),
+                vid=vid,
+                datlastsysoid=self.datlastsysoid
+            )
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+            old_data = res['rows'][0]
 
-                if 'name' not in data:
-                    data['name'] = res['rows'][0]['name']
-                if 'schema' not in data:
-                    data['schema'] = res['rows'][0]['schema']
+            if 'name' not in data:
+                data['name'] = res['rows'][0]['name']
+            if 'schema' not in data:
+                data['schema'] = res['rows'][0]['schema']
 
-                # merge vacuum lists into one
-                data['vacuum_data'] = {}
-                data['vacuum_data']['changed'] = []
-                data['vacuum_data']['reset'] = []
+            # merge vacuum lists into one
+            data['vacuum_data'] = {}
+            data['vacuum_data']['changed'] = []
+            data['vacuum_data']['reset'] = []
 
-                # table vacuum: separate list of changed and reset data for
-                if ('vacuum_table' in data):
-                    if ('changed' in data['vacuum_table']):
-                        for item in data['vacuum_table']['changed']:
-                            if 'value' in item.keys():
-                                if item['value'] is None:
-                                    if old_data[item['name']] != item['value']:
-                                        data['vacuum_data']['reset'].append(item)
-                                else:
-                                    if (old_data[item['name']] is None or
-                                            (float(old_data[item['name']]) != float(item['value']))):
-                                        data['vacuum_data']['changed'].append(item)
+            # table vacuum: separate list of changed and reset data for
+            if ('vacuum_table' in data):
+                if ('changed' in data['vacuum_table']):
+                    for item in data['vacuum_table']['changed']:
+                        if 'value' in item.keys():
+                            if item['value'] is None:
+                                if old_data[item['name']] != item['value']:
+                                    data['vacuum_data']['reset'].append(item)
+                            else:
+                                if (old_data[item['name']] is None or
+                                        (float(old_data[item['name']]) != float(item['value']))):
+                                    data['vacuum_data']['changed'].append(item)
 
-                if ('autovacuum_enabled' in data and
-                            old_data['autovacuum_enabled'] is not None):
-                    if (data['autovacuum_enabled'] !=
-                            old_data['autovacuum_enabled']):
-                        data['vacuum_data']['changed'].append(
-                            {'name': 'autovacuum_enabled',
-                             'value': data['autovacuum_enabled']})
-                elif ('autovacuum_enabled' in data and 'autovacuum_custom' in data and
-                              old_data['autovacuum_enabled'] is None and data['autovacuum_custom']):
+            if ('autovacuum_enabled' in data and
+                        old_data['autovacuum_enabled'] is not None):
+                if (data['autovacuum_enabled'] !=
+                        old_data['autovacuum_enabled']):
                     data['vacuum_data']['changed'].append(
                         {'name': 'autovacuum_enabled',
                          'value': data['autovacuum_enabled']})
+            elif ('autovacuum_enabled' in data and 'autovacuum_custom' in data and
+                          old_data['autovacuum_enabled'] is None and data['autovacuum_custom']):
+                data['vacuum_data']['changed'].append(
+                    {'name': 'autovacuum_enabled',
+                     'value': data['autovacuum_enabled']})
 
-                # toast autovacuum: separate list of changed and reset data
-                if ('vacuum_toast' in data):
-                    if ('changed' in data['vacuum_toast']):
-                        for item in data['vacuum_toast']['changed']:
-                            if 'value' in item.keys():
-                                toast_key = 'toast_' + item['name']
-                                item['name'] = 'toast.' + item['name']
-                                if item['value'] is None:
-                                    if old_data[toast_key] != item['value']:
-                                        data['vacuum_data']['reset'].append(item)
-                                else:
-                                    if (old_data[toast_key] is None or
-                                            (float(old_data[toast_key]) != float(item['value']))):
-                                        data['vacuum_data']['changed'].append(item)
+            # toast autovacuum: separate list of changed and reset data
+            if ('vacuum_toast' in data):
+                if ('changed' in data['vacuum_toast']):
+                    for item in data['vacuum_toast']['changed']:
+                        if 'value' in item.keys():
+                            toast_key = 'toast_' + item['name']
+                            item['name'] = 'toast.' + item['name']
+                            if item['value'] is None:
+                                if old_data[toast_key] != item['value']:
+                                    data['vacuum_data']['reset'].append(item)
+                            else:
+                                if (old_data[toast_key] is None or
+                                        (float(old_data[toast_key]) != float(item['value']))):
+                                    data['vacuum_data']['changed'].append(item)
 
-                if ('toast_autovacuum_enabled' in data and
-                            old_data['toast_autovacuum_enabled'] is not None):
-                    if (data['toast_autovacuum_enabled'] !=
-                            old_data['toast_autovacuum_enabled']):
-                        data['vacuum_data']['changed'].append(
-                            {'name': 'toast.autovacuum_enabled',
-                             'value': data['toast_autovacuum_enabled']})
-                elif ('toast_autovacuum_enabled' in data and 'toast_autovacuum' in data and
-                              old_data['toast_autovacuum_enabled'] is None and data['toast_autovacuum']):
+            if ('toast_autovacuum_enabled' in data and
+                        old_data['toast_autovacuum_enabled'] is not None):
+                if (data['toast_autovacuum_enabled'] !=
+                        old_data['toast_autovacuum_enabled']):
                     data['vacuum_data']['changed'].append(
                         {'name': 'toast.autovacuum_enabled',
                          'value': data['toast_autovacuum_enabled']})
+            elif ('toast_autovacuum_enabled' in data and 'toast_autovacuum' in data and
+                          old_data['toast_autovacuum_enabled'] is None and data['toast_autovacuum']):
+                data['vacuum_data']['changed'].append(
+                    {'name': 'toast.autovacuum_enabled',
+                     'value': data['toast_autovacuum_enabled']})
 
-                key = 'datacl'
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = self.parse_privileges(
-                            data[key]['added'])
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = self.parse_privileges(
-                            data[key]['changed'])
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = self.parse_privileges(
-                            data[key]['deleted'])
+            key = 'datacl'
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = self.parse_privileges(
+                        data[key]['added'])
+                if 'changed' in data[key]:
+                    data[key]['changed'] = self.parse_privileges(
+                        data[key]['changed'])
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = self.parse_privileges(
+                        data[key]['deleted'])
 
-                try:
-                    SQL = render_template("/".join(
-                        [self.template_path, 'sql/update.sql']), data=data,
-                        o_data=old_data, conn=self.conn)
-                except Exception as e:
-                    return internal_server_error(errormsg=str(e))
-            else:
-                required_args = [
-                    'name',
-                    'schema',
-                    'definition'
-                ]
-                for arg in required_args:
-                    if arg not in data:
-                        return " -- definition incomplete"
-
-                # Get Schema Name from its OID.
-                if 'schema' in data and isinstance(data['schema'], int):
-                    data['schema'] = self._get_schema(data['schema'])
-
-                # merge vacuum lists into one
-                vacuum_table = [item for item in data['vacuum_table']
-                                if 'value' in item.keys() and
-                                item['value'] is not None]
-                vacuum_toast = [
-                    {'name': 'toast.' + item['name'], 'value': item['value']}
-                    for item in data['vacuum_toast']
-                    if 'value' in item.keys() and item['value'] is not None]
-
-                # add table_enabled & toast_enabled settings
-                if ('autovacuum_custom' in data and data['autovacuum_custom']):
-                    vacuum_table.append(
-                        {
-                            'name': 'autovacuum_enabled',
-                            'value': str(data['autovacuum_enabled'])
-                        }
-                    )
-                if ('toast_autovacuum' in data and data['toast_autovacuum']):
-                    vacuum_table.append(
-                        {
-                            'name': 'toast.autovacuum_enabled',
-                            'value': str(data['toast_autovacuum_enabled'])
-                        }
-                    )
-
-                # add vacuum_toast dict to vacuum_data only if
-                # table & toast's custom autovacuum is enabled
-                data['vacuum_data'] = (vacuum_table if (
-                    'autovacuum_custom' in data and
-                    data['autovacuum_custom'] is True
-                ) else []) + (
-                                          vacuum_toast if (
-                                              'toast_autovacuum' in data and
-                                              data['toast_autovacuum'] is True
-                                          ) else [])
-
-                if 'datacl' in data and data['datacl'] is not None:
-                    data['datacl'] = self.parse_privileges(data['datacl'])
+            try:
                 SQL = render_template("/".join(
-                    [self.template_path, 'sql/create.sql']), data=data)
-                if data['definition']:
-                    SQL += "\n"
-                    SQL += render_template("/".join(
-                        [self.template_path, 'sql/grant.sql']), data=data)
-            return SQL
+                    [self.template_path, 'sql/update.sql']), data=data,
+                    o_data=old_data, conn=self.conn)
+            except Exception as e:
+                return internal_server_error(errormsg=str(e))
+        else:
+            required_args = [
+                'name',
+                'schema',
+                'definition'
+            ]
+            for arg in required_args:
+                if arg not in data:
+                    return " -- definition incomplete"
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            # Get Schema Name from its OID.
+            if 'schema' in data and isinstance(data['schema'], int):
+                data['schema'] = self._get_schema(data['schema'])
+
+            # merge vacuum lists into one
+            vacuum_table = [item for item in data['vacuum_table']
+                            if 'value' in item.keys() and
+                            item['value'] is not None]
+            vacuum_toast = [
+                {'name': 'toast.' + item['name'], 'value': item['value']}
+                for item in data['vacuum_toast']
+                if 'value' in item.keys() and item['value'] is not None]
+
+            # add table_enabled & toast_enabled settings
+            if ('autovacuum_custom' in data and data['autovacuum_custom']):
+                vacuum_table.append(
+                    {
+                        'name': 'autovacuum_enabled',
+                        'value': str(data['autovacuum_enabled'])
+                    }
+                )
+            if ('toast_autovacuum' in data and data['toast_autovacuum']):
+                vacuum_table.append(
+                    {
+                        'name': 'toast.autovacuum_enabled',
+                        'value': str(data['toast_autovacuum_enabled'])
+                    }
+                )
+
+            # add vacuum_toast dict to vacuum_data only if
+            # table & toast's custom autovacuum is enabled
+            data['vacuum_data'] = (vacuum_table if (
+                'autovacuum_custom' in data and
+                data['autovacuum_custom'] is True
+            ) else []) + (
+                                      vacuum_toast if (
+                                          'toast_autovacuum' in data and
+                                          data['toast_autovacuum'] is True
+                                      ) else [])
+
+            if 'datacl' in data and data['datacl'] is not None:
+                data['datacl'] = self.parse_privileges(data['datacl'])
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/create.sql']), data=data)
+            if data['definition']:
+                SQL += "\n"
+                SQL += render_template("/".join(
+                    [self.template_path, 'sql/grant.sql']), data=data)
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, vid):
@@ -1565,6 +1574,9 @@ class MViewNode(ViewNode, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the materialized view."""))
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/acl.sql']), vid=vid)

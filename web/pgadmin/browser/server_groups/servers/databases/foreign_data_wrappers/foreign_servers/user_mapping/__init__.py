@@ -20,6 +20,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -284,6 +285,39 @@ class UserMappingView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def node(self, gid, sid, did, fid, fsid, umid):
+        """
+        This function will fetch properties of user mapping node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            fid: Foreign data wrapper ID
+            fsid: Foreign server ID
+            umid: User mapping ID
+        """
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              conn=self.conn, umid=umid)
+        status, r_set = self.conn.execute_2darray(sql)
+
+        if not status:
+            return internal_server_error(errormsg=r_set)
+
+        for row in r_set['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['um_oid'],
+                    fsid,
+                    row['name'],
+                    icon="icon-user_mapping"
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified user mapping."))
+
     def tokenizeOptions(self, option_value):
         """
         This function will tokenize the string stored in database
@@ -322,6 +356,11 @@ class UserMappingView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Couldnot find the user mapping information.")
+            )
 
         if res['rows'][0]['umoptions'] is not None:
             res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
@@ -427,38 +466,21 @@ class UserMappingView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        sql = self.get_sql(gid, sid, data, did, fid, fsid, umid)
         try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            sql = sql.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="User Mapping updated",
-                    data={
-                        'id': umid,
-                        'fsid': fsid,
-                        'fid': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    umid,
+                    fsid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': umid,
-                        'fsid': fsid,
-                        'fid': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -492,6 +514,7 @@ class UserMappingView(PGChildNodeView):
 
             if name is None:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -508,6 +531,7 @@ class UserMappingView(PGChildNodeView):
 
             if not res['rows']:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'The specified user mapping could not be found.\n'
@@ -559,18 +583,17 @@ class UserMappingView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
+        try:
+            sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            if sql == '':
+                sql = "--modified SQL"
 
-        sql = self.get_sql(gid, sid, data, did, fid, fsid, umid)
-        if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
                 data=sql,
                 status=200
-            )
-        else:
-            return make_json_response(
-                data='-- Modified SQL --',
-                status=200
-            )
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, data, did, fid, fsid, umid=None):
         """
@@ -589,93 +612,92 @@ class UserMappingView(PGChildNodeView):
         required_args = [
             'name'
         ]
-        try:
-            if umid is not None:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+
+        if umid is not None:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if res['rows'][0]['umoptions'] is not None:
+                res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
+
+            old_data = res['rows'][0]
+
+        sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
+        status, res1 = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=res1)
+
+        fdw_data = res1['rows'][0]
+
+        for arg in required_args:
+            if arg not in data:
+                data[arg] = old_data[arg]
+
+                new_list_add = []
+                new_list_change = []
+
+                # Allow user to set the blank value in fdwvalue field in option model
+                if 'umoptions' in data and 'added' in data['umoptions']:
+                    for item in data['umoptions']['added']:
+                        new_dict_add = {}
+                        if item['umoption']:
+                            if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
+                                new_dict_add.update(item);
+                            else:
+                                new_dict_add.update({'umoption': item['umoption'], 'umvalue': ''})
+
+                        new_list_add.append(new_dict_add)
+
+                    data['umoptions']['added'] = new_list_add
+
+                # Allow user to set the blank value in fdwvalue field in option model
+                if 'umoptions' in data and 'changed' in data['umoptions']:
+                    for item in data['umoptions']['changed']:
+                        new_dict_change = {}
+                        if item['umoption']:
+                            if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
+                                new_dict_change.update(item);
+                            else:
+                                new_dict_change.update({'umoption': item['umoption'], 'umvalue': ''})
+
+                        new_list_change.append(new_dict_change)
+
+                    data['umoptions']['changed'] = new_list_change
+
+                sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
+                                      fdwdata=fdw_data, conn=self.conn)
+                return sql, data['name'] if 'name' in data else old_data['name']
+            else:
+                sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
+                fdw_data = res['rows'][0]
 
-                if res['rows'][0]['umoptions'] is not None:
-                    res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
+                new_list = []
 
-                old_data = res['rows'][0]
+                if 'umoptions' in data:
+                    for item in data['umoptions']:
+                        new_dict = {}
+                        if item['umoption']:
+                            if 'umvalue' in item and item['umvalue'] \
+                                    and item['umvalue'] != '':
+                                new_dict.update(item);
+                            else:
+                                new_dict.update(
+                                    {'umoption': item['umoption'],
+                                     'umvalue': ''}
+                                )
+                        new_list.append(new_dict)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
-            status, res1 = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res1)
+                    data['umoptions'] = new_list
 
-            fdw_data = res1['rows'][0]
-
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-                    new_list_add = []
-                    new_list_change = []
-
-                    # Allow user to set the blank value in fdwvalue field in option model
-                    if 'umoptions' in data and 'added' in data['umoptions']:
-                        for item in data['umoptions']['added']:
-                            new_dict_add = {}
-                            if item['umoption']:
-                                if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
-                                    new_dict_add.update(item);
-                                else:
-                                    new_dict_add.update({'umoption': item['umoption'], 'umvalue': ''})
-
-                            new_list_add.append(new_dict_add)
-
-                        data['umoptions']['added'] = new_list_add
-
-                    # Allow user to set the blank value in fdwvalue field in option model
-                    if 'umoptions' in data and 'changed' in data['umoptions']:
-                        for item in data['umoptions']['changed']:
-                            new_dict_change = {}
-                            if item['umoption']:
-                                if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
-                                    new_dict_change.update(item);
-                                else:
-                                    new_dict_change.update({'umoption': item['umoption'], 'umvalue': ''})
-
-                            new_list_change.append(new_dict_change)
-
-                        data['umoptions']['changed'] = new_list_change
-
-                    sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
-                                          fdwdata=fdw_data, conn=self.conn)
-                else:
-                    sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
-                    status, res = self.conn.execute_dict(sql)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-                    fdw_data = res['rows'][0]
-
-                    new_list = []
-
-                    if 'umoptions' in data:
-                        for item in data['umoptions']:
-                            new_dict = {}
-                            if item['umoption']:
-                                if 'umvalue' in item and item['umvalue'] \
-                                        and item['umvalue'] != '':
-                                    new_dict.update(item);
-                                else:
-                                    new_dict.update(
-                                        {'umoption': item['umoption'],
-                                         'umvalue': ''}
-                                    )
-                            new_list.append(new_dict)
-
-                        data['umoptions'] = new_list
-
-                    sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
-                                          conn=self.conn)
-                    sql += "\n"
-                return sql
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
+                                      conn=self.conn)
+                sql += "\n"
+            return sql, data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid, umid):

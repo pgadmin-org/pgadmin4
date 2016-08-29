@@ -22,6 +22,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -276,6 +277,36 @@ class ForeignDataWrapperView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def node(self, gid, sid, did, fid):
+        """
+        This function will fetch properties of foreign data wrapper node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            fid: Foreign data wrapper ID
+        """
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              conn=self.conn, fid=fid)
+        status, r_set = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=r_set)
+
+        for row in r_set['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['fdwoid'],
+                    did,
+                    row['name'],
+                    icon="icon-foreign_data_wrapper"
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified foreign data wrapper."))
+
     def tokenize_options(self, option_value):
         """
         This function will tokenize the string stored in database
@@ -310,6 +341,11 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Couldnot find the foreign data wrapper information.")
+            )
 
         if res['rows'][0]['fdwoptions'] is not None:
             res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
@@ -417,35 +453,22 @@ class ForeignDataWrapperView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        sql = self.get_sql(gid, sid, data, did, fid)
+
         try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            sql, name = self.get_sql(gid, sid, data, did, fid)
 
-                return make_json_response(
-                    success=1,
-                    info="Foreign Data Wrapper updated",
-                    data={
-                        'id': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    fid,
+                    did,
+                    name,
+                    icon="icon-%s" % self.node_type
+                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -475,6 +498,7 @@ class ForeignDataWrapperView(PGChildNodeView):
 
             if name is None:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -521,12 +545,18 @@ class ForeignDataWrapperView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
+        try:
+            sql, name = self.get_sql(gid, sid, data, did, fid)
 
-        sql = self.get_sql(gid, sid, data, did, fid)
-        if sql and sql.strip('\n') and sql.strip(' '):
-            return make_json_response(data=sql, status=200)
-        else:
-            return make_json_response(data='-- Modified SQL --', status=200)
+            if sql == '':
+                sql = "--modified SQL"
+
+            return make_json_response(
+                data=sql,
+                status=200
+            )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, data, did, fid=None):
         """
@@ -542,89 +572,94 @@ class ForeignDataWrapperView(PGChildNodeView):
         required_args = [
             'name'
         ]
-        try:
-            if fid is not None:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                if res['rows'][0]['fdwoptions'] is not None:
-                    res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
+        if fid is not None:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                for key in ['fdwacl']:
-                    if key in data and data[key] is not None:
-                        if 'added' in data[key]:
-                            data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
-                        if 'changed' in data[key]:
-                            data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
-                        if 'deleted' in data[key]:
-                            data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Couldnot find the foreign data wrapper information.")
+                )
 
-                old_data = res['rows'][0]
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
+            if res['rows'][0]['fdwoptions'] is not None:
+                res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
 
-                new_list_add = []
-                new_list_change = []
+            for key in ['fdwacl']:
+                if key in data and data[key] is not None:
+                    if 'added' in data[key]:
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
+                    if 'changed' in data[key]:
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
+                    if 'deleted' in data[key]:
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
 
-                # Allow user to set the blank value in fdwvalue field in option model
-                if 'fdwoptions' in data and 'added' in data['fdwoptions']:
-                    for item in data['fdwoptions']['added']:
-                        new_dict_add = {}
-                        if item['fdwoption']:
-                            if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                                new_dict_add.update(item);
-                            else:
-                                new_dict_add.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+            old_data = res['rows'][0]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
 
-                        new_list_add.append(new_dict_add)
+            new_list_add = []
+            new_list_change = []
 
-                    data['fdwoptions']['added'] = new_list_add
+            # Allow user to set the blank value in fdwvalue field in option model
+            if 'fdwoptions' in data and 'added' in data['fdwoptions']:
+                for item in data['fdwoptions']['added']:
+                    new_dict_add = {}
+                    if item['fdwoption']:
+                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
+                            new_dict_add.update(item);
+                        else:
+                            new_dict_add.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
 
-                # Allow user to set the blank value in fdwvalue field in option model
-                if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
-                    for item in data['fdwoptions']['changed']:
-                        new_dict_change = {}
-                        if item['fdwoption']:
-                            if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                                new_dict_change.update(item);
-                            else:
-                                new_dict_change.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+                    new_list_add.append(new_dict_add)
 
-                        new_list_change.append(new_dict_change)
+                data['fdwoptions']['added'] = new_list_add
 
-                    data['fdwoptions']['changed'] = new_list_change
+            # Allow user to set the blank value in fdwvalue field in option model
+            if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
+                for item in data['fdwoptions']['changed']:
+                    new_dict_change = {}
+                    if item['fdwoption']:
+                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
+                            new_dict_change.update(item);
+                        else:
+                            new_dict_change.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
 
-                sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
-                                      conn=self.conn)
-            else:
-                for key in ['fdwacl']:
-                    if key in data and data[key] is not None:
-                        data[key] = parse_priv_to_db(data[key], ['U'])
+                    new_list_change.append(new_dict_change)
 
-                new_list = []
+                data['fdwoptions']['changed'] = new_list_change
 
-                # Allow user to set the blank value in fdwvalue field in option model
-                if 'fdwoptions' in data:
-                    for item in data['fdwoptions']:
-                        new_dict = {}
-                        if item['fdwoption']:
-                            if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                                new_dict.update(item);
-                            else:
-                                new_dict.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
+                                  conn=self.conn)
+            return sql, data['name'] if 'name' in data else old_data['name']
+        else:
+            for key in ['fdwacl']:
+                if key in data and data[key] is not None:
+                    data[key] = parse_priv_to_db(data[key], ['U'])
 
-                        new_list.append(new_dict)
+            new_list = []
 
-                    data['fdwoptions'] = new_list
+            # Allow user to set the blank value in fdwvalue field in option model
+            if 'fdwoptions' in data:
+                for item in data['fdwoptions']:
+                    new_dict = {}
+                    if item['fdwoption']:
+                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
+                            new_dict.update(item);
+                        else:
+                            new_dict.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
 
-                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
-                sql += "\n"
-            return sql
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                    new_list.append(new_dict)
+
+                data['fdwoptions'] = new_list
+
+            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+            sql += "\n"
+        return sql, data['name']
+
 
     @check_precondition
     def sql(self, gid, sid, did, fid):

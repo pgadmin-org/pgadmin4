@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class IndexConstraintModule(ConstraintTypeModule):
@@ -285,6 +286,11 @@ class IndexConstraintView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
+        if len(res['rows']) == 0:
+            return gone(_("""Could not find the {} in the table.""".format(
+                "primary key" if self.constraint_type == "p" else "unique key"
+            )))
+
         result = res['rows'][0]
 
         sql = render_template(
@@ -333,7 +339,6 @@ class IndexConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    @check_precondition
     def get_node_list(self, gid, sid, did, scid, tid, cid=None):
         """
         This function returns all primary keys
@@ -350,6 +355,24 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                sid
+            )
+        self.conn = self.manager.connection(did=did)
+        self.template_path = 'index_constraint/sql'
+
+        # We need parent's name eg table name and schema name
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            self.schema = row['schema']
+            self.table = row['table']
+
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               tid=tid,
                               constraint_type=self.constraint_type)
@@ -358,7 +381,44 @@ class IndexConstraintView(PGChildNodeView):
         return res['rows']
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid, tid, cid=None):
+    def node(self, gid, sid, did, scid, tid, cid):
+        """
+        This function returns all event trigger nodes as a list.
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          tid: Table ID
+          cid: Primary key constraint ID
+
+        Returns:
+
+        """
+        SQL = render_template("/".join([self.template_path, 'nodes.sql']),
+                              cid=cid,
+                              constraint_type=self.constraint_type)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if len(rset['rows']) == 0:
+            return gone(_("""Could not find the {} in the table.""".format(
+                "primary key" if self.constraint_type == "p" else "unique key"
+            )))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                tid,
+                rset['rows'][0]['name'],
+                icon="icon-%s" % self.node_type
+            )
+        return make_json_response(
+                data=res,
+                status=200
+            )
+
+    @check_precondition
+    def nodes(self, gid, sid, did, scid, tid):
         """
         This function returns all event trigger nodes as a
         http response.
@@ -374,16 +434,26 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        try:
-            res = self.get_nodes(gid, sid, did, scid, tid, cid)
-            return make_json_response(
+        SQL = render_template("/".join([self.template_path, 'nodes.sql']),
+                              tid=tid,
+                              constraint_type=self.constraint_type)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        res = []
+
+        for row in rset['rows']:
+            res.append(
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ))
+        return make_json_response(
                 data=res,
                 status=200
             )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
 
-    @check_precondition
     def get_nodes(self, gid, sid, did, scid, tid, cid=None):
         """
         This function returns all event trigger nodes as a list.
@@ -399,6 +469,24 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                sid
+            )
+        self.conn = self.manager.connection(did=did)
+        self.template_path = 'index_constraint/sql'
+
+        # We need parent's name eg table name and schema name
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            self.schema = row['schema']
+            self.table = row['table']
+
         res = []
         SQL = render_template("/".join([self.template_path, 'nodes.sql']),
                               tid=tid,
@@ -563,47 +651,29 @@ class IndexConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql = self.get_sql(data, tid, cid)
+            sql, name = self.get_sql(data, tid, cid)
             sql = sql.strip('\n').strip(' ')
-            if sql != "":
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                      tid=tid,
-                                      constraint_type=self.constraint_type,
-                                      name=data['name'])
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Constraint updated",
-                    data={
-                        'id': cid,
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+            sql = render_template("/".join([self.template_path, 'get_oid.sql']),
+                                  tid=tid,
+                                  constraint_type=self.constraint_type,
+                                  name=data['name'])
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    cid,
+                    tid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': cid,
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -701,9 +771,10 @@ class IndexConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql = self.get_sql(data, tid, cid)
+            sql, name = self.get_sql(data, tid, cid)
             sql = sql.strip('\n').strip(' ')
-
+            if sql == '':
+                sql = "--modified SQL"
             return make_json_response(
                 data=sql,
                 status=200
@@ -767,7 +838,7 @@ class IndexConstraintView(PGChildNodeView):
                                   conn=self.conn,
                                   constraint_name=self.constraint_name)
 
-        return sql
+        return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, cid=None):

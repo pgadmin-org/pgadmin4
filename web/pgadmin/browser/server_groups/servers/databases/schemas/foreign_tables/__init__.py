@@ -410,6 +410,41 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, foid):
+        """
+        Returns the Foreign Tables to generate the Nodes.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            foid: Foreign Table Id
+        """
+
+        SQL = render_template("/".join([self.template_path,
+                                        'node.sql']), foid=foid)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-foreign-table"
+                ),
+                status=200
+            )
+
+        return gone(gettext(
+                    'Could not find the specified foreign table.'
+                    ))
+
+    @check_precondition
     def properties(self, gid, sid, did, scid, foid):
         """
         Returns the Foreign Table properties.
@@ -634,10 +669,7 @@ shifted to the another schema.
         """
         try:
             # Get SQL to create Foreign Table
-            status, SQL = self.get_sql(gid, sid, did, scid, self.request)
-            if not status:
-                return internal_server_error(errormsg=SQL)
-
+            SQL, name = self.get_sql(gid, sid, did, scid, self.request)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -744,50 +776,31 @@ shifted to the another schema.
             scid: Schema Id
             foid: Foreign Table Id
         """
-        status, SQL = self.get_sql(gid, sid, did, scid, self.request, foid)
-
-        if not status:
-            return internal_server_error(errormsg=SQL)
 
         try:
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                SQL = render_template("/".join([self.template_path,
-                                                'get_oid.sql']),
-                                      foid=foid)
-                status, res = self.conn.execute_2darray(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL = render_template("/".join([self.template_path,
+                                            'get_oid.sql']),
+                                  foid=foid)
+            status, res = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                scid = res['rows'][0]['scid']
+            scid = res['rows'][0]['scid']
 
-                return make_json_response(
-                    success=1,
-                    info="Foreign Table updated",
-                    data={
-                        'id': foid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    foid,
+                    scid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': foid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -845,14 +858,17 @@ shifted to the another schema.
         Returns:
             SQL statements to create/update the Foreign Table.
         """
-        status, SQL = self.get_sql(gid, sid, did, scid, self.request, foid)
-        if status:
+        try:
+            SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            if SQL == '':
+                SQL = "--modified SQL"
+
             return make_json_response(
-                data=SQL.strip('\n'),
+                data=SQL,
                 status=200
-            )
-        else:
-            return SQL
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, did, scid, data, foid=None):
         """
@@ -865,90 +881,88 @@ shifted to the another schema.
             scid: Schema Id
             foid: Foreign Table Id
         """
-        try:
-            if foid is not None:
-                old_data = self._fetch_properties(gid, sid, did, scid, foid,
-                                                  inherits=True)
+        if foid is not None:
+            old_data = self._fetch_properties(gid, sid, did, scid, foid,
+                                              inherits=True)
 
-                if not old_data:
-                    return gone(gettext("""
-        Could not find the foreign table in the database.
-        It may have been removed by another user or
-        shifted to the another schema.
-        """))
+            if not old_data:
+                return gone(gettext("""
+    Could not find the foreign table in the database.
+    It may have been removed by another user or
+    shifted to the another schema.
+    """))
 
-                # Prepare dict of columns with key = column's attnum
-                # Will use this in the update template when any column is
-                # changed, to identify the columns.
-                col_data = {}
-                for c in old_data['columns']:
-                    col_data[c['attnum']] = c
+            # Prepare dict of columns with key = column's attnum
+            # Will use this in the update template when any column is
+            # changed, to identify the columns.
+            col_data = {}
+            for c in old_data['columns']:
+                col_data[c['attnum']] = c
 
-                old_data['columns'] = col_data
+            old_data['columns'] = col_data
 
-                if 'columns' in data and 'added' in data['columns']:
-                    data['columns']['added'] = self._format_columns(
-                        data['columns']['added'])
+            if 'columns' in data and 'added' in data['columns']:
+                data['columns']['added'] = self._format_columns(
+                    data['columns']['added'])
 
-                if 'columns' in data and 'changed' in data['columns']:
-                    data['columns']['changed'] = self._format_columns(
-                        data['columns']['changed'])
+            if 'columns' in data and 'changed' in data['columns']:
+                data['columns']['changed'] = self._format_columns(
+                    data['columns']['changed'])
 
-                    # Parse Column Options
-                    for c in data['columns']['changed']:
-                        old_col_options = c['attfdwoptions'] if ('attfdwoptions' in c and c['attfdwoptions']) else []
-                        old_col_frmt_options = {}
+                # Parse Column Options
+                for c in data['columns']['changed']:
+                    old_col_options = c['attfdwoptions'] if ('attfdwoptions' in c and c['attfdwoptions']) else []
+                    old_col_frmt_options = {}
 
-                        for o in old_col_options:
-                            col_opt = o.split("=")
-                            old_col_frmt_options[col_opt[0]] = col_opt[1]
+                    for o in old_col_options:
+                        col_opt = o.split("=")
+                        old_col_frmt_options[col_opt[0]] = col_opt[1]
 
-                        c['coloptions_updated'] = {'added': [],
-                                                   'changed': [],
-                                                   'deleted': []}
+                    c['coloptions_updated'] = {'added': [],
+                                               'changed': [],
+                                               'deleted': []}
 
-                        if 'coloptions' in c and len(c['coloptions']) > 0:
-                            for o in c['coloptions']:
-                                if o['option'] in old_col_frmt_options and o['value'] != old_col_frmt_options[
-                                    o['option']]:
-                                    c['coloptions_updated']['changed'].append(o)
-                                elif o['option'] not in old_col_frmt_options:
-                                    c['coloptions_updated']['added'].append(o)
-                                if o['option'] in old_col_frmt_options:
-                                    del old_col_frmt_options[o['option']]
+                    if 'coloptions' in c and len(c['coloptions']) > 0:
+                        for o in c['coloptions']:
+                            if o['option'] in old_col_frmt_options and \
+                                            o['value'] != old_col_frmt_options[o['option']]:
+                                c['coloptions_updated']['changed'].append(o)
+                            elif o['option'] not in old_col_frmt_options:
+                                c['coloptions_updated']['added'].append(o)
+                            if o['option'] in old_col_frmt_options:
+                                del old_col_frmt_options[o['option']]
 
-                        for o in old_col_frmt_options:
-                            c['coloptions_updated']['deleted'].append({'option': o})
+                    for o in old_col_frmt_options:
+                        c['coloptions_updated']['deleted'].append({'option': o})
 
-                # Parse Privileges
-                if 'acl' in data and 'added' in data['acl']:
-                    data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
-                                                            ["a", "r", "w", "x"])
-                if 'acl' in data and 'changed' in data['acl']:
-                    data['acl']['changed'] = parse_priv_to_db(
-                        data['acl']['changed'], ["a", "r", "w", "x"])
-                if 'acl' in data and 'deleted' in data['acl']:
-                    data['acl']['deleted'] = parse_priv_to_db(
-                        data['acl']['deleted'], ["a", "r", "w", "x"])
+            # Parse Privileges
+            if 'acl' in data and 'added' in data['acl']:
+                data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
+                                                        ["a", "r", "w", "x"])
+            if 'acl' in data and 'changed' in data['acl']:
+                data['acl']['changed'] = parse_priv_to_db(
+                    data['acl']['changed'], ["a", "r", "w", "x"])
+            if 'acl' in data and 'deleted' in data['acl']:
+                data['acl']['deleted'] = parse_priv_to_db(
+                    data['acl']['deleted'], ["a", "r", "w", "x"])
 
-                SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=data, o_data=old_data
-                )
-            else:
-                data['columns'] = self._format_columns(data['columns'])
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data
+            )
+            return SQL, data['name'] if 'name' in data else old_data['name']
+        else:
+            data['columns'] = self._format_columns(data['columns'])
 
-                # Parse Privileges
-                if 'acl' in data:
-                    data['acl'] = parse_priv_to_db(data['acl'],
-                                                   ["a", "r", "w", "x"])
+            # Parse Privileges
+            if 'acl' in data:
+                data['acl'] = parse_priv_to_db(data['acl'],
+                                               ["a", "r", "w", "x"])
 
-                SQL = render_template("/".join([self.template_path,
-                                                'create.sql']), data=data)
-            return True, SQL
+            SQL = render_template("/".join([self.template_path,
+                                            'create.sql']), data=data)
+            return SQL, data['name']
 
-        except Exception as e:
-            return False, e
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, foid):

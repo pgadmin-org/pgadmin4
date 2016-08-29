@@ -104,9 +104,19 @@ define([
 
       // We will listen to the visibility change of the statistics panel
       pgBrowser.Events.on(
-          'pgadmin-browser:panel-statistics:' +
-              wcDocker.EVENT.VISIBILITY_CHANGED,
-          this.panelVisibilityChanged);
+        'pgadmin-browser:panel-statistics:' +
+          wcDocker.EVENT.VISIBILITY_CHANGED,
+          this.panelVisibilityChanged
+      );
+
+      pgBrowser.Events.on(
+        'pgadmin:browser:node:updated', function() {
+          if (this.panel && this.panel.length) {
+            $(this.panel[0]).data('node-prop', '');
+            this.panelVisibilityChanged(this.panel[0]);
+          }
+        }, this
+      );
 
       // Hmm.. Did we find the statistics panel, and is it visible (openned)?
       // If that is the case - we need to listen the browser tree selection
@@ -214,7 +224,7 @@ define([
             error: function(xhr, error, message) {
               var _label = treeHierarchy[n_type].label;
               pgBrowser.Events.trigger(
-                'pgadmin:node:retrieval:error', 'statistics', xhr, status, error, item
+                'pgadmin:node:retrieval:error', 'statistics', xhr, error, message, item
               );
               if (
                 !Alertify.pgHandleItemError(xhr, error, message, {
@@ -222,7 +232,7 @@ define([
                 })
               ) {
                 Alertify.pgNotifier(
-                  status, xhr,
+                  error, xhr,
                   S(
                     pgBrowser.messages['ERR_RETRIEVAL_INFO']
                   ).sprintf(message || _label).value(),

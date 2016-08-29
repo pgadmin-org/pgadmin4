@@ -157,7 +157,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             {'get': 'properties'},
             {'get': 'list'}
         ],
-        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
@@ -246,7 +246,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid, pkgid):
+    def nodes(self, gid, sid, did, scid, pkgid, edbfnid=None):
         """
         Returns all the Functions to generate the Nodes.
 
@@ -258,12 +258,31 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         """
 
         res = []
-        SQL = render_template("/".join([self.sql_template_path,
-                                        'node.sql']), pkgid=pkgid)
+        SQL = render_template(
+            "/".join([self.sql_template_path, 'node.sql']),
+            pkgid=pkgid,
+            fnid=edbfnid
+        )
         status, rset = self.conn.execute_2darray(SQL)
 
         if not status:
             return internal_server_error(errormsg=rset)
+
+        if edbfnid is not None:
+            if len(rset['rows']) == 0:
+                return gone(
+                    errormsg=_("Couldn't find the function")
+                )
+            row = rset['rows'][0]
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    pkgid,
+                    row['name'],
+                    icon="icon-" + self.node_type
+                ),
+                status=200
+            )
 
         for row in rset['rows']:
             res.append(

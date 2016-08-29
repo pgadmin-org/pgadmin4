@@ -7,7 +7,11 @@ JOIN
     pg_type b ON b.oid = d.typbasetype
 JOIN
     pg_namespace bn ON bn.oid=d.typnamespace
+{% if scid is defined %}
 WHERE
     d.typnamespace = {{scid}}::oid
+{% elif doid %}
+WHERE d.oid = {{doid}}::oid
+{% endif %}
 ORDER BY
     d.typname;

@@ -9,10 +9,14 @@ FROM pg_attribute att
   LEFT OUTER JOIN (pg_depend JOIN pg_class cs ON objid=cs.oid AND cs.relkind='S') ON refobjid=att.attrelid AND refobjsubid=att.attnum
   LEFT OUTER JOIN pg_namespace ns ON ns.oid=cs.relnamespace
   LEFT OUTER JOIN pg_index pi ON pi.indrelid=att.attrelid AND indisprimary
-WHERE att.attrelid = {{tid}}::oid
+WHERE
+    att.attrelid = {{ tid|qtLiteral }}::oid
+{% if clid %}
+    AND att.attnum = {{ clid|qtLiteral }}
+{% endif %}
     {### To show system objects ###}
     {% if not show_sys_objects %}
     AND att.attnum > 0
     {% endif %}
     AND att.attisdropped IS FALSE
-    ORDER BY att.attnum
+ORDER BY att.attnum

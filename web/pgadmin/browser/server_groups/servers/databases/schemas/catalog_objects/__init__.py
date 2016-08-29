@@ -20,6 +20,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -222,6 +223,42 @@ class CatalogObjectView(PGChildNodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, coid):
+        """
+        This function will fetch properties of catalog objects node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            coid: Catalog object ID
+
+        Returns:
+            JSON of given catalog objects child node
+        """
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']), coid=coid
+        )
+
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-catalog_object"
+                ),
+                status=200
+            )
+
+        return gone(errormsg=gettext("Could not find the specified catalog object."))
+
+    @check_precondition
     def properties(self, gid, sid, did, scid, coid):
         """
         This function will show the properties of the selected
@@ -246,6 +283,9 @@ class CatalogObjectView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the specified catalog object."""))
 
         return ajax_response(
             response=res['rows'][0],

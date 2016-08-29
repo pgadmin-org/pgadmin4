@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class RuleModule(CollectionNodeModule):
@@ -222,13 +223,40 @@ class RuleView(PGChildNodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, tid, rid):
+        """
+        return single node
+        """
+        SQL = render_template("/".join(
+            [self.template_path, 'nodes.sql']), rid=rid)
+
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(gettext("""Could not find the rule in the table."""))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                tid,
+                rset['rows'][0]['name'],
+                icon="icon-rule"
+        )
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
     def nodes(self, gid, sid, did, scid, tid):
         """
         List all the rules under the Rules Collection node
         """
         res = []
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']), tid=tid)
+            [self.template_path, 'nodes.sql']), tid=tid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -261,6 +289,9 @@ class RuleView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the rule in the table."""))
 
         return ajax_response(
             response=parse_rule_definition(res),
@@ -321,32 +352,20 @@ class RuleView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        SQL = self.getSQL(gid, sid, data, tid, rid)
         try:
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                return make_json_response(
-                    success=1,
-                    info=gettext("Rule updated"),
-                    data={
-                        'id': tid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+            SQL, name = self.getSQL(gid, sid, data, tid, rid)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    rid,
+                    tid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': tid,
-                        'scid': scid,
-                        'did': did
-                    }
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -410,9 +429,13 @@ class RuleView(PGChildNodeView):
         This function returns modified SQL
         """
         data = request.args
-        SQL = self.getSQL(gid, sid, data, tid, rid)
+        sql, name = self.getSQL(gid, sid, data, tid, rid)
+        sql = sql.strip('\n').strip(' ')
+
+        if sql == '':
+            sql = "--modified SQL"
         return make_json_response(
-            data=SQL,
+            data=sql,
             status=200
         )
 
@@ -437,26 +460,23 @@ class RuleView(PGChildNodeView):
         """
         This function will generate sql from model data
         """
-        try:
-            if rid is not None:
-                SQL = render_template("/".join(
-                    [self.template_path, 'properties.sql']), rid=rid)
-                status, res = self.conn.execute_dict(SQL)
-                res_data = []
-                res_data = parse_rule_definition(res)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                old_data = res_data
-                SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=data, o_data=old_data
-                )
-            else:
-                SQL = render_template("/".join(
-                    [self.template_path, 'create.sql']), data=data)
-            return SQL
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+
+        if rid is not None:
+            SQL = render_template("/".join(
+                [self.template_path, 'properties.sql']), rid=rid)
+            status, res = self.conn.execute_dict(SQL)
+            res_data = parse_rule_definition(res)
+            if not status:
+                return internal_server_error(errormsg=res)
+            old_data = res_data
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data
+            )
+        else:
+            SQL = render_template("/".join(
+                [self.template_path, 'create.sql']), data=data)
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, rid):

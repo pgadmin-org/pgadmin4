@@ -13,7 +13,7 @@ ALTER TEXT SEARCH TEMPLATE {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(o_data
 {% endif %}
 {% if data.schema and data.schema != o_data.schema %}
 ALTER TEXT SEARCH TEMPLATE {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    SET SCHEMA {{data.schema}};
+    SET SCHEMA {{conn|qtIdent(data.schema)}};
 {% endif %}
 {% if 'description' in data and data.description != o_data.description %}
 COMMENT ON TEXT SEARCH TEMPLATE {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}

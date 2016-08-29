@@ -268,6 +268,12 @@ class ServerNode(PGChildNodeView):
                     wal_pause=wal_paused
                 )
             )
+
+        if not len(res):
+            return gone(errormsg=gettext(
+                'The specified server group with id# {0} could not be found.'
+                ))
+
         return make_json_response(result=res)
 
     def node(self, gid, sid):
@@ -282,7 +288,7 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=gettext(
                     gettext(
-                        "Couldn't find the server with id# %s!"
+                        "Couldn't find the server with id# {0}!"
                     ).format(sid)
                 )
             )
@@ -336,6 +342,7 @@ class ServerNode(PGChildNodeView):
         # TODO:: A server, which is connected, can not be deleted
         if servers is None:
             return make_json_response(
+                status=410,
                 success=0,
                 errormsg=gettext(
                     'The specified server could not be found.\n'
@@ -364,6 +371,7 @@ class ServerNode(PGChildNodeView):
 
         if server is None:
             return make_json_response(
+                status=410,
                 success=0,
                 errormsg=gettext("Could not find the required server.")
             )
@@ -439,9 +447,8 @@ class ServerNode(PGChildNodeView):
         if not conn.connected():
             manager.update(server)
 
-        return make_json_response(
-            success=1,
-            data=self.blueprint.generate_browser_node(
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
                 "%d" % (server.id), server.servergroup_id,
                 server.name,
                 "icon-server-not-connected" if not connected else
@@ -502,6 +509,7 @@ class ServerNode(PGChildNodeView):
 
         if server is None:
             return make_json_response(
+                status=410,
                 success=0,
                 errormsg=gettext("Could not find the required server.")
             )

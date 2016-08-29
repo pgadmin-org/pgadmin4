@@ -329,6 +329,38 @@ class DomainView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, doid):
+        """
+        This function will fetch the properties of the domain node.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            doid: Domain Id
+        """
+
+        SQL = render_template("/".join([self.template_path, 'node.sql']),
+                              doid=doid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-domain"
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified domain."))
+
+    @check_precondition
     def properties(self, gid, sid, did, scid, doid):
         """
         Returns the Domain properties.
@@ -498,36 +530,30 @@ AND relkind != 'c'))"""
         """
 
         data = self.request
-        try:
-            status, SQL = self.get_sql(gid, sid, data, scid)
+        SQL, name = self.get_sql(gid, sid, data, scid)
 
-            if not status:
-                return internal_server_error(errormsg=SQL)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # We need oid to to add object in tree at browser, below sql will
+        # gives the same
+        SQL = render_template("/".join([self.template_path,
+                                        'get_oid.sql']),
+                              basensp=data['basensp'],
+                              name=data['name'])
+        status, doid = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # We need oid to to add object in tree at browser, below sql will
-            # gives the same
-            SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']),
-                                  basensp=data['basensp'],
-                                  name=data['name'])
-            status, doid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    doid,
-                    scid,
-                    data['name'],
-                    icon="icon-domain"
-                )
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                doid,
+                scid,
+                data['name'],
+                icon="icon-domain"
             )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        )
 
     @check_precondition
     def delete(self, gid, sid, did, scid, doid):
@@ -548,49 +574,46 @@ AND relkind != 'c'))"""
         else:
             cascade = False
 
-        try:
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  scid=scid, doid=doid)
-            status, res = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path,
+                                        'delete.sql']),
+                              scid=scid, doid=doid)
+        status, res = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            if not res['rows']:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified domain could not be found.\n'
-                    )
-                )
-
-            name  = res['rows'][0]['name']
-            basensp = res['rows'][0]['basensp']
-
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  name=name, basensp=basensp, cascade=cascade)
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
+        if not res['rows']:
             return make_json_response(
-                success=1,
-                info=gettext("Domain dropped"),
-                data={
-                    'id': doid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+                status=410,
+                success=0,
+                errormsg=gettext(
+                    'Error: Object not found.'
+                ),
+                info=gettext(
+                    'The specified domain could not be found.\n'
+                )
             )
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        name  = res['rows'][0]['name']
+        basensp = res['rows'][0]['basensp']
+
+        SQL = render_template("/".join([self.template_path,
+                                        'delete.sql']),
+                              name=name, basensp=basensp, cascade=cascade)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+            success=1,
+            info=gettext("Domain dropped"),
+            data={
+                'id': doid,
+                'scid': scid,
+                'sid': sid,
+                'gid': gid,
+                'did': did
+            }
+        )
 
     @check_precondition
     @validate_request
@@ -606,53 +629,31 @@ AND relkind != 'c'))"""
             doid: Domain Id
         """
 
-        status, SQL = self.get_sql(gid, sid, self.request, scid, doid)
+        SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
 
-        if not status:
-            return internal_server_error(errormsg=SQL)
+        if SQL:
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-        try:
-            if SQL:
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            # Get Schema Id
+            SQL = render_template("/".join([self.template_path,
+                                            'get_oid.sql']),
+                                  doid=doid)
+            status, res = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                # Get Schema Id
-                SQL = render_template("/".join([self.template_path,
-                                                'get_oid.sql']),
-                                      doid=doid)
-                status, res = self.conn.execute_2darray(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            scid = res['rows'][0]['scid']
 
-                scid = res['rows'][0]['scid']
-
-                return make_json_response(
-                    success=1,
-                    info="Domain updated",
-                    data={
-                        'id': doid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    doid,
+                    scid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': doid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            )
 
     @check_precondition
     def sql(self, gid, sid, did, scid, doid=None):
@@ -726,15 +727,17 @@ AND relkind != 'c'))"""
             SQL statements to create/update the Domain.
         """
 
-        status, SQL = self.get_sql(gid, sid, self.request, scid, doid)
+        try:
+            SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
+            if SQL == '':
+                SQL = "--modified SQL"
 
-        if SQL:
             return make_json_response(
                 data=SQL,
                 status=200
-            )
-        else:
-            return SQL
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, data, scid, doid=None):
         """
@@ -748,43 +751,40 @@ AND relkind != 'c'))"""
             doid: Domain Id
         """
 
-        try:
-            if doid is not None:
-                SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
-                                      scid=scid, doid=doid)
-                status, res = self.conn.execute_dict(SQL)
+        if doid is not None:
+            SQL = render_template("/".join([self.template_path,
+                                            'properties.sql']),
+                                  scid=scid, doid=doid)
+            status, res = self.conn.execute_dict(SQL)
 
-                if not status:
-                    return False, internal_server_error(errormsg=res)
+            if not status:
+                return False, internal_server_error(errormsg=res)
 
-                old_data = res['rows'][0]
+            old_data = res['rows'][0]
 
-                # Get Domain Constraints
-                SQL = render_template("/".join([self.template_path,
-                                                'get_constraints.sql']),
-                                      doid=doid)
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            # Get Domain Constraints
+            SQL = render_template("/".join([self.template_path,
+                                            'get_constraints.sql']),
+                                  doid=doid)
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                con_data = {}
-                for c in res['rows']:
-                    con_data[c['conoid']] = c
+            con_data = {}
+            for c in res['rows']:
+                con_data[c['conoid']] = c
 
-                old_data['constraints'] = con_data
+            old_data['constraints'] = con_data
 
-                SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=data, o_data=old_data)
-            else:
-                SQL = render_template("/".join([self.template_path,
-                                                'create.sql']),
-                                      data=data)
-            return True, SQL.strip('\n')
-
-        except Exception as e:
-            return False, e
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data)
+            return SQL.strip('\n'), data['name'] if 'name' in data else old_data['name']
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'create.sql']),
+                                  data=data)
+            return SQL.strip('\n'), data['name']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, doid):

@@ -1443,32 +1443,30 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 data[k] = v
 
         try:
-            SQL = self.get_sql(scid, tid, data)
+            SQL, name = self.get_sql(scid, tid, data)
 
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Table updated",
-                    data={
-                        'id': tid,
-                        'scid': scid,
-                        'did': did
-                    }
+            SQL = render_template("/".join([self.template_path,
+                                  'get_schema_oid.sql']), tid=tid)
+            status, res = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # new schema id
+            scid = res['rows'][0]['scid']
+
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    tid,
+                    scid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': tid,
-                        'scid': scid,
-                        'did': did
-                    }
-                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -1683,9 +1681,11 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 data[k] = v
 
         try:
-            SQL = self.get_sql(scid, tid, data)
+            SQL, name = self.get_sql(scid, tid, data)
             SQL = re.sub('\n{2,}', '\n\n', SQL)
             SQL = SQL.strip('\n')
+            if SQL == '':
+                SQL = "--modified SQL"
             return make_json_response(
                 data=SQL,
                 status=200
@@ -2286,7 +2286,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = SQL.strip('\n')
 
-        return SQL
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @staticmethod
     def validate_constrains(key, data):

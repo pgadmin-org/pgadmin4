@@ -277,15 +277,13 @@ class FtsParserView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(_("""
-                Could not find the FTS Parser node.
-                """))
+            return gone(_("Could not find the FTS Parser node."))
 
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     row['oid'],
-                    did,
+                    row['schema'],
                     row['name'],
                     icon="icon-fts_parser"
                 ),
@@ -306,7 +304,7 @@ class FtsParserView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(_("""
-                Could not find the FTS Parser node.
+                Could not find the FTS Parser node in the database node.
                 """))
 
         return ajax_response(
@@ -346,52 +344,49 @@ class FtsParserView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        try:
-            # Fetch schema name from schema oid
-            sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
-                data=data,
-                conn=self.conn,
-            )
+        # Fetch schema name from schema oid
+        sql = render_template(
+            "/".join([self.template_path, 'schema.sql']),
+            data=data,
+            conn=self.conn,
+        )
 
-            status, schema = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=schema)
+        status, schema = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=schema)
 
-            # replace schema oid with schema name before passing to create.sql
-            # to generate proper sql query
-            new_data = data.copy()
-            new_data['schema'] = schema
-            sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=new_data,
-                conn=self.conn,
-            )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # replace schema oid with schema name before passing to create.sql
+        # to generate proper sql query
+        new_data = data.copy()
+        new_data['schema'] = schema
+        sql = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=new_data,
+            conn=self.conn,
+        )
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # we need fts_parser id to to add object in tree at browser,
-            # below sql will give the same
-            sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                name=data['name']
-            )
-            status, pid = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=pid)
+        # we need fts_parser id to to add object in tree at browser,
+        # below sql will give the same
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            name=data['name'],
+            scid=data['schema'] if 'schema' in data else scid
+        )
+        status, pid = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=pid)
 
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    pid,
-                    did,
-                    data['name'],
-                    icon="icon-fts_parser"
-                )
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                pid,
+                data['schema'] if 'schema' in data else scid,
+                data['name'],
+                icon="icon-fts_parser"
             )
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+        )
 
     @check_precondition
     def update(self, gid, sid, did, scid, pid):
@@ -406,51 +401,38 @@ class FtsParserView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-
         # Fetch sql query to update fts parser
-        sql = self.get_sql(gid, sid, did, scid, data, pid)
-        if sql and sql.strip('\n') and sql.strip(' '):
-            status, res = self.conn.execute_scalar(sql)
+        sql, name = self.get_sql(gid, sid, did, scid, data, pid)
+        sql = sql.strip('\n').strip(' ')
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if pid is not None:
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                pid=pid,
+                scid=data['schema'] if 'schema' in data else scid
+            )
+
+            status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            if pid is not None:
-                sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
-                    pid=pid,
-                    scid=scid
+            if len(res['rows']) == 0:
+                return gone(
+                    _("Could not find the FTS Parser node to update.")
                 )
 
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                if len(res['rows']) == 0:
-                    return gone(_("""
-                        Could not find the FTS Parser node to update.
-                    """))
-
-                data = res['rows'][0]
-                return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        pid,
-                        did,
-                        data['name'],
-                        icon="icon-fts_parser"
-                    )
-                )
-        else:
-            return make_json_response(
-                success=1,
-                info="Nothing to update",
-                data={
-                    'id': pid,
-                    'scid': scid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
-                }
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                pid,
+                data['schema'] if 'schema' in data else scid,
+                name,
+                icon="icon-%s" % self.node_type
             )
+        )
+
 
     @check_precondition
     def delete(self, gid, sid, did, scid, pid):
@@ -530,20 +512,19 @@ class FtsParserView(PGChildNodeView):
         :param pid: fts tempate id
         """
         data = request.args
-
         # Fetch sql query for modified data
-        sql = self.get_sql(gid, sid, did, scid, data, pid)
+        try:
+            # Fetch sql query for modified data
+            SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
+            if SQL == '':
+                SQL = "--modified SQL"
 
-        if isinstance(sql, str) and sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                data=sql,
+                data=SQL,
                 status=200
-            )
-        else:
-            return make_json_response(
-                data="--modified SQL",
-                status=200
-            )
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, did, scid, data, pid=None):
         """
@@ -554,91 +535,88 @@ class FtsParserView(PGChildNodeView):
         :param scid: schema id
         :param pid: fts tempate id
         """
-        try:
-            # Fetch sql for update
-            if pid is not None:
+
+        # Fetch sql for update
+        if pid is not None:
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                pid=pid,
+                scid=scid
+            )
+
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(_("Could not find the FTS Parser node."))
+
+            old_data = res['rows'][0]
+
+            # If user has changed the schema then fetch new schema directly
+            # using its oid otherwise fetch old schema name with parser oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=data)
+
+            status, new_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=new_schema)
+
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            if 'schema' in new_data:
+                new_data['schema'] = new_schema
+
+            # Fetch old schema name using old schema oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=old_data
+            )
+
+            status, old_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=old_schema)
+
+            # Replace old schema oid with old schema name
+            old_data['schema'] = old_schema
+
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=new_data,
+                o_data=old_data
+            )
+            # Fetch sql query for modified data
+            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+        else:
+            # Fetch schema name from schema oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=data
+            )
+
+            status, schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=schema)
+
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            new_data['schema'] = schema
+
+            if 'prsstart' in new_data and \
+                            'prstoken' in new_data and \
+                            'prsend' in new_data and \
+                            'prslextype' in new_data and \
+                            'name' in new_data and \
+                            'schema' in new_data:
                 sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
-                    pid=pid,
-                    scid=scid
-                )
-
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                if len(res['rows']) == 0:
-                    return gone(_("Could not find the FTS Parser node."))
-
-                old_data = res['rows'][0]
-
-                # If user has changed the schema then fetch new schema directly
-                # using its oid otherwise fetch old schema name with parser oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=data)
-
-                status, new_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=new_schema)
-
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                if 'schema' in new_data:
-                    new_data['schema'] = new_schema
-
-                # Fetch old schema name using old schema oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=old_data
-                )
-
-                status, old_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=old_schema)
-
-                # Replace old schema oid with old schema name
-                old_data['schema'] = old_schema
-
-                sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.template_path, 'create.sql']),
                     data=new_data,
-                    o_data=old_data
+                    conn=self.conn
                 )
-                # Fetch sql query for modified data
             else:
-                # Fetch schema name from schema oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=data
-                )
-
-                status, schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=schema)
-
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                new_data['schema'] = schema
-
-                if 'prsstart' in new_data and \
-                                'prstoken' in new_data and \
-                                'prsend' in new_data and \
-                                'prslextype' in new_data and \
-                                'name' in new_data and \
-                                'schema' in new_data:
-                    sql = render_template(
-                        "/".join([self.template_path, 'create.sql']),
-                        data=new_data,
-                        conn=self.conn
-                    )
-                else:
-                    sql = "-- incomplete definition"
-            return str(sql.strip('\n'))
-
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+                sql = "-- incomplete definition"
+        return str(sql.strip('\n')), data['name']
 
     @check_precondition
     def start_functions(self, gid, sid, did, scid):

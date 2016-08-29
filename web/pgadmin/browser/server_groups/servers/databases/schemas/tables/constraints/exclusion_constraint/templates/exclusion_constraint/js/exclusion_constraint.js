@@ -306,9 +306,6 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             template: _.template([
               '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
               '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-              '    <% if (first_empty) { %>',
-              '    <option value="" <%="" === rawValue ? "selected" : "" %>><%- empty_value %></option>',
-              '    <% } %>',
               '    <% for (var i=0; i < options.length; i++) { %>',
               '    <% var option = options[i]; %>',
               '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',

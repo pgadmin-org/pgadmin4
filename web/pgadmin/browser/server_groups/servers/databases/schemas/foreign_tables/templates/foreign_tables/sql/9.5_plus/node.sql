@@ -10,5 +10,9 @@ LEFT OUTER JOIN
 LEFT OUTER JOIN
     pg_description des ON (des.objoid=c.oid AND des.classoid='pg_class'::regclass)
 WHERE
+{% if scid %}
     c.relnamespace = {{scid}}::oid
+{% elif foid %}
+    c.oid = {{foid}}::oid
+{% endif %}
 ORDER BY c.relname;

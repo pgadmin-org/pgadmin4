@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class TriggerModule(CollectionNodeModule):
@@ -497,6 +498,9 @@ class TriggerView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the trigger in the table."""))
+
         # Making copy of output for future use
         data = dict(res['rows'][0])
 
@@ -687,51 +691,20 @@ class TriggerView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
 
-            SQL = self.get_sql(scid, tid, trid, data)
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            SQL, name = self.get_sql(scid, tid, trid, data)
+            SQL = SQL.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                if hasattr(self, 'lanname') and self.lanname == 'edbspl' \
-                        and 'prosrc' in data:
-                    data['name'] = self.trigger_name
-                    SQL = render_template("/".join([self.template_path,
-                                                    'get_oid.sql']),
-                                          tid=tid, data=data)
-                    status, trid = self.conn.execute_scalar(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=tid)
-
-                    return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            trid,
-                            scid,
-                            data['name'],
-                            icon="icon-trigger"
-                        )
-                    )
-                else:
-                    return make_json_response(
-                        success=1,
-                        info="Trigger updated",
-                        data={
-                            'id': trid,
-                            'tid': tid,
-                            'scid': scid
-                        }
-                    )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': trid,
-                        'tid': tid,
-                        'scid': scid
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    trid,
+                    scid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -760,13 +733,16 @@ class TriggerView(PGChildNodeView):
         data['table'] = self.table
 
         try:
-            SQL = self.get_sql(scid, tid, trid, data)
+            sql, name = self.get_sql(scid, tid, trid, data)
 
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                return make_json_response(
-                    data=SQL,
-                    status=200
-                )
+            sql = sql.strip('\n').strip(' ')
+
+            if sql == '':
+                sql = "--modified SQL"
+            return make_json_response(
+                data=sql,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -821,7 +797,7 @@ class TriggerView(PGChildNodeView):
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
-        return SQL
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, trid):
@@ -861,7 +837,7 @@ class TriggerView(PGChildNodeView):
 
             data = self._trigger_definition(data)
 
-            SQL = self.get_sql(scid, tid, None, data)
+            SQL, name = self.get_sql(scid, tid, None, data)
 
             sql_header = "-- Trigger: {0}\n\n-- ".format(data['name'])
             if hasattr(str, 'decode'):

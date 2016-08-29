@@ -1,7 +1,7 @@
 SELECT
     pr.oid, pr.proname || '(' || COALESCE(pg_catalog
     .pg_get_function_identity_arguments(pr.oid), '') || ')' as name,
-    lanname, pg_get_userbyid(proowner) as funcowner
+    lanname, pg_get_userbyid(proowner) as funcowner, pr.pronamespace as nsp
 FROM
     pg_proc pr
 JOIN

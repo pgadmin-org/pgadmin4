@@ -22,10 +22,11 @@ LEFT OUTER JOIN
     pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
 WHERE
     proisagg = FALSE
-    AND pronamespace = {{scid}}::oid
     AND typname = 'trigger' AND lanname != 'edbspl'
 {% if fnid %}
     AND pr.oid = {{fnid}}::oid
+{% else %}
+    AND pronamespace = {{scid}}::oid
 {% endif %}
 ORDER BY
     proname;

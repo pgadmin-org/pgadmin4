@@ -16,10 +16,11 @@ FROM
 WHERE
 {% if scid %}
     cfg.cfgnamespace = {{scid}}::OID
-{% elif name %}
-    cfg.cfgname = {{name|qtLiteral}}
+{% endif %}
+{% if name %}
+    {% if scid %}AND {% endif %}cfg.cfgname = {{name|qtLiteral}}
 {% endif %}
 {% if cfgid %}
-    AND cfg.oid = {{cfgid}}::OID
+    {% if scid %}AND {% else %}{% if name %}AND {% endif %}{% endif %}cfg.oid = {{cfgid}}::OID
 {% endif %}
 ORDER BY cfg.cfgname

@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class ResourceGroupModule(CollectionNodeModule):
@@ -249,6 +250,38 @@ class ResourceGroupView(NodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, rg_id):
+        """
+        This function will used to create all the child node within that collection.
+        Here it will create all the resource group node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+        """
+
+        sql = render_template("/".join([self.template_path, 'nodes.sql']),
+                              rgid=rg_id)
+        status, result = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=result)
+
+        if len(result['rows']) == 0:
+            return gone(gettext("""Could not find the resource group."""))
+
+        res = self.blueprint.generate_browser_node(
+                result['rows'][0]['oid'],
+                sid,
+                result['rows'][0]['name'],
+                icon="icon-resource_group"
+            )
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
     def nodes(self, gid, sid):
         """
         This function will used to create all the child node within that collection.
@@ -259,7 +292,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']))
+        sql = render_template("/".join([self.template_path, 'nodes.sql']))
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -293,6 +326,9 @@ class ResourceGroupView(NodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the resource group."""))
 
         return ajax_response(
             response=res['rows'][0],
@@ -405,14 +441,13 @@ class ResourceGroupView(NodeView):
                     if not status:
                         return internal_server_error(errormsg=res)
 
-            return make_json_response(
-                success=1,
-                info="Resource Group updated",
-                data={
-                    'id': rg_id,
-                    'sid': sid,
-                    'gid': gid
-                }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    rg_id,
+                    sid,
+                    data['name'],
+                    icon="icon-%s" % self.node_type
+                )
             )
 
         except Exception as e:
@@ -482,17 +517,15 @@ class ResourceGroupView(NodeView):
             except ValueError:
                 data[k] = v
 
-        sql = self.get_sql(data, rg_id)
-        if sql and sql.strip('\n') and sql.strip(' '):
-            return make_json_response(
-                data=sql,
-                status=200
-            )
-        else:
-            return make_json_response(
-                data='-- Modified SQL --',
-                status=200
-            )
+        sql, name = self.get_sql(data, rg_id)
+        sql = sql.strip('\n').strip(' ')
+
+        if sql == '':
+            sql = "--modified SQL"
+        return make_json_response(
+            data=sql,
+            status=200
+        )
 
     def get_sql(self, data, rg_id=None):
         """
@@ -505,38 +538,35 @@ class ResourceGroupView(NodeView):
         required_args = [
             'name', 'cpu_rate_limit', 'dirty_rate_limit'
         ]
-        try:
-            if rg_id is not None:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                old_data = res['rows'][0]
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
+        if rg_id is not None:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), rgid=rg_id)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+            old_data = res['rows'][0]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
 
-                sql = ''
-                name_changed = False
-                if data['name'] != old_data['name']:
-                    name_changed = True
-                    sql = render_template("/".join([self.template_path, 'update.sql']),
-                                          oldname=old_data['name'], newname=data['name'], conn=self.conn)
-                if (data['cpu_rate_limit'] != old_data['cpu_rate_limit']) \
-                        or data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
-                    if name_changed:
-                        sql += "\n-- Following query will be executed in a separate transaction\n"
-                    sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
-            else:
-                sql = render_template("/".join([self.template_path, 'create.sql']), rgname=data['name'], conn=self.conn)
-                if ('cpu_rate_limit' in data and data['cpu_rate_limit'] > 0) \
-                        or ('dirty_rate_limit' in data and data['dirty_rate_limit'] > 0):
+            sql = ''
+            name_changed = False
+            if data['name'] != old_data['name']:
+                name_changed = True
+                sql = render_template("/".join([self.template_path, 'update.sql']),
+                                      oldname=old_data['name'], newname=data['name'], conn=self.conn)
+            if (data['cpu_rate_limit'] != old_data['cpu_rate_limit']) \
+                    or data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
+                if name_changed:
                     sql += "\n-- Following query will be executed in a separate transaction\n"
-                    sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+                sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
+        else:
+            sql = render_template("/".join([self.template_path, 'create.sql']), rgname=data['name'], conn=self.conn)
+            if ('cpu_rate_limit' in data and data['cpu_rate_limit'] > 0) \
+                    or ('dirty_rate_limit' in data and data['dirty_rate_limit'] > 0):
+                sql += "\n-- Following query will be executed in a separate transaction\n"
+                sql += render_template("/".join([self.template_path, 'update.sql']), data=data, conn=self.conn)
 
-            return sql
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, rg_id):

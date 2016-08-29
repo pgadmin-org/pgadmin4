@@ -86,7 +86,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "_id": parent_id,
             "_pid": parent_id,
             "module": 'pgadmin.node.%s' % self.node_type,
-            "subnodes": sorted([m.node_type for m in self.submodules])
+            "nodes": [self.node_type]
         }
 
         for key in kwargs:

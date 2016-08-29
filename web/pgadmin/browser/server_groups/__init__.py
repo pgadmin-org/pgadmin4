@@ -17,7 +17,7 @@ from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView
-from pgadmin.utils.ajax import make_json_response, \
+from pgadmin.utils.ajax import make_json_response, gone, \
     make_response as ajax_response
 from pgadmin.utils.menu import MenuItem
 
@@ -131,7 +131,7 @@ class ServerGroupView(NodeView):
 
         if sg is None:
             return make_json_response(
-                status=417,
+                status=410,
                 success=0,
                 errormsg=gettext(
                     'The specified server group could not be found.'
@@ -178,7 +178,17 @@ class ServerGroupView(NodeView):
                     status=410, success=0, errormsg=e.message
                 )
 
-        return make_json_response(result=request.form)
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                gid,
+                None,
+                servergroup.name,
+                "icon-%s" % self.node_type,
+                True,
+                self.node_type,
+                can_delete=True  # This is user created hence can deleted
+            )
+        )
 
     def properties(self, gid):
         """Update the server-group properties"""
@@ -190,7 +200,7 @@ class ServerGroupView(NodeView):
 
         if sg is None:
             return make_json_response(
-                status=417,
+                status=410,
                 success=0,
                 errormsg=gettext(
                     'The specified server group could not be found.'
@@ -232,7 +242,7 @@ class ServerGroupView(NodeView):
 
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
-                        "%d" % (sg.id), None,
+                        "%d" % (sg.id),None,
                         sg.name,
                         "icon-%s" % self.node_type,
                         True,
@@ -283,19 +293,29 @@ class ServerGroupView(NodeView):
 
         if gid is None:
             groups = ServerGroup.query.filter_by(user_id=current_user.id)
-        else:
-            groups = ServerGroup.query.filter_by(user_id=current_user.id,
-                                                 id=gid).first()
 
-        for group in groups:
-            nodes.append(
-                self.blueprint.generate_browser_node(
-                    "%d" % (group.id), None,
-                    group.name,
-                    "icon-%s" % self.node_type,
-                    True,
-                    self.node_type
+            for group in groups:
+                nodes.append(
+                    self.blueprint.generate_browser_node(
+                        "%d" % (group.id), None,
+                        group.name,
+                        "icon-%s" % self.node_type,
+                        True,
+                        self.node_type
+                    )
                 )
+        else:
+            group = ServerGroup.query.filter_by(user_id=current_user.id,
+                                                 id=gid).first()
+            if not group:
+                return gone(errormsg="Couldn't find the server-group!")
+
+            nodes = self.blueprint.generate_browser_node(
+                "%d" % (group.id), None,
+                group.name,
+                "icon-%s" % self.node_type,
+                True,
+                self.node_type
             )
 
         return make_json_response(data=nodes)

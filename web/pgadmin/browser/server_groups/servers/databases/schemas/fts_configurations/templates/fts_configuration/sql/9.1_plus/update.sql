@@ -41,7 +41,7 @@ ALTER TEXT SEARCH CONFIGURATION {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(n
 {% if 'schema' in data and data.schema != o_data.schema %}
 {% set schema = data.schema%}
 ALTER TEXT SEARCH CONFIGURATION {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    SET SCHEMA {{data.schema}};
+    SET SCHEMA {{conn|qtIdent(data.schema)}};
 
 {% endif %}
 {% if 'description' in data and data.description != o_data.description %}

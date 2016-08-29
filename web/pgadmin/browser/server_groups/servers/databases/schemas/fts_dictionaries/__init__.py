@@ -300,7 +300,7 @@ class FtsDictionaryView(PGChildNodeView):
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    did,
+                    scid,
                     row['name'],
                     icon="icon-fts_dictionary"
                 ))
@@ -332,15 +332,13 @@ class FtsDictionaryView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(_("""
-                Could not find the FTS Dictionary node.
-                """))
+            return gone(_("Could not find the FTS Dictionary node."))
 
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                    row['oid'],
-                    did,
+                    dcid,
+                    row['schema'],
                     row['name'],
                     icon="icon-fts_dictionary"
                 ),
@@ -372,7 +370,7 @@ class FtsDictionaryView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(_("""
-                Could not find the FTS Dictionary node.
+                Could not find the FTS Dictionary node in the database node.
                 """))
 
         if res['rows'][0]['options'] is not None:
@@ -408,54 +406,51 @@ class FtsDictionaryView(PGChildNodeView):
                 return make_json_response(
                     status=410,
                     success=0,
-                    errormsg=_(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                    errormsg=_("Could not find the required parameter (%s)." % arg)
                 )
-        try:
-            # Fetch schema name from schema oid
-            sql = render_template("/".join([self.template_path, 'schema.sql']),
-                                  data=data,
-                                  conn=self.conn,
-                                  )
+        # Fetch schema name from schema oid
+        sql = render_template(
+            "/".join([self.template_path, 'schema.sql']),
+            data=data,
+            conn=self.conn,
+        )
 
-            status, schema = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=schema)
+        status, schema = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=schema)
 
-            # Replace schema oid with schema name before passing to create.sql
-            # To generate proper sql query
-            new_data = data.copy()
-            new_data['schema'] = schema
-            sql = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=new_data,
-                                  conn=self.conn,
-                                  )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # Replace schema oid with schema name before passing to create.sql
+        # To generate proper sql query
+        new_data = data.copy()
+        new_data['schema'] = schema
+        sql = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=new_data,
+            conn=self.conn,
+        )
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # We need dcid to add object in tree at browser,
-            # Below sql will give the same
-            sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                name=data['name']
+        # We need dcid to add object in tree at browser,
+        # Below sql will give the same
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            name=data['name'],
+            scid=data['schema']
+        )
+        status, dcid= self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=dcid)
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                dcid,
+                data['schema'],
+                data['name'],
+                icon="icon-fts_dictionary"
             )
-            status, dcid = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=dcid)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    dcid,
-                    did,
-                    data['name'],
-                    icon="icon-fts_dictionary"
-                )
-            )
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+        )
 
     @check_precondition
     def update(self, gid, sid, did, scid, dcid):
@@ -472,55 +467,35 @@ class FtsDictionaryView(PGChildNodeView):
         )
 
         # Fetch sql query to update fts dictionary
-        sql = self.get_sql(gid, sid, did, scid, data, dcid)
-        try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+        sql, name = self.get_sql(gid, sid, did, scid, data, dcid)
+        sql = sql.strip('\n').strip(' ')
+        status, res = self.conn.execute_scalar(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-                if dcid is not None:
-                    sql = render_template(
-                        "/".join([self.template_path, 'properties.sql']),
-                        dcid=dcid,
-                        scid=scid
-                    )
+        if dcid is not None:
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                dcid=dcid
+            )
 
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                if len(res['rows']) == 0:
-                    return gone(_("""
-                        Could not find the FTS Dictionary node to update.
-                    """))
-
-                data = res['rows'][0]
-                return jsonify(
-                    node=self.blueprint.generate_browser_node(
-                        dcid,
-                        did,
-                        data['name'],
-                        icon="icon-fts_dictionary"
-                    )
-                )
-            # In case FTS Dictionary node is not present
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': dcid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'scid': scid
-                    }
+            if len(res['rows']) == 0:
+                return gone(
+                    _("Could not find the FTS Dictionary node to update.")
                 )
 
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                dcid,
+                res['rows'][0]['schema'],
+                name,
+                icon="icon-%s" % self.node_type
+            )
+        )
 
     @check_precondition
     def delete(self, gid, sid, did, scid, dcid):
@@ -604,19 +579,18 @@ class FtsDictionaryView(PGChildNodeView):
             except ValueError:
                 data[k] = v
 
-        # Fetch sql query for modified data
-        sql = self.get_sql(gid, sid, did, scid, data, dcid)
+        try:
+            # Fetch sql query for modified data
+            SQL, name = self.get_sql(gid, sid, did, scid, data, dcid)
+            if SQL == '':
+                SQL = "--modified SQL"
 
-        if isinstance(sql, str) and sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
-                data=sql,
+                data=SQL,
                 status=200
-            )
-        else:
-            return make_json_response(
-                data="--modified SQL",
-                status=200
-            )
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, did, scid, data, dcid=None):
         """
@@ -627,85 +601,83 @@ class FtsDictionaryView(PGChildNodeView):
         :param scid: schema id
         :param dcid: fts dictionary id
         """
-        try:
-            # Fetch sql for update
-            if dcid is not None:
-                sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
-                    dcid=dcid,
-                    scid=scid
-                )
 
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+        # Fetch sql for update
+        if dcid is not None:
+            sql = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                dcid=dcid,
+                scid=scid
+            )
 
-                if len(res['rows']) == 0:
-                    return gone(_("""
-                        Could not find the FTS Dictionary node.
-                    """))
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                old_data = res['rows'][0]
+            if len(res['rows']) == 0:
+                return gone(_("""
+                    Could not find the FTS Dictionary node.
+                """))
 
-                # If user has changed the schema then fetch new schema directly
-                # using its oid otherwise fetch old schema name using its oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=data)
+            old_data = res['rows'][0]
 
-                status, new_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=new_schema)
+            # If user has changed the schema then fetch new schema directly
+            # using its oid otherwise fetch old schema name using its oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=data)
 
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                if 'schema' in new_data:
-                    new_data['schema'] = new_schema
+            status, new_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=new_schema)
 
-                # Fetch old schema name using old schema oid
-                sql = render_template(
-                    "/".join([self.template_path, 'schema.sql']),
-                    data=old_data)
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            if 'schema' in new_data:
+                new_data['schema'] = new_schema
 
-                status, old_schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=old_schema)
+            # Fetch old schema name using old schema oid
+            sql = render_template(
+                "/".join([self.template_path, 'schema.sql']),
+                data=old_data)
 
-                # Replace old schema oid with old schema name
-                old_data['schema'] = old_schema
+            status, old_schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=old_schema)
 
-                sql = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=new_data, o_data=old_data
-                )
-                # Fetch sql query for modified data
+            # Replace old schema oid with old schema name
+            old_data['schema'] = old_schema
+
+            sql = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=new_data, o_data=old_data
+            )
+            # Fetch sql query for modified data
+            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+        else:
+            # Fetch schema name from schema oid
+            sql = render_template("/".join([self.template_path, 'schema.sql']),
+                                  data=data)
+
+            status, schema = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=schema)
+
+            # Replace schema oid with schema name
+            new_data = data.copy()
+            new_data['schema'] = schema
+
+            if 'template' in new_data and \
+                            'name' in new_data and \
+                            'schema' in new_data:
+                sql = render_template("/".join([self.template_path,
+                                                'create.sql']),
+                                      data=new_data,
+                                      conn=self.conn
+                                      )
             else:
-                # Fetch schema name from schema oid
-                sql = render_template("/".join([self.template_path, 'schema.sql']),
-                                      data=data)
-
-                status, schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=schema)
-
-                # Replace schema oid with schema name
-                new_data = data.copy()
-                new_data['schema'] = schema
-
-                if 'template' in new_data and \
-                                'name' in new_data and \
-                                'schema' in new_data:
-                    sql = render_template("/".join([self.template_path,
-                                                    'create.sql']),
-                                          data=new_data,
-                                          conn=self.conn
-                                          )
-                else:
-                    sql = "-- incomplete definition"
-            return str(sql.strip('\n'))
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                sql = "-- incomplete definition"
+            return str(sql.strip('\n')), data['name']
 
     @check_precondition
     def fetch_templates(self, gid, sid, did, scid):

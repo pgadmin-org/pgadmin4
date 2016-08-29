@@ -33,6 +33,49 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     }
   };
 
+  var processTreeData = function(payload) {
+    var data = JSON.parse(payload).data.sort(function(a, b) {
+      return pgAdmin.natural_sort(a.label, b.label, {});
+    });
+    _.each(data, function(d){
+      d._label = d.label;
+      d.label = _.escape(d.label);
+    })
+    return data;
+  };
+
+  var initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree =
+    function(b) {
+      $('#tree').aciTree({
+        ajax: {
+          url: '{{ url_for('browser.get_nodes') }}',
+          converters: {
+            'text json': processTreeData,
+          }
+        },
+        ajaxHook: function(item, settings) {
+          if (item != null) {
+            var d = this.itemData(item);
+            n = b.Nodes[d._type];
+            if (n)
+              settings.url = n.generate_url(item, 'children', d, true);
+          }
+        },
+        loaderDelay: 100,
+        show: {
+          duration: 75
+        },
+        hide: {
+          duration: 75
+        },
+        view: {
+          duration: 75
+        }
+      });
+
+      b.tree = $('#tree').aciTree('api');
+    };
+
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
@@ -330,44 +373,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       }, 10);
 
       // Initialise the treeview
-      $('#tree').aciTree({
-        ajax: {
-          url: '{{ url_for('browser.get_nodes') }}',
-          converters: {
-            'text json': function(payload) {
-              data = JSON.parse(payload).data.sort(function(a, b) {
-                return (
-                  (a.label === b.label) ? 0 : (a.label < b.label ? -1 : 1)
-                );
-              });
-              _.each(data, function(d){
-                d.label = _.escape(d.label);
-              })
-              return data;
-            },
-          }
-        },
-        ajaxHook: function(item, settings) {
-          if (item != null) {
-            var d = this.itemData(item);
-                n = obj.Nodes[d._type];
-            if (n)
-              settings.url = n.generate_url(item, 'children', d, true);
-          }
-        },
-        loaderDelay: 100,
-        show: {
-          duration: 75
-        },
-        hide: {
-          duration: 75
-        },
-        view: {
-          duration: 75
-        }
-      });
-
-      obj.tree = $('#tree').aciTree('api');
+      initializeBrowserTree(obj);
 
       // Build the treeview context menu
       $('#tree').contextMenu({
@@ -424,7 +430,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                           try {
                             m.init();
                             obj.Events.trigger(
-                              'pgadmin-browser:' + s.name + ':initialized', m, obj
+                              'pgadmin:module:' + s.name + ':initialized', m, obj
                             );
                           } catch (err) {
                             console.log("Error running module init script for '" + s.path + "'");
@@ -535,6 +541,9 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           error: function() {}
           });
         }, 300000);
+      obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
+      obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
+      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
     },
     // load the module right now
     load_module: function(name, path, c) {
@@ -714,6 +723,800 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       });
 
       return preference;
+    },
+
+    _findTreeChildNode: function(_i, _d, _o) {
+      var loaded = _o.t.wasLoad(_i),
+          done = true,
+          onLoad = function() {
+            var items = _o.t.children(_i),
+                i, d, n, idx = 0, size = items.length;
+            for (; idx < size; idx++) {
+              i = items.eq(idx);
+              d = _o.t.itemData(i);
+              if (d._type === _d._type) {
+                if (!_o.hasId || d._id == _d._id) {
+                  _o.i = i;
+                  _o.d = _d;
+                  _o.pI.push({coll: false, item: i, d: _d});
+
+                  _o.success();
+                  return;
+                }
+              } else {
+                n = _o.b.Nodes[d._type];
+                // Are we looking at the collection node for the given node?
+                if (
+                  n && n.collection_node && d.nodes &&
+                  _.indexOf(d.nodes, _d._type) != -1
+                ) {
+                  _o.i = i;
+                  _o.d = null;
+                  _o.pI.push({coll: true, item: i, d: d});
+
+                  _o.b._findTreeChildNode(i, _d, _o);
+                  return;
+                }
+              }
+            }
+            _o.notFound && typeof(_o.notFound) == 'function' &&
+              _o.notFound(_d);
+          };
+
+      if (!loaded && _o.load) {
+        _o.t.open(_i, {
+          success: onLoad,
+          unanimated: true,
+          fail: function() {
+            var fail = _o && _o.o && _o.o.fail;
+
+            if (
+              fail && typeof(fail) == 'function'
+            ) {
+              fail.apply(_o.t, []);
+            }
+          }
+        });
+      } else if (loaded) {
+        onLoad();
+      } else {
+        _o.notFound && typeof(_o.notFound) == 'function' &&
+          _o.notFound(_d);
+      }
+
+      return;
+    },
+
+    onAddTreeNode: function(_data, _hierarchy, _opts) {
+      var ctx = {
+            b: this, // Browser
+            d: null, // current parent
+            hasId: true,
+            i: null, // current item
+            p: _.toArray(_hierarchy || {}).sort(
+              function(a, b) {
+                return (a.priority === b.priority) ? 0 : (
+                  a.priority < b.priority ? -1 : 1
+                );
+              }
+            ), // path of the parent
+            pI: [], // path Item
+            t: this.tree, // Tree Api
+            o: _opts
+          },
+          traversePath = function() {
+            var ctx = this, i, d;
+
+            ctx.success = traversePath;
+            if (ctx.p.length) {
+              d = ctx.p.shift();
+              // This is the parent node.
+              // Replace the parent-id of the data, which could be different
+              // from the given hierarchy.
+              if (!ctx.p.length) {
+                d._id = _data._pid;
+                ctx.success = addItemNode;
+              }
+              ctx.b._findTreeChildNode(
+                ctx.i, d, ctx
+              );
+            }
+            return true;
+          }.bind(ctx),
+          addItemNode = function() {
+            // Append the new data in the tree under the current item.
+            // We may need to pass it to proper collection node.
+            var ctx = this,
+                first = (ctx.i || this.t.wasLoad(ctx.i)) &&
+                  this.t.first(ctx.i),
+                findChildNode = function(success, notFound) {
+                  var ctx = this;
+                  ctx.success = success;
+                  ctx.notFound = notFound;
+
+                  ctx.b._findTreeChildNode(ctx.i, _data, ctx);
+                }.bind(ctx),
+                selectNode = function() {
+                  this.t.openPath(this.i);
+                  this.t.select(this.i);
+                  if (
+                    ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                  ) {
+                    ctx.o.success.apply(ctx.t, [ctx.i, _data]);
+                  }
+                }.bind(ctx),
+                addNode = function() {
+                  var ctx = this,
+                      items = ctx.t.children(ctx.i),
+                      s = 0, e = items.length - 1, i,
+                      linearSearch = function() {
+                        while (e >= s) {
+                          i = items.eq(s);
+                          d = ctx.t.itemData(i);
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label, {}
+                            ) == 1
+                          )
+                            return true;
+                          s++;
+                        }
+                        if (e != items.length - 1) {
+                          i = items.eq(e);
+                          return true;
+                        }
+                        i = null;
+                        return false;
+                      },
+                      binarySearch = function() {
+                        var d, m;
+                        // Binary search only outperforms Linear search for n > 44.
+                        // Reference:
+                        // https://en.wikipedia.org/wiki/Binary_search_algorithm#cite_note-30
+                        //
+                        // We will try until it's half.
+                        while (e - s > 22) {
+                          i = items.eq(s);
+                          d = ctx.t.itemData(i);
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label, {}
+                            ) != -1
+                          )
+                            return true;
+                          i = items.eq(e);
+                          d = ctx.t.itemData(i);
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label, {}
+                            ) != 1
+                          )
+                            return true;
+                          m = Math.round((e - s) / 2);
+                          i = items.eq(e);
+                          d = ctx.t.itemData(i);
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label, {}
+                            ) == 1
+                          ) {
+                            s = m + 1;
+                            e--;
+                          } else {
+                            s++;
+                            e = m - 1;
+                          }
+                        }
+                        return linearSearch();
+                      };
+
+                  if (binarySearch()) {
+                    ctx.t.before(i, {
+                      itemData: _data,
+                      success: function() {
+                        console.log('Add before..');
+                        if (
+                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                        ) {
+                          ctx.o.success.apply(ctx.t, [i, _data]);
+                        }
+                      },
+                      fail: function() {
+                        console.log('Failed to add before..');
+                        if (
+                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
+                        ) {
+                          ctx.o.fail.apply(ctx.t, [i, _data]);
+                        }
+                      }
+                    });
+                  } else {
+                    ctx.t.append(ctx.i, {
+                      itemData: _data,
+                      success: function() {
+                        console.log('Appended');
+                        if (
+                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                        ) {
+                          ctx.o.success.apply(ctx.t, [ctx.i, _data]);
+                        }
+                      },
+                      fail: function() {
+                        console.log('Failed to append');
+                        if (
+                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
+                        ) {
+                          ctx.o.fail.apply(ctx.t, [ctx.i, _data]);
+                        }
+                      }
+                    });
+                  }
+                }.bind(ctx);
+
+            // Parent node do not have any children, let me unload it.
+            if (!first && ctx.t.wasLoad(ctx.i)) {
+              ctx.t.unload(ctx.i, {
+                success: function() {
+                  findChildNode(
+                    selectNode,
+                    function() {
+                      var o = this && this.o;
+                      if (
+                        o && o.fail && typeof(o.fail) == 'function'
+                      ) {
+                        o.fail.apply(this.t, [this.i, _data]);
+                      }
+                    }.bind(this)
+                  );
+                }.bind(this),
+                fail: function() {
+                  var o = this && this.o;
+                  if (
+                    o && o.fail && typeof(o.fail) == 'function'
+                  ) {
+                    o.fail.apply(this.t, [this.i, _data]);
+                  }
+                }.bind(this)
+              });
+              return;
+            }
+
+            // We can find the collection node using _findTreeChildNode
+            // indirectly.
+            findChildNode(selectNode, addNode);
+          }.bind(ctx);
+
+      if (!ctx.t.wasInit() || !_data) {
+        return;
+      }
+      _data._label = _data.label;
+      _data.label = _.escape(_data.label);
+
+      traversePath();
+    },
+
+    onUpdateTreeNode: function(_old, _new, _hierarchy, _opts) {
+      var ctx = {
+            b: this, // Browser
+            d: null, // current parent
+            i: null, // current item
+            hasId: true,
+            p: _.toArray(_hierarchy || {}).sort(
+              function(a, b) {
+                return (a.priority === b.priority) ? 0 : (
+                  a.priority < b.priority ? -1 : 1
+                );
+              }
+            ), // path of the old object
+            pI: [], // path items
+            t: this.tree, // Tree Api
+            o: _opts,
+            load: true,
+            old: _old,
+            new: _new,
+            op: null
+          },
+          errorOut = function() {
+            var fail = this.o && this.o.fail;
+            if (fail && typeof(fail) == 'function') {
+              fail.apply(this.t, [this.i, _new, _old]);
+            }
+          }.bind(ctx),
+          deleteNode = function() {
+            var pI = this.pI,
+                findParent = function() {
+                  if (pI.length) {
+                    pI.pop();
+                    var length = pI.length;
+                    this.i = (length && pI[length - 1].item) || null;
+                    this.d = (length && pI[length - 1].d) || null;
+
+                    // It is a collection item, let's find the node item
+                    if (length && pI[length - 1].coll) {
+                      pI.pop();
+                      length = pI.length;
+                      this.i = (length && pI[length - 1].item) || null;
+                      this.d = (length && pI[length - 1].d) || null;
+                    }
+                  } else {
+                    this.i = null;
+                    this.d = null;
+                  }
+                }.bind(this);
+
+            // Remove the current node first.
+            if (
+              this.i && this.d && this.old._id == this.d._id &&
+              this.old._type == this.d._type
+            ) {
+              this.t.remove(this.i);
+
+              // Find the parent
+              findParent();
+              var _parentData = this.d;
+              // Find the grand-parent, or the collection node of parent.
+              findParent();
+
+              if (this.i) {
+                this.load = true;
+
+                this.success = function() {
+                  addItemNode();
+                }.bind(this);
+                // We can refresh the collection node, but - let's not bother about
+                // it right now.
+                this.notFound = errorOut;
+
+                // Find the new parent
+                this.b._findTreeChildNode(
+                  this.i, {_id: this.new._pid, _type: _parentData._type}, this
+                );
+              }
+              return;
+            }
+            errorOut();
+
+          }.bind(ctx),
+          findNewParent = function(_d) {
+            var findParent = function() {
+              if (pI.length) {
+                pI.pop();
+                var length = pI.length;
+                this.i = (length && pI[length - 1].item) || null;
+                this.d = (length && pI[length - 1].d) || null;
+
+                // It is a collection item, let's find the node item
+                if (length && pI[length - 1].coll) {
+                  pI.pop();
+                  length = pI.length;
+                  this.i = (length && pI[length - 1].item) || null;
+                  this.d = (length && pI[length - 1].d) || null;
+                }
+              } else {
+                this.i = null;
+                this.d = null;
+              }
+            }.bind(this);
+
+            // old parent was not found, can we find the new parent?
+            if (this.i) {
+              this.load = true;
+              this.success = function() {
+                addItemNode();
+              }.bind(this);
+
+              if (_d._type == old._type) {
+                // We were already searching the old object under the parent.
+                findParent();
+                _d = this.d;
+                // Find the grand parent
+                findParent();
+              }
+              console.log(_d);
+              _d = this.new._pid;
+
+              // We can refresh the collection node, but - let's not bother about
+              // it right now.
+              this.notFound = errorOut;
+
+              // Find the new parent
+              this.b._findTreeChildNode(this.i, _d, this);
+            } else {
+              addItemNode();
+            }
+          }.bind(ctx),
+          updateNode = function() {
+            if (
+              this.i && this.d && this.new._id == this.d._id &&
+              this.new._type == this.d._type
+            ) {
+              // Found the currect
+              _.extend(this.d, this.new._id);
+              this.t.setLabel(ctx.i, {label: this.new.label});
+              this.t.addIcon(ctx.i, {icon: this.new.icon});
+              this.t.setId(ctx.id, {id: this.new.id});
+              this.t.openPath(this.i);
+              this.t.select(this.i);
+            }
+            var success = this.o && this.o.success;
+            if (success && typeof(success) == 'function') {
+              success.apply(this.t, [this.i, _old, _new]);
+            }
+          }.bind(ctx),
+          traversePath = function() {
+            var ctx = this, i, d;
+
+            ctx.success = traversePath;
+            if (ctx.p.length) {
+              d = ctx.p.shift();
+              // This is the node, we can now do the required operations.
+              // We should first delete the existing node, if the parent-id is
+              // different.
+              if (!ctx.p.length) {
+                if (ctx.op == 'RECREATE') {
+                  ctx.load = false;
+                  ctx.success = deleteNode;
+                  ctx.notFound = findNewParent;
+                } else {
+                  ctx.success = updateNode;
+                  ctx.notFound = errorOut;
+                }
+              }
+              ctx.b._findTreeChildNode(
+                ctx.i, d, ctx
+              );
+            } else if (ctx.p.length == 1) {
+              ctx.notFound = findNewParent;
+            }
+            return true;
+          }.bind(ctx),
+          addItemNode = function() {
+            var ctx = this,
+                first = (ctx.i || this.t.wasLoad(ctx.i)) &&
+                  this.t.first(ctx.i),
+                findChildNode = function(success, notFound) {
+                  var ctx = this;
+                  ctx.success = success;
+                  ctx.notFound = notFound;
+
+                  ctx.b._findTreeChildNode(ctx.i, _new, ctx);
+                }.bind(ctx),
+                selectNode = function() {
+                  this.t.openPath(this.i);
+                  this.t.select(this.i);
+                  if (
+                    ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                  ) {
+                    ctx.o.success.apply(ctx.t, [ctx.i, _new]);
+                  }
+                }.bind(ctx),
+                addNode = function() {
+                  var ctx = this,
+                      items = ctx.t.children(ctx.i),
+                      s = 0, e = items.length - 1, i,
+                      linearSearch = function() {
+                        while (e >= s) {
+                          i = items.eq(s);
+                          d = ctx.t.itemData(i);
+                          if (d.label > _new.label)
+                            return true;
+                          s++;
+                        }
+                        if (e != items.length - 1) {
+                          i = items.eq(e);
+                          return true;
+                        }
+                        i = null;
+                        return false;
+                      },
+                      binarySearch = function() {
+                        var d, m;
+                        // Binary search only outperforms Linear search for n > 44.
+                        // Reference:
+                        // https://en.wikipedia.org/wiki/Binary_search_algorithm#cite_note-30
+                        //
+                        // We will try until it's half.
+                        while (e - s > 22) {
+                          i = items.eq(s);
+                          d = ctx.t.itemData(i);
+                          if (d.label > _new.label)
+                            return true;
+                          i = items.eq(e);
+                          d = ctx.t.itemData(i);
+                          if (d.label < _new.label)
+                            return true;
+                          m = Math.round((e - s) / 2);
+                          i = items.eq(e);
+                          d = ctx.t.itemData(i);
+                          if (d.label < _new.label) {
+                            s = m + 1;
+                            e--;
+                          } else {
+                            s++;
+                            e = m - 1;
+                          }
+                        }
+                        return linearSearch();
+                      };
+
+                  if (binarySearch()) {
+                    ctx.t.before(i, {
+                      itemData: _new,
+                      success: function() {
+                        console.log('Add before..');
+                        if (
+                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                        ) {
+                          ctx.o.success.apply(ctx.t, [i, _old, _new]);
+                        }
+                      },
+                      fail: function() {
+                        console.log('Failed to add before..');
+                        if (
+                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
+                        ) {
+                          ctx.o.fail.apply(ctx.t, [i, _old, _new]);
+                        }
+                      }
+                    });
+                  } else {
+                    ctx.t.append(ctx.i, {
+                      itemData: _new,
+                      success: function() {
+                        console.log('Appended');
+                        if (
+                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                        ) {
+                          ctx.o.success.apply(ctx.t, [ctx.i, _old, _new]);
+                        }
+                      },
+                      fail: function() {
+                        console.log('Failed to append');
+                        if (
+                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
+                        ) {
+                          ctx.o.fail.apply(ctx.t, [ctx.i, _old, _new]);
+                        }
+                      }
+                    });
+                  }
+                }.bind(ctx);
+
+            // Parent node do not have any children, let me unload it.
+            if (!first && ctx.t.wasLoad(ctx.i)) {
+              ctx.t.unload(ctx.i, {
+                success: function() {
+                  findChildNode(
+                    selectNode,
+                    function() {
+                      var o = this && this.o;
+                      if (
+                        o && o.fail && typeof(o.fail) == 'function'
+                      ) {
+                        o.fail.apply(this.t, [this.i, _old, _new]);
+                      }
+                    }.bind(this)
+                  );
+                }.bind(this),
+                fail: function() {
+                  var o = this && this.o;
+                  if (
+                    o && o.fail && typeof(o.fail) == 'function'
+                  ) {
+                    o.fail.apply(this.t, [this.i, _old, _new]);
+                  }
+                }.bind(this)
+              });
+              return;
+            }
+
+            // We can find the collection node using _findTreeChildNode
+            // indirectly.
+            findChildNode(selectNode, addNode);
+          }.bind(ctx);
+
+      if (!ctx.t.wasInit() || !_new || !_old) {
+        return;
+      }
+      ctx.pI.push(_old);
+      _new._label = _new.label;
+      _new.label = _.escape(_new.label);
+
+      if (_old._pid != _new._pid) {
+        ctx.op = 'RECREATE';
+        traversePath();
+      } else {
+        ctx.op = 'UPDATE';
+        traversePath();
+      }
+    },
+
+    onRefreshTreeNode: function(_i, _opts) {
+      var d = _i && this.tree.itemData(_i),
+          n = d && d._type && this.Nodes[d._type],
+          ctx = {
+            b: this, // Browser
+            d: d, // current parent
+            i: _i, // current item
+            p: null, // path of the old object
+            pI: [], // path items
+            t: this.tree, // Tree Api
+            o: _opts
+          },
+          isOpen,
+          idx = -1;
+
+      if (!n) {
+        _i = null;
+        ctx.i = null;
+        ctx.d = null;
+      } else {
+        isOpen = this.tree.isInode(_i) && this.tree.isOpen(_i);
+      }
+
+      ctx.branch = ctx.t.serialize(
+        _i, {}, function(i, el, d) {
+          idx++;
+          if (!idx || (d.inode && d.open)) {
+            return {
+              _id: d._id, _type: d._type, branch: d.branch, open: d.open
+            };
+          }
+        });
+
+      if (!n) {
+        ctx.t.destroy({
+          success: function() {
+            initializeBrowserTree(ctx.b);
+            ctx.t = ctx.b.tree;
+            ctx.i = null;
+            ctx.b._refreshNode(ctx, ctx.branch);
+          },
+          error: function() {
+            var fail = (_opts.o && _opts.o.fail) || _opts.fail;
+
+            if (typeof(fail) == 'function') {
+              fail();
+            }
+          }
+        });
+        return;
+      }
+      var fetchNodeInfo = function(_i, _d, _n) {
+            var url = _n.generate_url(_i, 'nodes', _d, true);
+
+            $.ajax({
+              url: url,
+              type: 'GET',
+              cache: false,
+              dataType: 'json',
+              success: function(res) {
+                // Node information can come as result/data
+                var data = res.result || res.data;
+
+                data._label = data.label;
+                data.label = _.escape(data.label);
+                var d = ctx.t.itemData(ctx.i);
+                _.extend(d, data);
+                ctx.t.setLabel(ctx.i, {label: _d.label});
+                ctx.t.addIcon(ctx.i, {icon: _d.icon});
+                ctx.t.setId(ctx.i, {id: _d.id});
+
+                if (
+                  _n.can_expand && typeof(_n.can_expand) == 'function'
+                ) {
+                  if (!_n.can_expand(d)) {
+                    ctx.t.unload(ctx.i);
+                    return;
+                  }
+                }
+                ctx.b._refreshNode(ctx, ctx.branch);
+                var success = (ctx.o && ctx.o.success) || ctx.success;
+                if (success && typeof(success) == 'function') {
+                  success();
+                }
+              },
+              error: function(jqx, error, status) {
+                var p = ctx.t.parent(ctx.i);
+
+                if (!p)
+                  return;
+
+                ctx.t.remove(ctx.i, {
+                  success: function() {
+                    // Try to refresh the parent on error
+                    try {
+                      pgBrowser.Events.trigger(
+                        'pgadmin:browser:tree:refresh', p
+                      );
+                    } catch(e) {}
+                  }
+                });
+              }
+            });
+          }.bind(this);
+
+      if (n && n.collection_node) {
+        var p = ctx.i = this.tree.parent(_i),
+            unloadNode = function() {
+              this.tree.unload(_i, {
+                success: function() {
+                  _i = p;
+                  d = ctx.d = ctx.t.itemData(ctx.i);
+                  n = ctx.b.Nodes[d._type];
+                  _i = p;
+                  fetchNodeInfo(_i, d, n);
+                },
+                fail: function() {
+                  console.log(arguments);
+                }
+              });
+            }.bind(this);
+        if (!this.tree.isInode(_i)) {
+          this.tree.setInode(_i, {
+            success: unloadNode
+          });
+        } else {
+          unloadNode();
+        }
+      } else if (isOpen) {
+        this.tree.unload(_i, {
+          success: fetchNodeInfo.bind(this, _i, d, n),
+          fail: function() {
+            console.log(arguments);
+          }
+        });
+      } else {
+        fetchNodeInfo(_i, d, n);
+      }
+    },
+
+    _refreshNode: function(_ctx, _d) {
+      var traverseNodes = function(_d) {
+            var _ctx = this, idx = 0, ctx, d,
+                size = (_d.branch && _d.branch.length) || 0,
+                findNode = function(_i, __d, __ctx) {
+                  setTimeout(
+                    function() {
+                      __ctx.b._findTreeChildNode(_i, __d, __ctx);
+                    }, 0
+                  );
+                };
+
+            for (; idx < size; idx++) {
+              d = _d.branch[idx];
+              n = _ctx.b.Nodes[d._type];
+              ctx = {
+                b: _ctx.b,
+                t: _ctx.t,
+                pI: [],
+                i: _ctx.i,
+                d: d,
+                select: _ctx.select,
+                hasId: !n.collection_node,
+                o: _ctx.o,
+                load: true
+              };
+              ctx.success = function() {
+                this.b._refreshNode.call(this.b, this, this.d);
+              }.bind(ctx)
+              findNode(_ctx.i, d, ctx);
+            }
+          }.bind(_ctx, _d);
+
+       if (!_d || !_d.open)
+         return;
+
+       if (!_ctx.t.isOpen(_ctx.i)) {
+         _ctx.t.open(_ctx.i, {
+           unanimated: true,
+           success: traverseNodes,
+           fail: function() { /* Do nothing */ }
+         });
+       } else {
+         traverseNodes();
+       }
+
     },
 
     editor_shortcut_keys: {

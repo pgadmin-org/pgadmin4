@@ -22,6 +22,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -270,6 +271,41 @@ class ForeignServerView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def node(self, gid, sid, did, fid, fsid):
+        """
+        This function will fetch properites foreign server node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            fid: Foreign data wrapper ID
+            fsid: Foreign server ID
+        """
+
+        res = []
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fsid=fsid, conn=self.conn)
+        status, r_set = self.conn.execute_2darray(sql)
+
+        if not status:
+            return internal_server_error(errormsg=r_set)
+
+        for row in r_set['rows']:
+
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['fsrvid'],
+                    fid,
+                    row['name'],
+                    icon="icon-foreign_server"
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified foreign server."))
+
     def tokenizeOptions(self, option_value):
         """
         This function will tokenize the string stored in database
@@ -307,6 +343,11 @@ class ForeignServerView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Couldnot find the foreign server information.")
+            )
 
         if res['rows'][0]['fsrvoptions'] is not None:
             res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
@@ -422,36 +463,22 @@ class ForeignServerView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        sql = self.get_sql(gid, sid, data, did, fid, fsid)
-        try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Foreign server updated",
-                    data={
-                        'id': fsid,
-                        'fid': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
+        try:
+            sql, name = self.get_sql(gid, sid, data, did, fid, fsid)
+            sql = sql.strip('\n').strip(' ')
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    fsid,
+                    fid,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': fsid,
-                        'fid': fid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -484,6 +511,7 @@ class ForeignServerView(PGChildNodeView):
 
             if name is None:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -534,18 +562,18 @@ class ForeignServerView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
+        try:
+            sql, name = self.get_sql(gid, sid, data, did, fid, fsid)
+            if sql == '':
+                    sql = "--modified SQL"
 
-        sql = self.get_sql(gid, sid, data, did, fid, fsid)
-        if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
                 data=sql,
                 status=200
-            )
-        else:
-            return make_json_response(
-                data='-- Modified SQL --',
-                status=200
-            )
+                )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, gid, sid, data, did, fid, fsid=None):
         """
@@ -563,96 +591,96 @@ class ForeignServerView(PGChildNodeView):
         required_args = [
             'name'
         ]
-        try:
-            if fsid is not None:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                if res['rows'][0]['fsrvoptions'] is not None:
-                    res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
+        if fsid is not None:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                for key in ['fsrvacl']:
-                    if key in data and data[key] is not None:
-                        if 'added' in data[key]:
-                            data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
-                        if 'changed' in data[key]:
-                            data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
-                        if 'deleted' in data[key]:
-                            data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
+            if res['rows'][0]['fsrvoptions'] is not None:
+                res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
 
-                old_data = res['rows'][0]
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
+            for key in ['fsrvacl']:
+                if key in data and data[key] is not None:
+                    if 'added' in data[key]:
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], ['U'])
+                    if 'changed' in data[key]:
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ['U'])
+                    if 'deleted' in data[key]:
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ['U'])
 
-                new_list_add = []
-                new_list_change = []
+            old_data = res['rows'][0]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
 
-                # Allow user to set the blank value in fsrvvalue field in option model
-                if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
-                    for item in data['fsrvoptions']['added']:
-                        new_dict_add = {}
-                        if item['fsrvoption']:
-                            if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                                new_dict_add.update(item);
-                            else:
-                                new_dict_add.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+            new_list_add = []
+            new_list_change = []
 
-                        new_list_add.append(new_dict_add)
+            # Allow user to set the blank value in fsrvvalue field in option model
+            if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
+                for item in data['fsrvoptions']['added']:
+                    new_dict_add = {}
+                    if item['fsrvoption']:
+                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
+                            new_dict_add.update(item);
+                        else:
+                            new_dict_add.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
 
-                    data['fsrvoptions']['added'] = new_list_add
+                    new_list_add.append(new_dict_add)
 
-                # Allow user to set the blank value in fsrvvalue field in option model
-                if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
-                    for item in data['fsrvoptions']['changed']:
-                        new_dict_change = {}
-                        if item['fsrvoption']:
-                            if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                                new_dict_change.update(item);
-                            else:
-                                new_dict_change.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+                data['fsrvoptions']['added'] = new_list_add
 
-                        new_list_change.append(new_dict_change)
+            # Allow user to set the blank value in fsrvvalue field in option model
+            if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
+                for item in data['fsrvoptions']['changed']:
+                    new_dict_change = {}
+                    if item['fsrvoption']:
+                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
+                            new_dict_change.update(item);
+                        else:
+                            new_dict_change.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
 
-                    data['fsrvoptions']['changed'] = new_list_change
+                    new_list_change.append(new_dict_change)
 
-                sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
-                                      conn=self.conn)
-            else:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), fdwid=fid, conn=self.conn)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+                data['fsrvoptions']['changed'] = new_list_change
 
-                fdw_data = res['rows'][0]
+            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
+                                  conn=self.conn)
+            return sql, data['name'] if 'name' in data else old_data['name']
+        else:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), fdwid=fid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                for key in ['fsrvacl']:
-                    if key in data and data[key] is not None:
-                        data[key] = parse_priv_to_db(data[key], ['U'])
+            fdw_data = res['rows'][0]
 
-                new_list = []
+            for key in ['fsrvacl']:
+                if key in data and data[key] is not None:
+                    data[key] = parse_priv_to_db(data[key], ['U'])
 
-                if 'fsrvoptions' in data:
-                    for item in data['fsrvoptions']:
-                        new_dict = {}
-                        if item['fsrvoption']:
-                            if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                                new_dict.update(item);
-                            else:
-                                new_dict.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+            new_list = []
 
-                        new_list.append(new_dict)
+            if 'fsrvoptions' in data:
+                for item in data['fsrvoptions']:
+                    new_dict = {}
+                    if item['fsrvoption']:
+                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
+                            new_dict.update(item);
+                        else:
+                            new_dict.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
 
-                    data['fsrvoptions'] = new_list
+                    new_list.append(new_dict)
 
-                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
-                                      conn=self.conn)
-                sql += "\n"
-            return sql
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+                data['fsrvoptions'] = new_list
+
+            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
+                                  conn=self.conn)
+            sql += "\n"
+        return sql, data['name']
+
 
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid):

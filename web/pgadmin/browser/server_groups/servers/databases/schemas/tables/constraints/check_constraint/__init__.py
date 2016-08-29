@@ -22,6 +22,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -259,7 +260,6 @@ class CheckConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    @check_precondition
     def get_node_list(self, gid, sid, did, scid, tid, cid=None):
         """
         This function returns all check constraints
@@ -276,6 +276,28 @@ class CheckConstraintView(PGChildNodeView):
         Returns:
 
         """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        self.manager = driver.connection_manager(sid)
+        self.conn = self.manager.connection(did=did)
+        self.qtIdent = driver.qtIdent
+
+        ver = self.manager.version
+        # Set the template path for the SQL scripts
+        if ver >= 90200:
+            self.template_path = 'check_constraint/sql/9.2_plus'
+        elif ver >= 90100:
+            self.template_path = 'check_constraint/sql/9.1_plus'
+
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        self.schema = rset['rows'][0]['schema']
+        self.table = rset['rows'][0]['table']
+
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
                               tid=tid)
         status, res = self.conn.execute_dict(SQL)
@@ -283,7 +305,7 @@ class CheckConstraintView(PGChildNodeView):
         return res['rows']
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid, tid, cid=None):
+    def node(self, gid, sid, did, scid, tid, cid):
         """
         Returns all the Check Constraints.
 
@@ -295,16 +317,71 @@ class CheckConstraintView(PGChildNodeView):
             tid: Table Id
             cid: Check constraint Id.
         """
-        try:
-            res = self.get_nodes(gid, sid, did, scid, tid, cid)
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              cid=cid)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if len(rset['rows']) == 0:
+            return gone(_("""Could not find the check constraint."""))
+
+        if "convalidated" in rset['rows'][0] and rset['rows'][0]["convalidated"]:
+            icon = "icon-check_constraints_bad"
+            valid = False
+        else:
+            icon = "icon-check_constraints"
+            valid = True
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                tid,
+                rset['rows'][0]['name'],
+                icon=icon,
+                valid=valid
+            )
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
+    def nodes(self, gid, sid, did, scid, tid):
+        """
+        Returns all the Check Constraints.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            tid: Table Id
+            cid: Check constraint Id.
+        """
+        res = []
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        for row in rset['rows']:
+            if "convalidated" in row and row["convalidated"]:
+                icon = "icon-check_constraints_bad"
+                valid = False
+            else:
+                icon = "icon-check_constraints"
+                valid = True
+            res.append(
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon=icon,
+                    valid=valid
+                ))
             return make_json_response(
                 data=res,
                 status=200
             )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
 
-    @check_precondition
     def get_nodes(self, gid, sid, did, scid, tid, cid=None):
         """
         This function returns all event check constraint as a list.
@@ -320,6 +397,28 @@ class CheckConstraintView(PGChildNodeView):
         Returns:
 
         """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        self.manager = driver.connection_manager(sid)
+        self.conn = self.manager.connection(did=did)
+        self.qtIdent = driver.qtIdent
+
+        ver = self.manager.version
+        # Set the template path for the SQL scripts
+        if ver >= 90200:
+            self.template_path = 'check_constraint/sql/9.2_plus'
+        elif ver >= 90100:
+            self.template_path = 'check_constraint/sql/9.1_plus'
+
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        self.schema = rset['rows'][0]['schema']
+        self.table = rset['rows'][0]['table']
+
         res = []
         SQL = render_template("/".join([self.template_path,
                                         'nodes.sql']),
@@ -558,54 +657,35 @@ class CheckConstraintView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
 
-            SQL = self.get_sql(gid, sid, data, scid, tid, cid)
+            SQL, name = self.get_sql(gid, sid, data, scid, tid, cid)
             SQL = SQL.strip('\n').strip(' ')
-            if SQL != "":
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                sql = render_template("/".join([self.template_path, 'get_name.sql']),
-                                      cid=cid)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
-                    icon = 'icon-check_constraints_)bad'
-                    valid = False
-                else:
-                    icon = 'icon-check_constraints'
-                    valid = True
+            sql = render_template("/".join([self.template_path, 'get_name.sql']),
+                                  cid=cid)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Check Constraint updated",
-                    data={
-                        'id': cid,
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'icon': icon,
-                        'val    id': valid
-                    }
-                )
+            if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
+                icon = 'icon-check_constraints_bad'
+                valid = False
             else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': cid,
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+                icon = 'icon-check_constraints'
+                valid = True
 
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    cid,
+                    tid,
+                    name,
+                    icon=icon,
+                    valid=valid
+                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -677,9 +757,10 @@ class CheckConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql = self.get_sql(gid, sid, data, scid, tid, cid)
+            sql, name = self.get_sql(gid, sid, data, scid, tid, cid)
             sql = sql.strip('\n').strip(' ')
-
+            if sql == '':
+                sql = "--modified SQL"
             return make_json_response(
                 data=sql,
                 status=200
@@ -700,42 +781,39 @@ class CheckConstraintView(PGChildNodeView):
             tid: Table Id
             cid: Check Constraint Id
         """
-        try:
-            if cid is not None:
-                SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
-                                      tid=tid, cid=cid)
-                status, res = self.conn.execute_dict(SQL)
+        if cid is not None:
+            SQL = render_template("/".join([self.template_path,
+                                            'properties.sql']),
+                                  tid=tid, cid=cid)
+            status, res = self.conn.execute_dict(SQL)
 
-                if not status:
-                    return False, internal_server_error(errormsg=res)
+            if not status:
+                return False, internal_server_error(errormsg=res)
 
-                old_data = res['rows'][0]
-                required_args = ['name']
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
+            old_data = res['rows'][0]
+            required_args = ['name']
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
 
-                SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
-                    data=data, o_data=old_data, conn=self.conn
-                )
-            else:
-                required_args = ['consrc']
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data, conn=self.conn
+            )
+        else:
+            required_args = ['consrc']
 
-                for arg in required_args:
-                    if arg not in data:
-                        return _('-- definition incomplete')
-                    elif isinstance(data[arg], list) and len(data[arg]) < 1:
-                        return _('-- definition incomplete')
+            for arg in required_args:
+                if arg not in data:
+                    return _('-- definition incomplete')
+                elif isinstance(data[arg], list) and len(data[arg]) < 1:
+                    return _('-- definition incomplete')
 
-                SQL = render_template("/".join([self.template_path,
-                                                'create.sql']),
-                                      data=data)
+            SQL = render_template("/".join([self.template_path,
+                                            'create.sql']),
+                                  data=data)
 
-            return SQL
-        except Exception as e:
-            return False, internal_server_error(errormsg=str(e))
+        return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, cid):

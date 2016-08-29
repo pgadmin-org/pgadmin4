@@ -1,6 +1,6 @@
 {# FETCH FTS PARSER name statement #}
 SELECT
-    oid, prsname as name
+    oid, prsname as name, prs.prsnamespace AS schema
 FROM
     pg_ts_parser prs
 WHERE

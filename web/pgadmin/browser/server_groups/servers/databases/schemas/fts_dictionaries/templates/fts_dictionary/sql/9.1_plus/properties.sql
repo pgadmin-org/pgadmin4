@@ -14,11 +14,12 @@ FROM
 WHERE
 {% if scid %}
     dict.dictnamespace = {{scid}}::OID
-{% elif name %}
-dict.dictname = {{name|qtLiteral}}
+{% endif %}
+{% if name %}
+    {% if scid %}AND {% endif %}dict.dictname = {{name|qtLiteral}}
 {% endif %}
 {% if dcid %}
-    AND dict.oid = {{dcid}}::OID
+    {% if scid %}AND {% else %}{% if name %}AND {% endif %}{% endif %}dict.oid = {{dcid}}::OID
 {% endif %}
 ORDER BY
     dict.dictname

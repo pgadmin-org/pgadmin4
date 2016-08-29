@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class ForeignKeyConstraintModule(ConstraintTypeModule):
@@ -193,7 +194,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         ],
         'delete': [{'delete': 'delete'}],
         'children': [{'get': 'children'}],
-        'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
+        'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
@@ -273,54 +274,54 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
-        try:
-            sql = render_template("/".join([self.template_path, 'properties.sql']),
-                                  tid=tid, cid=fkid)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              tid=tid, cid=fkid)
 
-            status, res = self.conn.execute_dict(sql)
+        status, res = self.conn.execute_dict(sql)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            result = res['rows'][0]
+        if len(res['rows']) == 0:
+            return gone(_("""Could not find the foreign key constraint in the table."""))
 
-            sql = render_template("/".join([self.template_path,
-                                            'get_constraint_cols.sql']),
-                                  tid=tid,
-                                  keys=zip(result['confkey'], result['conkey']),
-                                  confrelid=result['confrelid'])
+        result = res['rows'][0]
 
-            status, res = self.conn.execute_dict(sql)
+        sql = render_template("/".join([self.template_path,
+                                        'get_constraint_cols.sql']),
+                              tid=tid,
+                              keys=zip(result['confkey'], result['conkey']),
+                              confrelid=result['confrelid'])
 
-            if not status:
-                return internal_server_error(errormsg=res)
+        status, res = self.conn.execute_dict(sql)
 
-            columns = []
-            cols = []
-            for row in res['rows']:
-                columns.append({"local_column": row['conattname'],
-                                "references": result['confrelid'],
-                                "referenced": row['confattname']})
-                cols.append(row['conattname'])
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            result['columns'] = columns
+        columns = []
+        cols = []
+        for row in res['rows']:
+            columns.append({"local_column": row['conattname'],
+                            "references": result['confrelid'],
+                            "referenced": row['confattname']})
+            cols.append(row['conattname'])
 
-            if fkid:
-                coveringindex = self.search_coveringindex(tid, cols)
-                result['coveringindex'] = coveringindex
-                if coveringindex:
-                    result['autoindex'] = True
-                    result['hasindex'] = True
-                else:
-                    result['autoindex'] = False
-                    result['hasindex'] = False
+        result['columns'] = columns
 
-            return ajax_response(
-                response=result,
-                status=200
-            )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        if fkid:
+            coveringindex = self.search_coveringindex(tid, cols)
+            result['coveringindex'] = coveringindex
+            if coveringindex:
+                result['autoindex'] = True
+                result['hasindex'] = True
+            else:
+                result['autoindex'] = False
+                result['hasindex'] = False
+
+        return ajax_response(
+            response=result,
+            status=200
+        )
 
     @check_precondition
     def list(self, gid, sid, did, scid, tid, fkid=None):
@@ -348,8 +349,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    @check_precondition
-    def get_node_list(self, gid, sid, did, scid, tid, fkid=None):
+    def get_node_list(self, gid, sid, did, scid, tid):
         """
         This function returns all foreign keys
         nodes within that collection as a list.
@@ -365,6 +365,24 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                sid
+            )
+        self.conn = self.manager.connection(did=did)
+        self.template_path = 'foreign_key/sql'
+
+        # We need parent's name eg table name and schema name
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            self.schema = row['schema']
+            self.table = row['table']
+
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               tid=tid)
@@ -373,9 +391,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
         return res['rows']
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid, tid, fkid=None):
+    def node(self, gid, sid, did, scid, tid, fkid=None):
         """
-        This function returns all event trigger nodes as a
+        This function returns all foreign key nodes as a
         http response.
 
         Args:
@@ -389,8 +407,97 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
-        res = self.get_nodes(gid, sid, did, scid, tid, fkid)
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
 
+        if len(rset['rows']) == 0:
+            return gone(_("""Could not find the foreign key."""))
+
+        if rset['rows'][0]["convalidated"]:
+            icon = "icon-foreign_key_no_validate"
+            valid = False
+        else:
+            icon = "icon-foreign_key"
+            valid = True
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                tid,
+                rset['rows'][0]['name'],
+                icon=icon,
+                valid=valid
+            )
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
+    def nodes(self, gid, sid, did, scid, tid):
+        """
+        This function returns all foreign key nodes as a
+        http response.
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          tid: Table ID
+          fkid: Foreign key constraint ID
+
+        Returns:
+
+        """
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        res = []
+        for row in rset['rows']:
+            if row["convalidated"]:
+                icon = "icon-foreign_key_no_validate"
+                valid = False
+            else:
+                icon = "icon-foreign_key"
+                valid = True
+            res.append(
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    tid,
+                    row['name'],
+                    icon=icon,
+                    valid=valid
+                ))
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    def get_nodes(self, gid, sid, did, scid, tid):
+        """
+        This function returns all foreign key nodes as a list.
+        """
+        self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                sid
+            )
+        self.conn = self.manager.connection(did=did)
+        self.template_path = 'foreign_key/sql'
+
+        # We need parent's name eg table name and schema name
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            self.schema = row['schema']
+            self.table = row['table']
         res = []
         SQL = render_template("/".join([self.template_path,
                                         'nodes.sql']),
@@ -412,11 +519,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     icon=icon,
                     valid=valid
                 ))
-
-        return make_json_response(
-            data=res,
-            status=200
-        )
+        return res
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid, fkid=None):
@@ -579,55 +682,36 @@ class ForeignKeyConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql = self.get_sql(data, tid, fkid)
+            sql, name = self.get_sql(data, tid, fkid)
             sql = sql.strip('\n').strip(' ')
-            if sql != "":
-                status, res = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                sql = render_template("/".join([self.template_path, 'get_oid.sql']),
-                                      tid=tid,
-                                      name=data['name'])
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = self.conn.execute_scalar(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                if res['rows'][0]["convalidated"]:
-                    icon = "icon-foreign_key_no_validate"
-                    valid = False
-                else:
-                    icon = "icon-foreign_key"
-                    valid = True
+            sql = render_template("/".join([self.template_path, 'get_oid.sql']),
+                                  tid=tid,
+                                  name=data['name'])
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Foreign key updated",
-                    data={
-                        'id': res['rows'][0]['oid'],
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'icon': icon,
-                        'valid': valid
-                    }
-                )
+            if res['rows'][0]["convalidated"]:
+                icon = "icon-foreign_key_no_validate"
+                valid = False
             else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': fkid,
-                        'tid': tid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did
-                    }
-                )
+                icon = "icon-foreign_key"
+                valid = True
 
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    fkid,
+                    tid,
+                    name,
+                    icon=icon,
+                    valid=valid
+                )
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -720,9 +804,10 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql = self.get_sql(data, tid, fkid)
+            sql, name = self.get_sql(data, tid, fkid)
             sql = sql.strip('\n').strip(' ')
-
+            if sql == '':
+                sql = "--modified SQL"
             return make_json_response(
                 data=sql,
                 status=200
@@ -814,7 +899,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 sql += render_template(
                     "/".join([self.template_path, 'create_index.sql']),
                     data=data, conn=self.conn)
-        return sql
+        return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, fkid=None):

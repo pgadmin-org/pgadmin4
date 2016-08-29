@@ -22,6 +22,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -290,6 +291,36 @@ class LanguageView(PGChildNodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, lid):
+        """
+        This function will fetch properties of the language nodes.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            lid: Language ID
+        """
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              lid=lid)
+        status, result = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=result)
+
+        for row in result['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    did,
+                    row['name'],
+                    icon="icon-language"
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified language."))
+
+    @check_precondition
     def properties(self, gid, sid, did, lid):
         """
         This function will show the properties of the selected language node.
@@ -305,6 +336,11 @@ class LanguageView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Couldnot find the language information.")
+            )
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), lid=lid)
         status, result = self.conn.execute_dict(sql)
@@ -356,36 +392,22 @@ class LanguageView(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        sql = self.get_sql(data, lid)
 
         try:
-            if sql and sql.strip('\n') and sql.strip(' '):
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
+            sql, name = self.get_sql(data, lid)
+            sql = sql.strip('\n').strip(' ')
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Language updated",
-                    data={
-                        'id': lid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    lid,
+                    did,
+                    name,
+                    icon="icon-%s" % self.node_type
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': lid,
-                        'did': did,
-                        'sid': sid,
-                        'gid': gid
-                    }
-                )
-
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -510,18 +532,17 @@ class LanguageView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
+        try:
+            sql, name = self.get_sql(data, lid)
+            if sql == '':
+                sql = "--modified SQL"
 
-        sql = self.get_sql(data, lid)
-        if sql and sql.strip('\n') and sql.strip(' '):
             return make_json_response(
                 data=sql,
                 status=200
-            )
-        else:
-            return make_json_response(
-                data='-- Modified SQL --',
-                status=200
-            )
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
     def get_sql(self, data, lid=None):
         """
@@ -534,39 +555,43 @@ class LanguageView(PGChildNodeView):
         required_args = [
             'name', 'lanowner', 'description'
         ]
-        try:
-            sql = ''
-            if lid is not None:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), lid=lid)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
-                for key in ['lanacl']:
-                    if key in data and data[key] is not None:
-                        if 'added' in data[key]:
-                            data[key]['added'] = parse_priv_to_db(data[key]['added'])
-                        if 'changed' in data[key]:
-                            data[key]['changed'] = parse_priv_to_db(data[key]['changed'])
-                        if 'deleted' in data[key]:
-                            data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'])
+        if lid is not None:
+            sql = render_template("/".join([self.template_path, 'properties.sql']), lid=lid)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                old_data = res['rows'][0]
-                for arg in required_args:
-                    if arg not in data:
-                        data[arg] = old_data[arg]
-                sql = render_template("/".join([self.template_path, 'update.sql']), data=data,
-                                      o_data=old_data, conn=self.conn)
-            else:
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Couldnot find the language information.")
+                )
 
-                if 'lanacl' in data:
-                    data['lanacl'] = parse_priv_to_db(data['lanacl'], 'LANGUAGE')
+            for key in ['lanacl']:
+                if key in data and data[key] is not None:
+                    if 'added' in data[key]:
+                        data[key]['added'] = parse_priv_to_db(data[key]['added'], ["U"])
+                    if 'changed' in data[key]:
+                        data[key]['changed'] = parse_priv_to_db(data[key]['changed'], ["U"])
+                    if 'deleted' in data[key]:
+                        data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], ["U"])
 
-                sql = render_template("/".join([self.template_path, 'create.sql']),
-                                      data=data, conn=self.conn)
-            return sql.strip('\n')
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            old_data = res['rows'][0]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
+            sql = render_template("/".join([self.template_path, 'update.sql']), data=data,
+                                  o_data=old_data, conn=self.conn)
+            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
+        else:
+
+            if 'lanacl' in data:
+                data['lanacl'] = parse_priv_to_db(data['lanacl'], ["U"])
+
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, conn=self.conn)
+            return sql.strip('\n'), data['name']
+
 
     @check_precondition
     def get_functions(self, gid, sid, did):

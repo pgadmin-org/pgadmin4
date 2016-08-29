@@ -25,6 +25,15 @@ define([
         this.sqlPanelVisibilityChanged
       );
 
+      pgBrowser.Events.on(
+        'pgadmin:browser:node:updated', function() {
+          if (this.sqlPanels && this.sqlPanels.length) {
+            $(this.sqlPanels[0]).data('node-prop', '');
+            this.sqlPanelVisibilityChanged(this.sqlPanels[0]);
+          }
+        }, this
+      );
+
       // Hmm.. Did we find the SQL panel, and is it visible (opened)?
       // If that is the case - we need to listen the browser tree selection
       // events.
@@ -88,7 +97,7 @@ define([
                 error: function(xhr, error, message) {
                   var _label = treeHierarchy[n_type].label;
                   pgBrowser.Events.trigger(
-                    'pgadmin:node:retrieval:error', 'sql', xhr, status, error, item
+                    'pgadmin:node:retrieval:error', 'sql', xhr, error, message, item
                   );
                   if (
                     !Alertify.pgHandleItemError(xhr, error, message, {
@@ -96,7 +105,7 @@ define([
                     })
                   ) {
                     Alertify.pgNotifier(
-                      status, xhr,
+                      error, xhr,
                       S(
                         pgBrowser.messages['ERR_RETRIEVAL_INFO']
                       ).sprintf(message || _label).value(),

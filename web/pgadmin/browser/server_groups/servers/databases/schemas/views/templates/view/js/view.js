@@ -93,7 +93,11 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           if (isNew) {
             // Set Selected Schema
             var schemaLabel = args.node_info.schema.label;
-            this.set({'schema': schemaLabel}, {silent: true});
+            if (schemaLabel == '') {
+              this.set({'schema': 'public'}, {silent: true});
+            } else {
+              this.set({'schema': schemaLabel}, {silent: true});
+            }
 
             // Set Current User
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;

@@ -43,6 +43,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       canDrop: true,
       hasStatistics: true,
       hasCollectiveStatistics: true,
+      can_expand: function(d) {
+        return d && d.connected;
+      },
       Init: function() {
 
         /* Avoid multiple registration of same menus */

@@ -17,11 +17,12 @@ ON
 WHERE
 {% if scid %}
     tmpl.tmplnamespace = {{scid}}::OID
-{% elif name %}
-    tmpl.tmplname = {{name|qtLiteral}}
+{% endif %}
+{% if name %}
+    {% if scid %}AND {% endif %}tmpl.tmplname = {{name|qtLiteral}}
 {% endif %}
 {% if tid %}
-    AND tmpl.oid = {{tid}}::OID
+    {% if name %}AND {% else %}{% if scid %}AND {% endif %}{% endif %}tmpl.oid = {{tid}}::OID
 {% endif %}
 ORDER BY
     tmpl.tmplname

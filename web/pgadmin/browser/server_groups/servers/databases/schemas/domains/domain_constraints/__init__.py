@@ -21,6 +21,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.ajax import gone
 
 from config import PG_DEFAULT_DRIVER
 
@@ -330,6 +331,47 @@ class DomainConstraintView(PGChildNodeView):
         )
 
     @check_precondition
+    def node(self, gid, sid, did, scid, doid, coid):
+        """
+        Returns all the Domain Constraints.
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            doid: Domain Id
+            coid: Domain Constraint Id
+        """
+        res = []
+        SQL = render_template("/".join([self.template_path,
+                                        'properties.sql']),
+                              coid=coid)
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            if 'convalidated' not in row:
+                icon = 'icon-domain_constraints'
+            elif row['convalidated']:
+                icon = 'icon-domain_constraints'
+            else:
+                icon = 'icon-domain_constraints-bad'
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['oid'],
+                    doid,
+                    row['name'],
+                    icon=icon
+                ),
+                status=200
+            )
+
+        return gone(gettext("Could not find the specified domain constraint."))
+
+    @check_precondition
     def properties(self, gid, sid, did, scid, doid, coid):
         """
         Returns the Domain Constraints property.
@@ -349,6 +391,12 @@ class DomainConstraintView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(gettext(
+                "Could not find the specified domain constraint."
+                )
+            )
 
         data = res['rows'][0]
         return ajax_response(

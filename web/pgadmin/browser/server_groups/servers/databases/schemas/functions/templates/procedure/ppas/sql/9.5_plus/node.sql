@@ -19,7 +19,12 @@ LEFT OUTER JOIN
 WHERE
     proisagg = FALSE
     AND pr.protype = '1'::char
+{% if fnid %}
+    AND pr.oid = {{ fnid|qtLiteral }}
+{% endif %}
+{% if scid %}
     AND pronamespace = {{scid}}::oid
+{% endif %}
     AND typname NOT IN ('trigger', 'event_trigger')
 ORDER BY
     proname;
