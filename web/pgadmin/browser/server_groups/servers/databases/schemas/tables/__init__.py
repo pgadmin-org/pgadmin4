@@ -22,9 +22,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -272,22 +271,18 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             driver = get_driver(PG_DEFAULT_DRIVER)
+            did = kwargs['did']
             self.manager = driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
             # We need datlastsysoid to check if current table is system table
-            self.datlastsysoid = self.manager.db_info[kwargs['did']]['datlastsysoid']
-            self.server_type = self.manager.server_type
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
-            # we will set template path for sql scripts
+            self.datlastsysoid = self.manager.db_info[
+                did
+            ]['datlastsysoid'] if self.manager.db_info is not None and \
+                did in self.manager.db_info else 0
+
             ver = self.manager.version
-            # Template for Column node
+            # Set the template path for the SQL scripts
             if ver >= 90500:
                 self.template_path = 'table/sql/9.5_plus'
             else:
@@ -1193,7 +1188,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         try:
             SQL = render_template("/".join([self.template_path,
                                             'get_oftype.sql']), scid=scid,
-                                  server_type=self.server_type,
+                                  server_type=self.manager.server_type,
                                   show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
@@ -1224,7 +1219,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             SQL = render_template("/".join([self.template_path, 'get_inherits.sql']),
                                   show_system_objects=self.blueprint.show_system_objects,
                                   tid=tid,
-                                  server_type=self.server_type)
+                                  server_type=self.manager.server_type)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1253,7 +1248,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         try:
             SQL = render_template("/".join([self.template_path, 'get_relations.sql']),
                                   show_sys_objects=self.blueprint.show_system_objects,
-                                  server_type=self.server_type)
+                                  server_type=self.manager.server_type)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)

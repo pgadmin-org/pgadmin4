@@ -18,9 +18,8 @@ from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.type \
     import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -216,16 +215,7 @@ class ExclusionConstraintView(PGChildNodeView):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
 
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    _(
-                        "Connection to the server has been lost!"
-                    )
-                )
-
             ver = self.manager.version
-
             if ver >= 90200:
                 self.template_path = 'exclusion_constraint/sql/9.2_plus'
             elif ver >= 90100:
@@ -242,8 +232,8 @@ class ExclusionConstraintView(PGChildNodeView):
             for row in rset['rows']:
                 self.schema = row['schema']
                 self.table = row['table']
-            return f(*args, **kwargs)
 
+            return f(*args, **kwargs)
         return wrap
 
     def end_transaction(self):

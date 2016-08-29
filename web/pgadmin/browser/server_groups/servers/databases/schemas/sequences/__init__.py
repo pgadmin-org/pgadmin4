@@ -20,9 +20,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -145,20 +144,11 @@ class SequenceView(PGChildNodeView):
                     self.conn = self.manager.connection(did=kwargs['did'])
                 else:
                     self.conn = self.manager.connection()
-                # If DB not connected then return error to browser
-                if not self.conn.connected():
-                    return precondition_required(
-                        _(
-                            "Connection to the server has been lost!"
-                        )
-                    )
-
                 self.template_path = 'sequence/sql/9.1_plus'
                 self.acl = ['r', 'w', 'U']
+
                 return f(self, *args, **kwargs)
-
             return wrapped
-
         return wrap
 
     @check_precondition(action='list')
@@ -336,10 +326,10 @@ class SequenceView(PGChildNodeView):
             # We need oid of newly created sequence.
             SQL = render_template("/".join([self.template_path, 'get_oid.sql']), name=data['name'], scid=scid)
             SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, seid = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+
+            status, seid = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=seid)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -504,18 +494,13 @@ class SequenceView(PGChildNodeView):
                             "Could not find the required parameter (%s)." % arg
                         )
                     )
-        try:
-            SQL = self.getSQL(gid, sid, did, data, scid, seid)
-            SQL = SQL.strip('\n').strip(' ')
-            return make_json_response(
-                data=SQL,
-                status=200
-            )
-        except Exception as e:
-            return make_json_response(
-                data="-- modified SQL",
-                status=200
-            )
+        SQL = self.getSQL(gid, sid, did, data, scid, seid)
+        SQL = SQL.strip('\n').strip(' ')
+
+        return make_json_response(
+            data=SQL,
+            status=200
+        )
 
     def getSQL(self, gid, sid, did, data, scid, seid=None):
         """

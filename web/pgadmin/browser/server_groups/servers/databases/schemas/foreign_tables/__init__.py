@@ -25,9 +25,8 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, gone
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -338,15 +337,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
 
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
-
             self.qtIdent = driver.qtIdent
-
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
 
             ver = self.manager.version
             # Set template path for sql scripts depending
@@ -360,7 +351,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                 self.template_path = 'foreign_tables/sql/9.1_plus'
 
             return f(*args, **kwargs)
-
         return wrap
 
     @check_precondition

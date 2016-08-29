@@ -36,6 +36,14 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
     // Make sure - a child have all the callbacks of the parent.
     child.callbacks = _.extend({}, parent.callbacks, props.callbacks);
 
+    var bindToChild = function(cb) {
+          if (typeof(child.callbacks[cb]) == 'function') {
+            child.callbacks[cb] = child.callbacks[cb].bind(child);
+          }
+        },
+        callbacks = _.keys(child.callbacks);
+    for(var idx = 0; idx < callbacks.length; idx++) bindToChild(callbacks[idx]);
+
     // Registering the node by calling child.Init(...) function
     child.Init.apply(child);
 
@@ -174,7 +182,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
     //
     // Used to generate view for the particular node properties, edit,
     // creation.
-    getView: function(item, type, el, node, formType, callback, ctx) {
+    getView: function(item, type, el, node, formType, callback, ctx, cancelFunc) {
       var that = this;
 
       if (!this.type || this.type == '')
@@ -265,24 +273,43 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!newModel.isNew()) {
             // This is definetely not in create mode
             newModel.fetch()
-              .success(function(res, msg, xhr) {
-                // We got the latest attributes of the
-                // object. Render the view now.
-                view.render();
-                if (type != 'properties') {
-                  $(el).focus();
-                }
-                newModel.startNewSession();
-              })
-              .error(function(jqxhr, error, message) {
-                // TODO:: We may not want to continue from here
+            .success(function(res, msg, xhr) {
+              // We got the latest attributes of the
+              // object. Render the view now.
+              view.render();
+              if (type != 'properties') {
+                $(el).focus();
+              }
+              newModel.startNewSession();
+            })
+            .error(function(xhr, error, message) {
+              var _label = that && item ?
+                                that.getTreeNodeHierarchy(item)[that.type].label :
+                                '';
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'properties',
+                xhr, error, message, item
+              );
+              if (
+                !Alertify.pgHandleItemError(
+                  xhr, error, message, {item: item, info: info}
+                )
+              ) {
                 Alertify.pgNotifier(
-                  error, jqxhr,
+                  error, xhr,
                   S(
-                    "{{ _("Error retrieving properties: %s.") }}"
-                    ).sprintf(message).value()
-                  );
-              });
+                    "{{ _("Error retrieving properties- %s") }}"
+                  ).sprintf(message || _label).value(),
+                  function() {
+                    console.log(arguments);
+                  }
+                );
+              }
+              // Close the panel (if couldn't fetch properties)
+              if (cancelFunc) {
+                cancelFunc();
+              }
+            });
           } else {
             // Yay - render the view now!
             $(el).focus();
@@ -1039,7 +1066,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           };
 
           // Create a view to edit/create the properties in fieldsets
-          view = that.getView(item, action, content, data, 'dialog', updateButtons, j);
+          view = that.getView(item, action, content, data, 'dialog', updateButtons, j, onCancelFunc);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);

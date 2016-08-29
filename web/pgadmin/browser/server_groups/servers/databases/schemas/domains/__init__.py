@@ -20,9 +20,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, gone
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -263,18 +262,10 @@ class DomainView(PGChildNodeView, DataTypeReader):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
 
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext("Connection to the server has been lost!")
-                )
-
-            ver = self.manager.version
-            server_type = self.manager.server_type
-
             # we will set template path for sql scripts
-            if ver >= 90200:
+            if self.manager.version >= 90200:
                 self.template_path = 'domains/sql/9.2_plus'
-            elif ver >= 90100:
+            else:
                 self.template_path = 'domains/sql/9.1_plus'
 
             return f(*args, **kwargs)

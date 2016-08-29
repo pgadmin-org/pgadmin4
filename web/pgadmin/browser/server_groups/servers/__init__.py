@@ -712,8 +712,16 @@ class ServerNode(PGChildNodeView):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
+        res = conn.connected()
 
-        return make_json_response(data={'connected': conn.connected()})
+        if res:
+            from pgadmin.utils.exception import ConnectionLost
+            try:
+                conn.execute_scalar('SELECT 1')
+            except ConnectionLost:
+                res = False
+
+        return make_json_response(data={'connected': res})
 
     def connect(self, gid, sid):
         """
@@ -752,8 +760,14 @@ class ServerNode(PGChildNodeView):
         password = None
         save_password = False
 
+        # Connect the Server
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
         if 'password' not in data:
-            if server.password is None:
+            conn_passwd = getattr(conn, 'password', None)
+            if conn_passwd is None and server.password is None:
                 # Return the password template in case password is not
                 # provided, or password has not been saved earlier.
                 return make_json_response(
@@ -772,19 +786,15 @@ class ServerNode(PGChildNodeView):
                 data['save_password'] if password and \
                                          'save_password' in data else False
 
-        # Encrypt the password before saving with user's login password key.
-        try:
-            password = encrypt(password, user.password) \
-                if password is not None else server.password
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=e.message)
+            # Encrypt the password before saving with user's login password key.
+            try:
+                password = encrypt(password, user.password) \
+                    if password is not None else server.password
+            except Exception as e:
+                current_app.logger.exception(e)
+                return internal_server_error(errormsg=e.message)
 
-        # Connect the Server
-        from pgadmin.utils.driver import get_driver
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        conn = manager.connection()
-
+        status = True
         try:
             status, errmsg = conn.connect(
                 password=password,
@@ -792,13 +802,18 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             current_app.logger.exception(e)
-            # TODO::
-            # Ask the password again (if existing password couldn't be
-            # descrypted)
-            if e.message:
-                return internal_server_error(errormsg=e.message)
-            else:
-                return internal_server_error(errormsg=str(e))
+
+            return make_json_response(
+                success=0,
+                status=401,
+                result=render_template(
+                    'servers/password.html',
+                    server_label=server.name,
+                    username=server.username,
+                    errmsg=e.message if e.message else str(e),
+                    _=gettext
+                )
+            )
 
         if not status:
             current_app.logger.error(

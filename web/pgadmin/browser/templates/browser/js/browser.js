@@ -335,7 +335,11 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
           url: '{{ url_for('browser.get_nodes') }}',
           converters: {
             'text json': function(payload) {
-              data = JSON.parse(payload).data;
+              data = JSON.parse(payload).data.sort(function(a, b) {
+                return (
+                  (a.label === b.label) ? 0 : (a.label < b.label ? -1 : 1)
+                );
+              });
               _.each(data, function(d){
                 d.label = _.escape(d.label);
               })

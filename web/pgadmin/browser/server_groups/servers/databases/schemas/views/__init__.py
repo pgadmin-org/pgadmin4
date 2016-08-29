@@ -18,10 +18,8 @@ from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, \
-    bad_request
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, bad_request
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -171,13 +169,10 @@ def check_precondition(f):
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
-        # If DB not connected then return error to browser
-        if not self.conn.connected():
-            return precondition_required(
-                gettext("Connection to the server has been lost!")
-            )
         self.datlastsysoid = self.manager.db_info[
-            kwargs['did']]['datlastsysoid']
+            kwargs['did']
+        ]['datlastsysoid'] if self.manager.db_info is not None and \
+            kwargs['did'] in self.manager.db_info else 0
 
         # Set template path for sql scripts
         self.template_path = self.template_initial + '/' + (

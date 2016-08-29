@@ -1,7 +1,7 @@
 define(
   [
   'jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-  'pgadmin.browser.collection'{% for c in constraints %}, 'pgadmin.node.{{ c|safe }}'{%endfor%}
+  'pgadmin.browser.collection'{% for c in constraints %}, 'pgadmin.node.{{ c }}'{%endfor%}
   ],
 function($, _, S, pgAdmin, pgBrowser) {
 

@@ -27,9 +27,8 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, gone
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -329,21 +328,12 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
-
             self.qtIdent = driver.qtIdent
             self.qtLiteral = driver.qtLiteral
 
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
-
             ver = self.manager.version
 
-            # Set template path for sql scripts depending
-            # on the server version.
+            # Set the template path for the SQL scripts
             self.template_path = "/".join([
                 self.node_type
             ])
@@ -469,10 +459,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         proallargtypes = data['proallargtypes'] \
             if data['proallargtypes'] else []
 
-        proargout = []
-        proargid = []
-        proargmodenames = {'i': 'IN', 'o': 'OUT', 'b': 'INOUT',
-                           'v': 'VARIADIC', 't': 'TABLE'}
+        proargmodenames = {
+            'i': 'IN', 'o': 'OUT', 'b': 'INOUT', 'v': 'VARIADIC', 't': 'TABLE'
+        }
 
         # The proargtypes doesn't give OUT params, so we need to fetch
         # those from database explicitly, below code is written for this
@@ -1325,7 +1314,6 @@ It may have been removed by another user or moved to another schema.
         if not status:
             return internal_server_error(errormsg=res)
 
-        func_def = res['rows'][0]['func_def']
         name = res['rows'][0]['name']
 
         # Fetch only arguments

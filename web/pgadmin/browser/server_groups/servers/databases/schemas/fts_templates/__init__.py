@@ -17,9 +17,8 @@ from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases import DatabaseModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -209,19 +208,9 @@ class FtsTemplateView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
-            # we will set template path for sql scripts depending upon server version
-            ver = self.manager.version
-            if ver >= 90100:
-                self.template_path = 'fts_template/sql/9.1_plus'
-            return f(*args, **kwargs)
+            self.template_path = 'fts_template/sql/9.1_plus'
 
+            return f(*args, **kwargs)
         return wrap
 
     @check_precondition
@@ -267,7 +256,6 @@ class FtsTemplateView(PGChildNodeView):
 
     @check_precondition
     def node(self, gid, sid, did, scid, tid):
-        res = []
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
             tid=tid
@@ -286,6 +274,9 @@ class FtsTemplateView(PGChildNodeView):
                 ),
                 status=200
             )
+        return gone(
+            _("Could not the requested FTS template.")
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, tid):
@@ -609,9 +600,9 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
-        data = request.args
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
-                              lexize=True)
+        sql = render_template(
+            "/".join([self.template_path, 'functions.sql']), lexize=True
+        )
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
@@ -638,9 +629,9 @@ class FtsTemplateView(PGChildNodeView):
         :param scid: schema id
         :param tid: fts tempate id
         """
-        data = request.args
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
-                              init=True)
+        sql = render_template(
+            "/".join([self.template_path, 'functions.sql']), init=True
+        )
         status, rset = self.conn.execute_dict(sql)
 
         if not status:

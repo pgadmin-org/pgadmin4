@@ -114,14 +114,24 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
 
       // Fetch Data
       collection.fetch({reset: true})
-      .error(function(jqxhr, error, message) {
+      .error(function(xhr, error, message) {
+        pgBrowser.Events.trigger(
+          'pgadmin:collection:retrieval:error', 'properties', xhr, error, message, item, that
+        );
+        if (
+          !Alertify.pgHandleItemError(xhr, error, message, {item: item, info: info})
+        ) {
           Alertify.pgNotifier(
-            error, jqxhr,
+            error, xhr,
             S(
-              "{{ _("Error retrieving properties: %s.") }}"
-              ).sprintf(message).value()
-            );
-        });
+              "{{ _("Error retrieving properties- %s") }}"
+            ).sprintf(message || that.label).value(),
+            function() {
+              console.log(arguments);
+            }
+          );
+        }
+      });
     },
     generate_url: function(item, type, d) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',

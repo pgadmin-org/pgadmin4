@@ -17,9 +17,8 @@ from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -201,17 +200,8 @@ class CastView(PGChildNodeView):
             self = args[0]
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
-            ver = self.manager.version
-            # we will set template path for sql scripts
-            if ver >= 90100:
-                self.template_path = 'cast/sql/9.1_plus'
+            # Set template path for the SQL scripts
+            self.template_path = 'cast/sql/9.1_plus'
 
             return f(*args, **kwargs)
 
@@ -226,9 +216,13 @@ class CastView(PGChildNodeView):
         :param did: database id
         :return:
         """
+        last_system_oid = 0 if self.blueprint.show_system_objects else \
+            (self.manager.db_info[did])['datlastsysoid'] \
+            if self.manager.db_info is not None and \
+            did in self.manager.db_info else 0
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            datlastsysoid=last_system_oid,
             showsysobj=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(sql)
@@ -255,9 +249,13 @@ class CastView(PGChildNodeView):
         :return:
         """
         res = []
+        last_system_oid = 0 if self.blueprint.show_system_objects else \
+            (self.manager.db_info[did])['datlastsysoid'] \
+            if self.manager.db_info is not None and \
+            did in self.manager.db_info else 0
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            datlastsysoid=last_system_oid,
             showsysobj=self.blueprint.show_system_objects
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -313,17 +311,19 @@ class CastView(PGChildNodeView):
         :param cid: cast id
         :return:
         """
+        last_system_oid = (self.manager.db_info[did])['datlastsysoid'] if \
+            self.manager.db_info is not None and \
+            did in self.manager.db_info else 0
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),
             cid=cid,
-            datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+            datlastsysoid=last_system_oid,
             showsysobj=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
             return internal_server_error(errormsg=res)
-        result = res['rows'][0]
 
         return ajax_response(
             response=res['rows'][0],
@@ -367,10 +367,14 @@ class CastView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             # we need oid to to add object in tree at browser, below sql will gives the same
+            last_system_oid = 0 if self.blueprint.show_system_objects else \
+                (self.manager.db_info[did])['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                did in self.manager.db_info else 0
             sql = render_template("/".join([self.template_path, 'properties.sql']),
                                   srctyp=data['srctyp'],
                                   trgtyp=data['trgtyp'],
-                                  datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+                                  datlastsysoid=last_system_oid,
                                   showsysobj=self.blueprint.show_system_objects
                                   )
             status, cid = self.conn.execute_scalar(sql)
@@ -529,9 +533,13 @@ class CastView(PGChildNodeView):
         """
         try:
             if cid is not None:
+                last_system_oid = 0 if self.blueprint.show_system_objects else \
+                    (self.manager.db_info[did])['datlastsysoid'] \
+                    if self.manager.db_info is not none and \
+                    did in self.manager.db_info else 0
                 sql = render_template("/".join([self.template_path, 'properties.sql']),
                                       cid=cid,
-                                      datlastsysoid=self.manager.db_info[did]['datlastsysoid'],
+                                      datlastsysoid=last_system_oid,
                                       showsysobj=self.blueprint.show_system_objects)
                 status, res = self.conn.execute_dict(sql)
 

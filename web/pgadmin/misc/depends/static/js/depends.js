@@ -1,6 +1,7 @@
-define(
-  ['underscore', 'underscore.string', 'jquery', 'pgadmin.browser'],
-  function(_, S, $, pgBrowser) {
+define([
+  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
+  'alertify', 'pgadmin.alertifyjs'
+], function(_, S, $, pgBrowser, Alertify) {
 
   if (pgBrowser.ShowNodeDepends)
     return pgBrowser.ShowNodeDepends;
@@ -226,7 +227,30 @@ define(
           $gridContainer.removeClass('hidden');
           // Set the url, fetch the data and update the collection
           collection.url = url;
-          collection.fetch({ reset: true });
+          collection.fetch({
+            reset: true,
+            error: function(coll, xhr, error, message) {
+              var _label = treeHierarchy[n_type].label;
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'depends', xhr, status, error
+              );
+              if (
+                !Alertify.pgHandleItemError(xhr, error, message, {
+                  item: item, info: treeHierarchy
+                })
+              ) {
+                Alertify.pgNotifier(
+                  status, xhr,
+                  S(
+                    pgBrowser.messages['ERR_RETRIEVAL_INFO']
+                  ).sprintf(message || _label).value(),
+                  function() {
+                    console.log(arguments);
+                  }
+                );
+              }
+            }
+          });
         }
       }
       if (msg != '') {

@@ -1,6 +1,7 @@
-define(
-   ['underscore', 'jquery', 'pgadmin.browser', 'backgrid', 'wcdocker', 'pgadmin.backgrid'],
-function(_, $, pgBrowser, Backgrid) {
+define([
+  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
+  'alertify', 'wcdocker', 'pgadmin.backgrid', 'pgadmin.alertifyjs'
+], function(_, S, $, pgBrowser, Backgrid, Alertify) {
 
   if (pgBrowser.NodeStatistics)
     return pgBrowser.NodeStatistics;
@@ -210,8 +211,26 @@ function(_, $, pgBrowser, Backgrid) {
                 $msgContainer.removeClass('hidden');
               }
             },
-            error:  function() {
-              // TODO:: Report this error.
+            error: function(xhr, error, message) {
+              var _label = treeHierarchy[n_type].label;
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'statistics', xhr, status, error, item
+              );
+              if (
+                !Alertify.pgHandleItemError(xhr, error, message, {
+                  item: item, info: treeHierarchy
+                })
+              ) {
+                Alertify.pgNotifier(
+                  status, xhr,
+                  S(
+                    pgBrowser.messages['ERR_RETRIEVAL_INFO']
+                  ).sprintf(message || _label).value(),
+                  function() {
+                    console.log(arguments);
+                  }
+                );
+              }
             }
           });
         }

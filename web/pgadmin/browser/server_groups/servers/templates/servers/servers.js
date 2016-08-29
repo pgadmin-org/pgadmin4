@@ -102,6 +102,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           '{{ _('A grantee must be selected.') }}';
         pgBrowser.messages['NO_PRIV_SELECTED'] =
           '{{ _('At least one privilege should be selected.') }}';
+
+        pgBrowser.Events.on(
+          'pgadmin:server:disconnect', this.callbacks.disconnect_server
+        );
+        pgBrowser.Events.on(
+          'pgadmin:server:connect', this.callbacks.connect_server
+        );
+
+        _.bindAll(this, 'connection_lost');
+        pgBrowser.Events.on(
+          'pgadmin:server:connection:lost', this.connection_lost
+        );
       },
       is_not_connected: function(node) {
         return (node && node.connected != true);
@@ -158,11 +170,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (!d)
             return false;
 
-          connect_to_server(obj, d, t, i);
+          connect_to_server(obj, d, t, i, false);
           return false;
         },
         /* Disconnect the server */
-        disconnect_server: function(args) {
+        disconnect_server: function(args, notify) {
           var input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -172,48 +184,60 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (!d)
             return false;
 
-          alertify.confirm(
-            '{{ _('Disconnect server') }}',
-            S('{{ _('Are you sure you want to disconnect the server %s?') }}').sprintf(d.label).value(),
-            function(evt) {
-              $.ajax({
-                url: obj.generate_url(i, 'connect', d, true),
-                type:'DELETE',
-                success: function(res) {
-                  if (res.success == 1) {
-                    alertify.success(res.info);
-                    d = t.itemData(i);
-                    t.removeIcon(i);
-                    d.connected = false;
-                    d.icon = 'icon-server-not-connected';
-                    t.addIcon(i, {icon: d.icon});
-                    obj.callbacks.refresh.apply(obj, [null, i]);
-                    if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
-                      delete pgBrowser.serverInfo[d._id]
-                    }
-                    obj.trigger('server-disconnected', obj, i, d);
+          notify = notify || _.isUndefined(notify) || _.isNull(notify);
+
+          var disconnect = function() {
+            $.ajax({
+              url: obj.generate_url(i, 'connect', d, true),
+              type:'DELETE',
+              success: function(res) {
+                if (res.success == 1) {
+                  alertify.success(res.info);
+                  d = t.itemData(i);
+                  t.removeIcon(i);
+                  d.connected = false;
+                  d.icon = 'icon-server-not-connected';
+                  t.addIcon(i, {icon: d.icon});
+                  obj.callbacks.refresh.apply(obj, [null, i]);
+                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                    delete pgBrowser.serverInfo[d._id]
                   }
-                  else {
-                    try {
-                        alertify.error(res.errormsg);
-                    } catch (e) {}
-                    t.unload(i);
-                  }
-                },
-                error: function(xhr, status, error) {
+                  obj.trigger('server-disconnected', obj, i, d);
+                }
+                else {
                   try {
-                    var err = $.parseJSON(xhr.responseText);
-                    if (err.success == 0) {
-                      alertify.error(err.errormsg);
-                    }
+                    alertify.error(res.errormsg);
                   } catch (e) {}
                   t.unload(i);
                 }
+              },
+              error: function(xhr, status, error) {
+                try {
+                  var err = $.parseJSON(xhr.responseText);
+                  if (err.success == 0) {
+                    alertify.error(err.errormsg);
+                  }
+                } catch (e) {}
+                t.unload(i);
+              }
+            });
+          };
+
+          if (notify) {
+            alertify.confirm(
+              '{{ _('Disconnect server') }}',
+              S('{{ _('Are you sure you want to disconnect the server %s?') }}').sprintf(
+                d.label
+              ).value(),
+              function(evt) {
+                disconnect();
+              },
+              function(evt) {
+                return true;
               });
-          },
-          function(evt) {
-              return true;
-          });
+          } else {
+            disconnect();
+          }
 
           return false;
         },
@@ -226,7 +250,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           pgBrowser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected) {
-            connect_to_server(this, data, pgBrowser.tree, item);
+            connect_to_server(this, data, pgBrowser.tree, item, false);
 
             return false;
           }
@@ -409,7 +433,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   }
                 },
                 prepare: function() {
-                    //console.log(this.get('server').user.name);
                   var self = this;
                   // Disable Backup button until user provides Filename
                   this.__internal.buttons[0].element.disabled = true;
@@ -487,13 +510,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           alertify.changeServerPassword(d).resizeTo('40%','52%');
           return false;
         },
+
         /* Pause WAL Replay */
         pause_wal_replay: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -528,13 +552,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             }
           })
         },
+
         /* Resume WAL Replay */
         resume_wal_replay: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -709,66 +734,157 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         isConnected: function(model) {
           return model.get('connected');
         }
-      })
-    });
-    function connect_to_server(obj, data, tree, item) {
-      var onFailure = function(xhr, status, error, _model, _data, _tree, _item) {
+      }),
+      connection_lost: function(i, resp) {
+        if (pgBrowser.tree) {
+          var t = pgBrowser.tree,
+              info = i && this.getTreeNodeHierarchy(i),
+              s = null,
+              d = i && t.itemData(i),
+              self = this;
 
-        tree.setInode(_item);
-        tree.addIcon(_item, {icon: 'icon-server-not-connected'});
-
-        alertify.pgNotifier('error', xhr, error, function(msg) {
-          setTimeout(function() {
-            alertify.dlgServerPass(
-              '{{ _('Connect to Server') }}',
-              msg, _model, _data, _tree, _item
-              ).resizeTo();
-          }, 100);
-        });
-      },
-      onSuccess = function(res, model, data, tree, item) {
-        tree.deselect(item);
-        tree.setInode(item);
-
-        if (res && res.data) {
-
-          if (typeof res.data.icon == 'string') {
-            tree.removeIcon(item);
-            data.icon = res.data.icon;
-            tree.addIcon(item, {icon: data.icon});
+          while (d && d._type != 'server') {
+            i = t.parent(i);
+            d = i && t.itemData(i);
           }
 
-          // Update 'in_recovery' and 'wal_pause' options at server node
-          tree.itemData(item).in_recovery=res.data.in_recovery;
-          tree.itemData(item).wal_pause=res.data.wal_pause;
+          if (i && d && d._type == 'server') {
+            if (_.isUndefined(d.is_connecting) || !d.is_connecting) {
+              d.is_connecting = true;
 
-          _.extend(data, res.data);
+              var disconnect = function(_sid) {
+                if (d._id == _sid) {
+                  d.is_connecting = false;
+                  // Stop listening to the connection cancellation event
+                  pgBrowser.Events.off(
+                    'pgadmin:server:connect:cancelled', disconnect
+                  );
 
-          var serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
-          serverInfo[data._id] = _.extend({}, data);
+                  // Connection to the database will also be cancelled
+                  pgBrowser.Events.trigger(
+                    'pgadmin:database:connect:cancelled',_sid,
+                    resp.data.database || d.db
+                  );
 
-          alertify.success(res.info);
-          obj.trigger('server-connected', obj, item, data);
+                  // Make sure - the server is disconnected properly
+                  pgBrowser.Events.trigger(
+                    'pgadmin:server:disconnect',
+                    {item: _i, data: _d}, false
+                  );
+                }
+              };
 
-          setTimeout(function() {
-            tree.select(item);
-            tree.open(item);
-          }, 10);
-
+              // Listen for the server connection cancellation event
+              pgBrowser.Events.on(
+                'pgadmin:server:connect:cancelled', disconnect
+              );
+              alertify.confirm(
+                '{{ _('Connection lost') }}',
+                '{{ _('Would you like to reconnect to the database?') }}',
+                function() {
+                  connect_to_server(self, d, t, i, true);
+                },
+                function() {
+                  d.is_connecting = false;
+                  t.unload(i);
+                  t.setInode(i);
+                  t.addIcon(i, {icon: 'icon-database-not-connected'});
+                  pgBrowser.Events.trigger(
+                    'pgadmin:server:connect:cancelled', i, d, self
+                  );
+                  t.select(i);
+                });
+            }
+          }
         }
-      };
+      }
+    });
+    function connect_to_server(obj, data, tree, item, reconnect) {
+      var wasConnected = reconnect || data.connected,
+          onFailure = function(
+            xhr, status, error, _node, _data, _tree, _item, _wasConnected
+          ) {
+            data.connected = false;
+
+            // It should be attempt to reconnect.
+            // Let's not change the status of the tree node now.
+            if (!_wasConnected) {
+              tree.setInode(_item);
+              tree.addIcon(_item, {icon: 'icon-server-not-connected'});
+            }
+
+            alertify.pgNotifier('error', xhr, error, function(msg) {
+              setTimeout(function() {
+                alertify.dlgServerPass(
+                  '{{ _('Connect to Server') }}',
+                  msg, _node, _data, _tree, _item, _wasConnected
+                ).resizeTo();
+              }, 100);
+            });
+          },
+          onSuccess = function(res, node, data, tree, item, _wasConnected) {
+            if (res && res.data) {
+              if (typeof res.data.icon == 'string') {
+                tree.removeIcon(item);
+                data.icon = res.data.icon;
+                tree.addIcon(item, {icon: data.icon});
+              }
+
+              _.extend(data, res.data);
+              data.is_connecting = false;
+
+              var serverInfo = pgBrowser.serverInfo =
+                pgBrowser.serverInfo || {};
+              serverInfo[data._id] = _.extend({}, data);
+
+              alertify.success(res.info);
+              obj.trigger('connected', obj, item, data);
+
+              // Generate the event that server is connected
+              pgBrowser.Events.trigger(
+                'pgadmin:server:connected', data._id, item, data
+              );
+              // Generate the event that database is connected
+              pgBrowser.Events.trigger(
+                'pgadmin:database:connected', data._id, data.db, item, data
+              );
+
+              // We're not reconnecting
+              if (!_wasConnected) {
+                tree.setInode(item);
+                tree.deselect(item);
+
+                setTimeout(function() {
+                  tree.select(item);
+                  tree.open(item);
+                }, 10);
+              } else {
+                // We just need to refresh the tree now.
+                setTimeout(function() {
+                  node.callbacks.refresh.apply(node, [true]);
+                }, 10);
+              }
+            }
+          };
 
       // Ask Password and send it back to the connect server
       if (!alertify.dlgServerPass) {
         alertify.dialog('dlgServerPass', function factory() {
           return {
-            main: function(title, message, model, data, tree, item) {
+            main: function(
+              title, message, node, data, tree, item,
+              _status, _onSuccess, _onFailure, _onCancel
+            ) {
               this.set('title', title);
               this.message = message;
               this.tree = tree;
               this.nodeData = data;
               this.nodeItem = item;
-              this.nodeModel = model;
+              this.node= node;
+              this.connected = _status;
+              this.onSuccess = _onSuccess || onSuccess;
+              this.onFailure = _onFailure || onFailure;
+              this.onCancel = _onCancel || onCancel;
             },
             setup:function() {
               return {
@@ -791,18 +907,24 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               this.setContent(this.message);
             },
             callback: function(closeEvent) {
-              var _sdata = this.nodeData,
-                  _tree = this.tree,
+              var _tree = this.tree,
                   _item = this.nodeItem,
-                  _model = this.nodeModel;
+                  _node = this.node,
+                  _data = this.nodeData,
+                  _status = this.connected,
+                  _onSuccess = this.onSuccess,
+                  _onFailure = this.onFailure,
+                  _onCancel = this.onCancel;
 
               if (closeEvent.button.text == "{{ _('OK') }}") {
 
-                var _url = _model.generate_url(_item, 'connect', _sdata, true);
+                var _url = _node.generate_url(_item, 'connect', _data, true);
 
-                _tree.setLeaf(_item);
-                _tree.removeIcon(_item);
-                _tree.addIcon(_item, {icon: 'icon-server-connecting'});
+                if (!_status) {
+                  _tree.setLeaf(_item);
+                  _tree.removeIcon(_item);
+                  _tree.addIcon(_item, {icon: 'icon-server-connecting'});
+                }
 
                 $.ajax({
                   type: 'POST',
@@ -810,38 +932,58 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   url: _url,
                   data: $('#frmPassword').serialize(),
                   success: function(res) {
-                    return onSuccess(
-                      res, _model, _sdata, _tree, _item
+                    return _onSuccess(
+                      res, _node, _data, _tree, _item, _status
                       );
                   },
                   error: function(xhr, status, error) {
-                    return onFailure(
-                      xhr, status, error, _model, _sdata, _tree, _item
+                    return _onFailure(
+                      xhr, status, error, _node, _data, _tree, _item, _status
                       );
                   }
                 });
               } else {
-                _tree.setInode(_item);
-                _tree.removeIcon(_item);
-                _tree.addIcon(_item, {icon: 'icon-server-not-connected'});
+                this.onCancel && typeof(this.onCancel) == 'function' &&
+                  this.onCancel(_tree, _item, _data, _status);
               }
             }
           };
         });
       }
 
+      var onCancel = function(_tree, _item, _data, _status) {
+        _data.is_connecting = false;
+        _tree.unload(_item);
+        _tree.setInode(_item);
+        _tree.removeIcon(_item);
+        _tree.addIcon(_item, {icon: 'icon-server-not-connected'});
+        obj.trigger('connect:cancelled', data._id, data.db, obj, _item, _data);
+        pgBrowser.Events.trigger(
+          'pgadmin:server:connect:cancelled', data._id, _item, _data, obj
+        );
+        pgBrowser.Events.trigger(
+          'pgadmin:database:connect:cancelled', data._id, data.db, _item, _data, obj
+        );
+        if (_status) {
+          _tree.select(_item);
+        }
+      };
+
+      data.is_connecting = true;
       url = obj.generate_url(item, "connect", data, true);
       $.post(url)
-      .done(
-        function(res) {
-          if (res.success == 1) {
-            return onSuccess(res, obj, data, tree, item);
-          }
-        })
-      .fail(
-        function(xhr, status, error) {
-          return onFailure(xhr, status, error, obj, data, tree, item);
-        });
+      .done(function(res) {
+        if (res.success == 1) {
+          return onSuccess(
+            res, obj, data, tree, item, wasConnected
+          );
+        }
+      })
+      .fail(function(xhr, status, error) {
+        return onFailure(
+          xhr, status, error, obj, data, tree, item, wasConnected
+        );
+      });
     }
 
     /* Send PING to indicate that session is alive */

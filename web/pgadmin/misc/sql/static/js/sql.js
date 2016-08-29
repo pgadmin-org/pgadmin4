@@ -1,6 +1,7 @@
-define(
-   ['underscore', 'jquery', 'pgadmin.browser'],
-function(_, $, pgBrowser) {
+define([
+  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
+  'alertify', 'pgadmin.alertifyjs'
+], function(_, S, $, pgBrowser, Alertify) {
 
   pgBrowser.ShowNodeSQL = pgBrowser.ShowNodeSQL || {};
 
@@ -84,8 +85,26 @@ function(_, $, pgBrowser) {
                     pgAdmin.Browser.editor.setValue(res);
                   }
                 },
-                error:  function() {
-                  // TODO:: Report this
+                error: function(xhr, error, message) {
+                  var _label = treeHierarchy[n_type].label;
+                  pgBrowser.Events.trigger(
+                    'pgadmin:node:retrieval:error', 'sql', xhr, status, error, item
+                  );
+                  if (
+                    !Alertify.pgHandleItemError(xhr, error, message, {
+                      item: item, info: treeHierarchy
+                    })
+                  ) {
+                    Alertify.pgNotifier(
+                      status, xhr,
+                      S(
+                        pgBrowser.messages['ERR_RETRIEVAL_INFO']
+                      ).sprintf(message || _label).value(),
+                      function() {
+                        console.log(arguments);
+                      }
+                    );
+                  }
                 }
               });
             }

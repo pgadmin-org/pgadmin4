@@ -24,7 +24,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
-from pgadmin.utils.ajax import precondition_required, gone
+from pgadmin.utils.ajax import gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -133,11 +133,6 @@ class DatabaseView(PGChildNodeView):
                     self.conn = self.manager.connection(did=kwargs['did'])
                 else:
                     self.conn = self.manager.connection()
-                # If DB not connected then return error to browser
-                if not self.conn.connected():
-                    return precondition_required(
-                        _("Connection to the server has been lost!")
-                    )
 
                 ver = self.manager.version
                 # we will set template path for sql scripts
@@ -147,6 +142,7 @@ class DatabaseView(PGChildNodeView):
                     self.template_path = 'databases/sql/9.2_plus'
                 else:
                     self.template_path = 'databases/sql/9.1_plus'
+
                 return f(self, *args, **kwargs)
 
             return wrapped
@@ -156,7 +152,9 @@ class DatabaseView(PGChildNodeView):
     @check_precondition(action="list")
     def list(self, gid, sid):
         last_system_oid = 0 if self.blueprint.show_system_objects else \
-            (self.manager.db_info[self.manager.did])['datlastsysoid']
+            (self.manager.db_info[self.manager.did])['datlastsysoid'] \
+            if self.manager.db_info is not None and \
+            self.manager.did in self.manager.db_info else 0
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             conn=self.conn, last_system_oid=last_system_oid
@@ -175,8 +173,10 @@ class DatabaseView(PGChildNodeView):
         res = []
         last_system_oid = 0 if self.blueprint.show_system_objects or \
             show_system_templates else (
-                self.manager.db_info[self.manager.did]
-            )['datlastsysoid']
+                (self.manager.db_info[self.manager.did])['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                self.manager.did in self.manager.db_info else 0
+            )
 
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
@@ -403,26 +403,22 @@ class DatabaseView(PGChildNodeView):
         This function to return list of avialable encodings
         """
         res = [{'label': '', 'value': ''}]
-        try:
-            SQL = render_template(
-                "/".join([self.template_path, 'get_encodings.sql'])
-            )
-            status, rset = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_encodings.sql'])
+        )
+        status, rset = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-            for row in rset['rows']:
-                res.append(
-                    {'label': row['encoding'], 'value': row['encoding']}
-                )
-
-            return make_json_response(
-                data=res,
-                status=200
+        for row in rset['rows']:
+            res.append(
+                {'label': row['encoding'], 'value': row['encoding']}
             )
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
     @check_precondition(action="get_ctypes")
     def get_ctypes(self, gid, sid, did=None):
@@ -435,25 +431,21 @@ class DatabaseView(PGChildNodeView):
             res.append(
                 {'label': val, 'value': val}
             )
-        try:
-            SQL = render_template(
-                "/".join([self.template_path, 'get_ctypes.sql'])
-            )
-            status, rset = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_ctypes.sql'])
+        )
+        status, rset = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-            for row in rset['rows']:
-                if row['cname'] not in default_list:
-                    res.append({'label': row['cname'], 'value': row['cname']})
+        for row in rset['rows']:
+            if row['cname'] not in default_list:
+                res.append({'label': row['cname'], 'value': row['cname']})
 
-            return make_json_response(
-                data=res,
-                status=200
-            )
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
     @check_precondition(action="create")
     def create(self, gid, sid):
@@ -475,64 +467,56 @@ class DatabaseView(PGChildNodeView):
                         "Could not find the required parameter (%s)." % arg
                     )
                 )
-        try:
-            # The below SQL will execute CREATE DDL only
-            SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=data, conn=self.conn
-            )
+        # The below SQL will execute CREATE DDL only
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data, conn=self.conn
+        )
+        status, msg = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=msg)
+
+        if 'datacl' in data:
+            data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
+
+        # The below SQL will execute rest DMLs because we can not execute CREATE with any other
+        SQL = render_template(
+            "/".join([self.template_path, 'grant.sql']),
+            data=data, conn=self.conn
+        )
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL and SQL != "":
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=msg)
 
-            if 'datacl' in data:
-                data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
+        # We need oid of newly created database
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            name=data['name'], conn=self.conn, last_system_oid=0
+        )
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL and SQL != "":
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
-            # The below SQL will execute rest DMLs because we can not execute CREATE with any other
-            SQL = render_template(
-                "/".join([self.template_path, 'grant.sql']),
-                data=data, conn=self.conn
+        response = res['rows'][0]
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                response['did'],
+                sid,
+                response['name'],
+                icon="icon-database-not-connected",
+                connected=False,
+                tablespace=response['default_tablespace'],
+                allowConn=True,
+                canCreate=response['cancreate'],
+                canDisconn=True,
+                canDrop=True
             )
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, msg = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=msg)
-
-            # We need oid of newly created database
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                name=data['name'], conn=self.conn, last_system_oid=0
-            )
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-            response = res['rows'][0]
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    response['did'],
-                    sid,
-                    response['name'],
-                    icon="icon-database-not-connected",
-                    connected=False,
-                    tablespace=response['default_tablespace'],
-                    allowConn=True,
-                    canCreate=response['cancreate'],
-                    canDisconn=True,
-                    canDrop=True
-                )
-            )
-
-        except Exception as e:
-            return make_json_response(
-                status=410,
-                success=0,
-                errormsg=e.message
-            )
+        )
 
     @check_precondition(action="update")
     def update(self, gid, sid, did):
@@ -563,91 +547,79 @@ class DatabaseView(PGChildNodeView):
             if 'name' not in data:
                 data['name'] = data['old_name']
 
-        try:
-            status = self.manager.release(did=did)
-            conn = self.manager.connection()
-            for action in ["rename_database", "tablespace"]:
-                SQL = self.get_offline_sql(gid, sid, data, did, action)
-                SQL = SQL.strip('\n').strip(' ')
-                if SQL and SQL != "":
-                    status, msg = conn.execute_scalar(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=msg)
-
-                    info = "Database updated."
-
-            self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
-            status, errmsg = self.conn.connect()
-
-            SQL = self.get_online_sql(gid, sid, data, did)
+        status = self.manager.release(did=did)
+        conn = self.manager.connection()
+        for action in ["rename_database", "tablespace"]:
+            SQL = self.get_offline_sql(gid, sid, data, did, action)
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
-                status, msg = self.conn.execute_scalar(SQL)
+                status, msg = conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=msg)
 
                 info = "Database updated."
 
-            return make_json_response(
-                success=1,
-                info=info,
-                data={
-                    'id': did,
-                    'sid': sid,
-                    'gid': gid,
-                }
-            )
+        self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
+        status, errmsg = self.conn.connect()
 
-        except Exception as e:
-            return make_json_response(
-                status=410,
-                success=0,
-                errormsg=str(e)
-            )
+        SQL = self.get_online_sql(gid, sid, data, did)
+        SQL = SQL.strip('\n').strip(' ')
+        if SQL and SQL != "":
+            status, msg = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=msg)
+
+            info = "Database updated."
+
+        return make_json_response(
+            success=1,
+            info=info,
+            data={
+                'id': did,
+                'sid': sid,
+                'gid': gid,
+            }
+        )
 
     @check_precondition(action="drop")
     def delete(self, gid, sid, did):
         """Delete the database."""
-        try:
-            default_conn = self.manager.connection()
-            SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                did=did, conn=self.conn
-            )
-            status, res = default_conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        default_conn = self.manager.connection()
+        SQL = render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            did=did, conn=self.conn
+        )
+        status, res = default_conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            if res is None:
-                return make_json_response(
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified database could not be found.\n'
-                    )
-                )
-            else:
-
-                status = self.manager.release(did=did)
-
-                SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    datname=res, conn=self.conn
-                )
-
-                status, msg = default_conn.execute_scalar(SQL)
-                if not status:
-                    # reconnect if database drop failed.
-                    conn = self.manager.connection(did=did, auto_reconnect=True)
-                    status, errmsg = conn.connect()
-                    return internal_server_error(errormsg=msg)
-
-        except Exception as e:
+        if res is None:
             return make_json_response(
                 success=0,
-                errormsg=str(e))
+                errormsg=_(
+                    'Error: Object not found.'
+                ),
+                info=_(
+                    'The specified database could not be found.\n'
+                )
+            )
+        else:
+
+            status = self.manager.release(did=did)
+
+            SQL = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                datname=res, conn=self.conn
+            )
+
+            status, msg = default_conn.execute_scalar(SQL)
+            if not status:
+                # reconnect if database drop failed.
+                conn = self.manager.connection(did=did, auto_reconnect=True)
+                status, errmsg = conn.connect()
+
+                return internal_server_error(errormsg=msg)
+
 
         return make_json_response(success=1)
 
@@ -662,25 +634,18 @@ class DatabaseView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
-        try:
-            status, res = self.get_sql(gid, sid, data, did)
+        status, res = self.get_sql(gid, sid, data, did)
 
-            if not status:
-                return res
+        if not status:
+            return res
 
-            res = re.sub('\n{2,}', '\n\n', res)
-            SQL = res.strip('\n').strip(' ')
+        res = re.sub('\n{2,}', '\n\n', res)
+        SQL = res.strip('\n').strip(' ')
 
-            return make_json_response(
-                data=SQL,
-                status=200
-            )
-        except Exception as e:
-            current_app.logger.exception(e)
-            return make_json_response(
-                data=_("-- modified SQL"),
-                status=200
-            )
+        return make_json_response(
+            data=SQL,
+            status=200
+        )
 
     def get_sql(self, gid, sid, data, did=None):
         SQL = ''
@@ -819,7 +784,10 @@ class DatabaseView(PGChildNodeView):
         server.
         """
         last_system_oid = 0 if self.blueprint.show_system_objects else \
-            (self.manager.db_info[self.manager.did])['datlastsysoid']
+            (self.manager.db_info[self.manager.did])['datlastsysoid'] \
+            if self.manager.db_info is not None and \
+            self.manager.did in self.manager.db_info else 0
+
         status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'stats.sql']),

@@ -30,8 +30,9 @@ class DataTypeJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def make_json_response(success=1, errormsg='', info='', result=None,
-                       data=None, status=200):
+def make_json_response(
+        success=1, errormsg='', info='', result=None, data=None, status=200
+):
     """Create a HTML response document describing the results of a request and
     containing the data."""
     doc = dict()
@@ -44,7 +45,7 @@ def make_json_response(success=1, errormsg='', info='', result=None,
     return Response(
         response=json.dumps(doc, cls=DataTypeJSONEncoder),
         status=status,
-        mimetype="text/json"
+        mimetype="application/json"
     )
 
 
@@ -53,7 +54,7 @@ def make_response(response=None, status=200):
     return Response(
         response=json.dumps(response, cls=DataTypeJSONEncoder),
         status=status,
-        mimetype="text/json"
+        mimetype="application/json"
     )
 
 
@@ -120,10 +121,25 @@ def gone(errormsg=''):
     )
 
 
-def not_implemented(errormsg=_('Not implemented.')):
+def not_implemented(errormsg=_('Not implemented.'), info='', result=None, data=None):
     """Create a response with HTTP status code 501 - Not Implemented."""
     return make_json_response(
         status=501,
         success=0,
-        errormsg=errormsg
+        errormsg=errormsg,
+        info=info,
+        result=result,
+        data=data
+    )
+
+
+def service_unavailable(errormsg=_("Service Unavailable"), info='', result=None, data=None):
+    """Create a response with HTTP status code 503 - Server Unavailable."""
+    return make_json_response(
+        status=503,
+        success=0,
+        errormsg=errormsg,
+        info=info,
+        result=result,
+        data=data
     )

@@ -17,9 +17,8 @@ from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -219,20 +218,8 @@ class UserMappingView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
 
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    gettext(
-                        "Connection to the server has been lost!"
-                    )
-                )
-
+            # Set the template path for the SQL scripts
             self.template_path = 'user_mappings/sql/9.1_plus'
-
-            ver = self.manager.version
-            # we will set template path for sql scripts
-            if ver >= 90100:
-                self.template_path = 'user_mappings/sql/9.1_plus'
 
             return f(*args, **kwargs)
 

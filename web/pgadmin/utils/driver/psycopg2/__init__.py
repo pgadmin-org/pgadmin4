@@ -30,6 +30,7 @@ from psycopg2.extensions import adapt
 
 import config
 from pgadmin.model import Server, User
+from pgadmin.utils.exception import ConnectionLost
 from .keywords import ScanKeyword
 from ..abstract import BaseDriver, BaseConnection
 from .cursor import DictCursor
@@ -179,6 +180,7 @@ class Connection(BaseConnection):
         self.execution_aborted = False
         self.row_count = 0
         self.__notices = None
+        self.password = None
 
         super(Connection, self).__init__()
 
@@ -225,10 +227,13 @@ class Connection(BaseConnection):
         password = None
         mgr = self.manager
 
-        if 'password' in kwargs:
-            encpass = kwargs['password']
-        else:
-            encpass = getattr(mgr, 'password', None)
+        encpass = kwargs['password'] if 'password' in kwargs else None
+
+        if encpass is None:
+            encpass = self.password or getattr(mgr, 'password', None)
+
+        # Reset the existing connection password
+        self.password = None
 
         if encpass:
             # Fetch Logged in User Details.
@@ -239,16 +244,16 @@ class Connection(BaseConnection):
 
             try:
                 password = decrypt(encpass, user.password)
+
+                # password is in bytes, for python3 we need it in string
+                if isinstance(password, bytes):
+                    password = password.decode()
             except Exception as e:
                 current_app.logger.exception(e)
                 return False, \
                        _("Failed to decrypt the saved password!\nError: {0}").format(
                            str(e)
                        )
-
-            # password is in bytes, for python3 we need it in string
-            if isinstance(password, bytes):
-                password = password.decode()
 
         try:
             if hasattr(str, 'decode'):
@@ -401,11 +406,18 @@ WHERE
                     mgr.server_cls = st
                     break
 
+        mgr._update_password(encpass)
         mgr.update_session()
 
         return True, None
 
     def __cursor(self, server_cursor=False):
+        if not self.conn:
+            raise ConnectionLost(
+                self.manager.sid,
+                self.db,
+                None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+            )
         cur = getattr(g, "{0}#{1}".format(
             self.manager.sid,
             self.conn_id.encode('utf-8')
@@ -475,7 +487,7 @@ Attempting to reconnect to the database server (#{server_id}) for the connection
 Connection for server#{0} with database "{1}" was lost.
 Attempt to reconnect it failed with the error:
 {2}"""
-                    ).format(self.driver.server_id, self.database, cur)
+                    ).format(self.driver.server_id, self.db, cur)
                     current_app.logger.error(msg)
 
                     return False, cur
@@ -593,6 +605,12 @@ Attempt to reconnect it failed with the error:
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
+            if not self.connected():
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
                 u"Failed to execute query (execute_scalar) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
@@ -694,6 +712,12 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
+            if not self.connected():
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(u"""
 Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
@@ -733,6 +757,12 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
+            if not self.connected():
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
                 u"Failed to execute query (execute_2darray) for the server #{server_id} - {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
@@ -778,6 +808,12 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
+            if not self.connected():
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    None if self.conn_id[0:3] == u'DB:' else self.conn_id[5:]
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
                 u"Failed to execute query (execute_dict) for the server #{server_id}- {conn_id} (Query-id: {query_id}):\nError Message:{errmsg}".format(
@@ -867,6 +903,7 @@ Failed to reset the connection to the server due to following error:
         if self.conn:
             self.conn.close()
             self.conn = None
+            self.password = None
 
     def _wait(self, conn):
         """
@@ -942,6 +979,12 @@ Failed to reset the connection to the server due to following error:
         try:
             status = self._wait_timeout(self.conn, ASYNC_WAIT_TIMEOUT)
         except psycopg2.Error as pe:
+            if cur.closed:
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    self.conn_id[5:]
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             return False, errmsg, None
 
@@ -1242,10 +1285,6 @@ class ServerManager(object):
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
             async=None
     ):
-        msg_active_conn = gettext(
-            "Server has no active connection. Please connect to the server."
-        )
-
         if database is not None:
             if hasattr(str, 'decode') and \
                     not isinstance(database, unicode):
@@ -1285,7 +1324,7 @@ WHERE db.oid = {0}""".format(did))
                             ))
 
         if database is None:
-            raise Exception(msg_active_conn)
+            raise ConnectionLost(self.sid, None, None)
 
         my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
             (u'DB:{0}'.format(database))
@@ -1386,6 +1425,13 @@ WHERE db.oid = {0}""".format(did))
         self.update_session()
 
         return True
+
+    def _update_password(self, passwd):
+        self.password = passwd
+        for conn_id in self.connections:
+            conn = self.connections[conn_id]
+            if conn.conn is not None:
+                conn.password = passwd
 
     def update_session(self):
         managers = session['__pgsql_server_managers'] \

@@ -124,6 +124,7 @@ def create_app(app_name=config.APP_NAME):
     # Removes unwanted whitespace from render_template function
     app.jinja_env.trim_blocks = True
     app.config.from_object(config)
+    app.config.update(dict(PROPAGATE_EXCEPTIONS=True))
 
     ##########################################################################
     # Setup session management

@@ -18,9 +18,8 @@ from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error, gone
-from pgadmin.utils.ajax import precondition_required
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -230,17 +229,10 @@ class FtsConfigurationView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            # If DB not connected then return error to browser
-            if not self.conn.connected():
-                return precondition_required(
-                    _("Connection to the server has been lost!")
-                )
-            # we will set template path for sql scripts depending upon server version
-            ver = self.manager.version
-            if ver >= 90100:
-                self.template_path = 'fts_configuration/sql/9.1_plus'
-            return f(*args, **kwargs)
+            # Set the template path for the SQL scripts
+            self.template_path = 'fts_configuration/sql/9.1_plus'
 
+            return f(*args, **kwargs)
         return wrap
 
     @check_precondition
@@ -741,7 +733,6 @@ class FtsConfigurationView(PGChildNodeView):
         :param scid: schema id
         """
         # Fetch last system oid
-        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
 
         sql = render_template(
             "/".join([self.template_path, 'parser.sql']),
@@ -751,6 +742,8 @@ class FtsConfigurationView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=rset)
+
+        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
 
         # Empty set is added before actual list as initially it will be visible
         # at parser control while creating a new FTS Configuration
@@ -776,8 +769,6 @@ class FtsConfigurationView(PGChildNodeView):
         :param scid: schema id
         """
         # Fetch last system oid
-        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
-
         sql = render_template(
             "/".join([self.template_path, 'copy_config.sql']),
             copy_config=True
@@ -786,6 +777,8 @@ class FtsConfigurationView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=rset)
+
+        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
 
         # Empty set is added before actual list as initially it will be visible
         # at copy_config control while creating a new FTS Configuration
