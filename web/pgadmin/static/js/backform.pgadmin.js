@@ -2131,10 +2131,18 @@
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
             mode: "text/x-sql",
-            readOnly: isDisabled,
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize
           });
+
+      // Disable editor
+      if (isDisabled) {
+        self.sqlCtrl.setOption("readOnly", "nocursor");
+        var cm = self.sqlCtrl.getWrapperElement();
+        if (cm) {
+          cm.className += ' cm_disabled';
+        }
+      }
 
       if (!isVisible)
         self.$el.addClass(Backform.hiddenClassname);

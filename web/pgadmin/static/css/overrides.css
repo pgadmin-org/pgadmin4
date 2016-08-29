@@ -1391,3 +1391,14 @@ table.backgrid {
 .cm_disabled {
   background: #EEEEEE;
 }
+
+.pgadmin-controls.sql_field_layout {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.pgadmin-controls.sql_field_layout .CodeMirror {
+  line-height: 22px;
+}
