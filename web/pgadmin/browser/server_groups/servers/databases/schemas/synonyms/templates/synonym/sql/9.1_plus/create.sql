@@ -3,9 +3,13 @@
 {% set is_public = True %}
 {% endif %}
 {% if comment %}
--- {% if is_public %}Public{% else %}Private{% endif %} synonym: {{ conn|qtIdent(data.schema, data.name) }};
+-- {% if is_public %}Public{% else %}Private{% endif %} synonym: {% if is_public %}{{ conn|qtIdent(data.name) }};
+{% else %}{{ conn|qtIdent(data.schema, data.name) }};
+{% endif %}
 
--- DROP {% if is_public %}PUBLIC {% endif %}SYNONYM {{ conn|qtIdent(data.schema, data.name) }};
+-- DROP {% if is_public %}PUBLIC {% endif %}SYNONYM {% if is_public %}{{ conn|qtIdent(data.name) }};
+{% else %}{{ conn|qtIdent(data.schema, data.name) }};
+{% endif %}
 
 {% endif %}
 CREATE OR REPLACE {% if is_public %}

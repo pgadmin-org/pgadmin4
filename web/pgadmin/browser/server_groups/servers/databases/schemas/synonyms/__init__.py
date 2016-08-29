@@ -332,10 +332,21 @@ class SynonymView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            return ajax_response(
-                response=res['rows'][0],
-                status=200
-            )
+            if len(res['rows']) > 0:
+                return ajax_response(
+                    response=res['rows'][0],
+                    status=200
+                )
+            else:
+                return make_json_response(
+                    success=410,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified synonym could not be found.\n'
+                    )
+                )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -414,9 +425,9 @@ class SynonymView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            data = res['rows'][0]
-
-            if data['name'] is None:
+            if len(res['rows']) > 0:
+                data = res['rows'][0]
+            else:
                 return make_json_response(
                     success=0,
                     errormsg=gettext(
@@ -578,7 +589,18 @@ class SynonymView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
-        data = res['rows'][0]
+        if len(res['rows']) > 0:
+           data = res['rows'][0]
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=gettext(
+                    'Error: Object not found.'
+                ),
+                info=gettext(
+                    'The specified synonym could not be found.\n'
+                )
+            )
 
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']),

@@ -1356,11 +1356,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           function(o) { return o.priority; }
           ),
         function(o) {
-          ref = S('%s/%s').sprintf(ref, encodeURI(o._id)).value();
+          ref = S('%s/%s').sprintf(ref, encodeURIComponent(o._id)).value();
         });
 
       ref = S('%s/%s').sprintf(
-          ref, with_id && d._type == self.type ? d._id : ''
+          ref, with_id && d._type == self.type ? encodeURIComponent(d._id) : ''
           ).value();
 
       var args = {
