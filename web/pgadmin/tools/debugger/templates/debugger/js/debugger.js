@@ -46,6 +46,18 @@ define(
           category: 'Debugging', priority: 10, label: '{{ _('Set breakpoint') }}',
           data: {object: 'procedure'}, icon: 'fa fa-arrow-circle-right',
           enable: 'can_debug'
+        }, {
+          name: 'trigger_function_indirect_debugger', node: 'trigger_function', module: this,
+          applies: ['object', 'context'], callback: 'check_func_debuggable',
+          priority: 10, label: '{{ _('Set breakpoint') }}', category: 'Debugging',
+          icon: 'fa fa-arrow-circle-right', data: {object:'trigger_function'},
+          enable: 'can_debug'
+        }, {
+          name: 'trigger_indirect_debugger', node: 'trigger', module: this,
+          applies: ['object', 'context'], callback: 'check_func_debuggable',
+          priority: 10, label: '{{ _('Set breakpoint') }}', category: 'Debugging',
+          icon: 'fa fa-arrow-circle-right', data: {object:'trigger'},
+          enable: 'can_debug'
         }]);
 
         // Create and load the new frame required for debugger panel
@@ -88,6 +100,11 @@ define(
         // Must be a super user or object owner to create breakpoints of any kind
         if (!(treeInfo.server.user.is_superuser || treeInfo.function.funcowner == treeInfo.server.user.name))
           return false;
+
+        // For trigger node, language will be undefined - we should allow indirect debugging for trigger node
+        if (d_.language == undefined && d_._type == 'trigger') {
+          return true;
+        }
 
         if (d_.language != 'plpgsql' && d_.language != 'edbspl') {
            return false;
@@ -178,9 +195,18 @@ define(
           var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
         }
-        else {
+        else if (d._type == "procedure") {
           var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+        }
+        else if (d._type == "trigger_function") {
+          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
+                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.trigger_function._id;
+        }
+        else if (d._type == "trigger") {
+          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
+                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.table._id +
+                                "/" + treeInfo.trigger._id;
         }
 
         $.ajax({

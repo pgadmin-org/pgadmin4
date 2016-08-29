@@ -111,10 +111,11 @@ def update_session_function_transaction(trans_id, data):
 
 
 @blueprint.route('/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>', methods=['GET'])
+@blueprint.route('/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>/<int:trid>', methods=['GET'])
 @login_required
-def init_function(node_type, sid, did, scid, fid):
+def init_function(node_type, sid, did, scid, fid, trid=None):
     """
-    init_function(node_type, sid, did, scid, fid)
+    init_function(node_type, sid, did, scid, fid, trid)
 
     This method is responsible to initialize the function required for debugging.
     This method is also responsible for storing the all functions data to session variable.
@@ -132,6 +133,8 @@ def init_function(node_type, sid, did, scid, fid):
         - Schema Id
         fid
         - Function Id
+        trid
+        - Trigger Function Id
     """
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did)
@@ -149,6 +152,18 @@ def init_function(node_type, sid, did, scid, fid):
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
 
+    if node_type == 'trigger':
+        # Find trigger function id from trigger id
+        sql = render_template("/".join([template_path, 'get_trigger_function_info.sql']), table_id=fid, trigger_id=trid)
+
+        status, tr_set = conn.execute_dict(sql)
+        if not status:
+            current_app.logger.debug("Error retrieving trigger function information from database")
+            return internal_server_error(errormsg=tr_set)
+
+        fid = tr_set['rows'][0]['tgfoid']
+
+    sql = ''
     sql = render_template("/".join([template_path, 'get_function_debug_info.sql']), is_ppas_database=ppas_server,
                           hasFeatureFunctionDefaults=True, fid=fid)
     status, r_set = conn.execute_dict(sql)
@@ -166,9 +181,6 @@ def init_function(node_type, sid, did, scid, fid):
         if ":" in r_set['rows'][0]['name']:
             ret_status = False
             msg = gettext("Functions with a colon in the name cannot be debugged.")
-        elif node_type != 'trigger' and r_set['rows'][0]['rettype'] == 'trigger':
-            ret_status = False
-            msg = gettext("Functions with return type of 'trigger' cannot be debugged.")
         elif ppas_server and r_set['rows'][0]['prosrc'].lstrip().startswith('$__EDBwrapped__$'):
             ret_status = False
             msg = gettext("EDB Advanced Server wrapped functions cannot be debugged.")
@@ -304,10 +316,12 @@ def direct_new(trans_id):
 
 @blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
                  methods=['GET', 'POST'])
+@blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>/<int:tri_id>',
+                 methods=['GET', 'POST'])
 @login_required
-def initialize_target(debug_type, sid, did, scid, func_id):
+def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     """
-    initialize_target(debug_type, sid, did, scid, func_id)
+    initialize_target(debug_type, sid, did, scid, func_id, tri_id)
 
     This method is responsible for creating an asynchronous connection.
     It will also create a unique transaction id and store the information
@@ -324,6 +338,8 @@ def initialize_target(debug_type, sid, did, scid, func_id):
         - Schema Id
         func_id
         - Function Id
+        tri_id
+        - Trigger Function Id
     """
 
     # Create asynchronous connection using random connection id.
@@ -338,6 +354,20 @@ def initialize_target(debug_type, sid, did, scid, func_id):
     status, msg = conn.connect()
     if not status:
         return internal_server_error(errormsg=str(msg))
+
+    # Set the template path required to read the sql files
+    template_path = 'debugger/sql'
+
+    if tri_id is not None:
+        # Find trigger function id from trigger id
+        sql = render_template("/".join([template_path, 'get_trigger_function_info.sql']), table_id=func_id, trigger_id=tri_id)
+
+        status, tr_set = conn.execute_dict(sql)
+        if not status:
+            current_app.logger.debug("Error retrieving trigger function information from database")
+            return internal_server_error(errormsg=tr_set)
+
+        func_id = tr_set['rows'][0]['tgfoid']
 
     # Create a unique id for the transaction
     trans_id = str(random.randint(1, 9999999))
