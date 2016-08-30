@@ -545,8 +545,7 @@ define(
                 // Collect primary key data from collection as needed for stage row
                 _.each(selected_rows_list, function(row_index) {
                   var row_data = collection[row_index], _selected = {};
-                    _selected = { [row_data.__temp_PK]: _.pick(row_data, _pk) };
-                    _.extend(rows_for_stage, _selected);
+                  rows_for_stage[row_data.__temp_PK] = _.pick(row_data, _pk);
                 });
               } else {
                 // Clear the object as no rows to delete
@@ -577,9 +576,8 @@ define(
               }
 
               // Fetch primary keys for the row before they gets modified
-              _.each(_keys, function(value,key) {
-                each_pk_key = { [key]: before_data[key] };
-                _.extend(current_pk, each_pk_key);
+              _.each(_keys, function(value, key) {
+                current_pk[key] = before_data[key];
               });
               // Place it in main variable for later use
               self.handler.primary_keys_data[_pk] = current_pk
@@ -639,28 +637,21 @@ define(
             if(_pk in self.handler.data_store.added) {
               _.extend(self.handler.data_store.added[_pk]['data'], col_val);
               //Find type for current column
-              _type = { [changed_column]: _.where(this.columns, {name: changed_column})[0]['type'] };
-              _.extend(
-                self.handler.data_store.added[_pk]['data_type'],
-                _type
-              );
+              self.handler.data_store.added[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
             // Check if it is updated data from existing rows?
             } else if(_pk in self.handler.data_store.updated) {
               _.extend(self.handler.data_store.updated[_pk]['data'], col_val);
              //Find type for current column
-             _type = { [changed_column]: _.where(this.columns, {name: changed_column})[0]['type'] };
-              _.extend(
-                self.handler.data_store.updated[_pk]['data_type'],
-                _type
-              );
+             self.handler.data_store.updated[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
             } else {
               // First updated data for this primary key
               self.handler.data_store.updated[_pk] = {};
               self.handler.data_store.updated[_pk]['data'] = col_val;
               self.handler.data_store.updated[_pk]['primary_keys'] = self.handler.primary_keys_data[_pk];
               // Find & add column data type for current changed column
-              _type = { [changed_column]: _.where(this.columns, {name: changed_column})[0]['type'] };
-              self.handler.data_store.updated[_pk]['data_type'] = _type;
+              var temp = {};
+              temp[changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
+              self.handler.data_store.updated[_pk]['data_type'] = temp;
             }
           }
           // Enable save button
@@ -681,9 +672,9 @@ define(
           self.handler.data_store.added[_key] = {};
           self.handler.data_store.added[_key]['data'] = item;
           // Fetch data type & add it for the column
-          var _type = { [column.field]:
-                            _.where(this.columns, {name: column.field})[0]['type'] };
-          self.handler.data_store.added[_key]['data_type'] = _type;
+          var temp = {};
+          temp[column.field] = _.where(this.columns, {name: column.field})[0]['type'];
+          self.handler.data_store.added[_key]['data_type'] =  temp;
           grid.invalidateRows([collection.length - 1]);
           grid.updateRowCount();
           grid.render();
