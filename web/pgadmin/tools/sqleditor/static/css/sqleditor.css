@@ -380,6 +380,14 @@ textarea.editor-text {
   padding: 0;
 }
 
+/* Slick.Editors.Checkbox */
+input.editor-checkbox {
+  margin: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+}
+
 /* Override selected row color */
 .slick-cell.selected {
     background-color: #eeeeee !important;

@@ -10,7 +10,8 @@
   $.extend(true, window, {
     "Slick": {
       "Formatters": {
-        "JsonString": JsonFormatter
+        "JsonString": JsonFormatter,
+        "Checkmark": CheckmarkFormatter
       }
     }
   });
@@ -26,6 +27,10 @@
         return value;
       }
     }
+  }
+
+  function CheckmarkFormatter(row, cell, value, columnDef, dataContext) {
+    return value ? "true" : "false";
   }
 
 })(jQuery);

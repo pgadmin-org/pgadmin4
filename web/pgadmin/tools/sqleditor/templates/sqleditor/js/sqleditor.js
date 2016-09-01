@@ -460,7 +460,8 @@ define(
               field: c.name,
               name: c.label
             };
-            // If gird is editable then add formatter & editor as well
+
+            // If gird is editable then add editor
             if(is_editable) {
               if(c.cell == 'Json') {
                 options['editor'] = Slick.Editors.JsonText;
@@ -468,13 +469,19 @@ define(
               else if(c.cell == 'number') {
                 options['editor'] = Slick.Editors.Text;
               }
+              else if(c.cell == 'boolean') {
+                options['editor'] = Slick.Editors.Checkbox;
+              }
               else {
                 options['editor'] = Slick.Editors.pgText;
               }
             }
-            // To handle json format properly in grid
+
+            // To handle json & boolean formatter in grid
             if(c.cell == 'Json') {
               options['formatter'] = Slick.Formatters.JsonString;
+            } else if(c.cell == 'boolean') {
+              options['formatter'] = Slick.Formatters.Checkmark;
             }
 
             grid_columns.push(options)
@@ -485,7 +492,7 @@ define(
           enableAddRow: is_editable,
           enableCellNavigation: true,
           enableColumnReorder: false,
-          asyncEditorLoading: true,
+          asyncEditorLoading: false,
           autoEdit: false
         };
 
@@ -692,14 +699,12 @@ define(
           self.grid_resize(grid);
         });
 
-
         // Resize SlickGrid when output Panel gets focus
-        self.data_output_panel.on(wcDocker.EVENT.GAIN_FOCUS, function() {
+        self.data_output_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
           // Resize grid only if output panel is visible
           if(self.data_output_panel.isVisible())
             self.grid_resize(grid);
         });
-
       },
 
       /* This function is responsible to render output grid */
@@ -1353,8 +1358,35 @@ define(
           }
         },
 
-        // This function makes the ajax call to execute the sql query.
+        // This function checks if there is any dirty data in the grid before
+        // it executes the sql query
         _execute_data_query: function() {
+          var self = this;
+
+          // Check if the data grid has any changes before running query
+          if(_.has(self, 'data_store') &&
+                ( _.size(self.data_store.added) ||
+                _.size(self.data_store.updated) ||
+                _.size(self.data_store.deleted))
+            ) {
+                alertify.confirm('{{ _('Unsaved changes') }}',
+                  '{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}',
+                  function(){
+                    // Do nothing as user do not want to save, just continue
+                    self._run_query();
+                  },
+                  function(){
+                    // Stop, User wants to save
+                    return true;
+                  }
+                ).set('labels', {ok:'Yes', cancel:'No'});
+          } else {
+            self._run_query();
+          }
+        },
+
+        // This function makes the ajax call to execute the sql query.
+        _run_query: function() {
           var self = this;
           self.query_start_time = new Date();
           self.rows_affected = 0;
@@ -1697,6 +1729,9 @@ define(
                     case "real":
                     case "double precision":
                       col_cell = 'number';
+                      break;
+                    case "boolean":
+                      col_cell = 'boolean';
                       break;
                     default:
                       col_cell = 'string';
