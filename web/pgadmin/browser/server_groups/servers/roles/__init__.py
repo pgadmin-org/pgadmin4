@@ -145,7 +145,7 @@ class RoleView(PGChildNodeView):
                         date = datetime.datetime.strptime(
                             data[u'rolvaliduntil'], '%m/%d/%Y'
                         )
-                        data[u'rolvaliduntil'] = date.strftime("%d-%B-%Y")
+                        data[u'rolvaliduntil'] = date.strftime("%Y-%m-%d")
                 except Exception as e:
                     return precondition_required(
                         _("Date format is invalid.")
@@ -640,11 +640,8 @@ rolmembership:{
                     'admin': True if role.group(1) == '1' else False
                 })
             row['rolmembership'] = res
-            row['rolvaliduntil'] = row['rolvaliduntil'].isoformat() \
-                if isinstance(
-                row['rolvaliduntil'],
-                (datetime.date, datetime.datetime)
-            ) else None
+            if row['rolvaliduntil'] is not None:
+                row['rolvaliduntil'] = row['rolvaliduntil'].split(' ')[0]
             if 'seclabels' in row and row['seclabels'] is not None:
                 res = []
                 for sec in row['seclabels']:
