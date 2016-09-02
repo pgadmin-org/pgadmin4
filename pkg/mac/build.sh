@@ -83,9 +83,37 @@ _create_python_virtualenv() {
     source $VIRTUALENV/bin/activate
     $PIP install -r $SOURCEDIR/$REQUIREMENTS || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
 
-    # Move the python<version> directory to python so that the private environment path is found by the application.
+    # Figure out some paths for use when completing the venv
+    # Use "python" here as we want the venv path
     export PYMODULES_PATH=`python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`
     export DIR_PYMODULES_PATH=`dirname $PYMODULES_PATH`
+    
+    # Use $PYTHON here as we want the system path
+    export PYSYSLIB_PATH=`$PYTHON -c "import sys; print '%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor)"`
+    
+    # Symlink in the rest of the Python libs. This is required because the runtime
+    # will clear PYTHONHOME for safety, which has the side-effect of preventing
+    # it from finding modules that are note explicitly included in the venv
+    cd $DIR_PYMODULES_PATH
+    
+    # Files
+    for FULLPATH in $PYSYSLIB_PATH/*.py; do
+        FILE=${FULLPATH##*/}
+        if [ ! -e $FILE ]; then
+           ln -s $FULLPATH $FILE
+        fi
+    done
+    
+    # Paths
+    for FULLPATH in $PYSYSLIB_PATH/*/; do
+        FULLPATH=${FULLPATH%*/}
+        FILE=${FULLPATH##*/}
+        if [ ! -e $FILE ]; then
+            ln -s $FULLPATH $FILE
+        fi
+    done
+    
+    # Move the python<version> directory to python so that the private environment path is found by the application.
     if test -d $DIR_PYMODULES_PATH; then
         mv $DIR_PYMODULES_PATH $DIR_PYMODULES_PATH/../python
     fi
