@@ -41,7 +41,7 @@ Click the *Columns* tab to continue.
 
 Use the fields in the *Columns* tab to select the columns that will be imported or exported:
 
-* Click inside the *Columns to export/import* field to select one or more columns from the drop-down listbox. To delete a selection, click the *x* to the left of the column name. 
+* Click inside the *Columns to export/import* field to deselect one or more columns from the drop-down listbox. To delete a selection, click the *x* to the left of the column name. Click an empty spot inside the field to access the drop-down list.
 * Use the *NULL Strings* field to specify a string that will represent a null value within the source or target file. 
 * If enabled, click inside the *Not null columns* field to select one or more columns that will not be checked for a NULL value. To delete a column, click the *x* to the left of the column name. 
 

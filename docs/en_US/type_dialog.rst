@@ -13,7 +13,7 @@ The *Type* dialog organizes the development of a data type through the following
 Use the fields in the *General* tab to identify the custom data type:
 
 * Use the *Name* field to add a descriptive name for the type. The name will be displayed in the *pgAdmin* tree control. The type name must be distinct from the name of any existing type, domain, or table in the same schema. 
-* Use the drop-down listbox next to *Owner* to select a role.
+* Use the drop-down listbox next to *Owner* to select the role that will own the type.
 * Select the name of the schema in which the type will reside from the drop-down listbox in the *Schema* field.
 * Store notes about the type in the *Comments* field.
 
@@ -33,25 +33,25 @@ If you select *Composite* in the *Type* field, the *Definition* tab displays the
 
 .. image:: images/type_composite.png
 
-Click *Add* to provide parameters for the type and click the *Edit* icon to the left of the row to enter values in the dropdown *General* panel. Fields on the *General* panel are context sensitive and may be disabled.
+Click the *Add* icon (+) to provide attributes of the type. Fields on the *General* panel are context sensitive and may be disabled.
 
 * Use the *Member Name* field to add an attribute name.
-* Use the *Type* field to add a datatype. 
+* Use the drop-down listbox in the *Type* field to select a datatype. 
 * Use the *Length/Precision* field to specify the maximum length of a non-numeric type, or the total count of significant digits in a numeric type. 
 * Use the *Scale* field to specify the number of digits to the right of the decimal point.  
-* Use the *Collation* field to specify an attribute's collation.
+* Use the drop-down listbox in the *Collation* field to select a collation (if applicable).
  
-Click *Add* to create an additional row of parameters; click the *Edit* icon to the left of a row to enter values on the dropdown panel; click the trash icon to the left of the row to discard a row of parameters.
+Click the *Add* icon (+) to define an additional member; click the trash icon to the left of the row to discard a row.
 
 If you select the *Enumeration* in the *Type* field, the *Definition* tab displays the *Enumeration Type* panel:
 
 .. image:: images/type_enumeration.png
 
-Click *Add* to provide a label for the type.
+Click the *Add* icon (+) to provide a label for the type.
 
 * Use the *Label* field to add a label, which must be less than 64 bytes long.
 
-Click *Add* after each selection to create additional labels; to discard a label, click the trash icon to the left of the row.
+Click the *Add* icon (+) after each selection to create additional labels; to discard a label, click the trash icon to the left of the row.
 
 If you select *External*, the *Definition* tab displays the *External Type* panel:  
 
@@ -106,20 +106,20 @@ Click the *Security* tab to continue.
 
 Use the *Security* tab to assign privileges and define security labels.  
 
-Use the *Privileges* panel to assign privileges to a role. Click *Add* to specify privileges for the type:
+Use the *Privileges* panel to assign privileges for the type; click the *Add* icon (+) to grant privileges:
 
 * Select the name of the role that will be granted privileges on the type from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privilege to the specified user.
 * Select the name of the role that is granting privileges from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the database.
 
-Click *Add* to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the type. Click *Add* to add each security label selection: 
+Use the *Security Labels* panel to define security labels applied to the type. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
+* Specify a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
 
-Click *Add* to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 
@@ -131,7 +131,7 @@ The following is an example of a sql command generated by user selections made i
 
 .. image:: images/type_sql.png
 
-The example shown demonstrates creating a data type named *work_order*. The data type uses the *Enumeration Type* form with three labels: new, open and closed.
+The example shown demonstrates creating a data type named *work_order*. The data type is an enumerated type with three labels: new, open and closed.
  
 * Click the *Info* button (i) to access online help. View context-sensitive help in the *Tabbed browser*, where a new tab displays the PostgreSQL core documentation. 
 * Click the *Save* button to save work.

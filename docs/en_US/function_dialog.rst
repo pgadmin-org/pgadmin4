@@ -54,23 +54,22 @@ Click the *Arguments* tab to continue.
 
 .. image:: images/function_arguments.png
 
-Use the fields in the *Arguments* tab to define an argument. Click *Add* to set parameters and values for the argument:
+Use the fields in the *Arguments* tab to define an argument. Click the *Add* icon (+) to set parameters and values for the argument:
 
-* Use the drop-down listbox next to *Data type* to select a data type.
-* Use the drop-down listbox next to *Mode* to select a mode. Select *IN* for an input parameter; select *OUT* for an output parameter; select *INOUT* for both an input and an output parameter; or, select *VARIADIC* to specify a VARIADIC parameter.
-* Write a name for the argument in the *Argument Name* field.
+* Use the drop-down listbox in the *Data type* field to select a data type.
+* Use the drop-down listbox in the *Mode* field to select a mode. Select *IN* for an input parameter; select *OUT* for an output parameter; select *INOUT* for both an input and an output parameter; or, select *VARIADIC* to specify a VARIADIC parameter.
+* Provide a name for the argument in the *Argument Name* field.
 * Specify a default value for the argument in the *Default Value* field.
 
-Click *Add* to define another argument; to discard an argument, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to define another argument; to discard an argument, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *Parameters* tab to continue.
 
 .. image:: images/function_parameters.png
 
-Use the fields in the *Parameters* tab to specify settings that will be applied when the function is invoked:
+Use the fields in the *Parameters* tab to specify settings that will be applied when the function is invoked. Click the *Add* icon (+) to add a *Name*/*Value* field in the table.
 
-* Use the drop-down listbox next to *Parameter Name* in the *Parameters* panel to select a parameter. 
-* Click the *Add* button to add the variable to *Name* field in the table.
+* Use the drop-down listbox in the *Name* column in the *Parameters* panel to select a parameter. 
 * Use the *Value* field to specify the value that will be associated with the selected variable. This field is context-sensitive.
 
 Click the *Security* tab to continue.
@@ -85,14 +84,14 @@ Use the *Privileges* panel to assign usage privileges for the function to a role
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privilege to the specified user.
 * Select the name of the role from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the database.
 
-Click *Add* to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the function. Click *Add* to add each security label selection: 
+Use the *Security Labels* panel to define security labels applied to the function. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
 
-Click *Add* to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 

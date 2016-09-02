@@ -37,7 +37,7 @@ Use the fields in the *Definition* tab to define the index:
 * Move the *Concurrent build?* switch to the *Yes* position to build the index without taking any locks that prevent concurrent inserts, updates, or deletes on the table.
 * Use the *Constraint* field to provide a constraint expression; a constraint expression limits the entries in the index to those rows that satisfy the constraint.
 
-Use the context-sensitive fields in the *Columns* panel to specify which column(s) the index queries. Click *Add* to add a column:
+Use the context-sensitive fields in the *Columns* panel to specify which column(s) the index queries. Click the *Add* icon (+) to add a column:
 
 * Use the drop-down listbox in *Column* field to select the name of the column from the table.
 * If enabled, use the drop-down listbox to select an available *Operator class* to specify the type of action performed on the column.

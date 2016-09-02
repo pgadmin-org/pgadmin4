@@ -19,6 +19,8 @@ Use the *File* menu to access the following options:
 +----------------------+---------------------------------------------------------------------------------------------------------+
 | *Preferences*        | Click to open the :ref:`Preferences <preferences>` dialog to to customize your pgAdmin settings.        |
 +----------------------+---------------------------------------------------------------------------------------------------------+
+| *Reset Layout*       | If you have modified the workspace, click to restore the default layout.                                |
++----------------------+---------------------------------------------------------------------------------------------------------+
 
 **The Object Menu**
 
@@ -54,7 +56,7 @@ The *Object* menu is context-sensitive. Use the *Object* menu to access the foll
 | *View Data*            | Click to access a context menu that provides several options for viewing data (see below).                               |
 +------------------------+--------------------------------------------------------------------------------------------------------------------------+ 
 
-**The Tool Menu**
+**The Tools Menu**
 
 .. image:: /images/tool_menu.png
 
@@ -98,7 +100,7 @@ Use the options on the *Help* menu to access online help documents, or to review
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | Option               | Action                                                                                                                                  |
 +======================+=========================================================================================================================================+
-| *About pgAdmin*      | Click to open a window where you will find information about pgAdmin; this includes the current version and the current user.           |
+| *About pgAdmin 4*    | Click to open a window where you will find information about pgAdmin; this includes the current version and the current user.           |
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | *Online Help*        | Click to open documentation support for using pgAdmin utilities, tools and dialogs.                                                     | 
 |                      | Navigate (in the newly opened tab?) help documents in the left browser pane or use the search bar to specify a topic.                   |                                                                 

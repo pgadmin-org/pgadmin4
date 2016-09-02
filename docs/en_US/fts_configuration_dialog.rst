@@ -35,8 +35,8 @@ Click the *Tokens* tab to continue.
 Use the fields in the *Tokens* tab to add a token:
 
 * Use the *Tokens* field to specify the name of a token.
-* Click *Add* to create a token.
-* Use the *Dictionary* field to specify a dictionary. 
+* Click the *Add* icon (+) to create a token.
+* Use the *Dictionaries* field to specify a dictionary. 
 
 Repeat these steps to add additional tokens; to discard a token, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 

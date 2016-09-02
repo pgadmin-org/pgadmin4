@@ -24,13 +24,12 @@ Click the *Parameters* tab to continue.
 
 .. image:: images/tablespace_parameters.png
 
-Use the *Parameters* tab to set parameters for the tablespace:
+Use the *Parameters* tab to set parameters for the tablespace. Click the *Add* icon (+) to add a row to the table below.
 
-* Use the drop-down listbox next to *Parameter name* to select a parameter.
-* Click *Add* to add the parameter name to the table below.
+* Use the drop-down listbox next to *Name* to select a parameter. 
 * Use the *Value* field to set a value for the parameter.
 
-Click *Add* to specify each additional parameter; to discard a parameter, click the trash icon to the left of the row and confirm deletion in the *Delete Row* dialog.
+Click the *Add* icon (+) to specify each additional parameter; to discard a parameter, click the trash icon to the left of the row and confirm deletion in the *Delete Row* dialog.
 
 Click the *Security* tab to continue.
 
@@ -38,15 +37,15 @@ Click the *Security* tab to continue.
 
 Use the *Security* tab to assign privileges and define security labels for the tablespace. 
 
-Use the *Privileges* panel to assign security privileges. Click *Add* to assign a set of privileges:
+Use the *Privileges* panel to assign security privileges. Click the *Add* icon (+) to assign a set of privileges:
 
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Select the name of the role from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the owner of the tablespace.
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privileges to the specified user.
 
-Click add to assign additional sets of privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon to assign additional sets of privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the tablespace. Click *Add* to add each security label selection: 
+Use the *Security Labels* panel to define security labels applied to the tablespace. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 

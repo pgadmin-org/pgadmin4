@@ -13,7 +13,7 @@ The *FTS Dictionary* dialog organizes the development of a FTS dictionary throug
 Use the fields in the *General* tab to identify the dictionary:
 
 * Use the *Name* field to add a descriptive name for the dictionary. The name will be displayed in the *pgAdmin* tree control.
-* Use the drop-down listbox next to *Owner* to select a role.
+* Use the drop-down listbox next to *Owner* to select the role that will own the FTS Dictionary.
 * Select the name of the schema in which the dictionary will reside from the drop-down listbox in the *Schema* field.
 * Store notes about the dictionary in the *Comment* field.
 
@@ -33,16 +33,16 @@ Click the *Options* tab to continue.
 
 .. image:: images/fts_dictionary_options.png
    
-Use the fields in the *Options* tab to provide template-specific options. Click *Add* to add an option clause:
+Use the fields in the *Options* tab to provide template-specific options. Click the *Add* icon (+) to add an option clause:
 
 * Specify the name of an option in the *Option* field
-* Provide a value in the *Value* field.
+* Provide a value for the option in the *Value* field.
 
-Click *Add* to specify each additional option/value pair; to discard an option, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to specify each additional option/value pair; to discard an option, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
   
-Your entries in the *FTS Dictionary* dialog generate a generate a SQL command (see an example below). Use the *SQL* tab for review; revisit or switch tabs to make any changes to the SQL command. 
+Your entries in the *FTS Dictionary* dialog generate a generate a SQL command. Use the *SQL* tab for review; revisit or switch tabs to make any changes to the SQL command. 
 
 **Example**
 

@@ -26,11 +26,11 @@ Click the *Next* button to continue, or the *Cancel* button to close the wizard 
 
 Use the fields in the *Privileges Selection (step 2 of 3)* window to grant privileges. If you grant a privilege WITH GRANT OPTION, the Grantee will have the right to grant privileges on the object to others. If WITH GRANT OPTION is subsequently revoked, any role who received access to that object from that Grantee (directly or through a chain of grants) will lose thier privileges on the object.
 
-* Click *Add* to assign a set of privileges.
+* Click the *Add* icon (+) to assign a set of privileges.
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privileges to the specified user. If privileges have previously been granted on a database object, unchecking a privilege for a group or user will result in revoking that privilege.
 * If enabled, select the name of the role from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the database.
-* Click *Add* to assign a set of privileges to another role; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* dialog.
+* Click the *Add* icon (+) to assign a set of privileges to another role; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* dialog.
 
 For more information about granting privileges on database objects, see the `PostgreSQL core documentation <http://www.postgresql.org/docs/9.5/static/sql-grant.html>`_.
 

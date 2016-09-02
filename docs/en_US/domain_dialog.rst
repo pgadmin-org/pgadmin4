@@ -13,8 +13,8 @@ The *Domain* dialog organizes the development of a domain through the following 
 Use the fields on the *General* tab to identify a domain:
 
 * Use the *Name* field to add a descriptive name for the domain. The name will be displayed in the *pgAdmin* tree control.
-* Use the drop-down listbox next to *Owner* to select a role.
-* Select the name of the schema in which the collation will reside from the drop-down listbox in the *Schema* field.
+* Use the drop-down listbox next to *Owner* to select a role that will own the domain.
+* Select the name of the schema in which the domain will reside from the drop-down listbox in the *Schema* field.
 * Store notes about the domain in the *Comment* field.
 
 Click the *Definition* tab to continue.
@@ -34,30 +34,26 @@ Click the *Constraints* tab to continue.
 
 .. image:: images/domain_constraints.png
 
-Use the fields in the *Constraints* tab to specify rules for the domain. Click *Add* to set constraints:
+Use the fields in the *Constraints* tab to specify rules for the domain. Click the *Add* icon (+) to set constraints:
 
 * Use the *Name* field to specify a name for the constraint.
 * Use the *Check* field to provide an expression for the constraint.
 * Use the *Validate* checkbox to determine whether the constraint will be validated. The default checkbox is checked and sets a validation requirement. 
 
-CHECK clauses specify integrity constraints or tests which values of the domain must satisfy. Each constraint must be an expression producing a Boolean result. It should use the key word VALUE to refer to the value being tested. Expressions evaluating to TRUE or UNKNOWN succeed. If the expression produces a FALSE result, an error is reported and the value is not allowed to be converted to the domain type.
+A CHECK clause specifies an integrity test which values of the domain must satisfy. Each constraint must be an expression that produces a Boolean result. Use the key word VALUE to refer to the value being tested. Expressions evaluating to TRUE or UNKNOWN succeed. If the expression produces a FALSE result, an error is reported and the value is not allowed to be converted to the domain type.  A CHECK expression cannot contain subqueries nor refer to variables other than VALUE.  If a domain has multiple CHECK constraints, they will be tested in alphabetical order by name. 
 
-CHECK expressions cannot contain subqueries nor refer to variables other than VALUE.
-
-If a domain has multiple CHECK constraints, they will be tested in alphabetical order by name. 
-
-Click *Add* to set additional constraints; to discard a constraint, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to set additional constraints; to discard a constraint, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *Security* tab to continue.
 
 .. image:: images/domain_security.png
 
-Use the *Security Labels* panel to assign security labels. Click *Add* to add a label:
+Use the *Security Labels* panel to assign security labels. Click the *Add* icon (+) to add a label:
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them.
 
-Click *Add* to specify each additional label; to discard a label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to specify each additional label; to discard a label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 

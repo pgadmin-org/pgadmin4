@@ -23,7 +23,7 @@ Use the fields in the *Definition* tab to define the exclusion constraint:
 * Use the drop-down listbox next to *Tablespace* to select the tablespace in which the index associated with the exclude constraint will reside. 
 * Use the drop-down listbox next to *Access method* to specify the type of index that will be used when implementing the exclusion constraint: 
 
-    * Select *gist* to specify a GiST index (the default).  
+    * Select *gist* to specify a GiST index.  
     * Select *spgist* to specify a space-partitioned GiST index. 
     * Select *btree* to specify a B-tree index.  
     * Select *hash* to specify a hash index.  
@@ -37,11 +37,12 @@ Click the *Columns* tab to continue.
 
 .. image:: images/exclusion_constraint_columns.png
 
-Use the fields in the *Columns* tab to to specify the column(s) to which the constraint applies. Use the drop-down listbox next to *Column* to select a column and click *Add* to provide details of the action on the column: 
+Use the fields in the *Columns* tab to to specify the column(s) to which the constraint applies. Use the drop-down listbox next to *Column* to select a column and click the *Add* icon (+) to provide details of the action on the column: 
 
 * The *Column* field is populated with the selection made in the *Column* drop-down listbox.
 * If applicable, use the drop-down listbox in the *Operator class* to specify the operator class that will be used by the index for the column.
 * Move the *DESC* switch to *DESC* to specify a descending sort order. The default is *ASC* which specifies an ascending sort order.
+* Use the *NULLs order* column to specify the placement of NULL values (when sorted).  Specify *FIRST* or *LAST*.
 * Use the drop-down list next to *Operator* to specify a comparison or conditional operator.
 
 Click the *SQL* tab to continue.

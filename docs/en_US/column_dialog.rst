@@ -22,35 +22,36 @@ Click the *Definition* tab to continue.
 Use the fields in the *Definition* tab to add parameters for the column. (Fields are disabled if inapplicable.)
 
 * Use the drop-down listbox next to *Data Type* to select a data type for the column. For more information on the data types that are supported by PostgreSQL, refer to Chapter 8 of the Postgres core documentation. This field is required.
-* Use the *Scale* field to specify scale of the value (the number of digits to the right of the decimal point).
-* Use the *Length/Precision* field to specify the maximum number of significant digits in a numeric value, or the maximum number of characters in a text value.
+* Use the *Length* and *Precision* fields to specify the maximum number of significant digits in a numeric value, or the maximum number of characters in a text value.
 * Use the drop-down listbox next to *Collation* to apply a collation setting to the column.
-* Use the *Default* field to specify a default data value.
-* Check the *Not Null* checkbox to specify the column may not contain null values.
+* Use the *Default Value* field to specify a default data value.
+* Move the *Not Null* switch to the *Yes* position to specify the column may not contain null values. The default is *No*.
 
-Click the *Security* tab to continue.
+Click the *Variables* tab to continue.
 
-.. image:: images/column_security.png
+.. image:: images/column_variables.png
 
-Use the *Security* tab to assign attributes and define security labels.  
-
-Use the *Variables* panel to specify the number of distinct values that may be present in the column; this value overrides estimates made by the ANALYZE command. Click *Add* to add an attribute:
+Use the *Variables* tab to to specify the number of distinct values that may be present in the column; this value overrides estimates made by the ANALYZE command. Click the *Add* icon (+) to add a *Name*/*Value* pair:
 
 * Select the name of the variable from the drop-down listbox in the *Name* field. 
     
     * Select *n_distinct* to specify the number of distinct values for the column. 
     * Select *n_distinct_inherited* to specify the number of distinct values for the table and its children.
 
-* Specify the number of distinct values in the *Value* field. For more information, see the documentation for `ALTER TABLE  <http://www.postgresql.org/docs/9.6/static/sql_altertable.html>`_. 
+* Specify the number of distinct values in the *Value* field. For more information, see the documentation for `ALTER TABLE  <http://www.postgresql.org/docs/9.6/static/sql_altertable.html>`_.  
 
-To discard an attribute, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.  
+Click the *Add* icon (+) to specify each additional *Name*/*Value* pair; to discard a variable, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the column. Click *Add* to add each security label selection: 
+Click the *Security* tab to continue.
+
+.. image:: images/column_security.png
+
+Use the *Security* tab to assign attributes and define security labels. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
 
-Click *Add* to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 

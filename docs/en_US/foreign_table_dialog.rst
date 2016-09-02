@@ -30,42 +30,36 @@ Click the *Columns* tab to continue.
 
 .. image:: images/foreign_table_columns.png
 
-Use the fields in the *Columns* tab to to add columns and their attributes to the table. Click *Add* to define a column:
+Use the fields in the *Columns* tab to to add columns and their attributes to the table. Click the *Add* icon (+) to define a column:
 
 * Use the *Name* field to add a descriptive name for the column.
-* Use the drop-down listbox next to *Data Type* to select a data type for the column. This can include array specifiers. For more information on which data types are supported by PostgreSQL, refer to Chapter 8 of the core documentation.
-* Use the *Length* field to specify the length of a data string.
-* Use the *Precision* field to specify the total number of significant digits.
-* Use the *Default* field to specify a default data value.
-* Check the *Not Null* checkbox to specify the column may not contain null values.
-* Use the *Statistics* field to specify *true* or *false* if the foreign data wrapper can collect statistics for the foreign table. 
-* Use the drop-down listbox next to *Collation* to apply a collation setting to the foreign table.
+* Use the drop-down listbox in the *Data Type* field to select a data type for the column. This can include array specifiers. For more information on which data types are supported by PostgreSQL, refer to Chapter 8 of the core documentation.
 
-Click *Add* to specify each additional column; to discard a column, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to specify each additional column; to discard a column, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *Constraints* tab to continue.
 
 .. image:: images/foreign_table_constraints.png
 
-Use the fields in the *Constraints* tab to apply a table constraint to the foreign table. Click *Add* to define a constraint:
+Use the fields in the *Constraints* tab to apply a table constraint to the foreign table. Click the *Add* icon (+) to define a constraint:
 
 * Use the *Name* field to add a descriptive name for the constraint. If the constraint is violated, the constraint name is present in error messages, so constraint names like *col must be positive* can be used to communicate helpful information.
 * Use the *Check* field to write a check expression producing a Boolean result. Each row in the foreign table is expected to satisfy the check expression.
 * Check the *No Inherit* checkbox to specify that the constraint will not propagate to child tables.
 * Uncheck the *Validate* checkbox to disable validation. The database will not assume that the constraint holds for all rows in the table.
 
-Click *Add* to specify each additional constraint; to discard a constraint, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to specify each additional constraint; to discard a constraint, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *Options* tab to continue.
 
 .. image:: images/foreign_table_options.png
 
-Use the fields in the *Options* tab to specify options to be associated with the new foreign table or one of its columns; the accepted option names and values are specific to the foreign data wrapper associated with the foreign server. Click the *Add* button to add an option/value pair. 
+Use the fields in the *Options* tab to specify options to be associated with the new foreign table or one of its columns; the accepted option names and values are specific to the foreign data wrapper associated with the foreign server. Click the *Add* icon (+) to add an option/value pair. 
 
 * Specify the option name in the *Option* field. Duplicate option names are not allowed.
 * Provide a corresponding value in the *Value* field.  
 
-Click *Add* to specify each additional option/value pair; to discard an option, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to specify each additional option/value pair; to discard an option, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *Security* tab to continue.
 
@@ -73,20 +67,20 @@ Click the *Security* tab to continue.
 
 Use the *Security* tab to assign privileges and define security labels.  
 
-Use the *Privileges* panel to assign privileges to a role. Click *Add* to set privileges for database objects:
+Use the *Privileges* panel to assign privileges to a role. Click the *Add* icon (+) to set privileges for database objects:
 
 * Select the name of the role to which privileges will be assigned from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privilege to the specified user.
 * Select the name of the role that owns the foreign table from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the database.
 
-Click *Add* to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the function. Click *Add* to add each security label selection: 
+Use the *Security Labels* panel to define security labels applied to the function. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
 
-Click *Add* to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 

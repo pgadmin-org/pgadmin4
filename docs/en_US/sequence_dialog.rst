@@ -14,7 +14,7 @@ Use the fields in the *General* tab to identify a sequence:
 
 * Use the *Name* field to add a descriptive name for the sequence. The name will be displayed in the *pgAdmin* tree control.  The sequence name must be distinct from the name of any other sequence, table, index, view, or foreign table in the same schema. 
 * Use the drop-down listbox next to *Owner* to select the name of the role that will own the sequence.
-* Use the drop-down listbox next to *Schema* to select an existing schema.
+* Use the drop-down listbox next to *Schema* to select the schema in which the sequence will reside.
 * Store notes about the sequence in the *Comment* field.
 
 Click the *Definition* tab to continue.
@@ -36,20 +36,20 @@ Click the *Security* tab to continue.
 
 Use the *Security* tab to assign privileges and define security labels for the sequence.  
 
-Use the *Privileges* panel to assign privileges. Click *Add* to set privileges:
+Use the *Privileges* panel to assign privileges. Click the *Add* icon (+) to set privileges:
 
-* Select the name of the role from the drop-down listbox in the *Grantee* field.
+* Select the name of a role that will be granted privileges from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or more privileges to grant the selected privilege to the specified user.
 * Select the name of the role from the drop-down listbox in the *Grantor* field. The default grantor is the owner of the database.
 
-Click *Add* to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional privileges; to discard a privilege, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
-Use the *Security Labels* panel to define security labels applied to the sequence. Click *Add* to add each security label selection: 
+Use the *Security Labels* panel to define security labels applied to the sequence. Click the *Add* icon (+) to add each security label selection: 
 
 * Specify a security label provider in the *Provider* field. The named provider must be loaded and must consent to the proposed labeling operation.
 * Specify a a security label in the *Security Label* field. The meaning of a given label is at the discretion of the label provider. PostgreSQL places no restrictions on whether or how a label provider must interpret security labels; it merely provides a mechanism for storing them. 
 
-Click *Add* to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
+Click the *Add* icon (+) to assign additional security labels; to discard a security label, click the trash icon to the left of the row and confirm deletion in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
    
