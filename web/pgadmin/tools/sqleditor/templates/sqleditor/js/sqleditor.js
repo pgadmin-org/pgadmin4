@@ -431,6 +431,17 @@ define(
       render_grid: function(collection, columns, is_editable) {
         var self = this;
 
+        // This will work as data store and holds all the
+        // inserted/updated/deleted data from grid
+        self.handler.data_store = {
+          updated: {},
+          added: {},
+          staged_rows: {},
+          deleted: {},
+          updated_index: {},
+          added_index: {}
+        };
+
         // To store primary keys before they gets changed
         self.handler.primary_keys_data = {};
 
@@ -451,6 +462,7 @@ define(
           checkboxSelector = new Slick.CheckboxSelectColumn({
             cssClass: "slick-cell-checkboxsel"
           });
+
           grid_columns.push(checkboxSelector.getColumnDefinition());
 
         _.each(columns, function(c) {
@@ -461,18 +473,15 @@ define(
               name: c.label
             };
 
-            // If gird is editable then add editor
+            // If grid is editable then add editor
             if(is_editable) {
               if(c.cell == 'Json') {
                 options['editor'] = Slick.Editors.JsonText;
-              }
-              else if(c.cell == 'number') {
+              } else if(c.cell == 'number') {
                 options['editor'] = Slick.Editors.Text;
-              }
-              else if(c.cell == 'boolean') {
+              } else if(c.cell == 'boolean') {
                 options['editor'] = Slick.Editors.Checkbox;
-              }
-              else {
+              } else {
                 options['editor'] = Slick.Editors.pgText;
               }
             }
@@ -483,7 +492,6 @@ define(
             } else if(c.cell == 'boolean') {
               options['formatter'] = Slick.Formatters.Checkmark;
             }
-
             grid_columns.push(options)
         });
 
@@ -506,6 +514,26 @@ define(
           row['__temp_PK'] = epicRandomString(15);
         });
 
+        // Add-on function which allow us to identify the faulty row after insert/update
+        // and apply css accordingly
+        collection.getItemMetadata = function(i) {
+          var res = {}, cssClass = 'normal_row';
+          if (_.has(self.handler, 'data_store')) {
+            if (i in self.handler.data_store.added_index) {
+              cssClass = 'new_row';
+              if (self.handler.data_store.added[self.handler.data_store.added_index[i]].err) {
+                cssClass += ' error';
+              }
+            } else if (i in self.handler.data_store.updated_index) {
+              cssClass = 'updated_row';
+              if (self.handler.data_store.updated[self.handler.data_store.updated_index[i]].err) {
+                cssClass += ' error';
+              }
+            }
+          }
+          return {'cssClasses': cssClass};
+        }
+
         var grid = new Slick.Grid($data_grid, collection, grid_columns, grid_options);
         grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: false }) );
         grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
@@ -521,15 +549,6 @@ define(
         };
 
         self.handler.slickgrid = grid;
-
-        // This will work as data store and holds all the
-        // inserted/updated/deleted data from grid
-        self.handler.data_store = {
-          updated: {},
-          added: {},
-          staged_rows: {},
-          deleted: {}
-        };
 
         // Listener function to watch selected rows from grid
         if (editor_data.selection) {
@@ -634,27 +653,37 @@ define(
           var changed_column = args.grid.getColumns()[args.cell].field, // Current filed name
             updated_data = args.item[changed_column],                   // New value for current field
             _pk = args.item.__temp_PK || null,                          // Unique key to identify row
-            col_val = {},
+            column_data = {},
             _type;
 
-           col_val[changed_column] = updated_data;
+           column_data[changed_column] = updated_data;
 
           if(_pk) {
             // Check if it is in newly added row by user?
             if(_pk in self.handler.data_store.added) {
-              _.extend(self.handler.data_store.added[_pk]['data'], col_val);
+              _.extend(
+                self.handler.data_store.added[_pk]['data'],
+                  column_data);
               //Find type for current column
+              self.handler.data_store.added[_pk]['err'] = false
               self.handler.data_store.added[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
             // Check if it is updated data from existing rows?
             } else if(_pk in self.handler.data_store.updated) {
-              _.extend(self.handler.data_store.updated[_pk]['data'], col_val);
+              _.extend(
+                self.handler.data_store.updated[_pk], {
+                  'data': column_data,
+                  'err': false
+                }
+              );
              //Find type for current column
              self.handler.data_store.updated[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
             } else {
               // First updated data for this primary key
-              self.handler.data_store.updated[_pk] = {};
-              self.handler.data_store.updated[_pk]['data'] = col_val;
-              self.handler.data_store.updated[_pk]['primary_keys'] = self.handler.primary_keys_data[_pk];
+              self.handler.data_store.updated[_pk] = {
+                'err': false, 'data': column_data,
+                'primary_keys': self.handler.primary_keys_data[_pk]
+              };
+              self.handler.data_store.updated_index[args.row] = _pk;
               // Find & add column data type for current changed column
               var temp = {};
               temp[changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
@@ -670,14 +699,14 @@ define(
           // self.handler.data_store.added will holds all the newly added rows/data
           var _key = epicRandomString(10),
             column = args.column,
-            item = args.item;
+            item = args.item, data_length = this.grid.getDataLength();
 
           if(item) {
             item.__temp_PK = _key;
           }
           collection.push(item);
-          self.handler.data_store.added[_key] = {};
-          self.handler.data_store.added[_key]['data'] = item;
+          self.handler.data_store.added[_key] = {'err': false, 'data': item};
+          self.handler.data_store.added_index[data_length] = _key;
           // Fetch data type & add it for the column
           var temp = {};
           temp[column.field] = _.where(this.columns, {name: column.field})[0]['type'];
@@ -1861,8 +1890,7 @@ define(
                   grid.resetActiveCell();
                   grid.setData(data, true);
                   grid.setSelectedRows([]);
-                  grid.invalidateAllRows();
-                  grid.render();
+                  grid.invalidate();
                   // Nothing to copy or delete here
                   $("#btn-delete-row").prop('disabled', true);
                   $("#btn-copy-row").prop('disabled', true);
@@ -1951,12 +1979,12 @@ define(
               contentType: "application/json",
               data: JSON.stringify(self.data_store),
               success: function(res) {
+                var grid = self.slickgrid,
+                  data = grid.getData();;
                 if (res.data.status) {
                     // Remove deleted rows from client as well
                     if(is_deleted) {
-                      var grid = self.slickgrid,
-                        data = grid.getData(),
-                        rows = grid.getSelectedRows();
+                      var rows = grid.getSelectedRows();
                       // Reverse the deletion from array
                       // so that when we remove it does not affect index
                       rows = rows.sort().reverse();
@@ -1965,23 +1993,41 @@ define(
                       });
                       grid.setData(data, true);
                       grid.setSelectedRows([]);
-                      grid.invalidateAllRows();
-                      grid.render();
                     }
 
                     // Reset data store
-                    self.data_store.updated = {};
-                    self.data_store.added = {};
-                    self.data_store.deleted = {};
+                    self.data_store = {
+                      'added': {},
+                      'updated': {},
+                      'deleted': {},
+                      'added_index': {},
+                      'updated_index': {}
+                    }
+
                     // Reset old primary key data now
                     self.primary_keys_data = {};
+
                     // Clear msgs after successful save
                     $('.sql-editor-message').html('');
                 } else {
+                  // Something went wrong while saving data on the db server
                   self.trigger('pgadmin-sqleditor:loading-icon:hide');
                   $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
-                  self.gridView.messages_panel.focus();
+                  var err_msg = S('{{ _('%s.') }}').sprintf(res.data.result).value();
+                  alertify.notify(err_msg, 'error', 20);
+
+                  // To highlight the row at fault
+                  if(_.has(res.data, '_rowid') &&
+                      (!_.isUndefined(res.data._rowid)|| !_.isNull(res.data._rowid))) {
+                    var _row_index = self._find_rowindex(res.data._rowid);
+                    if(_row_index in self.data_store.added_index) {
+                     self.data_store.added[self.data_store.added_index[_row_index]].err = true
+                    } else if (_row_index in self.data_store.updated_index) {
+                     self.data_store.updated[self.data_store.updated_index[_row_index]].err = true
+                    }
+                  }
+                  grid.gotoCell(_row_index, 1);
                 }
 
                 // Update the sql results in history tab
@@ -1992,6 +2038,8 @@ define(
                     'total_time': self.total_time, 'message': r.result
                   });
                 });
+
+                grid.invalidate();
               },
               error: function(e) {
                 if (e.readyState == 0) {
@@ -2010,6 +2058,38 @@ define(
               }
             });
           }
+        },
+
+        // Find index of row at fault from grid data
+        _find_rowindex: function(rowid) {
+          var self = this;
+          var grid = self.slickgrid,
+            data = grid.getData(), _rowid, count = 0, _idx = -1;
+          // If _rowid is object then it's update/delete operation
+          if(_.isObject(rowid)) {
+              _rowid = rowid;
+          } else if (_.isString(rowid)) { // Insert opration
+            _rowid = { '__temp_PK': rowid };
+          } else {
+            // Something is wrong with unique id
+            return _idx;
+          }
+
+          _.find(data, function(d) {
+            // search for unique id in row data if found than its the row
+            // which error out on server side
+            var tmp = [];  //_.findWhere needs array of object to work
+            tmp.push(d);
+            if(_.findWhere(tmp, _rowid)) {
+              _idx = count;
+              // Now exit the loop by returning true
+              return true;
+            }
+              count++;
+          });
+
+          // Not able to find in grid Data
+          return _idx;
         },
 
         // Save as

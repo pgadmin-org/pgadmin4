@@ -416,7 +416,9 @@ class TableCommand(GridCommand):
         res = None
         query_res = dict()
         count = 0
+        list_of_rowid = []
         list_of_sql = []
+        _rowid = None
 
         if conn.connected():
 
@@ -435,6 +437,7 @@ class TableCommand(GridCommand):
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         data_type = changed_data[of_type][each_row]['data_type']
+                        list_of_rowid.append(data.get('__temp_PK'))
                         # Remove our unique tracking key
                         data.pop('__temp_PK', None)
                         sql = render_template("/".join([self.sql_path, 'insert.sql']),
@@ -458,6 +461,7 @@ class TableCommand(GridCommand):
                                               nsp_name=self.nsp_name,
                                               data_type=data_type)
                         list_of_sql.append(sql)
+                        list_of_rowid.append(data)
 
                 # For deleted rows
                 elif of_type == 'deleted':
@@ -468,8 +472,9 @@ class TableCommand(GridCommand):
                                               object_name=self.object_name,
                                               nsp_name=self.nsp_name)
                         list_of_sql.append(sql)
+                        list_of_rowid.append(data)
 
-            for sql in list_of_sql:
+            for i, sql in enumerate(list_of_sql):
                 if sql:
                     status, res = conn.execute_void(sql)
                     rows_affected = conn.rows_affected()
@@ -486,13 +491,14 @@ class TableCommand(GridCommand):
                         for val in query_res:
                             if query_res[val]['status']:
                                 query_res[val]['result'] = 'Transaction ROLLBACK'
+                        _rowid = list_of_rowid[i]
 
-                        return status, res, query_res
+                        return status, res, query_res, _rowid
 
             # Commit the transaction if there is no error found
             conn.execute_void('COMMIT;')
 
-        return status, res, query_res
+        return status, res, query_res, _rowid
 
 
 class ViewCommand(GridCommand):

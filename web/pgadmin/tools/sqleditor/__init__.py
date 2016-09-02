@@ -584,13 +584,18 @@ def save(trans_id):
                       'result': gettext('No primary key found for this object, so unable to save records.')}
             )
 
-        status, res, query_res = trans_obj.save(changed_data)
+        status, res, query_res, _rowid = trans_obj.save(changed_data)
     else:
         status = False
         res = error_msg
         query_res = None
 
-    return make_json_response(data={'status': status, 'result': res, 'query_result': query_res})
+    return make_json_response(
+        data={ 'status': status,
+               'result': res,
+               'query_result': query_res,
+               '_rowid': _rowid }
+        )
 
 
 @blueprint.route('/filter/get/<int:trans_id>', methods=["GET"])

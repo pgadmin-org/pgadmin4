@@ -392,3 +392,18 @@ input.editor-checkbox {
 .slick-cell.selected {
     background-color: #eeeeee !important;
 }
+
+/* To highlight all newly inserted rows */
+.grid-canvas .new_row {
+  background: #f3f2d8;
+}
+
+/* To highlight all the updated rows */
+.grid-canvas .updated_row {
+  background: #c1c1c1;
+}
+
+/* To highlight row at fault */
+.grid-canvas .new_row.error, .grid-canvas .updated_row.error {
+  background: #e46b6b;
+}
