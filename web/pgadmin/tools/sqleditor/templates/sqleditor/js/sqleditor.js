@@ -268,6 +268,35 @@ define(
 
         self.render_history_grid();
 
+       // Listen on the panel closed event and notify user to save modifications.
+       _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+         if(p.isVisible()) {
+           p.on(wcDocker.EVENT.CLOSING, function() {
+             // Only if we can edit data then perform this check
+             var notify = false, msg;
+             if(self.handler.can_edit) {
+               var data_store = self.handler.data_store;
+               if(_.size(data_store.added) ||
+                   _.size(data_store.updated)) {
+                 msg = '{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
+                 notify = true; 
+               }
+             } else if(self.handler.is_query_tool) {
+               // We will check for modified sql content
+               var sql = self.handler.gridView.query_tool_obj.getValue();
+               sql = sql.replace(/\s+/g, ''); 
+               // If it is an empty query, do nothing.
+               if (sql.length > 0) {
+                 msg = '{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
+                 notify = true; 
+               } 
+             }
+             if(notify) {return self.user_confirmation(p, msg);}
+             return true;
+           });
+         }
+       });
+
         /* We have override/register the hint function of CodeMirror
          * to provide our own hint logic.
          */
@@ -368,6 +397,25 @@ define(
 
           return {list: result, from: {line: current_line, ch: start }, to: { line: current_line, ch: end }};
         });
+      },
+
+      /* To prompt user for unsaved changes */
+      user_confirmation: function(panel, msg) {
+        // If there is anything to save then prompt user 
+          alertify.confirm('{{ _('Unsaved changes') }}', msg, 
+            function() {
+              // Do nothing as user do not want to save, just continue
+              window.onbeforeunload = null;
+              panel.off(wcDocker.EVENT.CLOSING);
+              window.top.pgAdmin.Browser.docker.removePanel(panel);
+            },
+            function() {
+              // Stop, User wants to save
+              // false value will prevent from panel to close
+              return true;
+            }
+          ).set('labels', {ok:'Yes', cancel:'No'});
+        return false;
       },
 
       /* Regarding SlickGrid usage in render_grid function.
