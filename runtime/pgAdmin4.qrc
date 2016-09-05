@@ -4,5 +4,6 @@
         <file>back.png</file>
         <file>forward.png</file>
         <file>close.png</file>
+        <file>splash.png</file>
     </qresource>
 </RCC>

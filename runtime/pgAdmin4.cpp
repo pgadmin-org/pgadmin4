@@ -22,6 +22,7 @@
 #include <QtNetwork>
 #include <QLineEdit>
 #include <QInputDialog>
+#include <QSplashScreen>
 #endif
 
 // App headers
@@ -49,6 +50,12 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationName("pgAdmin Development Team");
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME);
+
+    // Display the spash screen
+    QSplashScreen *splash = new QSplashScreen();
+    splash->setPixmap(QPixmap(":/splash.png"));
+    splash->show();
+    app.processEvents(QEventLoop::AllEvents);
 
     quint16 port = 0L;
 
@@ -149,6 +156,7 @@ int main(int argc, char * argv[])
     browserWindow.show();
 
     // Go!
+    splash->finish(NULL);
     return app.exec();
 }
 
