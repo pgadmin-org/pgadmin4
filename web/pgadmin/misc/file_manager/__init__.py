@@ -249,8 +249,7 @@ class Filemanager(object):
         )
         self.dir = get_storage_directory()
 
-        if ((self.dir is not None and isinstance(self.dir, list)) or
-           self.dir is None):
+        if (self.dir is not None and isinstance(self.dir, list)):
             self.dir = ""
 
     @staticmethod
@@ -568,7 +567,7 @@ class Filemanager(object):
                 'Code': 1
             }
 
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         # check if it's dir
         if old[-1] == '/':
             old = old[:-1]
@@ -620,7 +619,7 @@ class Filemanager(object):
                 'Code': 1
             }
 
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         orig_path = "{0}{1}".format(dir, path)
 
         err_msg = ''
@@ -653,7 +652,7 @@ class Filemanager(object):
                 'Code': 1
             }
 
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         err_msg = ''
         code = 1
         try:
@@ -674,14 +673,13 @@ class Filemanager(object):
             'Error': err_msg,
             'Code': code
         }
-
         return result
 
     def is_file_exist(self, path, name, req=None):
         """
         Checks whether given file exists or not
         """
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         err_msg = ''
         code = 1
         name = unquote(name)
@@ -733,7 +731,7 @@ class Filemanager(object):
                 'Code': 1
             }
 
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         newName = name
         if dir != "":
             newPath = dir + '/' + path + newName + '/'
@@ -775,7 +773,7 @@ class Filemanager(object):
                 'Code': 1
             }
 
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
         orig_path = "{0}{1}".format(dir, path)
         name = path.split('/')[-1]
         content = open(orig_path, 'r')

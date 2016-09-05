@@ -1488,8 +1488,7 @@ if (has_capability(data, 'upload')) {
         setTimeout(function() {}, 10000);
       },
       success: function(file, response) {
-        var response = jQuery.parseJSON(response),
-            data = response.data.result,
+        var data = response.data.result,
             $this = $(file.previewTemplate);
 
         if (data.Code == 0) {
