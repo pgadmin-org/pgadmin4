@@ -8,7 +8,7 @@ define('pgadmin.browser',
         'pgadmin.browser.node', 'pgadmin.browser.collection'
 
        ],
-function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
+function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
 
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
@@ -40,6 +40,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
     _.each(data, function(d){
       d._label = d.label;
       d.label = _.escape(d.label);
+      data._inode = data.inode;
     })
     return data;
   };
@@ -991,6 +992,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       }
       _data._label = _data.label;
       _data.label = _.escape(_data.label);
+      _data._inode = _data.inode;
 
       traversePath();
     },
@@ -1321,6 +1323,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
       ctx.pI.push(_old);
       _new._label = _new.label;
       _new.label = _.escape(_new.label);
+      _new._inode = _new.inode;
 
       if (_old._pid != _new._pid) {
         ctx.op = 'RECREATE';
@@ -1351,7 +1354,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         ctx.i = null;
         ctx.d = null;
       } else {
-        isOpen = this.tree.isInode(_i) && this.tree.isOpen(_i);
+        isOpen = (this.tree.isInode(_i) && this.tree.isOpen(_i));
       }
 
       ctx.branch = ctx.t.serialize(
@@ -1383,7 +1386,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         return;
       }
       var fetchNodeInfo = function(_i, _d, _n) {
-            var url = _n.generate_url(_i, 'nodes', _d, true);
+            var info = _n.getTreeNodeHierarchy(_i),
+                url = _n.generate_url(_i, 'nodes', _d, true);
 
             $.ajax({
               url: url,
@@ -1396,6 +1400,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
 
                 data._label = data.label;
                 data.label = _.escape(data.label);
+                data._inode = data.inode;
                 var d = ctx.t.itemData(ctx.i);
                 _.extend(d, data);
                 ctx.t.setLabel(ctx.i, {label: _d.label});
@@ -1417,21 +1422,44 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
                 }
               },
               error: function(jqx, error, status) {
-                var p = ctx.t.parent(ctx.i);
+                if (
+                  !Alertify.pgHandleItemError(
+                    xhr, error, message, {item: _i, info: info}
+                  )
+                ) {
+                  var msg = xhr.responseText,
+                      contentType = xhr.getResponseHeader('Content-Type'),
+                      msg = xhr.responseText,
+                      jsonResp = (
+                        contentType &&
+                        contentType.indexOf('application/json') == 0 &&
+                        $.parseJSON(xhr.responseText)
+                        ) || {};
 
-                if (!p)
-                  return;
+                  if (xhr.status == 410 && jsonResp.success == 0) {
+                    var p = ctx.t.parent(ctx.i);
 
-                ctx.t.remove(ctx.i, {
-                  success: function() {
-                    // Try to refresh the parent on error
-                    try {
-                      pgBrowser.Events.trigger(
-                        'pgadmin:browser:tree:refresh', p
-                      );
-                    } catch(e) {}
+                    ctx.t.remove(ctx.i, {
+                      success: function() {
+                        if (p) {
+                          // Try to refresh the parent on error
+                          try {
+                            pgBrowser.Events.trigger(
+                              'pgadmin:browser:tree:refresh', p
+                            );
+                          } catch(e) {}
+                        }
+                      }
+                    });
                   }
-                });
+
+                  Alertify.pgNotifier(
+                    error, xhr, "{{ _("Error retrieving details for the node.") }}",
+                    function() {
+                       console.log(arguments);
+                    }
+                  );
+                }
               }
             });
           }.bind(this);
@@ -1461,6 +1489,13 @@ function(require, $, _, S, Bootstrap, pgAdmin, alertify, CodeMirror) {
         }
       } else if (isOpen) {
         this.tree.unload(_i, {
+          success: fetchNodeInfo.bind(this, _i, d, n),
+          fail: function() {
+            console.log(arguments);
+          }
+        });
+      } else if (!this.tree.isInode(_i) && d._inode) {
+        this.tree.setInode(_i, {
           success: fetchNodeInfo.bind(this, _i, d, n),
           fail: function() {
             console.log(arguments);

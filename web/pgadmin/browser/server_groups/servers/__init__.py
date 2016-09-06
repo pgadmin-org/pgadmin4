@@ -818,7 +818,7 @@ class ServerNode(PGChildNodeView):
                     'servers/password.html',
                     server_label=server.name,
                     username=server.username,
-                    errmsg=e.message if e.message else str(e),
+                    errmsg=getattr(e, 'message', str(e)),
                     _=gettext
                 )
             )
