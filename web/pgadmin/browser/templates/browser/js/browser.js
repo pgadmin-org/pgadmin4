@@ -40,7 +40,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
     _.each(data, function(d){
       d._label = d.label;
       d.label = _.escape(d.label);
-      data._inode = data.inode;
     })
     return data;
   };
@@ -932,25 +931,38 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                       }
                     });
                   } else {
-                    ctx.t.append(ctx.i, {
-                      itemData: _data,
-                      success: function() {
-                        console.log('Appended');
-                        if (
-                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
-                        ) {
-                          ctx.o.success.apply(ctx.t, [ctx.i, _data]);
-                        }
-                      },
-                      fail: function() {
-                        console.log('Failed to append');
-                        if (
-                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
-                        ) {
-                          ctx.o.fail.apply(ctx.t, [ctx.i, _data]);
-                        }
-                      }
-                    });
+                    var _append = function() {
+                          var ctx = this;
+                          ctx.t.append(ctx.i, {
+                            itemData: _data,
+                            success: function(item, options) {
+                              var i = $(options.items[0]);
+                              ctx.t.openPath(i);
+                              ctx.t.select(i);
+                              if (
+                                ctx.o && ctx.o.success &&
+                                typeof(ctx.o.success) == 'function'
+                              ) {
+                                ctx.o.success.apply(ctx.t, [i, _data]);
+                              }
+                            },
+                            fail: function() {
+                              console.log('Failed to append');
+                              if (
+                                ctx.o && ctx.o.fail &&
+                                typeof(ctx.o.fail) == 'function'
+                              ) {
+                                ctx.o.fail.apply(ctx.t, [ctx.i, _data]);
+                              }
+                            }
+                          });
+                        }.bind(ctx);
+
+                    if (!ctx.t.isInode(ctx.i) && ctx.d.inode) {
+                        ctx.t.setInode(ctx.i, {success: _append});
+                    } else {
+                        _append();
+                    }
                   }
                 }.bind(ctx);
 
@@ -992,7 +1004,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
       }
       _data._label = _data.label;
       _data.label = _.escape(_data.label);
-      _data._inode = _data.inode;
 
       traversePath();
     },
@@ -1323,7 +1334,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
       ctx.pI.push(_old);
       _new._label = _new.label;
       _new.label = _.escape(_new.label);
-      _new._inode = _new.inode;
 
       if (_old._pid != _new._pid) {
         ctx.op = 'RECREATE';
@@ -1400,7 +1410,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
 
                 data._label = data.label;
                 data.label = _.escape(data.label);
-                data._inode = data.inode;
                 var d = ctx.t.itemData(ctx.i);
                 _.extend(d, data);
                 ctx.t.setLabel(ctx.i, {label: _d.label});
@@ -1494,7 +1503,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
             console.log(arguments);
           }
         });
-      } else if (!this.tree.isInode(_i) && d._inode) {
+      } else if (!this.tree.isInode(_i) && d.inode) {
         this.tree.setInode(_i, {
           success: fetchNodeInfo.bind(this, _i, d, n),
           fail: function() {
