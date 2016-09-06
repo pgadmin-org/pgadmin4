@@ -66,6 +66,13 @@ psycopg2.extensions.register_type(
     psycopg2.extensions.new_type((1186,), 'INTERVAL_TEXT', psycopg2.STRING)
 )
 
+# This registers a type caster for int4range, int8range, numrange
+# tsrange, tstzrange, daterange
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type(
+        (3904, 3926, 3906, 3908, 3910, 3912),
+        'NUMERIC_RANGE_TEXT', psycopg2.STRING)
+)
 
 def register_date_typecasters(connection):
     """
