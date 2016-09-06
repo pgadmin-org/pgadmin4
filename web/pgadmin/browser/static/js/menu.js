@@ -193,7 +193,7 @@ function(_, S, pgAdmin, $) {
         m = items[idx];
         $menu.append(m.$el);
         if (!m.is_disabled) {
-          submenus[ctx + ctxId] = m.context
+          submenus[ctx + ctxId] = m.context;
         }
         ctxId++;
       }
@@ -320,9 +320,9 @@ function(_, S, pgAdmin, $) {
   // MENU PUBLIC CLASS DEFINITION
   // ==============================
   var Menu = function (element, options) {
-    this.$element  = $(element)
-    this.options   = $.extend({}, Menu.DEFAULTS, options)
-    this.isLoading = false
+    this.$element  = $(element);
+    this.options   = $.extend({}, Menu.DEFAULTS, options);
+    this.isLoading = false;
   }
 
   Menu.DEFAULTS = {}
@@ -330,7 +330,7 @@ function(_, S, pgAdmin, $) {
   Menu.prototype.toggle = function (ev) {
     var $parent = this.$element.closest('.menu-item');
     if ($parent.hasClass('disabled')) {
-      ev.preventDefault()
+      ev.preventDefault();
       return false;
     }
     var d = this.$element.data('pgMenu');
@@ -338,7 +338,7 @@ function(_, S, pgAdmin, $) {
       var cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
       if (cb) {
         cb.apply(d.module, [d.data, pgAdmin.Browser.tree.selected()]);
-        ev.preventDefault()
+        ev.preventDefault();
       } else {
         pgAdmin.Browser.report_error('Developer Warning: Callback - "' + d.cb + '" not found!');
       }
@@ -351,20 +351,20 @@ function(_, S, pgAdmin, $) {
 
   function Plugin(option, ev) {
     return this.each(function () {
-      var $this   = $(this)
-      var data  = $this.data('pg.menu')
-      var options = typeof option == 'object' && option
+      var $this   = $(this);
+      var data  = $this.data('pg.menu');
+      var options = typeof option == 'object' && option;
 
-      if (!data) $this.data('pg.menu', (data = new Menu(this, options)))
+      if (!data) $this.data('pg.menu', (data = new Menu(this, options)));
 
-      data.toggle(ev)
+      data.toggle(ev);
     })
   }
 
-  var old = $.fn.button
+  var old = $.fn.button;
 
-  $.fn.pgmenu       = Plugin
-  $.fn.pgmenu.Constructor = Menu
+  $.fn.pgmenu       = Plugin;
+  $.fn.pgmenu.Constructor = Menu;
 
 
   // BUTTON NO CONFLICT
@@ -380,14 +380,18 @@ function(_, S, pgAdmin, $) {
 
   $(document)
     .on('click.pg.menu.data-api', '[data-toggle^="pg-menu"]', function (ev) {
-      var $menu = $(ev.target)
+      var $menu = $(ev.target);
       if (!$menu.hasClass('menu-link'))
-        $menu = $menu.closest('.menu-link')
-      Plugin.call($menu, 'toggle', ev)
+        $menu = $menu.closest('.menu-link');
+      Plugin.call($menu, 'toggle', ev);
     })
-    .on('focus.pg.menu.data-api blur.pg.menu.data-api', '[data-toggle^="pg-menu"]',
+    .on(
+      'focus.pg.menu.data-api blur.pg.menu.data-api',
+      '[data-toggle^="pg-menu"]',
       function (e) {
-        $(e.target).closest('.menu').toggleClass('focus', /^focus(in)?$/.test(e.type))
+        $(e.target).closest('.menu').toggleClass(
+          'focus', /^focus(in)?$/.test(e.type)
+        );
       });
 
   return pgAdmin.Browser.MenuItem;
