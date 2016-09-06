@@ -33,7 +33,7 @@ import config
 # If script is running under python3, it will not have the xrange function
 # defined
 winreg = None
-if sys.version_info.major >= 3:
+if sys.version_info[0] >= 3:
     xrange = range
     if os.name == 'nt':
         import winreg
@@ -247,6 +247,7 @@ def create_app(app_name=config.APP_NAME):
         '''Add a server to the config database'''
         def add_server(user_id, servergroup_id, name, superuser, port, discovery_id, comment):
         # Create a server object if needed, and store it.
+            arch_keys = set()
             servers = Server.query.filter_by(
                 user_id=user_id,
                 discovery_id=svr_discovery_id
@@ -279,12 +280,13 @@ def create_app(app_name=config.APP_NAME):
                 proc_arch64 = None
 
             if proc_arch == 'x86' and not proc_arch64:
-                arch_keys = {0}
+                arch_keys.add(0)
             elif proc_arch == 'x86' or proc_arch == 'amd64':
-                arch_keys = {winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY}
+                arch_keys.add(winreg.KEY_WOW64_32KEY)
+                arch_keys.add(winreg.KEY_WOW64_64KEY)
 
             for arch_key in arch_keys:
-                for server_type in { 'PostgreSQL', 'EnterpriseDB'}:
+                for server_type in ('PostgreSQL', 'EnterpriseDB'):
                     try:
                         root_key = winreg.OpenKey(
                             winreg.HKEY_LOCAL_MACHINE,

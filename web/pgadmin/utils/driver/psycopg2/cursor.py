@@ -130,7 +130,7 @@ class DictCursor(_cursor):
         """
         if self._odt_desc is None:
             self._ordered_description()
-        return {k[0]: v for k, v in zip(self._odt_desc, tup)}
+        return dict((k[0], v) for k, v in zip(self._odt_desc, tup))
 
     def _ordered_description(self):
         """
@@ -144,7 +144,7 @@ class DictCursor(_cursor):
             return
 
         res = list()
-        od = {d[0]: 0 for d in desc}
+        od = dict((d[0], 0) for d in desc)
         for d in desc:
             dummy = None
             idx = od[d.name]
