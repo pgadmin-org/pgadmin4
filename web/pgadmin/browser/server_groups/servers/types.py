@@ -54,7 +54,7 @@ class ServerType(object):
                 _("{0} Binary Path").format(st.desc),
                 'text', "", category_label=_('Binary paths'),
                 help_str=_(
-                    "Path to the {0} binary utilities.".format(
+                    "Path to the directory containing the {0} utility programs (pg_dump, pg_restore etc).".format(
                         st.desc
                     )
                 )
