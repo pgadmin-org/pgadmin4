@@ -402,7 +402,7 @@ Connect to the database server (#{server_id}) for connection ({conn_id}), but - 
             if status is not None:
                 self.conn.close()
                 self.conn = None
-                self.wasConneted = False
+                self.wasConnected = False
                 current_app.logger.error("""
 Failed to fetch the version information on the established connection to the database server (#{server_id}) for '{conn_id}' with below error message:
 {msg}
@@ -999,7 +999,7 @@ Failed to reset the connection to the server due to following error:
         return self.execute_scalar('SELECT 1')
 
     def _release(self):
-        if self.wasConneted:
+        if self.wasConnected:
             if self.conn:
                 self.conn.close()
                 self.conn = None
