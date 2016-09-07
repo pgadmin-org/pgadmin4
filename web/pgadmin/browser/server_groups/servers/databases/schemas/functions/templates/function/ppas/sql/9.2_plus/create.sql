@@ -9,7 +9,8 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% endfor %}
 {% endif -%}
 )
-    RETURNS{% if data.proretset %} SETOF{% endif %} {{ conn|qtTypeIdent(data.prorettypename) }}
+    RETURNS{% if data.proretset and data.prorettypename.startswith('SETOF ') %} {{ data.prorettypename }} {% elif data.proretset %} SETOF {{ conn|qtTypeIdent(data.prorettypename) }}{% else %} {{ conn|qtTypeIdent(data.prorettypename) }}{% endif %}
+
     LANGUAGE {{ data.lanname|qtLiteral }}
 {% if data.procost %}
     COST {{data.procost}}
