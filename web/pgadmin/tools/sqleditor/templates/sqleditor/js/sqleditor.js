@@ -415,19 +415,19 @@ define(
       /* To prompt user for unsaved changes */
       user_confirmation: function(panel, msg) {
         // If there is anything to save then prompt user
-          alertify.confirm('{{ _('Unsaved changes') }}', msg,
-            function() {
-              // Do nothing as user do not want to save, just continue
-              window.onbeforeunload = null;
-              panel.off(wcDocker.EVENT.CLOSING);
-              window.top.pgAdmin.Browser.docker.removePanel(panel);
-            },
-            function() {
-              // Stop, User wants to save
-              // false value will prevent from panel to close
-              return true;
-            }
-          ).set('labels', {ok:'Yes', cancel:'No'});
+        alertify.confirm('{{ _('Unsaved changes') }}', msg,
+          function() {
+            // Do nothing as user do not want to save, just continue
+            window.onbeforeunload = null;
+            panel.off(wcDocker.EVENT.CLOSING);
+            window.top.pgAdmin.Browser.docker.removePanel(panel);
+          },
+          function() {
+            // Stop, User wants to save
+            // false value will prevent from panel to close
+            return true;
+          }
+        ).set('labels', {ok:'Yes', cancel:'No'});
         return false;
       },
 
@@ -1162,21 +1162,49 @@ define(
 
       // Callback function for the clear button click.
       on_clear: function(ev) {
+        var self = this, sql;
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
 
-        this.query_tool_obj.setValue('');
+        // We will check for modified sql content
+        sql = self.query_tool_obj.getValue();
+        sql = sql.replace(/\s+/g, '');
+        // If there is nothing to save, clear it.
+        if (!sql.length) { self.query_tool_obj.setValue('');  return; }
+
+        alertify.confirm(
+          '{{ _('Unsaved changes') }}',
+          '{{ _('Are you sure you wish to discard the current changes?') }}',
+          function() {
+            // Do nothing as user do not want to save, just continue
+            self.query_tool_obj.setValue('');
+          },
+          function() {
+            return true;
+          }
+        ).set('labels', {ok:'Yes', cancel:'No'});
       },
 
       // Callback function for the clear history button click.
       on_clear_history: function(ev) {
+        var self = this;
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
+        // ask for confirmation only if anything to clear
+        if(!self.history_collection.length) { return; }
 
-        // Remove any existing grid first
-        if (this.history_grid) {
-            this.history_collection.reset();
-        }
+        alertify.confirm('{{ _('Clear history') }}',
+          '{{ _('Are you sure you wish to clear the history?') }}',
+          function() {
+            // Remove any existing grid first
+            if (self.history_grid) {
+              self.history_collection.reset();
+            }
+          },
+          function() {
+            return true;
+          }
+        ).set('labels', {ok:'Yes', cancel:'No'});
       },
 
       // Callback function for the auto commit button click.
@@ -2166,8 +2194,30 @@ define(
             }
           });
         },
+
         // load select file dialog
         _load_file: function() {
+          var self = this;
+          // We will check for modified sql content
+          sql = self.gridView.query_tool_obj.getValue()
+          sql = sql.replace(/\s+/g, '');
+          // If there is nothing to save, open file manager.
+          if (!sql.length) { self._open_select_file_manager(); return; }
+
+          alertify.confirm('{{ _('Unsaved changes') }}',
+            '{{ _('Are you sure you wish to discard the current changes?') }}',
+            function() {
+              // User do not want to save, just continue
+              self._open_select_file_manager();
+           },
+            function() {
+              return true;
+            }
+          ).set('labels', {ok:'Yes', cancel:'No'});
+        },
+
+        // Open FileManager
+        _open_select_file_manager: function() {
           var params = {
             'supported_types': ["sql"], // file types allowed
             'dialog_type': 'select_file' // open select file dialog
