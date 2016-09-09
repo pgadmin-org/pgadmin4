@@ -247,7 +247,6 @@ def create_app(app_name=config.APP_NAME):
         '''Add a server to the config database'''
         def add_server(user_id, servergroup_id, name, superuser, port, discovery_id, comment):
         # Create a server object if needed, and store it.
-            arch_keys = set()
             servers = Server.query.filter_by(
                 user_id=user_id,
                 discovery_id=svr_discovery_id
@@ -272,6 +271,7 @@ def create_app(app_name=config.APP_NAME):
 
         # Figure out what servers are present
         if winreg is not None:
+            arch_keys = set()
             proc_arch = os.environ['PROCESSOR_ARCHITECTURE'].lower()
 
             try:
