@@ -276,8 +276,8 @@ define(
               var notify = false, msg;
               if(self.handler.can_edit) {
                 var data_store = self.handler.data_store;
-                if(_.size(data_store.added) ||
-                    _.size(data_store.updated)) {
+                if(data_store && (_.size(data_store.added) ||
+                    _.size(data_store.updated))) {
                   msg = '{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
                   notify = true;
                 }
@@ -515,9 +515,7 @@ define(
           collection = [];
         }
 
-        // Create an array for client filter
-        var filter_array = new Array(),
-          grid_columns = new Array(),
+        var grid_columns = new Array(),
           checkboxSelector;
 
           checkboxSelector = new Slick.CheckboxSelectColumn({
@@ -527,37 +525,35 @@ define(
           grid_columns.push(checkboxSelector.getColumnDefinition());
 
         _.each(columns, function(c) {
-            filter_array.push(c.name);
             var options = {
               id: c.name,
               field: c.name,
               name: c.label
             };
 
-            // If grid is editable then add editor
-            if(is_editable) {
-              if(c.cell == 'Json') {
-                options['editor'] = Slick.Editors.JsonText;
-              } else if(c.cell == 'number') {
-                options['editor'] = Slick.Editors.Text;
-              } else if(c.cell == 'boolean') {
-                options['editor'] = Slick.Editors.Checkbox;
-              } else {
-                options['editor'] = Slick.Editors.pgText;
-              }
+            // If grid is editable then add editor else make it readonly
+            if(c.cell == 'Json') {
+              options['editor'] = is_editable ? Slick.Editors.JsonText
+                                              : Slick.Editors.ReadOnlyJsonText;
+              options['formatter'] = Slick.Formatters.JsonString;
+            } else if(c.cell == 'number') {
+              options['editor'] = is_editable ? Slick.Editors.Text
+                                              : Slick.Editors.ReadOnlyText;
+              options['formatter'] = Slick.Formatters.Numbers;
+            } else if(c.cell == 'boolean') {
+              options['editor'] = is_editable ? Slick.Editors.Checkbox
+                                              : Slick.Editors.ReadOnlyCheckbox;
+              options['formatter'] = Slick.Formatters.Checkmark;
+            } else {
+              options['editor'] = is_editable ? Slick.Editors.pgText
+                                              : Slick.Editors.ReadOnlypgText;
             }
 
-            // To handle json & boolean formatter in grid
-            if(c.cell == 'Json') {
-              options['formatter'] = Slick.Formatters.JsonString;
-            } else if(c.cell == 'boolean') {
-              options['formatter'] = Slick.Formatters.Checkmark;
-            }
-            grid_columns.push(options)
+           grid_columns.push(options)
         });
 
         var grid_options = {
-          editable: is_editable,
+          editable: true,
           enableAddRow: is_editable,
           enableCellNavigation: true,
           enableColumnReorder: false,

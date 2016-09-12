@@ -11,6 +11,7 @@
     "Slick": {
       "Formatters": {
         "JsonString": JsonFormatter,
+        "Numbers": NumbersFormatter,
         "Checkmark": CheckmarkFormatter
       }
     }
@@ -29,7 +30,18 @@
     }
   }
 
+  function NumbersFormatter(row, cell, value, columnDef, dataContext) {
+    if (value == null || value === "") {
+      return "";
+    } else {
+      return "<span style='float:right'>" + value + "</span>";
+    }
+  }
+
   function CheckmarkFormatter(row, cell, value, columnDef, dataContext) {
+    if (value == null || value === "") {
+      return "";
+    }
     return value ? "true" : "false";
   }
 
