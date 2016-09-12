@@ -240,7 +240,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
             Check if it is view and its parent node is schema
             then allow to create Rule
            */
-          else if('view' == d._type){
+          else if('view' == d._type || 'table' == d._type){
             prev_i = t.hasParent(i) ? t.parent(i) : null;
             prev_d = prev_i ? t.itemData(prev_i) : null;
             prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;

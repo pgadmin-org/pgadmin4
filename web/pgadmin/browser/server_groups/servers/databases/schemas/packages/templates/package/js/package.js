@@ -9,7 +9,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         node: 'package',
         label: '{{ _('Packages') }}',
         type: 'coll-package',
-        columns: ['name', ,'owner', 'description']
+        columns: ['name' ,'owner', 'description']
       });
   };
 
@@ -22,7 +22,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       collection_type: 'coll-package',
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['schema'],
+      parent_type: ['schema', 'catalog'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

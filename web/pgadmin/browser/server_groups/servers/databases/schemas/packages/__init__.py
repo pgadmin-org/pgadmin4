@@ -12,7 +12,7 @@ import re
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases.schemas as schemas
+import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -72,7 +72,7 @@ class PackageModule(SchemaChildModule):
         Load the module script for schema, when any of the database node is
         initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return database.DatabaseModule.NODE_TYPE
 
 
 blueprint = PackageModule(__name__)

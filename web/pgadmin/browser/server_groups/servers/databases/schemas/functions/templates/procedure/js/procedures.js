@@ -46,13 +46,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Procedure...') }}',
           icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
-          false}
+          false}, enable: 'canCreateProc'
         },{
           name: 'create_procedure', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Procedure...') }}',
           icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
-          true},
+          true}, enable: 'canCreateProc'
         },{
           name: 'create_procedure', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -64,6 +64,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
       },
       canDrop: pgSchemaNode.canChildDrop,
       canDropCascade: false,
+      canCreateProc: function(itemData, item, data) {
+        var node_hierarchy = this.getTreeNodeHierarchy.apply(this, [item]);
+
+        // Do not provide Create option in catalog
+        if ('catalog' in node_hierarchy)
+          return false;
+
+        // Procedures supported only in PPAS
+        if ('server' in node_hierarchy && node_hierarchy['server'].server_type == "ppas")
+          return true;
+
+        return false;
+      },
       model: Function.model.extend({
         defaults: _.extend({},
           Function.model.prototype.defaults,
@@ -166,22 +179,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
 
           return null;
         },
-      }
-      ),
-      canCreateProc: function(itemData, item, data) {
-        var node_hierarchy = this.getTreeNodeHierarchy.apply(this, [item]);
-
-        // Do not provide Create option in catalog
-        if ('catalog' in node_hierarchy)
-          return false;
-
-        // Procedures supported only in PPAS
-        if ('server' in node_hierarchy && node_hierarchy['server'].type == "ppas")
-          return true;
-
-        return false;
-
-      }
+      })
   });
 
   }
