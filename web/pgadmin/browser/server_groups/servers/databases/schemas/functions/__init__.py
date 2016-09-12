@@ -906,34 +906,34 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Fetch the function definition.
         args = u''
-        args_without_name = u''
+        args_without_name = []
         cnt = 1
         args_list = []
+
         if 'arguments' in resp_data and len(resp_data['arguments']) > 0:
             args_list = resp_data['arguments']
             resp_data['args'] = resp_data['arguments']
 
         for a in args_list:
             if (('argmode' in a and a['argmode'] != 'OUT' and
-                         a['argmode'] is not None
+                    a['argmode'] is not None
                  ) or 'argmode' not in a):
                 if 'argmode' in a:
                     args += a['argmode'] + " "
-                    args_without_name += a['argmode'] + " "
                 if 'argname' in a and a['argname'] != '' \
                         and a['argname'] is not None:
                     args += self.qtIdent(
                         self.conn, a['argname']) + " "
                 if 'argtype' in a:
                     args += a['argtype']
-                    args_without_name += a['argtype']
+                    args_without_name.append(a['argtype'])
                 if cnt < len(args_list):
                     args += ', '
-                    args_without_name += ', '
             cnt += 1
 
         resp_data['func_args'] = args.strip(' ')
-        resp_data['func_args_without'] = args_without_name.strip(' ')
+
+        resp_data['func_args_without'] = ', '.join(args_without_name)
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
@@ -1158,7 +1158,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 data['acl'] = parse_priv_to_db(data['acl'], ["X"])
 
             args = u''
-            args_without_name = u''
+            args_without_name = []
             cnt = 1
             args_list = []
             if 'arguments' in data and len(data['arguments']) > 0:
@@ -1171,27 +1171,25 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                      ) or 'argmode' not in a):
                     if 'argmode' in a:
                         args += a['argmode'] + " "
-                        args_without_name += a['argmode'] + " "
                     if 'argname' in a and a['argname'] != '' \
                             and a['argname'] is not None:
                         args += self.qtIdent(
                             self.conn, a['argname']) + " "
                     if 'argtype' in a:
                         args += a['argtype']
-                        args_without_name += a['argtype']
+                        args_without_name.append(a['argtype'])
                     if cnt < len(args_list):
                         args += ', '
-                        args_without_name += ', '
                 cnt += 1
 
             data['func_args'] = args.strip(' ')
-            data['func_args_without'] = args_without_name.strip(' ')
+
+            data['func_args_without'] = ', '.join(args_without_name)
             # Create mode
             SQL = render_template("/".join([self.sql_template_path,
                                             'create.sql']),
                                   data=data, is_sql=is_sql)
         return True, SQL.strip('\n')
-
 
     def _fetch_properties(self, gid, sid, did, scid, fnid=None):
         """
