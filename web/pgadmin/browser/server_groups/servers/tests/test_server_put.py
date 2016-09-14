@@ -23,55 +23,35 @@ class ServerUpdateTestCase(BaseTestGenerator):
 
     @classmethod
     def setUpClass(cls):
-        """
-        This function perform the four tasks
-         1. Add the test server
-         2. Get the server
-         3. Connect to server
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-
-        # Get the server
-        server_utils.get_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect) == 0:
-            raise Exception("No Server(s) connected to update!!!")
+        """This function add the server to test the PUT API"""
+        server_utils.add_server(cls.server)
 
     def runTest(self):
-        """ This function will update the server's comment field. """
+        """This function update the server details"""
+        all_id = utils.get_node_info_dict()
+        servers_info = all_id["sid"]
 
-        for server_id in self.server_ids:
-            data = {
-                "comment":
-                    server_utils.config_data['server_update_data'][0][
-                        'comment'],
-                "id": server_id
-            }
-            put_response = self.tester.put(
-                self.url + str(self.server_group) + '/' +
-                str(server_id), data=json.dumps(data),
-                content_type='html/json')
-            self.assertEquals(put_response.status_code, 200)
+        if len(servers_info) == 0:
+            raise Exception("No server to update.")
 
-            response_data = json.loads(put_response.data.decode())
-            self.assertTrue(response_data['success'], 1)
+        server_id = list(servers_info[0].keys())[0]
+        data = {
+            "comment":
+                server_utils.config_data['server_update_data'][0][
+                    'comment'],
+            "id": server_id
+        }
+        put_response = self.tester.put(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(server_id), data=json.dumps(data),
+            content_type='html/json')
+        self.assertEquals(put_response.status_code, 200)
 
     @classmethod
     def tearDownClass(cls):
         """
-        This function deletes the added server and the 'parent_id.pkl' file
-        which is created in setup() function.
-
-        :return: None
+        This function delete the server from SQLite & clears the node_info_dict
         """
-
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+        server_id = server_utils.get_server_id()
+        utils.delete_server(server_id)
+        utils.clear_node_info_dict()

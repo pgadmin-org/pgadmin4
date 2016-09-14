@@ -1,5 +1,5 @@
 {
-  "add_database_data": [
+  "add_database_data":
    {
     "privileges_acl": [
       {
@@ -93,13 +93,11 @@
     "privileges": [],
     "securities": [],
     "variables": []
-  }
- ],
-  "db_update_data": [
+  },
+  "db_update_data":
   {
       "comment": "This is db update comment"
-  }
- ],
+  },
 
   "lr_credentials": {
       "can_login": "true",
@@ -445,7 +443,7 @@
   {
     "comment": "This is event trigger update comment"
   },
-  
+
     "sequence_credentials":
   [{
     "cache": "1",
@@ -492,5 +490,3 @@
 
 
  }
-
-

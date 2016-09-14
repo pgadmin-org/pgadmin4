@@ -11,17 +11,13 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
+from regression import test_server_dict
 from regression.test_setup import advanced_config_data
-from regression.test_utils import get_ids
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from . import utils as database_utils
 
 
 class DatabasesUpdateTestCase(BaseTestGenerator):
-    """
-    This class will update the database under last added server.
-    """
-
+    """This class will update the database under last added server."""
     scenarios = [
         # Fetching default URL for database node.
         ('Check Databases Node', dict(url='/browser/database/obj/'))
@@ -29,63 +25,46 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
 
     @classmethod
     def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server
-         2. Connect to server
-         3. Add the databases
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
+        cls.db_name = "test_db_put"
+        cls.db_id = utils.create_database(cls.server, cls.db_name)
 
     def runTest(self):
         """ This function will update the comments field of database."""
-
-        all_id = get_ids()
-        server_ids = all_id["sid"]
-        db_ids_dict = all_id["did"][0]
-
-        for server_id in server_ids:
-            db_id = db_ids_dict[int(server_id)]
-            db_con = database_utils.verify_database(self.tester,
-                                                    utils.SERVER_GROUP,
-                                                    server_id,
-                                                    db_id)
-            if db_con["info"] == "Database connected.":
+        server_id = test_server_dict["server"][0]["server_id"]
+        db_id = self.db_id
+        db_con = database_utils.verify_database(self,
+                                                utils.SERVER_GROUP,
+                                                server_id,
+                                                db_id)
+        if db_con["info"] == "Database connected.":
+            try:
                 data = {
-                    "comments": advanced_config_data["db_update_data"][0]
-                    ["comment"],
+                    "comments": advanced_config_data["db_update_data"]["comment"],
                     "id": db_id
                 }
-                put_response = self.tester.put(
-                    self.url + str(utils.SERVER_GROUP) + '/' + str(
+                response = self.tester.put(self.url + str(utils.SERVER_GROUP) + '/' + str(
                         server_id) + '/' +
                     str(db_id), data=json.dumps(data), follow_redirects=True)
-                self.assertEquals(put_response.status_code, 200)
+                self.assertEquals(response.status_code, 200)
+            except Exception as exception:
+                raise Exception("Error while updating database details. %s" %
+                                exception)
+            finally:
+                # Disconnect database to delete it
+                database_utils.disconnect_database(self, server_id, db_id)
+        else:
+            raise Exception("Error while updating database details.")
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         """
-        This function deletes the added server and 'parent_id.pkl' file
-        which is created in setup() function.
-
-        :return: None
+        This function delete the database from server added in SQLite and
+        clears the node_info_dict
         """
-
-        database_utils.delete_database(self.tester)
-        server_utils.delete_server(self.tester)
-        utils.delete_parent_id_file()
+        connection = utils.get_db_connection(cls.server['db'],
+                                             cls.server['username'],
+                                             cls.server['db_password'],
+                                             cls.server['host'],
+                                             cls.server['port'])
+        utils.drop_database(connection, cls.db_name)
+        utils.clear_node_info_dict()

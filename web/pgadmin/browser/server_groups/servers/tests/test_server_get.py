@@ -9,7 +9,7 @@
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from . import utils as server_utils
+from regression import test_server_dict
 
 
 class ServersGetTestCase(BaseTestGenerator):
@@ -23,29 +23,13 @@ class ServersGetTestCase(BaseTestGenerator):
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function is used to add the server
-
-        :return: None
-        """
-
-        server_utils.add_server(cls.tester)
-
     def runTest(self):
         """ This function will fetch the added servers to object browser. """
+        server_id = test_server_dict["server"][0]["server_id"]
+        if not server_id:
+            raise Exception("Server not found to test GET API")
+        response = self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
+                                   str(server_id),
+                                   follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
 
-        server_utils.get_server(self.tester)
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added server and the 'parent_id.pkl' file
-        which is created in setup() function.
-
-        :return: None
-        """
-
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()

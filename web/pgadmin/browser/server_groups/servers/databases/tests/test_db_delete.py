@@ -6,16 +6,14 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
+from regression import test_server_dict
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from . import utils as database_utils
 
 
 class DatabaseDeleteTestCase(BaseTestGenerator):
     """ This class will delete the database under last added server. """
-
     scenarios = [
         # Fetching default URL for database node.
         ('Check Databases Node URL', dict(url='/browser/database/obj/'))
@@ -23,42 +21,23 @@ class DatabaseDeleteTestCase(BaseTestGenerator):
 
     @classmethod
     def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server
-         2. Connect to server
-         3. Add the databases
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
+        cls.db_id = utils.create_database(cls.server, "test_db_delete")
 
     def runTest(self):
         """ This function will delete the database."""
-
-        database_utils.delete_database(self.tester)
+        server_id = test_server_dict["server"][0]["server_id"]
+        server_response = server_utils.connect_server(self, server_id)
+        if server_response["data"]["connected"]:
+            db_id = self.db_id
+            response = self.tester.delete(
+                self.url + str(utils.SERVER_GROUP) + '/' +
+                str(server_id) + '/' + str(db_id),
+                follow_redirects=True)
+            self.assertEquals(response.status_code, 200)
+        else:
+            raise Exception("Could not connect to server to delete the "
+                            "database.")
 
     @classmethod
     def tearDownClass(cls):
-        """
-        This function deletes the added server and the 'parent_id.pkl' file
-        which is created in setup() function.
-
-        :return: None
-        """
-
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+        pass

@@ -9,10 +9,13 @@
 
 """ This file collect all modules/files present in tests directory and add
 them to TestSuite. """
+from __future__ import print_function
 
 import argparse
 import os
 import sys
+import signal
+import atexit
 import unittest
 import logging
 
@@ -25,30 +28,60 @@ root = os.path.dirname(CURRENT_PATH)
 
 if sys.path[0] != root:
     sys.path.insert(0, root)
+    os.chdir(root)
 
 from pgadmin import create_app
 import config
+import test_setup
+
+# Execute setup.py if test SQLite database doesn't exist.
+if os.path.isfile(config.TEST_SQLITE_PATH):
+    print("The configuration database already exists at '%s'. "
+          "Please remove the database and re-run the test suite." %
+          config.TEST_SQLITE_PATH)
+    sys.exit(1)
+else:
+    config.TESTING_MODE = True
+    pgadmin_credentials = test_setup.config_data
+
+    # Set environment variables for email and password
+    os.environ['PGADMIN_SETUP_EMAIL'] = ''
+    os.environ['PGADMIN_SETUP_PASSWORD'] = ''
+    if pgadmin_credentials:
+        if 'pgAdmin4_login_credentials' in pgadmin_credentials:
+            if all(item in pgadmin_credentials['pgAdmin4_login_credentials']
+                   for item in ['login_username', 'login_password']):
+                pgadmin_credentials = pgadmin_credentials[
+                    'pgAdmin4_login_credentials']
+                os.environ['PGADMIN_SETUP_EMAIL'] = pgadmin_credentials[
+                    'login_username']
+                os.environ['PGADMIN_SETUP_PASSWORD'] = pgadmin_credentials[
+                    'login_password']
+
+    # Execute the setup file
+    exec (open("setup.py").read())
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
-from test_utils import login_tester_account, logout_tester_account
+
+# Delay the import test_utils as it needs updated config.SQLITE_PATH
+import test_utils
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 # Override some other defaults
 from logging import WARNING
+
 config.CONSOLE_LOG_LEVEL = WARNING
 
 # Create the app
 app = create_app()
 app.config['WTF_CSRF_ENABLED'] = False
 test_client = app.test_client()
-# Login the test client
-login_tester_account(test_client)
 
 
-def get_suite(arguments, test_app_client):
+def get_suite(arguments, server, test_app_client):
     """
      This function loads the all modules in the tests directory into testing
      environment.
@@ -56,6 +89,8 @@ def get_suite(arguments, test_app_client):
     :param arguments: this is command line arguments for module name to
     which test suite will run
     :type arguments: str
+    :param server: server details
+    :type server: dict
     :param test_app_client: test client
     :type test_app_client: pgadmin app object
     :return pgadmin_suite: test suite with test cases
@@ -71,18 +106,24 @@ def get_suite(arguments, test_app_client):
     if arguments['pkg'] is None or arguments['pkg'] == "all":
         TestsGeneratorRegistry.load_generators('pgadmin')
     else:
-        TestsGeneratorRegistry.load_generators('pgadmin.{}.tests'.format(
-            arguments['pkg']))
+        TestsGeneratorRegistry.load_generators('pgadmin.%s.tests' %
+                                               arguments['pkg'])
+
+    # Sort module list so that test suite executes the test cases sequentially
+    module_list = TestsGeneratorRegistry.registry.items()
+    module_list = sorted(module_list, key=lambda module_tuple: module_tuple[0])
 
     # Get the each test module and add into list
-    for key, klass in TestsGeneratorRegistry.registry.items():
+    for key, klass in module_list:
         gen = klass
         modules.append(gen)
 
     # Set the test client to each module & generate the scenarios
     for module in modules:
         obj = module()
+        obj.setApp(app)
         obj.setTestClient(test_app_client)
+        obj.setTestServer(server)
         scenario = generate_scenarios(obj)
         pgadmin_suite.addTests(scenario)
 
@@ -104,6 +145,10 @@ def add_arguments():
     arg = parser.parse_args()
 
     return arg
+
+
+def sig_handler(signo, frame):
+    test_utils.drop_objects()
 
 
 class StreamToLogger(object):
@@ -131,6 +176,14 @@ class StreamToLogger(object):
 
 
 if __name__ == '__main__':
+    # Register cleanup function to cleanup on exit
+    atexit.register(test_utils.drop_objects)
+    # Set signal handler for cleanup
+    signal.signal(signal.SIGTERM, sig_handler)
+    signal.signal(signal.SIGABRT, sig_handler)
+    signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGQUIT, sig_handler)
+
     # Set basic logging configuration for log file
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
@@ -144,11 +197,25 @@ if __name__ == '__main__':
     sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
     args = vars(add_arguments())
-    suite = get_suite(args, test_client)
-    tests = unittest.TextTestRunner(stream=sys.stderr, descriptions=True,
-                                    verbosity=2).run(suite)
 
-    # Logout the test client
-    logout_tester_account(test_client)
+    servers_info = test_utils.get_config_data()
+    try:
+        for server in servers_info:
+            print("\n=============Running the test cases for '%s'============="
+                  % server['name'], file=sys.stderr)
+            test_utils.create_test_server(server)
+            # Login the test client
+            test_utils.login_tester_account(test_client)
+
+            suite = get_suite(args, server, test_client)
+            tests = unittest.TextTestRunner(stream=sys.stderr,
+                                            descriptions=True,
+                                            verbosity=2).run(suite)
+            # Logout the test client
+            test_utils.logout_tester_account(test_client)
+
+            test_utils.delete_test_server(server)
+    except SystemExit:
+        test_utils.drop_objects()
 
     print("Please check output in file: %s/regression.log " % CURRENT_PATH)

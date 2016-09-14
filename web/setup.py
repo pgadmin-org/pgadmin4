@@ -29,6 +29,7 @@ import config
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
+
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 # If script is running under python2 then change the behaviour of functions
@@ -50,30 +51,40 @@ def do_setup(app):
     else:
         print("NOTE: Configuring authentication for SERVER mode.\n")
 
-        # Prompt the user for their default username and password.
-        print("""
-Enter the email address and password to use for the initial pgAdmin user \
-account:\n""")
-        email_filter = re.compile(
-            "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
-            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+        if all(value in os.environ for value in
+               ['PGADMIN_SETUP_EMAIL', 'PGADMIN_SETUP_PASSWORD']):
+            email = ''
+            p1 = ''
+            if os.environ['PGADMIN_SETUP_EMAIL'] and os.environ[
+                'PGADMIN_SETUP_PASSWORD']:
+                email = os.environ['PGADMIN_SETUP_EMAIL']
+                p1 = os.environ['PGADMIN_SETUP_PASSWORD']
+        else:
+            # Prompt the user for their default username and password.
+            print("""
+    Enter the email address and password to use for the initial pgAdmin user \
+    account:\n""")
+            email_filter = re.compile(
+                "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
+                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
+                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
-        email = input("Email address: ")
-        while email == '' or not email_filter.match(email):
-            print('Invalid email address. Please try again.')
             email = input("Email address: ")
+            while email == '' or not email_filter.match(email):
+                print('Invalid email address. Please try again.')
+                email = input("Email address: ")
 
-        def pprompt():
-            return getpass.getpass(), getpass.getpass('Retype password:')
+            def pprompt():
+                return getpass.getpass(), getpass.getpass('Retype password:')
 
-        p1, p2 = pprompt()
-        while p1 != p2 or len(p1) < 6:
-            if p1 != p2:
-                print('Passwords do not match. Please try again.')
-            else:
-                print('Password must be at least 6 characters. Please try again.')
             p1, p2 = pprompt()
+            while p1 != p2 or len(p1) < 6:
+                if p1 != p2:
+                    print('Passwords do not match. Please try again.')
+                else:
+                    print(
+                    'Password must be at least 6 characters. Please try again.')
+                p1, p2 = pprompt()
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -91,7 +102,6 @@ account:\n""")
             name='User',
             description='pgAdmin User Role'
         )
-
         user_datastore.create_user(email=email, password=password)
         db.session.flush()
         user_datastore.add_role_to_user(email, 'Administrator')
@@ -338,6 +348,10 @@ ALTER TABLE SERVER
 if __name__ == '__main__':
     app = Flask(__name__)
     app.config.from_object(config)
+
+    if config.TESTING_MODE:
+        config.SQLITE_PATH = config.TEST_SQLITE_PATH
+
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'sqlite:///' + config.SQLITE_PATH.replace('\\', '/')
     db.init_app(app)
@@ -346,9 +360,10 @@ if __name__ == '__main__':
     print("======================================\n")
 
     local_config = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
+        os.path.dirname(os.path.dirname(__file__)),
         'config_local.py'
     )
+
     if not os.path.isfile(local_config):
         print("""
  The configuration file - {0} does not exist.

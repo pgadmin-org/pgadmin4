@@ -7,8 +7,14 @@
 #
 ##############################################################
 
+import sys
 import unittest
+
 from abc import ABCMeta, abstractmethod
+from importlib import import_module
+from werkzeug.utils import find_modules
+
+import config
 
 
 class TestsGeneratorRegistry(ABCMeta):
@@ -43,20 +49,26 @@ class TestsGeneratorRegistry(ABCMeta):
 
         ABCMeta.__init__(cls, name, bases, d)
 
+    @staticmethod
+    def import_app_modules(module_name):
+        """As we are running test suite for each server. To catch
+        the test cases, delete the previously imported  module
+        """
+        if str(module_name) in sys.modules.keys():
+            del sys.modules[module_name]
+        import_module(module_name)
+
     @classmethod
     def load_generators(cls, pkg):
 
         cls.registry = dict()
 
-        from importlib import import_module
-        from werkzeug.utils import find_modules
-        import config
-
         # Check for SERVER mode
         if config.SERVER_MODE:
             for module_name in find_modules(pkg, False, True):
                 try:
-                    module = import_module(module_name)
+                    if "tests." in str(module_name):
+                        cls.import_app_modules(module_name)
                 except ImportError:
                     pass
         else:
@@ -65,7 +77,7 @@ class TestsGeneratorRegistry(ABCMeta):
                     # Exclude the test cases in browser node if SERVER_MODE
                     # is False
                     if "pgadmin.browser.tests" not in module_name:
-                        module = import_module(module_name)
+                        cls.import_app_modules(module_name)
                 except ImportError:
                     pass
 
@@ -75,6 +87,11 @@ import six
 @six.add_metaclass(TestsGeneratorRegistry)
 class BaseTestGenerator(unittest.TestCase):
     # Defining abstract method which will override by individual testcase.
+
+    @classmethod
+    def setTestServer(cls, server):
+        cls.server = server
+
     @abstractmethod
     def runTest(self):
         pass
