@@ -1357,7 +1357,7 @@ It may have been removed by another user or moved to another schema.
         """
         # Fetch the function definition.
         SQL = render_template("/".join([self.sql_template_path,
-                                        'get_definition.sql']), fnid=fnid, scid=scid)
+                              'get_definition.sql']), fnid=fnid, scid=scid)
         status, res = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1375,7 +1375,7 @@ It may have been removed by another user or moved to another schema.
             for arg in list(set(args)):
                 formatted_arg = '\n\t<' + arg + '>'
                 name = name.replace(arg, formatted_arg)
-                name = name.replace(')', '\n)')
+            name = name.replace(')', '\n)')
 
         sql = "SELECT {0}".format(name)
 
