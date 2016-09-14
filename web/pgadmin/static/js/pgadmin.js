@@ -42,7 +42,7 @@
 
     // If object is of column type then do not sort
     if (options.hasOwnProperty("_type") && options._type &&
-        (options._type != 'column' || options._type != 'catalog_object_column'))
+        (options._type == 'column' || options._type == 'catalog_object_column'))
       return 0;
 
     // first try and sort Hex codes or Dates
