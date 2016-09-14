@@ -1430,10 +1430,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                   success();
                 }
               },
-              error: function(jqx, error, status) {
+              error: function(xhr, error, status) {
                 if (
                   !Alertify.pgHandleItemError(
-                    xhr, error, message, {item: _i, info: info}
+                    xhr, error, status, {item: _i, info: info}
                   )
                 ) {
                   var msg = xhr.responseText,
