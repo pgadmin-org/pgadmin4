@@ -1600,6 +1600,13 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
 
   });
 
+  /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding
+   * specific to Mac LineNumber:5797 - lib/Codemirror.js
+   * It is preventing default paste event(Cmd-V) from triggering
+   * in runtime.
+   */
+  delete CodeMirror.keyMap.emacsy["Ctrl-V"];
+
   // Use spaces instead of tab
   if ('{{ editor_use_spaces }}' == 'True') {
     pgAdmin.Browser.editor_shortcut_keys.Tab = "insertSoftTab";
