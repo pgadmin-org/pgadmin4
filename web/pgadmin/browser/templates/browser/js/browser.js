@@ -35,7 +35,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
 
   var processTreeData = function(payload) {
     var data = JSON.parse(payload).data.sort(function(a, b) {
-      return pgAdmin.natural_sort(a.label, b.label, {});
+        return pgAdmin.natural_sort(a.label, b.label, {'_type': a._type});
     });
     _.each(data, function(d){
       d._label = d.label;
@@ -855,7 +855,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label, {}
+                              d._label, _data._label, {'_type': d._type}
                             ) == 1
                           )
                             return true;
@@ -880,7 +880,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label, {}
+                              d._label, _data._label, {'_type': d._type}
                             ) != -1
                           )
                             return true;
@@ -888,7 +888,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label, {}
+                              d._label, _data._label, {'_type': d._type}
                             ) != 1
                           )
                             return true;
@@ -897,7 +897,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label, {}
+                              d._label, _data._label, {'_type': d._type}
                             ) == 1
                           ) {
                             s = m + 1;

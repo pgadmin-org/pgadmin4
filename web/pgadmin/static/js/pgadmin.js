@@ -40,6 +40,11 @@
         oFxNcL, oFyNcL,
         mult = options.desc ? -1 : 1;
 
+    // If object is of column type then do not sort
+    if (options.hasOwnProperty("_type") && options._type &&
+        (options._type != 'column' || options._type != 'catalog_object_column'))
+      return 0;
+
     // first try and sort Hex codes or Dates
     if (yD)
       if ( xD < yD ) return -1 * mult;
