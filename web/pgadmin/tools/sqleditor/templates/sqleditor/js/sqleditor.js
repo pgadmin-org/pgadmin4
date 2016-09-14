@@ -1709,9 +1709,12 @@ define(
 
           // Initial settings for delete row, copy row and paste row buttons.
           $("#btn-delete-row").prop('disabled', true);
-          if (!self.can_edit) {
+          // Do not disable save button in query tool
+          if(!self.is_query_tool && !self.can_edit) {
             $("#btn-save").prop('disabled', true);
             $("#btn-file-menu-dropdown").prop('disabled', true);
+          }
+          if (!self.can_edit) {
             $("#btn-delete-row").prop('disabled', true);
             $("#btn-copy-row").prop('disabled', true);
             $("#btn-paste-row").prop('disabled', true);
