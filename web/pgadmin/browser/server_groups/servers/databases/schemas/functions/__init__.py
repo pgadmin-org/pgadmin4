@@ -938,18 +938,42 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if self.node_type == 'procedure':
             object_type = 'procedure'
 
-            # Get SQL to create Function
-            status, func_def = self._get_sql(gid, sid, did, scid, resp_data,
-                                             None, True)
+            # Get Schema Name from its OID.
+            if 'pronamespace' in resp_data:
+                resp_data['pronamespace'] = self._get_schema(resp_data[
+                    'pronamespace'])
+
+            SQL = render_template("/".join([self.sql_template_path,
+                                            'get_definition.sql']
+                                           ), data=resp_data,
+                                  fnid=fnid, scid=scid)
+
+            status, res = self.conn.execute_2darray(SQL)
             if not status:
-                return internal_server_error(errormsg=func_def)
+                return internal_server_error(errormsg=res)
 
-            name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
+            # Add newline and tab before each argument to format
+            name_with_default_args = res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
 
-            # Create mode
+            # Parse privilege data
+            if 'acl' in resp_data:
+                resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
+
+            # generate function signature
+            header_func_name = '{0}.{1}({2})'.format(
+                resp_data['pronamespace'],
+                resp_data['proname'],
+                resp_data['proargtypenames']
+            )
+
+            # Generate sql for "SQL panel"
+            # func_def is procedure signature with default arguments
+            # query_for - To distinguish the type of call
             func_def = render_template("/".join([self.sql_template_path,
                                                 'create.sql']),
-                                       data=resp_data, query_type="create")
+                                       data=resp_data, query_type="create",
+                                       func_def=name_with_default_args,
+                                       query_for="sql_panel")
         else:
             object_type = 'function'
 
@@ -962,7 +986,13 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
-            # Create mode
+            # generate function signature
+            header_func_name = '{0}.{1}({2})'.format(
+                resp_data['pronamespace'],
+                resp_data['proname'],
+                resp_data['proargtypenames']
+            )
+
             SQL = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
                                            ), data=resp_data,
@@ -972,8 +1002,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            name = res['rows'][0]['name']
-            # Create mode
+            # Add newline and tab before each argument to format
+            name_with_default_args =  res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
+
             if hasattr(str, 'decode'):
                 if resp_data['prosrc']:
                     resp_data['prosrc'] = resp_data['prosrc'].decode(
@@ -983,15 +1014,21 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                     resp_data['prosrc_c'] = resp_data['prosrc_c'].decode(
                         'utf-8'
                     )
+
+            # Generate sql for "SQL panel"
+            # func_def is function signature with default arguments
+            # query_for - To distinguish the type of call
             func_def = render_template("/".join([self.sql_template_path,
                                                  'create.sql']),
-                                       data=resp_data, query_type="create")
+                                       data=resp_data, query_type="create",
+                                       func_def=name_with_default_args,
+                                       query_for="sql_panel")
 
         sql_header = """-- {0}: {1}
 
 -- DROP {0} {1};
 
-""".format(object_type.upper(), name)
+""".format(object_type.upper(), header_func_name)
         if hasattr(str, 'decode'):
             sql_header = sql_header.decode('utf-8')
 
