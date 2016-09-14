@@ -23,7 +23,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -348,6 +348,46 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             response=res['rows'],
             status=200
         )
+
+    @check_precondition
+    def node(self, gid, sid, did, scid, tid):
+        """
+        This function is used to list all the table nodes within that collection.
+
+        Args:
+            gid: Server group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            tid: Table ID
+
+        Returns:
+            JSON of available table nodes
+        """
+        res = []
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              scid=scid, tid=tid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+        if len(rset['rows']) == 0:
+                return gone(gettext("Could not find the table."))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                scid,
+                rset['rows'][0]['name'],
+                icon="icon-table",
+                tigger_count=rset['rows'][0]['triggercount'],
+                has_enable_triggers=rset['rows'][0]['has_enable_triggers']
+            )
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
 
     @check_precondition
     def nodes(self, gid, sid, did, scid):
