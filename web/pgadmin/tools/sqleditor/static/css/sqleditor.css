@@ -407,3 +407,7 @@ input.editor-checkbox {
 .grid-canvas .new_row.error, .grid-canvas .updated_row.error {
   background: #e46b6b;
 }
+
+#datagrid div.slick-header.ui-state-default {
+  background: #2c76b4;
+}

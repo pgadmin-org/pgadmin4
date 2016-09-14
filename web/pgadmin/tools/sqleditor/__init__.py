@@ -531,25 +531,28 @@ def fetch_pg_types(trans_id):
 
         # List of oid for which we need type name from pg_type
         oid = ''
-        for col in session_obj['columns_info']:
-            type_obj = session_obj['columns_info'][col]
-            oid += str(type_obj['type_code']) + ','
+        res = {}
+        if 'columns_info' in session_obj \
+                and session_obj['columns_info'] is not None:
+            for col in session_obj['columns_info']:
+                type_obj = session_obj['columns_info'][col]
+                oid += str(type_obj['type_code']) + ','
 
-        # Remove extra comma
-        oid = oid[:-1]
-        status, res = conn.execute_dict(
-            """SELECT oid, format_type(oid,null) as typname FROM pg_type WHERE oid IN ({0}) ORDER BY oid;
+            # Remove extra comma
+            oid = oid[:-1]
+            status, res = conn.execute_dict(
+                """SELECT oid, format_type(oid,null) as typname FROM pg_type WHERE oid IN ({0}) ORDER BY oid;
 """.format(oid))
 
-        if status:
-            # iterate through pg_types and update the type name in session object
-            for record in res['rows']:
-                for col in session_obj['columns_info']:
-                    type_obj = session_obj['columns_info'][col]
-                    if type_obj['type_code'] == record['oid']:
-                        type_obj['type_name'] = record['typname']
+            if status:
+                # iterate through pg_types and update the type name in session object
+                for record in res['rows']:
+                    for col in session_obj['columns_info']:
+                        type_obj = session_obj['columns_info'][col]
+                        if type_obj['type_code'] == record['oid']:
+                            type_obj['type_name'] = record['typname']
 
-            update_session_grid_transaction(trans_id, session_obj)
+                update_session_grid_transaction(trans_id, session_obj)
     else:
         status = False
         res = error_msg
