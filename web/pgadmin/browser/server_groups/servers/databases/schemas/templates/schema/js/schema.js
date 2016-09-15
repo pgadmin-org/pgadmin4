@@ -456,9 +456,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     });
   }
 
-  // Switch Cell with Deps
-  var SwitchDepCell =
-    Backgrid.Extension.SwitchDepCell =  Backgrid.Extension.SwitchCell.extend({
+  // Switch Cell with Deps (specifically for table children)
+  var TableChildSwitchCell =
+    Backgrid.Extension.TableChildSwitchCell = Backgrid.Extension.SwitchCell.extend({
       initialize: function() {
         Backgrid.Extension.SwitchCell.prototype.initialize.apply(this, arguments);
         Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);

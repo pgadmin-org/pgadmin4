@@ -183,17 +183,25 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           // Need to show this field only when creating new table
           // [in SubNode control]
           id: 'is_primary_key', label: '{{ _('Primary key?') }}',
-          cell: Backgrid.Extension.SwitchDepCell, type: 'switch', deps:['name'],
-          options: { onText: 'Yes', offText: 'No', onColor: 'success', offColor: 'primary' },
-          cellHeaderClasses:'width_percent_5',
+          cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
+          deps:['name'], cellHeaderClasses:'width_percent_5',
+          options: {
+            onText: '{{ _("Yes") }}', offText: '{{ _("No") }}',
+            onColor: 'success', offColor: 'primary'
+          },
           visible: function(m) {
-            return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
+            return _.isUndefined(
+              m.top.node_info['table'] || m.top.node_info['view'] ||
+                m.top.node_info['mview']
+            );
           },
           disabled: function(m){
             // If primary key already exist then disable.
-            if (m.top && !_.isUndefined(m.top.get('oid')) &&
-                        m.top.get('primary_key').length > 0 &&
-                        !_.isUndefined(m.top.get('primary_key').first().get('oid'))) {
+            if (
+              m.top && !_.isUndefined(m.top.get('oid')) &&
+                m.top.get('primary_key').length > 0 &&
+                !_.isUndefined(m.top.get('primary_key').first().get('oid'))
+            ) {
               return true;
             }
 
