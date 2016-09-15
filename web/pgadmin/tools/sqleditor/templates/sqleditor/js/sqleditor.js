@@ -7,7 +7,7 @@ define(
     'codemirror/addon/selection/active-line',
     'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
     'codemirror/addon/hint/show-hint', 'codemirror/addon/hint/sql-hint',
-    'codemirror/addon/fold/pgadmin-sqlfoldcode',
+    'codemirror/addon/fold/pgadmin-sqlfoldcode','codemirror/addon/scroll/simplescrollbars',
     'backgrid.sizeable.columns', 'wcdocker', 'pgadmin.file_manager'
   ],
   function(
@@ -191,9 +191,9 @@ define(
         sql_panel.load(main_docker);
         var sql_panel_obj = main_docker.addPanel('sql_panel', wcDocker.DOCK.TOP);
 
-        var output_container = $('<div id="output-panel"></div>');
-        var text_container = $('<textarea id="sql_query_tool"></textarea>').append(output_container);
-        sql_panel_obj.layout().addItem(text_container);
+        var text_container = $('<textarea id="sql_query_tool"></textarea>');
+        var output_container = $('<div id="output-panel"></div>').append(text_container);
+        sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
 
         self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
             lineNumbers: true,
@@ -210,7 +210,8 @@ define(
             },
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: pgBrowser.editor_shortcut_keys,
-            tabSize: pgAdmin.Browser.editor_options.tabSize
+            tabSize: pgAdmin.Browser.editor_options.tabSize,
+            scrollbarStyle: 'simple'
         });
 
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'

@@ -50,6 +50,8 @@
           href="{{ url_for('static', filename='css/slickgrid/slick-default-theme.css')}}"/>
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='css/slickgrid/smoothness/jquery-ui-1.11.3.custom.css' if config.DEBUG else 'css/slickgrid/smoothness/jquery-ui-1.11.3.custom.min.css')}}"/>
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='js/codemirror/addon/scroll/simplescrollbars.css')}}"/>
 
     <!-- View specified stylesheets -->
     {% for stylesheet in current_app.stylesheets %}

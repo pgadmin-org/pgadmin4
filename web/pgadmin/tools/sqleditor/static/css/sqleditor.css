@@ -156,6 +156,18 @@
     min-height: 100%;
 }
 
+/* Changes specific to output panel of query tool */
+#output-panel, #output-panel .CodeMirror, #output-panel .CodeMirror-gutters {
+  height: 100% !important;
+}
+
+#output-panel .CodeMirror-gutter-wrapper {
+  width: 43px;
+  height: 22px;
+  border-right: 1px solid #ddd !important;
+  background: #f7f7f7 !important;
+}
+
 .CodeMirror-foldgutter {
   width: .9em;
 }
