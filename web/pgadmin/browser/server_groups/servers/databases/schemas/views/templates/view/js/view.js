@@ -92,7 +92,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
             // Set Selected Schema
-            var schemaLabel = args.node_info.schema.label;
+            var schemaLabel = args.node_info.schema._label;
             if (schemaLabel == '') {
               this.set({'schema': 'public'}, {silent: true});
             } else {

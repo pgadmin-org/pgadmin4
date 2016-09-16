@@ -492,7 +492,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
             // Set Selected Schema
-            schema = args.node_info.schema.label
+            schema = args.node_info.schema._label
             this.set({'basensp': schema}, {silent: true});
 
             // Set Current User

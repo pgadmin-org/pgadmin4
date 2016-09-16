@@ -114,7 +114,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var schemaInfo = args.node_info.schema;
 
             this.set({'seqowner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo.label}, {silent: true});
+            this.set({'schema': schemaInfo._label}, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },

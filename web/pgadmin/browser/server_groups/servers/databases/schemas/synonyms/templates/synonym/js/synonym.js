@@ -65,8 +65,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             var schemaInfo = args.node_info.schema;
             this.set({
                 'owner': userInfo.name,
-                'synobjschema': schemaInfo.label,
-                'schema': schemaInfo.label,
+                'synobjschema': schemaInfo._label,
+                'schema': schemaInfo._label,
                 'targettype': 'r'
             }, {silent: true});
           } else {
