@@ -536,7 +536,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         try:
             SQL, name = self.getSQL(gid, sid, data, vid)
             SQL = SQL.strip('\n').strip(' ')
-            status, res = self.conn.execute_scalar(SQL)
+            status, res = self.conn.execute_void(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 

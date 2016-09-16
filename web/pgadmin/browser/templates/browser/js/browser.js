@@ -1140,16 +1140,24 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
           }.bind(ctx),
           updateNode = function() {
             if (
-              this.i && this.d && this.new._id == this.d._id &&
-              this.new._type == this.d._type
+              this.i && this.d && this.new._type == this.d._type
             ) {
-              // Found the currect
-              _.extend(this.d, this.new._id);
-              this.t.setLabel(ctx.i, {label: this.new.label});
-              this.t.addIcon(ctx.i, {icon: this.new.icon});
-              this.t.setId(ctx.id, {id: this.new.id});
-              this.t.openPath(this.i);
-              this.t.select(this.i);
+              var _id = this.d._id;
+              if (this.new._id != this.d._id) {
+                // Found the new oid, update its node_id
+                var node_data = this.t.itemData(ctx.i);
+                node_data._id = _id = this.new._id;
+              }
+              if (this.new._id == _id) {
+                // Found the currect
+                _.extend(this.d, this.new._id);
+                this.t.setLabel(ctx.i, {label: this.new.label});
+                this.t.addIcon(ctx.i, {icon: this.new.icon});
+                this.t.setId(ctx.id, {id: this.new.id});
+                this.t.openPath(this.i);
+                this.t.deselect(this.i);
+                this.t.select(this.i);
+              }
             }
             var success = this.o && this.o.success;
             if (success && typeof(success) == 'function') {
