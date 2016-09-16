@@ -2,25 +2,36 @@ define(
   [
     'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
     'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain', 'slickgrid',
-    'bootstrap', 'pgadmin.browser',
+    'bootstrap', 'pgadmin.browser', 'wcdocker',
     'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
-    'codemirror/addon/selection/active-line',
-    'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
-    'codemirror/addon/hint/show-hint', 'codemirror/addon/hint/sql-hint',
-    'codemirror/addon/fold/pgadmin-sqlfoldcode','codemirror/addon/scroll/simplescrollbars',
-    'backgrid.sizeable.columns', 'wcdocker', 'pgadmin.file_manager'
+    'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
+    'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
+    'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
+    'codemirror/addon/fold/pgadmin-sqlfoldcode',
+    'codemirror/addon/scroll/simplescrollbars',
+    'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
+    'slickgrid/slick.pgadmin.formatters', 'slickgrid/slick.editors',
+    'slickgrid/slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
+    'slickgrid/plugins/slick.cellrangedecorator',
+    'slickgrid/plugins/slick.cellrangeselector',
+    'slickgrid/plugins/slick.cellselectionmodel',
+    'slickgrid/plugins/slick.checkboxselectcolumn',
+    'slickgrid/plugins/slick.cellcopymanager',
+    'slickgrid/plugins/slick.rowselectionmodel',
+    'slickgrid/slick.grid'
   ],
   function(
-    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, Slick
+    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain
   ) {
-    // Some scripts do export their object in the window only.
-    // Generally the one, which do no have AMD support.
-    var wcDocker = window.wcDocker,
-      pgBrowser = pgAdmin.Browser;
-
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
       return pgAdmin.SqlEditor;
+
+    // Some scripts do export their object in the window only.
+    // Generally the one, which do no have AMD support.
+    var wcDocker = window.wcDocker,
+        pgBrowser = pgAdmin.Browser,
+        Slick = window.Slick;
 
     /* Get the function definition from
      * http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript/35302975#35302975
@@ -316,100 +327,122 @@ define(
          */
         CodeMirror.registerHelper("hint", "sql", function(editor, options) {
           var data = [],
-              result = [];
-          var doc = editor.getDoc();
-          var cur = doc.getCursor();
-          var current_line = cur.line; // gets the line number in the cursor position
-          var current_cur = cur.ch;  // get the current cursor position
+              doc = editor.getDoc(),
+              cur = doc.getCursor(),
+              // Get the current cursor position
+              current_cur = cur.ch,
+              // function context
+              ctx = {
+                editor: editor,
+                // URL for auto-complete
+                url: "{{ url_for('sqleditor.index') }}" + "autocomplete/" +
+                  self.transId,
+                data: data,
+                // Get the line number in the cursor position
+                current_line: cur.line,
+                /*
+                 * Render function for hint to add our own class
+                 * and icon as per the object type.
+                 */
+                hint_render: function(elt, data, cur) {
+                  var el = document.createElement('span');
 
-          /* Render function for hint to add our own class
-           * and icon as per the object type.
-           */
-          var hint_render = function(elt, data, cur) {
-             var el = document.createElement('span');
+                  switch(cur.type) {
+                  case 'database':
+                      el.className = 'sqleditor-hint pg-icon-' + cur.type;
+                      break;
+                      case 'datatype':
+                      el.className = 'sqleditor-hint icon-type';
+                      break;
+                      case 'keyword':
+                      el.className = 'fa fa-key';
+                      break;
+                      case 'table alias':
+                      el.className = 'fa fa-at';
+                      break;
+                      default:
+                      el.className = 'sqleditor-hint icon-' + cur.type;
+                  }
 
-             switch(cur.type) {
-               case 'database':
-                 el.className = 'sqleditor-hint pg-icon-' + cur.type;
-                 break;
-               case 'datatype':
-                 el.className = 'sqleditor-hint icon-type';
-                 break;
-               case 'keyword':
-                 el.className = 'fa fa-key';
-                 break;
-               case 'table alias':
-                 el.className = 'fa fa-at';
-                 break;
-               default:
-                 el.className = 'sqleditor-hint icon-' + cur.type;
-             }
+                  el.appendChild(document.createTextNode(cur.text));
+                  elt.appendChild(el);
+                }
+              };
 
-             el.appendChild(document.createTextNode(cur.text));
-             elt.appendChild(el);
-          };
-
-          var full_text = doc.getValue();
+          data.push(doc.getValue());
           // Get the text from start to the current cursor position.
-          var text_before_cursor = doc.getRange({ line: 0, ch: 0 },
-                    { line: current_line, ch: current_cur });
+          data.push(
+            doc.getRange(
+              { line: 0, ch: 0 },
+              { line: ctx.current_line, ch: current_cur }
+            )
+          );
 
-          data.push(full_text);
-          data.push(text_before_cursor);
+          return {
+            then: function(cb) {
+              var self = this;
+              // Make ajax call to find the autocomplete data
+              $.ajax({
+                url: self.url,
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(self.data),
+                success: function(res) {
+                  var result = [];
 
-          // Make ajax call to find the autocomplete data
-          $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "autocomplete/" + self.transId,
-            method: 'POST',
-            async: false,
-            contentType: "application/json",
-            data: JSON.stringify(data),
-            success: function(res) {
-              _.each(res.data.result, function(obj, key) {
-                 result.push({
-                     text: key, type: obj.object_type,
-                     render: hint_render
-                 });
+                  _.each(res.data.result, function(obj, key) {
+                    result.push({
+                      text: key, type: obj.object_type,
+                      render: self.hint_render
+                    });
+                  });
+
+                  // Sort function to sort the suggestion's alphabetically.
+                  result.sort(function(a, b){
+                    var textA = a.text.toLowerCase(), textB = b.text.toLowerCase();
+                    if (textA < textB) //sort string ascending
+                      return -1;
+                    if (textA > textB)
+                      return 1;
+                    return 0; //default return value (no sorting)
+                  });
+
+                  /*
+                   * Below logic find the start and end point
+                   * to replace the selected auto complete suggestion.
+                   */
+                  var token = self.editor.getTokenAt(cur), start, end, search;
+                  if (token.end > cur.ch) {
+                    token.end = cur.ch;
+                    token.string = token.string.slice(0, cur.ch - token.start);
+                  }
+
+                  if (token.string.match(/^[.`\w@]\w*$/)) {
+                    search = token.string;
+                    start = token.start;
+                    end = token.end;
+                  } else {
+                    start = end = cur.ch;
+                    search = "";
+                  }
+
+                  /*
+                   * Added 1 in the start position if search string
+                   * started with "." or "`" else auto complete of code mirror
+                   * will remove the "." when user select any suggestion.
+                   */
+                  if (search.charAt(0) == "." || search.charAt(0) == "``")
+                    start += 1;
+
+                  cb({
+                    list: result,
+                    from: {line: self.current_line, ch: start },
+                    to: { line: self.current_line, ch: end }
+                  });
+                }
               });
-
-              // Sort function to sort the suggestion's alphabetically.
-              result.sort(function(a, b){
-                var textA = a.text.toLowerCase(), textB = b.text.toLowerCase()
-                if (textA < textB) //sort string ascending
-                    return -1
-                if (textA > textB)
-                    return 1
-                return 0 //default return value (no sorting)
-              })
-            }
-          });
-
-          /* Below logic find the start and end point
-           * to replace the selected auto complete suggestion.
-           */
-          var token = editor.getTokenAt(cur), start, end, search;
-          if (token.end > cur.ch) {
-            token.end = cur.ch;
-            token.string = token.string.slice(0, cur.ch - token.start);
-          }
-
-          if (token.string.match(/^[.`\w@]\w*$/)) {
-            search = token.string;
-            start = token.start;
-            end = token.end;
-          } else {
-            start = end = cur.ch;
-            search = "";
-          }
-
-          /* Added 1 in the start position if search string
-           * started with "." or "`" else auto complete of code mirror
-           * will remove the "." when user select any suggestion.
-           */
-          if (search.charAt(0) == "." || search.charAt(0) == "``")
-            start += 1;
-
-          return {list: result, from: {line: current_line, ch: start }, to: { line: current_line, ch: end }};
+            }.bind(ctx)
+          };
         });
       },
 
@@ -778,12 +811,18 @@ define(
 
         // Resize SlickGrid when window resize
         $( window ).resize( function() {
-          self.grid_resize(grid);
+          // Resize grid only when 'Data Output' panel is visible.
+          if(self.data_output_panel.isVisible()) {
+            self.grid_resize(grid);
+          }
         });
 
         // Resize SlickGrid when output Panel resize
         self.data_output_panel.on(wcDocker.EVENT.RESIZE_ENDED, function() {
-          self.grid_resize(grid);
+          // Resize grid only when 'Data Output' panel is visible.
+          if(self.data_output_panel.isVisible()) {
+            self.grid_resize(grid);
+          }
         });
 
         // Resize SlickGrid when output Panel gets focus
@@ -797,7 +836,7 @@ define(
       /* This function is responsible to render output grid */
       grid_resize: function(grid) {
         var h = $($('#editor-panel').find('.wcFrame')[1]).height() - 35;
-        $('#datagrid').css({'height':h+'px'});
+        $('#datagrid').css({'height': h + 'px'});
         grid.resizeCanvas();
       },
 
@@ -1722,53 +1761,82 @@ define(
           }
 
           // Fetch the columns metadata
-          self.columns = self._fetch_column_metadata(data);
+          self._fetch_column_metadata.call(
+            self, data, function() {
+              var self = this;
 
-          self.trigger(
-            'pgadmin-sqleditor:loading-icon:message',
-            '{{ _('Loading data from the database server and rendering...') }}',
-            self
+              self.trigger(
+                'pgadmin-sqleditor:loading-icon:message',
+                '{{ _('Loading data from the database server and rendering...') }}',
+                self
+              );
+
+              // Show message in message and history tab in case of query tool
+              self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
+              self.update_msg_history(true, "", false);
+              var msg1 = S('{{ _('Total query runtime: %s.') }}').sprintf(self.total_time).value();
+              var msg2 = S('{{ _('%s rows retrieved.') }}').sprintf(self.rows_affected).value();
+
+              // Display the notifier if the timeout is set to >= 0
+              if (self.info_notifier_timeout >= 0) {
+                alertify.success(msg1 + '<br />' + msg2, self.info_notifier_timeout);
+              }
+
+              $('.sql-editor-message').text(msg1 + '\n' + msg2);
+
+                /* Add the data to the collection and render the grid.
+                 * In case of Explain draw the graph on explain panel
+                 * and add json formatted data to collection and render.
+                 */
+              var explain_data_array = [];
+              if(
+                data.result && data.result.length > 1 &&
+                  data.result[0] && data.result[0].hasOwnProperty(
+                    'QUERY PLAN'
+                  ) && _.isObject(data.result[0]['QUERY PLAN'])
+              ) {
+                var explain_data = {'QUERY PLAN' : JSON.stringify(data.result[0]['QUERY PLAN'], null, 2)};
+                explain_data_array.push(explain_data);
+                // Make sure - the 'Data Output' panel is visible, before - we
+                // start rendering the grid.
+                self.gridView.data_output_panel.focus();
+                setTimeout(
+                  function() {
+                    self.gridView.render_grid(
+                      explain_data_array, self.columns, self.can_edit
+                    );
+                    // Make sure - the 'Explain' panel is visible, before - we
+                    // start rendering the grid.
+                    self.gridView.explain_panel.focus();
+                    pgExplain.DrawJSONPlan(
+                      $('.sql-editor-explain'), data.result[0]['QUERY PLAN']
+                    );
+                  }, 10
+                );
+              } else {
+                // Make sure - the 'Data Output' panel is visible, before - we
+                // start rendering the grid.
+                self.gridView.data_output_panel.focus();
+                setTimeout(
+                  function() {
+                    self.gridView.render_grid(data.result, self.columns, self.can_edit);
+                  }, 10
+                );
+              }
+
+              // Hide the loading icon
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              $("#btn-flash").prop('disabled', false);
+            }.bind(self),
+            function() {
+              this.trigger('pgadmin-sqleditor:loading-icon:hide');
+              $("#btn-flash").prop('disabled', false);
+            }.bind(self)
           );
-
-          // Show message in message and history tab in case of query tool
-          self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-          self.update_msg_history(true, "", false);
-          var msg1 = S('{{ _('Total query runtime: %s.') }}').sprintf(self.total_time).value();
-          var msg2 = S('{{ _('%s rows retrieved.') }}').sprintf(self.rows_affected).value();
-
-          // Display the notifier if the timeout is set to >= 0
-          if (self.info_notifier_timeout >= 0) {
-              alertify.success(msg1 + '<br />' + msg2, self.info_notifier_timeout);
-          }
-
-          $('.sql-editor-message').text(msg1 + '\n' + msg2);
-
-          /* Add the data to the collection and render the grid.
-           * In case of Explain draw the graph on explain panel
-           * and add json formatted data to collection and render.
-           */
-          var explain_data_array = [];
-          if(data.result &&
-              data.result[0] && data.result[0].hasOwnProperty('QUERY PLAN') &&
-              _.isObject(data.result[0]['QUERY PLAN'])) {
-              var explain_data = {'QUERY PLAN' : JSON.stringify(data.result[0]['QUERY PLAN'], null, 2)};
-              explain_data_array.push(explain_data);
-              self.gridView.explain_panel.focus();
-              pgExplain.DrawJSONPlan($('.sql-editor-explain'), data.result[0]['QUERY PLAN']);
-              self.gridView.render_grid(explain_data_array, self.columns, self.can_edit);
-          }
-          else {
-            self.gridView.render_grid(data.result, self.columns, self.can_edit);
-            self.gridView.data_output_panel.focus();
-          }
-
-          // Hide the loading icon
-          self.trigger('pgadmin-sqleditor:loading-icon:hide');
-          $("#btn-flash").prop('disabled', false);
         },
 
         // This function creates the columns as required by the backgrid
-        _fetch_column_metadata: function(data) {
+        _fetch_column_metadata: function(data, cb, _fail) {
           var colinfo = data.colinfo,
               primary_keys = data.primary_keys,
               result = data.result,
@@ -1784,7 +1852,6 @@ define(
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "fetch/types/" + self.transId,
             method: 'GET',
-            async: false,
             success: function(res) {
               if (res.data.status) {
                 // Store pg_types in an array
@@ -1868,10 +1935,13 @@ define(
               else {
                alertify.alert('Fetching Type Error', res.data.result);
               }
-            }
+              self.columns = columns;
+              if (cb && typeof(cb) == 'function') {
+                cb();
+              }
+            },
+            fail: _fail
           });
-
-          return columns;
         },
 
         // This function is used to raise appropriate message.
@@ -2060,16 +2130,21 @@ define(
           }
 
           if (save_data) {
+
+            self.trigger(
+              'pgadmin-sqleditor:loading-icon:show',
+              '{{ _('Saving the updated data...') }}'
+            );
+
             // Make ajax call to save the data
             $.ajax({
               url: "{{ url_for('sqleditor.index') }}" + "save/" + self.transId,
               method: 'POST',
-              async: false,
               contentType: "application/json",
               data: JSON.stringify(self.data_store),
               success: function(res) {
                 var grid = self.slickgrid,
-                  data = grid.getData();;
+                  data = grid.getData();
                 if (res.data.status) {
                     // Remove deleted rows from client as well
                     if(is_deleted) {
@@ -2100,7 +2175,6 @@ define(
                     $('.sql-editor-message').html('');
                 } else {
                   // Something went wrong while saving data on the db server
-                  self.trigger('pgadmin-sqleditor:loading-icon:hide');
                   $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
                   var err_msg = S('{{ _('%s.') }}').sprintf(res.data.result).value();
@@ -2126,11 +2200,13 @@ define(
                     'query': r.sql, 'row_affected': r.rows_affected,
                     'total_time': self.total_time, 'message': r.result
                   });
+                  self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 });
 
                 grid.invalidate();
               },
               error: function(e) {
+                self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 if (e.readyState == 0) {
                   self.update_msg_history(false,
                     '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
@@ -2228,17 +2304,20 @@ define(
 
         // read file data and return as response
         _select_file_handler: function(e) {
-          var self = this;
+          var self = this,
+              data = {
+                'file_name': e
+              };
 
-          data = {
-            'file_name': e
-          }
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Loading the file...') }}'
+          );
 
           // Make ajax call to load the data from file
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "load_file/",
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(data),
             success: function(res) {
@@ -2247,10 +2326,12 @@ define(
                 self.gridView.current_file = e;
                 self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
               }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
             },
             error: function(e) {
               var errmsg = $.parseJSON(e.responseText).errormsg;
               alertify.error(errmsg);
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
             }
           });
         },
@@ -2262,12 +2343,15 @@ define(
             'file_name': e,
             'file_content': self.gridView.query_tool_obj.getValue()
           }
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Saving the queries in the file...') }}'
+          );
 
           // Make ajax call to save the data to file
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "save_file/",
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(data),
             success: function(res) {
@@ -2279,11 +2363,18 @@ define(
                 $("#btn-save").prop('disabled', true);
                 $("#btn-file-menu-save").css('display', 'none');
               }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
             },
             error: function(e) {
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+
               var errmsg = $.parseJSON(e.responseText).errormsg;
-              alertify.error(errmsg);
-            }
+              setTimeout(
+                function() {
+                  alertify.error(errmsg);
+                }, 10
+              );
+            },
           });
         },
 
@@ -2323,6 +2414,10 @@ define(
         _show_filter: function() {
           var self = this;
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Loading the existing filter options...') }}'
+          );
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/get/" + self.transId,
             method: 'GET',
@@ -2338,23 +2433,32 @@ define(
                   self.gridView.filter_obj.setValue(res.data.result);
               }
               else {
-                alertify.alert('Get Filter Error', res.data.result);
+                self.trigger('pgadmin-sqleditor:loading-icon:hide');
+                setTimeout(
+                  function() {
+                    alertify.alert('Get Filter Error', res.data.result);
+                  }, 10
+                );
               }
             },
             error: function(e) {
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+
+              var msg;
               if (e.readyState == 0) {
-                alertify.alert('Get Filter Error',
+                msg =
                   '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
-
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
+              } else {
+                msg = e.responseText;
+                if (e.responseJSON != undefined &&
                   e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
-
-              alertify.alert('Get Filter Error', msg);
+                  msg = e.responseJSON.errormsg;
+              }
+              setTimeout(
+                function() {
+                  alertify.alert('Get Filter Error', msg);
+                }, 10
+              );
             }
           });
         },
@@ -2381,36 +2485,50 @@ define(
           // Add column name and it's' value to data
           data[column_info.field] = _values[column_info.field] || '';
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Applying the new filter...') }}'
+          );
+
           // Make ajax call to include the filter by selection
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/inclusive/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(data),
             success: function(res) {
-              if (res.data.status) {
-                // Refresh the sql grid
-                self._refresh();
-              }
-              else {
-                alertify.alert('Filter By Selection Error', res.data.result);
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (res.data.status) {
+                    // Refresh the sql grid
+                    self._refresh();
+                  }
+                  else {
+                    alertify.alert('Filter By Selection Error', res.data.result);
+                  }
+                }
+              );
             },
             error: function(e) {
-              if (e.readyState == 0) {
-                alertify.alert('Filter By Selection Error',
-                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (e.readyState == 0) {
+                    alertify.alert('Filter By Selection Error',
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                    );
+                    return;
+                  }
 
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+                  var msg = e.responseText;
+                  if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                    msg = e.responseJSON.errormsg;
 
-              alertify.alert('Filter By Selection Error', msg);
+                  alertify.alert('Filter By Selection Error', msg);
+                }, 10
+              );
             }
           });
         },
@@ -2437,36 +2555,51 @@ define(
           // Add column name and it's' value to data
           data[column_info.field] = _values[column_info.field] || '';
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Applying the new filter...') }}'
+          );
+
           // Make ajax call to exclude the filter by selection.
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/exclusive/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(data),
             success: function(res) {
-              if (res.data.status) {
-                // Refresh the sql grid
-                self._refresh();
-              }
-              else {
-                alertify.alert('Filter Exclude Selection Error', res.data.result);
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (res.data.status) {
+                    // Refresh the sql grid
+                    self._refresh();
+                  }
+                  else {
+                    alertify.alert('Filter Exclude Selection Error', res.data.result);
+                  }
+                }, 10
+              );
             },
             error: function(e) {
-              if (e.readyState == 0) {
-                alertify.alert('Filter Exclude Selection Error',
-                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+              setTimeout(
+                function() {
+                  if (e.readyState == 0) {
+                    alertify.alert('Filter Exclude Selection Error',
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                    );
+                    return;
+                  }
 
-              alertify.alert('Filter Exclude Selection Error', msg);
+                  var msg = e.responseText;
+                  if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                    msg = e.responseJSON.errormsg;
+
+                  alertify.alert('Filter Exclude Selection Error', msg);
+                }, 10
+              );
             }
           });
         },
@@ -2475,34 +2608,48 @@ define(
         _remove_filter: function () {
           var self = this;
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Removing the filter...') }}'
+          );
+
           // Make ajax call to exclude the filter by selection.
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/remove/" + self.transId,
             method: 'POST',
-            async: false,
             success: function(res) {
-              if (res.data.status) {
-                // Refresh the sql grid
-                self._refresh();
-              }
-              else {
-                alertify.alert('Remove Filter Error', res.data.result);
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (res.data.status) {
+                    // Refresh the sql grid
+                    self._refresh();
+                  }
+                  else {
+                    alertify.alert('Remove Filter Error', res.data.result);
+                  }
+                }
+              );
             },
             error: function(e) {
-              if (e.readyState == 0) {
-                alertify.alert('Remove Filter Error',
-                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (e.readyState == 0) {
+                    alertify.alert('Remove Filter Error',
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                    );
+                    return;
+                  }
 
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+                  var msg = e.responseText;
+                  if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                    msg = e.responseJSON.errormsg;
 
-              alertify.alert('Remove Filter Error', msg);
+                  alertify.alert('Remove Filter Error', msg);
+                }
+              );
             }
           });
         },
@@ -2512,38 +2659,52 @@ define(
           var self = this;
               sql = self.gridView.filter_obj.getValue();
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Applying the filter...') }}'
+          );
+
           // Make ajax call to include the filter by selection
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/apply/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(sql),
             success: function(res) {
-              if (res.data.status) {
-                $('#filter').addClass('hidden');
-                $('#editor-panel').removeClass('sql-editor-busy-fetching');
-                // Refresh the sql grid
-                self._refresh();
-              }
-              else {
-                alertify.alert('Apply Filter Error',res.data.result);
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (res.data.status) {
+                    $('#filter').addClass('hidden');
+                    $('#editor-panel').removeClass('sql-editor-busy-fetching');
+                    // Refresh the sql grid
+                    self._refresh();
+                  }
+                  else {
+                    alertify.alert('Apply Filter Error',res.data.result);
+                  }
+                }, 10
+              );
             },
             error: function(e) {
-              if (e.readyState == 0) {
-                alertify.alert('Apply Filter Error',
-                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (e.readyState == 0) {
+                    alertify.alert('Apply Filter Error',
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                    );
+                    return;
+                  }
 
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+                  var msg = e.responseText;
+                  if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                    msg = e.responseJSON.errormsg;
 
-              alertify.alert('Apply Filter Error', msg);
+                  alertify.alert('Apply Filter Error', msg);
+                }, 10
+              );
             }
           });
         },
@@ -2703,35 +2864,48 @@ define(
           var self = this;
               limit = parseInt($(".limit").val());
 
+          self.trigger(
+            'pgadmin-sqleditor:loading-icon:show',
+            '{{ _('Setting the limit on the result...') }}'
+          );
           // Make ajax call to change the limit
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "limit/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(limit),
             success: function(res) {
-              if (res.data.status) {
-                // Refresh the sql grid
-                self._refresh();
-              }
-              else
-                alertify.alert('Change limit Error', res.data.result);
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (res.data.status) {
+                    // Refresh the sql grid
+                    self._refresh();
+                  }
+                  else
+                    alertify.alert('Change limit Error', res.data.result);
+                }, 10
+              );
             },
             error: function(e) {
-              if (e.readyState == 0) {
-                alertify.alert('Change limit Error',
-                  '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
-                );
-                return;
-              }
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              setTimeout(
+                function() {
+                  if (e.readyState == 0) {
+                    alertify.alert('Change limit Error',
+                      '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
+                    );
+                    return;
+                  }
 
-              var msg = e.responseText;
-              if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
-                msg = e.responseJSON.errormsg;
+                  var msg = e.responseText;
+                  if (e.responseJSON != undefined &&
+                    e.responseJSON.errormsg != undefined)
+                    msg = e.responseJSON.errormsg;
 
-              alertify.alert('Change limit Error', msg);
+                  alertify.alert('Change limit Error', msg);
+                }, 10
+              );
             }
           });
         },
@@ -2784,7 +2958,6 @@ define(
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "query_tool/start/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(sql),
             success: function(res) {
@@ -2911,7 +3084,6 @@ define(
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "cancel/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             success: function(res) {
               if (res.data.status) {
@@ -2985,13 +3157,11 @@ define(
                 alertify.alert('Get Object Name Error', msg);
               }
             });
-           }
-           else {
+           } else {
             var cur_time = new Date();
             var filename = 'data-' + cur_time.getTime() + '.csv';
             self._trigger_csv_download(sql, filename);
            }
-
         },
         // Trigger query result download to csv.
         _trigger_csv_download: function(query, filename) {
@@ -3018,7 +3188,6 @@ define(
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "auto_rollback/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(auto_rollback),
             success: function(res) {
@@ -3058,7 +3227,6 @@ define(
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "auto_commit/" + self.transId,
             method: 'POST',
-            async: false,
             contentType: "application/json",
             data: JSON.stringify(auto_commit),
             success: function(res) {
@@ -3267,12 +3435,52 @@ define(
               explain_buffers = false,
               explain_timing = false,
               auto_commit = true,
-              auto_rollback = false;
+              auto_rollback = false,
+              updateUI = function() {
+                // Set Auto-commit and auto-rollback on query editor
+                if (auto_commit &&
+                  $('.auto-commit').hasClass('visibility-hidden') === true)
+                  $('.auto-commit').removeClass('visibility-hidden');
+                else {
+                  $('.auto-commit').addClass('visibility-hidden');
+                }
+                if (auto_rollback &&
+                  $('.auto-rollback').hasClass('visibility-hidden') === true)
+                  $('.auto-rollback').removeClass('visibility-hidden');
+                else {
+                  $('.auto-rollback').addClass('visibility-hidden');
+                }
+
+                // Set explain options on query editor
+                if (explain_verbose &&
+                  $('.explain-verbose').hasClass('visibility-hidden') === true)
+                  $('.explain-verbose').removeClass('visibility-hidden');
+                else {
+                  $('.explain-verbose').addClass('visibility-hidden');
+                }
+                if (explain_costs &&
+                  $('.explain-costs').hasClass('visibility-hidden') === true)
+                  $('.explain-costs').removeClass('visibility-hidden');
+                else {
+                  $('.explain-costs').addClass('visibility-hidden');
+                }
+                if (explain_buffers &&
+                  $('.explain-buffers').hasClass('visibility-hidden') === true)
+                  $('.explain-buffers').removeClass('visibility-hidden');
+                else {
+                  $('.explain-buffers').addClass('visibility-hidden');
+                }
+                if (explain_timing &&
+                  $('.explain-timing').hasClass('visibility-hidden') === true)
+                  $('.explain-timing').removeClass('visibility-hidden');
+                else {
+                  $('.explain-timing').addClass('visibility-hidden');
+                }
+              };
 
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
             method: 'GET',
-            async: false,
             success: function(res) {
               if (res.data) {
                 explain_verbose = res.data.explain_verbose;
@@ -3281,54 +3489,17 @@ define(
                 explain_timing = res.data.explain_timing;
                 auto_commit = res.data.auto_commit;
                 auto_rollback = res.data.auto_rollback;
+
+                updateUI();
               }
             },
             error: function(e) {
+              updateUI();
               alertify.alert('Get Preferences error',
                 '{{ _('Error occurred while getting query tool options ') }}'
               );
             }
           });
-
-          // Set Auto-commit and auto-rollback on query editor
-          if (auto_commit &&
-              $('.auto-commit').hasClass('visibility-hidden') === true)
-            $('.auto-commit').removeClass('visibility-hidden');
-          else {
-            $('.auto-commit').addClass('visibility-hidden');
-          }
-          if (auto_rollback &&
-              $('.auto-rollback').hasClass('visibility-hidden') === true)
-            $('.auto-rollback').removeClass('visibility-hidden');
-          else {
-            $('.auto-rollback').addClass('visibility-hidden');
-          }
-
-          // Set explain options on query editor
-          if (explain_verbose &&
-              $('.explain-verbose').hasClass('visibility-hidden') === true)
-            $('.explain-verbose').removeClass('visibility-hidden');
-          else {
-            $('.explain-verbose').addClass('visibility-hidden');
-          }
-          if (explain_costs &&
-              $('.explain-costs').hasClass('visibility-hidden') === true)
-            $('.explain-costs').removeClass('visibility-hidden');
-          else {
-            $('.explain-costs').addClass('visibility-hidden');
-          }
-          if (explain_buffers &&
-              $('.explain-buffers').hasClass('visibility-hidden') === true)
-            $('.explain-buffers').removeClass('visibility-hidden');
-          else {
-            $('.explain-buffers').addClass('visibility-hidden');
-          }
-          if (explain_timing &&
-            $('.explain-timing').hasClass('visibility-hidden') === true)
-            $('.explain-timing').removeClass('visibility-hidden');
-          else {
-            $('.explain-timing').addClass('visibility-hidden');
-          }
         }
       }
     );

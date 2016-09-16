@@ -73,6 +73,10 @@
                   name: 'codemirror',
                   location: '{{ url_for('static', filename='js/codemirror')}}',
                   main: 'lib/codemirror'
+                },{
+                  name: 'slickgrid',
+                  location: '{{ url_for('static', filename='js/slickgrid')}}',
+                  main: 'slick.core'
                 }],
                 shim: {
                     "backbone": {
@@ -119,16 +123,21 @@
                     "pgadmin.backform": {
                         "deps": ['backform', "pgadmin.backgrid", "select2"],
                     },
+                    "jquery.event.drag": {
+                        "deps": ['jquery'], "exports": 'jQuery.fn.drag'
+                    },
+                    "jquery.ui": {"deps": ['jquery']},
                     "slickgrid": {
-                        "deps": ['jquery', "jquery.ui", "jquery.event.drag", "slick.core",
-                                    "slick.cellrangedecorator", "slick.cellrangeselector",
-                                    "slick.cellselectionmodel", "slick.formatters",
-                                    "slick.pgadmin.formatters", "slick.editors",
-                                    "slick.pgadmin.editors", "slick.tooltip",
-                                    "slick.checkboxselectcolumn", "slick.cellcopymanager",
-                                    "slick.rowselectionmodel"
-                                    ],
+                        "deps": [
+                            'jquery', "jquery.ui", "jquery.event.drag"
+                        ],
                         "exports": 'Slick'
+                    },
+                    "slickgrid/slick.grid": {
+                        "deps": [
+                            'jquery', "jquery.ui", "jquery.event.drag", "slickgrid"
+                        ],
+                        "exports": 'Slick.Grid'
                     },
                     "flotr2": {
                         deps: ['bean'],
@@ -166,20 +175,7 @@
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
                     "jquery.event.drag": "{{ url_for('static', filename='js/jquery-ui/jquery.event.drag-2.2') }}",
-                    "slickgrid": "{{ url_for('static', filename='js/slickgrid/slick.grid') }}",
-                    "slick.core": "{{ url_for('static', filename='js/slickgrid/slick.core') }}",
-                    "slick.formatters": "{{ url_for('static', filename='js/slickgrid/slick.formatters') }}",
-                    "slick.pgadmin.formatters": "{{ url_for('static', filename='js/slickgrid/slick.pgadmin.formatters') }}",
-                    "slick.editors": "{{ url_for('static', filename='js/slickgrid/slick.editors') }}",
-                    "slick.pgadmin.editors": "{{ url_for('static', filename='js/slickgrid/slick.pgadmin.editors') }}",
                     "jquery.ui": "{{ url_for('static', filename='js/jquery-ui/jquery-ui-1.11.3' if config.DEBUG else 'js/jquery-ui/jquery-ui-1.11.3.min') }}",
-                    "slick.cellrangedecorator": "{{ url_for('static', filename='js/slickgrid/plugins/slick.cellrangedecorator') }}",
-                    "slick.cellrangeselector": "{{ url_for('static', filename='js/slickgrid/plugins/slick.cellrangeselector') }}",
-                    "slick.cellselectionmodel": "{{ url_for('static', filename='js/slickgrid/plugins/slick.cellselectionmodel') }}",
-                    "slick.tooltip": "{{ url_for('static', filename='js/slickgrid/plugins/slick.autotooltips') }}",
-                    "slick.checkboxselectcolumn": "{{ url_for('static', filename='js/slickgrid/plugins/slick.checkboxselectcolumn') }}",
-                    "slick.cellcopymanager": "{{ url_for('static', filename='js/slickgrid/plugins/slick.cellcopymanager') }}",
-                    "slick.rowselectionmodel": "{{ url_for('static', filename='js/slickgrid/plugins/slick.rowselectionmodel') }}",
                     bean :"{{ url_for('static', filename='js/flotr2/' + ('bean' if config.DEBUG else 'bean-min')) }}",
                     flotr2 :"{{ url_for('static', filename='js/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
