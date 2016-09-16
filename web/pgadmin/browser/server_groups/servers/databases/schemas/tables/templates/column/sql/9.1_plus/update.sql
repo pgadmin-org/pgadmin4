@@ -8,13 +8,12 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Alter column type and collation ###}
-{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen and data.attlen != o_data.attlen) or (data.attprecision and data.attprecision != o_data.attprecision) %}
+{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen and data.attlen != o_data.attlen) or (data.attprecision or data.attprecision != o_data.attprecision) %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {% if data.cltype %}{{conn|qtTypeIdent(data.cltype)}} {% else %}{{conn|qtTypeIdent(o_data.cltype)}} {% endif %}
-{% if data.attlen %}({{data.attlen}}{% elif not data.cltype %}({{o_data.attlen}}{% endif %}{% if data.attprecision%}, {{data.attprecision}}){% elif not data.cltype %}, {{o_data.attprecision}}){% elif data.attlen %}){% endif %}{% if data.hasSqrBracket %}
+{% if data.attlen and data.attlen != 'None' %}({{data.attlen}}{% if data.attlen != 'None' and data.attprecision %}, {{data.attprecision}}){% elif (data.cltype is defined and not data.cltype) %}, {{o_data.attprecision}}){% elif data.attlen %}){% endif %}{% endif %}{% if data.hasSqrBracket %}
 []{% endif %}{% if data.collspcname and data.collspcname != o_data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %};
-
 {% endif %}
 {###  Alter column default value ###}
 {% if data.defval and data.defval != o_data.defval %}
