@@ -2149,12 +2149,20 @@ define(
                     // Remove deleted rows from client as well
                     if(is_deleted) {
                       var rows = grid.getSelectedRows();
-                      // Reverse the deletion from array
-                      // so that when we remove it does not affect index
-                      rows = rows.sort().reverse();
-                      rows.forEach(function(idx) {
-                        data.splice(idx, 1);
-                      });
+                      /* In JavaScript sorting by default is lexical,
+                       * To make sorting numerical we need to pass function
+                       * After that we will Reverse the order of sorted array
+                       * so that when we remove it does not affect array index
+                       */
+                      if(data.length == rows.length) {
+                        // This means all the rows are selected, clear all data
+                        data = [];
+                      } else {
+                        rows = rows.sort(function(a,b){return a - b}).reverse();
+                        rows.forEach(function(idx) {
+                          data.splice(idx, 1);
+                        });
+                      }
                       grid.setData(data, true);
                       grid.setSelectedRows([]);
                     }

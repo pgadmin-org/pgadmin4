@@ -465,14 +465,27 @@ class TableCommand(GridCommand):
 
                 # For deleted rows
                 elif of_type == 'deleted':
+                    is_first = True
+                    rows_to_delete = []
+                    keys = None
+                    no_of_keys = None
                     for each_row in changed_data[of_type]:
-                        data = changed_data[of_type][each_row]
-                        sql = render_template("/".join([self.sql_path, 'delete.sql']),
-                                              data=data,
-                                              object_name=self.object_name,
-                                              nsp_name=self.nsp_name)
-                        list_of_sql.append(sql)
-                        list_of_rowid.append(data)
+                        rows_to_delete.append(changed_data[of_type][each_row])
+                        # Fetch the keys for SQL generation
+                        if is_first:
+                            # We need to covert dict_keys to normal list in Python3
+                            # In Python2, it's already a list
+                            keys = list(changed_data[of_type][each_row].keys())
+                            no_of_keys = len(keys)
+                            is_first = False
+
+                    sql = render_template("/".join([self.sql_path, 'delete.sql']),
+                                          data=rows_to_delete,
+                                          primary_key_labels=keys,
+                                          no_of_keys=no_of_keys,
+                                          object_name=self.object_name,
+                                          nsp_name=self.nsp_name)
+                    list_of_sql.append(sql)
 
             for i, sql in enumerate(list_of_sql):
                 if sql:
