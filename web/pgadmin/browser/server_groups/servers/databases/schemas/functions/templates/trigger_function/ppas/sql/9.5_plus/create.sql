@@ -25,7 +25,7 @@ CREATE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
 $BODY$
-{{ data.prosrc }};
+{{ data.prosrc }}
 $BODY${% endif -%};
 {% if data.funcowner %}
 
