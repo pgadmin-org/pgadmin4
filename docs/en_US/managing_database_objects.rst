@@ -6,7 +6,7 @@ Managing Database Objects
 
 pgAdmin 4 provides simple but powerful dialogs that you can use to design and create database objects.  Each dialog contains a series of tabs that you use to describe the object that will be created by the dialog; the SQL tab displays the SQL command that the server will execute when creating the object.
 
-To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new database, right-click on the *Casts* node, and select *Create Cast...*
+To access a dialog that allows you to create a database object, right-click on the object type in the pgAdmin tree control, and select the *Create* option for that object.  For example, to create a new cast, right-click on the *Casts* node, and select *Create Cast...*
 
 Contents:
 
@@ -26,10 +26,13 @@ Contents:
    fts_parser_dialog
    fts_template_dialog
    function_dialog
+   language_dialog
    materialized_view_dialog
+   package_dialog
    procedure_dialog
    schema_dialog
    sequence_dialog
+   synonym_dialog
    trigger_function_dialog
    type_dialog
    user_mapping_dialog

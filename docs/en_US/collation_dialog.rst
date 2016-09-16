@@ -12,7 +12,7 @@ The *Collation* dialog organizes the development of a collation through the foll
 
 Use the fields in the *General* tab to identify the collation:
 
-* Use the *Name* field to add a name for the collation. The collation name must be unique within a schema. The name will be displayed in the *pgAdmin* tree control.
+* Use the *Name* field to provide a name for the collation. The collation name must be unique within a schema. The name will be displayed in the *pgAdmin* tree control.
 * Select the name of the owner from the drop-down listbox in the *Owner* field. 
 * Select the name of the schema in which the collation will reside from the drop-down listbox in the *Schema* field.
 * Store notes about the collation in the *Comment* field.

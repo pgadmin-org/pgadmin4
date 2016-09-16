@@ -12,7 +12,8 @@ The *Check* dialog organizes the development of a check constraint through the *
 
 Use the fields in the *General* tab to identify the check constraint:
 
-* Use the *Name* field to add a descriptive name for the check constraint. The name will be displayed in the *pgAdmin* tree control. With PostgreSQL 9.5 forward, when a table has multiple check constraints, they will be tested for each row in alphabetical order by name and after NOT NULL constraints. 
+* Use the *Name* field to provide a descriptive name for the check constraint that will be displayed in the *pgAdmin* tree control. With PostgreSQL 9.5 forward, when a table has multiple check constraints, they will be tested for each row in alphabetical order by name and after NOT NULL constraints.
+* Store notes about the check constraint in the *Comment* field. 
 
 Click the *Definition* tab to continue.
 
