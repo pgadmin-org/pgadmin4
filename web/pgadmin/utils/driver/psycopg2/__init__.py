@@ -1735,7 +1735,7 @@ class Driver(BaseDriver):
         for sess in self.managers:
             sess_mgr = self.managers[sess]
 
-            if sess == session['_id']:
+            if sess == session.get('_id'):
                 sess_mgr['pinged'] = curr_time
                 continue
 
