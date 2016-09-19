@@ -33,11 +33,12 @@ if sys.path[0] != root:
 from pgadmin import create_app
 import config
 import test_setup
+import regression
 
 # Execute setup.py if test SQLite database doesn't exist.
 if os.path.isfile(config.TEST_SQLITE_PATH):
-    print("The configuration database already exists at '%s'. "
-          "Please remove the database and re-run the test suite." %
+    print("The configuration database already existed at '%s'. "
+          "Please remove the database and again run the test suite." %
           config.TEST_SQLITE_PATH)
     sys.exit(1)
 else:
@@ -151,6 +152,26 @@ def sig_handler(signo, frame):
     test_utils.drop_objects()
 
 
+def get_tests_result(tests):
+    """This function returns the total ran and total failed test cases count"""
+    total_ran = tests.testsRun
+    failed_cases_result = []
+    if total_ran:
+        if tests.failures:
+            for failed_case in tests.failures:
+                class_name = str(failed_case[0]).split('.')[-1].split()[0].\
+                    strip(')')
+                failed_cases_result.append(class_name)
+        if tests.errors:
+            for error_case in tests.errors:
+                class_name = str(error_case[0]).split('.')[-1].split()[0].\
+                    strip(')')
+                if class_name not in failed_cases_result:
+                    failed_cases_result.append(class_name)
+
+    return total_ran, failed_cases_result
+
+
 class StreamToLogger(object):
     def __init__(self, logger, log_level=logging.INFO):
         self.terminal = sys.stderr
@@ -176,6 +197,7 @@ class StreamToLogger(object):
 
 
 if __name__ == '__main__':
+    test_result = dict()
     # Register cleanup function to cleanup on exit
     atexit.register(test_utils.drop_objects)
     # Set signal handler for cleanup
@@ -203,7 +225,9 @@ if __name__ == '__main__':
         for server in servers_info:
             print("\n=============Running the test cases for '%s'============="
                   % server['name'], file=sys.stderr)
+
             test_utils.create_test_server(server)
+
             # Login the test client
             test_utils.login_tester_account(test_client)
 
@@ -211,11 +235,28 @@ if __name__ == '__main__':
             tests = unittest.TextTestRunner(stream=sys.stderr,
                                             descriptions=True,
                                             verbosity=2).run(suite)
+
+            ran_tests, failed_cases = get_tests_result(tests)
+            test_result[server['name']] = [ran_tests, failed_cases]
+
             # Logout the test client
             test_utils.logout_tester_account(test_client)
 
-            test_utils.delete_test_server(server)
+            test_utils.delete_test_server()
     except SystemExit:
         test_utils.drop_objects()
 
-    print("Please check output in file: %s/regression.log " % CURRENT_PATH)
+    print("\nTest Result Summary", file=sys.stderr)
+    print("============================", file=sys.stderr)
+    for server_res in test_result:
+        failed_cases = "\n\t".join(test_result[server_res][1])
+        total_failed = len(test_result[server_res][1])
+        total_passed = int(test_result[server_res][0]) - total_failed
+
+        print("%s: %s test%s passed, %s test%s failed %s%s" %
+              (server_res, total_passed, (total_passed != 1 and "s" or ""),
+               total_failed, (total_failed != 1 and "s" or ""),
+               (total_failed != 0 and ":\n\t" or ""), failed_cases), file=sys.stderr)
+    print("============================", file=sys.stderr)
+
+    print("\nPlease check output in file: %s/regression.log " % CURRENT_PATH)

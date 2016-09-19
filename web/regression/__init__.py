@@ -28,5 +28,7 @@ node_info_dict = {
 global test_server_dict
 test_server_dict = {
         "server": [],
-        "database": []
+        "database": [],
+        "tablespace": [],
+        "role": []
 }

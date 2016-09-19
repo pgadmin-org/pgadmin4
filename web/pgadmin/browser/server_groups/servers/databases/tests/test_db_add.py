@@ -29,25 +29,29 @@ class DatabaseAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add database under 1st server of tree node. """
+        self.db_name = ''
         server_id = test_server_dict["server"][0]["server_id"]
-        server_utils.connect_server(self, server_id)
-
-        data = database_utils.get_db_data()
-        self.db_name = data['name']
-        response = self.tester.post(self.url + str(utils.SERVER_GROUP) +
-                                    "/" + str(server_id) + "/",
-                                    data=json.dumps(data),
-                                    content_type='html/json')
-        self.assertEquals(response.status_code, 200)
-        response_data = json.loads(response.data.decode('utf-8'))
-        db_id = response_data['node']['_id']
-        db_dict = {"db_id": db_id, "db_name": self.db_name}
-        utils.write_node_info(int(server_id), "did", db_dict)
+        server_response = server_utils.connect_server(self, server_id)
+        if server_response["info"] == "Server connected.":
+            db_owner = server_response['data']['user']['name']
+            self.data = database_utils.get_db_data(db_owner)
+            self.db_name = self.data['name']
+            response = self.tester.post(self.url + str(utils.SERVER_GROUP) +
+                                        "/" + str(server_id) + "/",
+                                        data=json.dumps(self.data),
+                                        content_type='html/json')
+            self.assertEquals(response.status_code, 200)
+            response_data = json.loads(response.data.decode('utf-8'))
+            db_id = response_data['node']['_id']
+            db_dict = {"db_id": db_id, "db_name": self.db_name}
+            utils.write_node_info(int(server_id), "did", db_dict)
+        else:
+            raise Exception("Error while connecting server to add the"
+                            " database.")
 
     def tearDown(self):
         """
-        This function delete the database from server added in SQLite and
-        clears the node_info_dict
+        This function delete the database from server added in SQLite.
         """
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
@@ -55,4 +59,3 @@ class DatabaseAddTestCase(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
-        utils.clear_node_info_dict()

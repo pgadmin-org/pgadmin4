@@ -6,6 +6,8 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+import uuid
+
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
 from regression import test_server_dict
@@ -19,9 +21,9 @@ class DatabaseDeleteTestCase(BaseTestGenerator):
         ('Check Databases Node URL', dict(url='/browser/database/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        cls.db_id = utils.create_database(cls.server, "test_db_delete")
+    def setUp(self):
+        self.db_name = "db_delete_%s" % str(uuid.uuid4())[1:4],
+        self.db_id = utils.create_database(self.server, self.db_name)
 
     def runTest(self):
         """ This function will delete the database."""
@@ -38,6 +40,11 @@ class DatabaseDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not connect to server to delete the "
                             "database.")
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    def tearDown(self):
+        """This function drop the added database"""
+        connection = utils.get_db_connection(self.server['db'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'])
+        utils.drop_database(connection, self.db_name)

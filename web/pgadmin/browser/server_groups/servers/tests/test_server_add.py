@@ -11,7 +11,6 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from . import utils as server_utils
 
 
 class ServersAddTestCase(BaseTestGenerator):
@@ -22,8 +21,7 @@ class ServersAddTestCase(BaseTestGenerator):
         ('Default Server Node url', dict(url='/browser/server/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         pass
 
     def runTest(self):
@@ -33,14 +31,9 @@ class ServersAddTestCase(BaseTestGenerator):
                                     content_type='html/json')
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
-        server_id = response_data['node']['_id']
-        utils.write_node_info(int(server_id), "sid", self.server)
+        self.server_id = response_data['node']['_id']
+        utils.write_node_info(int(self.server_id), "sid", self.server)
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function delete the server from SQLite & clears the node_info_dict
-        """
-        server_id = server_utils.get_server_id()
-        utils.delete_server(server_id)
-        utils.clear_node_info_dict()
+    def tearDown(self):
+        """This function delete the server from SQLite """
+        utils.delete_server(self.server_id)

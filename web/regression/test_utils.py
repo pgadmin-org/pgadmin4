@@ -10,18 +10,24 @@ from __future__ import print_function
 
 import os
 import sys
+import uuid
 import psycopg2
 import sqlite3
+
+import logging
+
 import config
 
 import test_setup
 import regression
 
 SERVER_GROUP = test_setup.config_data['server_group']
+logger = logging.getLogger(__name__)
+file_name = os.path.basename(__file__)
 
 
 def get_db_connection(db, username, password, host, port):
-    """This function retruns the connection object of psycopg"""
+    """This function returns the connection object of psycopg"""
     connection = psycopg2.connect(database=db,
                                   user=username,
                                   password=password,
@@ -71,7 +77,7 @@ def get_config_data():
     server_data = []
     for srv in test_setup.config_data['server_credentials']:
         data = {"name": srv['name'],
-                "comment": "",
+                "comment": srv['comment'],
                 "host": srv['host'],
                 "port": srv['db_port'],
                 "db": srv['maintenance_db'],
@@ -142,19 +148,22 @@ def create_database(server, db_name):
         raise Exception("Error while creating database. %s" % exception)
 
 
-def drop_database(connection, db_name):
+def drop_database(connection, database_name):
     """This function used to drop the database"""
-    try:
+
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("SELECT * FROM pg_database db WHERE db.datname='%s'"
+                      % database_name)
+    if pg_cursor.fetchall():
+        # Release pid if any process using database
+        pg_cursor.execute("select pg_terminate_backend(pid) from"
+                          " pg_stat_activity where datname='%s'" %
+                          database_name)
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
-        pg_cursor = connection.cursor()
-        pg_cursor.execute('''DROP DATABASE "%s"''' % db_name)
+        pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
-        connection.close()
-    except Exception as exception:
-        raise Exception("Exception while dropping the database. %s" %
-                        exception)
 
 
 def create_server(server):
@@ -181,116 +190,198 @@ def delete_server(sid):
     try:
         conn = sqlite3.connect(config.SQLITE_PATH)
         cur = conn.cursor()
-        servers = cur.execute('SELECT * FROM server WHERE id=%s' % sid)
-        servers_count = len(servers.fetchall())
+        server_objects = cur.execute('SELECT * FROM server WHERE id=%s' % sid)
+        servers_count = len(server_objects.fetchall())
         if servers_count:
             cur.execute('DELETE FROM server WHERE id=%s' % sid)
             conn.commit()
-        else:
-            print("No servers found to delete.", file=sys.stderr)
+        conn.close()
     except Exception as err:
         raise Exception("Error while deleting server %s" % err)
 
 
-def create_test_server(server):
-    """
-    This function create the test server which will act as parent server,
-    the other node will add under this server
-    :param server: server details
-    :type server: dict
-    :return: None
-    """
-    # Create the server
-    server_id = create_server(server)
-
-    # Create test database
-    test_db_name = "test_db"
-    db_id = create_database(server, test_db_name)
-
-    # Add server info to test_server_dict
-    regression.test_server_dict["server"].append({"server_id": server_id,
-                                                  "server": server})
-    regression.test_server_dict["database"].append({"server_id": server_id,
-                                                    "db_id": db_id,
-                                                    "db_name": test_db_name})
-
-
-def delete_test_server(server):
-    test_server_dict = regression.test_server_dict
-    if test_server_dict:
+def create_tablespace(server, test_tablespace_name):
+    try:
         connection = get_db_connection(server['db'],
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
                                        server['port'])
-        db_name = test_server_dict["database"][0]["db_name"]
-        drop_database(connection, db_name)
-        # Delete the server
-        server_id = test_server_dict['server'][0]["server_id"]
-        conn = sqlite3.connect(config.SQLITE_PATH)
-        cur = conn.cursor()
-        servers = cur.execute('SELECT * FROM server WHERE id=%s' % server_id)
-        servers_count = len(servers.fetchall())
-        if servers_count:
-            cur.execute('DELETE FROM server WHERE id=%s' % server_id)
-            conn.commit()
-            conn.close()
-            server_dict = regression.test_server_dict["server"]
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("CREATE TABLESPACE %s LOCATION '%s'" %
+                          (test_tablespace_name, server['tablespace_path']))
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
 
-            # Pop the server from dict if it's deleted
-            server_dict = [server_dict.pop(server_dict.index(item))
-                           for item in server_dict
-                           if str(server_id) == str(item["server_id"])]
+        # Get 'oid' from newly created tablespace
+        pg_cursor.execute(
+            "SELECT ts.oid from pg_tablespace ts WHERE ts.spcname='%s'" %
+            test_tablespace_name)
+        oid = pg_cursor.fetchone()
+        tspc_id = ''
+        if oid:
+            tspc_id = oid[0]
+        connection.close()
+        return tspc_id
+    except Exception as exception:
+        raise Exception("Error while creating tablespace. %s" % exception)
 
-            # Pop the db from dict if it's deleted
-            db_dict = regression.test_server_dict["database"]
-            db_dict = [db_dict.pop(db_dict.index(item)) for item in db_dict
-                       if server_id == item["server_id"]]
+
+def delete_tablespace(connection, test_tablespace_name):
+    try:
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("SELECT * FROM pg_tablespace ts WHERE"
+                          " ts.spcname='%s'" % test_tablespace_name)
+        tablespace_count = len(pg_cursor.fetchall())
+        if tablespace_count:
+            old_isolation_level = connection.isolation_level
+            connection.set_isolation_level(0)
+            pg_cursor.execute("DROP TABLESPACE %s" % test_tablespace_name)
+            connection.set_isolation_level(old_isolation_level)
+            connection.commit()
+        connection.close()
+    except Exception as exception:
+        exception = "%s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
+        raise Exception(exception)
+
+
+def create_test_server(server_info):
+    """
+    This function create the test server which will act as parent server,
+    the other node will add under this server
+    :param server_info: server details
+    :type server_info: dict
+    :return: None
+    """
+    # Create the server
+    srv_id = create_server(server_info)
+
+    # Create test database
+    test_db_name = "test_db_%s" % str(uuid.uuid4())[1:8]
+    db_id = create_database(server_info, test_db_name)
+
+    # TODO: Need to decide about test tablespace creation
+    # Create tablespace
+    # test_tablespace_name = "test_tablespace"
+    # tablespace_id = create_tablespace(server, test_tablespace_name)
+
+    # Add server info to test_server_dict
+    regression.test_server_dict["server"].append({"server_id": srv_id,
+                                                  "server": server_info})
+    regression.test_server_dict["database"].append({"server_id": srv_id,
+                                                    "db_id": db_id,
+                                                    "db_name": test_db_name})
+
+
+def delete_test_server():
+    test_server_dict = regression.test_server_dict
+    test_servers = test_server_dict["server"]
+    test_databases = test_server_dict["database"]
+    test_table_spaces = test_server_dict["tablespace"]
+    try:
+        for test_server in test_servers:
+            srv_id = test_server["server_id"]
+            servers_dict = test_server["server"]
+            for database in test_databases:
+                connection = get_db_connection(servers_dict['db'],
+                                               servers_dict['username'],
+                                               servers_dict['db_password'],
+                                               servers_dict['host'],
+                                               servers_dict['port'])
+                database_name = database["db_name"]
+                # Drop database
+                drop_database(connection, database_name)
+
+            # Delete server
+            delete_server(srv_id)
+    except Exception as exception:
+        exception = "Exception: %s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception)
+        logger.exception(exception)
+
+    # Clear test_server_dict
+    for item in regression.test_server_dict:
+        del regression.test_server_dict[item][:]
+
+
+def remove_db_file():
+    if os.path.isfile(config.SQLITE_PATH):
+        os.remove(config.SQLITE_PATH)
 
 
 def drop_objects():
     """This function use to cleanup the created the objects(servers, databases,
      schemas etc) during the test suite run"""
+    try:
+        conn = sqlite3.connect(config.SQLITE_PATH)
+        cur = conn.cursor()
+        servers = cur.execute('SELECT name, host, port, maintenance_db,'
+                              ' username, id  FROM server')
+        if servers:
+            all_servers = servers.fetchall()
+            for server_info in all_servers:
+                name = server_info[0]
+                host = server_info[1]
+                db_port = server_info[2]
 
-    # Cleanup in node_info_dict
-    servers_info = regression.node_info_dict['sid']
-    if servers_info:
-        for server in servers_info:
-            server_id = server.keys()[0]
-            server = server.values()[0]
-            if regression.node_info_dict['did']:
-                db_conn = get_db_connection(server['db'],
-                                            server['username'],
-                                            server['db_password'],
-                                            server['host'],
-                                            server['port'])
-                db_dict = regression.node_info_dict['did'][0]
-                if int(server_id) in db_dict:
-                    db_name = db_dict[int(server_id)]["db_name"]
-                    drop_database(db_conn, db_name)
-            delete_server(server_id)
+                server_id = server_info[5]
+                config_servers = test_setup.config_data['server_credentials']
+                db_password = ''
+                # Get the db password from config file for appropriate server
+                for srv in config_servers:
+                    if (srv['name'], srv['host'], srv['db_port']) == \
+                            (name, host, db_port):
+                        db_password = srv['db_password']
+                if db_password:
+                    # Drop database
+                    connection = get_db_connection(server_info[3],
+                                                   server_info[4],
+                                                   db_password,
+                                                   server_info[1],
+                                                   server_info[2])
 
-    # Cleanup in test_server_dict
-    servers = regression.test_server_dict["server"]
-    if servers:
-        for server in servers:
-            server_id = server["server_id"]
-            server = server["server"]
-            if regression.test_server_dict["database"]:
-                db_info = regression.test_server_dict["database"]
-                db_dict = [item for item in db_info
-                           if server_id == item["server_id"]]
-                if db_dict:
-                    for db in db_dict:
-                        db_name = db["db_name"]
-                        db_conn = get_db_connection(server['db'],
-                                                    server['username'],
-                                                    server['db_password'],
-                                                    server['host'],
-                                                    server['port'])
-                        drop_database(db_conn, db_name)
-            delete_server(server_id)
+                    pg_cursor = connection.cursor()
+                    pg_cursor.execute("SELECT db.datname FROM pg_database db")
+                    databases = pg_cursor.fetchall()
+                    if databases:
+                        for db in databases:
+                            # Do not drop the default databases
+                            if db[0] not in ["postgres", "template1",
+                                             "template0"]:
+                                drop_database(connection, db[0])
+                    connection.close()
 
-    # Remove the test SQLite database
-    if os.path.isfile(config.SQLITE_PATH):
-        os.remove(config.SQLITE_PATH)
+                    # Delete tablespace
+                    connection = get_db_connection(server_info[3],
+                                                   server_info[4],
+                                                   db_password,
+                                                   server_info[1],
+                                                   server_info[2])
+                    pg_cursor = connection.cursor()
+                    pg_cursor.execute("SELECT * FROM pg_tablespace")
+                    table_spaces = pg_cursor.fetchall()
+                    if table_spaces:
+                        for tablespace in table_spaces:
+                            # Do not delete default table spaces
+                            if tablespace[0] not in ["pg_default",
+                                                     "pg_global"]:
+                                tablespace_name = tablespace[0]
+                                # Delete tablespace
+                                delete_tablespace(connection, tablespace_name)
+
+                # Delete server
+                delete_server(server_id)
+        conn.close()
+        # Remove SQLite db file
+        remove_db_file()
+    except Exception as exception:
+        remove_db_file()
+        exception = "Exception: %s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception)
+        logger.exception(exception)

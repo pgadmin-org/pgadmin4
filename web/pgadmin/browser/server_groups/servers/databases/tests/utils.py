@@ -19,26 +19,101 @@ DATABASE_URL = '/browser/database/obj/'
 DATABASE_CONNECT_URL = 'browser/database/connect/'
 
 
-def get_db_data():
-    """This function returns the database details from json file"""
-    data = None
-    if advanced_config_data['add_database_data'] is not None:
-        adv_config_data = advanced_config_data['add_database_data']
-        data = {
-            "datacl": adv_config_data['privileges_acl'],
-            "datconnlimit": adv_config_data['conn_limit'],
-            "datowner": adv_config_data['owner'],
-            "deffuncacl": adv_config_data['fun_acl'],
-            "defseqacl": adv_config_data['seq_acl'],
-            "deftblacl": adv_config_data['tbl_acl'],
-            "deftypeacl": adv_config_data['type_acl'],
-            "encoding": adv_config_data['encoding'],
-            "name": str(uuid.uuid4())[1:8],
-            "privileges": adv_config_data['privileges'],
-            "securities": adv_config_data['securities'],
-            "variables": adv_config_data['variables']
-        }
+def get_db_data(db_owner):
+    """
+    This function returns the database details in dict format
+    """
+    data = {
+        "datconnlimit": -1,
+        "datowner": db_owner,
+        "deffuncacl": [
+      {
+        "grantee": db_owner,
+        "grantor": db_owner,
+        "privileges": [
+          {
+            "privilege_type": "X",
+            "privilege": True,
+            "with_grant": False
+          }
+        ]
+      }
+    ],
+        "defseqacl": [
+      {
+        "grantee": db_owner,
+        "grantor": db_owner,
+        "privileges": [
+          {
+            "privilege_type": "r",
+            "privilege": True,
+            "with_grant": False
+          },
+          {
+            "privilege_type": "w",
+            "privilege": True,
+            "with_grant": False
+          },
+          {
+            "privilege_type": "U",
+            "privilege": True,
+            "with_grant": False
+          }
+        ]
+      }
+    ],
+        "deftblacl": [
+      {
+        "grantee": db_owner,
+        "grantor": db_owner,
+        "privileges": [
+          {
+            "privilege_type": "a",
+            "privilege": True,
+            "with_grant": True
+          },
+          {
+            "privilege_type": "r",
+            "privilege": True,
+            "with_grant": False
+          }
+        ]
+      }
+    ],
+        "deftypeacl": [
+      {
+        "grantee": db_owner,
+        "grantor": db_owner,
+        "privileges": [
+          {
+            "privilege_type": "U",
+            "privilege": True,
+            "with_grant": False
+          }
+        ]
+      }
+    ],
+        "encoding": "UTF8",
+        "name": "db_add_%s" % str(uuid.uuid4())[1:4],
+        "privileges": [],
+        "securities": [],
+        "variables": []
+    }
     return data
+
+
+def create_database(connection, db_name):
+    """This function used to create database"""
+    try:
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("CREATE DATABASE %s" % db_name)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+        return pg_cursor
+    except Exception as exception:
+        raise Exception("Error while creating database. %s" % exception)
 
 
 def verify_database(self, server_group, server_id, db_id):
