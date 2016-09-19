@@ -209,64 +209,60 @@
 </div>
 {% endblock %}
 
-{% block init_script %}
-try {
-require(
-['jquery', 'pgadmin', 'pgadmin.sqleditor'],
-function($, pgAdmin) {
+{% block init_script %}require(
+  ['jquery', 'pgadmin', 'require', 'underscore.string'],
+function($, pgAdmin, R, S) {
+	R(['pgadmin.sqleditor'], function() {
+    var editorPanel = $('.sql-editor'),
+    loadingDiv = $('#fetching_data'),
+    msgDiv = loadingDiv.find('.sql-editor-busy-text');
 
-var editorPanel = $('.sql-editor'),
-loadingDiv = $('#fetching_data'),
-msgDiv = loadingDiv.find('.sql-editor-busy-text');
+    // Get the controller object from pgAdmin.SqlEditor
+    var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
 
-// Get the controller object from pgAdmin.SqlEditor
-var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
+    // Listen on events to show/hide loading-icon and change messages.
+    sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
+      msgDiv.text(msg);
+      }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
+        loadingDiv.removeClass('hide');
+        msgDiv.text(msg);
+        }).on('pgadmin-sqleditor:loading-icon:hide', function() {
+          if (!loadingDiv.hasClass('hide')) {
+          loadingDiv.addClass('hide');
+          }
+          });
 
-// Listen on events to show/hide loading-icon and change messages.
-sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
-msgDiv.text(msg);
-}).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
-loadingDiv.removeClass('hide');
-msgDiv.text(msg);
-}).on('pgadmin-sqleditor:loading-icon:hide', function() {
-if (!loadingDiv.hasClass('hide')) {
-loadingDiv.addClass('hide');
-}
-});
-
-// Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
-var script_sql = '';
+    // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
+    var script_sql = '';
 {% if script_type_url%}
-// Call AJAX only if script type url is present
-$.ajax({
-url: '{{ script_type_url }}',
-type:'GET',
-async: false,
-success: function(res) {
-script_sql = res;
-},
-error: function(jqx) {
-var msg = jqx.responseText;
-/* Error from the server */
-if (jqx.status == 410 || jqx.status == 500) {
-try {
-var data = $.parseJSON(jqx.responseText);
-msg = data.errormsg;
-} catch (e) {}
-}
-pgBrowser.report_error(
-S('{{ _('Error fetching SQL for script: "%s"') }}')
-.sprintf(msg)
-.value(), msg);
-}
-});
+    // Call AJAX only if script type url is present
+    $.ajax({
+      url: '{{ script_type_url }}',
+      type:'GET',
+      async: false,
+      success: function(res) {
+        script_sql = res;
+      },
+      error: function(jqx) {
+        var msg = jqx.responseText;
+        /* Error from the server */
+        if (jqx.status == 410 || jqx.status == 500) {
+          try {
+            var data = $.parseJSON(jqx.responseText);
+            msg = data.errormsg;
+          } catch (e) {}
+        }
+        pgBrowser.report_error(
+          S('{{ _('Error fetching SQL for script: "%s"') }}')
+          .sprintf(msg)
+          .value(), msg
+        );
+      }
+    });
 {% endif %}
 
-// Start the query tool.
-sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}", script_sql);
+    // Start the query tool.
+    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}", script_sql);
+  });
 });
-} catch (err) {
-/* Show proper error dialog */
-console.log(err);
-}
 {% endblock %}
