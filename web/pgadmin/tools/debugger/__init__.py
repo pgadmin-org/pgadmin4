@@ -1342,7 +1342,7 @@ def poll_end_execution_result(trans_id):
 
     if conn.connected():
         statusmsg = conn.status_message()
-        status, result, my_result = conn.poll()
+        status, result, col_info = conn.poll()
         if status == ASYNC_OK and session['functionData'][str(trans_id)]['language'] == 'edbspl':
             status = 'Success'
             return make_json_response(success=1, info=gettext("Execution Completed."),
@@ -1354,14 +1354,19 @@ def poll_end_execution_result(trans_id):
                                           data={'status': status, 'status_message': result})
             else:
                 status = 'Success'
-                data = {}
-                for i in result:
-                    for k, v in i.items():
-                        data["name"] = k
-                        data.setdefault("value", []).append(v)
+                columns = []
+                # Check column info is available or not
+                if col_info is not None and len(col_info) > 0:
+                    for col in col_info:
+                        items = list(col.items())
+                        column = dict()
+                        column['name'] = items[0][1]
+                        column['type_code'] = items[1][1]
+                        columns.append(column)
 
                 return make_json_response(success=1, info=gettext("Execution Completed."),
-                                          data={'status': status, 'result': data, 'status_message': statusmsg})
+                                          data={'status': status, 'result': result,
+                                                'col_info': columns, 'status_message': statusmsg})
         else:
             status = 'Busy'
     else:

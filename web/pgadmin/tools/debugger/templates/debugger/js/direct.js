@@ -417,9 +417,9 @@ define(
               }
               else {
                 // Call function to create and update local variables ....
-                if (res.data.result.name != null) {
+                if (res.data.result != null) {
                   pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
-                  self.AddResults(res.data.result);
+                  self.AddResults(res.data.col_info, res.data.result);
                   pgTools.DirectDebug.results_panel.focus();
                   pgTools.DirectDebug.direct_execution_completed = true;
                   pgTools.DirectDebug.polling_timeout_idle = true;
@@ -846,7 +846,7 @@ define(
 
       },
 
-      AddResults: function(result) {
+      AddResults: function(columns, result) {
         var self = this;
 
         // Remove the existing created grid and update the result values
@@ -866,22 +866,23 @@ define(
           model: DebuggerResultsModel
         });
 
-        resultGridCols = [
-          {name: 'value', label:result.name, type:'text', editable: false, cell:'string'}
-        ];
-
-        var my_obj = [];
-        if (result.value.length != 0)
-        {
-          for (i = 0; i < result.value.length; i++) {
-            my_obj.push({ "value": result.value[i]});
-          }
+        var resultGridCols = [];
+        if(_.size(columns)) {
+          _.each(columns, function(c) {
+            var column = {
+                            type:'text',
+                            editable: false,
+                            cell:'string'
+                         };
+            column['name'] = column['label'] = c.name;
+            resultGridCols.push(column);
+          });
         }
 
         // Initialize a new Grid instance
         var result_grid = this.result_grid = new Backgrid.Grid({
           columns: resultGridCols,
-          collection: new ResultsCollection(my_obj),
+          collection: new ResultsCollection(result),
           className: "backgrid table-bordered"
         });
 
