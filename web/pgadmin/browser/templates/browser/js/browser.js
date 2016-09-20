@@ -820,6 +820,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
               ctx.b._findTreeChildNode(
                 ctx.i, d, ctx
               );
+              // if parent node is null
+              if (!_data._pid) {
+                addItemNode.apply(ctx, arguments);
+              }
             }
             return true;
           }.bind(ctx),
@@ -958,9 +962,11 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                           });
                         }.bind(ctx);
 
-                    if (!ctx.t.isInode(ctx.i) && ctx.d.inode) {
+                    if (ctx.i && !ctx.t.isInode(ctx.i)) {
                         ctx.t.setInode(ctx.i, {success: _append});
                     } else {
+                        // Handle case for node without parent i.e. server-group
+                        // or if parent node's inode is true.
                         _append();
                     }
                   }
