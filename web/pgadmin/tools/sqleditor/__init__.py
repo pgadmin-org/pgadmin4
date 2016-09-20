@@ -1304,16 +1304,18 @@ def start_query_download_tool(trans_id):
 
                 sync_conn.connect(autocommit=False)
 
+                def cleanup():
+                    conn.manager.connections[sync_conn.conn_id]._release()
+                    del conn.manager.connections[sync_conn.conn_id]
+
                 # This returns generator of records.
                 status, gen = sync_conn.execute_on_server_as_csv(sql, records=2000)
 
                 if not status:
-                    conn.manager.release(conn_id=conn_id, did=trans_obj.did)
-                    return internal_server_error(errormsg=str(gen))
-
-                def cleanup():
-                    conn.manager.connections[sync_conn.conn_id]._release()
-                    del conn.manager.connections[sync_conn.conn_id]
+                    r = Response('"{0}"'.format(gen), mimetype='text/csv')
+                    r.headers["Content-Disposition"] = "attachment;filename=error.csv"
+                    r.call_on_close(cleanup)
+                    return r
 
                 r = Response(gen(), mimetype='text/csv')
 
@@ -1326,11 +1328,12 @@ def start_query_download_tool(trans_id):
                 r.headers["Content-Disposition"] = "attachment;filename={0}".format(filename)
 
                 r.call_on_close(cleanup)
-
                 return r
 
         except Exception as e:
-            conn.manager.release(conn_id=conn_id, did=trans_obj.did)
-            return internal_server_error(errormsg=str(e))
+            r = Response('"{0}"'.format(e), mimetype='text/csv')
+            r.headers["Content-Disposition"] = "attachment;filename=error.csv"
+            r.call_on_close(cleanup)
+            return r
     else:
         return internal_server_error(errormsg=gettext("Transaction status check failed."))
