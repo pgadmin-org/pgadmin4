@@ -1790,7 +1790,7 @@ define(
                  */
               var explain_data_array = [];
               if(
-                data.result && data.result.length > 1 &&
+                data.result && data.result.length >= 1 &&
                   data.result[0] && data.result[0].hasOwnProperty(
                     'QUERY PLAN'
                   ) && _.isObject(data.result[0]['QUERY PLAN'])

@@ -24,6 +24,16 @@
       // Stringify only if it's json object
       if (typeof value === "object" && !Array.isArray(value)) {
         return JSON.stringify(value);
+      } else if (Array.isArray(value)) {
+        var temp = [];
+        $.each(value, function(i, val) {
+          if (typeof val === "object") {
+            temp.push(JSON.stringify(val));
+          } else {
+            temp.push(val)
+          }
+        });
+        return "[" + temp.join() + "]"
       } else {
         return value;
       }

@@ -230,6 +230,16 @@
       var data = defaultValue = item[args.column.field];
       if (typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
+      } else if (Array.isArray(data)) {
+        var temp = [];
+        $.each(data, function(i, val) {
+          if (typeof val === "object") {
+            temp.push(JSON.stringify(val));
+          } else {
+            temp.push(val)
+          }
+        });
+        data = "[" + temp.join() + "]";
       }
       $input.val(data);
       $input.select();
@@ -466,6 +476,16 @@
       var data = defaultValue = item[args.column.field];
       if (typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
+      } else if (Array.isArray(data)) {
+        var temp = [];
+        $.each(data, function(i, val) {
+          if (typeof val === "object") {
+            temp.push(JSON.stringify(val));
+          } else {
+            temp.push(val)
+          }
+        });
+        data = "[" + temp.join() + "]";
       }
       $input.val(data);
       $input.select();
