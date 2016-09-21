@@ -29,6 +29,18 @@ class DataTypeJSONEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, obj)
 
+def get_no_cache_header():
+    """
+    Prevent browser from caching data every time an
+    http request is made.
+    Returns: headers
+    """
+    headers = {}
+    headers["Cache-Control"] = "no-cache, no-store, must-revalidate"  # HTTP 1.1.
+    headers["Pragma"] = "no-cache"  # HTTP 1.0.
+    headers["Expires"] = "0"  # Proxies.
+    return headers
+
 
 def make_json_response(
         success=1, errormsg='', info='', result=None, data=None, status=200
@@ -45,7 +57,8 @@ def make_json_response(
     return Response(
         response=json.dumps(doc, cls=DataTypeJSONEncoder),
         status=status,
-        mimetype="application/json"
+        mimetype="application/json",
+        headers=get_no_cache_header()
     )
 
 
@@ -54,7 +67,8 @@ def make_response(response=None, status=200):
     return Response(
         response=json.dumps(response, cls=DataTypeJSONEncoder),
         status=status,
-        mimetype="application/json"
+        mimetype="application/json",
+        headers=get_no_cache_header()
     )
 
 
