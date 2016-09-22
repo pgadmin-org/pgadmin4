@@ -14,15 +14,12 @@ import uuid
 import psycopg2
 import sqlite3
 
-import logging
-
 import config
-
 import test_setup
 import regression
+from functools import partial
 
 SERVER_GROUP = test_setup.config_data['server_group']
-logger = logging.getLogger(__name__)
 file_name = os.path.basename(__file__)
 
 
@@ -36,10 +33,6 @@ def get_db_connection(db, username, password, host, port):
     return connection
 
 
-def get_node_info_dict():
-    return regression.node_info_dict
-
-
 def login_tester_account(tester):
     """
     This function login the test client using env variables email and password
@@ -47,8 +40,8 @@ def login_tester_account(tester):
     :type tester: flask test client object
     :return: None
     """
-    if os.environ['PGADMIN_SETUP_EMAIL'] and os.environ[
-        'PGADMIN_SETUP_PASSWORD']:
+    if os.environ['PGADMIN_SETUP_EMAIL'] and\
+            os.environ['PGADMIN_SETUP_PASSWORD']:
         email = os.environ['PGADMIN_SETUP_EMAIL']
         password = os.environ['PGADMIN_SETUP_PASSWORD']
         tester.post('/login', data=dict(email=email, password=password),
@@ -56,7 +49,7 @@ def login_tester_account(tester):
     else:
         print("Unable to login test client, email and password not found.",
               file=sys.stderr)
-        drop_objects()
+        _drop_objects(tester)
         sys.exit(1)
 
 
@@ -151,19 +144,25 @@ def create_database(server, db_name):
 def drop_database(connection, database_name):
     """This function used to drop the database"""
 
-    pg_cursor = connection.cursor()
-    pg_cursor.execute("SELECT * FROM pg_database db WHERE db.datname='%s'"
-                      % database_name)
-    if pg_cursor.fetchall():
-        # Release pid if any process using database
-        pg_cursor.execute("select pg_terminate_backend(pid) from"
-                          " pg_stat_activity where datname='%s'" %
-                          database_name)
-        old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
-        pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
-        connection.set_isolation_level(old_isolation_level)
-        connection.commit()
+    try:
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("SELECT * FROM pg_database db WHERE db.datname='%s'"
+                          % database_name)
+        if pg_cursor.fetchall():
+            # Release pid if any process using database
+            pg_cursor.execute("select pg_terminate_backend(pid) from"
+                              " pg_stat_activity where datname='%s'" %
+                              database_name)
+            old_isolation_level = connection.isolation_level
+            connection.set_isolation_level(0)
+            pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+            connection.set_isolation_level(old_isolation_level)
+            connection.commit()
+            connection.close()
+    except Exception as exception:
+        exception = "%s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
 
 
 def create_server(server):
@@ -185,19 +184,37 @@ def create_server(server):
         raise Exception("Error while creating server. %s" % exception)
 
 
-def delete_server(sid):
+def delete_server(tester, sid):
     """This function used to delete server from SQLite"""
     try:
-        conn = sqlite3.connect(config.SQLITE_PATH)
-        cur = conn.cursor()
+        url = '/browser/server/obj/' + str(SERVER_GROUP) + "/"
+        # Call API to delete the server
+        response = tester.delete(url + str(sid))
+    except Exception as exception:
+        exception = "%s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
+
+
+def delete_server_from_sqlite(sid):
+    """This function used to delete server from SQLite"""
+    try:
+        con = sqlite3.connect(config.SQLITE_PATH)
+        cur = con.cursor()
         server_objects = cur.execute('SELECT * FROM server WHERE id=%s' % sid)
-        servers_count = len(server_objects.fetchall())
+        ss = server_objects.fetchall()
+        # for i in ss:
+        #     print(">>>>>>>>>>>", i)
+        servers_count = len(ss)
+        # print(">>>>>>>", sid)
         if servers_count:
             cur.execute('DELETE FROM server WHERE id=%s' % sid)
-            conn.commit()
-        conn.close()
-    except Exception as err:
-        raise Exception("Error while deleting server %s" % err)
+            con.commit()
+        con.close()
+    except Exception as exception:
+        exception = "%s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
 
 
 def create_tablespace(server, test_tablespace_name):
@@ -246,7 +263,6 @@ def delete_tablespace(connection, test_tablespace_name):
         exception = "%s: line:%s %s" % (
             file_name, sys.exc_traceback.tb_lineno, exception)
         print(exception, file=sys.stderr)
-        raise Exception(exception)
 
 
 def create_test_server(server_info):
@@ -277,7 +293,7 @@ def create_test_server(server_info):
                                                     "db_name": test_db_name})
 
 
-def delete_test_server():
+def delete_test_server(tester):
     test_server_dict = regression.test_server_dict
     test_servers = test_server_dict["server"]
     test_databases = test_server_dict["database"]
@@ -295,14 +311,12 @@ def delete_test_server():
                 database_name = database["db_name"]
                 # Drop database
                 drop_database(connection, database_name)
-
             # Delete server
-            delete_server(srv_id)
+            delete_server(tester, srv_id)
     except Exception as exception:
         exception = "Exception: %s: line:%s %s" % (
             file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception)
-        logger.exception(exception)
+        print(exception, file=sys.stderr)
 
     # Clear test_server_dict
     for item in regression.test_server_dict:
@@ -310,11 +324,12 @@ def delete_test_server():
 
 
 def remove_db_file():
+    """This function use to remove SQLite DB file"""
     if os.path.isfile(config.SQLITE_PATH):
         os.remove(config.SQLITE_PATH)
 
 
-def drop_objects():
+def _drop_objects(tester):
     """This function use to cleanup the created the objects(servers, databases,
      schemas etc) during the test suite run"""
     try:
@@ -329,7 +344,6 @@ def drop_objects():
                 host = server_info[1]
                 db_port = server_info[2]
 
-                server_id = server_info[5]
                 config_servers = test_setup.config_data['server_credentials']
                 db_password = ''
                 # Get the db password from config file for appropriate server
@@ -350,11 +364,15 @@ def drop_objects():
                     databases = pg_cursor.fetchall()
                     if databases:
                         for db in databases:
+                            connection = get_db_connection(server_info[3],
+                                                           server_info[4],
+                                                           db_password,
+                                                           server_info[1],
+                                                           server_info[2])
                             # Do not drop the default databases
                             if db[0] not in ["postgres", "template1",
                                              "template0"]:
                                 drop_database(connection, db[0])
-                    connection.close()
 
                     # Delete tablespace
                     connection = get_db_connection(server_info[3],
@@ -374,14 +392,30 @@ def drop_objects():
                                 # Delete tablespace
                                 delete_tablespace(connection, tablespace_name)
 
+            for server_info in all_servers:
+                server_id = server_info[5]
                 # Delete server
-                delete_server(server_id)
+                try:
+                    delete_server(tester, server_id)
+                except Exception as exception:
+                    exception = "Exception while deleting server: %s:" \
+                                " line:%s %s" %\
+                                (file_name, sys.exc_traceback.tb_lineno,
+                                 exception)
+                    print(exception, file=sys.stderr)
+                    continue
         conn.close()
-        # Remove SQLite db file
-        remove_db_file()
     except Exception as exception:
-        remove_db_file()
         exception = "Exception: %s: line:%s %s" % (
             file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception)
-        logger.exception(exception)
+        print(exception, file=sys.stderr)
+    finally:
+        # Logout the test client
+        logout_tester_account(tester)
+        # Remove SQLite db file
+        remove_db_file()
+
+
+def get_cleanup_handler(tester):
+    """This function use to bind variable to drop_objects function"""
+    return partial(_drop_objects, tester)

@@ -9,14 +9,9 @@
 
 from __future__ import print_function
 
-import sys
 import json
-import sqlite3
-import config
 
-from regression import node_info_dict
 from regression import test_utils as utils
-from regression.test_setup import config_data
 
 SERVER_URL = '/browser/server/obj/'
 SERVER_CONNECT_URL = '/browser/server/connect/'

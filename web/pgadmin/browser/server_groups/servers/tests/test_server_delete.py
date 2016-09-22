@@ -33,4 +33,4 @@ class ServerDeleteTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """This function delete the server from SQLite """
-        utils.delete_server(self.server_id)
+        utils.delete_server(self.tester, self.server_id)

@@ -10,13 +10,12 @@
 import json
 import uuid
 
-from regression.test_setup import advanced_config_data
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from regression import test_utils as utils
 
 
 DATABASE_URL = '/browser/database/obj/'
-DATABASE_CONNECT_URL = 'browser/database/connect/'
+DATABASE_CONNECT_URL = '/browser/database/connect/'
 
 
 def get_db_data(db_owner):
