@@ -14,9 +14,9 @@
     <title>{% block title %}{% endblock %}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="dcterms.rightsHolder" content="The pgAdmin Development Team">
-    <meta name="dcterms.rights" content="All rights reserved">
-    <meta name="dcterms.dateCopyrighted" content="2014 - 2015">
+
+    <!-- To set pgAdmin4 shortcut icon in browser -->
+    <link rel="shortcut icon" href="{{ url_for('redirects.favicon') }}"/>
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet"
