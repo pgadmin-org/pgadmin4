@@ -90,91 +90,89 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           disabled: true , control: 'node-list-by-name',
           node: 'schema'
         },{
-          type: 'nested', control: 'fieldset', label: '{{ _('Definition') }}',
-          schema:[{
-              id: 'targettype', label:'{{ _('Target Type') }}', cell: 'string',
-              disabled: 'inSchema', group: '{{ _('Definition') }}',
-              select2: { width: "50%", allowClear: false },
-              options: function(obj) {
-                  return [
-                    {label: "Table", value: "r"},
-                    {label: "Sequence", value: "S"},
-                    {label: "View", value: "v"},
-                    {label: "Function", value: "f"},
-                    {label: "Procedure", value: "p"},
-                    {label: "Public Synonym", value: "s"}
-                  ]
-               },
-              control: 'select2'
-            },{
-              id: 'synobjschema', label:'{{ _('Target Schema') }}', cell: 'string',
-              type: 'text', mode: ['properties', 'create', 'edit'],
-              group: '{{ _('Definition') }}', deps: ['targettype'],
-              select2: { allowClear: false }, control: 'node-list-by-name',
-              node: 'schema', filter: function(d) {
-                // Exclude PPAS catalogs
-                var exclude_catalogs = ['pg_catalog', 'sys', 'dbo',
-                                'pgagent', 'information_schema',
-                                'dbms_job_procedure'];
-                return d && _.indexOf(exclude_catalogs, d.label) == -1;
-              },
-              disabled: function(m) {
-                // If tagetType is synonym then disable it
-                if(!m.inSchema.apply(this, [m])) {
-                  var is_synonym = (m.get('targettype') == 's');
-                  if(is_synonym) {
-                      m.set('synobjschema', 'public', {silent: true});
-                    return true;
-                  } else {
-                    return false;
-                  }
-                }
-                return true;
-              }
-            },{
-              id: 'synobjname', label:'{{ _('Target Object') }}', cell: 'string',
-              type: 'text', disabled: 'inSchema', group: '{{ _('Definition') }}',
-              deps: ['targettype', 'synobjschema'],
-                control: 'node-ajax-options',
-                options: function(control) {
-                  var trgTyp = control.model.get('targettype');
-                  var trgSchema = control.model.get('synobjschema');
-                  var res = [];
-
-                  var node = control.field.get('schema_node'),
-                  _url = node.generate_url.apply(
-                    node, [
-                    null, 'get_target_objects', control.field.get('node_data'), false,
-                    control.field.get('node_info') ]);
-                  $.ajax({
-                      type: 'GET',
-                      timeout: 30000,
-                      url: _url,
-                      cache: false,
-                      async: false,
-                      data: {"trgTyp" : trgTyp, "trgSchema" : trgSchema},
-
-                      // On success return function list from server
-                      success: function(result) {
-                        res = result.data;
-                        return res;
-                      },
-
-                      // On failure show error appropriate error message to user
-                      error: function(xhr, status, error) {
-                        try {
-                          var err = $.parseJSON(xhr.responseText);
-                          if (err.success == 0) {
-                            alertify.error(err.errormsg);
-                          }
-                        } catch (e) {}
-                      }
-                  });
-                return res;
-              }
-            }]
+          id: 'targettype', label:'{{ _('Target type') }}', cell: 'string',
+          disabled: 'inSchema', group: '{{ _('Definition') }}',
+          select2: { width: "50%", allowClear: false },
+          options: function(obj) {
+              return [
+                {label: "Table", value: "r"},
+                {label: "Sequence", value: "S"},
+                {label: "View", value: "v"},
+                {label: "Function", value: "f"},
+                {label: "Procedure", value: "p"},
+                {label: "Package", value: "P"},
+                {label: "Public Synonym", value: "s"}
+              ]
+           },
+          control: 'select2'
         },{
-          id: 'is_public_synonym', label:'{{ _('Public Synonym?') }}',
+          id: 'synobjschema', label:'{{ _('Target schema') }}', cell: 'string',
+          type: 'text', mode: ['properties', 'create', 'edit'],
+          group: '{{ _('Definition') }}', deps: ['targettype'],
+          select2: { allowClear: false }, control: 'node-list-by-name',
+          node: 'schema', filter: function(d) {
+            // Exclude PPAS catalogs
+            var exclude_catalogs = ['pg_catalog', 'sys', 'dbo',
+                            'pgagent', 'information_schema',
+                            'dbms_job_procedure'];
+            return d && _.indexOf(exclude_catalogs, d.label) == -1;
+          },
+          disabled: function(m) {
+            // If tagetType is synonym then disable it
+            if(!m.inSchema.apply(this, [m])) {
+              var is_synonym = (m.get('targettype') == 's');
+              if(is_synonym) {
+                  m.set('synobjschema', 'public', {silent: true});
+                return true;
+              } else {
+                return false;
+              }
+            }
+            return true;
+          }
+        },{
+          id: 'synobjname', label:'{{ _('Target object') }}', cell: 'string',
+          type: 'text', disabled: 'inSchema', group: '{{ _('Definition') }}',
+          deps: ['targettype', 'synobjschema'],
+            control: 'node-ajax-options',
+            options: function(control) {
+              var trgTyp = control.model.get('targettype');
+              var trgSchema = control.model.get('synobjschema');
+              var res = [];
+
+              var node = control.field.get('schema_node'),
+              _url = node.generate_url.apply(
+                node, [
+                null, 'get_target_objects', control.field.get('node_data'), false,
+                control.field.get('node_info') ]);
+              $.ajax({
+                  type: 'GET',
+                  timeout: 30000,
+                  url: _url,
+                  cache: false,
+                  async: false,
+                  data: {"trgTyp" : trgTyp, "trgSchema" : trgSchema},
+
+                  // On success return function list from server
+                  success: function(result) {
+                    res = result.data;
+                    return res;
+                  },
+
+                  // On failure show error appropriate error message to user
+                  error: function(xhr, status, error) {
+                    try {
+                      var err = $.parseJSON(xhr.responseText);
+                      if (err.success == 0) {
+                        alertify.error(err.errormsg);
+                      }
+                    } catch (e) {}
+                  }
+              });
+            return res;
+          }
+        },{
+          id: 'is_public_synonym', label:'{{ _('Public synonym?') }}',
           disabled: true, type: 'switch', mode: ['properties'], cell: 'switch',
           options: { onText: 'Yes', offText: 'No', onColor: 'success',
                     offColor: 'primary', size: 'mini'}
