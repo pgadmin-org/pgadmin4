@@ -1,8 +1,8 @@
 .. _synonym:
 
-********************************
+******************
 The Synonym Dialog
-*********************************
+******************
 
 
 Use the *Synonym* dialog to substitute the name of a target object with a user-defined synonym.
