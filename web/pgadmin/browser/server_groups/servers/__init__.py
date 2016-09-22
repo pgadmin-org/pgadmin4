@@ -656,6 +656,16 @@ class ServerNode(PGChildNodeView):
     def modified_sql(self, gid, sid):
         return make_json_response(data='')
 
+    def get_template_directory(self, version):
+        """ This function will check and return template directory
+        based on postgres verion"""
+        if version >= 90600:
+            return '9.6_plus'
+        elif version >= 90200:
+            return '9.2_plus'
+        else:
+            return '9.1_plus'
+
     def statistics(self, gid, sid):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -665,7 +675,7 @@ class ServerNode(PGChildNodeView):
                 render_template(
                     "/".join([
                         'servers/sql',
-                        '9.2_plus' if manager.version >= 90200 else '9.1_plus',
+                        self.get_template_directory(manager.version),
                         'stats.sql'
                     ]),
                     conn=conn, _=gettext
@@ -1040,7 +1050,7 @@ class ServerNode(PGChildNodeView):
 
             SQL = render_template("/".join([
                 'servers/sql',
-                '9.2_plus' if manager.version >= 90200 else '9.1_plus',
+                self.get_template_directory(manager.version),
                 'change_password.sql'
             ]),
                 conn=conn, _=gettext,
