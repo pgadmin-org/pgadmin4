@@ -26,7 +26,9 @@ function(_, S, pgAdmin) {
     'FALSE': "{{ _("False") }}",
     'NOTE_CTRL_LABEL': "{{ _("Note") }}",
     'ERR_RETRIEVAL_INFO': "{{ _("Error retrieving the information - %s") }}",
-    'CONNECTION_LOST': "{{ _("Connection to the server has been lost!") }}"
+    'CONNECTION_LOST': "{{ _("Connection to the server has been lost!") }}",
+    'SELECT_ALL': "{{ _("Select All") }}",
+    'UNSELECT_ALL': "{{ _("Unselect All") }}"
   };
 
 {% for key in current_app.messages.keys() %}

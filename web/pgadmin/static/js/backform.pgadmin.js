@@ -61,6 +61,7 @@
     'text': ['uneditable-input', 'input', 'string'],
     'numeric': ['uneditable-input', 'numeric', 'numeric'],
     'date': 'datepicker',
+    'datetime': 'datetimepicker',
     'boolean': 'boolean',
     'options': ['readonly-option', 'select', Backgrid.Extension.PGSelectCell],
     'multiline': ['textarea', 'textarea', 'string'],
@@ -1146,7 +1147,7 @@
     }
   });
 
-  var SubNodeCollectionControl =  Backform.SubNodeCollectionControl = Backform.Control.extend({
+  var SubNodeCollectionControl = Backform.SubNodeCollectionControl = Backform.Control.extend({
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -1258,14 +1259,14 @@
 
       if (!collection) {
         collection = new (pgBrowser.Node.Collection)(null, {
-          handler: self.model.handler || self,
+          handler: self.model.handler || self.model,
           model: data.model, top: self.model.top || self.model,
           silent: true
         });
         self.model.set(data.name, collection, {silent: true});
       }
 
-      var cellEditing = function(args){
+      var cellEditing = function(args) {
         var self = this,
           cell = args[0];
         // Search for any other rows which are open.
@@ -1369,20 +1370,18 @@
       this.dialog = o.dialog;
       this.tabIndex = o.tabIndex;
 
-      /*
-       * We will listen to the tab change event to check, if the SQL tab has
-       * been clicked or, not.
-       */
-      this.model.on('pg-property-tab-changed', this.onTabChange, this);
+      _.bindAll(this, 'onTabChange');
     },
     getValueFromDOM: function() {
         return this.formatter.toRaw(this.$el.find("textarea").val(), this.model);
     },
     render: function() {
       if (this.sqlCtrl) {
+        this.sqlCtrl.toTextArea();
         delete this.sqlCtrl;
         this.sqlCtrl = null;
         this.$el.empty();
+        this.model.off('pg-property-tab-changed', this.onTabChange, this);
       }
       // Use the Backform Control's render function
       Backform.Control.prototype.render.apply(this, arguments);
@@ -1396,6 +1395,12 @@
         extraKeys: pgAdmin.Browser.editor_shortcut_keys,
         tabSize: pgAdmin.Browser.editor_options.tabSize
       });
+
+      /*
+       * We will listen to the tab change event to check, if the SQL tab has
+       * been clicked or, not.
+       */
+      this.model.on('pg-property-tab-changed', this.onTabChange, this);
 
       return this;
     },
@@ -1447,8 +1452,10 @@
     },
     remove: function() {
       if (this.sqlCtrl) {
+        this.sqlCtrl.toTextArea();
         delete this.sqlCtrl;
         this.sqlCtrl = null;
+
         this.$el.empty();
       }
       this.model.off('pg-property-tab-changed', this.onTabChange, this);
@@ -1838,8 +1845,10 @@
       '   <option ',
       '    <% if (option.image) { %> data-image=<%=option.image%> <%}%>',
       '    value=<%= formatter.fromRaw(option.value) %>',
+      '    <% if (option.selected) {%>selected="selected"<%} else {%>',
       '    <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
       '    <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',
+      '    <%}%>',
       '    <%= disabled ? "disabled" : ""%>><%-option.label%></option>',
       '  <%}%>',
       ' </select>',
@@ -1920,7 +1929,9 @@
       if (this.$sel) {
         this.$sel.data('select2').on("keypress", function(ev) {
           var self = this;
-          if (ev.which === 9) { // keycode 9 is for TAB key
+
+          // keycode 9 is for TAB key
+          if (ev.which === 9 && self.isOpen()) {
             ev.preventDefault();
             self.trigger('results:select', {});
           }
@@ -2082,13 +2093,7 @@
       Backform.TextareaControl.prototype.initialize.apply(this, arguments);
       this.sqlCtrl = null;
 
-      // There is an issue with the Code Mirror SQL.
-      //
-      // It does not initialize the code mirror object completely when the
-      // referenced textarea is hidden (not visible), hence - we need to
-      // refresh the code mirror object on 'pg-property-tab-changed' event to
-      // make it work properly.
-      this.listenTo(this.model, 'pg-property-tab-changed', this.refreshTextArea);
+      _.bindAll(this, 'onFocus', 'onBlur', 'refreshTextArea');
     },
 
     getValueFromDOM: function() {
@@ -2098,6 +2103,11 @@
     render: function() {
       // Clean up the existing sql control
       if (this.sqlCtrl) {
+        this.model.off('pg-property-tab-changed', this.refreshTextArea, this);
+        this.sqlCtrl.off('focus', this.onFocus);
+        this.sqlCtrl.off('blur', this.onBlur);
+
+        this.sqlCtrl.toTextArea();
         delete this.sqlCtrl;
         this.sqlCtrl = null;
         this.$el.empty();
@@ -2147,6 +2157,17 @@
       if (!isVisible)
         self.$el.addClass(Backform.hiddenClassname);
 
+      // There is an issue with the Code Mirror SQL.
+      //
+      // It does not initialize the code mirror object completely when the
+      // referenced textarea is hidden (not visible), hence - we need to
+      // refresh the code mirror object on 'pg-property-tab-changed' event to
+      // make it work properly.
+      self.model.on('pg-property-tab-changed', this.refreshTextArea, this);
+
+      this.sqlCtrl.on('focus', this.onFocus);
+      this.sqlCtrl.on('blur', this.onBlur);
+
       var self = this;
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
@@ -2154,6 +2175,16 @@
       }, 0);
 
       return self;
+    },
+
+    onFocus: function() {
+      var $ctrl = this.$el.find('.pgadmin-controls').first();
+      if (!$ctrl.hasClass('focused'))
+        $ctrl.addClass('focused');
+    },
+
+    onBlur: function() {
+      this.$el.find('.pgadmin-controls').first().removeClass('focused');
     },
 
     refreshTextArea: function() {
@@ -2165,12 +2196,14 @@
     remove: function() {
       // Clean up the sql control
       if (this.sqlCtrl) {
+        this.sqlCtrl.off('focus', this.onFocus);
+        this.sqlCtrl.off('blur', this.onBlur);
         delete this.sqlCtrl;
         this.sqlCtrl = null;
         this.$el.empty();
       }
 
-      this.stopListening(this.model, "pg-property-tab-changed", this.refreshTextArea);
+      this.model.off("pg-property-tab-changed", this.refreshTextArea, this);
 
       Backform.TextareaControl.prototype.remove.apply(this, arguments);
     }
@@ -2258,6 +2291,135 @@
 
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
+    }
+  });
+
+  var DatetimepickerControl = Backform.DatetimepickerControl =
+      Backform.InputControl.extend({
+    defaults: {
+      type: "text",
+      label: "",
+      options: {
+        format: "MMM D YYYY HH:mm:ss.SSS Z",
+        showClear: true,
+        showTodayButton: true,
+        toolbarPlacement: 'top'
+      },
+      placeholder: "MMM D YYYY HH:mm:ss.SSS Z",
+      extraClasses: [],
+      helpMessage: null
+    },
+    events: {
+      "blur input": "onChange",
+      "change input": "onChange",
+      "changeDate input": "onChange",
+      "focus input": "clearInvalid",
+      'db.change': "onChange",
+      'click': 'openPicker'
+    },
+    openPicker: function() {
+      if (this.has_datepicker) {
+        this.$el.find("input").datetimepicker('show');
+      }
+    },
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="input-group  <%=Backform.controlsClassName%>">',
+      ' <input type="text" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      ' <span class="input-group-addon">',
+      '  <span class="fa fa-calendar"></span>',
+      ' </span>',
+      ' <% if (helpMessage && helpMessage.length) { %>',
+      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      ' <% } %>',
+      '</div>'
+    ].join("\n")),
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+          attributes = this.model.toJSON(),
+          attrArr = field.name.split('.'),
+          name = attrArr.shift(),
+          path = attrArr.join('.'),
+          rawValue = this.keyPathAccessor(attributes[name], path),
+          data = _.extend(field, {
+            rawValue: rawValue,
+            value: this.formatter.fromRaw(rawValue, this.model),
+            attributes: attributes,
+            formatter: this.formatter
+          }),
+          evalF = function(f, m) {
+            return (_.isFunction(f) ? !!f(m) : !!f);
+          };
+
+      // Evaluate the disabled, visible, and required option
+      _.extend(data, {
+        disabled: evalF(data.disabled, this.model),
+        visible:  evalF(data.visible, this.model),
+        required: evalF(data.required, this.model)
+      });
+      if (!data.disabled) {
+        data.placeholder = data.placeholder || this.defaults.placeholder;
+      }
+
+      // Clean up first
+      if (this.has_datepicker)
+        this.$el.find("input").datetimepicker('destroy');
+      this.$el.empty();
+      this.$el.removeClass(Backform.hiddenClassname);
+
+
+      this.$el.html(this.template(data)).addClass(field.name);
+
+      if (!data.visible) {
+        this.has_datepicker = false;
+        this.$el.addClass(Backform.hiddenClassname);
+      } else {
+        this.has_datepicker = true;
+        var self = this;
+        this.$el.find("input").first().datetimepicker(
+          _.extend({
+            keyBinds: {
+              enter: function(widget) {
+                var picker = this;
+                if (widget) {
+                  setTimeout(function() {
+                    picker.toggle();
+                    self.$el.find('input').first().blur();
+                  }, 10);
+                } else {
+                  setTimeout(function() { picker.toggle(); }, 10);
+                }
+              },
+              tab: function(widget) {
+                if (!widget) {
+                  // blur the input
+                  setTimeout(
+                    function() { self.$el.find('input').first().blur(); }, 10
+                  );
+                }
+              },
+              escape: function(widget) {
+                if (widget) {
+                  var picker = this;
+                  setTimeout(function() {
+                    picker.toggle();
+                    self.$el.find('input').first().blur();
+                  }, 10);
+                }
+              }
+            }
+          }, this.defaults.options, this.field.get("options"),
+          {'date': data.value})
+        );
+      }
+      this.updateInvalid();
+
+      return this;
+    },
+    cleanup: function() {
+      if (this.has_datepicker)
+        this.$el.find("input").datetimepicker('destroy');
+      this.$el.empty();
     }
   });
 

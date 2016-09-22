@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import datetime
 import re
 from functools import wraps
 
@@ -14,6 +13,7 @@ import pgadmin.browser.server_groups as sg
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext as _
+import dateutil.parser as dateutil_parser
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
@@ -142,11 +142,10 @@ class RoleView(PGChildNodeView):
                     if data[u'rolvaliduntil'] is not None and \
                                     data[u'rolvaliduntil'] != '' and \
                                     len(data[u'rolvaliduntil']) > 0:
-                        date = datetime.datetime.strptime(
-                            data[u'rolvaliduntil'], '%m/%d/%Y'
-                        )
-                        data[u'rolvaliduntil'] = date.strftime("%Y-%m-%d")
-                except Exception as e:
+                        data[u'rolvaliduntil'] = dateutil_parser.parse(
+                            data[u'rolvaliduntil']
+                        ).isoformat()
+                except Exception:
                     return precondition_required(
                         _("Date format is invalid.")
                     )
@@ -640,8 +639,6 @@ rolmembership:{
                     'admin': True if role.group(1) == '1' else False
                 })
             row['rolmembership'] = res
-            if row['rolvaliduntil'] is not None:
-                row['rolvaliduntil'] = row['rolvaliduntil'].split(' ')[0]
             if 'seclabels' in row and row['seclabels'] is not None:
                 res = []
                 for sec in row['seclabels']:

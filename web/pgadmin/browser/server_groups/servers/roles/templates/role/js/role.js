@@ -239,7 +239,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       });
       var msg = '{{ _('Select the checkbox for roles to include WITH ADMIN OPTION.') }}';
 
-      this.$el.find('div.note').html("<span>NOTE:<br/>" + msg + "</span>");
+      this.$el.find('div.note').html("<span>NOTE: " + msg + "</span>");
 
       return this;
     },
@@ -404,20 +404,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }
         },{
           id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
-          group: '{{ _('Definition') }}', label: '{{ _('Account Expires') }}',
-          cell: 'string', mode: ['properties', 'edit', 'create'], retype: true,
-          deps: ['rolcanlogin'], options: { autoclose: true }, control: 'datepicker'
+          group: '{{ _('Definition') }}', label: '{{ _('Account expires') }}',
+          mode: ['properties', 'edit', 'create'], control: 'datetimepicker',
+          deps: ['rolcanlogin']
         },{
           id: 'rolconnlimit',  type: 'int', group: '{{ _('Definition') }}',
-          label: '{{ _('Connection Limit') }}', cell: 'number',
+          label: '{{ _('Connection limit') }}', cell: 'number',
           mode: ['properties', 'edit', 'create'], disabled: 'readonly'
         },{
           id: 'rolcanlogin', label:'{{ _('Can login?') }}', type: 'switch',
-          group: '{{ _('Role Privileges') }}', options: switchOptions,
+          group: '{{ _('Privileges') }}', options: switchOptions,
           disabled: 'readonly'
         },{
           id: 'rolsuper', label:'{{ _('Superuser') }}', type: 'switch',
-          group: '{{ _('Role Privileges') }}', options: switchOptions,
+          group: '{{ _('Privileges') }}', options: switchOptions,
           control: Backform.SwitchControl.extend({
             onChange: function() {
               Backform.SwitchControl.prototype.onChange.apply(this, arguments);
@@ -430,7 +430,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           disabled: 'readonly'
         },{
           id: 'rolcreaterole', label:'{{ _('Create roles?') }}',
-          group: '{{ _('Role Privileges') }}', type: 'switch',
+          group: '{{ _('Privileges') }}', type: 'switch',
           options: switchOptions, disabled: 'readonly'
         },{
           id: 'description', label:'{{ _('Comments') }}', type: 'multiline',
@@ -438,26 +438,26 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           options: switchOptions, disabled: 'readonly'
         },{
           id: 'rolcreatedb', label:'{{ _('Create databases?') }}',
-          group: '{{ _('Role Privileges') }}', type: 'switch',
+          group: '{{ _('Privileges') }}', type: 'switch',
           options: switchOptions, disabled: 'readonly'
         },{
           id: 'rolcatupdate', label:'{{ _('Update Catalog?') }}',
           type: 'switch', max_version: 90400, options: switchOptions,
-          group: '{{ _('Role Privileges') }}', disabled: function(m) {
+          group: '{{ _('Privileges') }}', disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
           }
         },{
-          id: 'rolinherit', group: '{{ _('Role Privileges') }}',
+          id: 'rolinherit', group: '{{ _('Privileges') }}',
           label:'{{ _('Inherit rights from the parent roles?') }}',
           type: 'switch', options: switchOptions, disabled: 'readonly'
         },{
-          id: 'rolreplication', group: '{{ _('Role Privileges') }}',
+          id: 'rolreplication', group: '{{ _('Privileges') }}',
           label:'{{ _('Can initiate streaming replication and backups?') }}',
           type: 'switch', min_version: 90100, options: switchOptions,
           disabled: 'readonly'
         },{
-          id: 'rolmembership', label: '{{ _('Role Membership') }}',
-          group: '{{ _('Role Privileges') }}', type: 'collection',
+          id: 'rolmembership', label: '{{ _('Roles') }}',
+          group: '{{ _('Membership') }}', type: 'collection',
           cell: 'string', disabled: 'readonly',
           mode: ['properties', 'edit', 'create'],
           control: RoleMembersControl, model: pgBrowser.Node.Model.extend({

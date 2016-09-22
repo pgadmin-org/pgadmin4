@@ -716,6 +716,10 @@ lgg-el-container[el=md] .pg-el-lg-8,
   width: 8.33333333333333%;
 }
 
+.pg-el-container ul.tab-content {
+  min-height: calc(100% - 10px);
+}
+
 .pgadmin-control-group {
   min-width: 34px;
 }

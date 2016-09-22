@@ -1,8 +1,80 @@
-define(
-    ['jquery', 'underscore', 'pgadmin', 'backbone', 'backform', 'alertify', 'pgadmin.browser.node'],
+define([
+  'jquery', 'underscore', 'pgadmin', 'backbone', 'backform', 'alertify',
+  'pgadmin.browser.node', 'pgadmin.browser.messages'
+],
 function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var pgBrowser = pgAdmin.Browser;
+
+  /*
+   * Define the selectAll adapter for select2.
+   *
+   * Reference:
+   * https://github.com/select2/select2/issues/195#issuecomment-240130634
+   */
+  $.fn.select2.amd.define('select2/selectAllAdapter', [
+    'select2/utils',
+    'select2/dropdown',
+    'select2/dropdown/attachBody'
+  ], function (Utils, Dropdown, AttachBody) {
+
+    function SelectAll() { }
+    SelectAll.prototype.render = function (decorated) {
+      var self = this,
+        $rendered = decorated.call(this),
+        $selectAll = $([
+          '<button class="btn btn-xs btn-default" type="button"',
+          ' style="width: 49%;margin: 0 0.5%;">',
+          '<i class="fa fa-check-square-o"></i>',
+          '<span style="padding: 0px 5px;">',
+          pgAdmin.Browser.messages['SELECT_ALL'],
+          '</span></button>'
+        ].join('')),
+        $unselectAll = $([
+          '<button class="btn btn-xs btn-default" type="button"',
+          ' style="width: 49%;margin: 0 0.5%;">',
+          '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;">',
+          pgAdmin.Browser.messages['UNSELECT_ALL'],
+          '</span></button>'
+        ].join('')),
+        $btnContainer = $(
+          '<div style="padding: 3px 0px; background-color: #2C76B4; margin-bottom: 3px;">'
+        ).append($selectAll).append($unselectAll);
+
+      if (!this.$element.prop("multiple")) {
+        // this isn't a multi-select -> don't add the buttons!
+        return $rendered;
+      }
+      $rendered.find('.select2-dropdown').prepend($btnContainer);
+      $selectAll.on('click', function (e) {
+        var $results = $rendered.find('.select2-results__option[aria-selected=false]');
+        $results.each(function () {
+          self.trigger('select', {
+            data: $(this).data('data')
+          });
+        });
+        self.trigger('close');
+      });
+      $unselectAll.on('click', function (e) {
+        var $results = $rendered.find('.select2-results__option[aria-selected=true]');
+        $results.each(function () {
+          self.trigger('unselect', {
+            data: $(this).data('data')
+          });
+        });
+        self.trigger('close');
+      });
+      return $rendered;
+    };
+
+    return Utils.Decorate(
+      Utils.Decorate(
+        Dropdown,
+        AttachBody
+      ),
+      SelectAll
+    );
+  });
 
   /*
    * NodeAjaxOptionsControl

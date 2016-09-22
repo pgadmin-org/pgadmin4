@@ -31,9 +31,9 @@ ALTER {% if rolCanLogin %}USER{% else %}ROLE{% endif %} {{ conn|qtIdent(rolname)
 	NOINHERIT{% endif %}{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}
-{% endif %}{% if 'rolvaliduntil' in data and data.rolvaliduntil %}
+{% endif %}{% if 'rolvaliduntil' in data %}
 
-	VALID UNTIL {% if data.rolvaliduntil is not none %}{{ data.rolvaliduntil|qtLiteral }}{% else %}'infinity'
+	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral }}{% else %}'infinity'
 {% endif %}{% endif %}{% if 'rolpassword' in data %}
 
 	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral }}{% endif %}{% endif %}{% endif %};{% endif %}

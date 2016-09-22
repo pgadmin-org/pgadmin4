@@ -1,11 +1,11 @@
 (function(root, factory) {
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify'],
-     function(_, $, Backbone, Backform, Backgrid, Alertify) {
+    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify', 'moment'],
+     function(_, $, Backbone, Backform, Backgrid, Alertify, moment) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Alertify);
+      return factory(root, _, $, Backbone, Backform, Alertify, moment);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -15,13 +15,14 @@
       Backbone = require('backbone') || root.Backbone,
       Backform = require('backform') || root.Backform;
       Alertify = require('alertify') || root.Alertify;
-    factory(root, _, $, Backbone, Backform, Alertify);
+      moment = require('moment') || root.moment;
+    factory(root, _, $, Backbone, Backform, Alertify, moment);
 
   // Finally, as a browser global.
   } else {
     factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
   }
-} (this, function(root, _, $, Backbone, Backform, Alertify) {
+} (this, function(root, _, $, Backbone, Backform, Alertify, moment) {
   /*
      * Add mechanism in backgrid to render different types of cells in
      * same column;
@@ -544,7 +545,9 @@
       if (this.$sel) {
         this.$sel.data('select2').on("keypress", function(ev) {
           var self = this;
-          if (ev.which === 9) { // keycode 9 is for TAB key
+
+          // keycode 9 is for TAB key
+          if (ev.which === 9 && self.isOpen()) {
             self.trigger('results:select', {});
             ev.preventDefault();
           }
@@ -969,6 +972,193 @@
         className: "jsonb-cell",
         formatter: JSONBCellFormatter
       });
+
+  var DatepickerCell = Backgrid.Extension.DatepickerCell = Backgrid.Cell.extend({
+    editor: DatepickerCellEditor
+  });
+
+  var DatepickerCellEditor = Backgrid.InputCellEditor.extend({
+    events:{},
+    initialize:function() {
+      Backgrid.InputCellEditor.prototype.initialize.apply(this, arguments);
+      var input = this;
+      $(this.el).prop('readonly', true);
+      $(this.el).datepicker({
+        onClose: function(newValue){
+          var command = new Backgrid.Command({});
+          input.model.set(input.column.get("name"), newValue);
+          input.model.trigger(
+            "backgrid:edited", input.model, input.column, command
+          );
+          command = input = null;
+        }
+      });
+    }
+  });
+
+  // Reference:
+  // https://github.com/wyuenho/backgrid-moment-cell/blob/master/backgrid-moment-cell.js
+  /**
+   MomentFormatter converts bi-directionally any datetime values in any format
+   supported by [moment()](http://momentjs.com/docs/#/parsing/) to any
+   datetime format
+   [moment.fn.format()](http://momentjs.com/docs/#/displaying/format/)
+   supports.
+   @class Backgrid.Extension.MomentFormatter
+   @extends Backgrid.CellFormatter
+   @constructor
+   */
+  var MomentFormatter = Backgrid.Extension.MomentFormatter = function (options) {
+    _.extend(this, this.defaults, options);
+  };
+
+  MomentFormatter.prototype = new Backgrid.CellFormatter;
+  _.extend(MomentFormatter.prototype, {
+    /**
+       @cfg {Object} options
+       @cfg {boolean} [options.modelInUnixOffset=false] Whether the model values
+       should be read/written as the number of milliseconds since UNIX Epoch.
+       @cfg {boolean} [options.modelInUnixTimestamp=false] Whether the model
+       values should be read/written as the number of seconds since UNIX Epoch.
+       @cfg {boolean} [options.modelInUTC=true] Whether the model values should
+       be read/written in UTC mode or local mode.
+       @cfg {string} [options.modelLang=moment.locale() moment>=2.8.0 |
+       moment.lang() moment<2.8.0] The locale the model values should be
+       read/written in.
+       @cfg {string} [options.modelFormat=moment.defaultFormat] The format this
+       moment formatter should use to read/write model values. Only meaningful if
+       the values are strings.
+       @cfg {boolean} [options.displayInUnixOffset=false] Whether the display
+       values should be read/written as the number of milliseconds since UNIX
+       Epoch.
+       @cfg {boolean} [options.displayInUnixTimestamp=false] Whether the display
+       values should be read/written as the number of seconds since UNIX Epoch.
+       @cfg {boolean} [options.displayInUTC=true] Whether the display values
+       should be read/written in UTC mode or local mode.
+       @cfg {string} [options.displayLang=moment.locale() moment>=2.8.0 |
+       moment.lang() moment<2.8.0] The locale the display values should be
+       read/written in.
+       @cfg {string} [options.displayFormat=moment.defaultFormat] The format
+       this moment formatter should use to read/write dislay values.
+       */
+    defaults: {
+      modelInUnixOffset: false,
+      modelInUnixTimestamp: false,
+      modelInUTC: true,
+      modelLang: moment.locale(),
+      modelFormat: moment.defaultFormat,
+      displayInUnixOffset: false,
+      displayInUnixTimestamp: false,
+      displayInUTC: true,
+      displayLang: moment.locale(),
+      displayFormat: moment.defaultFormat,
+      allowEmpty: false
+    },
+
+    /**
+       Converts datetime values from the model for display.
+       @member Backgrid.Extension.MomentFormatter
+       @param {*} rawData
+       @return {string}
+       */
+    fromRaw: function (rawData) {
+      if (rawData == null) return '';
+
+      var m = this.modelInUnixOffset ? moment(rawData) :
+        this.modelInUnixTimestamp ? moment.unix(rawData) :
+        this.modelInUTC ?
+        moment.utc(rawData, this.modelFormat, this.modelLang) :
+        moment(rawData, this.modelFormat, this.modelLang);
+
+      if (this.displayInUnixOffset) return +m;
+
+      if (this.displayInUnixTimestamp) return m.unix();
+
+      if (this.displayLang) m.locale(this.displayLang);
+
+      if (this.displayInUTC) m.utc(); else m.local();
+
+      if (this.displayFormat != moment.defaultFormat) {
+        return m.format(this.displayFormat);
+      }
+
+      return m.format();
+    },
+
+    /**
+       Converts datetime values from user input to model values.
+       @member Backgrid.Extension.MomentFormatter
+       @param {string} formattedData
+       @return {string}
+       */
+    toRaw: function (formattedData) {
+
+      var m = this.displayInUnixOffset ? moment(+formattedData) :
+        this.displayInUnixTimestamp ? moment.unix(+formattedData) :
+        this.displayInUTC ?
+        moment.utc(formattedData, this.displayFormat, this.displayLang) :
+        moment(formattedData, this.displayFormat, this.displayLang);
+
+      if (!m || !m.isValid()) return (this.allowEmpty && formattedData === '') ? null : undefined;
+
+      if (this.modelInUnixOffset) return +m;
+
+      if (this.modelInUnixTimestamp) return m.unix();
+
+      if (this.modelLang) m.locale(this.modelLang);
+
+      if (this.modelInUTC) m.utc(); else m.local()
+
+      if (this.modelFormat != moment.defaultFormat) {
+        return m.format(this.modelFormat);
+      }
+
+      return m.format();
+    }
+  });
+
+  var MomentCell = Backgrid.Extension.MomentCell = Backgrid.Cell.extend({
+
+    editor: Backgrid.InputCellEditor,
+
+    /** @property */
+    className: "datetime-cell",
+
+    /** @property {Backgrid.CellFormatter} [formatter=Backgrid.Extension.MomentFormatter] */
+    formatter: MomentFormatter,
+
+    /**
+       Initializer. Accept Backgrid.Extension.MomentFormatter.options and
+       Backgrid.Cell.initialize required parameters.
+     */
+    initialize: function (options) {
+
+      MomentCell.__super__.initialize.apply(this, arguments);
+
+      var formatterDefaults = MomentFormatter.prototype.defaults;
+      var formatterDefaultKeys = _.keys(formatterDefaults);
+      var classAttrs = _.pick(this, formatterDefaultKeys);
+      var formatterOptions = _.pick(options, formatterDefaultKeys);
+      var columnsAttrs = _.pick(this.column.toJSON(), formatterDefaultKeys);
+
+      // Priority of the options for the formatter, from highest to lowerest
+      // 1. MomentCell instance options
+      // 2. MomentCell class attributes
+      // 3. MomentFormatter defaults
+
+      // this.formatter will have been instantiated now
+      _.extend(this.formatter, formatterDefaults, classAttrs, formatterOptions, columnsAttrs);
+
+      this.editor = this.editor.extend({
+        attributes: _.extend({}, this.editor.prototype.attributes || this.editor.attributes || {}, {
+          placeholder: this.formatter.displayFormat
+        }),
+        options: this.column.get('options')
+      });
+    }
+  });
+
+  _.extend(MomentCell.prototype, MomentFormatter.prototype.defaults);
 
   return Backgrid;
 

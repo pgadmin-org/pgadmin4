@@ -513,27 +513,27 @@ fieldset[disabled] .form-control {
     margin-bottom: 15px;
 }
 
-.backgrid thead th{
+.backgrid > thead th{
     background-color: #2C76B4;
 }
 
-.backgrid th, .backgrid td {
+.backgrid > thead > th, .backgrid > tbody > td {
   line-height: 18px;
   font-size: 12px;
 }
 
-.backgrid th {
+.backgrid > thead > th {
     letter-spacing:0.5px
 }
 
-.backgrid td {
+.backgrid > tbody > td {
     padding-top: 0px;
     padding-bottom: 0px;
     padding-left: 2px;
     padding-right: 2px;
 }
 
-.backgrid thead th a {
+.backgrid > thead th a {
     color: white;
 }
 
@@ -562,7 +562,8 @@ fieldset[disabled] .form-control {
     background-color: #AAA;
 }
 
-.sql-editor-grid-container .backgrid th.renderable, .sql-editor-grid-container .backgrid td.renderable {
+.sql-editor-grid-container .backgrid > thead > th.renderable,
+.sql-editor-grid-container .backgrid > tbody > td.renderable {
     white-space: pre-wrap;
 }
 
@@ -842,7 +843,7 @@ td.edit-cell.editable.sortable.renderable.editor {
   font-size: 10px!important;
 }
 
-.backgrid th, .backgrid td{
+.backgrid > th, .backgrid > td {
   padding: 2px;
   font-weight: normal!important;
 }
@@ -879,8 +880,15 @@ td.edit-cell.editable.sortable.renderable.editor {
 
 .select2-container--default.select2-container--focus
 .select2-selection--multiple {
-    border: 1px solid #aaa !important;
-    outline: 0 none;
+  border: 1px solid #aaa !important;
+  outline: 0 none;
+}
+
+.select2-container--default.select2-container--focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
 /* CSS for SqlField control */
@@ -989,7 +997,7 @@ ul.nav.nav-tabs {
 }
 
 .pgadmin-controls.SQL>.CodeMirror {
-  height: 500px!important;
+  height: 500px !important;
 }
 
 /* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */ 
@@ -1276,7 +1284,7 @@ form[name="change_password_form"] .help-block {
   text-align: left;
 }
 
-.backgrid td.editor input[type=password] {
+.backgrid > tbody > td.editor input[type=password] {
   display: block;
   width: 100%;
   height: 100%;
@@ -1401,4 +1409,21 @@ table.backgrid {
 
 .pgadmin-controls.sql_field_layout .CodeMirror {
   line-height: 22px;
+}
+
+.pgadmin-controls.focused {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.bootstrap-datetimepicker-widget td,
+.bootstrap-datetimepicker-widget th {
+  display: table-cell;
+  white-space: normal;
+}
+
+.help-block {
+  white-space: normal;
 }

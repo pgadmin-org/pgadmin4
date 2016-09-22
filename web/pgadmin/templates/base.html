@@ -30,7 +30,8 @@
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datetimepicker.min.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
     <link type="text/css" rel="stylesheet"
@@ -117,8 +118,12 @@
                         "deps": ['jquery', 'bootstrap'],
                         "exports": 'jQuery.fn.datepicker'
                     },
+                    "bootstrap.datetimepicker": {
+                        "deps": ['jquery', 'bootstrap', 'moment'],
+                        "exports": 'jQuery.fn.datetimepicker'
+                    },
                     "pgadmin.backgrid": {
-                        "deps": ["backgrid", "bootstrap.datepicker", "bootstrap.switch"],
+                        "deps": ["backgrid", "bootstrap.datetimepicker", "bootstrap.switch"],
                     },
                     "pgadmin.backform": {
                         "deps": ['backform', "pgadmin.backgrid", "select2"],
@@ -156,6 +161,7 @@
                     modernizr: "{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min') }}",
                     jquery: "{{ url_for('static', filename='js/' + ('jquery-1.11.2' if config.DEBUG else 'jquery-1.11.2.min')) }}",
                     select2: "{{ url_for('static', filename='js/select2/' + ('select2.full' if config.DEBUG else 'select2.full.min')) }}",
+                    moment: "{{ url_for('static', filename='js/moment-with-locales' + ('' if config.DEBUG else '.min')) }}",
                     underscore: "{{ url_for('static', filename='js/' + ('underscore' if config.DEBUG else 'underscore-min')) }}",
                     "underscore.string": "{{ url_for('static', filename='js/' + ('underscore.string' if config.DEBUG else 'underscore.string.min')) }}",
                     bootstrap: "{{ url_for('static', filename='js/' + ('bootstrap' if config.DEBUG else 'bootstrap.min')) }}",
@@ -163,7 +169,8 @@
                     'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults') }}",
                     backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
                     "backbone.paginator": "{{ url_for('static', filename='js/' + ('backbone.paginator' if config.DEBUG else 'backbone.paginator.min')) }}",
-                    "bootstrap.datepicker": "{{ url_for('static', filename='js/' + ('bootstrap-datepicker' if config.DEBUG else 'bootstrap-datepicker.min')) }}",
+                    "bootstrap.datepicker": "{{ url_for('static', filename='js/bootstrap-datepicker' + ('' if config.DEBUG else '.min')) }}",
+                    "bootstrap.datetimepicker": "{{ url_for('static', filename='js/bootstrap-datetimepicker' + ('' if config.DEBUG else '.min')) }}",
                     "bootstrap.switch": "{{ url_for('static', filename='js/' + ('bootstrap-switch' if config.DEBUG else 'bootstrap-switch.min')) }}",
                     backform: "{{ url_for('static', filename='js/backform') }}",
                     backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",

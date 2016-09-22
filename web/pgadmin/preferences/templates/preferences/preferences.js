@@ -210,12 +210,9 @@ define(
                 case 'numeric':
                   return 'numeric';
                 case 'date':
-                  // TODO::
-                  // Datetime picker Control is missing at the moment, replace
-                  // once it has been implemented.
                   return 'datepicker';
                 case 'datetime':
-                  return 'datepicker';
+                  return 'datetimepicker';
                 case 'options':
                   var opts = [];
                   // Convert the array to SelectControl understandable options.
