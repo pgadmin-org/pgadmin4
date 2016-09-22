@@ -49,6 +49,8 @@ private slots:
     void openUrl();
     void preferences();
     void about();
+    void zoomIn();
+    void zoomOut();
 
 public slots:
     void tabIndexChanged(int index);
@@ -69,6 +71,8 @@ private:
     QShortcut *preferencesShortcut;
     QShortcut *exitShortcut;
     QShortcut *aboutShortcut;
+    QShortcut *zoomInShortcut;
+    QShortcut *zoomOutShortcut;
 
     QGridLayout  *m_tabGridLayout;
     QGridLayout  *m_mainGridLayout;

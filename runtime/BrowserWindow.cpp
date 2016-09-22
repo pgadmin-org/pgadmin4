@@ -105,6 +105,10 @@ BrowserWindow::BrowserWindow(QString url)
     restoreGeometry(settings.value("Browser/Geometry").toByteArray());
     restoreState(settings.value("Browser/WindowState").toByteArray());
 
+    // Set the initial zoom
+    qreal zoom = settings.value("Browser/Zoom", 0).toReal();
+    m_mainWebView->setZoomFactor(zoom);
+
     // The last save location
     m_last_open_folder_path = settings.value("Browser/LastSaveLocation", QDir::homePath()).toString();
 
@@ -146,6 +150,16 @@ void BrowserWindow::createActions()
     aboutShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_A), this);
     aboutShortcut->setContext(Qt::ApplicationShortcut);
     connect(aboutShortcut, SIGNAL(activated()), this, SLOT(about()));
+
+    // Zoom in
+    zoomInShortcut = new QShortcut(QKeySequence(QKeySequence::ZoomIn), this);
+    zoomInShortcut->setContext(Qt::ApplicationShortcut);
+    connect(zoomInShortcut, SIGNAL(activated()), this, SLOT(zoomIn()));
+
+    // Zoom out
+    zoomOutShortcut = new QShortcut(QKeySequence(QKeySequence::ZoomOut), this);
+    zoomOutShortcut->setContext(Qt::ApplicationShortcut);
+    connect(zoomOutShortcut, SIGNAL(activated()), this, SLOT(zoomOut()));
 }
 
 
@@ -192,7 +206,7 @@ int BrowserWindow::findURLTab(const QUrl &name)
     int tabCount = 0;
     WebViewWindow *webviewPtr = NULL;
 
-    for (tabCount = 1;tabCount < m_tabWidget->count();tabCount++)
+    for (tabCount = 1; tabCount < m_tabWidget->count(); tabCount++)
     {
         QWidget *tab = m_tabWidget->widget(tabCount);
         if (tab != NULL)
@@ -202,12 +216,12 @@ int BrowserWindow::findURLTab(const QUrl &name)
             {
                 if (widgetPtr != NULL)
                 {
-	            webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
 
-	            if (webviewPtr != NULL && !QString::compare(webviewPtr->getFirstLoadURL(),name.host(), Qt::CaseInsensitive))
-	            {
-		        m_tabWidget->setCurrentIndex(tabCount);
-		        return 1;
+                    if (webviewPtr != NULL && !QString::compare(webviewPtr->getFirstLoadURL(),name.host(), Qt::CaseInsensitive))
+                    {
+                        m_tabWidget->setCurrentIndex(tabCount);
+                        return 1;
                     }
                 }
             }
@@ -248,6 +262,7 @@ void BrowserWindow::download(const QNetworkRequest &request)
     if (save_dialog.exec() == QDialog::Accepted) {
         fileName = save_dialog.selectedFiles().first();
         f_name = fileName.replace(m_dir, "");
+
         // Remove the first character(/) from fiename
         f_name.remove(0,1);
         m_defaultFilename = f_name;
@@ -297,7 +312,8 @@ void BrowserWindow::download(const QNetworkRequest &request)
                 {
                     m_downloadStarted = 1;
                     m_downloadCancelled = 0;
-                    // Connect the signal for downloadProgress and downloadFinished
+
+                    // Connect the signals for downloadProgress and downloadFinished
                     connect( reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadFileProgress(qint64, qint64)) );
                     connect( reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
                 }
@@ -343,9 +359,11 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
         m_progressDialog->setMinimumWidth(450);
         m_progressDialog->setMinimumHeight(80);
         m_progressDialog->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
         // Register slot for file download cancel request
         QObject::connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(progressCanceled()));
         m_reply = reply;
+
         // Show downloading progress bar
         m_progressDialog->show();
     }
@@ -371,6 +389,7 @@ void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
             m_downloadFilename.clear();
             m_defaultFilename.clear();
             m_downloadCancelled = 0;
+
             if (m_file)
             {
                 m_file->close();
@@ -428,6 +447,7 @@ void BrowserWindow::downloadFinished()
     m_defaultFilename.clear();
     m_downloadStarted = 0;
     m_downloadCancelled = 0;
+
     if (m_file)
     {
         m_file->close();
@@ -527,12 +547,12 @@ void BrowserWindow::unsupportedContent(QNetworkReply * reply)
 void BrowserWindow::tabIndexChanged(int index)
 {
     int tabCount = 1;
-    for (tabCount = 1;tabCount < m_tabWidget->count();tabCount++)
+    for (tabCount = 1; tabCount < m_tabWidget->count(); tabCount++)
     {
         if (tabCount != index)
-	    m_tabWidget->showHideToolButton(tabCount,0);
+            m_tabWidget->showHideToolButton(tabCount, 0);
         else
-	    m_tabWidget->showHideToolButton(tabCount,1);
+            m_tabWidget->showHideToolButton(tabCount, 1);
     }
 }
 
@@ -546,9 +566,9 @@ void BrowserWindow::closetabs()
 
     // If QTabWidget contains only one tab then hide the TabBar window
     if ((totalTabs - 1) < 2)
-	m_tabWidget->tabBar()->setVisible(false);
+	    m_tabWidget->tabBar()->setVisible(false);
     else
-	m_tabWidget->tabBar()->setVisible(true);
+	    m_tabWidget->tabBar()->setVisible(true);
 
     QObject *senderPtr = QObject::sender();
     if (senderPtr != NULL)
@@ -568,7 +588,7 @@ void BrowserWindow::closetabs()
             delete tab;
 
         // Adjust the tab index value if the tab is closed in between
-        for (loopCount = 1;loopCount < totalTabs;loopCount++)
+        for (loopCount = 1; loopCount < totalTabs; loopCount++)
         {
             if (index > loopCount)
                 continue;
@@ -684,13 +704,17 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
 
     if (!tabFound)
     {
+        QSettings settings;
+        qreal zoom = settings.value("Browser/Zoom", 0).toReal();
+
         m_addNewTab = new QWidget(m_tabWidget);
         m_addNewGridLayout = new QGridLayout(m_addNewTab);
         m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
         m_addNewWebView = new WebViewWindow(m_addNewTab);
+        m_addNewWebView->setZoomFactor(zoom);
 
-	// Listen for the download request from the web page
-	m_addNewWebView->page()->setForwardUnsupportedContent(true);
+        // Listen for the download request from the web page
+        m_addNewWebView->page()->setForwardUnsupportedContent(true);
         connect(m_addNewWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
         connect(m_addNewWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
 
@@ -762,6 +786,79 @@ void BrowserWindow::about()
 {
     QMessageBox::about(this, tr("About %1").arg(PGA_APP_NAME), tr("%1 - PostgreSQL Tools").arg(PGA_APP_NAME));
 }
+
+
+// Zoom in
+void BrowserWindow::zoomIn()
+{
+    int tabCount = 0;
+    WebViewWindow *webviewPtr = NULL;
+
+    // Loop through all the tabs
+    for (tabCount = 0; tabCount < m_tabWidget->count(); tabCount++)
+    {
+        QWidget *tab = m_tabWidget->widget(tabCount);
+        if (tab != NULL)
+        {
+            // Find and loop through any child controls
+            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+            foreach( QWidget* widgetPtr, widgetList )
+            {
+                if (widgetPtr != NULL)
+                {
+                    // If it's a web view control, set the zoom level based on the main view
+                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+
+                    if (webviewPtr != NULL)
+                    {
+                        webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() + 0.1);
+                    }
+                }
+            }
+        }
+    }
+
+    // Save the zoom factor for next time
+    QSettings settings;
+    settings.setValue("Browser/Zoom", m_mainWebView->zoomFactor());
+}
+
+
+// Zoom out
+void BrowserWindow::zoomOut()
+{
+    int tabCount = 0;
+    WebViewWindow *webviewPtr = NULL;
+
+    // Loop through all the tabs
+    for (tabCount = 0; tabCount < m_tabWidget->count(); tabCount++)
+    {
+        QWidget *tab = m_tabWidget->widget(tabCount);
+        if (tab != NULL)
+        {
+            // Find and loop through any child controls
+            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+            foreach( QWidget* widgetPtr, widgetList )
+            {
+                if (widgetPtr != NULL)
+                {
+                    // If it's a web view control, set the zoom level based on the main view
+                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+
+                    if (webviewPtr != NULL)
+                    {
+                        webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() - 0.1);
+                    }
+                }
+            }
+        }
+    }
+
+    // Save the zoom factor for next time
+    QSettings settings;
+    settings.setValue("Browser/Zoom", m_mainWebView->zoomFactor());
+}
+
 
 // Open an arbitrary URL
 void BrowserWindow::openUrl()
