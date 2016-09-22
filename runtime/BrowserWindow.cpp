@@ -106,7 +106,7 @@ BrowserWindow::BrowserWindow(QString url)
     restoreState(settings.value("Browser/WindowState").toByteArray());
 
     // Set the initial zoom
-    qreal zoom = settings.value("Browser/Zoom", 0).toReal();
+    qreal zoom = settings.value("Browser/Zoom", m_mainWebView->zoomFactor()).toReal();
     m_mainWebView->setZoomFactor(zoom);
 
     // The last save location
@@ -704,14 +704,11 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
 
     if (!tabFound)
     {
-        QSettings settings;
-        qreal zoom = settings.value("Browser/Zoom", 0).toReal();
-
         m_addNewTab = new QWidget(m_tabWidget);
         m_addNewGridLayout = new QGridLayout(m_addNewTab);
         m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
         m_addNewWebView = new WebViewWindow(m_addNewTab);
-        m_addNewWebView->setZoomFactor(zoom);
+        m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
 
         // Listen for the download request from the web page
         m_addNewWebView->page()->setForwardUnsupportedContent(true);
