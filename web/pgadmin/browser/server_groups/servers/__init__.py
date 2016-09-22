@@ -24,6 +24,7 @@ from pgadmin.utils.menu import MenuItem
 import config
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User
+from pgadmin.utils.driver import get_driver
 
 
 def has_any(data, keys):
@@ -64,7 +65,6 @@ class ServerModule(sg.ServerGroupPluginModule):
         servers = Server.query.filter_by(user_id=current_user.id,
                                          servergroup_id=gid)
 
-        from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         for server in servers:
@@ -156,7 +156,6 @@ class ServerModule(sg.ServerGroupPluginModule):
         sub-modules at once.
         """
         if first_registration:
-            from pgadmin.utils.driver import get_driver
             driver = get_driver(PG_DEFAULT_DRIVER, app)
             app.jinja_env.filters['qtLiteral'] = driver.qtLiteral
             app.jinja_env.filters['qtIdent'] = driver.qtIdent
@@ -224,7 +223,6 @@ class ServerNode(PGChildNodeView):
         servers = Server.query.filter_by(user_id=current_user.id,
                                          servergroup_id=gid)
 
-        from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         for server in servers:
@@ -293,7 +291,6 @@ class ServerNode(PGChildNodeView):
                 )
             )
 
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
         conn = manager.connection()
         connected = conn.connected()
@@ -353,6 +350,7 @@ class ServerNode(PGChildNodeView):
         else:
             try:
                 for s in servers:
+                    get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                     db.session.delete(s)
                 db.session.commit()
             except Exception as e:
@@ -405,7 +403,6 @@ class ServerNode(PGChildNodeView):
             request.data, encoding='utf-8'
         )
 
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
@@ -473,7 +470,6 @@ class ServerNode(PGChildNodeView):
         ).first()
         res = []
 
-        from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         for server in servers:
@@ -519,7 +515,6 @@ class ServerNode(PGChildNodeView):
             id=server.servergroup_id
         ).first()
 
-        from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         manager = driver.connection_manager(sid)
@@ -594,7 +589,6 @@ class ServerNode(PGChildNodeView):
             user = None
 
             if 'connect_now' in data and data['connect_now']:
-                from pgadmin.utils.driver import get_driver
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
                 manager.update(server)
                 conn = manager.connection()
@@ -663,7 +657,6 @@ class ServerNode(PGChildNodeView):
         return make_json_response(data='')
 
     def statistics(self, gid, sid):
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
 
@@ -717,7 +710,6 @@ class ServerNode(PGChildNodeView):
 
     def connect_status(self, gid, sid):
         """Check and return the connection status."""
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         res = conn.connected()
@@ -769,7 +761,6 @@ class ServerNode(PGChildNodeView):
         save_password = False
 
         # Connect the Server
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
 
@@ -902,7 +893,6 @@ class ServerNode(PGChildNodeView):
             return bad_request(gettext("Server not found."))
 
         # Release Connection
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
         status = manager.release()
@@ -923,7 +913,6 @@ class ServerNode(PGChildNodeView):
         """Reload the server configuration"""
 
         # Reload the server configurations
-        from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
 
@@ -958,7 +947,6 @@ class ServerNode(PGChildNodeView):
         try:
             data = request.form
             restore_point_name = data['value'] if data else None
-            from pgadmin.utils.driver import get_driver
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
 
@@ -1033,7 +1021,6 @@ class ServerNode(PGChildNodeView):
             if user is None:
                 return unauthorized(gettext("Unauthorized request."))
 
-            from pgadmin.utils.driver import get_driver
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
 
@@ -1100,7 +1087,6 @@ class ServerNode(PGChildNodeView):
             )
 
         try:
-            from pgadmin.utils.driver import get_driver
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
 

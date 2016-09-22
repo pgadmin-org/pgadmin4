@@ -1721,6 +1721,17 @@ class Driver(BaseDriver):
         """
         return self.connection_manager(sid).release(database, conn_id)
 
+    def delete_manager(self, sid):
+        """
+        Delete manager for given server id.
+        """
+        manager = self.connection_manager(sid)
+        if manager is not None:
+            manager.release()
+        if session['_id'] in self.managers and \
+                str(sid) in self.managers[session['_id']]:
+            del self.managers[session['_id']][str(sid)]
+
     def gc(self):
         """
         Release the connections for the sessions, which have not pinged the
