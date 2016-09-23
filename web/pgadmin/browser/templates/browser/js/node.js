@@ -148,7 +148,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               applies: ['object', 'context'], callback: 'show_script',
               priority: 4, label: type_label, category: 'Scripts',
               data: {'script': stype}, icon: 'fa fa-pencil',
-              enable: this.check_user_permission
+              enable: self.check_user_permission
             }]);
           });
       }
@@ -160,6 +160,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
     // if no permission matched then do not allow create script
     ///////
     check_user_permission: function(itemData, item, data) {
+      // Do not display CREATE script on server group and server node
+      if (itemData._type == 'server-group' || itemData._type == 'server') {
+        return false;
+      }
       var node = pgBrowser.Nodes[itemData._type],
         parentData = node.getTreeNodeHierarchy(item);
       if ( _.indexOf(['create','insert','update', 'delete'], data.script) != -1) {
