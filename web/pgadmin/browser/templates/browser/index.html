@@ -156,7 +156,7 @@ require.onResourceLoad = function (context, map, depMaps) {
                         <li><a href="#" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
                         <li class="divider"></li>
                         {% endif %}
-                        <li><a href="{{ url_for('security.logout') }}">{{ _('Logout') }}</a></li>
+                        <li><a href="{{ url_for('security.logout') }}?next={{url_for('browser.index')}}">{{ _('Logout') }}</a></li>
                     </ul>
                 </li>
             </ul>
