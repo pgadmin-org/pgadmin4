@@ -210,19 +210,18 @@ class SequenceView(PGChildNodeView):
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     row['oid'],
-                    sid,
+                    scid,
                     row['name'],
                     icon="icon-%s" % self.node_type
                 ),
                 status=200
             )
 
-
         for row in rset['rows']:
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    sid,
+                    scid,
                     row['name'],
                     icon="icon-%s" % self.node_type
                 ))
