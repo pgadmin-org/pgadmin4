@@ -269,27 +269,29 @@ if __name__ == '__main__':
     except SystemExit:
         drop_objects()
 
-    print("\nTest Result Summary", file=sys.stderr)
-    print("============================", file=sys.stderr)
+    print("\n======================================================================", file=sys.stderr)
+    print("Test Result Summary", file=sys.stderr)
+    print("======================================================================\n", file=sys.stderr)
+
     for server_res in test_result:
-        failed_cases = "\n\t".join(test_result[server_res][1])
-        skipped_cases = "\n\t".join(test_result[server_res][2])
+        failed_cases = "\n\t\t".join(test_result[server_res][1])
+        skipped_cases = "\n\t\t".join(test_result[server_res][2])
         total_failed = len(test_result[server_res][1])
         total_skipped = len(test_result[server_res][2])
         total_passed_cases = int(
             test_result[server_res][0]) - total_failed - total_skipped
 
         print(
-            "%s: %s test%s passed, %s test%s failed%s%s,"
-            " %s test%s skipped%s%s" %
+            "%s:\n\n\t%s test%s passed\n\t%s test%s failed%s%s"
+            "\n\t%s test%s skipped%s%s\n" %
             (server_res, total_passed_cases,
              (total_passed_cases != 1 and "s" or ""),
              total_failed, (total_failed != 1 and "s" or ""),
-             (total_failed != 0 and ":\n\t" or ""), failed_cases,
+             (total_failed != 0 and ":\n\t\t" or ""), failed_cases,
              total_skipped, (total_skipped != 1 and "s" or ""),
-             (total_skipped != 0 and ":\n\t" or ""), skipped_cases),
+             (total_skipped != 0 and ":\n\t\t" or ""), skipped_cases),
             file=sys.stderr)
 
-    print("============================", file=sys.stderr)
+    print("======================================================================\n", file=sys.stderr)
 
-    print("\nPlease check output in file: %s/regression.log " % CURRENT_PATH)
+    print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
