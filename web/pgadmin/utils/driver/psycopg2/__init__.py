@@ -74,24 +74,25 @@ psycopg2.extensions.register_type(
         'NUMERIC_RANGE_TEXT', psycopg2.STRING)
 )
 
-def register_date_typecasters(connection):
+def register_string_typecasters(connection):
     """
-    Casts date and timestamp values to string, resolves issues
-    with out of range dates (e.g. BC) which psycopg2 can't handle
+    Casts various types to string, resolving issues with out of
+    range dates (e.g. BC) and rounded numbers which psycopg2 can't
+    handle
     """
 
-    def cast_date(value, cursor):
+    def return_as_string(value, cursor):
         return value
 
     cursor = connection.cursor()
-    cursor.execute('SELECT NULL::date, NULL::timestamp, NULL::timestamptz')
-    date_oid = cursor.description[0][1]
-    timestamp_oid = cursor.description[1][1]
-    timestamptz_oid = cursor.description[2][1]
-    oids = (date_oid, timestamp_oid, timestamptz_oid)
-    new_type = psycopg2.extensions.new_type(oids, 'DATE', cast_date)
+    cursor.execute('SELECT NULL::date, NULL::timestamp, NULL::timestamptz, NULL::bigint')
+    # Oid(s): Date, timestamp, timestamptz, bigint, double precision
+    oids = (
+        cursor.description[0][1], cursor.description[1][1],
+        cursor.description[2][1], cursor.description[3][1]
+    )
+    new_type = psycopg2.extensions.new_type(oids, 'RETURN_STRING', return_as_string)
     psycopg2.extensions.register_type(new_type)
-
 
 class Connection(BaseConnection):
     """
@@ -362,7 +363,7 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
                 self.conn.autocommit = False
             else:
                 self.conn.autocommit = True
-            register_date_typecasters(self.conn)
+            register_string_typecasters(self.conn)
 
         status = _execute(cur, """
 SET DateStyle=ISO;
