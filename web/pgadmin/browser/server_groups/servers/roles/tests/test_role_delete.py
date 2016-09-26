@@ -6,53 +6,40 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
+import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from regression import test_server_dict
 from . import utils as roles_utils
 
 
 class LoginRoleDeleteTestCase(BaseTestGenerator):
     """This class has delete role scenario"""
-
     scenarios = [
         # Fetching default URL for roles node.
         ('Check Role Node', dict(url='/browser/role/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function used to add the sever and roles
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the roles!!!")
-
-        # Add the role
-        roles_utils.add_role(cls.tester, cls.server_connect_response,
-                             cls.server_group, cls.server_ids)
+    def setUp(self):
+        self.role_name = "role_delete_%s" % str(uuid.uuid4())[1:6]
+        self.role_id = roles_utils.create_role(self.server, self.role_name)
 
     def runTest(self):
-        """This function tests the delete role scenario"""
+        """This function test the delete role scenario"""
+        server_id = test_server_dict["server"][0]["server_id"]
+        response = self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(server_id) + '/' + str(self.role_id),
+            follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
 
-        roles_utils.delete_role(self.tester)
-
-    @classmethod
-    def tearDownClass(self):
-        """This function deletes the role,server and parent id file"""
-
-        server_utils.delete_server(self.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function delete the role from added server"""
+        connection = utils.get_db_connection(self.server['db'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'])
+        roles_utils.delete_role(connection, self.role_name)
 

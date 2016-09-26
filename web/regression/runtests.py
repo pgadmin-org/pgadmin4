@@ -182,14 +182,12 @@ def get_tests_result(test_suite):
                         error_case[0]).split('.')[-1].split()[0].strip(')')
                     if class_name not in failed_cases_result:
                         failed_cases_result.append(class_name)
-                        # TODO: Code remaining to count the skipped test cases
-                        # if test_suite.skipped:
-                        #     for skip_test in test_suite.skipped:
-                        #         class_name = str(
-                        #           skip_test[0]).split('.')[-1].split()[0].strip(')')
-                        #         if class_name not in failed_cases_result:
-                        #             skipped_cases_result.append(class_name)
-                        #         print(class_name)
+            if test_suite.skipped:
+                for skip_test in test_suite.skipped:
+                    class_name = str(
+                        skip_test[0]).split('.')[-1].split()[0].strip(')')
+                    if class_name not in failed_cases_result:
+                        skipped_cases_result.append(class_name)
         return total_ran, failed_cases_result, skipped_cases_result
     except Exception as exception:
         exception = "Exception: %s: line:%s %s" % (
@@ -275,15 +273,22 @@ if __name__ == '__main__':
     print("============================", file=sys.stderr)
     for server_res in test_result:
         failed_cases = "\n\t".join(test_result[server_res][1])
+        skipped_cases = "\n\t".join(test_result[server_res][2])
         total_failed = len(test_result[server_res][1])
-        # TODO : code remaining to handle '-1' condition
-        total_passed = int(test_result[server_res][0]) - total_failed
+        total_skipped = len(test_result[server_res][2])
+        total_passed_cases = int(
+            test_result[server_res][0]) - total_failed - total_skipped
 
-        print("%s: %s test%s passed, %s test%s failed %s%s" %
-              (server_res, total_passed, (total_passed != 1 and "s" or ""),
-               total_failed, (total_failed != 1 and "s" or ""),
-               (total_failed != 0 and ":\n\t" or ""), failed_cases),
-              file=sys.stderr)
+        print(
+            "%s: %s test%s passed, %s test%s failed%s%s,"
+            " %s test%s skipped%s%s" %
+            (server_res, total_passed_cases,
+             (total_passed_cases != 1 and "s" or ""),
+             total_failed, (total_failed != 1 and "s" or ""),
+             (total_failed != 0 and ":\n\t" or ""), failed_cases,
+             total_skipped, (total_skipped != 1 and "s" or ""),
+             (total_skipped != 0 and ":\n\t" or ""), skipped_cases),
+            file=sys.stderr)
 
     print("============================", file=sys.stderr)
 

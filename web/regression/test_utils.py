@@ -13,11 +13,11 @@ import sys
 import uuid
 import psycopg2
 import sqlite3
+from functools import partial
 
 import config
 import test_setup
 import regression
-from functools import partial
 
 SERVER_GROUP = test_setup.config_data['server_group']
 file_name = os.path.basename(__file__)
@@ -78,7 +78,7 @@ def get_config_data():
                 "db_password": srv['db_password'],
                 "role": "",
                 "sslmode": srv['sslmode'],
-                "tablespace_path": srv['tablespace_path']}
+                "tablespace_path": srv.get('tablespace_path', None)}
         server_data.append(data)
     return server_data
 
@@ -138,7 +138,9 @@ def create_database(server, db_name):
         connection.close()
         return db_id
     except Exception as exception:
-        raise Exception("Error while creating database. %s" % exception)
+        exception = "Error while creating database: %s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
 
 
 def drop_database(connection, database_name):
@@ -217,54 +219,6 @@ def delete_server_from_sqlite(sid):
         print(exception, file=sys.stderr)
 
 
-def create_tablespace(server, test_tablespace_name):
-    try:
-        connection = get_db_connection(server['db'],
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'])
-        old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
-        pg_cursor = connection.cursor()
-        pg_cursor.execute("CREATE TABLESPACE %s LOCATION '%s'" %
-                          (test_tablespace_name, server['tablespace_path']))
-        connection.set_isolation_level(old_isolation_level)
-        connection.commit()
-
-        # Get 'oid' from newly created tablespace
-        pg_cursor.execute(
-            "SELECT ts.oid from pg_tablespace ts WHERE ts.spcname='%s'" %
-            test_tablespace_name)
-        oid = pg_cursor.fetchone()
-        tspc_id = ''
-        if oid:
-            tspc_id = oid[0]
-        connection.close()
-        return tspc_id
-    except Exception as exception:
-        raise Exception("Error while creating tablespace. %s" % exception)
-
-
-def delete_tablespace(connection, test_tablespace_name):
-    try:
-        pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_tablespace ts WHERE"
-                          " ts.spcname='%s'" % test_tablespace_name)
-        tablespace_count = len(pg_cursor.fetchall())
-        if tablespace_count:
-            old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
-            pg_cursor.execute("DROP TABLESPACE %s" % test_tablespace_name)
-            connection.set_isolation_level(old_isolation_level)
-            connection.commit()
-        connection.close()
-    except Exception as exception:
-        exception = "%s: line:%s %s" % (
-            file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception, file=sys.stderr)
-
-
 def create_test_server(server_info):
     """
     This function create the test server which will act as parent server,
@@ -279,11 +233,6 @@ def create_test_server(server_info):
     # Create test database
     test_db_name = "test_db_%s" % str(uuid.uuid4())[1:8]
     db_id = create_database(server_info, test_db_name)
-
-    # TODO: Need to decide about test tablespace creation
-    # Create tablespace
-    # test_tablespace_name = "test_tablespace"
-    # tablespace_id = create_tablespace(server, test_tablespace_name)
 
     # Add server info to test_server_dict
     regression.test_server_dict["server"].append({"server_id": srv_id,
@@ -390,7 +339,32 @@ def _drop_objects(tester):
                                                      "pg_global"]:
                                 tablespace_name = tablespace[0]
                                 # Delete tablespace
-                                delete_tablespace(connection, tablespace_name)
+                                connection = get_db_connection(server_info[3],
+                                                               server_info[4],
+                                                               db_password,
+                                                               server_info[1],
+                                                               server_info[2])
+                                regression.tablespace_utils.delete_tablespace(
+                                    connection, tablespace_name)
+
+                    # Delete role
+                    connection = get_db_connection(server_info[3],
+                                                   server_info[4],
+                                                   db_password,
+                                                   server_info[1],
+                                                   server_info[2])
+                    pg_cursor = connection.cursor()
+                    pg_cursor.execute("SELECT * FROM pg_catalog.pg_roles")
+                    roles = pg_cursor.fetchall()
+                    if roles:
+                        for role_name in roles:
+                            # Do not delete default table spaces
+                            if role_name[0] not in ["postgres",
+                                                    "enterprisedb"]:
+                                role_name = role_name[0]
+                                # Delete role
+                                regression.roles_utils.delete_role(connection,
+                                                                   role_name)
 
             for server_info in all_servers:
                 server_id = server_info[5]

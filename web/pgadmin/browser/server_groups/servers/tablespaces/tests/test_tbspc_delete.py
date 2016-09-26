@@ -6,11 +6,13 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
+from __future__ import print_function
+import uuid
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from regression import test_server_dict
 from . import utils as tablespace_utils
 
 
@@ -22,37 +24,39 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
         ('Check Tablespace Node', dict(url='/browser/tablespace/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function used to add the sever
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the roles!!!")
-
-        # Add tablespace
-        tablespace_utils.add_table_space(cls.tester,
-                                         cls.server_connect_response,
-                                         cls.server_group, cls.server_ids)
+    def setUp(self):
+        if not self.server['tablespace_path']\
+                or self.server['tablespace_path'] is None:
+            message = "Skipped tablespace delete test case. Tablespace path" \
+                      " not configured for server: %s" % self.server['name']
+            # Skip the test case if tablespace_path not found.
+            self.skipTest(message)
+        self.tablespace_name = "tablespace_delete_%s" % str(uuid.uuid4())[1:6]
+        self.tablespace_id = tablespace_utils.create_tablespace(
+            self.server, self.tablespace_name)
 
     def runTest(self):
-        """This function tests the delete table space scenario"""
+        """This function tests the delete table space api"""
+        server_id = test_server_dict["server"][0]["server_id"]
+        tablespace_count = tablespace_utils.verify_table_space(
+            self.server, self.tablespace_name)
+        if tablespace_count == 0:
+            raise Exception("No tablespace(s) to delete!!!")
 
-        tablespace_utils.delete_table_space(self.tester)
+        response = self.tester.delete(self.url + str(utils.SERVER_GROUP)
+                                      + '/' + str(server_id) + '/'
+                                      + str(self.tablespace_id),
+                                      follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
+        delete_response_data = json.loads(response.data.decode('utf-8'))
+        self.assertEquals(delete_response_data['success'], 1)
 
-    @classmethod
-    def tearDownClass(cls):
-        """This function deletes the server and parent id file"""
+    def tearDown(self):
+        """This function deletes the tablespace"""
+        connection = utils.get_db_connection(self.server['db'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'])
+        tablespace_utils.delete_tablespace(connection, self.tablespace_name)
 
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()

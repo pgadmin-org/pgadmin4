@@ -6,62 +6,39 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from regression import test_server_dict
 from . import utils as roles_utils
 
 
 class LoginRoleGetTestCase(BaseTestGenerator):
     """This class tests the get role scenario"""
-
     scenarios = [
         # Fetching default URL for roles node.
         ('Check Role Node', dict(url='/browser/role/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function used to add the sever and roles
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to get the roles!!!")
-
-        # Add the role
-        roles_utils.add_role(cls.tester, cls.server_connect_response,
-                             cls.server_group, cls.server_ids)
+    def setUp(self):
+        self.role_name = "role_get_%s" % str(uuid.uuid4())[1:6]
+        self.role_id = roles_utils.create_role(self.server, self.role_name)
 
     def runTest(self):
         """This function test the get role scenario"""
+        server_id = test_server_dict["server"][0]["server_id"]
+        response = self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(server_id) + '/' + str(self.role_id),
+            follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
 
-        all_id = utils.get_ids()
-        server_ids = all_id["sid"]
-        role_ids_dict = all_id["lrid"][0]
-
-        for server_id in server_ids:
-            role_id = role_ids_dict[int(server_id)]
-            response = self.tester.get(
-                self.url + str(utils.SERVER_GROUP) + '/' +
-                str(server_id) + '/' + str(role_id),
-                follow_redirects=True)
-            self.assertEquals(response.status_code, 200)
-
-    @classmethod
-    def tearDownClass(cls):
-        """This function deletes the role,server and parent id file"""
-
-        roles_utils.delete_role(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function delete the role from added server"""
+        connection = utils.get_db_connection(self.server['db'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'])
+        roles_utils.delete_role(connection, self.role_name)
