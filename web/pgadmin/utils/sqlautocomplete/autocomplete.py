@@ -671,6 +671,11 @@ class SQLAutoComplete(object):
                                                 full_text, identifier)
 
     def suggest_based_on_last_token(self, token, text_before_cursor, full_text, identifier):
+        # New version of sqlparse sends tuple, we need to make it
+        # compatible with our logic
+        if isinstance(token, tuple) and len(token) > 1:
+            token = token[1]
+
         if isinstance(token, string_types):
             token_v = token.lower()
         elif isinstance(token, Comparison):
