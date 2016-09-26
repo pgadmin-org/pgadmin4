@@ -13,7 +13,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
 import simplejson as json
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings
@@ -505,7 +505,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     )
                 )
         try:
-            SQL, name = self.getSQL(gid, sid, data)
+            SQL, nameOrError = self.getSQL(gid, sid, data)
+            if SQL is None:
+                return nameOrError
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -523,6 +525,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 )
             )
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
@@ -534,7 +537,9 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             request.data, encoding='utf-8'
         )
         try:
-            SQL, name = self.getSQL(gid, sid, data, vid)
+            SQL, nameOrError = self.getSQL(gid, sid, data, vid)
+            if SQL is None:
+                return nameOrError
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_void(SQL)
             if not status:
@@ -567,6 +572,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 )
             )
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
@@ -626,6 +632,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     def _get_schema(self, scid):
@@ -657,12 +664,15 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             except ValueError:
                 data[k] = v
 
-        sql, name = self.getSQL(gid, sid, data, vid)
+        sql, nameOrError = self.getSQL(gid, sid, data, vid)
+        if sql is None:
+            return nameOrError
 
         sql = sql.strip('\n').strip(' ')
 
         if sql == '':
             sql = "--modified SQL"
+
         return make_json_response(
             data=sql,
             status=200
@@ -723,7 +733,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return None, internal_server_error(errormsg=res)
 
             old_data = res['rows'][0]
 
@@ -748,7 +758,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     [self.template_path, 'sql/update.sql']), data=data,
                     o_data=old_data, conn=self.conn)
             except Exception as e:
-                return internal_server_error(errormsg=str(e))
+                current_app.logger.exception(e)
+                return None, internal_server_error(errormsg=str(e))
         else:
             required_args = [
                 'name',
@@ -757,7 +768,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             ]
             for arg in required_args:
                 if arg not in data:
-                    return " -- definition incomplete"
+                    return None, make_json_response(
+                        data=gettext(" -- definition incomplete"),
+                        status=200
+                    )
 
             # Get Schema Name from its OID.
             if 'schema' in data and isinstance(data['schema'], int):
@@ -771,6 +785,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 SQL += "\n"
                 SQL += render_template("/".join(
                     [self.template_path, 'sql/grant.sql']), data=data)
+
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     def get_index_column_details(self, idx, data):
@@ -1061,6 +1076,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
@@ -1304,7 +1320,7 @@ class MViewNode(ViewNode, VacuumSettings):
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return None, internal_server_error(errormsg=res)
             old_data = res['rows'][0]
 
             if 'name' not in data:
@@ -1388,7 +1404,8 @@ class MViewNode(ViewNode, VacuumSettings):
                     [self.template_path, 'sql/update.sql']), data=data,
                     o_data=old_data, conn=self.conn)
             except Exception as e:
-                return internal_server_error(errormsg=str(e))
+                current_app.logger.exception(e)
+                return None, internal_server_error(errormsg=str(e))
         else:
             required_args = [
                 'name',
@@ -1397,7 +1414,10 @@ class MViewNode(ViewNode, VacuumSettings):
             ]
             for arg in required_args:
                 if arg not in data:
-                    return " -- definition incomplete"
+                    return None, make_json_response(
+                        data=gettext(" -- definition incomplete"),
+                        status=200
+                    )
 
             # Get Schema Name from its OID.
             if 'schema' in data and isinstance(data['schema'], int):
@@ -1656,6 +1676,7 @@ class MViewNode(ViewNode, VacuumSettings):
             )
 
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
 
