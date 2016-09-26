@@ -71,6 +71,8 @@ class ServerModule(sg.ServerGroupPluginModule):
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
+            in_recovery = None
+            wal_paused = None
             if connected:
                 status, result = conn.execute_dict("""
                     SELECT CASE WHEN usesuper
@@ -83,11 +85,9 @@ class ServerModule(sg.ServerGroupPluginModule):
                            END as isreplaypaused
                     FROM pg_user WHERE usename=current_user""")
 
-                in_recovery = result['rows'][0]['inrecovery'];
-                wal_paused = result['rows'][0]['isreplaypaused']
-            else:
-                in_recovery = None
-                wal_paused = None
+                if len(result['rows']):
+                    in_recovery = result['rows'][0]['inrecovery']
+                    wal_paused = result['rows'][0]['isreplaypaused']
 
             yield self.generate_browser_node(
                 "%d" % (server.id),
