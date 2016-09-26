@@ -351,16 +351,16 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
-          id: 'tblacl', label: '{{ _('Default TABLE Privileges') }}', type: 'text',
+          id: 'tblacl', label: '{{ _('Default TABLE privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
-          id: 'seqacl', label: '{{ _('Default SEQUENCE Privileges') }}', type: 'text',
+          id: 'seqacl', label: '{{ _('Default SEQUENCE privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true
         },{
-          id: 'funcacl', label: '{{ _('Default FUNCTION Privileges') }}',
+          id: 'funcacl', label: '{{ _('Default FUNCTION privileges') }}',
           group: '{{ _('Security') }}', type: 'text', mode: ['properties'], disabled: true
         },{
-          id: 'typeacl', label: '{{ _('Default TYPE Privileges') }}', type: 'text',
+          id: 'typeacl', label: '{{ _('Default TYPE privileges') }}', type: 'text',
           group: '{{ _('Security') }}', mode: ['properties'], disabled: true, min_version: 90200,
           visible: function() {
             return this.version_compatible;
