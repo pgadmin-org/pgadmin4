@@ -108,14 +108,17 @@ Execution:
   and registered automatically by its module name in
   'pgadmin4/web/pgadmin/utils/test.py' file.
 
+- Change to the regression test directory:
+     run 'cd web/regression'
+
 - Execute the test framework for all nodes
-     run 'regression/runtests.py --pkg all' or just:
-         'regression/runtests.py'
+     run 'python runtests.py --pkg all' or just:
+         'python runtests.py'
 
 - Execute test framework for single node at a time
 
      Example 1) Run test framework for 'browser' node
-     run 'regression/runtests.py --pkg browser'
+     run 'python runtests.py --pkg browser'
 
      Example 2) Run test framework for 'database' node
-     run 'regression/runtests.py --pkg browser.server_groups.servers.databases'
+     run 'python runtests.py --pkg browser.server_groups.servers.databases'

@@ -360,7 +360,7 @@ if __name__ == '__main__':
     print("======================================\n")
 
     local_config = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
+        os.path.dirname(os.path.realpath(__file__)),
         'config_local.py'
     )
 
