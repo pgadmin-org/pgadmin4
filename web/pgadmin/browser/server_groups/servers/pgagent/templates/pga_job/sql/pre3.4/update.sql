@@ -16,5 +16,5 @@ WHERE jobid = {{ jid }};
 {% if 'added' in data.jsteps %}{% for step in data.jsteps.added %}{{ STEP.INSERT(has_connstr, jid, step) }}{% endfor %}{% endif %}{% endif %}{% if 'jschedules' in data %}
 
 {% if 'deleted' in data.jschedules %}{% for schedule in data.jschedules.deleted %}{{ SCHEDULE.DELETE(jid, schedule.jscid) }}{% endfor %}{% endif %}
-{% if 'changed' in data.jschedules %}{% for schedule in data.jschedules.changed %}{{ SCHEDULE.UPDATE(has_connstr, jid, schedule.jscid, schedule) }}{% endfor %}{% endif %}
-{% if 'added' in data.jschedules %}{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(has_connstr, jid, schedule) }}{% endfor %}{% endif %}{% endif %}
+{% if 'changed' in data.jschedules %}{% for schedule in data.jschedules.changed %}{{ SCHEDULE.UPDATE(jid, schedule.jscid, schedule) }}{% endfor %}{% endif %}
+{% if 'added' in data.jschedules %}{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(jid, schedule) }}{% endfor %}{% endif %}{% endif %}

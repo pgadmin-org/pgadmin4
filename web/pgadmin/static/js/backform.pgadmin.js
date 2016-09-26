@@ -1201,6 +1201,12 @@
         $("<div></div>").addClass('pgadmin-control-error-message pg-el-xs-offset-4 pg-el-xs-8 help-block').text(error)
         );
     },
+    cleanup: function() {
+      // Clean up existing grid if any (in case of re-render)
+      if (this.grid) {
+        this.grid.remove();
+      }
+    },
     clearInvalid: function() {
       this.$el.removeClass('subnode-error');
       this.$el.find(".pgadmin-control-error-message").remove();
