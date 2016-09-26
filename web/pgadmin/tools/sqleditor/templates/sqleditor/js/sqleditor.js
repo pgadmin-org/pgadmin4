@@ -1601,10 +1601,12 @@ define(
                 self._poll();
               }
               else {
+                self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 self.update_msg_history(false, res.data.result);
               }
             },
             error: function(e) {
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
               if (e.readyState == 0) {
                 self.update_msg_history(false,
                   '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
@@ -1668,6 +1670,7 @@ define(
                       $("#btn-cancel-query").prop('disabled', true);
                     }
                     is_query_running = false;
+                    self.trigger('pgadmin-sqleditor:loading-icon:hide');
                   }
                   else if (res.data.status === 'Busy') {
                     // If status is Busy then poll the result by recursive call to the poll function
@@ -1678,7 +1681,7 @@ define(
                     }
                   }
                   else if (res.data.status === 'NotConnected') {
-
+                    self.trigger('pgadmin-sqleditor:loading-icon:hide');
                     // Enable/Disable query tool button only if is_query_tool is true.
                     if (self.is_query_tool) {
                       self.disable_tool_buttons(false);
@@ -1687,11 +1690,13 @@ define(
                     self.update_msg_history(false, res.data.result, true);
                   }
                   else if (res.data.status === 'Cancel') {
+                    self.trigger('pgadmin-sqleditor:loading-icon:hide');
                     self.update_msg_history(false, "Execution Cancelled!", true)
                   }
                 },
                 error: function(e) {
                   // Enable/Disable query tool button only if is_query_tool is true.
+                  self.trigger('pgadmin-sqleditor:loading-icon:hide');
                   if (self.is_query_tool) {
                     self.disable_tool_buttons(false);
                     $("#btn-cancel-query").prop('disabled', true);
@@ -2208,13 +2213,12 @@ define(
                     'query': r.sql, 'row_affected': r.rows_affected,
                     'total_time': self.total_time, 'message': r.result
                   });
-                  self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 });
+                self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
                 grid.invalidate();
               },
               error: function(e) {
-                self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 if (e.readyState == 0) {
                   self.update_msg_history(false,
                     '{{ _('Not connected to the server or the connection to the server has been closed.') }}'
@@ -2430,6 +2434,7 @@ define(
             url: "{{ url_for('sqleditor.index') }}" + "filter/get/" + self.transId,
             method: 'GET',
             success: function(res) {
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
               if (res.data.status) {
                 $('#filter').removeClass('hidden');
                 $('#editor-panel').addClass('sql-editor-busy-fetching');
@@ -2439,9 +2444,7 @@ define(
                   self.gridView.filter_obj.setValue('');
                 else
                   self.gridView.filter_obj.setValue(res.data.result);
-              }
-              else {
-                self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              } else {
                 setTimeout(
                   function() {
                     alertify.alert('Get Filter Error', res.data.result);
@@ -2995,6 +2998,7 @@ define(
                 self._poll();
               }
               else {
+                self.trigger('pgadmin-sqleditor:loading-icon:hide');
                 self.disable_tool_buttons(false);
                 $("#btn-cancel-query").prop('disabled', true);
                 self.update_msg_history(false, res.data.result);
@@ -3004,6 +3008,7 @@ define(
               }
             },
             error: function(e) {
+              self.trigger('pgadmin-sqleditor:loading-icon:hide');
               self.disable_tool_buttons(false);
               $("#btn-cancel-query").prop('disabled', true);
 
