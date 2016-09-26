@@ -1,0 +1,28 @@
+.icon-pga_job {
+  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job.png') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pga_job-disabled {
+  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job-disabled.png') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.pg-el-container[el=sm] .pga-round-border {
+  border: 1px solid darkgray;
+  border-radius: 12px;
+}
+
+.pg-el-container[el=sm] .pga-round-border {
+  margin: 5px;
+}
+
+div[role=tabpanel] > .pgadmin-control-group.form-group.pg-el-xs-12.jscexceptions {
+  min-height: 400px;
+}

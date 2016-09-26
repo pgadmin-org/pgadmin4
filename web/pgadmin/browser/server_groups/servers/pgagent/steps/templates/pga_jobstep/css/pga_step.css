@@ -1,0 +1,7 @@
+.icon-pga_jobstep {
+  background-image: url('{{ url_for('NODE-pga_jobstep.static', filename='img/pga_jobstep.png') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

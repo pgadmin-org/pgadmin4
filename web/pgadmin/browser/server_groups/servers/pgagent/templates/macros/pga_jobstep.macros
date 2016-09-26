@@ -1,0 +1,51 @@
+{################################################}
+{# This will be specific macro for pga_jobstep. #}
+{################################################}
+{% macro INSERT(has_connstr, jid, data) -%}
+-- Inserting a step (jobid: {{ jid|qtLiteral }})
+INSERT INTO pgagent.pga_jobstep (
+    jstjobid, jstname, jstenabled, jstkind,
+    {% if has_connstr %}jstconnstr, {% endif %}jstdbname, jstonerror,
+    jstcode, jstdesc
+) VALUES (
+    {% if jid %}{{ jid|qtLiteral }}{% else %}jid{% endif %}, {{ data.jstname|qtLiteral }}::text, {% if data.jstenabled %}true{% else %}false {% endif %}, {% if data.jstkind %}'s'{% else %}'b'{% endif %}::character(1),
+    {% if has_connstr %}{% if data.jstconntype %}''{% else %}{{ data.jstconnstr|qtLiteral }}{% endif %}::text, {% if not data.jstconntype %}''::name{% else %}{{ data.jstdbname|qtLiteral }}{% endif %}::name{% else %}{{ data.jstdbname|qtLiteral }}::name{% endif %}, {{ data.jstonerror|qtLiteral }}::character(1),
+    {{ data.jstcode|qtLiteral }}::text, {{ data.jstdesc|qtLiteral }}::text
+) {% if jid %}RETURNING jstid{% endif %};
+{%- endmacro %}
+{% macro UPDATE(has_connstr, jid, jstid, data) -%}
+-- Updating the existing step (id: {{ jstid|qtLiteral }} jobid: {{ jid|qtLiteral }})
+UPDATE pgagent.pga_jobstep
+SET
+    {% if has_connstr %}{% if 'jstconntype' in data %}{% if data.jstconntype %}jstdbname={{ data.jstdbname|qtLiteral }}, jstconnstr=''{% else %}jstdbname='', jstconnstr={{ data.jstconnstr|qtLiteral }}{% endif %}{% if 'jstname' in data or 'jstenabled' in data or 'jstdesc' in data or 'jstonerror' in data or 'jstcode' in data %},{% endif %}{% endif %}{% else %}{% if 'jstdbname' in data %}jstdbname={{ data.jstdbname|qtLiteral }}::name{% endif %}{% if 'jstname' in data or 'jstenabled' in data or 'jstdesc' in data or 'jstonerror' in data or 'jstcode' in data %},{% endif %}{% endif %}{% if 'jstname' in data  %}
+
+    jstname={{ data.jstname|qtLiteral }}::text{% if 'jstenabled' in data or 'jstdesc' in data or 'jstonerror' in data or 'jstcode' in data %},{% endif %}{% endif %}{% if 'jstenabled' in data %}
+
+    jstenabled={% if data.jstenabled %}true{% else %}false{% endif %}{% if 'jstdesc' in data or 'jstonerror' in data or 'jstcode' in data %},{% endif %}{% endif %}{% if 'jstdesc' in data %}
+
+    jstdesc={{ data.jstdesc|qtLiteral }}{% if 'jstonerror' in data or 'jstcode' in data %},{% endif %}{% endif %}{% if 'jstonerror' in data %}
+
+    jstonerror={{ data.jstonerror|qtLiteral }}{% if 'jstcode' in data %},{% endif %}{% endif %}{% if 'jstcode' in data %}
+
+    jstcode={{ data.jstcode|qtLiteral }}{% endif %}
+
+WHERE jstid={{ jstid|qtLiteral }}::integer AND jstjobid={{ jid|qtLiteral }}::integer;
+{%- endmacro %}
+{% macro DELETE(jid, jstid) -%}
+-- Deleting a step (id: {{ jstid|qtLiteral }}, jobid: {{ jid|qtLiteral }})
+DELETE FROM pgagent.pga_jobstep WHERE jstid={{ jstid|qtLiteral }}::integer AND jstjobid={{ jid|qtLiteral }}::integer;
+{%- endmacro %}
+{% macro PROPERTIES(has_connstr, jid, jstid) -%}
+SELECT
+    jstid,  jstjobid, jstname, jstdesc, jstenabled, jstkind = 's'::bpchar as jstkind,
+    jstcode, CASE WHEN jstdbname != '' THEN true ELSE false END AS jstconntype,
+    {% if has_connstr %}jstconnstr, {% endif %} jstdbname, jstonerror, jscnextrun
+FROM
+    pgagent.pga_jobstep
+WHERE
+{% if jstid %}
+    jstid = {{ jstid|qtLiteral }}::integer AND
+{% endif %}
+    jstjobid = {{ jid|qtLiteral }}::integer
+ORDER BY jstname;
+{%- endmacro %}

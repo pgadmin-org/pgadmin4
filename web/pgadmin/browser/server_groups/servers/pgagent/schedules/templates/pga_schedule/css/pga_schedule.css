@@ -1,0 +1,7 @@
+.icon-pga_schedule {
+  background-image: url('{{ url_for('NODE-pga_schedule.static', filename='img/pga_schedule.png') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
