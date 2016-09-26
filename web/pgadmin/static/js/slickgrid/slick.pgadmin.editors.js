@@ -289,7 +289,7 @@
       $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0' readonly>")
           .appendTo($wrapper);
 
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-danger fa fa-lg fa-times long_text_editor pg-alertify-button'>Cancel</BUTTON></DIV>")
+      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-times long_text_editor pg-alertify-button'>Close</BUTTON></DIV>")
        .appendTo($wrapper);
 
       $wrapper.find("button:first").bind("click", this.cancel);
@@ -405,7 +405,7 @@
       $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0' readonly>")
           .appendTo($wrapper);
 
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-danger fa fa-lg fa-times long_text_editor pg-alertify-button'>Cancel</BUTTON></DIV>")
+      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-times long_text_editor pg-alertify-button'>Close</BUTTON></DIV>")
        .appendTo($wrapper);
 
       $wrapper.find("button:first").bind("click", this.cancel);
