@@ -180,7 +180,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           }
           if (_.isUndefined(field_def) || _.isNull(field_def) ||
             String(field_def).replace(/^\s+|\s+$/g, '') == '') {
-            err['definition'] = '{{ _("Please enter function definition.") }}';
+            err['definition'] = '{{ _("Please enter view definition.") }}';
             errmsg = errmsg || err['definition'];
             this.errorModel.set('definition', errmsg);
             return errmsg;
