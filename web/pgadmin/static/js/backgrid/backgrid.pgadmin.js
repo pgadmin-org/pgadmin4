@@ -1,7 +1,10 @@
 (function(root, factory) {
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify', 'moment'],
+    define([
+      'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
+      'moment', 'bootstrap.datetimepicker'
+    ],
      function(_, $, Backbone, Backform, Backgrid, Alertify, moment) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
@@ -1155,6 +1158,79 @@
         }),
         options: this.column.get('options')
       });
+    }
+  });
+
+  var DatetimePickerEditor = Backgrid.Extension.DatetimePickerEditor = Backgrid.InputCellEditor.extend({
+    postRender: function() {
+      var self = this,
+          evalF = function() {
+            var args = [];
+            Array.prototype.push.apply(args, arguments);
+            var f = args.shift();
+
+            if (typeof(f) === 'function') {
+              return f.apply(self, args);
+            }
+            return f;
+          },
+          options = _.extend({
+            format: "YYYY-MM-DD HH:mm:ss Z",
+            showClear: true,
+            showTodayButton: true,
+            toolbarPlacement: 'top'
+          }, evalF(this.column.get('options')), {
+            keyBinds: {
+              "shift tab": function(widget) {
+                if (widget) {
+                  // blur the input
+                  setTimeout(
+                    function() {
+                      self.closeIt({keyCode: 9, shiftKey: true});
+                    }, 10
+                  );
+                }
+              },
+              tab: function(widget) {
+                if (widget) {
+                  // blur the input
+                  setTimeout(
+                    function() {
+                      self.closeIt({keyCode: 9});
+                    }, 10
+                  );
+                }
+              }
+            }
+          });
+      this.$el.datetimepicker(options);
+      this.$el.datetimepicker('show');
+      this.picker = this.$el.data('DateTimePicker');
+    },
+    events: {
+      'dp.hide': 'closeIt'
+    },
+    closeIt: function(ev) {
+      var formatter = this.formatter,
+          model = this.model;
+          column = this.column;
+          val = this.$el.val();
+          newValue = formatter.toRaw(val, model);
+
+      if (this.is_closing)
+        return;
+      this.is_closing = true;
+      this.$el.datetimepicker('destroy');
+      this.is_closing = false;
+
+      var command = new Backgrid.Command(ev);
+
+      if (_.isUndefined(newValue)) {
+        model.trigger("backgrid:error", model, column, val);
+      } else {
+        model.set(column.get("name"), newValue);
+        model.trigger("backgrid:edited", model, column, command);
+      }
     }
   });
 

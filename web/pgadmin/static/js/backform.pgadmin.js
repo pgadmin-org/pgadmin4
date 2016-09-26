@@ -439,10 +439,10 @@
       '    <label>',
       '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '    </label>',
-      '   <% if (helpMessage && helpMessage.length) { %>',
-      '     <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '   <% } %>',
       '  </div>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
       '</div>',
     ].join("\n")),
     getValueFromDOM: function() {
@@ -1370,7 +1370,7 @@
       this.dialog = o.dialog;
       this.tabIndex = o.tabIndex;
 
-      _.bindAll(this, 'onTabChange');
+      _.bindAll(this, 'onTabChange', 'onPanelResized');
     },
     getValueFromDOM: function() {
         return this.formatter.toRaw(this.$el.find("textarea").val(), this.model);
@@ -1382,6 +1382,7 @@
         this.sqlCtrl = null;
         this.$el.empty();
         this.model.off('pg-property-tab-changed', this.onTabChange, this);
+        this.model.off('pg-browser-resized', this.onPanelResized, this);
       }
       // Use the Backform Control's render function
       Backform.Control.prototype.render.apply(this, arguments);
@@ -1401,6 +1402,7 @@
        * been clicked or, not.
        */
       this.model.on('pg-property-tab-changed', this.onTabChange, this);
+      this.model.on('pg-browser-resized', this.onPanelResized, this);
 
       return this;
     },
@@ -1448,6 +1450,29 @@
           this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
+
+        this.$el.find('.CodeMirror').css(
+            'cssText',
+            'height: ' + (
+              this.$el.closest('.tab-content').height() + 8
+              ) + 'px !important;'
+            );
+      }
+    },
+    onPanelResized: function(o) {
+      if (o && o.container) {
+        var $tabContent = o.container.find(
+              '.backform-tab > .tab-content'
+            ).first(),
+            $sqlPane = $tabContent.find(
+              'div[role=tabpanel].tab-pane.SQL'
+            );
+        if ($sqlPane.hasClass('active')) {
+          $sqlPane.find('.CodeMirror').css(
+            'cssText',
+            'height: ' + ($tabContent.height() + 8) + 'px !important;'
+          )
+        }
       }
     },
     remove: function() {
@@ -1459,6 +1484,8 @@
         this.$el.empty();
       }
       this.model.off('pg-property-tab-changed', this.onTabChange, this);
+      this.model.off('pg-browser-resized', this.onPanelResized, this);
+
       Backform.Control.__super__.remove.apply(this, arguments);
     }
 });
@@ -2300,12 +2327,12 @@
       type: "text",
       label: "",
       options: {
-        format: "MMM D YYYY HH:mm:ss.SSS Z",
+        format: "YYYY-MM-DD HH:mm:ss Z",
         showClear: true,
         showTodayButton: true,
         toolbarPlacement: 'top'
       },
-      placeholder: "MMM D YYYY HH:mm:ss.SSS Z",
+      placeholder: "YYYY-MM-DD HH:mm:ss Z",
       extraClasses: [],
       helpMessage: null
     },

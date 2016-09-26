@@ -334,6 +334,20 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       if (p && p.length == 1)
         return;
 
+      var events = {};
+      events[wcDocker.EVENT.RESIZE_ENDED] = function() {
+        var $container = this.$container.find('.obj_properties').first(),
+            v = $container.data('obj-view');
+
+        if (v && v.model && v.model) {
+          v.model.trigger(
+            'pg-browser-resized', {
+              'view': v, 'panel': this, 'container': $container
+          });
+
+        }
+      };
+
       p = new pgBrowser.Panel({
           name: 'node_props',
           showTitle: true,
@@ -343,8 +357,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please wait while we fetch information about the node from the server!') }}</div></div>',
           onCreate: function(myPanel, $container) {
             $container.addClass('pg-no-overflow');
-          }
-        });
+          },
+          events: events
+      });
       p.load(pgBrowser.docker);
     },
     /*

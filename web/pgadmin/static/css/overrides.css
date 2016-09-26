@@ -52,7 +52,7 @@ iframe {
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */
-.CodeMirror, .CodeMirror-gutters {
+.CodeMirror-gutters {
     height: 100% !important; 
 } 
 
@@ -994,10 +994,6 @@ ul.nav.nav-tabs {
 .select2-results span.wcTabIcon {
   padding-left: 20px;
   background-position: 0px 2px;
-}
-
-.pgadmin-controls.SQL>.CodeMirror {
-  height: 500px !important;
 }
 
 /* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */ 
