@@ -85,6 +85,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           acl: undefined,
           pkgacl: []
         },
+        initialize: function(attrs, args) {
+          if (_.size(attrs) === 0) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            var schemaInfo = args.node_info.schema;
+
+            this.set({
+              'owner': userInfo.name, 'schema': schemaInfo._label
+            }, {silent: true});
+          }
+          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
+        },
         // Define the schema for package node.
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -101,6 +112,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           disabled: true, editable: false, visible: function(m) {
             return !m.isNew();
           }
+        },{
+          id: 'schema', label:'{{_('Schema')}}', type: 'text', node: 'schema',
+          control: 'node-list-by-name',
+          disabled: function(m) { return !m.isNew(); }, filter: function(d) {
+            // If schema name start with pg_* then we need to exclude them
+            if(d && d.label.match(/^pg_/))
+            {
+              return false;
+            }
+            return true;
+          }, cache_node: 'database', cache_level: 'database'
         },{
           id: 'is_sys_object', label: '{{ _('System package?') }}',
            cell:'boolean', type: 'switch',mode: ['properties']

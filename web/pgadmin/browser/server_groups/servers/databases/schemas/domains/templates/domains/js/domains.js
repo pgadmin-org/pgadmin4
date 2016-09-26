@@ -19,8 +19,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
     initialize: function(attrs, args) {
-      var isNew = (_.size(attrs) === 0);
-      if (!isNew) {
+      if (_.size(attrs) === 0) {
+        var userInfo = pgBrowser.serverInfo[
+              args.node_info.server._id
+            ].user,
+            schemaInfo = args.node_info.schema;
+        this.set({
+          'owner': userInfo.name, 'schema': schemaInfo._label
+        }, {silent: true});
+      } else {
         this.convalidated_default = this.get('convalidated')
       }
       pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);

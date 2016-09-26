@@ -115,19 +115,13 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
        */
       model: pgBrowser.Node.Model.extend({
         initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          if (isNew) {
-            // Set Selected Schema
-            var schemaLabel = args.node_info.schema._label;
-            if (schemaLabel == '') {
-              this.set({'schema': 'public'}, {silent: true});
-            } else {
-              this.set({'schema': schemaLabel}, {silent: true});
-            }
-
-            // Set Current User
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'owner': userInfo.name}, {silent: true});
+          if (_.size(attrs) === 0) {
+            // Set Selected Schema and Current User
+            var schemaLabel = args.node_info.schema._label || 'public',
+                userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            this.set({
+              'schema': 'public', 'owner': userInfo.name
+            }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
@@ -149,7 +143,8 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
         },{
           id: 'schema', label:'{{ _("Schema") }}', cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
-          node: 'schema', mode: ['create', 'edit'], disabled: 'inSchema', select2: { allowClear: false }
+          node: 'schema', mode: ['create', 'edit'], cache_node: 'database',
+          disabled: 'inSchema', select2: { allowClear: false }
         },{
           id: 'system_view', label:'{{ _("System view?") }}', cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],

@@ -490,7 +490,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
-          control: 'node-list-by-id'
+          control: 'node-list-by-id', cache_node: 'database',
+          cache_level: 'database'
         },{
           id: 'description', label:'{{ _('Comment') }}', cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'

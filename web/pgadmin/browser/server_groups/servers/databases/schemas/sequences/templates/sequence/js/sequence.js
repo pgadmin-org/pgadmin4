@@ -140,7 +140,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
             }
             return true;
-            }
+          }, cache_node: 'database', cache_level: 'database'
         },{
           id: 'comment', label:'{{ _('Comment') }}', type: 'multiline',
           mode: ['properties', 'create', 'edit']

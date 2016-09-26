@@ -304,14 +304,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
         // Default values!
         initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
+          if (_.size(attrs) === 0) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user,
+                schemaInfo = args.node_info.schema;
 
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-
-            this.set({'typeowner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo._label}, {silent: true});
+            this.set({
+              'typeowner': userInfo.name, 'schema': schemaInfo._label
+            }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
@@ -338,7 +337,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
               return false;
             }
             return true;
-          },
+          }, cache_node: 'database', cache_level: 'database',
           control: 'node-list-by-name', select2: {allowClear: false}
         },{
           id: 'typtype', label:'{{ _('Type') }}',

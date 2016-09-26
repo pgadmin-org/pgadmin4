@@ -491,13 +491,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
-            // Set Selected Schema
-            schema = args.node_info.schema._label
-            this.set({'basensp': schema}, {silent: true});
+            var schema = args.node_info.schema._label,
+                userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
 
-            // Set Current User
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'owner': userInfo.name}, {silent: true});
+            // Set Selected Schema and Current User
+            this.set({
+              'basensp': schema, 'owner': userInfo.name
+            }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },

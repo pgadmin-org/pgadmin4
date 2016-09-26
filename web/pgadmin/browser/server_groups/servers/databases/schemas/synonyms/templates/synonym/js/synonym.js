@@ -83,12 +83,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: true , control: 'node-list-by-name',
-          node: 'role'
+          node: 'role', visible: false
         },{
           id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: true , control: 'node-list-by-name',
-          node: 'schema'
+          disabled: function(m) { return !m.isNew(); }, node: 'schema',
+          control: 'node-list-by-name', cache_node: 'database',
+          cache_level: 'database'
         },{
           id: 'targettype', label:'{{ _('Target type') }}', cell: 'string',
           disabled: 'inSchema', group: '{{ _('Definition') }}',

@@ -409,7 +409,7 @@ class PackageView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Package dropped"),
+                info=_("Packge dropped"),
                 data={
                     'id': pkgid,
                     'scid': scid,
@@ -517,9 +517,8 @@ class PackageView(PGChildNodeView):
             u'name'
         ]
 
-        data['schema'] = self.schema
-
         if pkgid is not None:
+            data['schema'] = self.schema
             SQL = render_template("/".join([self.template_path, 'properties.sql']), scid=scid, pkgid=pkgid)
             status, res = self.conn.execute_dict(SQL)
             if not status:

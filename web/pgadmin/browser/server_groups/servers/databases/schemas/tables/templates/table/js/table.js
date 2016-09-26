@@ -276,15 +276,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Default values!
         initialize: function(attrs, args) {
-          var self = this,
-              isNew = (_.size(attrs) === 0);
+          var self = this;
 
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
+          if (_.size(attrs) === 0) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user,
+                schemaInfo = args.node_info.schema;
 
-            this.set({'relowner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo._label}, {silent: true});
+            this.set({
+              'relowner': userInfo.name, 'schema': schemaInfo._label
+            }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
 
@@ -308,7 +308,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
             }
             return true;
-          }
+          }, cache_node: 'database', cache_level: 'database'
         },{
           id: 'spcname', label:'{{ _('Tablespace') }}', node: 'tablespace',
           type: 'text', control: 'node-list-by-name', disabled: 'inSchema',
