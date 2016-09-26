@@ -276,8 +276,22 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
           if (!newModel.isNew()) {
             // This is definetely not in create mode
+            var msgDiv = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">'+
+                pgBrowser.messages['LOADING_MESSAGE']+'</div>',
+                $msgDiv = $(msgDiv);
+            var timer = setTimeout(function(ctx) {
+              // notify user if request is taking longer than 1 second
+
+              if (!_.isUndefined(ctx)) {
+                $msgDiv.appendTo(ctx);
+              }
+            }, 1000, ctx);
             newModel.fetch()
             .success(function(res, msg, xhr) {
+              // clear timeout and remove message
+              clearTimeout(timer);
+              $msgDiv.addClass('hidden');
+
               // We got the latest attributes of the
               // object. Render the view now.
               view.render();
@@ -934,7 +948,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                       'pg-prop-footer'
                       ).appendTo(j);
           // Create a view to show the properties in fieldsets
-          view = that.getView(item, 'properties', content, data, 'fieldset');
+          view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           if (view) {
             // Save it for release it later
             j.data('obj-view', view);
@@ -1135,7 +1149,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 // Save the changes
                 btn.click(function() {
                   var m = view.model,
-                    d = m.toJSON(true);
+                    d = m.toJSON(true),
+
+                    // Generate a timer for the request
+                    timer = setTimeout(function(){
+                      $('.obj_properties').addClass('show_progress');
+                    }, 1000);
+
                   if (d && !_.isEmpty(d)) {
                     m.save({}, {
                       attrs: d,
@@ -1143,6 +1163,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                       cache: false,
                       success: function() {
                         onSaveFunc.call();
+                        // Hide progress cursor
+                        $('.obj_properties').removeClass('show_progress');
+                        clearTimeout(timer);
+
                         // Removing the node-prop property of panel
                         // so that we show updated data on panel
                         var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
@@ -1169,6 +1193,10 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                             "{{ _("Error saving properties: %s") }}"
                             ).sprintf(jqxhr.statusText).value()
                           );
+
+                        // Hide progress cursor
+                        $('.obj_properties').removeClass('show_progress');
+                        clearTimeout(timer);
                       }
                     });
                   }

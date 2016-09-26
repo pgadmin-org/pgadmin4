@@ -760,3 +760,9 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .pgadmin-controls > textarea.form-control {
   padding: 3px 6px;
 }
+.pg-panel-properties-message {
+  margin-top: 50px !important;
+}
+.show_progress {
+  cursor: progress;
+}

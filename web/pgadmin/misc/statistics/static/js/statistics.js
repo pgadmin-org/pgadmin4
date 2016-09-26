@@ -1,6 +1,6 @@
 define([
   'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
-  'alertify', 'wcdocker', 'pgadmin.backgrid', 'pgadmin.alertifyjs'
+  'alertify', 'wcdocker', 'pgadmin.backgrid', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
 ], function(_, S, $, pgBrowser, Backgrid, Alertify) {
 
   if (pgBrowser.NodeStatistics)
@@ -175,17 +175,28 @@ define([
           $(panel[0]).data('node-prop', treeHierarchy);
 
         if (node.hasStatistics) {
-          /* Set the message because ajax request may take time to
-           * fetch the information from the server.
-           */
           msg = '';
-          $msgContainer.text(msg);
-
+          var timer;
           // Set the url, fetch the data and update the collection
           $.ajax({
             url: url,
             type:'GET',
+            beforeSend: function(jqXHR, settings) {
+              // Generate a timer for the request
+              timer = setTimeout(function(){
+                // notify user if request is taking longer than 1 second
+
+                $msgContainer.text(pgBrowser.messages['LOADING_MESSAGE']);
+                $msgContainer.removeClass('hidden');
+                if (self.grid) {
+                  self.grid.remove();
+                }
+              }, 1000);
+            },
             success: function(res) {
+              // clear timer and reset message.
+              clearTimeout(timer);
+              $msgContainer.text('');
               if (res.data) {
                 var data = res.data;
                 if (node.hasCollectiveStatistics || data['rows'].length > 1) {
@@ -241,6 +252,8 @@ define([
                   }
                 );
               }
+              // show failed message.
+              $msgContainer.text(pgBrowser.messages['LOADING_FAILED']);
             }
           });
         }

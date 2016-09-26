@@ -1,6 +1,6 @@
 define([
   'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs'
+  'alertify', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
 ], function(_, S, $, pgBrowser, Alertify) {
 
   pgBrowser.ShowNodeSQL = pgBrowser.ShowNodeSQL || {};
@@ -84,15 +84,25 @@ define([
             if (node.hasSQL) {
 
               sql = '';
-              var url = node.generate_url(item, 'sql', data, true);
+              var url = node.generate_url(item, 'sql', data, true),
+                  timer;
 
               $.ajax({
                 url: url,
                 type:'GET',
+                beforeSend: function(jqXHR, settings) {
+                  // Generate a timer for the request
+                  timer = setTimeout(function(){
+                  // notify user if request is taking longer than 1 second
+
+                    pgAdmin.Browser.editor.setValue(pgBrowser.messages['LOADING_MESSAGE']);
+                  }, 1000);
+                },
                 success: function(res) {
                   if (pgAdmin.Browser.editor.getValue() != res) {
                     pgAdmin.Browser.editor.setValue(res);
                   }
+                  clearTimeout(timer);
                 },
                 error: function(xhr, error, message) {
                   var _label = treeHierarchy[n_type].label;

@@ -1,6 +1,6 @@
 define([
   'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs'
+  'alertify', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
 ], function(_, S, $, pgBrowser, Alertify) {
 
   if (pgBrowser.ShowNodeDepends)
@@ -234,13 +234,31 @@ define([
             this.dependentGrid.columns.models[2].set({'label': 'Restriction'});
           }
 
-          // Hide the message container and show the grid container.
+          // Hide message container and show grid container.
           $msgContainer.addClass('hidden');
           $gridContainer.removeClass('hidden');
+
+          var timer = setTimeout(function(){
+            // notify user if request is taking longer than 1 second
+
+            $msgContainer.text(pgBrowser.messages['LOADING_MESSAGE']);
+            $msgContainer.removeClass('hidden');
+            if ($gridContainer) {
+              $gridContainer.addClass('hidden');
+            }
+          }, 1000);
+
           // Set the url, fetch the data and update the collection
           collection.url = url;
           collection.fetch({
             reset: true,
+            success: function() {
+              clearTimeout(timer);
+              $gridContainer.removeClass('hidden');
+              if (!$msgContainer.hasClass('hidden')) {
+                $msgContainer.addClass('hidden');
+              }
+            },
             error: function(coll, xhr, error, message) {
               var _label = treeHierarchy[n_type].label;
               pgBrowser.Events.trigger(
@@ -261,6 +279,8 @@ define([
                   }
                 );
               }
+              // show failed message.
+              $msgContainer.text(pgBrowser.messages['LOADING_FAILED']);
             }
           });
         }

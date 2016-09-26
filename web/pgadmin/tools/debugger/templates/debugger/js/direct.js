@@ -266,6 +266,10 @@ define(
         $.ajax({
           url: baseUrl,
           method: 'GET',
+          beforeSend: function(jqXHR, settings) {
+            // set cursor to progress before every poll.
+            $('.debugger-container').addClass('show_progress');
+          },
           success: function(res) {
             if (res.data.status === 'Success') {
               // If no result then poll again to wait for results.
@@ -313,6 +317,8 @@ define(
                   self.GetStackInformation(trans_id);
                 }
 
+                // remove progress cursor
+                $('.debugger-container').removeClass('show_progress');
                 // Enable all the buttons as we got the results
                 self.enable('stop', true);
                 self.enable('step_over', true);
