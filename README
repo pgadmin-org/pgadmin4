@@ -4,9 +4,6 @@ pgAdmin 4
 pgAdmin 4 is a rewrite of the popular pgAdmin3 management tool for the
 PostgreSQL (http://www.postgresql.org) database. 
 
-At present, it is an experimental/proof of concept project. Use at your own
-risk, and don't blame us if it breaks anything!
-
 Architecture
 ------------
 
@@ -62,7 +59,7 @@ If Python version is 2.7.2 than specify PYTHON_VERSION=27
 Support
 -------
 
-pgAdmin 4 is completely experiemental and unsupported!
+See https://www.pgadmin.org/support/ for support options.
 
 Project info
 ------------
