@@ -297,9 +297,9 @@ def trigger_definition(data):
         data['evnt_update'] = False
 
     if data['tgtype'] & trigger_definition['TRIGGER_TYPE_TRUNCATE']:
-        data['evnt_turncate'] = True
+        data['evnt_truncate'] = True
     else:
-        data['evnt_turncate'] = False
+        data['evnt_truncate'] = False
 
     return data
 

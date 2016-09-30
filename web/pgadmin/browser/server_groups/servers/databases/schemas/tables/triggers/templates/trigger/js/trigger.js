@@ -367,7 +367,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
-            id: 'evnt_turncate', label:'{{ _('TRUNCATE') }}',
+            id: 'evnt_truncate', label:'{{ _('TRUNCATE') }}',
             type: 'switch', group: '{{ _('Events') }}',
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
@@ -471,10 +471,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             return msg;
           }
 
-          if(!this.get('evnt_turncate') && !this.get('evnt_delete') &&
+          if(!this.get('evnt_truncate') && !this.get('evnt_delete') &&
             !this.get('evnt_update') && !this.get('evnt_insert')) {
             msg = '{{ _('Specify at least one event.') }}';
-            this.errorModel.set('evnt_turncate', " ");
+            this.errorModel.set('evnt_truncate', " ");
             this.errorModel.set('evnt_delete', " ");
             this.errorModel.set('evnt_update', " ");
             this.errorModel.set('evnt_insert', msg);

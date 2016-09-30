@@ -9,7 +9,7 @@ CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
     {{o_data.fires}} {% if o_data.evnt_insert %}INSERT{% set or_flag = True %}
 {% endif %}{% if o_data.evnt_delete %}
 {% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}
-{% endif %}{% if o_data.evnt_turncate %}
+{% endif %}{% if o_data.evnt_truncate %}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}
 {% endif %}{% if o_data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c.column) }}{% endfor %}{% endif %}
