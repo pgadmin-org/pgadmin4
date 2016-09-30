@@ -473,7 +473,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if(!this.get('evnt_turncate') && !this.get('evnt_delete') &&
             !this.get('evnt_update') && !this.get('evnt_insert')) {
-            msg = '{{ _('Specify atleast one event.') }}';
+            msg = '{{ _('Specify at least one event.') }}';
             this.errorModel.set('evnt_turncate', " ");
             this.errorModel.set('evnt_delete', " ");
             this.errorModel.set('evnt_update', " ");
