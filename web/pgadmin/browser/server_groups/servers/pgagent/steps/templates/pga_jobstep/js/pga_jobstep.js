@@ -97,7 +97,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
           disabled: function(m) { return false; },
           cellHeaderClasses: 'width_percent_60'
         },{
-          id: 'jstenabled', label: '{{ _('Enabled') }}', type: 'switch',
+          id: 'jstenabled', label: '{{ _('Enabled?') }}', type: 'switch',
           disabled: function(m) { return false; }
         },{
           id: 'jstkind', label: '{{ _('Kind') }}', type: 'switch',

@@ -258,7 +258,7 @@ function($, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
           cellHeaderClasses: 'width_percent_45',
           disabled: function() { return false; }
         },{
-          id: 'jscenabled', label: '{{ _('Enabled') }}', type: 'switch',
+          id: 'jscenabled', label: '{{ _('Enabled?') }}', type: 'switch',
           disabled: function() { return false; },
           cellHeaderClasses: 'width_percent_5'
         },{
@@ -278,12 +278,12 @@ function($, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
           }, cellHeaderClasses: 'width_percent_25',
           modelFormat: 'YYYY-MM-DD HH:mm:SS Z'
         },{
-          id: 'jscweekdays', label:'{{ _('Week Days') }}', type: 'text',
+          id: 'jscweekdays', label:'{{ _('Week days') }}', type: 'text',
           control: Backform.Control.extend({
             formatter: new BooleanArrayFormatter(weekdays, false)
           }), mode: ['properties']
         },{
-          id: 'jscmonthdays', label:'{{ _('Month Days') }}', type: 'text',
+          id: 'jscmonthdays', label:'{{ _('Month days') }}', type: 'text',
           control: Backform.Control.extend({
             formatter: new BooleanArrayFormatter(monthdays, false)
           }), mode: ['properties']

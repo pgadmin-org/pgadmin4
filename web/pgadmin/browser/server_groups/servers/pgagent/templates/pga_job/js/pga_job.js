@@ -87,23 +87,23 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           id: 'jobid', label:'{{ _('ID') }}', mode: ['properties'],
           type: 'int'
         },{
-          id: 'jobenabled', label:'{{ _('Enabled') }}', type: 'switch',
+          id: 'jobenabled', label:'{{ _('Enabled?') }}', type: 'switch',
           cellHeaderClasses: 'width_percent_5'
         },{
-          id: 'jobclass', label: '{{ _('Job Class') }}', type: 'text',
+          id: 'jobclass', label: '{{ _('Job class') }}', type: 'text',
           mode: ['properties']
         },{
-          id: 'jobjclid', label: '{{ _('Job Class') }}', type: 'integer',
+          id: 'jobjclid', label: '{{ _('Job class') }}', type: 'integer',
           control: 'node-ajax-options', url: 'classes', url_with_id: false,
           cache_node: 'server', mode: ['create', 'edit'],
           select2: {allowClear: false},
-          helpMessage: '{{ _('Please a class to categorize the job. This option will not affect the way the job runs.') }}'
+          helpMessage: '{{ _('Please select a class to categorize the job. This option will not affect the way the job runs.') }}'
         },{
-          id: 'jobhostagent', label: '{{ _('Host Agent') }}', type: 'text',
+          id: 'jobhostagent', label: '{{ _('Host agent') }}', type: 'text',
           mode: ['edit', 'create'],
           helpMessage: '{{ _('Enter the hostname of a machine running pgAgent if you wish to ensure only that machine will run this job. Leave blank if any host may run the job.') }}'
         },{
-          id: 'jobhostagent', label: '{{ _('Host Agent') }}', type: 'text',
+          id: 'jobhostagent', label: '{{ _('Host agent') }}', type: 'text',
           mode: ['properties']
         },{
           id: 'jobcreated', type: 'text', mode: ['properties'],
