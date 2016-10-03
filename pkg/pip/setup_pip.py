@@ -21,7 +21,10 @@ from os import path
 req_file='../requirements_py' + str(sys.version_info[0]) + '.txt'
 
 with open(req_file) as reqf:
-    required = reqf.read().decode("utf-8").splitlines()
+    if sys.version_info[0] >= 3:
+        required = reqf.read().splitlines()
+    else:
+        required = reqf.read().decode("utf-8").splitlines()
 
 # Get the app version
 modl = imp.load_source('APP_VERSION', '../web/config.py')
