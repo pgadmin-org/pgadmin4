@@ -1573,6 +1573,7 @@
       // After validation we need to set that value into model (only if all flags are true)
       if (isValid) {
         this.stopListening(this.model, "change:" + name, this.render);
+        this.model.errorModel.unset(name);
         this.model.set(name, value);
         this.listenTo(this.model, "change:" + name, this.render);
       } else {
@@ -1666,6 +1667,7 @@
       // After validation we need to set that value into model (only if all flags are true)
       if (isValid) {
         this.stopListening(this.model, "change:" + name, this.render);
+        this.model.errorModel.unset(name);
         this.model.set(name, value);
         this.listenTo(this.model, "change:" + name, this.render);
       } else {
