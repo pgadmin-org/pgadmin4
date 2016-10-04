@@ -1,13 +1,13 @@
 .. _pgagent_jobs:
 
 
-*********************
-`pgAgent Jobs`:index:
-*********************
+*******************************
+`Creating a pgAgent Job`:index:
+*******************************
 
 pgAgent is a scheduling agent that runs and manages jobs; each job consists of steps and schedules.  
 
-To create or manage a job, use the pgAdmin tree control to browse to the server on which the pgAgent database objects were created. The tree control will display a *pgAgent Jobs* node, under which currently defined jobs are displayed. To change the properties of an existing job, right click on the name of the job, and select *Properties*.  To add a new job, right click on the *pgAgent Jobs* node, and select *Create pgAgent Job...* from the context menu.  
+To create or manage a job, use the pgAdmin tree control to browse to the server on which the pgAgent database objects were created. The tree control will display a *pgAgent Jobs* node, under which currently defined jobs are displayed.  To add a new job, right click on the *pgAgent Jobs* node, and select *Create pgAgent Job...* from the context menu.  
 
 When the pgAgent dialog opens, use the tabs on the *pgAgent Job* dialog to define the steps and schedule that make up a pgAgent job.
 
@@ -59,7 +59,7 @@ Use fields on the step definition dialog to define the step:
 Use the context-sensitive field on the step definition dialog's *Code* tab to provide the SQL code or batch script that will be executed during the step:
 
  * If the step invokes SQL code, provide one or more SQL statements in the *SQL query* field.
- * If the step performs a batch script, provide the script in the *Script* field.  If you are running on a Windows server, standard batch file syntax must be used.  When running on a *nix server, any shell script may be used, provided that a suitable interpreter is specified on the first line (e.g. *#!/bin/sh*).
+ * If the step performs a batch script, provide the script in the *Script* field.  If you are running on a Windows server, standard batch file syntax must be used.  When running on a Linux server, any shell script may be used, provided that a suitable interpreter is specified on the first line (e.g. *#!/bin/sh*).
 
 When you've provided all of the information required by the step, click the compose icon to close the step definition dialog.  Click the add icon (+) to add each additional step, or select the *Schedules* tab to define the job schedule.
 
@@ -111,6 +111,11 @@ When you've finished defining the schedule, you can use the *SQL* tab to review 
 
 .. image:: images/pgagent_sql.png
  
-The *Properties* tab in the main pgAdmin window will display the details of the selected job, and the Statistics tab will show the details of each run of the job.
+Click the *Save* button to save the job definition, or *Cancel* to exit the job without saving.  Use the *Reset* button to remove your unsaved entries from the dialog. 
+ 
+After saving a job, the job will be listed under the *pgAgent Jobs* node of the pgAdmin tree control of the server on which it was defined.  The *Properties* tab in the main pgAdmin window will display a high-level overview of the selected job, and the *Statistics* tab will show the details of each run of the job.  
 
 .. image:: images/pgagent_properties.png
+
+To modify an existing job or to review detailed information about a job, right-click on a job name, and select *Properties* from the context menu.  
+

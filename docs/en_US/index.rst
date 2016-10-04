@@ -22,6 +22,7 @@ Contents:
    developer_tools
    deployment
    contributions
+   pgagent
    licence
 
   

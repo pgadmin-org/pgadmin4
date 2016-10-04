@@ -22,6 +22,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
     pgBrowser.Nodes['pga_jobstep'] = pgBrowser.Node.extend({
       parent_type: 'pga_job',
       type: 'pga_jobstep',
+      dialogHelp: '{{ url_for('help.static', filename='pgagent_jobs.html') }}',
       hasSQL: true,
       hasDepends: false,
       hasStatistics: true,
