@@ -24,6 +24,7 @@ codesign --verify --verbose --force "${DMG_IMAGE}"
 RETURN_STATUS=$?
 if [ $RETURN_STATUS -ne 0 ]; then
   echo ERROR: Code signing did not work
+  exit 1
 else
   echo ${DMG_IMAGE} successfully signed
 fi

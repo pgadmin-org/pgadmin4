@@ -56,7 +56,7 @@ find "${BUNDLE}/Contents/Frameworks" -type d -name "P*framework" | while read -r
   # Create soft link to the framework Resources dir
   ln -s Versions/Current/Resources
 
-  # Create the Info.plist files
+  # Create the Info.plist file
   MYNAME=`ls -1 Py*`
   sed 's/__SHORT_VERSION__/${PYTHON_SHORT_VERSION}/' "${SCRIPT_DIR}/Info.plist-template_Python" | sed 's/__FULL_VERSION__/${PYTHON_FULL_VERSION}/' | sed "s/__FRAMEWORK_NAME__/${MYNAME}/" > "Resources/Info.plist"
 
@@ -73,6 +73,7 @@ codesign --verify --verbose --deep --force "${BUNDLE}"
 RETURN_STATUS=$?
 if [ $RETURN_STATUS -ne 0 ]; then
   echo Code signing did not work, check the log
+  exit 1
 else
   echo ${BUNDLE} successfully signed
 fi

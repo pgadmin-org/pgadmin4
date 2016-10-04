@@ -162,8 +162,7 @@ _complete_bundle() {
 
     # Remove the .pyc files if any
     cd "$BUILDROOT/$APP_BUNDLE_NAME"
-    find . -name *.pyc | xargs rm -f 
-
+    find . -name *.pyc | xargs rm -f
 }
 
 _codesign_bundle() {
