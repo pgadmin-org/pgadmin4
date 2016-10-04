@@ -39,6 +39,8 @@ IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 call :CREATE_INSTALLER
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
+call :SIGN_INSTALLER
+
 CD %WD%
 goto:EXIT
 REM Main function Ends
@@ -398,6 +400,20 @@ GOTO:EOF
 
     ECHO "Location - %TARGETINSTALLER%\%INSTALLERNAME%"
     ECHO Installer generated successfully.
+
+    CD %WD%
+GOTO:EOF
+
+:SIGN_INSTALLER
+    ECHO Attempting to sign the installer...
+    signtool sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%TARGETINSTALLER%\%INSTALLERNAME%"
+    IF %ERRORLEVEL% NEQ 0 (
+        ECHO
+        ECHO ************************************************************
+        ECHO * Failed to sign the installer
+        ECHO ************************************************************
+        SLEEP 5
+    )
 
     CD %WD%
 GOTO:EOF
