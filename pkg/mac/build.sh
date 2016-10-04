@@ -166,6 +166,22 @@ _complete_bundle() {
 
 }
 
+_codesign_bundle() {
+    cd $SOURCEDIR/pkg/mac
+    
+    if [ ! -f codesign.conf ]; then
+        echo
+        echo "******************************************************************"
+        echo "* codesign.conf not found. NOT signing the bundle."
+        echo "******************************************************************"
+        echo
+        sleep 5
+        return
+    fi
+
+    ./codesign-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo codesign-bundle.sh failed; exit 1; }    
+}
+
 _create_dmg() {
     cd $SOURCEDIR
     ./pkg/mac/create-dmg.sh || { echo create-dmg.sh failed; exit 1; }
@@ -173,9 +189,27 @@ _create_dmg() {
     rm -rf $BUILDROOT/*
 }
 
+_codesign_dmg() {
+    cd $SOURCEDIR/pkg/mac
+    
+    if [ ! -f codesign.conf ]; then
+        echo
+        echo "******************************************************************"
+        echo "* codesign.conf not found. NOT signing the disk image."
+        echo "******************************************************************"
+        echo
+        sleep 5
+        return
+    fi
+
+    ./codesign-dmg.sh || { echo codesign-bundle.sh failed; exit 1; }    
+}
+
 _get_version || { echo Could not get versioning; exit 1; }
 _cleanup
 _build_runtime || { echo Runtime build failed; exit 1; }
 _build_doc
 _complete_bundle
+_codesign_bundle
 _create_dmg
+_codesign_dmg
