@@ -290,7 +290,8 @@ class Connection(BaseConnection):
                 database=database,
                 user=user,
                 password=password,
-                async=self.async
+                async=self.async,
+                sslmode=mgr.ssl_mode
             )
 
             # If connection is asynchronous then we will have to wait
