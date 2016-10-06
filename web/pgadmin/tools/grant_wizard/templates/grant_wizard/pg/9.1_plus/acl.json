@@ -17,7 +17,7 @@
     },
     "sequence": {
         "type": "SEQUENCE",
-        "acl": ["w", "U"]
+        "acl": ["r", "w", "U"]
     },
     "function": {
         "type": "FUNCTION",
