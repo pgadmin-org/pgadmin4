@@ -13,7 +13,7 @@
     },
     "table": {
         "type": "TABLE",
-        "acl": ["a", "w", "d", "D", "x", "t"]
+        "acl": ["a", "r", "w", "d", "D", "x", "t"]
     },
     "sequence": {
         "type": "SEQUENCE",
