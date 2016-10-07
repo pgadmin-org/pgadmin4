@@ -623,18 +623,17 @@ class ServerNode(PGChildNodeView):
 
                     user = manager.user_info
                     connected = True
-                    icon = "icon-pg"
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     "%d" % server.id, server.servergroup_id,
                     server.name,
-                    icon,
+                    'icon-{0}'.format(manager.server_type) if manager.server_type else "icon-pg",
                     True,
                     self.node_type,
                     user=user,
                     connected=connected,
-                    server_type='pg'  # Default server type
+                    server_type=manager.server_type if manager.server_type else 'pg'
                 )
             )
 
