@@ -32,8 +32,9 @@ class ServersAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.server_id = response_data['node']['_id']
-        utils.write_node_info(int(self.server_id), "sid", self.server)
+        server_dict = {"server_id": int(self.server_id)}
+        utils.write_node_info("sid", server_dict)
 
     def tearDown(self):
         """This function delete the server from SQLite """
-        utils.delete_server(self.tester, self.server_id)
+        utils.delete_server_with_api(self.tester, self.server_id)

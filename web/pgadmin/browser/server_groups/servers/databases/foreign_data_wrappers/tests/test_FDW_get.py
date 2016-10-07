@@ -7,77 +7,65 @@
 #
 # ##################################################################
 
+from __future__ import print_function
+
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.databases.extensions.tests import\
-    utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
-    utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
+    utils as extension_utils
 from . import utils as fdw_utils
+from regression import parent_node_dict
+from regression import test_utils as utils
+import uuid
 
 
 class FDWDGetTestCase(BaseTestGenerator):
-    """ This class will add foreign data wrappers under database node. """
-
+    """ This class will add foreign data wrappers under test database. """
     scenarios = [
-            # Fetching default URL for foreign_data_wrapper node.
-            ('Check FDW Node',
-             dict(url='/browser/foreign_data_wrapper/obj/'))
-        ]
+        # Fetching default URL for foreign_data_wrapper node.
+        ('Check FDW Node',
+         dict(url='/browser/foreign_data_wrapper/obj/'))
+    ]
 
-    @classmethod
-    def setUpClass(cls):
-        """This function use to add/connect the servers and create databases"""
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to servers
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add databases to connected servers
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-        schema_utils.add_schemas(cls.tester)
-
-        extension_utils.add_extensions(cls.tester)
-
-        fdw_utils.add_fdw(cls.tester)
+    def setUp(self):
+        """ This function will create extension and foreign data wrapper."""
+        self.schema_data = parent_node_dict['schema'][-1]
+        self.server_id = self.schema_data['server_id']
+        self.db_id = self.schema_data['db_id']
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        self.schema_name = self.schema_data['schema_name']
+        self.extension_name = "postgres_fdw"
+        self.fdw_name = "fdw_{0}".format(str(uuid.uuid4())[1:4])
+        self.extension_id = extension_utils.create_extension(
+            self.server, self.db_name, self.extension_name, self.schema_name)
+        self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
+                                           self.fdw_name)
 
     def runTest(self):
-        """ This function will get added FDW. """
+        """This function will fetch foreign data wrapper present under test
+         database."""
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 self.server_id,
+                                                 self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to database.")
+        extension_response = extension_utils.verify_extension(
+            self.server, self.db_name, self.extension_name)
+        if not extension_response:
+            raise Exception("Could not find extension.")
+        response = self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/' + str(self.fdw_id),
+            content_type='html/json')
+        self.assertEquals(response.status_code, 200)
 
-        all_id = utils.get_ids()
-        server_ids = all_id["sid"]
-        db_ids_dict = all_id["did"][0]
-        fdw_ids_dict = all_id["fid"][0]
-
-        for server_id in server_ids:
-            db_id = db_ids_dict[int(server_id)]
-            fdw_id = fdw_ids_dict[server_id]
-
-            response = fdw_utils.verify_fdws(self.tester,
-                                             utils.SERVER_GROUP,
-                                             server_id, db_id,
-                                             fdw_id)
-
-            self.assertEquals(response.status_code, 200)
-
-    @classmethod
-    def tearDownClass(cls):
-        """This function deletes the added schema, database, server and parent
-        id file
-        """
-        fdw_utils.delete_fdw(cls.tester)
-        extension_utils.delete_extension(cls.tester)
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function disconnect the test database and drop added extension
+         and dependant objects."""
+        extension_utils.drop_extension(self.server, self.db_name,
+                                       self.extension_name)
+        database_utils.disconnect_database(self, self.server_id,
+                                           self.db_id)

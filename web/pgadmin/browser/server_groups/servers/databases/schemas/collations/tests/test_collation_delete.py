@@ -6,11 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
+import uuid
 
 from regression import test_utils as utils
+from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -20,58 +20,47 @@ from . import utils as collation_utils
 
 class CollationDeleteTestCase(BaseTestGenerator):
     """ This class will delete added collation under schema node. """
-
     scenarios = [
         # Fetching default URL for collation node.
         ('Fetch collation Node URL', dict(url='/browser/collation/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server
-         2. Connect to server
-         3. Add the databases
-         4. Add the schemas
-         5. Add the collations
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-        # Add schemas
-        schema_utils.add_schemas(cls.tester)
-        # Add collations
-        collation_utils.add_collation(cls.tester, cls.server_connect_response,
-                                      cls.server_ids)
+    def setUp(self):
+        self.schema_info = parent_node_dict["schema"][-1]
+        self.schema_name = self.schema_info["schema_name"]
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        coll_name = "collation_get_%s" % str(uuid.uuid4())[1:6]
+        self.collation = collation_utils.create_collation(self.server,
+                                                          self.schema_name,
+                                                          coll_name,
+                                                          self.db_name)
 
     def runTest(self):
         """ This function will delete collation under schema node. """
+        server_id = self.schema_info["server_id"]
+        db_id = self.schema_info["db_id"]
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 server_id,
+                                                 db_id)
+        if not db_con['data']["connected"]:
+            raise Exception("Could not connect to database.")
 
-        collation_utils.delete_collation(self.tester)
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
+        if not schema_response:
+            raise Exception("Could not find the schema.")
+        collation_id = self.collation[0]
+        schema_id = self.schema_info["schema_id"]
+        get_response = self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                server_id) + '/' +
+            str(db_id) + '/' + str(schema_id) + '/' + str(collation_id),
+            content_type='html/json')
+        self.assertEquals(get_response.status_code, 200)
+        # Disconnect database to delete it
+        database_utils.disconnect_database(self, server_id, db_id)
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added schemas, database,
-        server and the 'parent_id.pkl' file which is created in setup()
-        function.
-
-        :return: None
-        """
-
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
-
+    def tearDown(self):
+        pass

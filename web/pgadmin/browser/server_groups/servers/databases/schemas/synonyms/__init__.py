@@ -387,6 +387,7 @@ class SynonymView(PGChildNodeView):
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),
                                   data=data, conn=self.conn, comment=False)
+
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)

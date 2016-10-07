@@ -6,10 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+import uuid
 
 from regression import test_utils as utils
+from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -18,76 +19,43 @@ from . import utils as sequence_utils
 
 
 class SequenceGetTestCase(BaseTestGenerator):
-    """ This class will fetch added sequence under schema node. """
-
+    """This class will fetch added sequence under schema node."""
     scenarios = [
         # Fetching default URL for sequence node.
         ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server(s)
-         2. Connect to server(s)
-         3. Add database(s)
-         4. Add schema(s)
-         5. Add sequence(s)
-
-        :return: None
-        """
-
-        # First, add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add database(s)
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-        # Add schema(s)
-        schema_utils.add_schemas(cls.tester)
-
-        # Add sequence(s)
-        sequence_utils.add_sequences(cls.tester)
+    def setUp(self):
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        schema_info = parent_node_dict["schema"][-1]
+        self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
+        if not db_con['data']["connected"]:
+            raise Exception("Could not connect to database to add sequence.")
+        self.schema_id = schema_info["schema_id"]
+        self.schema_name = schema_info["schema_name"]
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
+        if not schema_response:
+            raise Exception("Could not find the schema to add sequence.")
+        self.sequence_name = "test_sequence_delete_%s" % str(uuid.uuid4())[1:6]
+        self.sequence_id = sequence_utils.create_sequences(
+            self.server, self.db_name, self.schema_name, self.sequence_name)
 
     def runTest(self):
-        """ This function will fetch added sequence under schema node. """
+        """This function will fetch added sequence under schema node."""
+        response = self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.schema_id) + '/' +
+            str(self.sequence_id),
+            follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
 
-        all_id = utils.get_ids()
-        server_ids = all_id["sid"]
-        db_ids_dict = all_id["did"][0]
-        schema_ids_dict = all_id["scid"][0]
-        sequence_ids_dict = all_id["seid"][0]
-
-        for server_id in server_ids:
-            db_id = db_ids_dict[int(server_id)]
-            schema_info = schema_ids_dict[int(server_id)]
-            schema_id = schema_info[0]
-            sequence_id = sequence_ids_dict[server_id]
-            get_response = sequence_utils.verify_sequence(self.tester,
-                                                          utils.SERVER_GROUP,
-                                                          server_id,
-                                                          db_id,
-                                                          schema_id,
-                                                          sequence_id)
-            self.assertEquals(get_response.status_code, 200)
-
-    @classmethod
-    def tearDownClass(cls):
-        """This function delete the added sequence, schema, database, server
-        and parent id file
-
-        :return: None
-        """
-
-        sequence_utils.delete_sequence(cls.tester)
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

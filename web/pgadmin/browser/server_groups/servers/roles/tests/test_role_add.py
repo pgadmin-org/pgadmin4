@@ -10,7 +10,7 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression import test_server_dict
+from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from . import utils as roles_utils
 
@@ -28,7 +28,7 @@ class LoginRoleAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function test the add role scenario"""
-        server_id = test_server_dict["server"][0]["server_id"]
+        server_id = parent_node_dict["server"][-1]["server_id"]
         server_response = server_utils.connect_server(self, server_id)
         if not server_response['data']['connected']:
             raise Exception("Server not found to add the role.")
@@ -42,8 +42,9 @@ class LoginRoleAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         role_id = response_data['node']['_id']
-        role_dict = {"server_id": server_id, "role_id": role_id}
-        utils.write_node_info(role_id, "lrid", role_dict)
+        role_dict = {"server_id": server_id, "role_id": role_id,
+                     "role_name": self.role_name}
+        utils.write_node_info("lrid", role_dict)
 
     def tearDown(self):
         """This function delete the role from added server"""

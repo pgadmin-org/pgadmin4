@@ -7,8 +7,12 @@
 #
 ##############################################################
 
+import traceback
 import sys
-import unittest
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 from abc import ABCMeta, abstractmethod
 from importlib import import_module
@@ -70,7 +74,7 @@ class TestsGeneratorRegistry(ABCMeta):
                     if "tests." in str(module_name):
                         cls.import_app_modules(module_name)
                 except ImportError:
-                    pass
+                    traceback.print_exc(file=sys.stderr)
         else:
             for module_name in find_modules(pkg, False, True):
                 try:
@@ -79,7 +83,8 @@ class TestsGeneratorRegistry(ABCMeta):
                     if "pgadmin.browser.tests" not in module_name:
                         cls.import_app_modules(module_name)
                 except ImportError:
-                    pass
+                    traceback.print_exc(file=sys.stderr)
+
 
 import six
 

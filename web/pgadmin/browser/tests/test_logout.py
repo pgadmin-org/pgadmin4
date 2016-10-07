@@ -32,7 +32,7 @@ class LogoutTest(BaseTestGenerator):
         """This function checks the logout functionality."""
 
         response = self.tester.get('/logout')
-        self.assertIn(self.respdata, response.data.decode('utf8'))
+        self.assertTrue(self.respdata in response.data.decode('utf8'))
 
     @classmethod
     def tearDownClass(cls):

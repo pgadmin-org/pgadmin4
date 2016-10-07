@@ -7,143 +7,74 @@
 #
 # ##################################################################
 
+from __future__ import print_function
 import os
-import pickle
-import json
-from regression.test_setup import advanced_config_data, pickle_path
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
-import uuid
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
+import sys
+from regression.test_utils import get_db_connection
+
+file_name = os.path.basename(__file__)
 
 
-FSRV_URL = '/browser/foreign_server/obj/'
-
-
-def get_fsrv_config_data(server_connect_data):
-    adv_config_data = None
-    db_user = server_connect_data['data']['user']['name']
-
-    # Get the config data of appropriate db user
-    for config_test_data in advanced_config_data['fsrv_credentials']:
-        if db_user == config_test_data['owner']:
-            adv_config_data = config_test_data
-
-    data = {
-        "fsrvacl": adv_config_data['fsrv_acl'],
-        "fsrvoptions": adv_config_data['fsrv_options'],
-        "fsrvowner": adv_config_data['owner'],
-        "name": "fsrv_{}".format(str(uuid.uuid4())[1:4])
-    }
-
-    return data
-
-
-def add_fsrv(tester):
-
-    all_id = utils.get_ids()
-    server_ids = all_id["sid"]
-    db_ids_dict = all_id["did"][0]
-    fdw_ids_dict = all_id["fid"][0]
-
-    for server_id in server_ids:
-        db_id = db_ids_dict[int(server_id)]
-        db_con = database_utils.verify_database(tester,
-                                                utils.SERVER_GROUP,
-                                                server_id, db_id)
-
-        if db_con['data']['connected']:
-            server_connect_response = server_utils.verify_server(
-                tester, utils.SERVER_GROUP, server_id)
-
-            fdw_id = fdw_ids_dict[server_id]
-
-            response = fdw_utils.verify_fdws(tester,
-                                             utils.SERVER_GROUP,
-                                             server_id, db_id,
-                                             fdw_id)
-
-            if response.status_code == 200:
-                data = get_fsrv_config_data(server_connect_response)
-
-                response = tester.post(
-                    FSRV_URL + str(utils.SERVER_GROUP) + '/' +
-                    str(server_id) + '/' + str(
-                        db_id) +
-                    '/' + str(fdw_id) + '/',
-                    data=json.dumps(data),
-                    content_type='html/json')
-
-                assert response.status_code == 200
-
-                response_data = json.loads(response.data.decode())
-                write_fsrv_info(response_data, server_id)
-
-
-def write_fsrv_info(response_data, server_id):
+def create_fsrv(server, db_name, fsrv_name, fdw_name):
     """
-    This function writes the schema id into parent_id.pkl
+    This function will create foreign data wrapper under the existing
+    dummy database.
 
-    :param response_data: foreign server add response data
-    :type response_data: dict
-    :param server_id: server id
-    :type server_id: str
-    :return: None
+    :param server: test_server, test_db, fsrv_name, fdw_name
+    :return: fsrv_id
     """
 
-    fsrv_id = response_data['node']['_id']
-    pickle_id_dict = utils.get_pickle_id_dict()
-    if os.path.isfile(pickle_path):
-        existing_server_id = open(pickle_path, 'rb')
-        tol_server_id = pickle.load(existing_server_id)
-        pickle_id_dict = tol_server_id
-    if 'fsid' in pickle_id_dict:
-        if pickle_id_dict['fsid']:
-            # Add the FSRV_id as value in dict
-            pickle_id_dict["fsid"][0].update({server_id: fsrv_id})
-        else:
-            # Create new dict with server_id and fsrv_id
-            pickle_id_dict["fsid"].append({server_id: fsrv_id})
-    fsrv_output = open(pickle_path, 'wb')
-    pickle.dump(pickle_id_dict, fsrv_output)
-    fsrv_output.close()
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("CREATE SERVER {0} FOREIGN DATA WRAPPER {1} OPTIONS "
+                          "(host '{2}', dbname '{3}', port '{4}')".format
+                          (fsrv_name, fdw_name, server['host'], db_name,
+                           server['port']))
+
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+        # Get 'oid' from newly created foreign server
+        pg_cursor.execute(
+            "SELECT oid FROM pg_foreign_server WHERE srvname = '%s'"
+            % fsrv_name)
+        oid = pg_cursor.fetchone()
+        fsrv_id = ''
+        if oid:
+            fsrv_id = oid[0]
+        connection.close()
+        return fsrv_id
+    except Exception as exception:
+        exception = "Exception: %s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)
 
 
-def verify_fsrv(tester, server_group,  server_id, db_id, fdw_id, fsrv_id):
-    response = tester.get(FSRV_URL + str(server_group) + '/' +
-                          str(server_id) + '/' + str(db_id) +
-                          '/' + str(fdw_id) + '/' + str(fsrv_id),
-                          content_type='html/json')
-    return response
+def verify_fsrv(server, db_name , fsrv_name):
+    """ This function will verify current foreign server."""
 
+    try:
+        connection = get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'])
+        pg_cursor = connection.cursor()
 
-def delete_fsrv(tester):
-    all_id = utils.get_ids()
-    server_ids = all_id["sid"]
-    db_ids_dict = all_id["did"][0]
-    fdw_ids_dict = all_id["fid"][0]
-    fsrv_ids_dict = all_id["fsid"][0]
-
-    for server_id in server_ids:
-        db_id = db_ids_dict[int(server_id)]
-        fdw_id = fdw_ids_dict[server_id]
-        fsrv_id = fsrv_ids_dict[server_id]
-
-        response = verify_fsrv(tester, utils.SERVER_GROUP,
-                               server_id, db_id,
-                               fdw_id, fsrv_id)
-
-        if response.status_code == 200:
-            delete_response = tester.delete(
-                FSRV_URL + str(utils.SERVER_GROUP) +
-                '/' + str(server_id) + '/' +
-                str(db_id) + '/' +
-                str(fdw_id) + '/' +
-                str(fsrv_id),
-                follow_redirects=True)
-
-            delete_respdata = json.loads(delete_response.data.decode())
-            return delete_respdata
+        pg_cursor.execute(
+            "SELECT oid FROM pg_foreign_server WHERE srvname = '%s'"
+            % fsrv_name)
+        fsrvs = pg_cursor.fetchall()
+        connection.close()
+        return fsrvs
+    except Exception as exception:
+        exception = "%s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)

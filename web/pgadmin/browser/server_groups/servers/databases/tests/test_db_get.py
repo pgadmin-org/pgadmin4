@@ -9,7 +9,7 @@
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression import test_server_dict
+from regression import parent_node_dict
 from . import utils as database_utils
 
 
@@ -24,10 +24,10 @@ class DatabasesGetTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will fetch added database. """
-        server_data = test_server_dict["database"][0]
+        server_data = parent_node_dict["database"][-1]
         self.server_id = server_data["server_id"]
         self.db_id = server_data['db_id']
-        db_con = database_utils.verify_database(self,
+        db_con = database_utils.connect_database(self,
                                                 utils.SERVER_GROUP,
                                                 self.server_id,
                                                 self.db_id)

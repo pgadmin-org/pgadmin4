@@ -6,14 +6,13 @@
 # #This software is released under the PostgreSQL Licence
 #
 # ##########################################################################
-
 import uuid
 import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.test_setup import config_data
-from regression import test_utils as utils
-from utils import change_password
+from regression import test_utils
+from . import utils
 
 
 class ChangePasswordTestCase(BaseTestGenerator):
@@ -89,30 +88,25 @@ class ChangePasswordTestCase(BaseTestGenerator):
                 confirmPassword=self.password, active=1, role="2"),
                                         follow_redirects=True)
             user_id = json.loads(response.data.decode('utf-8'))['id']
-
             # Logout the Administrator before login normal user
-            utils.logout_tester_account(self.tester)
-
+            test_utils.logout_tester_account(self.tester)
             response = self.tester.post('/login', data=dict(
                 email=self.username, password=self.password),
                                         follow_redirects=True)
-            assert response.status_code == 200
-
+            self.assertEquals(response.status_code, 200)
             # test the 'change password' test case
-            change_password(self)
-
+            utils.change_password(self)
             # Delete the normal user after changing it's password
-            utils.logout_tester_account(self.tester)
-
+            test_utils.logout_tester_account(self.tester)
             # Login the Administrator before deleting normal user
-            utils.login_tester_account(self.tester)
+            test_utils.login_tester_account(self.tester)
             response = self.tester.delete(
                 '/user_management/user/' + str(user_id),
                 follow_redirects=True)
-            assert response.status_code == 200
+            self.assertEquals(response.status_code, 200)
         else:
-            change_password(self)
+            utils.change_password(self)
 
     @classmethod
     def tearDownClass(cls):
-        utils.login_tester_account(cls.tester)
+        test_utils.login_tester_account(cls.tester)

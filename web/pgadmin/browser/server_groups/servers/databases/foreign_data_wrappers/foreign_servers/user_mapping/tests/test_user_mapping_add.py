@@ -6,93 +6,92 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+from __future__ import print_function
+import uuid
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.databases.extensions.tests import\
-    utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
-    utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
+    utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests\
     import utils as fdw_utils
+from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
     foreign_servers.tests import utils as fsrv_utils
-from . import utils as um_utils
 
 
 class UserMappingAddTestCase(BaseTestGenerator):
-    """
-    This class will add user mapping under foreign server node.
-    """
+    """This class will add user mapping under foreign server node."""
 
     scenarios = [
         # Fetching default URL for user mapping node.
         ('Check user mapping Node', dict(url='/browser/user_mapping/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-         This function perform the following tasks:
-         1. Add and connect to the test server(s)
-         2. Add database(s) connected to server(s)
-         3. Add schemas to connected database(s)
-         4. Add extension(s) to schema(s)
-         5. Add foreign data wrapper(s) to extension(s)
-         6. Add foreign server(s) to foreign data wrapper(s)
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to servers
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add databases to connected servers
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-
-        # Add schema(s) under connected database(s)
-        schema_utils.add_schemas(cls.tester)
-
-        # Add extension(s) to schema(s)
-        extension_utils.add_extensions(cls.tester)
-
-        # Add foreign data wrapper(s) to extension(s)
-        fdw_utils.add_fdw(cls.tester)
-
-        # Add foreign server(s) to foreign data wrapper
-        fsrv_utils.add_fsrv(cls.tester)
+    def setUp(self):
+        """ This function will create extension and foreign data wrapper."""
+        self.schema_data = parent_node_dict['schema'][-1]
+        self.server_id = self.schema_data['server_id']
+        self.db_id = self.schema_data['db_id']
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        self.schema_name = self.schema_data['schema_name']
+        self.extension_name = "postgres_fdw"
+        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:6])
+        self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:6])
+        self.extension_id = extension_utils.create_extension(
+            self.server, self.db_name, self.extension_name, self.schema_name)
+        self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
+                                           self.fdw_name)
+        self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
+                                              self.fsrv_name, self.fdw_name)
 
     def runTest(self):
-        """ This function will add user mapping under foreign server node. """
+        """This function will update foreign server present under test
+        database. """
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 self.server_id,
+                                                 self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to database.")
+        fdw_response = fdw_utils.verify_fdw(self.server, self.db_name,
+                                            self.fdw_name)
+        if not fdw_response:
+            raise Exception("Could not find FDW.")
+        fsrv_response = fsrv_utils.verify_fsrv(self.server, self.db_name,
+                                               self.fsrv_name)
+        if not fsrv_response:
+            raise Exception("Could not find FSRV.")
+        db_user = self.server["username"]
+        data = {
+                "name": db_user,
+                "um_options": [],
+                "umoptions": [
+                    {
+                        "umoption": "user",
+                        "umvalue": self.server["username"]
+                    },
+                    {
+                        "umoption": "password",
+                        "umvalue": self.server["db_password"]
+                    }
+                ]
+            }
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(
+                self.db_id) +
+            '/' + str(self.fdw_id) + '/' + str(self.fsrv_id) + '/',
+            data=json.dumps(data),
+            content_type='html/json')
+        self.assertEquals(response.status_code, 200)
 
-        um_utils.add_um(self.tester)
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added user mapping(s), foreign server(s),
-        foreign data wrapper(s), extension(s), schema(s), database(s),
-        server(s) and parent id file
-
-        :return: None
-        """
-
-        um_utils.delete_um(cls.tester)
-        fsrv_utils.delete_fsrv(cls.tester)
-        fdw_utils.delete_fdw(cls.tester)
-        extension_utils.delete_extension(cls.tester)
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function disconnect the test database and drop added extension
+         and dependant objects."""
+        extension_utils.drop_extension(self.server, self.db_name,
+                                       self.extension_name)
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

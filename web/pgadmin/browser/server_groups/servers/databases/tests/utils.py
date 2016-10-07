@@ -6,15 +6,12 @@
 # #This software is released under the PostgreSQL Licence
 #
 # ##########################################################################
-
 import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from regression import test_utils as utils
 
-
-DATABASE_URL = '/browser/database/obj/'
 DATABASE_CONNECT_URL = '/browser/database/connect/'
 
 
@@ -93,7 +90,7 @@ def get_db_data(db_owner):
       }
     ],
         "encoding": "UTF8",
-        "name": "db_add_%s" % str(uuid.uuid4())[1:4],
+        "name": "db_add_%s" % str(uuid.uuid4())[1:6],
         "privileges": [],
         "securities": [],
         "variables": []
@@ -107,7 +104,7 @@ def create_database(connection, db_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute("CREATE DATABASE %s" % db_name)
+        pg_cursor.execute('''CREATE DATABASE "%s"''' % db_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         return pg_cursor
@@ -115,7 +112,7 @@ def create_database(connection, db_name):
         raise Exception("Error while creating database. %s" % exception)
 
 
-def verify_database(self, server_group, server_id, db_id):
+def connect_database(self, server_group, server_id, db_id):
     """
     This function verifies that database is exists and whether it connect
     successfully or not
@@ -150,38 +147,3 @@ def disconnect_database(self, server_id, db_id):
         'browser/database/connect/', utils.SERVER_GROUP, server_id, db_id),
         follow_redirects=True)
     self.assertEquals(db_con.status_code, 200)
-
-
-def delete_database(tester):
-    """
-    This function used to delete the added databases
-
-    :param tester: test client object
-    :return: None
-    """
-
-    server_ids = None
-    db_ids_dict = None
-
-    all_id = utils.get_ids()
-    if "sid" and "did" in all_id.keys():
-        server_ids = all_id["sid"]
-        if all_id['did']:
-            db_ids_dict = all_id['did'][0]
-    else:
-        raise Exception("Keys are not found in pickle dict: {}".format(["sid", "did"]))
-
-    if server_ids and db_ids_dict is not None:
-        for server_id in server_ids:
-            server_response = server_utils.verify_server(tester, utils.SERVER_GROUP, server_id)
-            if server_response["data"]["connected"]:
-                db_id = db_ids_dict[int(server_id)]
-                response = tester.delete(DATABASE_URL + str(utils.SERVER_GROUP) + '/' +
-                                         str(server_id) + '/' + str(db_id),
-                                         follow_redirects=True)
-                assert response.status_code == 200
-                response_data = json.loads(response.data.decode('utf-8'))
-                assert response_data['success'] == 1
-    else:
-        raise Exception("No servers/databases found.")
-

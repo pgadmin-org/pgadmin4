@@ -85,7 +85,7 @@ class LoginTestCase(BaseTestGenerator):
         response = self.tester.post('/login', data=dict(
             email=self.email, password=self.password),
                                     follow_redirects=True)
-        self.assertIn(self.respdata, response.data.decode('utf8'))
+        self.assertTrue(self.respdata in response.data.decode('utf8'))
 
     @classmethod
     def tearDownClass(cls):

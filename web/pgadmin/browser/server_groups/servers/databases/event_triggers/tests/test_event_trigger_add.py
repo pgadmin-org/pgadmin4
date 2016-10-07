@@ -7,73 +7,73 @@
 #
 # ##################################################################
 
+import uuid
+import json
+
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
-from pgadmin.browser.server_groups.servers.databases.schemas.functions.tests \
-    import utils as func_utils
-from . import utils as event_trigger_utils
+from regression import test_utils as utils
+from regression import parent_node_dict
+from regression import trigger_funcs_utils
 
 
 class EventTriggerAddTestCase(BaseTestGenerator):
-    """ This class will add new event trigger under schema node. """
-
+    """ This class will add new event trigger under test schema. """
     scenarios = [
         # Fetching default URL for event trigger node.
         ('Fetch Event Trigger Node URL',
          dict(url='/browser/event_trigger/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-              This function perform the following tasks:
-              1. Add and connect to the test server(s)
-              2. Add database(s) connected to server(s)
-              3. Add schemas to connected database(s)
-              4. Add trigger function(s) to schema(s)
-
-             :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to servers
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add databases to connected servers
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-
-        schema_utils.add_schemas(cls.tester)
-
-        func_utils.add_trigger_function(cls.tester, cls.server_connect_response,
-                                        cls.server_ids)
+    def setUp(self):
+        self.schema_data = parent_node_dict['schema'][-1]
+        self.server_id = self.schema_data['server_id']
+        self.db_id = self.schema_data['db_id']
+        self.schema_name = self.schema_data['schema_name']
+        self.schema_id = self.schema_data['schema_id']
+        self.extension_name = "postgres_fdw"
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        self.func_name = "trigger_func_%s" % str(uuid.uuid4())[1:6]
+        self.db_user = self.server["username"]
+        self.function_info = trigger_funcs_utils.create_trigger_function(
+            self.server, self.db_name, self.schema_name, self.func_name)
 
     def runTest(self):
-        """ This function will add event trigger under database node. """
-        event_trigger_utils.add_event_trigger(self.tester)
+        """ This function will add event trigger under test database. """
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
+        if not db_con['data']["connected"]:
+            raise Exception("Could not connect to database.")
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
+        if not schema_response:
+            raise Exception("Could not find the schema.")
+        func_name = self.function_info[1]
+        func_response = trigger_funcs_utils.verify_trigger_function(
+            self.server,
+            self.db_name,
+            func_name)
+        if not func_response:
+            raise Exception("Could not find the trigger function.")
+        data = {
+            "enabled": "O",
+            "eventfunname": "%s.%s" % (self.schema_name, self.func_name),
+            "eventname": "DDL_COMMAND_END",
+            "eventowner": self.db_user,
+            "name": "event_trigger_add_%s" % (str(uuid.uuid4())[1:6]),
+            "providers": []
+        }
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/', data=json.dumps(data),
+            content_type='html/json')
+        self.assertAlmostEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(cls):
-        """This function deletes the added schema, database, server and parent
-        id file
-
-        :return: None
-        """
-
-        event_trigger_utils.delete_event_trigger(cls.tester)
-        func_utils.delete_trigger_function(cls.tester)
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        # Disconnect database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

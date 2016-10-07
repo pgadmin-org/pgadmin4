@@ -6,12 +6,12 @@
 # #This software is released under the PostgreSQL Licence
 #
 # ##########################################################################
-
 import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.test_setup import config_data
-from test_utils import login_tester_account, logout_tester_account
+from regression.test_utils import login_tester_account
+from regression.test_utils import logout_tester_account
 
 
 class ResetPasswordTestCase(BaseTestGenerator):
@@ -45,12 +45,12 @@ class ResetPasswordTestCase(BaseTestGenerator):
         """This function checks reset password functionality."""
 
         response = self.tester.get('/reset')
-        self.assertIn('Recover pgAdmin 4 Password', response.data.decode(
+        self.assertTrue('Recover pgAdmin 4 Password' in response.data.decode(
             'utf-8'))
         response = self.tester.post(
             '/reset', data=dict(email=self.email),
             follow_redirects=True)
-        self.assertIn(self.respdata, response.data.decode('utf-8'))
+        self.assertTrue(self.respdata in response.data.decode('utf-8'))
 
     @classmethod
     def tearDownClass(cls):

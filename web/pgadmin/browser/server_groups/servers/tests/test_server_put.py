@@ -23,6 +23,8 @@ class ServerUpdateTestCase(BaseTestGenerator):
     def setUp(self):
         """This function add the server to test the PUT API"""
         self.server_id = utils.create_server(self.server)
+        server_dict = {"server_id": self.server_id}
+        utils.write_node_info("sid", server_dict)
 
     def runTest(self):
         """This function update the server details"""
@@ -37,4 +39,4 @@ class ServerUpdateTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """This function delete the server from SQLite"""
-        utils.delete_server(self.tester, self.server_id)
+        utils.delete_server_with_api(self.tester, self.server_id)

@@ -10,14 +10,18 @@
 """ This file collect all modules/files present in tests directory and add
 them to TestSuite. """
 from __future__ import print_function
-
 import argparse
 import os
 import sys
 import signal
 import atexit
-import unittest
 import logging
+import traceback
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 logger = logging.getLogger(__name__)
 file_name = os.path.basename(__file__)
@@ -35,7 +39,7 @@ if sys.path[0] != root:
 
 from pgadmin import create_app
 import config
-import test_setup
+from regression import test_setup
 
 # Delete SQLite db file if exists
 if os.path.isfile(config.TEST_SQLITE_PATH):
@@ -66,7 +70,7 @@ exec (open("setup.py").read())
 from pgadmin.model import SCHEMA_VERSION
 
 # Delay the import test_utils as it needs updated config.SQLITE_PATH
-import test_utils
+from regression import test_utils
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
@@ -189,11 +193,8 @@ def get_tests_result(test_suite):
                     if class_name not in failed_cases_result:
                         skipped_cases_result.append(class_name)
         return total_ran, failed_cases_result, skipped_cases_result
-    except Exception as exception:
-        exception = "Exception: %s: line:%s %s" % (
-            file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception)
-        logger.exception(exception)
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
 
 
 class StreamToLogger(object):
@@ -248,12 +249,15 @@ if __name__ == '__main__':
     test_utils.login_tester_account(test_client)
 
     servers_info = test_utils.get_config_data()
+    node_name = "all"
+    if args['pkg'] is not None:
+        node_name = args['pkg'].split('.')[-1]
     try:
         for server in servers_info:
             print("\n=============Running the test cases for '%s'============="
                   % server['name'], file=sys.stderr)
             # Create test server
-            test_utils.create_test_server(server)
+            test_utils.create_parent_server_node(server, node_name)
 
             suite = get_suite(test_module_list, server, test_client)
             tests = unittest.TextTestRunner(stream=sys.stderr,
@@ -265,14 +269,16 @@ if __name__ == '__main__':
             test_result[server['name']] = [ran_tests, failed_cases,
                                            skipped_cases]
             # Delete test server
-            test_utils.delete_test_server(test_client)
+            # test_utils.delete_test_server(test_client)
     except SystemExit:
         drop_objects()
 
-    print("\n======================================================================", file=sys.stderr)
+    print("\n==============================================================="
+          "=======", file=sys.stderr)
     print("Test Result Summary", file=sys.stderr)
-    print("======================================================================\n", file=sys.stderr)
-
+    print(
+        "==================================================================="
+        "===\n", file=sys.stderr)
     for server_res in test_result:
         failed_cases = "\n\t\t".join(test_result[server_res][1])
         skipped_cases = "\n\t\t".join(test_result[server_res][2])
@@ -292,6 +298,8 @@ if __name__ == '__main__':
              (total_skipped != 0 and ":\n\t\t" or ""), skipped_cases),
             file=sys.stderr)
 
-    print("======================================================================\n", file=sys.stderr)
+    print(
+        "==================================================================="
+        "===\n", file=sys.stderr)
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)

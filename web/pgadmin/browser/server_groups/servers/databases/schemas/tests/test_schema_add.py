@@ -6,60 +6,66 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+import json
+import uuid
 
 from regression import test_utils as utils
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from . import utils as schema_utils
 
 
 class SchemaAddTestCase(BaseTestGenerator):
     """ This class will add new schema under database node. """
-
     scenarios = [
         # Fetching default URL for schema node.
         ('Check Schema Node URL', dict(url='/browser/schema/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server
-         2. Connect to server
-         3. Add the databases
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-
     def runTest(self):
         """ This function will add schema under database node. """
+        database_info = parent_node_dict["database"][-1]
+        server_id = database_info["server_id"]
 
-        schema_utils.add_schemas(self.tester)
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added schemas, database, server
-        and the 'parent_id.pkl' file which is created in setup() function.
-
-        :return: None
-        """
-
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+        db_id = database_info["db_id"]
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 server_id,
+                                                 db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to database to add the schema.")
+        db_user = self.server["username"]
+        data = {
+            "deffuncacl": [],
+            "defseqacl": [],
+            "deftblacl": [],
+            "deftypeacl": [],
+            "name": "test_schema_{0}".format(str(uuid.uuid4())[1:6]),
+            "namespaceowner": db_user,
+            "nspacl": [
+                {
+                    "grantee": db_user,
+                    "grantor": db_user,
+                    "privileges":
+                        [
+                            {
+                                "privilege_type": "C",
+                                "privilege": True,
+                                "with_grant": False
+                            },
+                            {
+                                "privilege_type": "U",
+                                "privilege": True,
+                                "with_grant": False
+                            }
+                        ]
+                }
+            ],
+            "seclabels": []
+        }
+        response = self.tester.post(self.url + str(utils.SERVER_GROUP) + '/' +
+                                    str(server_id) + '/' + str(db_id) +
+                                    '/', data=json.dumps(data),
+                                    content_type='html/json')
+        self.assertEquals(response.status_code, 200)

@@ -12,7 +12,7 @@ import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression import test_server_dict
+from regression import parent_node_dict
 from . import utils as database_utils
 
 
@@ -26,32 +26,36 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
     def setUp(self):
         self.db_name = "test_db_put_%s" % str(uuid.uuid4())[1:8],
         self.db_id = utils.create_database(self.server, self.db_name)
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        db_dict = {"server_id": self.server_id, "db_id": self.db_id,
+                   "db_name": self.db_name}
+        utils.write_node_info("did", db_dict)
 
     def runTest(self):
         """ This function will update the comments field of database."""
-        server_id = test_server_dict["server"][0]["server_id"]
-        db_id = self.db_id
-        db_con = database_utils.verify_database(self,
+        db_con = database_utils.connect_database(self,
                                                 utils.SERVER_GROUP,
-                                                server_id,
-                                                db_id)
+                                                self.server_id,
+                                                self.db_id)
         if db_con["info"] == "Database connected.":
             try:
                 data = {
                     "comments": "This is db update comment",
-                    "id": db_id
+                    "id": self.db_id
                 }
                 response = self.tester.put(
                     self.url + str(utils.SERVER_GROUP) + '/' + str(
-                        server_id) + '/' +
-                    str(db_id), data=json.dumps(data), follow_redirects=True)
+                        self.server_id) + '/' +
+                    str(self.db_id), data=json.dumps(data),
+                    follow_redirects=True)
                 self.assertEquals(response.status_code, 200)
             except Exception as exception:
                 raise Exception("Error while updating database details. %s" %
                                 exception)
             finally:
                 # Disconnect database to delete it
-                database_utils.disconnect_database(self, server_id, db_id)
+                database_utils.disconnect_database(self, self.server_id,
+                                                   self.db_id)
         else:
             raise Exception("Error while updating database details.")
 

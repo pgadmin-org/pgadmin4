@@ -6,13 +6,15 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+from __future__ import print_function
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
+from regression import parent_node_dict
 from regression import test_utils as utils
 from . import utils as cast_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class CastsAddTestCase(BaseTestGenerator):
@@ -21,45 +23,35 @@ class CastsAddTestCase(BaseTestGenerator):
         ('Check Cast Node', dict(url='/browser/cast/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-         This function perform the following tasks:
-              1. Add and connect to the test server(s)
-              2. Add database(s) connected to server(s)
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-
     def runTest(self):
-        """ This function will add cast under database node. """
+        """ This function will add cast under test database. """
+        self.server_data = parent_node_dict["database"][-1]
+        self.server_id = self.server_data["server_id"]
+        self.db_id = self.server_data['db_id']
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 self.server_id,
+                                                 self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to database.")
 
-        cast_utils.add_cast(self.tester)
+        self.data = cast_utils.get_cast_data()
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(
+                self.db_id) + '/',
+            data=json.dumps(self.data),
+            content_type='html/json')
+        self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added cast, database, server and the
-        'parent_id.pkl' file which is created in setUpClass.
-
-        :return: None
-        """
-
-        cast_utils.delete_cast(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function disconnect the test database and drop added cast."""
+        connection = utils.get_db_connection(self.server_data['db_name'],
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'])
+        cast_utils.drop_cast(connection, self.data["srctyp"],
+                             self.data["trgtyp"])
+        database_utils.disconnect_database(self, self.server_id,
+                                           self.db_id)

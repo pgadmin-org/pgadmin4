@@ -7,14 +7,11 @@
 #
 # ##################################################################
 from __future__ import print_function
-
-import os
-import sys
 import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression import test_server_dict
+from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from . import utils as tablespace_utils
 
@@ -30,14 +27,14 @@ class TableSpaceAddTestCase(BaseTestGenerator):
         self.tablespace_name = ''
         if not self.server['tablespace_path']\
                 or self.server['tablespace_path'] is None:
-            message = "Skipped tablespace add test case. Tablespace path" \
+            message = "Tablespace add test case. Tablespace path" \
                       " not configured for server: %s" % self.server['name']
             # Skip the test case if tablespace_path not found.
             self.skipTest(message)
 
     def runTest(self):
         """This function test the add tablespace API"""
-        server_id = test_server_dict["server"][0]["server_id"]
+        server_id = parent_node_dict["server"][-1]["server_id"]
         server_response = server_utils.connect_server(self, server_id)
         if not server_response['data']['connected']:
             raise Exception("Unable to connect server to get tablespace.")
@@ -58,7 +55,7 @@ class TableSpaceAddTestCase(BaseTestGenerator):
         tablespace_dict = {"tablespace_id": tablespace_id,
                            "tablespace_name": self.tablespace_name,
                            "server_id": server_id}
-        utils.write_node_info(tablespace_id, "tsid", tablespace_dict)
+        utils.write_node_info("tsid", tablespace_dict)
 
     def tearDown(self):
         """

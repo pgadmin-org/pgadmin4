@@ -6,11 +6,14 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
+import uuid
 
 from regression import test_utils as utils
+from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.sequences.tests \
+    import utils as sequence_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -19,59 +22,59 @@ from . import utils as synonym_utils
 
 
 class SynonymDeleteTestCase(BaseTestGenerator):
-    """ This class will delete added synonym under schema node. """
-
+    """This class will delete added synonym under schema node."""
     scenarios = [
         # Fetching default URL for synonym node.
         ('Fetch synonym Node URL', dict(url='/browser/synonym/obj/'))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-        This function perform the three tasks
-         1. Add the test server
-         2. Connect to server
-         3. Add the databases
-         4. Add the schemas
-         5. Add the synonyms
-
-        :return: None
-        """
-
-        # Firstly, add the server
-        server_utils.add_server(cls.tester)
-        # Connect to server
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-        # Add database
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-        # Add schemas
-        schema_utils.add_schemas(cls.tester)
-        # Add synonyms
-        synonym_utils.add_synonym(cls.tester, cls.server_connect_response,
-                                      cls.server_ids)
+    def setUp(self):
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        schema_info = parent_node_dict["schema"][-1]
+        self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
+        server_con = server_utils.connect_server(self, self.server_id)
+        if server_con:
+            if "server_type" in server_con["data"]:
+                if server_con["data"]["server_type"] == "pg":
+                    message = "Synonym not supported by PG."
+                    self.skipTest(message)
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
+        if not db_con['data']["connected"]:
+            raise Exception("Could not connect to database to add synonym.")
+        self.schema_id = schema_info["schema_id"]
+        self.schema_name = schema_info["schema_name"]
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
+        if not schema_response:
+            raise Exception("Could not find the schema to add the synonym.")
+        self.sequence_name = "test_sequence_synonym_%s" % \
+                             str(uuid.uuid4())[1:6]
+        self.sequence_id = sequence_utils.create_sequences(
+            self.server, self.db_name, self.schema_name, self.sequence_name)
+        self.synonym_name = "test_synonym_delete_%s" % str(uuid.uuid4())[1:6]
+        self.synonym_id = synonym_utils.create_synonym(self.server,
+                                                       self.db_name,
+                                                       self.schema_name,
+                                                       self.synonym_name,
+                                                       self.sequence_name)
 
     def runTest(self):
-        """ This function will delete synonym under schema node. """
+        """This function will delete synonym under schema node."""
+        synonym_response = synonym_utils.verify_synonym(self.server,
+                                                        self.db_name,
+                                                        self.synonym_name)
+        if not synonym_response:
+            raise Exception("No synonym node to delete.")
+        response = self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) + '/' +
+            str(self.schema_id) + '/' + str(self.synonym_id),
+            follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
 
-        synonym_utils.delete_synonym(self.tester)
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This function deletes the added schemas, database,
-        server and the 'parent_id.pkl' file which is created in setup()
-        function.
-
-        :return: None
-        """
-
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
-
+    def tearDown(self):
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

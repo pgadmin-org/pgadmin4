@@ -6,128 +6,103 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
-
-import os
-import pickle
-import json
-from regression.test_setup import advanced_config_data, pickle_path
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
+from __future__ import print_function
+import traceback
 import uuid
+import sys
 
-FDW_URL = '/browser/foreign_data_wrapper/obj/'
+from regression.test_utils import get_db_connection
 
 
-def get_fdw_config_data(schema_name, server_connect_data):
-    adv_config_data = None
-    db_user = server_connect_data['data']['user']['name']
-
-    # Get the config data of appropriate db user
-    for config_test_data in advanced_config_data['fdw_credentials']:
-        if db_user == config_test_data['owner']:
-            adv_config_data = config_test_data
-
+def get_fdw_data(schema_name, db_user):
     data = {
-        "fdwacl": adv_config_data['acl'],
-        "fdwhan": "{0}.{1}".format(schema_name, adv_config_data['handler']),
-        "fdwoptions": adv_config_data['options'],
-        "fdwowner": adv_config_data['owner'],
-        "fdwvalue": "{0}.{1}".format(schema_name, adv_config_data['validator']),
-        "name": "fdw_{}".format(str(uuid.uuid4())[1:4])
+        "fdwacl":
+            [
+                {
+                    "grantee": db_user,
+                    "grantor": db_user,
+                    "privileges":
+                        [
+                            {
+                                "privilege_type": "U",
+                                "privilege": "true",
+                                "with_grant": "true"
+                            }
+                        ]
+                }
+            ],
+        "fdwhan": "%s.%s" % (schema_name, "postgres_fdw_handler"),
+        "fdwoptions": [],
+        "fdwowner": db_user,
+        "fdwvalue": "%s.%s" % (schema_name, "postgres_fdw_validator"),
+        "name": "fdw_add_%s" % (str(uuid.uuid4())[1:6])
     }
-
     return data
 
 
-def add_fdw(tester):
-
-    all_id = utils.get_ids()
-    server_ids = all_id["sid"]
-    db_ids_dict = all_id["did"][0]
-    schema_info_dict = all_id["scid"][0]
-
-    for server_id in server_ids:
-        db_id = db_ids_dict[int(server_id)]
-        db_con = database_utils.verify_database(tester, utils.SERVER_GROUP,
-                                                server_id, db_id)
-        if db_con['data']["connected"]:
-            server_connect_response = server_utils.verify_server(
-                tester, utils.SERVER_GROUP, server_id)
-
-            schema_name = schema_info_dict[int(server_id)][1]
-            data = get_fdw_config_data(schema_name,
-                                       server_connect_response)
-
-            response = tester.post(FDW_URL + str(utils.SERVER_GROUP) + '/' +
-                                   str(server_id) + '/' + str(db_id) + '/',
-                                   data=json.dumps(data),
-                                   content_type='html/json')
-            assert response.status_code == 200
-            response_data = json.loads(response.data.decode('utf-8'))
-            write_fdw_info(response_data, server_id)
-
-
-def write_fdw_info(response_data, server_id):
+def create_fdw(server, db_name, fdw_name):
     """
-    This function writes the sequence id into parent_id.pkl
-
-    :param response_data: FDW add response data
-    :type response_data: dict
-    :param server_id: server id
-    :type server_id: str
-    :return: None
+    This function will create foreign data wrapper under the existing
+    dummy database.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fdw_name: FDW name
+    :type fdw_name: str
+    :return fdw_id: fdw id
+    :rtype: int
     """
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''CREATE FOREIGN DATA WRAPPER "%s"''' % fdw_name)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+        # Get 'oid' from newly created foreign data wrapper
+        pg_cursor.execute(
+            "SELECT oid FROM pg_foreign_data_wrapper WHERE fdwname = '%s'"
+            % fdw_name)
+        oid = pg_cursor.fetchone()
+        fdw_id = ''
+        if oid:
+            fdw_id = oid[0]
+        connection.close()
+        return fdw_id
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
 
-    fdw_id = response_data['node']['_id']
-    pickle_id_dict = utils.get_pickle_id_dict()
-    if os.path.isfile(pickle_path):
-        existing_server_id = open(pickle_path, 'rb')
-        tol_server_id = pickle.load(existing_server_id)
-        pickle_id_dict = tol_server_id
-    if 'fid' in pickle_id_dict:
-        if pickle_id_dict['fid']:
-            # Add the FDW_id as value in dict
-            pickle_id_dict["fid"][0].update({server_id: fdw_id})
-        else:
-            # Create new dict with server_id and FDW_id
-            pickle_id_dict["fid"].append({server_id: fdw_id})
-    fdw_output = open(pickle_path, 'wb')
-    pickle.dump(pickle_id_dict, fdw_output)
-    fdw_output.close()
 
-
-def verify_fdws(tester, server_group, server_id, db_id, fdw_id):
-    response = tester.get(FDW_URL + str(server_group) + '/' +
-                          str(server_id) + '/' + str(db_id) +
-                          '/' + str(fdw_id),
-                          content_type='html/json')
-    return response
-
-
-def delete_fdw(tester):
-    all_id = utils.get_ids()
-    server_ids = all_id["sid"]
-    db_ids_dict = all_id["did"][0]
-    fdw_ids_dict = all_id["fid"][0]
-
-    for server_id in server_ids:
-        db_id = db_ids_dict[int(server_id)]
-        fdw_id = fdw_ids_dict[server_id]
-
-        response = verify_fdws(tester,
-                               utils.SERVER_GROUP,
-                               server_id, db_id,
-                               fdw_id)
-
-        if response.status_code == 200:
-            delete_response = tester.delete(
-                FDW_URL + str(utils.SERVER_GROUP) + '/' +
-                str(server_id) + '/' +
-                str(db_id) + '/' + str(fdw_id),
-                follow_redirects=True)
-
-            delete_respdata = json.loads(delete_response.data.decode())
-
-            return delete_respdata
+def verify_fdw(server, db_name, fdw_name):
+    """
+    This function will verify current foreign data wrapper.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fdw_name: FDW name
+    :type fdw_name: str
+    :return fdw: fdw details
+    :rtype: tuple
+    """
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            "SELECT oid FROM pg_foreign_data_wrapper WHERE fdwname = '%s'"
+            % fdw_name)
+        fdw = pg_cursor.fetchone()
+        connection.close()
+        return fdw
+    except Exception:
+        traceback.print_exc(file=sys.stderr)

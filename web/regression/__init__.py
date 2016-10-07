@@ -9,6 +9,11 @@
 import pgadmin.browser.server_groups.servers.roles.tests.utils as roles_utils
 import pgadmin.browser.server_groups.servers.tablespaces.tests.utils as \
     tablespace_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tests import\
+    utils as schema_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.functions.tests\
+    import utils as trigger_funcs_utils
+
 
 global node_info_dict
 node_info_dict = {
@@ -16,22 +21,14 @@ node_info_dict = {
     "did": [],  # database
     "lrid": [],  # role
     "tsid": [],  # tablespace
-    "scid": [],  # schema
-    "tfnid": [],  # trigger functions
-    "coid": [],  # collation
-    "cid": [],  # casts
-    "etid": [],  # event_trigger
-    "eid": [],  # extension
-    "fid": [],  # FDW
-    "fsid": [],  # FRS
-    "umid": [],  # user_mapping
-    "seid": []  # sequence
+    "scid": []  # schema
 }
 
-global test_server_dict
-test_server_dict = {
+global parent_node_dict
+parent_node_dict = {
     "server": [],
     "database": [],
     "tablespace": [],
-    "role": []
+    "role": [],
+    "schema": []
 }

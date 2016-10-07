@@ -10,7 +10,7 @@ import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils as utils
-from regression import test_server_dict
+from regression import parent_node_dict
 from . import utils as roles_utils
 
 
@@ -22,15 +22,18 @@ class LoginRoleGetTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
         self.role_name = "role_get_%s" % str(uuid.uuid4())[1:6]
         self.role_id = roles_utils.create_role(self.server, self.role_name)
+        role_dict = {"server_id": self.server_id, "role_id": self.role_id,
+                     "role_name": self.role_name}
+        utils.write_node_info("lrid", role_dict)
 
     def runTest(self):
         """This function test the get role scenario"""
-        server_id = test_server_dict["server"][0]["server_id"]
         response = self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(server_id) + '/' + str(self.role_id),
+            str(self.server_id) + '/' + str(self.role_id),
             follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 

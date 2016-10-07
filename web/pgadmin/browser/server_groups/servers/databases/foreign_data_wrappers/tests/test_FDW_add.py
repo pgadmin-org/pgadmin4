@@ -6,70 +6,63 @@
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
+from __future__ import print_function
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.databases.extensions.tests import\
-    utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
-    utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
+    utils as extension_utils
 from . import utils as fdw_utils
+from regression import parent_node_dict
+from regression import test_utils as utils
 
 
 class FDWDAddTestCase(BaseTestGenerator):
     """ This class will add foreign data wrappers under database node. """
-
     scenarios = [
-            # Fetching default URL for foreign_data_wrapper node.
-            ('Check FDW Node',
-             dict(url='/browser/foreign_data_wrapper/obj/'))
-        ]
+        # Fetching default URL for foreign_data_wrapper node.
+        ('Check FDW Node',
+         dict(url='/browser/foreign_data_wrapper/obj/'))
+    ]
 
-    @classmethod
-    def setUpClass(cls):
-        """
-         This function perform the following tasks:
-         1. Add and connect to the test server(s)
-         2. Add database(s) connected to server(s)
-         3. Add schema(s) to connected database(s)
-         4. Add extension(s) to schema(s)
-
-        :return: None
-        """
-
-        # Add the server
-        server_utils.add_server(cls.tester)
-
-        # Connect to servers
-        cls.server_connect_response, cls.server_group, cls.server_ids = \
-            server_utils.connect_server(cls.tester)
-
-        if len(cls.server_connect_response) == 0:
-            raise Exception("No Server(s) connected to add the database!!!")
-
-        # Add databases to connected servers
-        database_utils.add_database(cls.tester, cls.server_connect_response,
-                                    cls.server_ids)
-        schema_utils.add_schemas(cls.tester)
-
-        extension_utils.add_extensions(cls.tester)
+    def setUp(self):
+        """ This function will create extension."""
+        self.schema_data = parent_node_dict['schema'][-1]
+        self.server_id = self.schema_data['server_id']
+        self.db_id = self.schema_data['db_id']
+        self.schema_name = self.schema_data['schema_name']
+        self.extension_name = "postgres_fdw"
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        self.extension_id = extension_utils.create_extension(
+            self.server, self.db_name, self.extension_name, self.schema_name)
 
     def runTest(self):
-        """ This function will add extension under 1st server of tree node. """
-        fdw_utils.add_fdw(self.tester)
+        """This function will add foreign data wrapper under test database."""
+        db_con = database_utils.connect_database(self,
+                                                 utils.SERVER_GROUP,
+                                                 self.server_id,
+                                                 self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to database.")
+        extension_response = extension_utils.verify_extension(
+            self.server, self.db_name, self.extension_name)
+        if not extension_response:
+            raise Exception("Could not find extension.")
+        self.data = fdw_utils.get_fdw_data(self.schema_name,
+                                           self.server['username'])
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) + '/',
+            data=json.dumps(self.data),
+            content_type='html/json')
+        self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(cls):
-        """This function deletes the added schema, database, server and parent
-        id file
-        """
-
-        fdw_utils.delete_fdw(cls.tester)
-        extension_utils.delete_extension(cls.tester)
-        schema_utils.delete_schema(cls.tester)
-        database_utils.delete_database(cls.tester)
-        server_utils.delete_server(cls.tester)
-        utils.delete_parent_id_file()
+    def tearDown(self):
+        """This function disconnect the test database and
+            drop added extension."""
+        extension_utils.drop_extension(self.server, self.db_name,
+                                       self.extension_name)
+        database_utils.disconnect_database(self, self.server_id,
+                                           self.db_id)
