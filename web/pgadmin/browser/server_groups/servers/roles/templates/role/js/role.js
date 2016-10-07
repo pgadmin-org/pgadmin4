@@ -441,7 +441,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           group: '{{ _('Privileges') }}', type: 'switch',
           options: switchOptions, disabled: 'readonly'
         },{
-          id: 'rolcatupdate', label:'{{ _('Update Catalog?') }}',
+          id: 'rolcatupdate', label:'{{ _('Update catalog?') }}',
           type: 'switch', max_version: 90400, options: switchOptions,
           group: '{{ _('Privileges') }}', disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
