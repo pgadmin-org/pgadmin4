@@ -1418,7 +1418,7 @@ if (has_capability(data, 'upload')) {
   $('.upload').remove();
   $( ".create" ).before( '<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn fa fa-upload upload"><span></span></button> ' );
 
-  $('.upload').unbind().click(function() {
+  $('#uploader .upload').unbind().click(function() {
     // we create prompt
     var msg  = '<div id="dropzone-container">' +
           '<button class="fa fa-times dz_cross_btn"></button>' +
