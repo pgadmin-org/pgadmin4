@@ -587,6 +587,7 @@ class ServerNode(PGChildNodeView):
             connected = False
             icon = "icon-server-not-connected"
             user = None
+            manager = None
 
             if 'connect_now' in data and data['connect_now']:
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
@@ -628,12 +629,12 @@ class ServerNode(PGChildNodeView):
                 node=self.blueprint.generate_browser_node(
                     "%d" % server.id, server.servergroup_id,
                     server.name,
-                    'icon-{0}'.format(manager.server_type) if manager.server_type else "icon-pg",
+                    'icon-{0}'.format(manager.server_type) if manager and manager.server_type else "icon-pg",
                     True,
                     self.node_type,
                     user=user,
                     connected=connected,
-                    server_type=manager.server_type if manager.server_type else 'pg'
+                    server_type=manager.server_type if manager and manager.server_type else 'pg'
                 )
             )
 
