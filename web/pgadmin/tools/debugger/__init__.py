@@ -163,6 +163,10 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
         fid = tr_set['rows'][0]['tgfoid']
 
+    # if ppas server and node type is edb function or procedure then extract last argument as function id
+    if node_type == 'edbfunc' or node_type == 'edbproc':
+        fid = trid
+
     sql = ''
     sql = render_template("/".join([template_path, 'get_function_debug_info.sql']), is_ppas_database=ppas_server,
                           hasFeatureFunctionDefaults=True, fid=fid)
@@ -259,6 +263,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         'arg_mode': r_set['rows'][0]['proargmodes'],
         'use_default': r_set['rows'][0]['pronargdefaults'],
         'default_value': r_set['rows'][0]['proargdefaults'],
+        'pkgname': r_set['rows'][0]['pkgname'],
         'pkg': r_set['rows'][0]['pkg'],
         'require_input': data['require_input'],
         'args_value': ''
@@ -454,6 +459,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
         'arg_mode': func_data['arg_mode'],
         'use_default': func_data['use_default'],
         'default_value': func_data['default_value'],
+        'pkgname': func_data['pkgname'],
         'pkg': func_data['pkg'],
         'require_input': func_data['require_input'],
         'args_value': func_data['args_value']
@@ -631,9 +637,15 @@ def start_debugger_listener(trans_id):
         if obj['debug_type'] == 'direct':
             str_query = ''
 
-            # Form the function name with schema name
-            func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + driver.qtIdent(
-                conn, session['functionData'][str(trans_id)]['name'])
+            if session['functionData'][str(trans_id)]['pkg'] == 0:
+                # Form the function name with schema name
+                func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + driver.qtIdent(
+                    conn, session['functionData'][str(trans_id)]['name'])
+            else:
+                # Form the edb package function/procedure name with schema name
+                func_name = driver.qtIdent(conn, session['functionData'][str(trans_id)]['schema']) + '.' + \
+                            driver.qtIdent(conn, session['functionData'][str(trans_id)]['pkgname']) + '.' + \
+                            driver.qtIdent(conn, session['functionData'][str(trans_id)]['name'])
 
             if obj['restart_debug'] == 0:
                 # render the SQL template and send the query to server

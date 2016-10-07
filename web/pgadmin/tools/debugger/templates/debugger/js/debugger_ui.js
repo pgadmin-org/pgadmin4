@@ -150,10 +150,20 @@ define(
                 var _Url = "{{ url_for('debugger.index') }}" + "get_arguments/" + treeInfo.server._id +
                               "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
               }
-              else {
+              else if (d._type == "procedure") {
                 // Get the existing function parameters available from sqlite database
                 var _Url = "{{ url_for('debugger.index') }}" + "get_arguments/" + treeInfo.server._id +
                               "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+              }
+              else if (d._type == "edbfunc") {
+                // Get the existing function parameters available from sqlite database
+                var _Url = "{{ url_for('debugger.index') }}" + "get_arguments/" + treeInfo.server._id +
+                              "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbfunc._id;
+              }
+              else if (d._type == "edbproc") {
+                // Get the existing function parameters available from sqlite database
+                var _Url = "{{ url_for('debugger.index') }}" + "get_arguments/" + treeInfo.server._id +
+                              "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbproc._id;
               }
             }
             else {
@@ -471,12 +481,26 @@ define(
                   }
 
                   if (self.restart_debug == 0) {
+                    var f_id;
+                    if (d._type == "function") {
+                      f_id = treeInfo.function._id;
+                    }
+                    else if (d._type == "procedure") {
+                      f_id = treeInfo.procedure._id;
+                    }
+                    else if (d._type == "edbfunc") {
+                      f_id = treeInfo.edbfunc._id;
+                    }
+                    else if (d._type == "edbproc") {
+                      f_id = treeInfo.edbproc._id;
+                    }
+
                     // Below will format the data to be stored in sqlite database
                     sqlite_func_args_list.push({
                       'server_id': treeInfo.server._id,
                       'database_id': treeInfo.database._id,
                       'schema_id': treeInfo.schema._id ,
-                      'function_id': d._type == "function" ? treeInfo.function._id : treeInfo.procedure._id,
+                      'function_id': f_id,
                       'arg_id': self.input_arg_id[int_count],
                       'is_null': m.get('is_null')  ? 1 : 0,
                       'is_expression': m.get('expr') ? 1 : 0,
@@ -508,9 +532,17 @@ define(
                   var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
                 }
-                else {
+                else if (d._type == "procedure") {
                   var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+                }
+                else if (d._type == "edbfunc") {
+                  var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
+                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbfunc._id;
+                }
+                else if (d._type == "edbproc") {
+                  var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
+                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbproc._id;
                 }
 
                 $.ajax({
@@ -549,9 +581,19 @@ define(
                       var _Url = "{{ url_for('debugger.index') }}" + "set_arguments/" + treeInfo.server._id +
                                   "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
                     }
-                    else {
+                    else if (d._type == "procedure") {
                       var _Url = "{{ url_for('debugger.index') }}" + "set_arguments/" + treeInfo.server._id +
                                   "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+                    }
+                    else if (d._type == "edbfunc") {
+                      // Get the existing function parameters available from sqlite database
+                      var _Url = "{{ url_for('debugger.index') }}" + "set_arguments/" + treeInfo.server._id +
+                              "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbfunc._id;
+                    }
+                    else if (d._type == "edbproc") {
+                      // Get the existing function parameters available from sqlite database
+                      var _Url = "{{ url_for('debugger.index') }}" + "set_arguments/" + treeInfo.server._id +
+                              "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.edbproc._id;
                     }
 
                     $.ajax({

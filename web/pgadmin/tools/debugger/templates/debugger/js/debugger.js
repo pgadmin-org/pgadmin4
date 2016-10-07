@@ -58,6 +58,30 @@ define(
           priority: 10, label: '{{ _('Set breakpoint') }}', category: 'Debugging',
           icon: 'fa fa-arrow-circle-right', data: {object:'trigger'},
           enable: 'can_debug'
+        }, {
+          name: 'package_function_direct_debugger', node: 'edbfunc', module: this,
+          applies: ['object', 'context'], callback: 'get_function_information',
+          category: 'Debugging', priority: 10, label: '{{ _('Debug') }}',
+          data: {object: 'edbfunc'}, icon: 'fa fa-arrow-circle-right',
+          enable: 'can_debug'
+        },{
+          name: 'package_function_global_debugger', node: 'edbfunc', module: this,
+          applies: ['object', 'context'], callback: 'check_func_debuggable',
+          category: 'Debugging', priority: 10, label: '{{ _('Set breakpoint') }}',
+          data: {object: 'edbfunc'}, icon: 'fa fa-arrow-circle-right',
+          enable: 'can_debug'
+        },{
+          name: 'package_procedure_direct_debugger', node: 'edbproc', module: this,
+          applies: ['object', 'context'], callback: 'get_function_information',
+          category: 'Debugging', priority: 10, label: '{{ _('Debug') }}',
+          data: {object: 'edbproc'}, icon: 'fa fa-arrow-circle-right',
+          enable: 'can_debug'
+        }, {
+          name: 'package_procedure_global_debugger', node: 'edbproc', module: this,
+          applies: ['object', 'context'], callback: 'check_func_debuggable',
+          category: 'Debugging', priority: 10, label: '{{ _('Set breakpoint') }}',
+          data: {object: 'edbproc'}, icon: 'fa fa-arrow-circle-right',
+          enable: 'can_debug'
         }]);
 
         // Create and load the new frame required for debugger panel
@@ -102,7 +126,9 @@ define(
           return false;
 
         // For trigger node, language will be undefined - we should allow indirect debugging for trigger node
-        if (d_.language == undefined && d_._type == 'trigger') {
+        if ((d_.language == undefined && d_._type == 'trigger') ||
+            (d_.language == undefined && d_._type == 'edbfunc') ||
+            (d_.language == undefined && d_._type == 'edbproc')) {
           return true;
         }
 
