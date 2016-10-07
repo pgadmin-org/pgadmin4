@@ -96,13 +96,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           select2: { width: "50%", allowClear: false },
           options: function(obj) {
               return [
-                {label: "Table", value: "r"},
-                {label: "Sequence", value: "S"},
-                {label: "View", value: "v"},
-                {label: "Function", value: "f"},
-                {label: "Procedure", value: "p"},
-                {label: "Package", value: "P"},
-                {label: "Public Synonym", value: "s"}
+                {label: "{{ _('Function') }}", value: "f"},
+                {label: "{{ _('Package') }}", value: "P"},
+                {label: "{{ _('Procedure') }}", value: "p"},
+                {label: "{{ _('Public Synonym') }}", value: "s"},
+                {label: "{{ _('Sequence') }}", value: "S"},
+                {label: "{{ _('Table') }}", value: "r"},
+                {label: "{{ _('View') }}", value: "v"}
               ]
            },
           control: 'select2'

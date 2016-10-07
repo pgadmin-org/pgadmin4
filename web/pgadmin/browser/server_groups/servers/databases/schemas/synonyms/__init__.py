@@ -391,10 +391,18 @@ class SynonymView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            # Find parent oid to add properly in tree browser
+            SQL = render_template("/".join([self.template_path,
+                                            'get_parent_oid.sql']),
+                                  data=data, conn=self.conn)
+            status, parent_id = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     data['name'],
-                    scid,
+                    int(parent_id),
                     data['name'],
                     icon="icon-synonym"
                 )
@@ -483,25 +491,14 @@ class SynonymView(PGChildNodeView):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                return make_json_response(
-                    success=1,
-                    info="Synonym updated",
-                    data={
-                        'id': syid,
-                        'scid': scid,
-                        'did': did
-                    }
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    syid,
+                    scid,
+                    syid,
+                    icon="icon-synonym"
                 )
-            else:
-                return make_json_response(
-                    success=1,
-                    info="Nothing to update",
-                    data={
-                        'id': syid,
-                        'scid': scid,
-                        'did': did
-                    }
-                )
+            )
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
