@@ -21,7 +21,8 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, bad_request
 from pgadmin.utils.driver import get_driver
-
+from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db,\
+    parse_priv_to_db
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import gone
 
@@ -230,7 +231,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
       - This function is used to return modified SQL for the selected view
         node.
 
-    * get_sql(data, scid)
+    * getSQL(data, scid)
       - This function will generate sql from model data
 
     * sql(gid, sid, did, scid):
@@ -396,33 +397,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             status=200
         )
 
-    def parse_views_privileges(self, db_privileges):
-        """
-        This function forms a separate list of grantable
-        and non grantable privileges.
-        """
-        acl = {'grantor': db_privileges['grantor'],
-               'grantee': db_privileges['grantee'],
-               'privileges': []
-               }
-
-        privileges = []
-        for idx, priv in enumerate(db_privileges['privileges']):
-            if db_privileges['grantable'][idx]:
-                privileges.append({"privilege_type": priv,
-                                   "privilege": True,
-                                   "with_grant": True
-                                   })
-            else:
-                privileges.append({"privilege_type": priv,
-                                   "privilege": True,
-                                   "with_grant": False
-                                   })
-
-        acl['privileges'] = privileges
-
-        return acl
-
     @check_precondition
     def properties(self, gid, sid, did, scid, vid):
         """
@@ -446,11 +420,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
-            priv = self.parse_views_privileges(row)
-            if row['deftype'] in res['rows'][0]:
-                res['rows'][0][row['deftype']].append(priv)
-            else:
-                res['rows'][0][row['deftype']] = [priv]
+            priv = parse_priv_from_db(row)
+            res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
         result = res['rows'][0]
 
@@ -678,49 +649,6 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             status=200
         )
 
-    @staticmethod
-    def parse_privileges(str_privileges, object_type='VIEW'):
-        """Parse Privileges."""
-        db_privileges = {
-            'a': 'INSERT',
-            'r': 'SELECT',
-            'w': 'UPDATE',
-            'd': 'DELETE',
-            'D': 'TRUNCATE',
-            'x': 'REFERENCES',
-            't': 'TRIGGER'
-        }
-        privileges = []
-        for priv in str_privileges:
-            priv_with_grant = []
-            priv_without_grant = []
-            for privilege in priv['privileges']:
-                if privilege['with_grant']:
-                    priv_with_grant.append(
-                        db_privileges[privilege['privilege_type']])
-                elif privilege['privilege']:
-                    priv_without_grant.append(
-                        db_privileges[privilege['privilege_type']])
-
-                # If we have all acl then just return all
-                if len(priv_with_grant) == len(db_privileges):
-                    priv_with_grant = ['ALL']
-                if len(priv_without_grant) == len(db_privileges):
-                    priv_without_grant = ['ALL']
-
-            # Server Level validation
-            if 'grantee' in priv:
-                privileges.append(
-                    {
-                        'grantee': priv['grantee'] if 'grantee' in priv else '',
-                        'with_grant': priv_with_grant,
-                        'without_grant': priv_without_grant
-                    }
-                )
-            else:
-                return ''
-        return privileges
-
     def getSQL(self, gid, sid, data, vid=None):
         """
         This function will generate sql from model data
@@ -742,17 +670,26 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if 'schema' not in data:
                 data['schema'] = res['rows'][0]['schema']
 
-            key = 'datacl'
-            if key in data and data[key] is not None:
-                if 'added' in data[key]:
-                    data[key]['added'] = self.parse_privileges(
-                        data[key]['added'])
-                if 'changed' in data[key]:
-                    data[key]['changed'] = self.parse_privileges(
-                        data[key]['changed'])
-                if 'deleted' in data[key]:
-                    data[key]['deleted'] = self.parse_privileges(
-                        data[key]['deleted'])
+            acls = []
+            try:
+                acls = render_template(
+                    "/".join([self.template_path, 'sql/allowed_privs.json'])
+                )
+                acls = json.loads(acls, encoding='utf-8')
+            except Exception as e:
+                current_app.logger.exception(e)
+
+            # Privileges
+            for aclcol in acls:
+                if aclcol in data:
+                    allowedacl = acls[aclcol]
+
+                    for key in ['added', 'changed', 'deleted']:
+                        if key in data[aclcol]:
+                            data[aclcol][key] = parse_priv_to_db(
+                                data[aclcol][key], allowedacl['acl']
+                            )
+
             try:
                 SQL = render_template("/".join(
                     [self.template_path, 'sql/update.sql']), data=data,
@@ -777,8 +714,23 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             if 'schema' in data and isinstance(data['schema'], int):
                 data['schema'] = self._get_schema(data['schema'])
 
-            if 'datacl' in data and data['datacl'] is not None:
-                data['datacl'] = self.parse_privileges(data['datacl'])
+            acls = []
+            try:
+                acls = render_template(
+                    "/".join([self.template_path, 'sql/allowed_privs.json'])
+                )
+                acls = json.loads(acls, encoding='utf-8')
+            except Exception as e:
+                current_app.logger.exception(e)
+
+            # Privileges
+            for aclcol in acls:
+                if aclcol in data:
+                    allowedacl = acls[aclcol]
+                    data[aclcol] = parse_priv_to_db(
+                        data[aclcol], allowedacl['acl']
+                    )
+
             SQL = render_template("/".join(
                 [self.template_path, 'sql/create.sql']), data=data)
             if data['definition']:
@@ -1024,15 +976,27 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
-            priv = self.parse_views_privileges(row)
-            if row['deftype'] in res['rows'][0]:
-                res['rows'][0]['datacl'].append(priv)
-            else:
-                res['rows'][0]['datacl'] = [priv]
+            priv = parse_priv_from_db(row)
+            res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
         result.update(res['rows'][0])
-        if 'datacl' in result:
-            result['datacl'] = self.parse_privileges(result['datacl'])
+
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'sql/allowed_privs.json'])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
+        # Privileges
+        for aclcol in acls:
+            if aclcol in result:
+                allowedacl = acls[aclcol]
+                result[aclcol] = parse_priv_to_db(
+                    result[aclcol], allowedacl['acl']
+                )
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/create.sql']),
@@ -1264,7 +1228,7 @@ class MViewNode(ViewNode, VacuumSettings):
     * delete(self, gid, sid, scid):
       - Raise an error - we can not delete a material view.
 
-    * get_sql(data, scid)
+    * getSQL(data, scid)
       - This function will generate sql from model data
 
     * refresh_data(gid, sid, did, scid, vid):
@@ -1299,18 +1263,9 @@ class MViewNode(ViewNode, VacuumSettings):
             '9.3_plus'
         )
 
-    def get_sql(self, gid, sid, data, scid, vid=None):
-        """
-        This function will generate sql from model data
-        """
-        if scid is None:
-            return bad_request('Cannot create a View!')
-
-        return super(MViewNode, self).get_sql(gid, sid, data, scid, vid)
-
     def getSQL(self, gid, sid, data, vid=None):
         """
-        This function will genrate sql from model data
+        This function will generate sql from model data
         """
         if vid is not None:
             SQL = render_template("/".join(
@@ -1387,17 +1342,25 @@ class MViewNode(ViewNode, VacuumSettings):
                     {'name': 'toast.autovacuum_enabled',
                      'value': data['toast_autovacuum_enabled']})
 
-            key = 'datacl'
-            if key in data and data[key] is not None:
-                if 'added' in data[key]:
-                    data[key]['added'] = self.parse_privileges(
-                        data[key]['added'])
-                if 'changed' in data[key]:
-                    data[key]['changed'] = self.parse_privileges(
-                        data[key]['changed'])
-                if 'deleted' in data[key]:
-                    data[key]['deleted'] = self.parse_privileges(
-                        data[key]['deleted'])
+            acls = []
+            try:
+                acls = render_template(
+                    "/".join([self.template_path, 'sql/allowed_privs.json'])
+                )
+                acls = json.loads(acls, encoding='utf-8')
+            except Exception as e:
+                current_app.logger.exception(e)
+
+            # Privileges
+            for aclcol in acls:
+                if aclcol in data:
+                    allowedacl = acls[aclcol]
+
+                    for key in ['added', 'changed', 'deleted']:
+                        if key in data[aclcol]:
+                            data[aclcol][key] = parse_priv_to_db(
+                                data[aclcol][key], allowedacl['acl']
+                            )
 
             try:
                 SQL = render_template("/".join(
@@ -1459,8 +1422,23 @@ class MViewNode(ViewNode, VacuumSettings):
                                           data['toast_autovacuum'] is True
                                       ) else [])
 
-            if 'datacl' in data and data['datacl'] is not None:
-                data['datacl'] = self.parse_privileges(data['datacl'])
+            acls = []
+            try:
+                acls = render_template(
+                    "/".join([self.template_path, 'sql/allowed_privs.json'])
+                )
+                acls = json.loads(acls, encoding='utf-8')
+            except Exception as e:
+                current_app.logger.exception(e)
+
+            # Privileges
+            for aclcol in acls:
+                if aclcol in data:
+                    allowedacl = acls[aclcol]
+                    data[aclcol] = parse_priv_to_db(
+                        data[aclcol], allowedacl['acl']
+                    )
+
             SQL = render_template("/".join(
                 [self.template_path, 'sql/create.sql']), data=data)
             if data['definition']:
@@ -1521,15 +1499,27 @@ class MViewNode(ViewNode, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
-            priv = self.parse_views_privileges(row)
-            if row['deftype'] in res['rows'][0]:
-                res['rows'][0]['datacl'].append(priv)
-            else:
-                res['rows'][0]['datacl'] = [priv]
+            priv = parse_priv_from_db(row)
+            res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
         result.update(res['rows'][0])
-        if 'datacl' in result:
-            result['datacl'] = self.parse_privileges(result['datacl'])
+
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'sql/allowed_privs.json'])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
+        # Privileges
+        for aclcol in acls:
+            if aclcol in result:
+                allowedacl = acls[aclcol]
+                result[aclcol] = parse_priv_to_db(
+                    result[aclcol], allowedacl['acl']
+                )
 
         SQL = render_template("/".join(
             [self.template_path, 'sql/create.sql']),
@@ -1605,11 +1595,8 @@ class MViewNode(ViewNode, VacuumSettings):
             return internal_server_error(errormsg=res)
 
         for row in dataclres['rows']:
-            priv = self.parse_views_privileges(row)
-            if row['deftype'] in res['rows'][0]:
-                res['rows'][0][row['deftype']].append(priv)
-            else:
-                res['rows'][0][row['deftype']] = [priv]
+            priv = parse_priv_from_db(row)
+            res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
         result = res['rows'][0]
 

@@ -932,6 +932,11 @@ function(_, pgAdmin, $, Backbone) {
         if (!this.trackChanges)
           return true;
 
+        /* Once model is removed from collection clear its errorModel as it's no longer relevant
+         * for us. Otherwise it creates problem in 'clearInvalidSessionIfModelValid' function.
+         */
+        obj.errorModel.clear();
+
         var self = this,
             invalidModels = self.sessAttrs['invalid'],
             copy = _.clone(obj),
@@ -994,7 +999,7 @@ function(_, pgAdmin, $, Backbone) {
           }
           else {
             // Hmm..
-            // How come - you have been assinged in invalid list.
+            // How come - you have been assigned in invalid list.
             // I will make a list of it, and remove it later.
             validModels.push(key);
           }

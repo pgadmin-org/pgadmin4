@@ -249,10 +249,6 @@
 
     toJSON: function(session) {
 
-      if (session) {
-        return pgNode.Model.prototype.toJSON.apply(this, arguments);
-      }
-
       var privileges = [];
 
       if (this.attributes &&
