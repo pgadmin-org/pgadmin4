@@ -5,7 +5,7 @@ Submitting Patches
 ******************
 
 Before developing a patch for pgAdmin you should always contact the developers 
-on the `mailing list <mailto:pgadmin-hackers@postgresql.org>` to discuss your 
+on the mailing list pgadmin-hackers@postgresql.org to discuss your 
 plans. This ensures that others know if you're fixing a bug and can then avoid
 duplicating your work, and in the case of large patches, gives the community
 the chance to discuss and refine your ideas before investing too much time 
@@ -29,8 +29,8 @@ might run::
 to create a patch between your development branch and the public master branch.
 
 Once you have your patch, check it thoroughly to ensure it meets the pgAdmin
-:doc:`coding_standards`, and review it against the :doc:`code-review' to minimise
+:doc:`coding_standards`, and review it against the :doc:`code_review` to minimise
 the chances of it being rejected. Once you're happy with your work, mail it to the 
-`mailing list <mailto:pgadmin-hackers@postgresql.org>`. Please ensure you 
-include a full description of what the patch does, as well as the rationale for
-any important design decisions.
+mailing list pgadmin-hackers@postgresql.org. Please ensure you include a full 
+description of what the patch does, as well as the rationale for any important 
+design decisions.
