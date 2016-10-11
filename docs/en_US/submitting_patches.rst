@@ -30,7 +30,7 @@ to create a patch between your development branch and the public master branch.
 
 Once you have your patch, check it thoroughly to ensure it meets the pgAdmin
 :doc:`coding_standards`, and review it against the :doc:`code_review` to minimise
-the chances of it being rejected. Once you're happy with your work, mail it to the 
-mailing list pgadmin-hackers@postgresql.org. Please ensure you include a full 
-description of what the patch does, as well as the rationale for any important 
-design decisions.
+the chances of it being rejected. Once you're happy with your work, mail it
+as an attachment to the mailing list pgadmin-hackers@postgresql.org.
+Please ensure you include a full description of what the patch does,
+as well as the rationale for any important design decisions.
