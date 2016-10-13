@@ -53,15 +53,6 @@ class TestsGeneratorRegistry(ABCMeta):
 
         ABCMeta.__init__(cls, name, bases, d)
 
-    @staticmethod
-    def import_app_modules(module_name):
-        """As we are running test suite for each server. To catch
-        the test cases, delete the previously imported  module
-        """
-        if str(module_name) in sys.modules.keys():
-            del sys.modules[module_name]
-        import_module(module_name)
-
     @classmethod
     def load_generators(cls, pkg):
 
@@ -72,7 +63,7 @@ class TestsGeneratorRegistry(ABCMeta):
             for module_name in find_modules(pkg, False, True):
                 try:
                     if "tests." in str(module_name):
-                        cls.import_app_modules(module_name)
+                        import_module(module_name)
                 except ImportError:
                     traceback.print_exc(file=sys.stderr)
         else:
@@ -81,7 +72,7 @@ class TestsGeneratorRegistry(ABCMeta):
                     # Exclude the test cases in browser node if SERVER_MODE
                     # is False
                     if "pgadmin.browser.tests" not in module_name:
-                        cls.import_app_modules(module_name)
+                        import_module(module_name)
                 except ImportError:
                     traceback.print_exc(file=sys.stderr)
 
