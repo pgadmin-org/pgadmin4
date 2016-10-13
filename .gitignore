@@ -3,6 +3,9 @@
 *.pyo
 *.o
 *.psp
+*.diff
+*.patch
+*.autosave
 _build
 build-*
 .DS_Store
