@@ -149,8 +149,13 @@ class SynonymView(PGChildNodeView):
         {'type': 'int', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
+    # If URL has an identifier containing slash character '/'
+    # into the URI, then set param type to path. Because if
+    # param name contains '/' in syid, it gets confused and
+    # wrong url is generated.
+    # Reference:- http://flask.pocoo.org/snippets/76/
     ids = [
-        {'type': 'string', 'id': 'syid'}
+        {'type': 'path', 'id': 'syid'}
     ]
 
     operations = dict({
