@@ -136,7 +136,7 @@ def connect_database(self, server_group, server_id, db_id):
     db_con = self.tester.post('{0}{1}/{2}/{3}'.format(
         DATABASE_CONNECT_URL, server_group, server_id, db_id),
         follow_redirects=True)
-    self.assertEquals(db_con.status_code, 200)
+    assert db_con.status_code == 200
     db_con = json.loads(db_con.data.decode('utf-8'))
     return db_con
 
@@ -146,4 +146,4 @@ def disconnect_database(self, server_id, db_id):
     db_con = self.tester.delete('{0}{1}/{2}/{3}'.format(
         'browser/database/connect/', utils.SERVER_GROUP, server_id, db_id),
         follow_redirects=True)
-    self.assertEquals(db_con.status_code, 200)
+    assert db_con.status_code == 200

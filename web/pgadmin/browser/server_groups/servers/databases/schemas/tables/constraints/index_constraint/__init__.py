@@ -577,7 +577,6 @@ class IndexConstraintView(PGChildNodeView):
                 data=data, conn=self.conn,
                 constraint_name=self.constraint_name
             )
-
             status, msg = self.conn.execute_scalar(SQL)
             if not status:
                 self.end_transaction()
