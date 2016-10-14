@@ -22,8 +22,8 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import gone
 
 
 class SynonymModule(SchemaChildModule):
@@ -265,6 +265,44 @@ class SynonymView(PGChildNodeView):
             data=res,
             status=200
         )
+
+    @check_precondition
+    def node(self, gid, sid, did, scid, syid=None):
+        """
+        Return Synonym node to generate node
+
+        Args:
+            gid: Server Group Id
+            sid: Server Id
+            did: Database Id
+            scid: Schema Id
+            syid: Synonym id
+        """
+
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            syid=syid, scid=scid
+        )
+        status, rset = self.conn.execute_2darray(sql)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(
+                gettext("""Could not find the Synonym node.""")
+            )
+
+        for row in rset['rows']:
+            return make_json_response(
+                data=self.blueprint.generate_browser_node(
+                    row['name'],
+                    scid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ),
+                status=200
+            )
 
     @check_precondition
     def get_target_objects(self, gid, sid, did, scid, syid=None):
