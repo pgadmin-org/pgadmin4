@@ -25,13 +25,15 @@ from . import utils as synonym_utils
 
 
 class SynonymPutTestCase(BaseTestGenerator):
-    """This class will update added synonym under schema node."""
+    """This class will update added synonym under test schema."""
+
     scenarios = [
         # Fetching default URL for synonym node.
         ('Fetch synonym Node URL', dict(url='/browser/synonym/obj/'))
     ]
 
     def setUp(self):
+
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -58,14 +60,15 @@ class SynonymPutTestCase(BaseTestGenerator):
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
         self.synonym_name = "test_synonym_put_%s" % str(uuid.uuid4())[1:6]
-        self.synonym_id = synonym_utils.create_synonym(self.server,
-                                                       self.db_name,
-                                                       self.schema_name,
-                                                       self.synonym_name,
-                                                       self.sequence_name)
+        synonym_utils.create_synonym(self.server,
+                                     self.db_name,
+                                     self.schema_name,
+                                     self.synonym_name,
+                                     self.sequence_name)
 
     def runTest(self):
         """This function will update synonym under schema node."""
+
         synonym_response = synonym_utils.verify_synonym(self.server,
                                                         self.db_name,
                                                         self.synonym_name)
@@ -92,5 +95,6 @@ class SynonymPutTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        # Disconnect the database
+        """ Disconnect the database. """
+
         database_utils.disconnect_database(self, self.server_id, self.db_id)

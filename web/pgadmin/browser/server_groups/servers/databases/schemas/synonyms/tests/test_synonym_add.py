@@ -22,7 +22,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
 
 
 class SynonymAddTestCase(BaseTestGenerator):
-    """This class will add new synonym under schema node."""
+    """This class will add new synonym under test schema."""
+
     scenarios = [
         # Fetching default URL for synonym node.
         ('Default Node URL', dict(url='/browser/synonym/obj/'))
@@ -56,8 +57,10 @@ class SynonymAddTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.sequence_name)
 
     def runTest(self):
-        """This function will add synonym under schema node."""
+        """This function will add synonym under test schema."""
+
         db_user = self.server["username"]
+
         data = {
             "owner": db_user,
             "schema": self.schema_name,
@@ -66,6 +69,7 @@ class SynonymAddTestCase(BaseTestGenerator):
             "targettype": "Sequence",
             "name": "synonym_add_%s" % (str(uuid.uuid4())[1:6])
         }
+
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id)
             + '/' + str(self.db_id) + '/' + str(self.schema_id) + '/',
@@ -74,4 +78,5 @@ class SynonymAddTestCase(BaseTestGenerator):
 
     def tearDown(self):
         # Disconnect the database
+
         database_utils.disconnect_database(self, self.server_id, self.db_id)

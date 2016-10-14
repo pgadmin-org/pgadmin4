@@ -14,7 +14,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from pgadmin.browser.server_groups.servers.databases.schemas.sequences.tests\
+from pgadmin.browser.server_groups.servers.databases.schemas.sequences.tests \
     import utils as sequence_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -23,6 +23,7 @@ from . import utils as synonym_utils
 
 class SynonymGetTestCase(BaseTestGenerator):
     """This class will fetch new synonym under schema node."""
+
     scenarios = [
         # Fetching default URL for synonym node.
         ('Fetch synonym Node URL', dict(url='/browser/synonym/obj/'))
@@ -50,26 +51,28 @@ class SynonymGetTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add the synonym.")
-        self.sequence_name = "test_sequence_synonym_%s" %\
+        self.sequence_name = "test_sequence_synonym_%s" % \
                              str(uuid.uuid4())[1:6]
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
         self.synonym_name = "test_synonym_get_%s" % str(uuid.uuid4())[1:6]
-        self.synonym_id = synonym_utils.create_synonym(self.server,
-                                                       self.db_name,
-                                                       self.schema_name,
-                                                       self.synonym_name,
-                                                       self.sequence_name)
+        synonym_utils.create_synonym(self.server,
+                                     self.db_name,
+                                     self.schema_name,
+                                     self.synonym_name,
+                                     self.sequence_name)
 
     def runTest(self):
         """This function will fetch synonym under schema node."""
+
         response = self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) + '/' +
-            str(self.schema_id) + '/' + str(self.synonym_id),
+            str(self.schema_id) + '/' + str(self.synonym_name),
             follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        # Disconnect the database
+        """ Disconnect the database. """
+
         database_utils.disconnect_database(self, self.server_id, self.db_id)
