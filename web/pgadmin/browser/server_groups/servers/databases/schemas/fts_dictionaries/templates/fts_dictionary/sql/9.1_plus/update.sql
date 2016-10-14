@@ -5,7 +5,7 @@
 {% if data.name and data.name != o_data.name %}
 {% set name = data.name %}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(o_data.name)}}
-    RENAME TO {{data.name}};
+    RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
 {% if 'options' in data %}

@@ -2,7 +2,7 @@
 {% if data %}
 {% if data.name and data.name != o_data.name %}
 ALTER TEXT SEARCH TEMPLATE {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(o_data.name)}}
-    RENAME TO {{data.name}};
+    RENAME TO {{ conn|qtIdent(data.name) }};
 {% endif %}
 
 {#in case of rename, use new fts template name #}
