@@ -1442,9 +1442,17 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            # Get updated schema oid
+            SQL = render_template("/".join([self.template_path,
+                                  'get_schema_oid.sql']), tname=data['name'])
+
+            status, scid = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=scid)
+
             # we need oid to to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']), scid=scid, data=data)
+                                  'get_oid.sql']), scid=scid, data=data)
             status, tid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=tid)

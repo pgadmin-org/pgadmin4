@@ -256,7 +256,7 @@ class FtsParserView(PGChildNodeView):
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    did,
+                    scid,
                     row['name'],
                     icon="icon-fts_parser"
                 ))

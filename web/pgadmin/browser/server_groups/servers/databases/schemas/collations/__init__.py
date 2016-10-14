@@ -443,6 +443,13 @@ class CollationView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=coid)
 
+        # Get updated schema oid
+        SQL = render_template("/".join([self.template_path,
+                                        'get_oid.sql']), coid=coid)
+        status, scid = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=coid)
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 coid,

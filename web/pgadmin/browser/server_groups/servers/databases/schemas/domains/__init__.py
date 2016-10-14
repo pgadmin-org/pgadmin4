@@ -546,6 +546,14 @@ AND relkind != 'c'))"""
         if not status:
             return internal_server_error(errormsg=res)
 
+        # Get updated schema oid
+        SQL = render_template("/".join([self.template_path,
+                                        'get_oid.sql']),
+                              doid=doid)
+        status, scid = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 doid,
@@ -640,11 +648,9 @@ AND relkind != 'c'))"""
             SQL = render_template("/".join([self.template_path,
                                             'get_oid.sql']),
                                   doid=doid)
-            status, res = self.conn.execute_2darray(SQL)
+            status, scid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            scid = res['rows'][0]['scid']
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

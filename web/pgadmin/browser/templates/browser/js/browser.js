@@ -1148,7 +1148,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
             if (
               this.i && this.d && this.new._type == this.d._type
             ) {
-              var _id = this.d._id;
+              var self = this,
+              _id = this.d._id;
               if (this.new._id != this.d._id) {
                 // Found the new oid, update its node_id
                 var node_data = this.t.itemData(ctx.i);
@@ -1162,7 +1163,10 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                 this.t.setId(ctx.id, {id: this.new.id});
                 this.t.openPath(this.i);
                 this.t.deselect(this.i);
-                this.t.select(this.i);
+                // select tree item after few milliseconds
+                setTimeout(function() {
+                  self.t.select(self.i);
+                }, 10);
               }
             }
             var success = this.o && this.o.success;

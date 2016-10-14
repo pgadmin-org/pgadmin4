@@ -487,12 +487,24 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             SQL = render_template("/".join(
                 [self.template_path, 'sql/view_id.sql']), data=data)
             status, view_id = self.conn.execute_scalar(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Get updated schema oid
+            SQL = render_template("/".join(
+                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
+            status, scid = self.conn.execute_scalar(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
                     scid,
                     data['name'],
-                    icon="icon-%s" % self.node_type
+                    icon="icon-view"
                 )
             )
         except Exception as e:
@@ -525,14 +537,12 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             view_id = res_data['rows'][0]['oid']
             new_view_name = res_data['rows'][0]['relname']
 
+            # Get updated schema oid
             SQL = render_template("/".join(
                 [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            status, res = self.conn.execute_2darray(SQL)
+            status, scid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            # new schema id
-            scid = res['rows'][0]['scid']
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
