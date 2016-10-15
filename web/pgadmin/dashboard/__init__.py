@@ -140,7 +140,11 @@ def check_precondition(f):
         # Set template path for sql scripts
         g.server_type = g.manager.server_type
         g.version = g.manager.version
-        g.template_path = 'dashboard/sql/9.1_plus'
+
+        if g.version < 90600:
+            g.template_path = 'dashboard/sql/9.1_plus'
+        else:
+            g.template_path = 'dashboard/sql/9.6_plus'
 
         return f(*args, **kwargs)
 
@@ -174,6 +178,17 @@ def index(sid=None, did=None):
 
     prefs = Preferences.module('dashboards')
 
+    # Get the server version
+    if sid is not None:
+        g.manager = get_driver(
+            PG_DEFAULT_DRIVER).connection_manager(sid)
+        g.conn = g.manager.connection()
+
+        g.version = g.manager.version
+
+        if not g.conn.connected():
+            g.version = 0
+
     session_stats_refresh_pref = prefs.preference('session_stats_refresh')
     rates['session_stats_refresh'] = session_stats_refresh_pref.get()
     tps_stats_refresh_pref = prefs.preference('tps_stats_refresh')
@@ -189,9 +204,9 @@ def index(sid=None, did=None):
     if sid is None and did is None:
         return render_template('/dashboard/welcome_dashboard.html')
     if did is None:
-        return render_template('/dashboard/server_dashboard.html', sid=sid, rates=rates)
+        return render_template('/dashboard/server_dashboard.html', sid=sid, rates=rates, version=g.version)
     else:
-        return render_template('/dashboard/database_dashboard.html', sid=sid, did=did, rates=rates)
+        return render_template('/dashboard/database_dashboard.html', sid=sid, did=did, rates=rates, version=g.version)
 
 
 def get_data(sid, did, template):

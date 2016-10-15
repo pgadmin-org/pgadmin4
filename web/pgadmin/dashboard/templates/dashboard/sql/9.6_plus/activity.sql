@@ -6,7 +6,8 @@ SELECT
     client_addr,
     backend_start,
     state,
-    CASE WHEN waiting THEN '{{ _('yes') }}' ELSE '{{ _('no') }}' END AS waiting
+    wait_event_type,
+    wait_event
 FROM
     pg_stat_activity
 {% if did %}WHERE

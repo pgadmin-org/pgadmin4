@@ -353,7 +353,7 @@ function(r, $, pgAdmin, _, Backbone) {
         },
 
         // Rock n' roll on the server dashboard
-        init_server_dashboard: function(sid, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
+        init_server_dashboard: function(sid, version, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
             var div_sessions = document.getElementById('graph-sessions');
             var div_tps = document.getElementById('graph-tps');
             var div_ti = document.getElementById('graph-ti');
@@ -429,6 +429,29 @@ function(r, $, pgAdmin, _, Backbone) {
                 editable: false,
                 cell: "string"
             }];
+
+            if (version < 90600) {
+                server_activity_columns = server_activity_columns.concat(
+                [{
+                    name: "waiting",
+                    label: "{{ _('Waiting?') }}",
+                    editable: false,
+                    cell: "string"
+                }]);
+            } else {
+                server_activity_columns = server_activity_columns.concat(
+                [{
+                    name: "wait_event_type",
+                    label: "{{ _('Wait Event Type') }}",
+                    editable: false,
+                    cell: "string"
+                },{
+                    name: "wait_event",
+                    label: "{{ _('Wait Event') }}",
+                    editable: false,
+                    cell: "string"
+                }]);
+            }
 
             var server_locks_columns = [{
                 name: "pid",
@@ -616,7 +639,7 @@ function(r, $, pgAdmin, _, Backbone) {
         },
 
         // Rock n' roll on the database dashboard
-        init_database_dashboard: function(sid, did, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
+        init_database_dashboard: function(sid, did, version, session_stats_refresh, tps_stats_refresh, ti_stats_refresh, to_stats_refresh, bio_stats_refresh) {
             var div_sessions = document.getElementById('graph-sessions');
             var div_tps = document.getElementById('graph-tps');
             var div_ti = document.getElementById('graph-ti');
@@ -683,6 +706,29 @@ function(r, $, pgAdmin, _, Backbone) {
                 editable: false,
                 cell: "string"
             }];
+
+            if (version < 90600) {
+                database_activity_columns = database_activity_columns.concat(
+                [{
+                    name: "waiting",
+                    label: "{{ _('Waiting?') }}",
+                    editable: false,
+                    cell: "string"
+                }]);
+            } else {
+                database_activity_columns = database_activity_columns.concat(
+                [{
+                    name: "wait_event_type",
+                    label: "{{ _('Wait Event Type') }}",
+                    editable: false,
+                    cell: "string"
+                },{
+                    name: "wait_event",
+                    label: "{{ _('Wait Event') }}",
+                    editable: false,
+                    cell: "string"
+                }]);
+            }
 
             var database_locks_columns = [{
                 name: "pid",
