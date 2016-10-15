@@ -69,7 +69,7 @@ def get_config_data():
     """This function reads the server data from config_data"""
     server_data = []
     for srv in test_setup.config_data['server_credentials']:
-        if not hasattr(srv, 'enabled') or srv['enabled'] == True:
+        if (not srv.has_key('enabled')) or srv['enabled'] == True:
             data = {"name": srv['name'],
                     "comment": srv['comment'],
                     "host": srv['host'],
