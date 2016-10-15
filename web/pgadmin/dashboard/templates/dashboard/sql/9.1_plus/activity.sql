@@ -4,7 +4,7 @@ SELECT
     usename,
     application_name,
     client_addr,
-    backend_start,
+    to_char(backend_start, 'YYYY-MM-DD HH24:MM:SS TZ') AS backend_start,
     state,
     CASE WHEN waiting THEN '{{ _('yes') }}' ELSE '{{ _('no') }}' END AS waiting
 FROM

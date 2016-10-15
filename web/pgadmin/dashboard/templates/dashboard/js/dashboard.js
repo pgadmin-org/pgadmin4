@@ -395,7 +395,7 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var server_activity_columns = [{
                 name: "pid",
-                label: "{{ _('Process ID') }}",
+                label: "{{ _('PID') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -410,12 +410,12 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             }, {
                 name: "application_name",
-                label: "{{ _('Application name') }}",
+                label: "{{ _('Application') }}",
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: "{{ _('Client address') }}",
+                label: "{{ _('Client') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -441,13 +441,13 @@ function(r, $, pgAdmin, _, Backbone) {
             } else {
                 server_activity_columns = server_activity_columns.concat(
                 [{
-                    name: "wait_event_type",
-                    label: "{{ _('Wait Event Type') }}",
+                    name: "wait_event",
+                    label: "{{ _('Wait Event') }}",
                     editable: false,
                     cell: "string"
                 },{
-                    name: "wait_event",
-                    label: "{{ _('Wait Event') }}",
+                    name: "blocking_pids",
+                    label: "{{ _('Blocking PIDs') }}",
                     editable: false,
                     cell: "string"
                 }]);
@@ -455,7 +455,7 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var server_locks_columns = [{
                 name: "pid",
-                label: "{{ _('Process ID') }}",
+                label: "{{ _('PID') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -485,7 +485,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: "{{ _('Virtual XID (target)') }}",
+                label: "{{ _('vXID (target)') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -505,7 +505,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: "{{ _('Virtual XID (owner)') }}",
+                label: "{{ _('vXID (owner)') }}",
                 editable: false,
                 cell: "string"
             },{
@@ -516,11 +516,6 @@ function(r, $, pgAdmin, _, Backbone) {
             },{
                 name: "granted",
                 label: "{{ _('Granted?') }}",
-                editable: false,
-                cell: "string"
-            },{
-                name: "fastpath",
-                label: "{{ _('Fast path?') }}",
                 editable: false,
                 cell: "string"
             }];
@@ -677,7 +672,7 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var database_activity_columns = [{
                 name: "pid",
-                label: "{{ _('Process ID') }}",
+                label: "{{ _('PID') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -687,12 +682,12 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             }, {
                 name: "application_name",
-                label: "{{ _('Application name') }}",
+                label: "{{ _('Application') }}",
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: "{{ _('Client address') }}",
+                label: "{{ _('Client') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -718,13 +713,13 @@ function(r, $, pgAdmin, _, Backbone) {
             } else {
                 database_activity_columns = database_activity_columns.concat(
                 [{
-                    name: "wait_event_type",
-                    label: "{{ _('Wait Event Type') }}",
+                    name: "wait_event",
+                    label: "{{ _('Wait Event') }}",
                     editable: false,
                     cell: "string"
                 },{
-                    name: "wait_event",
-                    label: "{{ _('Wait Event') }}",
+                    name: "blocking_pids",
+                    label: "{{ _('Blocking PIDs') }}",
                     editable: false,
                     cell: "string"
                 }]);
@@ -732,7 +727,7 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var database_locks_columns = [{
                 name: "pid",
-                label: "{{ _('Process ID') }}",
+                label: "{{ _('PID') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -757,7 +752,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: "{{ _('Virtual XID (target)') }}",
+                label: "{{ _('vXID (target)') }}",
                 editable: false,
                 cell: "string"
             }, {
@@ -777,7 +772,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: "{{ _('Virtual XID (owner)') }}",
+                label: "{{ _('vXID (owner)') }}",
                 editable: false,
                 cell: "string"
             },{
@@ -788,11 +783,6 @@ function(r, $, pgAdmin, _, Backbone) {
             },{
                 name: "granted",
                 label: "{{ _('Granted?') }}",
-                editable: false,
-                cell: "string"
-            },{
-                name: "fastpath",
-                label: "{{ _('Fast path?') }}",
                 editable: false,
                 cell: "string"
             }];

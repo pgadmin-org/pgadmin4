@@ -3,7 +3,7 @@ SELECT
     database,
     owner,
     transaction,
-    prepared
+    to_char(prepared, 'YYYY-MM-DD HH24:MM:SS TZ') AS prepared
 FROM
     pg_prepared_xacts
 {% if did %}WHERE
