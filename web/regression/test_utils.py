@@ -69,17 +69,18 @@ def get_config_data():
     """This function reads the server data from config_data"""
     server_data = []
     for srv in test_setup.config_data['server_credentials']:
-        data = {"name": srv['name'],
-                "comment": srv['comment'],
-                "host": srv['host'],
-                "port": srv['db_port'],
-                "db": srv['maintenance_db'],
-                "username": srv['db_username'],
-                "db_password": srv['db_password'],
-                "role": "",
-                "sslmode": srv['sslmode'],
-                "tablespace_path": srv.get('tablespace_path', None)}
-        server_data.append(data)
+        if not hasattr(srv, 'enabled') or srv['enabled'] == True:
+            data = {"name": srv['name'],
+                    "comment": srv['comment'],
+                    "host": srv['host'],
+                    "port": srv['db_port'],
+                    "db": srv['maintenance_db'],
+                    "username": srv['db_username'],
+                    "db_password": srv['db_password'],
+                    "role": "",
+                    "sslmode": srv['sslmode'],
+                    "tablespace_path": srv.get('tablespace_path', None)}
+            server_data.append(data)
     return server_data
 
 

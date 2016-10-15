@@ -20,7 +20,8 @@
       "db_port": 5432,
       "maintenance_db": "postgres",
       "sslmode": "prefer",
-      "tablespace_path": ""
+      "tablespace_path": "",
+      "enabled": true
     }
   ],
   "server_update_data": [
