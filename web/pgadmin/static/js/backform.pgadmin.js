@@ -2364,10 +2364,12 @@
       ' <span class="input-group-addon">',
       '  <span class="fa fa-calendar"></span>',
       ' </span>',
-      ' <% if (helpMessage && helpMessage.length) { %>',
-      '  <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      ' <% } %>',
-      '</div>'
+      '</div>',
+      '<% if (helpMessage && helpMessage.length) { %>',
+      ' <div class="<%=Backform.controlsClassName%>">',
+      '   <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      ' </div>',
+      '<% } %>'
     ].join("\n")),
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
