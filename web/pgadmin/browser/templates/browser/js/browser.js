@@ -936,13 +936,25 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     });
                   } else {
                     var _append = function() {
-                          var ctx = this;
+                          var ctx = this,
+                            is_parent_loaded_before = ctx.t.wasLoad(ctx.i),
+                            _parent_data = ctx.t.itemData(ctx.i);
+
                           ctx.t.append(ctx.i, {
                             itemData: _data,
                             success: function(item, options) {
                               var i = $(options.items[0]);
-                              ctx.t.openPath(i);
-                              ctx.t.select(i);
+                              // Open the item path only if its parent is loaded
+                              // or parent type is same as nodes
+                              if(_parent_data._type.search(_data._type) > -1 ||
+                                is_parent_loaded_before) {
+                                ctx.t.openPath(i);
+                                ctx.t.select(i);
+                              } else {
+                                // Unload the parent node so that we'll get
+                                // latest data when we try to expand it
+                                ctx.t.unload(ctx.i);
+                              }
                               if (
                                 ctx.o && ctx.o.success &&
                                 typeof(ctx.o.success) == 'function'

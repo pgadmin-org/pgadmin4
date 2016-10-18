@@ -170,9 +170,16 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         if (itemData.type == 'role' &&
           parentData.server.user.can_create_role) {
           return true;
-        } else if (parentData.server.user.is_superuser ||
-          parentData.server.user.can_create_db ||
-          (parentData.schema && parentData.schema.can_create)) {
+        } else if (
+           (
+            parentData.server && (
+            parentData.server.user.is_superuser ||
+            parentData.server.user.can_create_db)
+           ) ||
+           (
+            parentData.schema && parentData.schema.can_create
+           )
+           ) {
             return true;
         } else {
            return false;
