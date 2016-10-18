@@ -415,7 +415,7 @@ class Filemanager(object):
                 except:
                     drive_size = 0
                 protected = 1 if drive_size == 0 else 0
-                files[drive] = {
+                files[file_name] = {
                     "Filename": file_name,
                     "Path": path,
                     "file_type": 'drive',
@@ -441,7 +441,12 @@ class Filemanager(object):
 
         orig_path = unquote(orig_path)
         try:
-            for f in sorted(os.listdir(orig_path)):
+            def custom_sort(x, y):
+                return y.lower() > x.lower()
+
+            mylist = [x for x in sorted(os.listdir(orig_path),
+                      cmp=custom_sort)]
+            for f in mylist:
                 protected = 0
                 system_path = os.path.join(os.path.join(orig_path, f))
 
@@ -474,7 +479,7 @@ class Filemanager(object):
                             continue
 
                 # create a list of files and folders
-                files[user_path] = {
+                files[f] = {
                     "Filename": f,
                     "Path": user_path,
                     "file_type": file_extension,

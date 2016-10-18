@@ -236,7 +236,7 @@ var setUploader = function(path) {
 
       // template for creating new folder
       folder_div =
-        "<li class='cap_downloadcap_deletecap_select_filecap_select_foldercap_renamecap_createcap_upload'>" +
+        "<li class='cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload'>" +
         "<div class='clip'><span data-alt='' class='fa fa-folder-open fm_folder'></span></div>" +
         "<p><input type='text' class='fm_file_rename'><span title=''>New_Folder</span></p>" +
         "<span class='meta size'></span><span class='meta created'></span><span class='meta modified'></span></li>";
@@ -686,7 +686,9 @@ var getFolderInfo = function(path, file_type) {
       if (!_.isEmpty(data)) {
         if ($('.fileinfo').data('view') == 'grid') {
           result += '<ul id="contents" class="grid">';
-          Object.keys(data).forEach(function (key) {
+          Object.keys(data).sort(function keyOrder(x, y) {
+              return pgAdmin.natural_sort(x.toLowerCase(), y.toLowerCase());
+            }).forEach(function (key) {
             var props = (data[key]).Properties,
                 cap_classes = "";
 
@@ -760,7 +762,9 @@ var getFolderInfo = function(path, file_type) {
           result += '<span>' + lg.modified + '</span></th></tr></thead>';
           result += '<tbody>';
 
-          Object.keys(data).forEach(function (key) {
+          Object.keys(data).sort(function keyOrder(x, y) {
+              return pgAdmin.natural_sort(x.toLowerCase(), y.toLowerCase());
+            }).forEach(function (key) {
             var path = encodeURI((data[key]).Path),
                 props = (data[key]).Properties,
                 cap_classes = "", cap, class_type;
@@ -787,8 +791,8 @@ var getFolderInfo = function(path, file_type) {
             result += '<tr class="' + cap_classes + '">';
 
             var fm_filename = (data[key]).Filename;
-            if (fm_filename.length > 15 ) {
-              fm_filename = (data[key]).Filename.substr(0, 10) +'...';
+            if (fm_filename.length > 48) {
+              fm_filename = (data[key]).Filename.substr(0, 48) +'...';
             }
 
             result += '<td title="' + path + '" class="'+class_type+'">';
