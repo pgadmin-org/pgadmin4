@@ -906,12 +906,13 @@ class TypeView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            # we need scid to update in browser tree
-            SQL = render_template("/".join([self.template_path,
-                                  'get_scid.sql']), tname=data['name'])
-            status, scid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=scid)
+            if 'schema' in data:
+                # we need scid to update in browser tree
+                SQL = render_template("/".join([self.template_path,
+                                      'get_scid.sql']), schema=data['schema'])
+                status, scid = self.conn.execute_scalar(SQL)
+                if not status:
+                    return internal_server_error(errormsg=scid)
 
             # we need oid to to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
@@ -956,7 +957,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join([self.template_path,
-                                  'get_scid.sql']), tname=data['name'])
+                                  'get_scid.sql']), tid=tid)
 
             # Get updated schema oid
             status, scid = self.conn.execute_scalar(SQL)
