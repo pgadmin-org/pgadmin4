@@ -104,7 +104,7 @@ def create_database(connection, db_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE DATABASE "%s"''' % db_name)
+        pg_cursor.execute('''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         return pg_cursor

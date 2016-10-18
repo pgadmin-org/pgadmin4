@@ -34,6 +34,7 @@ class DatabaseAddTestCase(BaseTestGenerator):
         if server_response["info"] == "Server connected.":
             db_owner = server_response['data']['user']['name']
             self.data = database_utils.get_db_data(db_owner)
+            self.data['template'] = 'template0'
             self.db_name = self.data['name']
             response = self.tester.post(self.url + str(utils.SERVER_GROUP) +
                                         "/" + str(self.server_id) + "/",
