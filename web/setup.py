@@ -10,6 +10,7 @@
 """Perform the initial setup of the application, by creating the auth
 and settings database."""
 
+import base64
 import getpass
 import os
 import random
@@ -22,7 +23,7 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import encrypt_password
 
 from pgadmin.model import db, Role, User, Server, \
-    ServerGroup, Version
+    ServerGroup, Version, Keys
 # Configuration settings
 import config
 
@@ -40,6 +41,7 @@ if hasattr(__builtins__, 'raw_input'):
 
 def do_setup(app):
     """Create a new settings database from scratch"""
+
     if config.SERVER_MODE is False:
         print("NOTE: Configuring authentication for DESKTOP mode.")
         email = config.DESKTOP_USER
@@ -116,6 +118,17 @@ def do_setup(app):
             name='ConfigDB', value=config.SETTINGS_SCHEMA_VERSION
         )
         db.session.merge(version)
+        db.session.commit()
+
+        # Create the keys
+        key = Keys(name='CSRF_SESSION_KEY', value=config.CSRF_SESSION_KEY)
+        db.session.merge(key)
+
+        key = Keys(name='SECRET_KEY', value=config.SECRET_KEY)
+        db.session.merge(key)
+
+        key = Keys(name='SECURITY_PASSWORD_SALT', value=config.SECURITY_PASSWORD_SALT)
+        db.session.merge(key)
 
         db.session.commit()
 
@@ -128,7 +141,7 @@ def do_setup(app):
     )
 
 
-def do_upgrade(app, datastore, security, version):
+def do_upgrade(app, datastore, version):
     """Upgrade an existing settings database"""
     #######################################################################
     # Run whatever is required to update the database schema to the current
@@ -329,6 +342,29 @@ ALTER TABLE SERVER
     ADD COLUMN discovery_id TEXT
     """)
 
+        if int(version.value) < 14:
+            db.engine.execute("""
+CREATE TABLE keys (
+    name TEST NOT NULL,
+    value TEXT NOT NULL,
+    PRIMARY KEY (name))
+                """)
+
+            sql = "INSERT INTO keys (name, value) VALUES ('CSRF_SESSION_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32))
+            db.engine.execute(sql)
+
+            sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32))
+            db.engine.execute(sql)
+
+            # If SECURITY_PASSWORD_SALT is not in the config, but we're upgrading, then it must (unless the
+            # user edited the main config - which they shouldn't have done) have been at it's default
+            # value, so we'll use that. Otherwise, use whatever we can find in the config.
+            if hasattr(config, 'SECURITY_PASSWORD_SALT'):
+                sql = "INSERT INTO keys (name, value) VALUES ('SECURITY_PASSWORD_SALT', '%s')" % config.SECURITY_PASSWORD_SALT
+            else:
+                sql = "INSERT INTO keys (name, value) VALUES ('SECURITY_PASSWORD_SALT', 'SuperSecret3')"
+            db.engine.execute(sql)
+
     # Finally, update the schema version
     version.value = config.SETTINGS_SCHEMA_VERSION
     db.session.merge(version)
@@ -347,6 +383,7 @@ ALTER TABLE SERVER
 ###############################################################################
 if __name__ == '__main__':
     app = Flask(__name__)
+
     app.config.from_object(config)
 
     if config.TESTING_MODE:
@@ -364,15 +401,6 @@ if __name__ == '__main__':
         'config_local.py'
     )
 
-    if not os.path.isfile(local_config):
-        print("""
- The configuration file - {0} does not exist.
- Before running this application, ensure that config_local.py has been created
- and sets values for SECRET_KEY, SECURITY_PASSWORD_SALT and CSRF_SESSION_KEY
- at bare minimum. See config.py for more information and a complete list of
- settings. Exiting...""".format(local_config))
-        sys.exit(1)
-
     # Check if the database exists. If it does, tell the user and exit.
     if os.path.isfile(config.SQLITE_PATH):
         print("""
@@ -381,7 +409,6 @@ Entering upgrade mode...""" % config.SQLITE_PATH)
 
         # Setup Flask-Security
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-        security = Security(app, user_datastore)
 
         # Always use "< REQUIRED_VERSION" as the test for readability
         with app.app_context():
@@ -403,8 +430,13 @@ Exiting...""" % (version.value))
             print("NOTE: Upgrading database schema from version %d to %d." % (
                 version.value, config.SETTINGS_SCHEMA_VERSION
             ))
-            do_upgrade(app, user_datastore, security, version)
+            do_upgrade(app, user_datastore, version)
     else:
+        # Get some defaults for the various keys
+        config.CSRF_SESSION_KEY = base64.urlsafe_b64encode(os.urandom(32))
+        config.SECRET_KEY = base64.urlsafe_b64encode(os.urandom(32))
+        config.SECURITY_PASSWORD_SALT = base64.urlsafe_b64encode(os.urandom(32))
+
         directory = os.path.dirname(config.SQLITE_PATH)
         if not os.path.exists(directory):
             os.makedirs(directory, int('700', 8))

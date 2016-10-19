@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 13
+SCHEMA_VERSION = 14
 
 ##########################################################################
 #
@@ -207,3 +207,10 @@ class Process(db.Model):
     end_time = db.Column(db.String(), nullable=True)
     exit_code = db.Column(db.Integer(), nullable=True)
     acknowledge = db.Column(db.String(), nullable=True)
+
+
+class Keys(db.Model):
+    """Define the keys table."""
+    __tablename__ = 'keys'
+    name = db.Column(db.String(), nullable=False, primary_key=True)
+    value = db.Column(db.String(), nullable=False)

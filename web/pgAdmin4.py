@@ -32,18 +32,6 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 # Sanity checks
 ##########################################################################
 
-# Check for local settings if running in server mode
-if config.SERVER_MODE is True:
-    local_config = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'config_local.py')
-    if not os.path.isfile(local_config):
-        print("The configuration file %s does not exist.\n" % local_config)
-        print("Before running this application, ensure that config_local.py has been created")
-        print("and sets values for SECRET_KEY, SECURITY_PASSWORD_SALT and CSRF_SESSION_KEY")
-        print("at bare minimum. See config.py for more information and a complete list of")
-        print("settings. Exiting...")
-        sys.exit(1)
-
 # Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
     setupfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),

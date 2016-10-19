@@ -140,20 +140,12 @@ DEFAULT_SERVER_PORT = 5050
 # Enable CSRF protection?
 CSRF_ENABLED = True
 
-# Secret key for signing CSRF data. Override this in config_local.py if
-# running on a web server
-CSRF_SESSION_KEY = 'SuperSecret1'
-
-# Secret key for signing cookies. Override this in config_local.py if
-# running on a web server
-SECRET_KEY = 'SuperSecret2'
-
-# Salt used when hashing passwords. Override this in config_local.py if
-# running on a web server
-SECURITY_PASSWORD_SALT = 'SuperSecret3'
-
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
+
+# NOTE: CSRF_SESSION_KEY, SECRET_KEY and SECURITY_PASSWORD_SALT are no
+#       longer part of the main configuration, but are stored in the
+#       configuration databases 'keys' table and are auto-generated.
 
 # Should HTML be minified on the fly when not in debug mode?
 # Note: This is disabled by default as it will error when processing the
