@@ -247,9 +247,6 @@ GOTO:EOF
     ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"
     ECHO MINIFY_HTML = False >> "%PGBUILDPATH%\web\config_distro.py"
 
-    ECHO Creating config_local.py
-    ECHO # Add any configuration changes to this file. > "%PGBUILDPATH%\web\config_local.py"
-
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
