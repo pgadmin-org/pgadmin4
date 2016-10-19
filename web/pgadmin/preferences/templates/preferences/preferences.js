@@ -35,7 +35,7 @@ define(
            * This model will be used to keep tracking of the changes done for
            * an individual option.
            */
-          var PreferenceModel = Backbone.Model.extend({
+          var PreferenceModel = pgBrowser.DataModel.extend({
             idAttribute: 'id',
             defaults: {
               id: undefined,
