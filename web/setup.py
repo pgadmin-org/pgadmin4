@@ -437,6 +437,8 @@ Exiting...""" % (version.value))
         config.SECRET_KEY = base64.urlsafe_b64encode(os.urandom(32))
         config.SECURITY_PASSWORD_SALT = base64.urlsafe_b64encode(os.urandom(32))
 
+        app.config.from_object(config)
+
         directory = os.path.dirname(config.SQLITE_PATH)
         if not os.path.exists(directory):
             os.makedirs(directory, int('700', 8))
