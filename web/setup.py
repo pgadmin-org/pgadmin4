@@ -350,10 +350,10 @@ CREATE TABLE keys (
     PRIMARY KEY (name))
                 """)
 
-            sql = "INSERT INTO keys (name, value) VALUES ('CSRF_SESSION_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32))
+            sql = "INSERT INTO keys (name, value) VALUES ('CSRF_SESSION_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32)).decode()
             db.engine.execute(sql)
 
-            sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32))
+            sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(os.urandom(32)).decode()
             db.engine.execute(sql)
 
             # If SECURITY_PASSWORD_SALT is not in the config, but we're upgrading, then it must (unless the
@@ -433,9 +433,9 @@ Exiting...""" % (version.value))
             do_upgrade(app, user_datastore, version)
     else:
         # Get some defaults for the various keys
-        config.CSRF_SESSION_KEY = base64.urlsafe_b64encode(os.urandom(32))
-        config.SECRET_KEY = base64.urlsafe_b64encode(os.urandom(32))
-        config.SECURITY_PASSWORD_SALT = base64.urlsafe_b64encode(os.urandom(32))
+        config.CSRF_SESSION_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
+        config.SECRET_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
+        config.SECURITY_PASSWORD_SALT = base64.urlsafe_b64encode(os.urandom(32)).decode()
 
         app.config.from_object(config)
 
