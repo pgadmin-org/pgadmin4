@@ -14,7 +14,7 @@ import json
 from flask import render_template
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
-
+from config import PG_DEFAULT_DRIVER
 
 class SchemaChildModule(CollectionNodeModule):
     """
@@ -134,14 +134,8 @@ class DataTypeReader:
                     else:
                         max_val = 10
 
-                # If schema is public, prefix it. Otherwise, we should already have it.
-                if row['nspname'] == 'public':
-                    rtn_type = "public." + row['typname']
-                else:
-                    rtn_type = row['typname']
-
                 res.append({
-                    'label': rtn_type, 'value': rtn_type,
+                    'label': row['typname'], 'value': row['typname'],
                     'typval': typeval, 'precision': precision,
                     'length': length, 'min_val': min_val, 'max_val': max_val,
                     'is_collatable': row['is_collatable']
@@ -242,6 +236,7 @@ class DataTypeReader:
             return 'timestamp' + length + ' without time zone' + array
         else:
             return name + length + array
+
 
 def trigger_definition(data):
     """

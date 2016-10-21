@@ -275,6 +275,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             self.manager = driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
+            self.qtTypeIdent = driver.qtTypeIdent
             # We need datlastsysoid to check if current table is system table
             self.datlastsysoid = self.manager.db_info[
                 did
@@ -681,7 +682,13 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
                 edit_types_list = list()
                 # We will need present type in edit mode
-                edit_types_list.append(present_type)
+
+                if column['typnspname'] == "pg_catalog" or column['typnspname'] == "public":
+                    edit_types_list.append(present_type)
+                else:
+                    t = self.qtTypeIdent(self.conn, column['typnspname'], present_type)
+                    edit_types_list.append(t)
+                    column['cltype'] = t
 
                 if int(is_reference) == 0:
                     SQL = render_template("/".join([self.column_template_path,
@@ -710,10 +717,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
                 if isArray:
                     column['cltype'] += "[]"
-
-                if column['typnspname'] != 'pg_catalog':
-                    column['cltype'] = self.qtIdent(self.conn, column['typnspname']) \
-                                       + '.' + column['cltype']
 
                 if 'indkey' in column:
                     # Current column

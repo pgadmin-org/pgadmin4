@@ -199,6 +199,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
+            self.qtTypeIdent = driver.qtTypeIdent
 
             # Set the template path for the SQL scripts
             if self.manager.version >= 90200:
@@ -417,7 +418,12 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         edit_types_list = list()
         # We will need present type in edit mode
-        edit_types_list.append(present_type)
+        if data['typnspname'] == "pg_catalog" or data['typnspname'] == "public":
+            edit_types_list.append(present_type)
+        else:
+            t = self.qtTypeIdent(self.conn, data['typnspname'], present_type)
+            edit_types_list.append(t)
+            data['cltype'] = t
 
         if int(is_reference) == 0:
             SQL = render_template("/".join([self.template_path,
@@ -446,10 +452,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         if isArray:
             data['cltype'] += "[]"
-
-        if data['typnspname'] != 'pg_catalog':
-            data['cltype'] = self.qtIdent(self.conn, data['typnspname'])\
-                             + '.' + data['cltype']
 
         return data
 
