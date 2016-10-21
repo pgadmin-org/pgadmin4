@@ -184,7 +184,7 @@ function($, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
       parent_type: 'pga_job',
       type: 'pga_schedule',
       dialogHelp: '{{ url_for('help.static', filename='pgagent_jobs.html') }}',
-      hasSQL: false,
+      hasSQL: true,
       hasDepends: false,
       hasStatistics: false,
       canDrop: function(node) {

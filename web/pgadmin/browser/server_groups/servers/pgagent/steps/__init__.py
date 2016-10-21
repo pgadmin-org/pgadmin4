@@ -232,8 +232,8 @@ SELECT EXISTS(
         res = []
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jstid = jstid,
-            jid = jid
+            jstid=jstid,
+            jid=jid
         )
 
         status, result = self.conn.execute_2darray(sql)
@@ -315,13 +315,16 @@ SELECT EXISTS(
             jid: Job ID
         """
         data = {}
-        for k, v in request.args.items():
-            try:
-                data[k] = json.loads(
-                    v.decode('utf-8') if hasattr(v, 'decode') else v
-                )
-            except ValueError:
-                data[k] = v
+        if request.args:
+            for k, v in request.args.items():
+                try:
+                    data[k] = json.loads(
+                        v.decode('utf-8') if hasattr(v, 'decode') else v
+                    )
+                except ValueError:
+                    data[k] = v
+        else:
+            data = json.loads(request.data.decode())
 
         sql = render_template(
             "/".join([self.template_path, 'create.sql']),
@@ -337,8 +340,8 @@ SELECT EXISTS(
 
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jstid = res,
-            jid = jid
+            jstid=res,
+            jid=jid
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -417,8 +420,8 @@ SELECT EXISTS(
 
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jstid = jstid,
-            jid = jid
+            jstid=jstid,
+            jid=jid
         )
         status, res = self.conn.execute_2darray(sql)
 

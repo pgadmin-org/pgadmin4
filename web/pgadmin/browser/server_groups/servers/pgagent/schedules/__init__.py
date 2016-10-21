@@ -219,8 +219,8 @@ class JobScheduleView(PGChildNodeView):
         res = []
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jscid = jscid,
-            jid = jid
+            jscid=jscid,
+            jid=jid
         )
 
         status, result = self.conn.execute_2darray(sql)
@@ -298,13 +298,22 @@ class JobScheduleView(PGChildNodeView):
             jid: Job ID
         """
         data = {}
-        for k, v in request.args.items():
-            try:
-                data[k] = json.loads(
-                    v.decode('utf-8') if hasattr(v, 'decode') else v
-                )
-            except ValueError:
-                data[k] = v
+        if request.args:
+            for k, v in request.args.items():
+                try:
+                    data[k] = json.loads(
+                        v.decode('utf-8') if hasattr(v, 'decode') else v
+                    )
+                except ValueError:
+                    data[k] = v
+        else:
+            data = json.loads(request.data.decode())
+            # convert python list literal to postgres array literal.
+            data['jscminutes'] = data['jscminutes'].replace("[", "{").replace("]", "}")
+            data['jschours'] = data['jschours'].replace("[", "{").replace("]", "}")
+            data['jscweekdays'] = data['jscweekdays'].replace("[", "{").replace("]", "}")
+            data['jscmonthdays'] = data['jscmonthdays'].replace("[", "{").replace("]", "}")
+            data['jscmonths'] = data['jscmonths'].replace("[", "{").replace("]", "}")
 
         sql = render_template(
             "/".join([self.template_path, 'create.sql']),
@@ -327,8 +336,8 @@ class JobScheduleView(PGChildNodeView):
         self.conn.execute_void('END')
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jscid = res,
-            jid = jid
+            jscid=res,
+            jid=jid
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -357,17 +366,36 @@ class JobScheduleView(PGChildNodeView):
             jscid: JobSchedule ID
         """
         data = {}
-        for k, v in request.args.items():
-            try:
-                data[k] = json.loads(
-                    v.decode('utf-8') if hasattr(v, 'decode') else v
-                )
-            except ValueError:
-                data[k] = v
+        if request.args:
+            for k, v in request.args.items():
+                try:
+                    data[k] = json.loads(
+                        v.decode('utf-8') if hasattr(v, 'decode') else v
+                    )
+                except ValueError:
+                    data[k] = v
+        else:
+            data = json.loads(request.data.decode())
+            # convert python list literal to postgres array literal.
+            if 'jscminutes' in data:
+                data['jscminutes'] = data['jscminutes'].replace("[", "{").replace("]", "}")
+
+            if 'jschours' in data:
+                data['jschours'] = data['jschours'].replace("[", "{").replace("]", "}")
+
+            if 'jscweekdays' in data:
+                data['jscweekdays'] = data['jscweekdays'].replace("[", "{").replace("]", "}")
+
+            if 'jscmonthdays' in data:
+                data['jscmonthdays'] = data['jscmonthdays'].replace("[", "{").replace("]", "}")
+
+            if 'jscmonths' in data:
+                data['jscmonths'] = data['jscmonths'].replace("[", "{").replace("]", "}")
 
         sql = render_template(
             "/".join([self.template_path, 'update.sql']),
             jid=jid,
+            jscid=jscid,
             data=data
         )
 
@@ -378,8 +406,8 @@ class JobScheduleView(PGChildNodeView):
 
         sql = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            jscid = jscid,
-            jid = jid
+            jscid=jscid,
+            jid=jid
         )
         status, res = self.conn.execute_2darray(sql)
 
