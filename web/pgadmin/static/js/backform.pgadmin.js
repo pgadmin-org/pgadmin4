@@ -1894,7 +1894,8 @@
     ].join("\n")),
     render: function() {
 
-      if(this && this.$sel && this.$sel.select2) {
+      if(this.$sel && this.$sel.select2 &&
+        this.$sel.select2.hasOwnProperty('destroy')) {
         this.$sel.select2('destroy');
       }
 
