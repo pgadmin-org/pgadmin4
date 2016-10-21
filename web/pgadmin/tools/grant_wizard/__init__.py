@@ -187,7 +187,6 @@ def properties(gid, sid, did, node_id, node_type):
     conn = manager.connection(did=did)
 
     node_types = []
-    nspname = ''
     show_sysobj = blueprint.show_system_objects().get()
     if node_type == 'database':
 
@@ -212,18 +211,16 @@ def properties(gid, sid, did, node_id, node_type):
             return internal_server_error(errormsg=res)
         node_types = res['rows']
         ntype = node_type
-        nspname = node_types[0]['name']
 
     for row in node_types:
         if 'oid' in row:
             node_id = row['oid']
-            nspname = row['name']
 
         # Fetch functions against schema
         if ntype in ['schema', 'function']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),
-                node_id=node_id, nspname=nspname, type='function')
+                node_id=node_id, type='function')
 
             status, res = conn.execute_dict(SQL)
 
@@ -238,7 +235,7 @@ def properties(gid, sid, did, node_id, node_type):
                     ntype in ['schema', 'procedure']):
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),
-                node_id=node_id, nspname=nspname, type='procedure')
+                node_id=node_id, type='procedure')
 
             status, res = conn.execute_dict(SQL)
 
@@ -251,7 +248,7 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'trigger_function']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/function.sql']),
-                node_id=node_id, nspname=nspname, type='trigger_function')
+                node_id=node_id, type='trigger_function')
             status, res = conn.execute_dict(SQL)
 
             if not status:
@@ -263,7 +260,7 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'sequence']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/sequence.sql']),
-                node_id=node_id, nspname=nspname)
+                node_id=node_id)
 
             status, res = conn.execute_dict(SQL)
             if not status:
@@ -274,7 +271,7 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'table']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/table.sql']),
-                node_id=node_id, nspname=nspname)
+                node_id=node_id)
 
             status, res = conn.execute_dict(SQL)
             if not status:
@@ -286,7 +283,7 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'view']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/view.sql']),
-                node_id=node_id, node_type='v', nspname=nspname)
+                node_id=node_id, node_type='v')
 
             status, res = conn.execute_dict(SQL)
             if not status:
@@ -298,7 +295,7 @@ def properties(gid, sid, did, node_id, node_type):
         if ntype in ['schema', 'mview']:
             SQL = render_template("/".join(
                 [server_prop['template_path'], '/sql/view.sql']),
-                node_id=node_id, node_type='m', nspname=nspname)
+                node_id=node_id, node_type='m')
 
             status, res = conn.execute_dict(SQL)
             if not status:
