@@ -441,11 +441,7 @@ class Filemanager(object):
 
         orig_path = unquote(orig_path)
         try:
-            def custom_sort(x, y):
-                return y.lower() > x.lower()
-
-            mylist = [x for x in sorted(os.listdir(orig_path),
-                      cmp=custom_sort)]
+            mylist = [x for x in sorted(os.listdir(orig_path))]
             for f in mylist:
                 protected = 0
                 system_path = os.path.join(os.path.join(orig_path, f))
@@ -491,10 +487,11 @@ class Filemanager(object):
                     }
                 }
         except Exception as e:
-            if e.strerror == gettext('Permission denied'):
+            if (hasattr(e, 'strerror') and
+                    e.strerror == gettext('Permission denied')):
                 err_msg = "Error: {0}".format(e.strerror)
             else:
-                err_msg = "Error: {0}".format(e.strerror)
+                err_msg = "Error: {0}".format(e)
             files = {
                 'Code': 0,
                 'err_msg': err_msg
