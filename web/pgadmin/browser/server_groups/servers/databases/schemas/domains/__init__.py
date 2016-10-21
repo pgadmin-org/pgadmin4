@@ -695,6 +695,10 @@ AND relkind != 'c'))"""
 
         data['constraints'] = res['rows']
 
+        # Get formatted Security Labels
+        if 'seclabels' in data:
+            data.update(parse_sec_labels_from_db(data['seclabels']))
+
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']), data=data)
 
