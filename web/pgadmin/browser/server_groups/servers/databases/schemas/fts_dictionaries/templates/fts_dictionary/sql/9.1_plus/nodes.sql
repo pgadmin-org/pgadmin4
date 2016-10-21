@@ -1,6 +1,7 @@
 {# Fetch FTS DICTIONARY name statement #}
 SELECT
-    oid, dictname as name
+    oid, dictname as name,
+    dictnamespace as schema
 FROM
     pg_ts_dict dict
 WHERE
