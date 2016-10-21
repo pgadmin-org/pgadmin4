@@ -623,7 +623,7 @@ class IndexesView(PGChildNodeView):
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     idx,
-                    scid,
+                    tid,
                     data['name'],
                     icon="icon-index"
                 )
