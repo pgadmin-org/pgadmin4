@@ -209,9 +209,17 @@ class BatchProcess(object):
             )
 
         self.ecode = p.poll()
-        if self.ecode is not None:
-            # TODO:: Couldn't start execution
-            pass
+        if self.ecode is not None and self.ecode != 0:
+            # TODO:// Find a way to read error from detached failed process
+
+            # Couldn't start execution
+            p = Process.query.filter_by(
+                pid=self.id, user_id=current_user.id
+            ).first()
+            p.start_time = p.end_time = get_current_time()
+            if not p.exit_code:
+                p.exit_code = self.ecode
+            db.session.commit()
 
     def status(self, out=0, err=0):
         import codecs

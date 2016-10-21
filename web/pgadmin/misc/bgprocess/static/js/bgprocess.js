@@ -220,8 +220,9 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
             setTimeout(function() { self.update(res); }, 10);
           },
           error: function(res) {
-            // Try after some time
-            setTimeout(function() { self.update(res); }, 10000);
+            // Try after some time only if job id present
+            if (res.status != 410)
+              setTimeout(function() { self.update(res); }, 10000);
           }
         });
       },
