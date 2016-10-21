@@ -310,7 +310,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           canEdit: false, canDelete: true, uniqueCol : ['provider'],
           disabled: 'isDisabled', control: 'unique-col-collection',
           visible: function() {
-            return this.node_data && this.node_data._type != 'procedure';
+            return this.node && this.node.type != "procedure";
           }
         }
         ],
