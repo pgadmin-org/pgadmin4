@@ -1,7 +1,7 @@
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 
 {% if data %}
-{% if data.pkgheadsrc is defined and data.pkgheadsrc != o_data.pkgheadsrc and o_data.pkgbodysrc != None %}
+{% if data.pkgheadsrc is defined and data.pkgheadsrc != o_data.pkgheadsrc and o_data.pkgbodysrc != None or (data.pkgbodysrc is defined and data.pkgbodysrc == '')  %}
 DROP PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }};
 {% endif %}
 {% if data.pkgheadsrc %}
