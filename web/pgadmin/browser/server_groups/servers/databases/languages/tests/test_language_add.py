@@ -42,7 +42,7 @@ class LanguagesAddTestCase(BaseTestGenerator):
 
         self.data = {
             "lanacl": [],
-            "laninl": "btendscan",
+            "laninl": "btint2sortsupport",
             "lanowner": db_user,
             "lanproc": "plpgsql_call_handler",
             "lanval": "fmgr_c_validator",
