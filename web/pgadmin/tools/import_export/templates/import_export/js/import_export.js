@@ -400,9 +400,9 @@ define(
                     treeInfo = n.getTreeNodeHierarchy.apply(n, [i])
 
                   this.view.model.set({
-                    'database': treeInfo.database.label,
-                    'schema': treeInfo.schema.label,
-                    'table': treeInfo.table.label
+                    'database': treeInfo.database._label,
+                    'schema': treeInfo.schema._label,
+                    'table': treeInfo.table._label
                   });
                   var self = this,
                       baseUrl = "{{ url_for('import_export.index') }}" +

@@ -206,8 +206,11 @@ def create_import_export_job(sid):
                 storage_dir = storage_dir.replace('/', '\\')
             data['filename'] = data['filename'].replace('\\', '\\\\')
             data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
-        else:
+        elif storage_dir:
             data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
+        else:
+            data['filename'] = data['filename']
+
     else:
         return make_json_response(
             data={'status': False, 'info': 'Please specify a valid file'}
@@ -254,8 +257,7 @@ def create_import_export_job(sid):
 
     args = [
         '--host', server.host, '--port', str(server.port),
-        '--username', server.username, '--dbname',
-        driver.qtIdent(conn, data['database']),
+        '--username', server.username, '--dbname', data['database'],
         '--command', query
     ]
 

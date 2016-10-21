@@ -276,7 +276,7 @@ def create_backup_job(sid):
         server.username,
         '--no-password',
         '--database',
-        driver.qtIdent(conn, server.maintenance_db)
+        server.maintenance_db
     ]
     if 'role' in data and data['role']:
         args.append('--role')
@@ -428,14 +428,14 @@ def create_backup_objects_job(sid):
     set_value('no_of_jobs', '--jobs', True)
 
     for s in data['schemas']:
-        args.extend(['--schema', driver.qtIdent(conn, s)])
+        args.extend(['--schema', s])
 
     for s, t in data['tables']:
         args.extend([
             '--table', driver.qtIdent(conn, s, t)
         ])
 
-    args.append(driver.qtIdent(conn, data['database']))
+    args.append(data['database'])
 
     try:
         p = BatchProcess(

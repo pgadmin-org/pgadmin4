@@ -747,20 +747,20 @@ TODO LIST FOR BACKUP:
                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
                   // Set current database into model
-                  this.view.model.set('database', treeInfo.database.label);
+                  this.view.model.set('database', treeInfo.database._label);
 
                   // We will remove once object tree is implemented
                   // If selected node is Schema then add it in model
                   if(d._type == 'schema') {
                     var schemas = [];
-                    schemas.push(d.label);
+                    schemas.push(d._label);
                     this.view.model.set('schemas', schemas);
                   }
                   // If selected node is Table then add it in model along with
                   // its schema
                   if(d._type == 'table') {
                     this.view.model.set(
-                      'tables', [[treeInfo.schema.label, d.label]]
+                      'tables', [[treeInfo.schema._label, d._label]]
                     );
                   }
 

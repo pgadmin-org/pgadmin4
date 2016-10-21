@@ -217,7 +217,7 @@ def create_maintenance_job(sid, did):
     args = [
         '--host', server.host, '--port', str(server.port),
         '--username', server.username, '--dbname',
-        driver.qtIdent(conn, data['database']),
+        data['database'],
         '--command', query
     ]
 

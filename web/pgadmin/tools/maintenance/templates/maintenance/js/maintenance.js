@@ -295,21 +295,21 @@ define(
                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
                   if (treeInfo.schema != undefined) {
-                    schema = treeInfo.schema.label;
+                    schema = treeInfo.schema._label;
                   }
                   if (treeInfo.table != undefined) {
-                    table = treeInfo.table.label;
+                    table = treeInfo.table._label;
                   }
 
                   if (treeInfo.primary_key != undefined) {
-                    primary_key = treeInfo.primary_key.label;
+                    primary_key = treeInfo.primary_key._label;
                   } else if (treeInfo.unique_constraint != undefined) {
-                    unique_constraint = treeInfo.unique_constraint.label;
+                    unique_constraint = treeInfo.unique_constraint._label;
                   } else if (treeInfo.index != undefined) {
-                    index = treeInfo.index.label;
+                    index = treeInfo.index._label;
                   }
 
-                  this.view.model.set({'database': treeInfo.database.label,
+                  this.view.model.set({'database': treeInfo.database._label,
                                       'schema': schema,
                                       'table': table,
                                       'primary_key': primary_key,
