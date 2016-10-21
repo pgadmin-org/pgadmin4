@@ -2325,6 +2325,9 @@ define(
             'pgadmin-sqleditor:loading-icon:show',
             '{{ _('Loading the file...') }}'
           );
+          // set cursor to progress before file load
+          var $busy_icon_div = $('.sql-editor-busy-fetching');
+          $busy_icon_div.addClass('show_progress');
 
           // Make ajax call to load the data from file
           $.ajax({
@@ -2339,11 +2342,15 @@ define(
                 self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
               }
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              // hide cursor
+              $busy_icon_div.removeClass('show_progress');
             },
             error: function(e) {
               var errmsg = $.parseJSON(e.responseText).errormsg;
               alertify.error(errmsg);
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              // hide cursor
+              $busy_icon_div.removeClass('show_progress');
             }
           });
         },

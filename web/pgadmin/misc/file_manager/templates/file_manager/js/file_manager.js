@@ -141,8 +141,12 @@ define([
                 var newFile = $('.currentpath').val() + sel_file;
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:storage_dialog', newFile);
+              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+                if (removeTransId(trans_id)) {
+                  this.destroy();
+                  return;
+                }
               }
-              removeTransId(trans_id);
             },
             build: function() {
               this.elements.content.appendChild($container.get(0));
@@ -253,8 +257,13 @@ define([
                 var newFile = $('.currentpath').val() + sel_file;
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_file', newFile);
+                removeTransId(trans_id);
+              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+                if (removeTransId(trans_id)) {
+                  this.destroy();
+                  return;
+                }
               }
-              removeTransId(trans_id);
             },
             build: function() {
               this.elements.content.appendChild($container.get(0));
@@ -365,8 +374,13 @@ define([
                 var newFile = $('.currentpath').val() + sel_file;
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_folder', newFile);
+                removeTransId(trans_id);
+              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+                if (removeTransId(trans_id)) {
+                  this.destroy();
+                  return;
+                }
               }
-              removeTransId(trans_id);
             },
             build: function() {
               this.elements.content.appendChild($container.get(0));
@@ -522,9 +536,11 @@ define([
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
                   removeTransId(trans_id);
                 }
-              }
-              if (closeEvent.button.text == "{{ _('Cancel') }}") {
-                removeTransId(trans_id);
+              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+                if (removeTransId(trans_id)) {
+                  this.destroy();
+                  return;
+                }
               }
             },
             build: function() {
