@@ -700,8 +700,14 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               if (column_collection.length > 0 && current_am != previous_am) {
                 var msg = '{{ _('Changing access method will clear columns collection') }}';
                 Alertify.confirm(msg, function (e) {
-                    // User clicks Ok, lets clear collection
-                    column_collection.reset();
+                    // User clicks Ok, lets clear collection.
+                    column_collection.each(function(m) {
+                      /*
+                       * Our datamodel do not support collection reset method.
+                       * So remove model one by one.
+                       */
+                      column_collection.remove(m);
+                    });
                     setTimeout(function() {
                       column_collection.trigger('pgadmin:columns:updated', column_collection);
                     }, 10);

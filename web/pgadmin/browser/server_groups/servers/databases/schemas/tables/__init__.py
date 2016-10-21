@@ -290,7 +290,11 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 self.template_path = 'table/sql/9.1_plus'
 
             # Template for Column ,check constraint and exclusion constraint node
-            if ver >= 90200:
+            if ver >= 90600:
+                self.column_template_path = 'column/sql/9.2_plus'
+                self.check_constraint_template_path = 'check_constraint/sql/9.2_plus'
+                self.exclusion_constraint_template_path = 'exclusion_constraint/sql/9.6_plus'
+            elif ver >= 90200:
                 self.column_template_path = 'column/sql/9.2_plus'
                 self.check_constraint_template_path = 'check_constraint/sql/9.2_plus'
                 self.exclusion_constraint_template_path = 'exclusion_constraint/sql/9.2_plus'

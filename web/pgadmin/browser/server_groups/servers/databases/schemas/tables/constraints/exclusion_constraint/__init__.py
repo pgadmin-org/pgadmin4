@@ -217,7 +217,9 @@ class ExclusionConstraintView(PGChildNodeView):
             self.conn = self.manager.connection(did=kwargs['did'])
 
             ver = self.manager.version
-            if ver >= 90200:
+            if ver >= 90600:
+                self.template_path = 'exclusion_constraint/sql/9.6_plus'
+            elif ver >= 90200:
                 self.template_path = 'exclusion_constraint/sql/9.2_plus'
             elif ver >= 90100:
                 self.template_path = 'exclusion_constraint/sql/9.1_plus'
