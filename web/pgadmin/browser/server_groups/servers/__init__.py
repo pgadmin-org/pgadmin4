@@ -831,6 +831,9 @@ class ServerNode(PGChildNodeView):
                 )
             )
 
+            if hasattr(str, 'decode'):
+                errmsg = errmsg.decode('utf-8')
+
             return make_json_response(
                 success=0,
                 status=401,
