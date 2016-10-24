@@ -20,6 +20,21 @@ In order to configure pgAdmin to run in desktop mode, it is first necessary to
 configure the Python code to run in single-user mode, and then to configure the
 runtime to find and execute the code.
 
+Note that there are multiple configuration files that are read at startup by
+pgAdmin. These are as follows:
+
+* ``config.py``: This is the main configuration file, and should not be modified.
+  It can be used as a reference for configuration settings, that may be overridden
+  in one of the following files.
+
+* ``config_distro.py``: This file is read after ``config.py`` and is intended for
+  packagers to change any settings that are required for their pgAdmin distribution.
+  This may typically include certain paths and file locations.
+
+* ``config_local.py``: This file is read after ``config_distro.py`` and is intended
+  for end users to change any default or packaging specific settings that they may
+  wish to adjust to meet local preferences or standards.
+
 Python
 ------
 
@@ -41,6 +56,9 @@ In order to configure the Python code, follow these steps:
    .. code-block:: bash
 
        $ python setup.py
+
+Alternatively, you can simply run ``pgAdmin4.py`` at this point or aat a later time,
+and ``pgadmin4.db`` will be created automatically at first run.
     
 Runtime
 -------

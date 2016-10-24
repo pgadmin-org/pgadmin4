@@ -12,7 +12,7 @@ The following instructions demonstrate how pgAdmin may be run as a WSGI
 application under ``Apache HTTP``, using ``mod_wsgi``.
 
 Requirements
-------------
+************
 
 **Important**: Some components of pgAdmin require the ability to maintain affinity
 between client sessions and a specific database connection (for example, the 
@@ -42,6 +42,69 @@ unlike a busy website, so in practice should not be an issue.
 Future versions of pgAdmin may introduce a shared connection manager process to
 overcome this limitation, however that is a significant amount of work for 
 little practical gain.
+
+Configuration
+*************
+
+In order to configure pgAdmin to run in server mode, it is first necessary to
+configure the Python code to run in multi-user mode, and then to configure the
+web server to find and execute the code.
+
+Note that there are multiple configuration files that are read at startup by
+pgAdmin. These are as follows:
+
+* ``config.py``: This is the main configuration file, and should not be modified.
+  It can be used as a reference for configuration settings, that may be overridden
+  in one of the following files.
+
+* ``config_distro.py``: This file is read after ``config.py`` and is intended for
+  packagers to change any settings that are required for their pgAdmin distribution.
+  This may typically include certain paths and file locations.
+
+* ``config_local.py``: This file is read after ``config_distro.py`` and is intended
+  for end users to change any default or packaging specific settings that they may
+  wish to adjust to meet local preferences or standards.
+
+Python
+------
+
+In order to configure the Python code, follow these steps:
+
+1. Create a ``config_local.py`` file alongside the existing ``config.py`` file.
+
+2. Edit ``config_local.py`` and add the following setting:
+
+   .. code-block:: python
+
+       SERVER_MODE = False
+
+3. In most cases, the default file locations are setup for running in desktop mode.
+   Add settings similar to the following to ``config_local.py`` to use paths suitable
+   for server mode.
+
+   *NOTE: You must ensure the directories specified are writeable by
+   the user that the web server processes will be running as, e.g. apache or www-data.*
+
+   .. code-block:: python
+
+       LOG_FILE = '/var/log/pgadmin4/pgadmin4.log'
+       SQLITE_PATH = '/var/lib/pgadmin4/pgadmin4.db'
+       SESSION_DB_PATH = '/var/lib/pgadmin4/sessions'
+       STORAGE_DIR = '/var/lib/pgadmin4/storage'
+
+4. Run the following command to create the configuration database:
+
+   .. code-block:: bash
+
+       # python setup.py
+
+5. Change the ownership of the configuration database to the user that the web server
+   processes will run as, for example, assuming that the web server runs as user
+   www-data in group www-data, and that the SQLite path is ``/var/lib/pgadmin4/pgadmin4.db``:
+
+   .. code-block:: bash
+
+       # chown www-data:www-data /var/lib/pgadmin4/pgadmin4.db
 
 Apache HTTPD Configuration (Windows)
 ------------------------------------
