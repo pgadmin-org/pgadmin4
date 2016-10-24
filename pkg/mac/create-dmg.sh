@@ -5,12 +5,12 @@ test -d $DISTROOT || mkdir $DISTROOT
 cd $DISTROOT
 
 DMG_SOURCES="./../mac-build/$APP_BUNDLE_NAME"
-DMG_LICENCE=./../pkg/mac/licence.r
+DMG_LICENCE=./../pkg/mac/licence.rtf
 DMG_VOLUME_NAME=$APP_NAME
 DMG_NAME=`echo $DMG_VOLUME_NAME | sed 's/ //g' | awk '{print tolower($0)}'`
 DMG_IMAGE=$DMG_NAME-$APP_LONG_VERSION.dmg
 HDIUTIL=/usr/bin/hdiutil
-REZ="/usr/bin/Rez /System/Library/Frameworks/Carbon.framework/Versions/A/Headers/*.r"
+REZ="/usr/bin/Rez"
 
 DMG_DIR=./$DMG_IMAGE.src
 
@@ -33,6 +33,4 @@ $HDIUTIL create -quiet -srcfolder "$DMG_DIR" -format UDZO -volname "$DMG_VOLUME_
 rm -rf "$DMG_DIR" || exit 1
 
 echo "Attaching License to image"
-$HDIUTIL unflatten -quiet "$DMG_IMAGE" || exit 1
-$REZ "$DMG_LICENCE" -a -o "$DMG_IMAGE" || exit 1
-$HDIUTIL flatten -quiet "$DMG_IMAGE" || exit 1
+python ./../pkg/mac/dmg-license.py "$DMG_IMAGE" "$DMG_LICENCE" -c bz2
