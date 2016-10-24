@@ -265,6 +265,7 @@ class SequenceView(PGChildNodeView):
             row['minimum'] = rset1['rows'][0]['min_value']
             row['maximum'] = rset1['rows'][0]['max_value']
             row['increment'] = rset1['rows'][0]['increment_by']
+            row['start'] = rset1['rows'][0]['start_value']
             row['cache'] = rset1['rows'][0]['cache_value']
             row['cycled'] = rset1['rows'][0]['is_cycled']
 

@@ -145,15 +145,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'comment', label:'{{ _('Comment') }}', type: 'multiline',
           mode: ['properties', 'create', 'edit']
         },{
+          id: 'current_value', label: '{{ _('Current value') }}', type: 'int',
+          mode: ['properties', 'edit'], group: '{{ _('Definition') }}'
+        },{
           id: 'increment', label: '{{ _('Increment') }}', type: 'int',
           mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
           min: 1
         },{
           id: 'start', label: '{{ _('Start') }}', type: 'int',
-          mode: ['create'], group: '{{ _('Definition') }}'
-        },{
-          id: 'current_value', label: '{{ _('Current value') }}', type: 'int',
-          mode: ['properties', 'edit'], group: '{{ _('Definition') }}'
+          mode: ['properties', 'create'], group: '{{ _('Definition') }}'
         },{
           id: 'minimum', label: '{{ _('Minimum') }}', type: 'int',
           mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
