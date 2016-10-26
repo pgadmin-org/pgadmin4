@@ -4,35 +4,43 @@ pgAdmin 4
 pgAdmin 4 is a rewrite of the popular pgAdmin3 management tool for the
 PostgreSQL (http://www.postgresql.org) database. 
 
+In the following documentation and examples, "$PGADMIN4_SRC/" is used to denote
+the top-level directory of a copy of the pgAdmin source tree, either from a
+tarball or a git checkout.
+
 Architecture
 ------------
 
-pgAdmin 4 is being written as a web application in Python, using jQuery and 
-Bootstrap for the client side processing and UI. On the server side, Flask is
-being utilised.
+pgAdmin 4 is written as a web application in Python, using jQuery and Bootstrap
+for the client side processing and UI. On the server side, Flask is being
+utilised.
 
-Although developed using web technologies, we intend for pgAdmin 4 to be usable
-either on a web server using a browser, or standalone on a workstation. The
-runtime/ subdirectory contains a QT based runtime application intended to allow
-this - it is essentially a browser and Python interpretor in one package which
-will be capable of hosting the Python application and presenting it to the user
-as a desktop application.
+Although developed using web technologies, pgAdmin 4 can be deployed either on
+a web server using a browser, or standalone on a workstation. The runtime/
+subdirectory contains a QT based runtime application intended to allow this -
+it is essentially a browser and Python interpretor in one package which is
+capable of hosting the Python application and presenting it to the user as a
+desktop application.
 
-Building
---------
+Building the Runtime
+--------------------
 
 To build the runtime, the following packages must be installed:
 
-- QT 4.6 or above (older versions may work, but haven't been tested).
+- QT 4.6 or above, up to 5.5 (older versions may work, but haven't been tested,
+  newer versions are not yet supported as Qt Webkit has been deprecated).
 - Python 2.6 or above.
 
 Assuming both qmake and python-config are in the path:
 
-$ cd $PGADMIN4_SRC/runtime
-$ qmake
-Project MESSAGE: Building for QT5+...
-$ make
-...
+   $ cd $PGADMIN4_SRC/runtime
+    $ qmake
+    Project MESSAGE: Building for QT5+...
+    Project MESSAGE: Building for Linux/Mac...
+    Project MESSAGE: Using /usr/bin/python-config
+    Project MESSAGE: Python2 detected.
+    $ make
+    ...
 
 To build the runtime in debug mode, use the option below with qmake
 $ qmake CONFIG+=debug
@@ -48,13 +56,221 @@ app bundle called pgAdmin4.app will be created.
 To build the runtime on a Windows system, export PYTHON_HOME and PYTHON_VERSION 
 variables in the System environment. Specify the PYTHON_VERSION with the major 
 and minor number. Do not specify micro level version.
-For example, given a Python version of A.B.C; A - Major number, B - Minor number, 
-C - Micro level (Bug fix releases).
 
-If Python version is 2.7.2 than specify PYTHON_VERSION=27
+For example, given a Python version of A.B.C; A - Major number, B - Minor
+number, C - Micro level (Bug fix releases).
+
+If Python version is 2.7.12 than specify PYTHON_VERSION=27
 
  e.g. PYTHON_HOME=C:\Python27\
       PYTHON_VERSION=27
+
+You can also use Qt Creator to build, develop and debug the runtime. Simply
+open the $PGADMIN4_SRC/runtime/pgAdmin4.pro project file in Qt Creator and
+configure the project with a supported version of Qt when prompted.
+
+Configuring the Python Environment
+----------------------------------
+
+In order to run the Python code, a suitable runtime environment is required. It
+is recommended that a Python Virtual Environment is setup for this purpose,
+rather than using the system Python environment. On Linux and Mac systems, the
+process is fairly simple - adapt as required for your distribution:
+
+1) Install the virtualenv packages into the system Python environment
+
+    $ sudo pip install virtualenv virtualenv-wrapper
+
+2) Source the virtualenv wrapper tools script. You may want to add this command
+   to your ~/.bash_profile file for future convenience:
+
+    $ source /usr/local/bin/virtualenvwrapper.sh
+
+3) Create a virtual environment:
+
+    $ mkvirtualenv pgadmin4
+
+   To make use of the virtual environment in the future, use the following
+   command to re-activate it:
+
+    $ workon pgadmin4
+
+4) Ensure that a PostgreSQL installation's bin/ directory is in the path (so
+   pg_config can be found for building psycopg2), and install the required
+   packages:
+
+    (pgadmin4) $ PATH=$PATH:/usr/local/pgsql/bin pip install -r $PGADMIN4_SRC/requirements_py2.txt
+
+   If you are using Python 3, use the requirements_py3.txt file instead.
+
+5) Create a local configuration file for pgAdmin. Edit
+   $PGADMIN4_SRC/web/config_local.py and add any desired configuration options
+   (use the config.py file as a reference - any settings duplicated in
+   config_local.py will override those in config.py). A typical development
+   configuration may look like:
+
+    from config import *
+
+    # Debug mode
+    DEBUG = True
+
+    # App mode
+    SERVER_MODE = True
+
+    # Enable the test module
+    MODULE_BLACKLIST.remove('test')
+
+    # Log
+    CONSOLE_LOG_LEVEL = DEBUG
+    FILE_LOG_LEVEL = DEBUG
+
+    DEFAULT_SERVER = '127.0.0.1'
+
+    UPGRADE_CHECK_ENABLED = True
+
+    # Use a different config DB for each server mode.
+    if SERVER_MODE == False:
+        SQLITE_PATH = os.path.join(
+            DATA_DIR,
+            'pgadmin4-desktop.db'
+        )
+    else:
+        SQLITE_PATH = os.path.join(
+            DATA_DIR,
+            'pgadmin4-server.db'
+        )
+
+   This configuration allows easy switching between server and desktop modes
+   for testing.
+
+6) The initial setup of the configuration database is interactive in server
+   mode,  and non-interactive in desktop mode. You can run it either by
+   running:
+
+    (pgadmin4) $ python $PGADMIN4_SRC/web/setup.py
+
+   or by starting pgAdmin 4:
+
+    (pgadmin4) $ python $PGADMIN4_SRC/web/pgAdmin4.py
+
+   Whilst it is possible to automatically run setup in desktop mode by running
+   the runtime, that will not work in server mode as the runtime doesn't allow
+   command line interaction with the setup program.
+
+At this point you will be able to run pgAdmin 4 from the command line in either
+server or desktop mode, and access it from a web browser using the URL shown in
+the terminal once pgAdmin has started up.
+
+Setup of an environment on Windows is somewhat more complicated unfortunately,
+largely due to the lack of a native compiler toolset. Thankfully, Microsoft
+supply a free compiler specifically for Python 2.7 users. Download and install
+it from:
+
+https://www.microsoft.com/en-gb/download/details.aspx?id=44266
+
+A blog detailing the setup of Virtual Environments on Windows can be found
+here:
+
+http://www.tylerbutler.com/2012/05/how-to-install-python-pip-and-virtualenv-on-windows-with-powershell/
+
+Once a virtual environment has been created and enabled, setup can continue
+from step 4 above.
+
+Configuring the Runtime
+-----------------------
+
+The pgAdmin 4 Runtime maintains it's own Python Path to avoid conflicts with
+packages or other issues in the system Python installation. It will also search
+a number of known locations for the pgAdmin4.py file needed to run pgAdmin
+(including relative locations in a source code tree), however you can specify
+an alternate path if needed.
+
+If either a working environment or pgAdmin4.py cannot be found at startup, the
+runtime will prompt for the locations. Alternatively, you can use Alt+Shift+P
+to open the path configuration dialogue.
+
+On a Linux/Mac system, the Python Path will typically consist of a single path
+to the virtual environment's site-packages directory, e.g.
+
+    /Users/<USERNAME>/.virtualenvs/pgadmin4/lib/python2.7/site-packages
+
+On Windows, multiple paths are likely to be required, e.g.
+
+    C:\Users\dpage\.virtualenvs\pgadmin4\Lib\site-packages;C:\Users\dpage\.virtualenvs\pgadmin4\Lib;C:\Users\dpage\.virtualenvs\pgadmin4\Lib\lib-tk;C:\Users\dpage\.virtualenvs\pgadmin4\DLLs
+
+If you wish to specify a specific copy of the Python code to run, you can set
+the  Application Path to a directory containing pgAdmin4.py, e.g.
+
+    /Users/<USERNAME>/git/pgadmin4-test/web/
+
+Building the documentation
+--------------------------
+
+In order to build the docs, an additional Python package is required in the
+virtual environment. This can be installed with the pip package manager:
+
+    $ workon pgadmin4
+    (pgadmin4) $ pip install Sphinx
+
+The docs can then be built using the Makefile in $PGADMIN4_SRC, e.g.
+
+    (pgadmin4) $ make docs
+
+The output can be found in $PGADMIN4_SRC/docs/en_US/_build/html/index.html
+
+Building packages
+-----------------
+
+Most packages can be built using the Makefile in $PGADMIN4_SRC, provided all
+the setup and configuration above has been completed.
+
+To build a source tarball:
+
+    (pgadmin4) $ make src
+
+To build a PIP Wheel, activate either a Python 2 or Python 3 virtual
+environment as desired, configured with all the required packages, and then
+run:
+
+    (pgadmin4) $ make pip
+
+On a Mac, build an application bundle in a disk image (DMG file) with:
+
+    (pgadmin4) $ make appbundle
+
+If you have an Apple code signing certificate, both the app bundle and disk
+image can be automatically signed by configuring signing:
+
+    $ cp $PGADMIN4_SRC/pkg/mac/codesign.conf.in $PGADMIN4_SRC/pkg/mac/codesign.conf
+    $ vi $PGADMIN4_SRC/pkg/mac/codesign.conf
+
+Edit the file as appropriate, ensuring the various version numbers are correct
+and that the appropriate developer ID is specified.
+
+On Windows, the InnoSetup tool is required to create an installer. Download the
+Unicode version from:
+
+http://www.jrsoftware.org/isdl.php
+
+A number of environment variables may need to be set to enable the build script
+to function. The defaults will usually work on a typical 64 bit system with
+Qt 5.5.1, Python 2.7 and Visual Studio 2013. The examples below are for a
+similar 32 bit system:
+
+INNOTOOL=C:\Program Files\Inno Setup 5
+PGDIR=C:\Program Files\PostgreSQL\9.6
+PYTHON_DLL=C:\Windows\System32\Python27.dll
+PYTHON_HOME=C:\Python27
+PYTHON_VERSION=27
+QTDIR=C:\Qt\5.5\msvc2013
+VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC
+
+To build the installer:
+
+    C:\$PGADMIN4_SRC> make x86
+
+If you have a code signing certificate, this will automatically be used if
+found in the Windows Certificate Store to sign the installer.
 
 Support
 -------
