@@ -73,7 +73,7 @@ GOTO:EOF
             ECHO ARCHITECTURE - %ARCHITECTURE% cannot be run on 32 bit machine
             goto:exit
         )
-        OSVALUE=%OSTYPE%
+        SET OSVALUE=%OSTYPE%
     )
 
     REM Check IF its is windows 32 bit machine and selected architecture is x86
