@@ -589,7 +589,7 @@ class DomainConstraintView(PGChildNodeView):
         """
 
         # Get Schema and Domain.
-        domain, schema = self._get_domain(doid)
+        schema, domain = self._get_domain(doid)
 
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
@@ -673,7 +673,7 @@ class DomainConstraintView(PGChildNodeView):
                     data=data, o_data=old_data, conn=self.conn
                 )
             else:
-                domain, schema = self._get_domain(doid)
+                schema, domain = self._get_domain(doid)
 
                 SQL = render_template("/".join([self.template_path,
                                                 'create.sql']),
@@ -698,7 +698,7 @@ class DomainConstraintView(PGChildNodeView):
         if not status:
             return False, internal_server_error(errormsg=res)
 
-        return res['rows'][0]
+        return res['rows'][0]['schema'], res['rows'][0]['domain']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, doid, coid):
