@@ -12,3 +12,6 @@ LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND
                                       con.oid = dep.refobjid)
 WHERE indrelid = {{tid}}::oid
 AND contype='{{constraint_type}}'
+{% if cid %}
+AND cls.oid = {{cid}}::oid
+{% endif %}

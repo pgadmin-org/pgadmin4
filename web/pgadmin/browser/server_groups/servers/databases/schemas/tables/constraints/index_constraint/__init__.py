@@ -398,8 +398,12 @@ class IndexConstraintView(PGChildNodeView):
         """
         SQL = render_template("/".join([self.template_path, 'nodes.sql']),
                               cid=cid,
+                              tid=tid,
                               constraint_type=self.constraint_type)
         status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
             return gone(_("""Could not find the {} in the table.""".format(
@@ -438,6 +442,9 @@ class IndexConstraintView(PGChildNodeView):
                               tid=tid,
                               constraint_type=self.constraint_type)
         status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
 
         res = []
 
