@@ -67,9 +67,24 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
 
   var switchOptions = {
     'onText': 'Yes', 'offText': 'No',
-    'onColor': 'warning', 'offColor': 'primary',
     'size': 'mini'
   };
+
+  var RoleCustomSwitchControl = Backform.SwitchControl.extend({
+    template: _.template([
+      '<label class="control-label pg-el-sm-9 pg-el-xs-12"><%=label%></label>',
+      '<div class="pgadmin-controls pg-el-sm-3 pg-el-xs-12">',
+      '  <div class="checkbox" style="float:right">',
+      '    <label>',
+      '      <input type="checkbox" class="<%=extraClasses.join(\' \')%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    </label>',
+      '  </div>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>',
+    ].join("\n"))
+  });
 
   var RoleMembersControl = Backform.Control.extend({
     defaults: _.defaults(
@@ -414,11 +429,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         },{
           id: 'rolcanlogin', label:'{{ _('Can login?') }}', type: 'switch',
           group: '{{ _('Privileges') }}', options: switchOptions,
-          disabled: 'readonly'
+          disabled: 'readonly', control: RoleCustomSwitchControl
         },{
           id: 'rolsuper', label:'{{ _('Superuser') }}', type: 'switch',
           group: '{{ _('Privileges') }}', options: switchOptions,
-          control: Backform.SwitchControl.extend({
+          control: RoleCustomSwitchControl.extend({
             onChange: function() {
               Backform.SwitchControl.prototype.onChange.apply(this, arguments);
 
@@ -431,7 +446,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         },{
           id: 'rolcreaterole', label:'{{ _('Create roles?') }}',
           group: '{{ _('Privileges') }}', type: 'switch',
-          options: switchOptions, disabled: 'readonly'
+          options: switchOptions, disabled: 'readonly',
+          control: RoleCustomSwitchControl
         },{
           id: 'description', label:'{{ _('Comments') }}', type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
@@ -439,22 +455,25 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         },{
           id: 'rolcreatedb', label:'{{ _('Create databases?') }}',
           group: '{{ _('Privileges') }}', type: 'switch',
-          options: switchOptions, disabled: 'readonly'
+          options: switchOptions, disabled: 'readonly',
+          control: RoleCustomSwitchControl
         },{
           id: 'rolcatupdate', label:'{{ _('Update catalog?') }}',
           type: 'switch', max_version: 90400, options: switchOptions,
+          control: RoleCustomSwitchControl,
           group: '{{ _('Privileges') }}', disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
           }
         },{
           id: 'rolinherit', group: '{{ _('Privileges') }}',
           label:'{{ _('Inherit rights from the parent roles?') }}',
-          type: 'switch', options: switchOptions, disabled: 'readonly'
+          type: 'switch', options: switchOptions, disabled: 'readonly',
+          control: RoleCustomSwitchControl
         },{
           id: 'rolreplication', group: '{{ _('Privileges') }}',
           label:'{{ _('Can initiate streaming replication and backups?') }}',
           type: 'switch', min_version: 90100, options: switchOptions,
-          disabled: 'readonly'
+          disabled: 'readonly', control: RoleCustomSwitchControl
         },{
           id: 'rolmembership', label: '{{ _('Roles') }}',
           group: '{{ _('Membership') }}', type: 'collection',
