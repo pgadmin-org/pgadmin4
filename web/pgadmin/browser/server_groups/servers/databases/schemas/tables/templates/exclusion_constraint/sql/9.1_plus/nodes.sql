@@ -4,4 +4,7 @@ SELECT conindid as oid,
 FROM pg_constraint ct
 WHERE contype='x' AND
     conrelid = {{tid}}::oid
+{% if exid %}
+    AND conindid = {{exid}}::oid
+{% endif %}
 ORDER BY conname

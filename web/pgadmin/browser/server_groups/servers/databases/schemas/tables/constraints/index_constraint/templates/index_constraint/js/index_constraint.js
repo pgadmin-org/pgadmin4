@@ -17,7 +17,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='unique_constraint_dialog.html') }}',
       {% endif %}
       hasSQL: true,
-      hasDepends: false,
+      hasDepends: true,
       hasStatistics: true,
       parent_type: 'table',
       canDrop: true,

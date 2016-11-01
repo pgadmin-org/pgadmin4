@@ -175,6 +175,13 @@ class IndexConstraintView(PGChildNodeView):
     * get_indices():
         - This function returns indices for current table.
 
+    * dependency():
+      - This function will generate dependency list show it in dependency
+        pane for the selected Index constraint.
+
+    * dependent():
+      - This function will generate dependent list to show it in dependent
+        pane for the selected Index constraint.
     """
 
     node_type = 'index_constraint'
@@ -968,6 +975,53 @@ class IndexConstraintView(PGChildNodeView):
 
         return make_json_response(
             data=res,
+            status=200
+        )
+
+    @check_precondition
+    def dependents(self, gid, sid, did, scid, tid, cid):
+        """
+        This function get the dependents and return ajax response
+        for the constraint node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            tid: Table ID
+            cid: Index constraint ID
+        """
+        dependents_result = self.get_dependents(
+            self.conn, cid
+        )
+
+        return ajax_response(
+            response=dependents_result,
+            status=200
+        )
+
+    @check_precondition
+    def dependencies(self, gid, sid, did, scid, tid, cid):
+        """
+        This function get the dependencies and return ajax response
+        for the constraint node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            tid: Table ID
+            cid: Index constraint ID
+
+        """
+        dependencies_result = self.get_dependencies(
+            self.conn, cid
+        )
+
+        return ajax_response(
+            response=dependencies_result,
             status=200
         )
 
