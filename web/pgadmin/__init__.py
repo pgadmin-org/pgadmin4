@@ -10,7 +10,7 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 import logging
-import os, sys
+import os, sys, time
 from collections import defaultdict
 from importlib import import_module
 
@@ -205,7 +205,20 @@ def create_app(app_name=config.APP_NAME):
 
     # Upgrade the schema (if required)
     with app.app_context():
-        version = Version.query.filter_by(name='ConfigDB').first()
+        try:
+            version = Version.query.filter_by(name='ConfigDB').first()
+        except:
+            backup_file = config.SQLITE_PATH + '.' + time.strftime("%Y%m%d%H%M%S")
+            app.logger.error(
+                """The configuration database ({0}) appears to be corrupt.\n\n"""
+                """The database will be moved to {1}.\n"""
+                """Please restart {2} to create a new configuration database.\n""".format(
+                    config.SQLITE_PATH, backup_file, config.APP_NAME
+                )
+            )
+
+            os.rename(config.SQLITE_PATH, backup_file)
+            exit(1)
 
         # Pre-flight checks
         if int(version.value) < int(config.SETTINGS_SCHEMA_VERSION):
