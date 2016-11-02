@@ -71,55 +71,71 @@ int main(int argc, char * argv[])
     }
 
     // Fire up the webserver
-    Server *server = new Server(port);
+    Server *server;
 
-    if (!server->Init())
+    bool done = false;
+
+    while (done != true)
     {
-        qDebug() << server->getError();
+        server = new Server(port);
 
-        QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
-        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
-	
-        exit(1);
-    }
-
-    server->start();
-
-    // This is a hack. Wait a second and then check to see if the server thread
-    // is still running. If it's not, we probably had a startup error
-    delay(1000);
-
-    // Any errors?
-    if (server->isFinished() || server->getError().length() > 0)
-    {
-        qDebug() << server->getError();
-
-        QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
-        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
-
-        // Allow the user to tweak the Python Path if needed
-        QSettings settings;
-        bool ok;
-
-        ConfigWindow *dlg = new ConfigWindow();
-        dlg->setWindowTitle(QWidget::tr("Configuration"));
-        dlg->setPythonPath(settings.value("PythonPath").toString());
-        dlg->setApplicationPath(settings.value("ApplicationPath").toString());
-        dlg->setModal(true);
-        ok = dlg->exec();
-
-        QString pythonpath = dlg->getPythonPath();
-        QString applicationpath = dlg->getApplicationPath();
-
-        if (ok)
+        if (!server->Init())
         {
-            settings.setValue("PythonPath", pythonpath);
-            settings.setValue("ApplicationPath", applicationpath);
-            settings.sync();
+            qDebug() << server->getError();
+
+            QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            exit(1);
         }
 
-        exit(1);
+        server->start();
+
+        // This is a hack. Wait a second and then check to see if the server thread
+        // is still running. If it's not, we probably had a startup error
+        delay(1000);
+
+        // Any errors?
+        if (server->isFinished() || server->getError().length() > 0)
+        {
+            splash->finish(NULL);
+
+            qDebug() << server->getError();
+
+            QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
+            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+            // Allow the user to tweak the Python Path if needed
+            QSettings settings;
+            bool ok;
+
+            ConfigWindow *dlg = new ConfigWindow();
+            dlg->setWindowTitle(QWidget::tr("Configuration"));
+            dlg->setPythonPath(settings.value("PythonPath").toString());
+            dlg->setApplicationPath(settings.value("ApplicationPath").toString());
+            dlg->setModal(true);
+            ok = dlg->exec();
+
+            QString pythonpath = dlg->getPythonPath();
+            QString applicationpath = dlg->getApplicationPath();
+
+            if (ok)
+            {
+                settings.setValue("PythonPath", pythonpath);
+                settings.setValue("ApplicationPath", applicationpath);
+                settings.sync();
+            }
+            else
+            {
+                exit(1);
+            }
+
+            delete server;
+        }
+        else
+            done = true;
     }
+
 
     // Generate the app server URL
     QString appServerUrl = QString("http://localhost:%1/").arg(port);
