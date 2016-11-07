@@ -624,7 +624,7 @@ WHERE
             csv_writer.writeheader()
             csv_writer.writerows(results)
 
-            yield res_io.getvalue().strip(str('\r\n'))
+            yield res_io.getvalue()
 
             while True:
                 results = cur.fetchmany(records)
@@ -639,7 +639,7 @@ WHERE
                     res_io, fieldnames=header, delimiter=str(','), quoting=csv.QUOTE_NONNUMERIC
                 )
                 csv_writer.writerows(results)
-                yield res_io.getvalue().strip(str('\r\n'))
+                yield res_io.getvalue()
 
         return True, gen
 
