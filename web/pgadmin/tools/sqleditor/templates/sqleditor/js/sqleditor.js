@@ -761,11 +761,11 @@ define(
             // Check if it is updated data from existing rows?
             } else if(_pk in self.handler.data_store.updated) {
               _.extend(
-                self.handler.data_store.updated[_pk], {
-                  'data': column_data,
-                  'err': false
-                }
+                self.handler.data_store.updated[_pk]['data'],
+                column_data
               );
+              self.handler.data_store.updated[_pk]['err'] = false
+
              //Find type for current column
              self.handler.data_store.updated[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
             } else {
