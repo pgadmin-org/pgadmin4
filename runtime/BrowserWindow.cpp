@@ -13,9 +13,14 @@
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
-#include <QtWebKitWidgets>
+#if QT_VERSION >= 0x050500
+#include <QtWebEngineWidgets>
 #else
+#include <QtWebKitWidgets>
 #include <QtWebKit>
+#endif
+#else
+
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
@@ -52,6 +57,9 @@ BrowserWindow::BrowserWindow(QString url)
     m_last_open_folder_path = "";
     m_dir = "";
     m_reply = NULL;
+#if QT_VERSION >= 0x050500
+    m_download = NULL;
+#endif
 
     m_appServerUrl = url;
 
@@ -65,12 +73,20 @@ BrowserWindow::BrowserWindow(QString url)
     m_tabGridLayout = new QGridLayout(m_pgAdminMainTab);
     m_tabGridLayout->setContentsMargins(0, 0, 0, 0);
     m_mainWebView = new WebViewWindow(m_pgAdminMainTab);
+#if QT_VERSION >= 0x050500
+    m_mainWebView->setPage(new WebEnginePage());
+#endif
 
 #ifdef PGADMIN4_DEBUG
     // If pgAdmin4 is run in debug mode, then we should enable the
     // "Inspect" option, when the user right clicks on QWebView widget.
     // This option is useful to debug the pgAdmin4 desktop application and open the developer tools.
+#if QT_VERSION >= 0x050500
+    // With QWebEngine, run with QTWEBENGINE_REMOTE_DEBUGGING=<port> and then point Google
+    // Chrome at 127.0.0.1:<port> to debug the runtime's web engine
+#else
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+#endif
 #endif
 
 #ifdef __APPLE__
@@ -87,18 +103,27 @@ BrowserWindow::BrowserWindow(QString url)
 
     connect(m_mainWebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
 
+#if QT_VERSION >= 0x050500
+    // Register the slot when click on the URL link for QWebEnginePage
+    connect(m_mainWebView->page(), SIGNAL(createTabWindow(QWebEnginePage * &)),SLOT(createNewTabWindow(QWebEnginePage * &)));
+#else
     // Register the slot when click on the URL link form main menu bar
     connect(m_mainWebView, SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
+#endif
 
     // Register the slot on tab index change
     connect(m_tabWidget,SIGNAL(currentChanged(int )),this,SLOT(tabIndexChanged(int )));
 
     // Listen for download file request from the web page
+#if QT_VERSION >= 0x050500
+    // Register downloadRequested signal of QWenEngineProfile to start download file to client side.
+    connect(m_mainWebView->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(downloadRequested(QWebEngineDownloadItem*)));
+#else
     m_mainWebView->page()->setForwardUnsupportedContent(true);
     connect(m_mainWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
     connect(m_mainWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
-
     m_mainWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+#endif
 
     // Restore the geometry
     QSettings settings;
@@ -231,6 +256,92 @@ int BrowserWindow::findURLTab(const QUrl &name)
     return 0;
 }
 
+#if QT_VERSION >= 0x050500
+// Below slot will be called when user start download (Only for QWebEngine. Qt version >= 5.5)
+void BrowserWindow::downloadRequested(QWebEngineDownloadItem *download)
+{
+    // Save the web engine download item state. it require when user cancel the download.
+    if (download != NULL)
+        m_download = download;
+
+    // Extract filename and query from encoded URL
+    QUrlQuery query_data(download->url());
+    QString file_name = query_data.queryItemValue("filename");
+    QString query = query_data.queryItemValue("query");
+
+    if (m_downloadStarted)
+    {
+        // Inform user that download is already started
+        QMessageBox::information(this, tr("Download warning"), tr("File download already in progress: %1").arg(m_defaultFilename));
+        return;
+    }
+
+    // If encoded URL contains 'filename' attribute then use that filename in file dialog.
+    if (file_name.isEmpty() && query.isEmpty())
+        m_defaultFilename = QFileInfo(download->url().toString()).fileName();
+    else
+        m_defaultFilename = file_name;
+
+    QFileDialog save_dialog(this);
+    save_dialog.setAcceptMode(QFileDialog::AcceptSave);
+    save_dialog.setWindowTitle(tr("Save file"));
+    save_dialog.setDirectory(m_last_open_folder_path);
+    save_dialog.selectFile(m_defaultFilename);
+
+    QObject::connect(&save_dialog, SIGNAL(directoryEntered(const QString &)), this, SLOT(current_dir_path(const QString &)));
+    m_dir = m_last_open_folder_path;
+    QString fileName = "";
+    QString f_name = "";
+
+    if (save_dialog.exec() == QDialog::Accepted) {
+        fileName = save_dialog.selectedFiles().first();
+        f_name = fileName.replace(m_dir, "");
+        // Remove the first character(/) from fiename
+        f_name.remove(0,1);
+        m_defaultFilename = f_name;
+    }
+    else
+        return;
+
+    fileName = m_dir + fileName;
+    // Clear last open folder path
+    m_dir.clear();
+
+#ifdef __APPLE__
+    // Check that user has given valid file name or not - forward slash is not allowed in file name
+    // In Mac OSX, forward slash is converted to colon(:) by Qt so we need to check for colon.
+    if (f_name.indexOf(":") != -1)
+    {
+        QMessageBox::information(this, tr("File name error"), tr("Invalid file name"));
+        return;
+    }
+#else
+    // Check that user has given valid file name or not - forward slash is not allowed in file name
+    if (f_name.indexOf("/") != -1)
+    {
+        QMessageBox::information(this, tr("File name error"), tr("Invalid file name"));
+        return;
+    }
+#endif
+
+    if (fileName.isEmpty())
+        return;
+    else
+    {
+        m_downloadFilename = fileName;
+        if (download != NULL)
+        {
+            m_downloadStarted = 1;
+            m_downloadCancelled = 0;
+            connect(download, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadEngineFileProgress(qint64,qint64)));
+            connect(download, SIGNAL(finished()), this, SLOT(downloadEngineFinished()));
+            download->setPath(m_downloadFilename);
+            download->accept();
+        }
+    }
+}
+#endif
+
 // Below slot will be called when user right click on download link and select "Save Link..." option from context menu
 void BrowserWindow::download(const QNetworkRequest &request)
 {
@@ -303,9 +414,14 @@ void BrowserWindow::download(const QNetworkRequest &request)
         QObject *obj_web_page = QObject::sender();
         if (obj_web_page != NULL)
         {
+#if QT_VERSION >= 0x050500
+            WebEnginePage *sender_web_page = dynamic_cast<WebEnginePage*>(obj_web_page);
+#else
             QWebPage *sender_web_page = dynamic_cast<QWebPage*>(obj_web_page);
+#endif
             if (sender_web_page != NULL)
             {
+#if QT_VERSION < 0x050500
                 QNetworkAccessManager *networkManager = sender_web_page->networkAccessManager();
                 QNetworkReply *reply = networkManager->get(newRequest);
                 if (reply != NULL)
@@ -317,10 +433,37 @@ void BrowserWindow::download(const QNetworkRequest &request)
                     connect( reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadFileProgress(qint64, qint64)) );
                     connect( reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
                 }
+#endif
             }
         }
     }
 }
+
+#if QT_VERSION >= 0x050500
+// Below slot will be called when file download is in progress ( Only for QWebEngine Qt version >= 5.5 )
+void BrowserWindow::downloadEngineFileProgress(qint64 readData, qint64 totalData)
+{
+    // Check if progress dialog is already opened then only update the progress bar status
+    if (!m_progressDialog)
+    {
+        // Create progress bar dialog
+        m_progressDialog = new QProgressDialog (tr("Downloading file: %1 ").arg(m_defaultFilename), "Cancel", 0, totalData, this);
+        m_progressDialog->setWindowModality(Qt::WindowModal);
+        m_progressDialog->setWindowTitle(tr("Download progress"));
+        m_progressDialog->setMinimumWidth(450);
+        m_progressDialog->setMinimumHeight(80);
+        m_progressDialog->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+        // Register slot for file download cancel request
+        QObject::connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(progressCanceled()));
+
+        // Show downloading progress bar
+        m_progressDialog->show();
+    }
+    else
+        m_progressDialog->setValue(readData);
+}
+#endif
 
 // Below slot will be called when file download is in progress
 void BrowserWindow::downloadFileProgress(qint64 readData, qint64 totalData)
@@ -414,6 +557,7 @@ void BrowserWindow::progressCanceled()
         m_progressDialog = NULL;
     }
 
+#if QT_VERSION < 0x050500
     if (m_file)
     {
         m_file->close();
@@ -428,11 +572,50 @@ void BrowserWindow::progressCanceled()
         m_reply->abort();
         m_reply = NULL;
     }
+#else
+    m_download->cancel();
+#endif
 
     m_downloadFilename.clear();
     m_defaultFilename.clear();
     m_downloadStarted = 0;
 }
+
+#if QT_VERSION >= 0x050500
+// Below slot will called when file download is finished ( Only for QWebEngine, Qt version >= 5.5 )
+void BrowserWindow::downloadEngineFinished()
+{
+    // Check download finished state.
+    if (m_download)
+    {
+        QWebEngineDownloadItem::DownloadState state = m_download->state();
+
+        switch (state)
+        {
+            case QWebEngineDownloadItem::DownloadRequested:
+            case QWebEngineDownloadItem::DownloadInProgress:
+                Q_UNREACHABLE();
+                break;
+            case QWebEngineDownloadItem::DownloadCompleted:
+            case QWebEngineDownloadItem::DownloadCancelled:
+            case QWebEngineDownloadItem::DownloadInterrupted:
+                m_download = NULL;
+                break;
+        }
+    }
+
+    if (m_progressDialog)
+    {
+        m_progressDialog->deleteLater();
+        m_progressDialog = NULL;
+    }
+
+    m_downloadFilename.clear();
+    m_defaultFilename.clear();
+    m_downloadStarted = 0;
+    m_downloadCancelled = 0;
+}
+#endif
 
 // Below slot will called when file download is finished
 void BrowserWindow::downloadFinished()
@@ -693,6 +876,70 @@ void BrowserWindow::current_dir_path(const QString &dir)
     settings.setValue("Browser/LastSaveLocation", m_last_open_folder_path);
 }
 
+#if QT_VERSION >= 0x050500
+// Below slot will be called when link is required to open in new tab.
+void BrowserWindow::createNewTabWindow(QWebEnginePage * &p)
+{
+    m_addNewTab = new QWidget(m_tabWidget);
+    m_addNewGridLayout = new QGridLayout(m_addNewTab);
+    m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
+    m_addNewWebView = new WebViewWindow(m_addNewTab);
+    m_addNewWebView->setPage(new WebEnginePage());
+    m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
+
+    m_widget = new QWidget(m_addNewTab);
+    m_toolBtnBack = new QToolButton(m_widget);
+    m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
+    m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
+    m_toolBtnBack->setIcon(QIcon(":/back.png"));
+    m_toolBtnBack->setToolTip(tr("Go back"));
+    m_toolBtnBack->setDisabled(true);
+
+    m_toolBtnForward = new QToolButton(m_widget);
+    m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
+    m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
+    m_toolBtnForward->setIcon(QIcon(":/forward.png"));
+    m_toolBtnForward->setToolTip(tr("Go forward"));
+    m_toolBtnForward->setDisabled(true);
+
+    QPushButton *m_btnClose = new QPushButton(m_widget);
+    m_btnClose->setFixedHeight(PGA_BTN_SIZE);
+    m_btnClose->setFixedWidth(PGA_BTN_SIZE);
+    m_btnClose->setIcon(QIcon(":/close.png"));
+    m_btnClose->setToolTip(tr("Close tab"));
+
+    m_horizontalLayout = new QHBoxLayout(m_widget);
+    m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    m_horizontalLayout->setSpacing(1);
+    m_horizontalLayout->addWidget(m_toolBtnBack);
+    m_horizontalLayout->addWidget(m_toolBtnForward);
+
+    // Register the slot on titleChange so set the tab text accordingly
+    connect(m_addNewWebView, SIGNAL(titleChanged(const QString &)), SLOT(tabTitleChanged(const QString &)));
+
+    // Register the slot on toolbutton to show the previous history of web
+    connect(m_toolBtnBack, SIGNAL(clicked()), this, SLOT(goBackPage()));
+
+    // Register the slot on toolbutton to show the next history of web
+    connect(m_toolBtnForward, SIGNAL(clicked()), this, SLOT(goForwardPage()));
+
+    // Register the slot on close button , added manually
+    connect(m_btnClose, SIGNAL(clicked()), SLOT(closetabs()));
+
+    m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
+    m_tabWidget->addTab(m_addNewTab, QString());
+    m_tabWidget->tabBar()->setVisible(true);
+    m_tabWidget->setCurrentIndex((m_tabWidget->count() - 1));
+
+    // Set the back and forward button on tab
+    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::LeftSide, m_widget);
+    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_btnClose);
+
+    m_addNewWebView->setTabIndex((m_tabWidget->count() - 1));
+    p = m_addNewWebView->page();
+}
+#endif
+
 // Slot: Link is open from pgAdmin mainwindow
 void BrowserWindow::urlLinkClicked(const QUrl &name)
 {
@@ -711,9 +958,13 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
         m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
 
         // Listen for the download request from the web page
+#if QT_VERSION >= 0x050500
+        connect(m_addNewWebView->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(downloadRequested(QWebEngineDownloadItem*)));
+#else
         m_addNewWebView->page()->setForwardUnsupportedContent(true);
         connect(m_addNewWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
         connect(m_addNewWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
+#endif
 
         m_widget = new QWidget(m_addNewTab);
         m_toolBtnBack = new QToolButton(m_widget);

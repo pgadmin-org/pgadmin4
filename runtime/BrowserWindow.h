@@ -18,10 +18,18 @@
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
+#if QT_VERSION >= 0x050500
+#include <QtWebEngineWidgets>
+#else
 #include <QtWebKitWidgets>
+#endif
 #else
 #include <QMainWindow>
+#if QT_VERSION >= 0x050500
+#include <QtWebEngineView>
+#else
 #include <QWebView>
+#endif
 #endif
 
 QT_BEGIN_NAMESPACE
@@ -51,6 +59,9 @@ private slots:
     void about();
     void zoomIn();
     void zoomOut();
+#if QT_VERSION >= 0x050500
+    void downloadRequested(QWebEngineDownloadItem *download);
+#endif
 
 public slots:
     void tabIndexChanged(int index);
@@ -62,6 +73,11 @@ public slots:
     void downloadFileProgress(qint64 , qint64 );
     void progressCanceled();
     void current_dir_path(const QString &dir);
+#if QT_VERSION >= 0x050500
+    void createNewTabWindow(QWebEnginePage * &);
+    void downloadEngineFileProgress(qint64 , qint64 );
+    void downloadEngineFinished();
+#endif
 
 private:
     QString m_appServerUrl;
@@ -98,6 +114,9 @@ private:
     QString m_last_open_folder_path;
     QString m_dir;
     QNetworkReply *m_reply;
+#if QT_VERSION >= 0x050500
+    QWebEngineDownloadItem *m_download;
+#endif
 
     void createActions();
     void pause(int seconds = 1);

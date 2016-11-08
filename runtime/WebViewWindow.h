@@ -15,12 +15,34 @@
 #include "pgAdmin4.h"
 
 #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050500
+#include <QtWebEngineWidgets>
+#else
 #include <QtWebKitWidgets>
+#endif
 #else
 #include <QWebView>
 #endif
 
+// Override QWebEnginePage to handle link delegation
+#if QT_VERSION >= 0x050500
+class WebEnginePage : public QWebEnginePage
+{
+    Q_OBJECT
+protected:
+    virtual bool acceptNavigationRequest(const QUrl & url, NavigationType type, bool isMainFrame);
+    QWebEnginePage *createWindow(QWebEnginePage::WebWindowType type);
+
+signals:
+    void createTabWindow(QWebEnginePage * &);
+};
+#endif
+
+#if QT_VERSION >= 0x050500
+class WebViewWindow : public QWebEngineView
+#else
 class WebViewWindow : public QWebView
+#endif
 {
     Q_OBJECT
 public:

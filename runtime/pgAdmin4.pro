@@ -1,7 +1,18 @@
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
-    QT += webkitwidgets network widgets
+    greaterThan(QT_MINOR_VERSION, 4) {
+        message(Using QWebEngine...)
+        QT += webenginewidgets network widgets
+    } else {
+        message(Using QWebKit...)
+        message()
+        message(************************************** WARNING **************************************)
+        message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
+        message(*************************************************************************************)
+        message()
+        QT += webkitwidgets network widgets
+    }
     win32 {
       RC_ICONS += pgAdmin4.ico
     }

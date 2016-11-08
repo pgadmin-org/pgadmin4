@@ -14,7 +14,11 @@
 // App headers
 #include "TabWindow.h"
 
+#if QT_VERSION >= 0x050500
+#include <QWebEngineHistory>
+#else
 #include <QWebHistory>
+#endif
 
 TabWindow::TabWindow(QWidget *parent) :
     QTabWidget(parent)
@@ -73,6 +77,7 @@ TabWindow::TabWindow(QWidget *parent) :
 void TabWindow::enableDisableToolButton(const int &index)
 {
     QToolButton *toolBtnPtr = NULL;
+    WebViewWindow *tmpwebviewPtr = NULL;
     WebViewWindow *webviewPtr = NULL;
 
     // Enable/disable the toolbutton based on the history
@@ -83,7 +88,9 @@ void TabWindow::enableDisableToolButton(const int &index)
         foreach( QWidget* widgetPtr, widgetList )
         {
             if (widgetPtr != NULL)
-                webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+                tmpwebviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+                if (tmpwebviewPtr != NULL)
+                    webviewPtr = tmpwebviewPtr;
         }
     }
 

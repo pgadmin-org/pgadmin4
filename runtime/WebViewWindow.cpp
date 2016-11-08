@@ -14,8 +14,35 @@
 // App headers
 #include "WebViewWindow.h"
 
+// Override QWebEnginePage to handle link delegation
+#if QT_VERSION >= 0x050500
+bool WebEnginePage::acceptNavigationRequest(const QUrl & url, NavigationType type, bool isMainFrame)
+{
+    Q_UNUSED(type);
+    Q_UNUSED(url);
+    Q_UNUSED(isMainFrame);
+
+    return true;
+}
+
+QWebEnginePage *WebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
+{
+    if (type == QWebEnginePage::WebBrowserTab)
+    {
+        QWebEnginePage *_page = NULL;
+        emit createTabWindow(_page);
+        return _page;
+    }
+    return NULL;
+}
+#endif
+
 WebViewWindow::WebViewWindow(QWidget *parent) :
+#if QT_VERSION >= 0x050500
+    QWebEngineView(parent)
+#else
     QWebView(parent)
+#endif
 {
     m_url = QString("");
     m_tabIndex = 0;
