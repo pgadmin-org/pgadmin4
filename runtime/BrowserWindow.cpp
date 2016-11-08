@@ -125,9 +125,20 @@ BrowserWindow::BrowserWindow(QString url)
     m_mainWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 #endif
 
-    // Restore the geometry
+    // Restore the geometry, or set a nice default
     QSettings settings;
-    restoreGeometry(settings.value("Browser/Geometry").toByteArray());
+
+    QSize availableSize = qApp->desktop()->availableGeometry().size();
+    QSize defaultSize(availableSize.width() * 0.9, availableSize.height() * 0.9);
+
+    QRect defaultGeometry = QStyle::alignedRect(
+        Qt::LeftToRight,
+        Qt::AlignCenter,
+        defaultSize,
+        qApp->desktop()->availableGeometry()
+    );
+
+    restoreGeometry(settings.value("Browser/Geometry", defaultGeometry).toByteArray());
     restoreState(settings.value("Browser/WindowState").toByteArray());
 
     // Set the initial zoom
