@@ -470,6 +470,20 @@ class TriggerView(PGChildNodeView):
 
         return data
 
+    def _format_args(self, args):
+        """
+        This function will format arguments.
+
+        Args:
+            args: Arguments
+
+        Returns:
+            Formated arguments for function
+        """
+        formatted_args = ["'{0}'".format(arg) for arg in args]
+        return ', '.join(formatted_args)
+
+
     @check_precondition
     def properties(self, gid, sid, did, scid, tid, trid):
         """
@@ -523,10 +537,10 @@ class TriggerView(PGChildNodeView):
                             'tfunctions' in result['rows'][0]:
                 data['tfunction'] = result['rows'][0]['tfunctions']
 
-        if data['tgnargs'] > 1:
-            # We know that trigger has more than 1 arguments, let's join them
-            # and convert it as string
-            data['tgargs'] = ', '.join(data['tgargs'])
+        if data['custom_tgargs'] > 1:
+            # We know that trigger has more than 1 argument, let's join them
+            # and convert it to string
+            data['tgargs'] = self._format_args(data['custom_tgargs'])
 
         if len(data['tgattr']) > 1:
             columns = ', '.join(data['tgattr'].split(' '))
@@ -770,9 +784,9 @@ class TriggerView(PGChildNodeView):
             self.trigger_name = data['name']
             self.lanname = old_data['lanname']
 
-            if old_data['tgnargs'] > 1:
-                # We know that trigger has more than 1 arguments, let's join them
-                old_data['tgargs'] = ', '.join(old_data['tgargs'])
+            if len(old_data['custom_tgargs']) > 1:
+                # We know that trigger has more than 1 argument, let's join them
+                old_data['tgargs'] = self._format_args(old_data['custom_tgargs'])
 
             if len(old_data['tgattr']) > 1:
                 columns = ', '.join(old_data['tgattr'].split(' '))
@@ -827,9 +841,9 @@ class TriggerView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
 
-            if data['tgnargs'] > 1:
-                # We know that trigger has more than 1 arguments, let's join them
-                data['tgargs'] = ', '.join(data['tgargs'])
+            if len(data['custom_tgargs']) > 1:
+                # We know that trigger has more than 1 argument, let's join them
+                data['tgargs'] = self._format_args(data['custom_tgargs'])
 
             if len(data['tgattr']) > 1:
                 columns = ', '.join(data['tgattr'].split(' '))
