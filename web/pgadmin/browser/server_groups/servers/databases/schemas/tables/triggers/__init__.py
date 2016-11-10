@@ -537,7 +537,7 @@ class TriggerView(PGChildNodeView):
                             'tfunctions' in result['rows'][0]:
                 data['tfunction'] = result['rows'][0]['tfunctions']
 
-        if data['custom_tgargs'] > 1:
+        if len(data['custom_tgargs']) > 1:
             # We know that trigger has more than 1 argument, let's join them
             # and convert it to string
             data['tgargs'] = self._format_args(data['custom_tgargs'])
