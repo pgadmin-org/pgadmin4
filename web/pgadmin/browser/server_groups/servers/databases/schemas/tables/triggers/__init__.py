@@ -517,25 +517,7 @@ class TriggerView(PGChildNodeView):
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
-
-        # If language is 'edbspl' then trigger function should be 'Inline EDB-SPL'
-        # else we will find the trigger function with schema name.
-        if data['lanname'] == 'edbspl':
-            data['tfunction'] = 'Inline EDB-SPL'
-        else:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_triggerfunctions.sql']),
-                                  tgfoid=data['tgfoid'],
-                                  show_system_objects=self.blueprint.show_system_objects)
-
-            status, result = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            # Update the trigger function which we have fetched with schema name
-            if 'rows' in result and len(result['rows']) > 0 and \
-                            'tfunctions' in result['rows'][0]:
-                data['tfunction'] = result['rows'][0]['tfunctions']
+        data = self.get_trigger_function_schema(data)
 
         if len(data['custom_tgargs']) > 1:
             # We know that trigger has more than 1 argument, let's join them
@@ -760,6 +742,30 @@ class TriggerView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def get_trigger_function_schema(self, data):
+        """
+        This function will return trigger function with schema name
+        """
+        # If language is 'edbspl' then trigger function should be 'Inline EDB-SPL'
+        # else we will find the trigger function with schema name.
+        if data['lanname'] == 'edbspl':
+            data['tfunction'] = 'Inline EDB-SPL'
+        else:
+            SQL = render_template("/".join([self.template_path,
+                                            'get_triggerfunctions.sql']),
+                                  tgfoid=data['tgfoid'],
+                                  show_system_objects=self.blueprint.show_system_objects)
+
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Update the trigger function which we have fetched with schema name
+            if 'rows' in result and len(result['rows']) > 0 and \
+                            'tfunctions' in result['rows'][0]:
+                data['tfunction'] = result['rows'][0]['tfunctions']
+        return data
+
     def get_sql(self, scid, tid, trid, data):
         """
         This function will genrate sql from model data
@@ -783,6 +789,8 @@ class TriggerView(PGChildNodeView):
 
             self.trigger_name = data['name']
             self.lanname = old_data['lanname']
+
+            old_data = self.get_trigger_function_schema(old_data)
 
             if len(old_data['custom_tgargs']) > 1:
                 # We know that trigger has more than 1 argument, let's join them
@@ -840,6 +848,8 @@ class TriggerView(PGChildNodeView):
             # Adding parent into data dict, will be using it while creating sql
             data['schema'] = self.schema
             data['table'] = self.table
+
+            data = self.get_trigger_function_schema(data)
 
             if len(data['custom_tgargs']) > 1:
                 # We know that trigger has more than 1 argument, let's join them
