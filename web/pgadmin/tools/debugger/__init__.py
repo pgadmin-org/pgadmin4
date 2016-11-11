@@ -1354,9 +1354,22 @@ def poll_end_execution_result(trans_id):
 
     if conn.connected():
         statusmsg = conn.status_message()
+        if statusmsg and statusmsg == 'SELECT 1':
+            statusmsg = ''
         status, result, col_info = conn.poll()
-        if status == ASYNC_OK and session['functionData'][str(trans_id)]['language'] == 'edbspl':
+        if status == ASYNC_OK and \
+                not session['functionData'][str(trans_id)]['is_func'] and \
+                session['functionData'][str(trans_id)]['language'] == 'edbspl':
             status = 'Success'
+            additional_msgs = conn.messages()
+            if len(additional_msgs) > 0:
+                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = "<br>".join(additional_msgs)
+                if statusmsg:
+                    statusmsg = additional_msgs + "<br>" + statusmsg
+                else:
+                    statusmsg = additional_msgs
+
             return make_json_response(success=1, info=gettext("Execution Completed."),
                                       data={'status': status, 'status_message': statusmsg})
         if result:
@@ -1366,6 +1379,15 @@ def poll_end_execution_result(trans_id):
                                           data={'status': status, 'status_message': result})
             else:
                 status = 'Success'
+                additional_msgs = conn.messages()
+                if len(additional_msgs) > 0:
+                    additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                    additional_msgs = "<br>".join(additional_msgs)
+                    if statusmsg:
+                        statusmsg = additional_msgs + "<br>" + statusmsg
+                    else:
+                        statusmsg = additional_msgs
+
                 columns = []
                 # Check column info is available or not
                 if col_info is not None and len(col_info) > 0:
@@ -1381,6 +1403,17 @@ def poll_end_execution_result(trans_id):
                                                 'col_info': columns, 'status_message': statusmsg})
         else:
             status = 'Busy'
+            additional_msgs = conn.messages()
+            if len(additional_msgs) > 0:
+                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = "<br>".join(additional_msgs)
+                if statusmsg:
+                    statusmsg = additional_msgs + "<br>" + statusmsg
+                else:
+                    statusmsg = additional_msgs
+            return make_json_response(data={
+                'status': status, 'result': result, 'status_message': statusmsg
+            })
     else:
         status = 'NotConnected'
         result = gettext('Not connected to server or connection with the server has been closed.')

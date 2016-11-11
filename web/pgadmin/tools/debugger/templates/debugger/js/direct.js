@@ -164,6 +164,9 @@ define(
 
               // Call function to create and update local variables ....
               self.GetStackInformation(trans_id);
+              if (pgTools.DirectDebug.debug_type) {
+                self.poll_end_execution_result(trans_id);
+              }
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -194,6 +197,13 @@ define(
               // Call function to create and update local variables
               self.AddLocalVariables(res.data.result);
               self.AddParameters(res.data.result);
+              // If debug function is restarted then again start listener to read the updated messages.
+              if (pgTools.DirectDebug.debug_restarted) {
+                if (pgTools.DirectDebug.debug_type) {
+                  self.poll_end_execution_result(trans_id);
+                }
+                pgTools.DirectDebug.debug_restarted = false;
+              }
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -245,6 +255,12 @@ define(
       */
       poll_result: function(trans_id) {
       var self = this;
+
+      // Do we need to poll?
+      if(!pgTools.DirectDebug.is_polling_required){
+        return;
+      }
+
       // Make ajax call to listen the database message
       var baseUrl = "{{ url_for('debugger.index') }}" + "poll_result/" + trans_id;
 
@@ -271,6 +287,9 @@ define(
             $('.debugger-container').addClass('show_progress');
           },
           success: function(res) {
+            // remove progress cursor
+            $('.debugger-container').removeClass('show_progress');
+
             if (res.data.status === 'Success') {
               // If no result then poll again to wait for results.
               if (res.data.result == null || res.data.result.length == 0) {
@@ -317,8 +336,6 @@ define(
                   self.GetStackInformation(trans_id);
                 }
 
-                // remove progress cursor
-                $('.debugger-container').removeClass('show_progress');
                 // Enable all the buttons as we got the results
                 self.enable('stop', true);
                 self.enable('step_over', true);
@@ -333,7 +350,8 @@ define(
               // If status is Busy then poll the result by recursive call to the poll function
               if (!pgTools.DirectDebug.debug_type) {
                 pgTools.DirectDebug.docker.startLoading('{{ _('Waiting for another session to invoke the target...') }}');
-                // As we are waiting for another session to invoke the target so disable all the buttons
+
+                // As we are waiting for another session to invoke the target,disable all the buttons
                 self.enable('stop', false);
                 self.enable('step_over', false);
                 self.enable('step_into', false);
@@ -363,13 +381,32 @@ define(
 
     },
 
+    // This function will update messages tab
+    update_messages: function(msg) {
+      var old_msgs='', new_msgs='';
+        old_msgs = pgTools.DirectDebug.messages_panel.$container.find('.messages').html();
+        if(old_msgs) {
+          new_msgs = (old_msgs + '\n' + msg)
+                        .replace(/(?:\r\n|\r|\n)/g, '<br />') // Newlines with <br>
+                        .replace(/(<br\ ?\/?>)+/g, '<br />'); // multiple <br> with single <br>
+        } else {
+          new_msgs = msg;
+        }
+        pgTools.DirectDebug.messages_panel.$container.find('.messages').html(new_msgs);
+    },
+
     /*
       For the direct debugging, we need to check weather the functions execution is completed or not. After completion
       of the debugging, we will stop polling the result  until new execution starts.
     */
     poll_end_execution_result: function(trans_id) {
       var self = this;
-      //return;
+
+      // Do we need to poll?
+      if(!pgTools.DirectDebug.is_polling_required){
+        return;
+      }
+
       // Make ajax call to listen the database message
       var baseUrl = "{{ url_for('debugger.index') }}" + "poll_end_execution_result/" + trans_id;
 
@@ -411,7 +448,12 @@ define(
                 );
 
                 // Update the message tab of the debugger
-                pgTools.DirectDebug.dbmsMessages.$elem.text(res.data.status_message);
+                if (res.data.status_message) {
+                  self.update_messages(res.data.status_message);
+                }
+
+                // remove progress cursor
+                $('.debugger-container').removeClass('show_progress');
 
                 // Execution completed so disable the buttons other than "Continue/Start" button because user can still
                 // start the same execution again.
@@ -420,6 +462,9 @@ define(
                 self.enable('step_into', false);
                 self.enable('toggle_breakpoint', false);
                 self.enable('clear_all_breakpoints', false);
+                self.enable('continue', true);
+                // Stop further polling
+                pgTools.DirectDebug.is_polling_required = false;
               }
               else {
                 // Call function to create and update local variables ....
@@ -439,7 +484,12 @@ define(
                   );
 
                   // Update the message tab of the debugger
-                  pgTools.DirectDebug.messages_panel.$container.find('.messages').text(res.data.status_message);
+                  if (res.data.status_message) {
+                    self.update_messages(res.data.status_message);
+                  }
+
+                  // remove progress cursor
+                  $('.debugger-container').removeClass('show_progress');
 
                   // Execution completed so disable the buttons other than "Continue/Start" button because user can still
                   // start the same execution again.
@@ -448,12 +498,20 @@ define(
                   self.enable('step_into', false);
                   self.enable('toggle_breakpoint', false);
                   self.enable('clear_all_breakpoints', false);
+                  self.enable('continue', true);
+
+                  // Stop further pooling
+                  pgTools.DirectDebug.is_polling_required = false;
                 }
               }
             }
             else if (res.data.status === 'Busy') {
               // If status is Busy then poll the result by recursive call to the poll function
-              //self.poll_end_execution_result(trans_id);
+              self.poll_end_execution_result(trans_id);
+              // Update the message tab of the debugger
+              if (res.data.status_message) {
+                self.update_messages(res.data.status_message);
+              }
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -473,8 +531,15 @@ define(
                 function() { }
               );
 
-              pgTools.DirectDebug.messages_panel.$container.find('.messages').text(res.data.status_message);
+              // Update the message tab of the debugger
+              if (res.data.status_message) {
+                self.update_messages(res.data.status_message);
+              }
+
               pgTools.DirectDebug.messages_panel.focus();
+
+              // remove progress cursor
+              $('.debugger-container').removeClass('show_progress');
 
               // Execution completed so disable the buttons other than "Continue/Start" button because user can still
               // start the same execution again.
@@ -483,6 +548,10 @@ define(
               self.enable('step_into', false);
               self.enable('toggle_breakpoint', false);
               self.enable('clear_all_breakpoints', false);
+              self.enable('continue', true);
+
+              // Stop further pooling
+              pgTools.DirectDebug.is_polling_required = false;
             }
           },
           error: function(e) {
@@ -498,13 +567,32 @@ define(
 
     Restart: function(trans_id) {
 
-      var baseUrl = "{{ url_for('debugger.index') }}" + "restart/" + trans_id;
+      var self = this,
+        baseUrl = "{{ url_for('debugger.index') }}" + "restart/" + trans_id;
+      self.enable('stop', false);
+      self.enable('step_over', false);
+      self.enable('step_into', false);
+      self.enable('toggle_breakpoint', false);
+      self.enable('clear_all_breakpoints', false);
+      self.enable('continue', false);
+
+      // Clear msg tab
+      pgTools.DirectDebug.messages_panel.$container.find('.messages').html('');
 
       $.ajax({
         url: baseUrl,
         success: function(res) {
           // Restart the same function debugging with previous arguments
           var restart_dbg = res.data.restart_debug ? 1 : 0;
+
+          // Start pooling again
+          pgTools.DirectDebug.is_polling_required = true;
+          self.poll_end_execution_result(trans_id);
+          self.poll_result(trans_id);
+
+          if (restart_dbg) {
+            pgTools.DirectDebug.debug_restarted = true;
+          }
 
           /*
            Need to check if restart debugging really require to open the input dialog ?
@@ -522,6 +610,9 @@ define(
               url: baseUrl,
               method: 'GET',
               success: function(res) {
+                if (pgTools.DirectDebug.debug_type) {
+                  self.poll_end_execution_result(trans_id);
+                }
               },
               error: function(e) {
                 Alertify.alert(
@@ -546,6 +637,12 @@ define(
     // Continue the execution until the next breakpoint
     Continue: function(trans_id) {
       var self = this;
+      self.enable('stop', false);
+      self.enable('step_over', false);
+      self.enable('step_into', false);
+      self.enable('toggle_breakpoint', false);
+      self.enable('clear_all_breakpoints', false);
+      self.enable('continue', false);
 
       //Check first if previous execution was completed or not
       if (pgTools.DirectDebug.direct_execution_completed &&
@@ -562,9 +659,6 @@ define(
           success: function(res) {
             if (res.data.status) {
               self.poll_result(trans_id);
-              if (pgTools.DirectDebug.debug_type) {
-                self.poll_end_execution_result(trans_id);
-              }
             }
             else {
               Alertify.alert(
@@ -583,6 +677,12 @@ define(
 
       Step_over: function(trans_id) {
         var self = this;
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', false);
 
         // Make ajax call to listen the database message
         var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "step_over";
@@ -593,9 +693,6 @@ define(
           success: function(res) {
             if (res.data.status) {
               self.poll_result(trans_id);
-              if (pgTools.DirectDebug.debug_type) {
-                self.poll_end_execution_result(trans_id);
-              }
             }
             else {
               Alertify.alert(
@@ -613,6 +710,12 @@ define(
 
       Step_into: function(trans_id) {
         var self = this;
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', false);
 
         // Make ajax call to listen the database message
         var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "step_into";
@@ -623,9 +726,6 @@ define(
           success: function(res) {
             if (res.data.status) {
               self.poll_result(trans_id);
-              if (pgTools.DirectDebug.debug_type) {
-                self.poll_end_execution_result(trans_id);
-              }
             }
             else {
               Alertify.alert(
@@ -643,6 +743,12 @@ define(
 
       Stop: function(trans_id) {
         var self = this;
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', true);
 
         // Make ajax call to listen the database message
         var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "abort_target";
@@ -665,12 +771,8 @@ define(
               );
 
               //Disable the buttons other than continue button. If user wants to again then it should allow to debug again...
-              self.enable('stop', false);
-              self.enable('step_over', false);
-              self.enable('step_into', false);
-              self.enable('continue', false);
-              self.enable('toggle_breakpoint', false);
-              self.enable('clear_all_breakpoints', false);
+              self.enable('continue', true);
+
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -688,6 +790,13 @@ define(
 
       toggle_breakpoint: function(trans_id) {
         var self = this;
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', false);
+
 
         var info = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
         var baseUrl = '';
@@ -720,6 +829,12 @@ define(
                     return marker;
                 }());
               }
+              self.enable('stop', true);
+              self.enable('step_over', true);
+              self.enable('step_into', true);
+              self.enable('toggle_breakpoint', true);
+              self.enable('clear_all_breakpoints', true);
+              self.enable('continue', true);
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -736,13 +851,19 @@ define(
       },
 
       clear_all_breakpoint: function(trans_id) {
-        var self = this;
-
-        var br_list = self.GetBreakpointInformation(trans_id);
+        var self = this,
+          br_list = self.GetBreakpointInformation(trans_id);
 
         // If there is no break point to clear then we should return from here.
         if ((br_list.length == 1) && (br_list[0].linenumber == -1))
           return;
+
+        self.enable('stop', false);
+        self.enable('step_over', false);
+        self.enable('step_into', false);
+        self.enable('toggle_breakpoint', false);
+        self.enable('clear_all_breakpoints', false);
+        self.enable('continue', false);
 
         var breakpoint_list = new Array();
 
@@ -771,6 +892,12 @@ define(
                 }
               }
             }
+          self.enable('stop', true);
+          self.enable('step_over', true);
+          self.enable('step_into', true);
+          self.enable('toggle_breakpoint', true);
+          self.enable('clear_all_breakpoints', true);
+          self.enable('continue', true);
           },
           error: function(e) {
             Alertify.alert(
@@ -1204,6 +1331,8 @@ define(
       this.first_time_indirect_debug = false;
       this.direct_execution_completed = false;
       this.polling_timeout_idle = false;
+      this.debug_restarted = false;
+      this.is_polling_required = true; // Flag to stop unwanted ajax calls
 
       var docker = this.docker = new wcDocker(
           '#container', {
