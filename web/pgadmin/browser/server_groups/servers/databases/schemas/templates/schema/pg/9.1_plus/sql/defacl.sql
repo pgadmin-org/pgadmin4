@@ -31,7 +31,7 @@ FROM
                 pg_namespace nsp
                 LEFT OUTER JOIN pg_catalog.pg_default_acl dacl ON (dacl.defaclnamespace = nsp.oid)
             WHERE
-                nsp.oid={{scid}}::int
+                nsp.oid={{scid}}::oid
         ) d) a
     LEFT JOIN pg_catalog.pg_roles g ON (a.grantor = g.oid)
     LEFT JOIN pg_catalog.pg_roles gt ON (a.grantee = gt.oid)

@@ -8,7 +8,7 @@ JOIN
 WHERE
     d.typnamespace = {{scid}}::oid
 AND
-    d.oid={{doid}}::int;
+    d.oid={{doid}}::oid;
 {% endif %}
 
 {% if name %}

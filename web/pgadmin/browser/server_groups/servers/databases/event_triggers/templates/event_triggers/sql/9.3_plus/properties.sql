@@ -12,6 +12,6 @@ array_to_string(array(select quote_literal(x) from unnest(evttags) as t(x)), ', 
  pg_namespace n
  WHERE p.pronamespace = n.oid
 {% if etid %}
- AND e.oid={{etid}}::int
+ AND e.oid={{etid}}::oid
 {% endif %}
   ORDER BY e.evtname

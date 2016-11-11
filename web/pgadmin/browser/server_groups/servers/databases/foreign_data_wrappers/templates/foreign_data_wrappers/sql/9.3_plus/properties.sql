@@ -10,7 +10,7 @@ FROM pg_foreign_data_wrapper fdw
     LEFT OUTER JOIN pg_namespace vp_nsp ON vp_nsp.oid=vp.pronamespace
     LEFT OUTER JOIN pg_description des ON (des.objoid=fdw.oid AND des.objsubid=0 AND des.classoid='pg_foreign_data_wrapper'::regclass)
 {% if fid %}
-WHERE fdw.oid={{fid}}::int
+WHERE fdw.oid={{fid}}::oid
 {% endif %}
 {% if fname %}
 WHERE fdw.fdwname={{ fname|qtLiteral }}::text

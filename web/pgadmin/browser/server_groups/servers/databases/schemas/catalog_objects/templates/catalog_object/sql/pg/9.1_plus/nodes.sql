@@ -3,8 +3,8 @@ SELECT
 FROM
     pg_class c
 {% if scid %}
-WHERE relnamespace = {{scid}}::int
+WHERE relnamespace = {{scid}}::oid
 {% elif coid %}
-WHERE c.oid = {{coid}}::int
+WHERE c.oid = {{coid}}::oid
 {% endif %}
 ORDER BY relname;

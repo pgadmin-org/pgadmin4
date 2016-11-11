@@ -6,7 +6,7 @@ FROM
         ON d.objoid=c.oid AND d.classoid='pg_class'::regclass
     LEFT JOIN pg_roles r ON c.relowner = r.oid
 WHERE
-    relnamespace = {{scid}}::int
+    relnamespace = {{scid}}::oid
 {% if coid %} AND
-    c.oid = {{coid}}::int
+    c.oid = {{coid}}::oid
 {% endif %} ORDER BY relname;

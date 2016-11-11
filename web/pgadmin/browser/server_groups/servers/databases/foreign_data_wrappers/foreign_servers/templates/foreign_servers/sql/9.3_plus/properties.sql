@@ -3,7 +3,7 @@
 SELECT fdw.oid as fdwoid, fdwname as name
 FROM pg_foreign_data_wrapper fdw
 LEFT OUTER JOIN pg_description des ON (des.objoid=fdw.oid AND des.objsubid=0 AND des.classoid='pg_foreign_data_wrapper'::regclass)
-WHERE fdw.oid={{fdwid}}::int
+WHERE fdw.oid={{fdwid}}::oid
 {% else %}
 SELECT srv.oid as fsrvid, srvname as name, srvtype as fsrvtype, srvversion as fsrvversion, fdw.fdwname as fdwname, description,
 array_to_string(srvoptions, ',') AS fsrvoptions,
@@ -17,10 +17,10 @@ WHERE fdw.fdwname = {{ fdwdata.name|qtLiteral }}::text and srvname = {{ data.nam
 WHERE fdw.fdwname = {{fdwdata.name|qtLiteral}}::text
 {% endif %}
 {% if fid %}
-WHERE srvfdw={{fid}}::int
+WHERE srvfdw={{fid}}::oid
 {% endif %}
 {% if fsid %}
-WHERE srv.oid={{fsid}}::int
+WHERE srv.oid={{fsid}}::oid
 {% endif %}
 ORDER BY srvname;
 {% endif %}

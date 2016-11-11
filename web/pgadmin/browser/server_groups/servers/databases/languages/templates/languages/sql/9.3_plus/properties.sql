@@ -15,7 +15,7 @@ FROM
         )
 WHERE lanispl IS TRUE
 {% if lid %} AND
-    lan.oid={{lid}}::int
+    lan.oid={{lid}}::oid
 {% endif %}
 {% if lanname %} AND
     lanname={{ lanname|qtLiteral }}::text

@@ -9,7 +9,7 @@ FROM
     LEFT JOIN pg_namespace n ON x.extnamespace=n.oid
     JOIN pg_available_extensions() e(name, default_version, comment) ON x.extname=e.name
 {%- if eid %}
- WHERE x.oid = {{eid}}::int
+ WHERE x.oid = {{eid}}::oid
 {% elif ename %}
  WHERE x.extname = {{ename|qtLiteral}}::text
 {% else %}

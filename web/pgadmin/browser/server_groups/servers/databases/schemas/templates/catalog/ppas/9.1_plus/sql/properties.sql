@@ -20,7 +20,7 @@ FROM
     LEFT JOIN pg_roles r ON (r.oid = nsp.nspowner)
 WHERE
     {% if scid %}
-    nsp.oid={{scid}}::int AND
+    nsp.oid={{scid}}::oid AND
     {% endif %}
     nsp.nspparent = 0 AND
     (

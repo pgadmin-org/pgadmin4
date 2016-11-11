@@ -28,7 +28,7 @@ LEFT OUTER JOIN
 WHERE
     d.typnamespace = {{scid}}::oid
 {% if doid %}
-  AND d.oid={{doid}}::int
+  AND d.oid={{doid}}::oid
 {% endif %}
 ORDER BY
     d.typname;

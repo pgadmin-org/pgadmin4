@@ -3,5 +3,5 @@ SELECT nsp.nspname AS schema,
 FROM
     pg_class rel
 JOIN pg_namespace nsp
-ON rel.relnamespace = nsp.oid::int
-WHERE rel.oid = {{tid}}::int
+ON rel.relnamespace = nsp.oid::oid
+WHERE rel.oid = {{tid}}::oid

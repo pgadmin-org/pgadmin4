@@ -9,7 +9,7 @@ FROM
 WHERE
     nsp.nspparent = 0 AND
     {% if scid %}
-    nsp.oid={{scid}}::int AND
+    nsp.oid={{scid}}::oid AND
     {% else %}
     {% if not show_sysobj %}
     nspname NOT LIKE E'pg\_%' AND

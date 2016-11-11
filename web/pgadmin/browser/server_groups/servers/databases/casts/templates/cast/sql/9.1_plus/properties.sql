@@ -43,7 +43,7 @@
     LEFT OUTER JOIN pg_description des ON (des.objoid=ca.oid AND des.objsubid=0 AND des.classoid='pg_cast'::regclass)
 
     {% if cid %}
-        WHERE ca.oid={{cid}}::int
+        WHERE ca.oid={{cid}}::oid
     {% endif %}
 
     {# Check for Show system object #}

@@ -1,6 +1,6 @@
 {# ============= Get the language name using oid ============= #}
 {% if lid %}
-    SELECT lanname FROM pg_language WHERE oid = {{lid}}::int;
+    SELECT lanname FROM pg_language WHERE oid = {{lid}}::oid;
 {% endif %}
 {# ============= Drop the language ============= #}
 {% if lname %}

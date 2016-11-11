@@ -60,5 +60,5 @@ FROM
     LEFT JOIN pg_catalog.pg_namespace g ON n.nspparent = g.oid
 {% endif %}
 {% if fid %}
-WHERE p.oid = {{fid}}::int;
+WHERE p.oid = {{fid}}::oid;
 {% endif %}
