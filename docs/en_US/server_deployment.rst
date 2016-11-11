@@ -76,7 +76,7 @@ In order to configure the Python code, follow these steps:
 
    .. code-block:: python
 
-       SERVER_MODE = False
+       SERVER_MODE = True
 
 3. In most cases, the default file locations are setup for running in desktop mode.
    Add settings similar to the following to ``config_local.py`` to use paths suitable
