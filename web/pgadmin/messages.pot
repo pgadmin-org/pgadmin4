@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-11-07 12:39+0000\n"
+"POT-Creation-Date: 2016-11-14 11:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,11 @@ msgstr ""
 #: pgadmin/about/templates/about/index.html:2
 #: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:201
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/templates/foreign_servers/js/foreign_servers.js:139
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:10
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:648
 msgid "Version"
 msgstr ""
@@ -399,7 +404,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:727
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:671
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:391
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:644
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:640
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1013
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:584
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:476
@@ -477,11 +482,27 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:84
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:78
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:167
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/coll_stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:109
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/coll_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/coll_stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/js/edbfunc.js:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/templates/edbvar/js/edbvar.js:46
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/templates/package/js/package.js:101
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:124
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/sql/9.1_plus/coll_stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/templates/synonym/js/synonym.js:79
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:23
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:178
@@ -505,6 +526,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:72
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:402
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:326
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.2_plus/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:628
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:525
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:552
@@ -1166,6 +1189,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/templates/user_mappings/js/user_mappings.js:112
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:387
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:28
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:28
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:408
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:680
 msgid "User"
@@ -1723,7 +1752,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:505
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:571
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:318
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:574
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:570
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:474
 #, python-format
 msgid "Couldn't find the required parameter (%s)."
@@ -2213,7 +2242,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:496
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:497
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:350
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1342
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1471
 msgid "Parameters"
 msgstr ""
 
@@ -2248,6 +2277,117 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:304
 msgid "Code cannot be empty."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.2_plus/stats.sql:2
+msgid "Number of calls"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.2_plus/stats.sql:3
+msgid "Total time"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/pg/sql/9.5_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/ppas/sql/9.5_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/ppas/sql/9.5_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/pg/sql/9.5_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/ppas/sql/9.5_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/ppas/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/ppas/9.2_plus/stats.sql:4
+msgid "Self time"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:29
@@ -2430,6 +2570,22 @@ msgstr ""
 msgid "Start value cannot be greater than maximum value."
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:6
+msgid "Blocks read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:7
+msgid "Blocks hit"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/templates/synonym/js/synonym.js:9
 msgid "Synonyms"
@@ -2551,7 +2707,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2307
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:784
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:811
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:795
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:817
 msgid "-- incomplete definition"
 msgstr ""
 
@@ -3157,6 +3313,186 @@ msgstr ""
 msgid "Please specify name."
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:2
+msgid "Null fraction"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:3
+msgid "Average width"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:4
+msgid "Distinct values"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:5
+msgid "Most common values"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:6
+msgid "Most common frequencies"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:7
+msgid "Histogram bounds"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.1_plus/stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/column/sql/9.2_plus/stats.sql:8
+msgid "Correlation"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/coll_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:4
+msgid "Index scans"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/coll_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:3
+msgid "Index tuples read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/coll_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:5
+msgid "Index tuples fetched"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:14
+msgid "Index blocks read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:15
+msgid "Index blocks hit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:12
+msgid "Index size"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:11
+msgid "Tree level"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:13
+msgid "Root block no"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:14
+msgid "Internal pages"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:15
+msgid "Leaf pages"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:16
+msgid "Empty pages"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:17
+msgid "Deleted pages"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:18
+msgid "Average leaf density"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.1_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.2_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/9.6_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/stats.sql:19
+msgid "Leaf fragmentation"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/coll_stats.sql:2
+msgid "Index name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index/sql/9.1_plus/coll_stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:22
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:22
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:24
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:24
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/9.2_plus/stats.sql:6
+msgid "Size"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:45
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:57
@@ -3329,20 +3665,227 @@ msgstr ""
 msgid "Table owner can not be empty."
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:2
+msgid "Table name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:10
+msgid "Tuples inserted"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:11
+msgid "Tuples updated"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:12
+msgid "Tuples deleted"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:9
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:6
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:9
+msgid "Tuples HOT updated"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:7
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:10
+msgid "Live tuples"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:11
+msgid "Dead tuples"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:9
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:20
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:9
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:20
+msgid "Last vacuum"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:21
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:10
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:21
+msgid "Last autovacuum"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:22
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:11
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:22
+msgid "Last analyze"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:23
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:23
+msgid "Last autoanalyze"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:24
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:24
+msgid "Vacuum counter"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:25
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:25
+msgid "Autovacuum counter"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:26
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:26
+msgid "Analyze counter"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/coll_table_stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:27
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/coll_table_stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:27
+msgid "Autoanalyze counter"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:2
+msgid "Sequential scans"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:3
+msgid "Sequential tuples read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:12
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:12
+msgid "Heap blocks read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:13
+msgid "Heap blocks hit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:16
+msgid "Toast blocks read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:17
+msgid "Toast blocks hit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:18
+msgid "Toast index blocks read"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:19
+msgid "Toast index blocks hit"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:28
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:28
+msgid "Table size"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:32
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:32
+msgid "Toast table size"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:35
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:35
+msgid "Indexes size"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:38
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:38
+msgid "Tuple count"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:39
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:39
+msgid "Tuple length"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:40
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:40
+msgid "Tuple percent"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:41
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:41
+msgid "Dead tuple count"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:42
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:42
+msgid "Dead tuple length"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:43
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:43
+msgid "Dead tuple percent"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:44
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:44
+msgid "Free space"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.1_plus/stats.sql:45
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/9.5_plus/stats.sql:45
+msgid "Free percent"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:30
 msgid "Triggers"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:502
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:516
 msgid "Could not find the trigger in the table."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:647
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:643
 msgid "The specified trigger could not be found.\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:663
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:659
 msgid "Trigger is dropped"
 msgstr ""
 
@@ -3425,6 +3968,21 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:21
 msgid "Catalog"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/pg/macros/catalogs.sql:14
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/ppas/macros/catalogs.sql:18
+msgid "PostgreSQL Catalog"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/pg/macros/catalogs.sql:15
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/ppas/macros/catalogs.sql:19
+msgid "pgAgent Job Scheduler"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/pg/macros/catalogs.sql:16
+#: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/ppas/macros/catalogs.sql:20
+msgid "ANSI"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:146
@@ -3843,8 +4401,17 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:32
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:287
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:2
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/steps/templates/pga_jobstep/js/pga_jobstep.js:127
 #: pgadmin/browser/server_groups/servers/pgagent/steps/templates/pga_jobstep/js/pga_jobstep.js:133
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:29
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:29
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:403
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:463
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:530
@@ -3905,6 +4472,97 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:462
 msgid "Connect to database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:3
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:3
+msgid "Backends"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:4
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:4
+msgid "Xact committed"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:5
+msgid "Xact rolled back"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:8
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:8
+msgid "Tuples returned"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:9
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:9
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:9
+msgid "Tuples fetched"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:13
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:13
+msgid "Last statistics reset"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:14
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:14
+msgid "Tablespace conflicts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:15
+msgid "Lock conflicts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:16
+msgid "Snapshot conflicts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:17
+msgid "Bufferpin conflicts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.1_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:18
+msgid "Deadlock conflicts"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:19
+msgid "Temporary files"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:20
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:20
+msgid "Size of temporary files"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:21
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:21
+msgid "Deadlocks"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:22
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:22
+msgid "Block read time"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:23
+#: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.3_plus/stats.sql:23
+msgid "Block write time"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:29
@@ -4721,6 +5379,41 @@ msgstr ""
 msgid "Running at"
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:2
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:2
+msgid "Run"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:3
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:3
+#: pgadmin/misc/bgprocess/__init__.py:54
+msgid "Status"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:4
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:5
+#: pgadmin/misc/bgprocess/__init__.py:53
+msgid "Start time"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:5
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:7
+msgid "Duration"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:6
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:6
+msgid "End time"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:4
+msgid "Result"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:8
+msgid "Output"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:56
 #: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:10
 msgid "Resource Groups"
@@ -5340,6 +6033,91 @@ msgstr ""
 msgid "Connect to Server"
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:30
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:30
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:5
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:423
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:695
+msgid "Backend start"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:40
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:40
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:15
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:418
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:690
+msgid "Client"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:41
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:41
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:16
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:413
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:685
+msgid "Application"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:42
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:437
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:709
+msgid "Waiting?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:43
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:43
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:45
+msgid "Query"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:44
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:19
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:44
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:20
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:46
+msgid "Query start"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:20
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:45
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:20
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:45
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:21
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:47
+msgid "Xact start"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.1_plus/stats.sql:41
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:41
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
+msgid "Streaming Replication"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:17
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:43
+msgid "Wait event type"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:18
+#: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:44
+msgid "Wait event name"
+msgstr ""
+
 #: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:10
 msgid "Server Group"
 msgstr ""
@@ -5798,29 +6576,9 @@ msgstr ""
 msgid "PID"
 msgstr ""
 
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:413
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:685
-msgid "Application"
-msgstr ""
-
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:418
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:690
-msgid "Client"
-msgstr ""
-
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:423
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:695
-msgid "Backend start"
-msgstr ""
-
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:428
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:700
 msgid "State"
-msgstr ""
-
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:437
-#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:709
-msgid "Waiting?"
 msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:445
@@ -5909,6 +6667,80 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/activity.sql:9
+msgid "yes"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/activity.sql:9
+msgid "no"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/bio_stats.sql:2
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/bio_stats.sql:2
+msgid "Reads"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/bio_stats.sql:3
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/bio_stats.sql:3
+msgid "Hits"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/session_stats.sql:2
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/session_stats.sql:2
+msgid "Total"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/session_stats.sql:3
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/session_stats.sql:3
+#: pgadmin/tools/user_management/templates/user_management/js/user_management.js:134
+msgid "Active"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/session_stats.sql:4
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/session_stats.sql:4
+msgid "Idle"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/ti_stats.sql:2
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/ti_stats.sql:2
+msgid "Inserts"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/ti_stats.sql:3
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/ti_stats.sql:3
+msgid "Updates"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/ti_stats.sql:4
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/ti_stats.sql:4
+msgid "Deletes"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/to_stats.sql:2
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/to_stats.sql:2
+msgid "Fetched"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/to_stats.sql:3
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/to_stats.sql:3
+msgid "Returned"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/tps_stats.sql:2
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/tps_stats.sql:2
+msgid "Transactions"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/tps_stats.sql:3
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/tps_stats.sql:3
+msgid "Commits"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/sql/9.1_plus/tps_stats.sql:4
+#: pgadmin/dashboard/templates/dashboard/sql/9.6_plus/tps_stats.sql:4
+msgid "Rollbacks"
+msgstr ""
+
 #: pgadmin/help/__init__.py:28 pgadmin/help/__init__.py:54
 msgid "Online Help"
 msgstr ""
@@ -5951,14 +6783,6 @@ msgstr ""
 
 #: pgadmin/misc/bgprocess/__init__.py:52
 msgid "Started"
-msgstr ""
-
-#: pgadmin/misc/bgprocess/__init__.py:53
-msgid "Start time"
-msgstr ""
-
-#: pgadmin/misc/bgprocess/__init__.py:54
-msgid "Status"
 msgstr ""
 
 #: pgadmin/misc/bgprocess/__init__.py:55
@@ -6665,9 +7489,9 @@ msgstr ""
 #: pgadmin/tools/debugger/__init__.py:1172
 #: pgadmin/tools/debugger/__init__.py:1199
 #: pgadmin/tools/debugger/__init__.py:1348
-#: pgadmin/tools/debugger/__init__.py:1386
-#: pgadmin/tools/debugger/__init__.py:1408
-#: pgadmin/tools/debugger/__init__.py:1423
+#: pgadmin/tools/debugger/__init__.py:1419
+#: pgadmin/tools/debugger/__init__.py:1441
+#: pgadmin/tools/debugger/__init__.py:1456
 #: pgadmin/tools/sqleditor/__init__.py:208
 #: pgadmin/tools/sqleditor/__init__.py:354
 #: pgadmin/tools/sqleditor/__init__.py:865
@@ -6688,12 +7512,12 @@ msgstr ""
 msgid "Error while setting the value"
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1360
-#: pgadmin/tools/debugger/__init__.py:1379
+#: pgadmin/tools/debugger/__init__.py:1373
+#: pgadmin/tools/debugger/__init__.py:1401
 msgid "Execution Completed."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1365
+#: pgadmin/tools/debugger/__init__.py:1378
 msgid "Execution completed with error"
 msgstr ""
 
@@ -6749,28 +7573,28 @@ msgstr ""
 msgid "Please enter a value for the parameter."
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:335
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:352
 msgid "Waiting for another session to invoke the target..."
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1353
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1482
 msgid "Local variables"
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1364
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1493
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:251
 msgid "Messages"
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1375
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1504
 msgid "Results"
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1386
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1515
 msgid "Stack"
 msgstr ""
 
-#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1445
+#: pgadmin/tools/debugger/templates/debugger/js/direct.js:1574
 msgid "Loading..."
 msgstr ""
 
@@ -7397,10 +8221,6 @@ msgstr ""
 
 #: pgadmin/tools/user_management/templates/user_management/js/user_management.js:86
 msgid "Email"
-msgstr ""
-
-#: pgadmin/tools/user_management/templates/user_management/js/user_management.js:134
-msgid "Active"
 msgstr ""
 
 #: pgadmin/tools/user_management/templates/user_management/js/user_management.js:148
