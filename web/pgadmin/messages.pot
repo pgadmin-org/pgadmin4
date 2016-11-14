@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-11-14 11:51+0000\n"
+"POT-Creation-Date: 2016-11-14 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6548,6 +6548,60 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
+msgid "Feature rich"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
+msgid "Maximises PostgreSQL"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
+msgid "Open Source"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:11
+msgid ""
+"pgAdmin is an open source administration and management tool for the "
+"PostgreSQL database. The tools include a graphical administration "
+"interface, an SQL query tool, a procedural code debugger and much more. "
+"The tool is designed to answer the needs of developers, DBAs and system "
+"administrators alike."
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:19
+msgid "Quick Links"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:26
+msgid "Add New Server"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:33
+msgid "Configure pgAdmin"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:44
+msgid "Getting Started"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:51
+msgid "PostgreSQL Documentation"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:57
+#: pgadmin/help/__init__.py:35 pgadmin/help/__init__.py:60
+msgid "pgAdmin Website"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:63
+msgid "Planet PostgreSQL"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:69
+msgid "Community Support"
+msgstr ""
+
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:44
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:117
 msgid "An error occurred whilst loading the dashboard."
@@ -6743,10 +6797,6 @@ msgstr ""
 
 #: pgadmin/help/__init__.py:28 pgadmin/help/__init__.py:54
 msgid "Online Help"
-msgstr ""
-
-#: pgadmin/help/__init__.py:35 pgadmin/help/__init__.py:60
-msgid "pgAdmin Website"
 msgstr ""
 
 #: pgadmin/help/__init__.py:42 pgadmin/help/__init__.py:67

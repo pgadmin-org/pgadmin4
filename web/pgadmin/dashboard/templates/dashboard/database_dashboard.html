@@ -2,12 +2,12 @@
     <div class="row">
         <div class="col-xs-6">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Database sessions') }}</legend>
+                <legend class="badge">{{ _('Database sessions') }}</legend>
             </div>
         </div>
         <div class="col-xs-6">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Transactions per second') }}</legend>
+                <legend class="badge">{{ _('Transactions per second') }}</legend>
             </div>
         </div>
     </div>
@@ -23,17 +23,17 @@
     <div class="row dashboard-header-spacer">
         <div class="col-xs-4">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Tuples in') }}</legend>
+                <legend class="badge">{{ _('Tuples in') }}</legend>
             </div>
         </div>
         <div class="col-xs-4">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Tuples out') }}</legend>
+                <legend class="badge">{{ _('Tuples out') }}</legend>
             </div>
         </div>
         <div class="col-xs-4">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Block I/O') }}</legend>
+                <legend class="badge">{{ _('Block I/O') }}</legend>
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
     <div class="row dashboard-header-spacer">
         <div class="col-xs-12">
             <div class="obj_properties">
-                <legend class="badge">{{ gettext('Database activity') }}</legend>
+                <legend class="badge">{{ _('Database activity') }}</legend>
             </div>
         </div>
     </div>
@@ -64,35 +64,35 @@
                 <ul class="nav nav-tabs dashboard-tab-panel" role="tablist">
                     <li role="presentation" class="active dashboard-tab"><a href="#tab_panel_database_activity"
                                                                             aria-controls="tab_database_activity"
-                                                                            role="tab" data-toggle="tab">{{ gettext('Sessions') }}</a>
+                                                                            role="tab" data-toggle="tab">{{ _('Sessions') }}</a>
                     </li>
                     <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_locks"
                                                                      aria-controls="tab_database_locks" role="tab"
-                                                                     data-toggle="tab">{{ gettext('Locks') }}</a></li>
+                                                                     data-toggle="tab">{{ _('Locks') }}</a></li>
                     <li role="presentation" class="dashboard-tab"><a href="#tab_panel_database_prepared"
                                                                      aria-controls="tab_database_prepared" role="tab"
-                                                                     data-toggle="tab">{{ gettext('Prepared Transactions') }}</a></li>
+                                                                     data-toggle="tab">{{ _('Prepared Transactions') }}</a></li>
                 </ul>
 
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="tab_panel_database_activity">
                         <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_activity_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <button id="btn_database_activity_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
                             <div id="database_activity_filter"></div>
                         </div>
                         <div id="database_activity" class="grid-container"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="tab_panel_database_locks">
                         <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_locks_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <button id="btn_database_locks_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
                             <div id="database_locks_filter"></div>
                         </div>
                         <div id="database_locks" class="grid-container"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="tab_panel_database_prepared">
                         <div class="dashboard-tab-btn-group pg-prop-btn-group-above">
-                            <button id="btn_database_prepared_refresh" type="button" class="btn btn-default" title="{{ gettext('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
+                            <button id="btn_database_prepared_refresh" type="button" class="btn btn-default" title="{{ _('Refresh') }}"> <span class="fa fa-lg fa-refresh"></span></button>
                             <div id="database_prepared_filter"></div>
                         </div>
                         <div id="database_prepared" class="grid-container"></div>
