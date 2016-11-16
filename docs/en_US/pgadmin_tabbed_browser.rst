@@ -12,11 +12,11 @@ Permanent tabs are named *Dashboard, *Properties*, *SQL*, *Statistics*, *Depende
 
 The *Dashboard* tab provides a graphical analysis of the usage statistics for the selected server or database:
 
-* The *Server sessions* or *Database sessions* graph displays the interactions with the managed server or database.
-* The *Transactions per second* graph displays the commits, rollbacks, and total transactions per second that are taking place on the managed server or database.
-* The *Tuples In* graph displays the number of tuples inserted, updated, and deleted into the managed server or database.
-* The *Tuples out* graph displays the number of tuples fetched and returned into the managed server or database.
-* The *Block I/O* graph displays the number of transactions processed by the managed server or database.
+* The *Server sessions* or *Database sessions* graph displays the interactions with the server or database.
+* The *Transactions per second* graph displays the commits, rollbacks, and total transactions per second that are taking place on the server or database.
+* The *Tuples In* graph displays the number of tuples inserted, updated, and deleted on the server or database.
+* The *Tuples out* graph displays the number of tuples fetched and returned from the server or database.
+* The *Block I/O* graph displays the number of blocks read from the filesystem or fetched from the buffer cache (but not the operating system's file system cache) for the server or database.
 
 The *Server activity* panel displays information about sessions, locks, prepared transactions and configuration. The information is presented in context-sensitive tables.
 
