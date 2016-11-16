@@ -126,11 +126,11 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         Label to be shown for the collection node, do not forget to set the
         class level variable COLLECTION_LABEL.
         """
-        return self.COLLECTION_LABEL
+        return gettext(self.COLLECTION_LABEL)
 
     @property
     def label(self):
-        return self.COLLECTION_LABEL
+        return gettext(self.COLLECTION_LABEL)
 
     @property
     def collection_icon(self):
