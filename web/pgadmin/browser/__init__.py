@@ -455,10 +455,10 @@ def index():
             )
 
             if response.getcode() == 200:
-                data = json.load(response)
+                data = json.loads(response.read().decode('utf-8'))
                 current_app.logger.debug('Response data: %s' % data)
         except:
-            pass
+            current_app.logger.exception('Exception when checking for update')
 
         if data is not None:
             if data['pgadmin4']['version_int'] > config.APP_VERSION_INT:
