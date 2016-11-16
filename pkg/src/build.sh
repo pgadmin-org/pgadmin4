@@ -31,6 +31,7 @@ if [ ! -z $APP_SUFFIX ]; then
     export APP_LONG_VERSION=$APP_LONG_VERSION-$APP_SUFFIX
 fi
 TARBALL_NAME=`echo $APP_NAME-$APP_LONG_VERSION | sed 's/ //g' | awk '{print tolower($0)}'`
+DOC_TARBALL_NAME=`echo $APP_NAME-$APP_LONG_VERSION-docs | sed 's/ //g' | awk '{print tolower($0)}'`
 
 # Output basic details to show we're working
 echo Building tarballs for $APP_NAME version $APP_LONG_VERSION...
@@ -56,6 +57,10 @@ if [ -f dist/$TARBALL_NAME.tar.gz ]; then
     rm -f dist/$TARBALL_NAME.tar.gz
 fi
 
+if [ -f dist/$DOC_TARBALL_NAME.tar.gz ]; then
+    rm -f dist/$DOC_TARBALL_NAME.tar.gz
+fi
+
 # Build the clean tree
 for FILE in `git ls-files`
 do
@@ -70,5 +75,14 @@ cd src-build
 tar zcvf ../dist/$TARBALL_NAME.tar.gz $TARBALL_NAME
 cd ..
 
+# Create the docs
+echo Creating docs...
+cd src-build/$TARBALL_NAME/docs/en_US
+make -f Makefile.sphinx html
+cd _build
+mv html $DOC_TARBALL_NAME
+tar zcvf ../../../../../dist/$DOC_TARBALL_NAME.tar.gz $DOC_TARBALL_NAME
+cd ../../../../../
+
 # Fin!
-echo Created tarball dist/$TARBALL_NAME.tar.gz
+echo Created tarball dist/$TARBALL_NAME.tar.gz and dist/$DOC_TARBALL_NAME.tar.gz
