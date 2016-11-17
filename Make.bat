@@ -128,6 +128,7 @@ GOTO:EOF
     SET APP_NAME=""
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
     FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print '%APP_NAME%'.lower().replace(' ', '')"') DO SET APP_SHORTNAME=%%G
+    FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
     
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
     IF "%APP_SUFFIX_VERSION%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%ARCHITECTURE%.exe
@@ -145,6 +146,12 @@ GOTO:EOF
     ECHO NMAKE       = %VCNMAKE%
     ECHO QTDIR       = %QTDIR%
     ECHO QMAKE       = %QMAKE%
+    ECHO QT_VERSION  = %QT_VERSION%
+    IF %QT_VERSION% GEQ 5.5 (
+        ECHO BROWSER     = QtWebEngine
+    ) ELSE (
+        ECHO BROWSER     = QtWebKit
+    )
     ECHO PYTHON_HOME = %PYTHON_HOME%
     ECHO PYTHON_DLL  = %PYTHON_DLL%
     ECHO PGDIR       = %PGDIR%
@@ -300,8 +307,6 @@ GOTO:EOF
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5Multimedia.dll" "%PGBUILDPATH%\runtime"
@@ -312,10 +317,35 @@ GOTO:EOF
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5PrintSupport.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
     copy "%QTDIR%\bin\Qt5MultimediaWidgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    REM Install the appropriate browser components. We use QtWebEngine with Qt 5.5+
+    IF %QT_VERSION% GEQ 5.5 (
+        copy "%QTDIR%\icudtl.dat" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\qtwebengine_resources.pak" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\qtwebengine_resources_100p.pak" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\qtwebengine_resources_200p.pak" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\Qt5WebEngine.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\Qt5WebEngineCore.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\Qt5WebEngineWidgets.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\QtWebEngineProcess.exe" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    ) ELSE (
+        copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    )
+
     MKDIR "%PGBUILDPATH%\runtime\platforms"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
