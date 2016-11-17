@@ -24,7 +24,9 @@ find "${BUNDLE}/Contents/Frameworks"/*framework -type d -name "Versions" | while
   ln -s $VERSION_NUMBER Current
 
   # Create "Resources" subdirectory
-  mkdir Current/Resources
+  if [ ! -d Current/Resources ]; then
+    mkdir Current/Resources
+  fi
 
   cd "${MYDIR}"
 done
