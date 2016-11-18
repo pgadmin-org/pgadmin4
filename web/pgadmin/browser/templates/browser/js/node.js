@@ -960,9 +960,6 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Save it for release it later
             j.data('obj-view', view);
 
-            // Create status bar
-            createStatusBar('footer');
-
             // Create proper buttons
 
             var buttons = [];
