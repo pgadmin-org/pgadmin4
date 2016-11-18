@@ -1450,3 +1450,18 @@ table.backgrid {
 .backgrid td.editor input[type=password]::-ms-clear {
   display: none;
 }
+
+/* Disable text selection where not wanted */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.enable-selection, .form-control, .backgrid td {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

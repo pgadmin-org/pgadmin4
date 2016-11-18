@@ -105,6 +105,10 @@
   overflow: auto;
   height: 100%;
   font-size: 0.925em;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .limit-enabled {
