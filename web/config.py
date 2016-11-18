@@ -29,6 +29,9 @@ APP_ICON = 'icon-postgres-alt'
 # NOTE!!!
 # If you change any of APP_RELEASE, APP_REVISION or APP_SUFFIX, then you
 # must also change APP_VERSION_INT to match.
+#
+# Any changes made here must also be made in runtime/pgAdmin4.pro
+#
 
 # Application version number components
 APP_RELEASE = 1
@@ -51,6 +54,7 @@ else:
     APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
 
 # Copyright string for display in the app
+# Any changes made here must also be made in runtime/pgAdmin4.pro
 APP_COPYRIGHT = 'Copyright 2013 - 2016, The pgAdmin Development Team'
 
 ##########################################################################
