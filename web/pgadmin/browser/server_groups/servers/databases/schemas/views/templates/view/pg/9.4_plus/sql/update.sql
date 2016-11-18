@@ -19,7 +19,7 @@ ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% if def and def != o_data.definition.rstrip(';') %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
-    WITH (check_option={{ data.check_option|default('no', 'true') if data.check_option else o_data.check_option|default('no', 'true') }}{{', ' }}security_barrier={{ data.security_barrier|lower if data.security_barrier else o_data.security_barrier|default('false', 'true')|lower }})
+    WITH ({% if (data.check_option or o_data.check_option) %}check_option={{ data.check_option if data.check_option else o_data.check_option }}{{', ' }}{% endif %}security_barrier={{ data.security_barrier|lower if data.security_barrier else o_data.security_barrier|default('false', 'true')|lower }})
     AS
     {{ def }};
 {% else %}
