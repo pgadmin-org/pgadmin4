@@ -362,7 +362,7 @@ li {
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
  color: #fff;
- padding: 4px 6px;
+ padding: 4px 0 4px 6px;
 }
 
 .long_text_editor {
@@ -423,4 +423,16 @@ input.editor-checkbox {
 
 #datagrid div.slick-header.ui-state-default {
   background: #2c76b4;
+}
+
+/*
+  SlickGrid, To fix the issue of width misalignment between Column Header &
+  actual Column in Mozilla Firefox browser
+  Ref: https://github.com/mleibman/SlickGrid/issues/742
+*/
+.slickgrid, .slickgrid *, .slick-header-column {
+        box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        -ms-box-sizing: content-box;
 }
