@@ -103,7 +103,7 @@ class Message(IProcessDesc):
         res += html.safe_str(
             _("Running command:")
         )
-        res += '</b><br><span class="pg-bg-cmd">'
+        res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(cmd)
 
         replace_next = False

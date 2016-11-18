@@ -43,6 +43,10 @@
 
 .pg-bg-process-logs {
   width: 100%;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .pg-bg-etime {

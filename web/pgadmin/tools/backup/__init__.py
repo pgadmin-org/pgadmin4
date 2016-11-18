@@ -151,7 +151,7 @@ class BackupMessage(IProcessDesc):
         res += html.safe_str(
             _("Running command:")
         )
-        res += '</b><br><i>'
+        res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(cmd)
 
         replace_next = False
@@ -177,7 +177,7 @@ class BackupMessage(IProcessDesc):
                 if arg == '--file':
                     replace_next = True
                 res += cmdArg(arg)
-        res += '</i></div>'
+        res += '</span></div>'
 
         return res
 

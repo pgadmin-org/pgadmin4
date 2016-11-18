@@ -93,7 +93,7 @@ class RestoreMessage(IProcessDesc):
         res += html.safe_str(
             _("Running command:")
         )
-        res += '</b><br><i>'
+        res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(cmd)
 
         def cmdArg(x):
@@ -119,7 +119,7 @@ class RestoreMessage(IProcessDesc):
         if no_args > 1:
             res += ' "' + html.safe_str(arg) + '"'
 
-        res += '</i></div>'
+        res += '</span></div>'
 
         return res
 
