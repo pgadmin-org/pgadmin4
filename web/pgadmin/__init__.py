@@ -20,7 +20,7 @@ from flask_login import user_logged_in
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
-from htmlmin.minify import html_minify
+from flask.ext.htmlmin import HTMLMIN
 from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.session import create_session_interface
 from werkzeug.local import LocalProxy
@@ -414,16 +414,8 @@ def create_app(app_name=config.APP_NAME):
     ##########################################################################
     # Minify output
     ##########################################################################
-    @app.after_request
-    def response_minify(response):
-        """Minify html response to decrease traffic"""
-        if config.MINIFY_HTML and not config.DEBUG:
-            if response.content_type == u'text/html; charset=utf-8':
-                response.set_data(
-                    html_minify(response.get_data(as_text=True))
-                )
-
-        return response
+    if not config.DEBUG:
+        HTMLMIN(app)
 
     @app.context_processor
     def inject_blueprint():

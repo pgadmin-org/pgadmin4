@@ -252,7 +252,6 @@ GOTO:EOF
     ECHO Creating config_distro.py
     ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_distro.py"
     ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"
-    ECHO MINIFY_HTML = False >> "%PGBUILDPATH%\web\config_distro.py"
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"

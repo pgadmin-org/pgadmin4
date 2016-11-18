@@ -153,10 +153,7 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 #       configuration databases 'keys' table and are auto-generated.
 
 # Should HTML be minified on the fly when not in debug mode?
-# Note: This is disabled by default as it will error when processing the
-#       docs. If the serving of docs is handled by an Apache HTTPD
-#       instance (rather than via the app), then it can be safely enabled.
-MINIFY_HTML = False
+MINIFY_PAGE = True
 
 ##########################################################################
 # Server Connection Driver Settings
