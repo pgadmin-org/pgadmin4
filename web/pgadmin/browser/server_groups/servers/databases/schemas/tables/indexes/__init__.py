@@ -139,6 +139,10 @@ class IndexesView(PGChildNodeView):
       - This function will used to create all the child node within that
         collection, Here it will create all the Index node.
 
+    * node()
+      - This function will used to create the child node within that
+        collection, Here it will create specific the Index node.
+
     * properties(gid, sid, did, scid, tid, idx)
       - This function will show the properties of the selected Index node
 
@@ -382,12 +386,15 @@ class IndexesView(PGChildNodeView):
             did: Database ID
             scid: Schema ID
             tid: Table ID
+            idx: Index ID
 
         Returns:
             JSON of available schema child nodes
         """
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), idx=idx)
+                                        'nodes.sql']),
+                              tid=tid,
+                              idx=idx)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)

@@ -159,6 +159,10 @@ class TriggerView(PGChildNodeView):
       - This function will used to create all the child node within that
         collection, Here it will create all the Trigger node.
 
+    * node()
+      - This function will used to create child node within that
+        collection, Here it will create specific the Trigger node.
+
     * properties(gid, sid, did, scid, tid, trid)
       - This function will show the properties of the selected Trigger node
 
@@ -355,6 +359,48 @@ class TriggerView(PGChildNodeView):
             return internal_server_error(errormsg=res)
         return ajax_response(
             response=res['rows'],
+            status=200
+        )
+
+    @check_precondition
+    def node(self, gid, sid, did, scid, tid, trid):
+        """
+        This function will used to create the child node within that collection.
+        Here it will create specific the trigger node.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            tid: Table ID
+            trid: Trigger ID
+
+        Returns:
+            JSON of available trigger child nodes
+        """
+        res = []
+        SQL = render_template("/".join([self.template_path,
+                                        'nodes.sql']),
+                              tid=tid,
+                              trid=trid)
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(gettext("""Could not find the trigger in the table."""))
+
+        res = self.blueprint.generate_browser_node(
+                rset['rows'][0]['oid'],
+                tid,
+                rset['rows'][0]['name'],
+                icon="icon-trigger" if rset['rows'][0]['is_enable_trigger']
+                else "icon-trigger-bad"
+            )
+
+        return make_json_response(
+            data=res,
             status=200
         )
 
@@ -594,7 +640,7 @@ class TriggerView(PGChildNodeView):
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     trid,
-                    scid,
+                    tid,
                     data['name'],
                     icon="icon-trigger"
                 )

@@ -9,4 +9,7 @@ FROM pg_index idx
     LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)
 WHERE indrelid = {{tid}}::OID
     AND conname is NULL
+{% if idx %}
+    AND cls.oid = {{ idx }}::OID
+{% endif %}
     ORDER BY cls.relname
