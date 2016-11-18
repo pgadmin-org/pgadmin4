@@ -1787,12 +1787,20 @@ define(
                 alertify.success(msg1 + '<br />' + msg2, self.info_notifier_timeout);
               }
 
-              $('.sql-editor-message').text(msg1 + '\n' + msg2);
+              var _msg = msg1 + '\n' + msg2;
 
-                /* Add the data to the collection and render the grid.
-                 * In case of Explain draw the graph on explain panel
-                 * and add json formatted data to collection and render.
-                 */
+              // If there is additional messages from server then add it to message
+              if(!_.isNull(data.additional_messages) &&
+                    !_.isUndefined(data.additional_messages)) {
+                    _msg = data.additional_messages + '\n' + _msg;
+              }
+
+              $('.sql-editor-message').text(_msg);
+
+              /* Add the data to the collection and render the grid.
+               * In case of Explain draw the graph on explain panel
+               * and add json formatted data to collection and render.
+               */
               var explain_data_array = [];
               if(
                 data.result && data.result.length >= 1 &&

@@ -504,11 +504,20 @@ def poll(trans_id):
 
         rows_affected = conn.rows_affected()
 
+    # There may be additional messages even if result is present
+    # eg: Function can provide result as well as RAISE messages
+    additional_messages = None
+    if status == 'Success' and result is not None:
+        messages = conn.messages()
+        if messages:
+            additional_messages = ''.join(messages)
+
     return make_json_response(
         data={
             'status': status, 'result': result,
             'colinfo': col_info, 'primary_keys': primary_keys,
-            'rows_affected': rows_affected
+            'rows_affected': rows_affected,
+            'additional_messages': additional_messages
         }
     )
 
