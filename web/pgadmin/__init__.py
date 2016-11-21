@@ -16,11 +16,11 @@ from importlib import import_module
 
 from flask import Flask, abort, request, current_app
 from flask_babel import Babel, gettext
+from flask_htmlmin import HTMLMIN
 from flask_login import user_logged_in
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
-from flask.ext.htmlmin import HTMLMIN
 from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.session import create_session_interface
 from werkzeug.local import LocalProxy
