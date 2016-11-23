@@ -363,6 +363,14 @@ GOTO:EOF
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime"
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy "%PGDIR%\bin\pg_dumpall.exe" "%PGBUILDPATH%\runtime"
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy "%PGDIR%\bin\pg_restore.exe" "%PGBUILDPATH%\runtime"
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy "%PGDIR%\bin\psql.exe" "%PGBUILDPATH%\runtime"
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
     MKDIR "%PGBUILDPATH%\installer"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
