@@ -270,8 +270,13 @@ STORAGE_DIR = os.path.join(
 # expected to be overridden by packagers in config_distro.py.
 #
 # A default location can be specified for each database driver ID, in
-# a dictionary. A relative (to the working directory for the package)
-# location may be specified, or absolute.
+# a dictionary. Either an absolute or relative path can be specified.
+# In cases where it may be difficult to know what the working directory
+# is, "$DIR" can be specified. This will be replaced with the path to the
+# top-level pgAdmin4.py file. For example, on macOS we might use:
+#
+# $DIR/../../SharedSupport
+#
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg":   "",

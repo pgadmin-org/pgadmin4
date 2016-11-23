@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import os
+import os, sys
 
 from flask import render_template
 from flask_babel import gettext as _
@@ -94,7 +94,7 @@ class ServerType(object):
             reverse=True
         )
 
-    def utility(self, operation, sverion):
+    def utility(self, operation, sversion):
         res = None
 
         if operation == 'backup':
@@ -112,10 +112,12 @@ class ServerType(object):
                 ))
             )
 
-        return os.path.join(
-            self.utility_path.get(),
+        bin_path = self.utility_path.get().replace("$DIR", os.path.dirname(sys.modules['__main__'].__file__))
+
+        return os.path.abspath(os.path.join(
+            bin_path,
             (res if os.name != 'nt' else (res + '.exe'))
-        )
+        ))
 
 
 # Default Server Type
