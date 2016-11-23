@@ -165,6 +165,10 @@ _complete_bundle() {
     rm -f pgadmin4.db config_local.*
     echo "SERVER_MODE = False" > config_distro.py
     echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py
+    echo "DEFAULT_BINARY_PATHS = {" >> config_distro.py
+    echo "    'pg':   '$DIR/../../SharedSupport'," >> config_distro.py
+    echo "    'ppas': ''" >> config_distro.py
+    echo "}" >> config_distro.py
 
     # Remove the .pyc files if any
     cd "$BUILDROOT/$APP_BUNDLE_NAME"
