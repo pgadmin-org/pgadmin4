@@ -264,6 +264,21 @@ STORAGE_DIR = os.path.join(
 )
 
 ##########################################################################
+# Default locations for binary utilities (pg_dump, pg_restore etc)
+#
+# These are intentionally left empty in the main config file, but are
+# expected to be overridden by packagers in config_distro.py.
+#
+# A default location can be specified for each database driver ID, in
+# a dictionary. A relative (to the working directory for the package)
+# location may be specified, or absolute.
+##########################################################################
+DEFAULT_BINARY_PATHS = {
+    "pg":   "",
+    "ppas": ""
+}
+
+##########################################################################
 # Test settings - used primarily by the regression suite, not for users
 ##########################################################################
 # Set default testing mode
