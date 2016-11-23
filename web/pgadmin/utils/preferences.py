@@ -129,6 +129,9 @@ class _Preference(object):
             if res.value in self.options:
                 return res.value
             return self.default
+        if self._type == 'text':
+            if res.value == '':
+                return self.default
 
         return res.value
 
