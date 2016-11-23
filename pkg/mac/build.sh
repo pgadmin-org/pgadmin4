@@ -166,7 +166,7 @@ _complete_bundle() {
     echo "SERVER_MODE = False" > config_distro.py
     echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py
     echo "DEFAULT_BINARY_PATHS = {" >> config_distro.py
-    echo "    'pg':   '$DIR/../../SharedSupport'," >> config_distro.py
+    echo "    'pg':   '\$DIR/../../SharedSupport'," >> config_distro.py
     echo "    'ppas': ''" >> config_distro.py
     echo "}" >> config_distro.py
 
