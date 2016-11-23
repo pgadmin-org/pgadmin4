@@ -32,3 +32,4 @@ pkg/win32/installer.iss
 runtime/Makefile.Debug
 runtime/Makefile.Release
 runtime/release/
+runtime/pgAdmin4_resource.rc
