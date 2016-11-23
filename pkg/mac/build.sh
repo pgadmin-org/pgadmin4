@@ -138,6 +138,13 @@ _build_doc() {
 
 _complete_bundle() {
     cd $SOURCEDIR/pkg/mac
+
+    # Copy the binary utilities into place
+    mkdir -p "$BUILDROOT/$APP_BUNDLE_NAME/Contents/SharedSupport/" || exit 1
+    cp "$PGDIR/bin/pg_dump" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/SharedSupport/" || exit 1
+    cp "$PGDIR/bin/pg_dumpall" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/SharedSupport/" || exit 1
+    cp "$PGDIR/bin/pg_restore" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/SharedSupport/" || exit 1
+    cp "$PGDIR/bin/psql" "$BUILDROOT/$APP_BUNDLE_NAME/Contents/SharedSupport/" || exit 1
     
     # Replace the place holders with the current version
     sed -e "s/PGADMIN_LONG_VERSION/$APP_LONG_VERSION/g" -e "s/PGADMIN_SHORT_VERSION/$APP_SHORT_VERSION/g" pgadmin.Info.plist.in > pgadmin.Info.plist
