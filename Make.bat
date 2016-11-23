@@ -252,6 +252,10 @@ GOTO:EOF
     ECHO Creating config_distro.py
     ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_distro.py"
     ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO DEFAULT_BINARY_PATHS = { >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO     'pg':   '$DIR/../runtime', >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO     'ppas': '' >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
 
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
@@ -362,6 +366,8 @@ GOTO:EOF
     copy "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime"
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    copy "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
