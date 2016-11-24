@@ -24,7 +24,7 @@ else
     exit 1
 fi
 
-if [ "$PYTHON_VERSION" -gt "34" -a "$PYTHON_VERSION" -lt "26" ]; then
+if [ "$PYTHON_VERSION" -gt "35" -a "$PYTHON_VERSION" -lt "26" ]; then
     echo "Python version not supported"
     exit 1
 fi
@@ -41,7 +41,7 @@ fi
 
 if [ "x$QTDIR" == "x" ]; then
     echo "QTDIR not set. Setting it to default"
-    export QTDIR=~/Qt/5.5/clang_64
+    export QTDIR=~/Qt/5.7/clang_64
 fi
 export QMAKE=$QTDIR/bin/qmake
 if ! $QMAKE --version > /dev/null 2>&1; then
