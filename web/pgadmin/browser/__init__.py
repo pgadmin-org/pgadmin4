@@ -40,6 +40,7 @@ class BrowserModule(PgAdminModule):
         # Add browser stylesheets
         for (endpoint, filename) in [
             ('static', 'css/codemirror/codemirror.css'),
+            ('static', 'js/codemirror/addon/dialog/dialog.css'),
             ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
             else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
             ('static', 'css/wcDocker/wcDocker.css' if current_app.debug

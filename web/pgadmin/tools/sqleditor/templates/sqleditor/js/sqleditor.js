@@ -9,6 +9,10 @@ define(
     'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
     'codemirror/addon/fold/pgadmin-sqlfoldcode',
     'codemirror/addon/scroll/simplescrollbars',
+    'codemirror/addon/dialog/dialog',
+    'codemirror/addon/search/search',
+    'codemirror/addon/search/searchcursor',
+    'codemirror/addon/search/jump-to-line',
     'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
     'slickgrid/slick.pgadmin.formatters', 'slickgrid/slick.editors',
     'slickgrid/slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
@@ -126,6 +130,14 @@ define(
         "click #btn-save": "on_save",
         "click #btn-file-menu-save": "on_save",
         "click #btn-file-menu-save-as": "on_save_as",
+        "click #btn-find": "on_find",
+        "click #btn-find-menu-find": "on_find",
+        "click #btn-find-menu-find-next": "on_find_next",
+        "click #btn-find-menu-find-previous": "on_find_previous",
+        "click #btn-find-menu-replace": "on_replace",
+        "click #btn-find-menu-replace-all": "on_replace_all",
+        "click #btn-find-menu-find-persistent": "on_find_persistent",
+        "click #btn-find-menu-jump": "on_jump",
         "click #btn-delete-row": "on_delete",
         "click #btn-filter": "on_show_filter",
         "click #btn-filter-menu": "on_show_filter",
@@ -1047,6 +1059,69 @@ define(
             self.handler,
             true
         );
+      },
+
+      // Callback function for the find button click.
+      on_find: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("find");
+      },
+
+      // Callback function for the find next button click.
+      on_find_next: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("findNext");
+      },
+
+      // Callback function for the find previous button click.
+      on_find_previous: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("findPrev");
+      },
+
+      // Callback function for the replace button click.
+      on_replace: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("replace");
+      },
+
+      // Callback function for the replace all button click.
+      on_replace_all: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("replaceAll");
+      },
+
+      // Callback function for the find persistent button click.
+      on_find_persistent: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("findPersistent");
+      },
+
+      // Callback function for the jump button click.
+      on_jump: function(ev) {
+        var self = this, sql;
+        this._stopEventPropogation(ev);
+        this._closeDropDown(ev);
+
+        self.query_tool_obj.execCommand("jumpToLine");
       },
 
       // Callback function for filter button click.

@@ -48,6 +48,54 @@
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
+                <button id="btn-find" type="button" class="btn btn-default" title="{{ _('Find (Ctrl/Cmd+F)') }}">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+                <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id="btn-find-menu-find" href="#">
+                            <span>{{ _('Find (Ctrl/Cmd+F)') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="btn-find-menu-find-next" href="#">
+                            <span>{{ _('Find next (Ctrl/Cmd+G)') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="btn-find-menu-find-previous" href="#">
+                            <span>{{ _('Find previous (Shift+Ctrl/Cmd+G)') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="btn-find-menu-find-persistent" href="#">
+                            <span>{{ _('Persistent find') }}</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a id="btn-find-menu-replace" href="#">
+                            <span>{{ _('Replace (Shift+Ctrl/Cmd+F)') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="btn-find-menu-replace-all" href="#">
+                            <span>{{ _('Replace all') }}</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a id="btn-find-menu-jump" href="#">
+                            <span>{{ _('Jump (Alt+G)') }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group" aria-label="">
                 <button id="btn-copy-row" type="button" class="btn btn-default" title="{{ _('Copy Row') }}" disabled>
                     <i class="fa fa-files-o" aria-hidden="true"></i>
                 </button>
