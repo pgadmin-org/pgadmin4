@@ -80,7 +80,7 @@ GOTO:EOF
     IF %OSVALUE%=="x86" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27123"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\Qt5.5.1\5.5\msvc2013"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
         IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.5"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
@@ -92,7 +92,7 @@ GOTO:EOF
     IF "%ARCHITECTURE%"=="x86" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\Qt5.5.1\5.5\msvc2013"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
         IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\9.5"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
@@ -103,7 +103,7 @@ GOTO:EOF
     IF "%ARCHITECTURE%"=="amd64" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27-x64"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
-        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.5\msvc2013"
+        IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
         IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.5"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
