@@ -269,6 +269,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           deftblacl: [],
           deffuncacl: [],
           defseqacl: [],
+          is_template: false,
           deftypeacl: []
         },
 
@@ -321,7 +322,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           editable: false, type: 'text', group: 'Definition',
           disabled: function(m) { return !m.isNew(); },
           control: 'node-list-by-name', url: 'get_databases', cache_level: 'server',
-          select2: { allowClear: false },
+          select2: { allowClear: false }, mode: ['create'],
           transform: function(data, cell) {
             var res = [],
                 control = cell || this,
@@ -362,6 +363,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },{
           id: 'datconnlimit', label: '{{ _('Connection limit') }}',
           editable: false, type: 'int', group: 'Definition', min: -1
+        },{
+          id: 'is_template', label: '{{ _('Template?') }}',
+          editable: false, type: 'switch', group: 'Definition',
+          disabled: true,  mode: ['properties', 'edit'],
+          options: {
+            'onText': 'Yes', 'offText': 'No',
+            'onColor': 'success', 'offColor': 'primary',
+            'size': 'small'
+          }
         },{
           id: 'datallowconn', label: '{{ _('Allow connections?') }}',
           editable: false, type: 'switch', group: 'Definition',

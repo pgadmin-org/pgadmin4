@@ -1,10 +1,10 @@
 SELECT
-    db.oid as did, db.datname as name, db.dattablespace AS spcoid,
+    db.oid AS did, db.datname AS name, db.dattablespace AS spcoid,
     spcname, datallowconn, pg_encoding_to_char(encoding) AS encoding,
     pg_get_userbyid(datdba) AS datowner, datcollate, datctype, datconnlimit,
-    has_database_privilege(db.oid, 'CREATE') as cancreate,
+    has_database_privilege(db.oid, 'CREATE') AS cancreate,
     current_setting('default_tablespace') AS default_tablespace,
-    descr.description as comments,
+    descr.description AS comments, db.datistemplate AS is_template,
     {### Default ACL for Tables ###}
     (SELECT array_to_string(ARRAY(
         SELECT array_to_string(defaclacl::text[], ', ')
