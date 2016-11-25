@@ -69,8 +69,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       if(node_info && 'catalog' in node_info) {
         return false;
       }
+      // Below will disable default value cell if argument mode is 'INOUT' or 'OUT' as
+      // user can not set default value for out parameters.
+      if(!_.isUndefined(m.get('argmode')) && !_.isUndefined(this.get('name')) &&
+         this.get('name') == 'argdefval' &&
+         (m.get('argmode') == 'INOUT' || m.get('argmode') == 'OUT')) {
+        return false;
+      }
       return true;
     },
+    validate: function() {
+    }
   });
 
   if (!pgBrowser.Nodes['function']) {
@@ -151,7 +160,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           procost: undefined, /* Estimated execution Cost */
           prorows: undefined, /* Estimated number of rows */
           proleakproof: undefined,
-          args: [],
+          arguments: [],
           prosrc: undefined,
           prosrc_c: undefined,
           probin: '$libdir/',
@@ -282,13 +291,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'proacl', label: '{{ _('Privileges') }}', type: 'text',
           mode: ['properties'], group: '{{ _('Security') }}'
         },{
-          id: 'args', label: '{{ _('Arguments') }}', cell: 'string',
+          id: 'arguments', label: '{{ _('Arguments') }}', cell: 'string',
           group: '{{ _('Arguments') }}', type: 'collection', canAdd: function(m){
             return m.isNew();
           },
           canDelete: true, model: ArgumentModel, mode: ['create', 'edit'],
           columns: ['argtype', 'argmode', 'argname', 'argdefval'],
-          disabled: 'isDisabled'
+          disabled: 'isDisabled', canDeleteRow: function(m) {
+            return m.isNew();
+          },
         },{
           id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
           group: '{{ _('Parameters') }}', control: 'variable-collection',

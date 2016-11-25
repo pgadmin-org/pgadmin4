@@ -11,8 +11,8 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, o_data.name) }}({{o_data.pro
 {% endif -%}
 {% if data.change_func  %}
 
-CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if data.args %}
-{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname) }} {% endif %}{% if p.argtype %}{{p.argtype}}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if data.arguments %}
+{% for p in data.arguments %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname) }} {% endif %}{% if p.argtype %}{{p.argtype}}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
 {% endfor %}
 {% endif -%}
