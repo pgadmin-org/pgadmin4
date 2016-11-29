@@ -196,8 +196,76 @@ void BrowserWindow::createActions()
     zoomOutShortcut = new QShortcut(QKeySequence(QKeySequence::ZoomOut), this);
     zoomOutShortcut->setContext(Qt::ApplicationShortcut);
     connect(zoomOutShortcut, SIGNAL(activated()), this, SLOT(zoomOut()));
+
+#ifdef __APPLE__
+  #if QT_VERSION >= 0x050500
+    QShortcut *cut_shortcut = new QShortcut(QKeySequence("Ctrl+X"), this);
+    QObject::connect(cut_shortcut, SIGNAL(activated()), this, SLOT(onMacCut()));
+
+    QShortcut *copy_shortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
+    QObject::connect(copy_shortcut, SIGNAL(activated()), this, SLOT(onMacCopy()));
+
+    QShortcut *paste_shortcut = new QShortcut(QKeySequence("Ctrl+V"), this);
+    QObject::connect(paste_shortcut, SIGNAL(activated()), this, SLOT(onMacPaste()));
+  #endif
+#endif
+
 }
 
+#ifdef __APPLE__
+  #if QT_VERSION >= 0x050500
+// Find current tab widget's webview widget and trigger the respective events of web page
+void BrowserWindow::triggerWebViewWindowEvents(QWebEnginePage::WebAction action)
+{
+    WebViewWindow *webviewPtr = NULL;
+
+    // Find current selected index from the view and set the cut/copy/paste events.
+    int index = m_tabWidget->currentIndex();
+
+    // If main web view window is pgAdmin then we should return from here after triggering events
+    if (index == 0)
+    {
+        m_mainWebView->triggerPageAction(action);
+        return;
+    }
+
+    // if multiple webviews are opened then trigger cut/copy/paste events to respective webviews.
+    QWidget *tab = m_tabWidget->widget(index);
+    if (tab != NULL)
+    {
+        QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+        foreach( QWidget* widgetPtr, widgetList )
+        {
+            if (widgetPtr != NULL)
+            {
+                webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+
+                if (webviewPtr != NULL)
+                    webviewPtr->triggerPageAction(action);
+            }
+        }
+    }
+}
+
+// Trigger web page's cut event
+void BrowserWindow::onMacCut()
+{
+  triggerWebViewWindowEvents(QWebEnginePage::Cut);
+}
+
+// Trigger web page's copy event
+void BrowserWindow::onMacCopy()
+{
+  triggerWebViewWindowEvents(QWebEnginePage::Copy);
+}
+
+// Trigger web page's paste event
+void BrowserWindow::onMacPaste()
+{
+  triggerWebViewWindowEvents(QWebEnginePage::Paste);
+}
+  #endif
+#endif
 
 // Process loading finished signals from the web view.
 void BrowserWindow::finishLoading(bool ok)

@@ -52,6 +52,13 @@ protected slots:
     void urlLinkClicked(const QUrl &);
     void closetabs();
     void tabTitleChanged(const QString &);
+#ifdef __APPLE__
+  #if QT_VERSION >= 0x050500
+    void onMacCut();
+    void onMacCopy();
+    void onMacPaste();
+  #endif
+#endif
 
 private slots:
     void openUrl();
@@ -121,6 +128,7 @@ private:
     void createActions();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
+    void triggerWebViewWindowEvents(QWebEnginePage::WebAction action);
 };
 
 #endif // BROWSERWINDOW_H
