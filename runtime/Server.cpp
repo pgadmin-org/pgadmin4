@@ -218,7 +218,13 @@ bool Server::Init()
 
     for (int i = 0; i < paths.size(); ++i)
     {
-        QDir dir(QCoreApplication::applicationDirPath() + "/" + paths[i]);
+        QDir dir;
+
+        if (paths[i].startsWith('/'))
+            dir = paths[i];
+        else
+            dir = QCoreApplication::applicationDirPath() + "/" + paths[i];
+
         m_appfile = dir.canonicalPath() + "/pgAdmin4.py";
 
         if (QFile::exists(m_appfile))
