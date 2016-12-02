@@ -47,9 +47,9 @@ int main(int argc, char * argv[])
     QApplication app(argc, argv);
 
     // Setup the settings management
-    QCoreApplication::setOrganizationName("pgAdmin Development Team");
+    QCoreApplication::setOrganizationName("pgadmin");
     QCoreApplication::setOrganizationDomain("pgadmin.org");
-    QCoreApplication::setApplicationName(PGA_APP_NAME);
+    QCoreApplication::setApplicationName(PGA_APP_NAME.toLower().replace(" ", ""));
 
     // Display the spash screen
     QSplashScreen *splash = new QSplashScreen();
