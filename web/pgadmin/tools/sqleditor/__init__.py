@@ -1201,11 +1201,16 @@ def load_file():
         file_data = json.loads(request.data, encoding='utf-8')
 
     file_path = unquote(file_data['file_name'])
+    if hasattr(str, 'decode'):
+        file_path = unquote(file_data['file_name']).encode('utf-8').decode('utf-8')
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
     if storage_manager_path:
         # generate full path of file
-        file_path = os.path.join(storage_manager_path, file_path.lstrip('/'))
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/')
+        )
 
     file_data = None
 
@@ -1224,7 +1229,10 @@ def load_file():
             is_binary = is_binary_string(fileObj.read(1024))
             if not is_binary:
                 fileObj.seek(0)
-                file_data = fileObj.read()
+                if hasattr(str, 'decode'):
+                    file_data = fileObj.read().decode('utf-8')
+                else:
+                    file_data = fileObj.read()
             else:
                 return internal_server_error(
                     errormsg=gettext("File type not supported")
@@ -1262,17 +1270,28 @@ def save_file():
 
     # generate full path of file
     file_path = unquote(file_data['file_name'])
+    if hasattr(str, 'decode'):
+        file_path = unquote(
+            file_data['file_name']
+        ).encode('utf-8').decode('utf-8')
     if storage_manager_path is not None:
         file_path = os.path.join(
             storage_manager_path,
-            unquote(file_data['file_name'].lstrip('/'))
+            file_path.lstrip('/')
         )
-    file_content = file_data['file_content']
+
+    if hasattr(str, 'decode'):
+        file_content = file_data['file_content']
+    else:
+        file_content = file_data['file_content'].encode()
 
     # write to file
     try:
-        with open(file_path, 'w') as output_file:
-            output_file.write(file_content)
+        with open(file_path, 'wb') as output_file:
+            if hasattr(str, 'decode'):
+                output_file.write(file_content.encode('utf-8'))
+            else:
+                output_file.write(file_content)
     except IOError as e:
         if e.strerror == 'Permission denied':
             err_msg = "Error: {0}".format(e.strerror)

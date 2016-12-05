@@ -2361,7 +2361,7 @@ define(
         setTitle: function(title) {
           _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if(p.isVisible()) {
-              p.title(title);
+              p.title(decodeURIComponent(title));
             }
           });
         },
@@ -2401,7 +2401,7 @@ define(
         _select_file_handler: function(e) {
           var self = this,
               data = {
-                'file_name': e
+                'file_name': decodeURI(e)
               };
 
           self.trigger(
@@ -2442,7 +2442,7 @@ define(
         _save_file_handler: function(e) {
           var self = this;
           data = {
-            'file_name': e,
+            'file_name': decodeURI(e),
             'file_content': self.gridView.query_tool_obj.getValue()
           }
           self.trigger(

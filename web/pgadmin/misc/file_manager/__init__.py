@@ -403,6 +403,9 @@ class Filemanager(object):
         It lists all file and folders within the given
         directory.
         """
+        path = unquote(path)
+        if hasattr(str, 'decode'):
+            path = unquote(path).encode('utf-8').decode('utf-8')
         files = {}
         if (_platform == "win32" and path == '/') and dir is None:
             drives = Filemanager._get_drives()
@@ -430,7 +433,7 @@ class Filemanager(object):
 
         if dir is None:
             dir = ""
-        orig_path = "{0}{1}".format(dir, path)
+        orig_path = u"{0}{1}".format(dir, path)
         user_dir = path
         folders_only = trans_data['folders_only'] if 'folders_only' in \
                                                      trans_data else ''
@@ -450,7 +453,10 @@ class Filemanager(object):
                 if (is_folder_hidden(system_path) or f.startswith('.')):
                     continue
 
-                user_path = os.path.join(os.path.join(user_dir, f))
+                if hasattr(str, 'decode'):
+                    user_path = os.path.join(os.path.join(user_dir, f)).encode('utf-8')
+                else:
+                    user_path = os.path.join(os.path.join(user_dir, f))
                 created = time.ctime(os.path.getctime(system_path))
                 modified = time.ctime(os.path.getmtime(system_path))
                 file_extension = str(splitext(system_path))
@@ -511,11 +517,12 @@ class Filemanager(object):
         Returns a JSON object containing information
         about the given file.
         """
-
         path = unquote(path)
+        if hasattr(str, 'decode'):
+            path = unquote(path).encode('utf-8').decode('utf-8')
         if self.dir is None:
             self.dir = ""
-        orig_path = "{0}{1}".format(self.dir, path)
+        orig_path = u"{0}{1}".format(self.dir, path)
         user_dir = path
         thefile = {
             'Filename': split_path(orig_path)[-1],
@@ -576,7 +583,9 @@ class Filemanager(object):
 
         # extract filename
         oldname = split_path(old)[-1]
-        path = str(old)
+        if hasattr(str, 'decode'):
+            old = old.encode('utf-8').decode('utf-8')
+        path = old
         path = split_path(path)[0]  # extract path
 
         if not path[-1] == '/':
@@ -584,11 +593,13 @@ class Filemanager(object):
 
         # newname = encode_urlpath(new)
         newname = new
+        if hasattr(str, 'decode'):
+            newname = new.encode('utf-8').decode('utf-8')
         newpath = path + newname
 
         # make system old path
-        oldpath_sys = "{0}{1}".format(dir, old)
-        newpath_sys = "{0}{1}".format(dir, newpath)
+        oldpath_sys = u"{0}{1}".format(dir, old)
+        newpath_sys = u"{0}{1}".format(dir, newpath)
 
         error_msg = gettext('Renamed successfully.')
         code = 1
@@ -622,7 +633,8 @@ class Filemanager(object):
             }
 
         dir = self.dir if self.dir is not None else ''
-        orig_path = "{0}{1}".format(dir, path)
+        path = path.encode('utf-8').decode('utf-8') if hasattr(str, 'decode') else path
+        orig_path = u"{0}{1}".format(dir, path)
 
         err_msg = ''
         code = 1
@@ -659,12 +671,17 @@ class Filemanager(object):
         code = 1
         try:
             path = req.form.get('currentpath')
-            orig_path = "{0}{1}".format(dir, path)
-            thefile = req.files['newfile']
-            newName = '{0}{1}'.format(orig_path, thefile.filename)
+
+            file_obj = req.files['newfile']
+            file_name = file_obj.filename
+            if hasattr(str, 'decode'):
+                path = req.form.get('currentpath').encode('utf-8').decode('utf-8')
+                file_name = file_obj.filename.encode('utf-8').decode('utf-8')
+            orig_path = u"{0}{1}".format(dir, path)
+            newName = u'{0}{1}'.format(orig_path, file_name)
 
             with open(newName, 'wb') as f:
-                f.write(thefile.read())
+                f.write(file_obj.read())
             code = 0
         except Exception as e:
             err_msg = "Error: {0}".format(e.strerror)
@@ -684,7 +701,12 @@ class Filemanager(object):
         dir = self.dir if self.dir is not None else ''
         err_msg = ''
         code = 1
+
         name = unquote(name)
+        path = unquote(path)
+        if hasattr(str, 'decode'):
+            name = unquote(name).encode('utf-8')
+            path = unquote(path).encode('utf-8')
         try:
             orig_path = "{0}{1}".format(dir, path)
             newName = '{0}{1}'.format(orig_path, name)
@@ -735,10 +757,19 @@ class Filemanager(object):
 
         dir = self.dir if self.dir is not None else ''
         newName = name
+        if hasattr(str, 'decode'):
+            newName = name.encode('utf-8')
+
         if dir != "":
-            newPath = dir + '/' + path + newName + '/'
+            if hasattr(str, 'decode'):
+                newPath = dir + '/' + path + newName.decode('utf-8') + '/'
+            else:
+                newPath = dir + '/' + path + newName + '/'
         else:
-            newPath = path + newName + '/'
+            if hasattr(str, 'decode'):
+                newPath = path + newName.decode('utf-8') + '/'
+            else:
+                newPath = path + newName + '/'
 
         err_msg = ''
         code = 1
@@ -776,9 +807,13 @@ class Filemanager(object):
             }
 
         dir = self.dir if self.dir is not None else ''
-        orig_path = "{0}{1}".format(dir, path)
+        if hasattr(str, 'decode'):
+            path = path.encode('utf-8')
+            orig_path = u"{0}{1}".format(dir, path.decode('utf-8'))
+        else:
+            orig_path = "{0}{1}".format(dir, path)
         name = path.split('/')[-1]
-        content = open(orig_path, 'r')
+        content = open(orig_path, 'rb')
         resp = Response(content)
         resp.headers['Content-Disposition'] = 'attachment; filename=' + name
         return resp

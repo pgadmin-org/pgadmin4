@@ -78,47 +78,14 @@ var preg_replace = function(array_pattern, array_pattern_replace, str)  {
   return new_str;
 };
 
-/*
- * cleanString (), on the same model as server side (connector)
- * cleanString
- */
-var cleanString = function(str) {
-  var cleaned = "";
-  var p_search = new Array(
-    "Š", "š", "Đ", "đ", "Ž", "ž", "Č", "č", "Ć", "ć", "À",
-    "Á", "Â", "Ã", "Ä", "Å", "Æ", "Ç", "È", "É", "Ê", "Ë", "Ì", "Í", "Î", "Ï",
-    "Ñ", "Ò", "Ó", "Ô", "Õ", "Ö", "Ő", "Ø", "Ù", "Ú", "Û", "Ü", "Ý", "Þ", "ß",
-    "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì",  "í",
-    "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ő", "ø", "ù", "ú", "û", "ü",
-    "ý", "ý", "þ", "ÿ", "Ŕ", "ŕ", " ", "'", "/"
-  );
-  var p_replace = new Array(
-    "S", "s", "Dj", "dj", "Z", "z", "C", "c", "C", "c", "A",
-    "A", "A", "A", "A", "A", "A", "C", "E", "E", "E", "E", "I", "I", "I", "I",
-    "N", "O", "O", "O", "O", "O", "O", "O", "U", "U", "U", "U", "Y", "B", "Ss",
-    "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i",
-    "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u",
-    "y", "y", "b", "y", "R", "r", "_", "_", ""
-  );
-
-  cleaned = preg_replace(p_search, p_replace, str);
-  cleaned = cleaned.replace(/[^_a-zA-Z0-9]/g, "");
-  cleaned = cleaned.replace(/[_]+/g, "_");
-
-  return cleaned;
-};
-
-/*
- * nameFormat (), separate filename from extension before calling cleanString()
- * nameFormat
- */
+ //nameFormat (), separate filename from extension
 var nameFormat = function(input) {
   var filename = '';
   if (input.lastIndexOf('.') != -1) {
-    filename  = cleanString(input.substr(0, input.lastIndexOf('.')));
+    filename  = input.substr(0, input.lastIndexOf('.'));
     filename += '.' + input.split('.').pop();
   } else {
-    filename = cleanString(input);
+    filename = input;
   }
   return filename;
 };
@@ -316,7 +283,7 @@ var setUploader = function(path) {
       var fname = value;
 
       if (fname != '') {
-        foldername = cleanString(fname);
+        foldername = fname;
         var d = new Date(); // to prevent IE cache issues
         $.getJSON(fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername, function(resp) {
           var result = resp.data.result;
@@ -366,7 +333,7 @@ var bindToolbar = function(data) {
     $('.fileinfo .delete_item button.btn_yes').unbind().on('click', function() {
       var path;
       if ($('.fileinfo').data('view') == 'grid') {
-        path = $('.fileinfo').find('#contents li.selected .clip span').attr('data-alt');
+        path = decodeURI($('.fileinfo').find('#contents li.selected .clip span').attr('data-alt'));
         if (path.lastIndexOf('/') == path.length - 1) {
           data.Path = path;
           deleteItem(data);
@@ -396,10 +363,10 @@ var bindToolbar = function(data) {
       var path;
       if ($('.fileinfo').data('view') == 'grid') {
         path = $('.fileinfo li.selected').find('.clip span').attr('data-alt');
-        window.open(fileConnector + '?mode=download&path=' + encodeURIComponent(path), '_blank');
+        window.open(fileConnector + '?mode=download&path=' + path, '_blank');
       } else {
         path = $('.fileinfo').find('table#contents tbody tr.selected td:first-child').attr('title');
-        window.open(fileConnector + '?mode=download&path=' + encodeURIComponent(path), '_blank');
+        window.open(fileConnector + '?mode=download&path=' + path, '_blank');
       }
     });
   }
@@ -1101,7 +1068,7 @@ var getFolderInfo = function(path, file_type) {
               config.options.dialog_type == 'create_file' &&
               is_protected == undefined
             ) {
-              $('.create_input input[type="text"]').val(file_name);
+              $('.create_input input[type="text"]').val(decodeURI(file_name));
               $('.file_manager_ok, .file_manager_create').removeClass('disabled');
             }
             getFileInfo(path);
