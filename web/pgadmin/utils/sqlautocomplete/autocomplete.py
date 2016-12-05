@@ -252,7 +252,14 @@ class SQLAutoComplete(object):
 
         result = dict()
         for m in matches:
-            result[m.completion.display] = {'object_type': m.completion.display_meta}
+            # Escape name only if meta type is not a keyword and datatype.
+            if m.completion.display_meta != 'keyword' and \
+                            m.completion.display_meta != 'datatype':
+                name = self.escape_name(m.completion.display)
+            else:
+                name = m.completion.display
+
+            result[name] = {'object_type': m.completion.display_meta}
 
         return result
 
