@@ -1509,7 +1509,6 @@ define(
           var self = this;
 
           self.is_query_tool = is_query_tool;
-          self.items_per_page = 25;
           self.rows_affected = 0;
           self.marked_line_no = 0;
           self.explain_verbose = false;
@@ -1529,7 +1528,6 @@ define(
 
           self.gridView.editor_title = _.unescape(editor_title);
           self.gridView.current_file = undefined;
-          self.gridView.items_per_page = self.items_per_page
 
           // Render the header
           self.gridView.render();
@@ -1640,8 +1638,6 @@ define(
 
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
-                self.items_per_page = res.data.items_per_page;
-                self.gridView.items_per_page = self.items_per_page;
                 self.info_notifier_timeout = res.data.info_notifier_timeout;
 
                 // Set the sql query to the SQL panel
@@ -3080,8 +3076,6 @@ define(
 
                 self.can_edit = res.data.can_edit;
                 self.can_filter = res.data.can_filter;
-                self.items_per_page = res.data.items_per_page;
-                self.gridView.items_per_page = self.items_per_page;
                 self.info_notifier_timeout = res.data.info_notifier_timeout;
 
                 // If status is True then poll the result.

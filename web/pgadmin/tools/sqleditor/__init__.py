@@ -71,16 +71,6 @@ class SqlEditorModule(PgAdminModule):
         return []
 
     def register_preferences(self):
-        self.items_per_page = self.preference.register(
-            'display', 'items_per_page',
-            gettext("Items per page in grid"), 'integer', 50,
-            category_label=gettext('Display'),
-            min_val=50,
-            max_val=2000,
-            help_str=gettext('The number of rows to display per page in the results grid. '
-                             'Value should be between 50 and 2000.')
-        )
-
         self.info_notifier_timeout = self.preference.register(
             'display', 'info_notifier_timeout',
             gettext("Query info notifier timeout"), 'integer', 5,
@@ -261,7 +251,6 @@ def start_view_data(trans_id):
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
-            'items_per_page': blueprint.items_per_page.get(),
             'info_notifier_timeout': blueprint.info_notifier_timeout.get()
         }
     )
@@ -364,7 +353,6 @@ def start_query_tool(trans_id):
         data={
             'status': status, 'result': result,
             'can_edit': can_edit, 'can_filter': can_filter,
-            'items_per_page': blueprint.items_per_page.get(),
             'info_notifier_timeout': blueprint.info_notifier_timeout.get()
         }
     )
