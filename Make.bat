@@ -340,7 +340,7 @@ GOTO:EOF
         copy "%QTDIR%\bin\opengl32sw.dll" "%PGBUILDPATH%\runtime"
         IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     ) ELSE (
-        IF %QT_VERSION GEQ 5.5 (
+        IF %QT_VERSION% GEQ 5.5 (
             copy "%QTDIR%\bin\icudt54.dll"   "%PGBUILDPATH%\runtime"
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
             copy "%QTDIR%\bin\icuin54.dll"   "%PGBUILDPATH%\runtime"
@@ -363,7 +363,7 @@ GOTO:EOF
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
             copy "%QTDIR%\bin\QtWebEngineProcess.exe" "%PGBUILDPATH%\runtime"
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        ) ELSE
+        ) ELSE (
             copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
             copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
