@@ -4007,8 +4007,8 @@ msgid "Default value"
 msgstr "默认值"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:201
-msgid "Custom auto-vaccum?"
-msgstr "自定义 AUTO VACUUM" 
+msgid "Custom auto-vacuum?"
+msgstr "自定义 AUTO VACUUM"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:202
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:218
@@ -6283,7 +6283,7 @@ msgid ""
 "Please click <a class=\"alert-link\" href=\"{0}\" "
 "target=\"_new\">here</a> for more\n"
 "    information."
-msgstr "请点击 <a class=\"alert-link\" href=\"{0}\" target=\"_new\">这里</a> 查看更多信息" 
+msgstr "请点击 <a class=\"alert-link\" href=\"{0}\" target=\"_new\">这里</a> 查看更多信息"
 
 #: pgadmin/browser/templates/browser/js/browser.js:110
 msgid "Properties"
@@ -6673,7 +6673,7 @@ msgid ""
 "administrators alike."
 msgstr ""
 "pgAdmin是一个开源的PostgreSQL数据库管理工具。"
-"这些工具包括图形管理界面，SQL查询工具，存储过程代码调试器等等。" 
+"这些工具包括图形管理界面，SQL查询工具，存储过程代码调试器等等。"
 "该工具旨在满足开发人员，DBA和系统管理员的需求。"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:19

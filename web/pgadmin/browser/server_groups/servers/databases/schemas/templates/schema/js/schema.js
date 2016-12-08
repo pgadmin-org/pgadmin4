@@ -6,7 +6,7 @@ define(
 function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
 
-  // VaccumSettings Collection to display all settings parameters as Grid
+  // VacuumSettings Collection to display all settings parameters as Grid
   var VacuumCollectionControl = Backform.VacuumCollectionControl =
     Backform.Control.extend({
 
@@ -198,7 +198,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     }),
     deps: ['autovacuum_enabled']
   },{
-    id: 'toast_autovacuum', label: '{{ _("Custom auto-vaccum?") }}',
+    id: 'toast_autovacuum', label: '{{ _("Custom auto-vacuum?") }}',
     group: '{{ _("Toast Table") }}', mode: ['edit', 'create'],
     type: 'switch',
     disabled: function(m) {

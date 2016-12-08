@@ -4005,7 +4005,7 @@ msgid "Default value"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:201
-msgid "Custom auto-vaccum?"
+msgid "Custom auto-vacuum?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:202

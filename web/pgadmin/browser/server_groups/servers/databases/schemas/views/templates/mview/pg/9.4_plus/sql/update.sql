@@ -165,7 +165,7 @@ RESET(
 {% endfor %}
 );
 {% endif %}
-{% endif %}{# ===== End check for custom autovaccum ===== #}
+{% endif %}{# ===== End check for custom autovacuum ===== #}
 {% endif %}{# ===== End block for check data definition ===== #}
 {% set old_comment = o_data.comment|default('', true) %}
 {% if (data.comment is defined and (data.comment != old_comment)) %}
