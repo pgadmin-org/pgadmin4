@@ -1980,8 +1980,6 @@ define(
                                 ')';
                   }
 
-                  column_label = c.display_name + '<br>' + col_type;
-
                   // Identify cell type of column.
                   switch(type) {
                     case "json":
@@ -2002,9 +2000,21 @@ define(
                     case "boolean":
                       col_cell = 'boolean';
                       break;
+                    case "character":
+                    case "character[]":
+                    case "character varying":
+                    case "character varying[]":
+                      if (c.internal_size && c.internal_size != 65535) {
+                        // Update column type to display length on column header
+                        col_type += ' (' + c.internal_size + ')';
+                      }
+                      col_cell = 'string';
+                      break;
                     default:
                       col_cell = 'string';
                   }
+
+                  column_label = c.display_name + '<br>' + col_type;
 
                   var col = {
                     'name': c.name,

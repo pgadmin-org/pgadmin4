@@ -12,5 +12,5 @@ INSERT INTO {{ conn|qtIdent(nsp_name, object_name) }} (
 {% set col_value = data_to_be_saved[col]|qtLiteral %}
 {% endif %}
 {########################################################}
-{% if not loop.first %}, {% endif %}{{ col_value }}::{{data_type[col]}}{% endfor %}
+{% if not loop.first %}, {% endif %}{{ col_value }}{% endfor %}
 );

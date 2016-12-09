@@ -9,7 +9,7 @@ UPDATE {{ conn|qtIdent(nsp_name, object_name) }} SET
 {% set col_value = data_to_be_saved[col]|qtLiteral %}
 {% endif %}
 {########################################################}
-{% if not loop.first %}, {% endif %}{{ conn|qtIdent(col) }} = {{ col_value }}::{{data_type[col]}}{% endfor %}
+{% if not loop.first %}, {% endif %}{{ conn|qtIdent(col) }} = {{ col_value }}{% endfor %}
  WHERE
 {% for pk in primary_keys %}
 {% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) }} = {{ primary_keys[pk]|qtLiteral }}{% endfor %};
