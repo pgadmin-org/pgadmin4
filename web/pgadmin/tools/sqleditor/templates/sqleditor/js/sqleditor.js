@@ -2428,7 +2428,7 @@ define(
               if (res.data.status) {
                 self.gridView.query_tool_obj.setValue(res.data.result);
                 self.gridView.current_file = e;
-                self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
+                self.setTitle(self.gridView.current_file.split('\\').pop().split('/').pop());
               }
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
               // hide cursor
