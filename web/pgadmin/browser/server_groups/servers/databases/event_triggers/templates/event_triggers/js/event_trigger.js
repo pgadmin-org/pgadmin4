@@ -46,7 +46,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'create_event_trigger', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Event Trigger...') }}',
-          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'}
+          icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'},
+          enable: pgBrowser.Nodes['database'].is_conn_allow
         }
         ]);
       },

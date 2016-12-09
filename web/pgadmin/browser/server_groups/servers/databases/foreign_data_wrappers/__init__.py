@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+import pgadmin.browser.server_groups.servers.databases as databases
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -79,9 +79,9 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         """
         Load the module script for foreign data wrapper, when any of the database node is initialized.
 
-        Returns: node type of the server module.
+        Returns: node type of the databse module.
         """
-        return servers.ServerModule.NODE_TYPE
+        return databases.DatabaseModule.NODE_TYPE
 
 
 blueprint = ForeignDataWrapperModule(__name__)

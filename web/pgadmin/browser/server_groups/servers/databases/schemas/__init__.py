@@ -88,7 +88,7 @@ class SchemaModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for server, when any of the server-group node is
+        Load the module script for schema, when any of the server node is
         initialized.
         """
         return servers.ServerModule.NODE_TYPE

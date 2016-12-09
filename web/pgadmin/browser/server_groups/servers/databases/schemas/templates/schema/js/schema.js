@@ -310,9 +310,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           name: 'create_schema', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Schema...') }}',
-          icon: 'wcTabIcon icon-schema', data: {action: 'create'}
+          icon: 'wcTabIcon icon-schema', data: {action: 'create'},
+          enable: 'can_create_schema'
         }
         ]);
+      },
+      can_create_schema: function(node, item) {
+        return pgBrowser.Nodes['database'].is_conn_allow.call(this, node);
       },
       model: pgBrowser.Node.Model.extend({
         defaults: {

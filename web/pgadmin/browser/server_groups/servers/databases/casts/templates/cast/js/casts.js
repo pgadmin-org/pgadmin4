@@ -39,7 +39,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             name: 'create_cast_on_database', node: 'database', module: this,
             applies: ['object', 'context'], callback: 'show_obj_properties',
             category: 'create', priority: 4, label: '{{ _('Cast...') }}',
-            icon: 'wcTabIcon icon-cast', data: {action: 'create'}
+            icon: 'wcTabIcon icon-cast', data: {action: 'create'},
+            enable: pgBrowser.Nodes['database'].is_conn_allow
           },{
             name: 'create_cast_on_coll', node: 'coll-cast', module: this,
             applies: ['object', 'context'], callback: 'show_obj_properties',

@@ -82,10 +82,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
-        return (node && node.connected != true);
+        return (node && node.connected != true && node.allowConn == true);
       },
       is_connected: function(node) {
         return (node && node.connected == true && node.canDisconn == true);
+      },
+      is_conn_allow: function(node) {
+        return (node && node.allowConn == true)
       },
       connection_lost: function(i, resp, server_connected) {
         if (pgBrowser.tree) {
@@ -102,6 +105,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
 
           if (i && d) {
+            if (!d.allowConn) return false;
             if (_.isUndefined(d.is_connecting) || !d.is_connecting) {
               d.is_connecting = true;
 
@@ -229,7 +233,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
 
           pgBrowser.tree.addIcon(item, {icon: data.icon});
-          if (!data.connected) {
+          if (!data.connected && data.allowConn) {
             connect_to_database(this, data, pgBrowser.tree, item, true);
             return false;
           }
@@ -237,18 +241,28 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },
 
         selected: function(item, data) {
-          if(!data || data._type != 'database' || data.label == "template0") {
+          if(!data || data._type != 'database') {
             return false;
           }
 
           pgBrowser.tree.addIcon(item, {icon: data.icon});
-          if (!data.connected) {
+          if (!data.connected && data.allowConn) {
             connect_to_database(this, data, pgBrowser.tree, item, false);
             return false;
           }
 
           return pgBrowser.Node.callbacks.selected.apply(this, arguments);
         },
+
+        refresh: function(cmd, i) {
+          var self = this,
+              t = pgBrowser.tree,
+              item = i || t.selected(),
+              d = t.itemData(item);
+
+          if (!d.allowConn) return;
+          pgBrowser.Node.callbacks.refresh.apply(this, arguments);
+        }
       },
       model: pgBrowser.Node.Model.extend({
         defaults: {

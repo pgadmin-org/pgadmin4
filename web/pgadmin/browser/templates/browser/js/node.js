@@ -126,7 +126,15 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             name: 'show_query_tool', node: self.type, module: self,
             applies: ['context'], callback: 'show_query_tool',
             priority: 998, label: '{{ _("Query Tool...") }}',
-            icon: 'fa fa-bolt'
+            icon: 'fa fa-bolt',
+            enable: function(itemData, item, data) {
+              if (itemData._type == 'database' && itemData.allowConn)
+                return true;
+              else if(itemData._type != 'database')
+                return true;
+              else
+                return false;
+            }
           }]);
         }
       }
@@ -164,6 +172,11 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       if (itemData._type == 'server-group' || itemData._type == 'server') {
         return false;
       }
+
+      // Do not display the menu if the database connection is not allowed
+      if (itemData._type == 'database' && !itemData.allowConn)
+        return false;
+
       var node = pgBrowser.Nodes[itemData._type],
         parentData = node.getTreeNodeHierarchy(item);
       if ( _.indexOf(['create','insert','update', 'delete'], data.script) != -1) {

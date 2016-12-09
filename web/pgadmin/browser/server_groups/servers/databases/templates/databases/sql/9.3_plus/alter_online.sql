@@ -3,19 +3,6 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data %}
-{# Change the owner #}
-{% if data.datowner %}
-ALTER DATABASE {{ conn|qtIdent(data.name) }} OWNER TO {{ conn|qtIdent(data.datowner) }};
-{% endif %}
-{# Change the comments/description #}
-{% if data.comments is defined %}
-COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
-IS {{ data.comments|qtLiteral }};
-{% endif %}
-{# Change the connection limit #}
-{% if data.datconnlimit %}
-ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH CONNECTION LIMIT = {{ data.datconnlimit }};
-{% endif %}
 {# Change the security labels #}
 {% if data.seclabels and data.seclabels|length > 0 %}
 {% set seclabels = data.seclabels %}

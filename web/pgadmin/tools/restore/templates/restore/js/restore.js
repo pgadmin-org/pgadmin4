@@ -240,11 +240,19 @@ define([
           var t = pgBrowser.tree, i = item, d = itemData;
           var parent_item = t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
-            if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data))
-              return (
-                (_.indexOf(restore_supported_nodes, d._type) !== -1 &&
-                is_parent_catalog(itemData, item, data) ) ? true: false
-              );
+            if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
+              if (_.indexOf(restore_supported_nodes, d._type) !== -1 &&
+                is_parent_catalog(itemData, item, data) ) {
+                  if (d._type == 'database' && d.allowConn)
+                    return true;
+                  else if(d._type != 'database')
+                    return true;
+                  else
+                    return false;
+              }
+              else
+                return false;
+            }
             else
               return false;
         };

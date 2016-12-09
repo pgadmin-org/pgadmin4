@@ -16,7 +16,8 @@ from flask import render_template, url_for, Response, g
 from flask_babel import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_response as ajax_response, internal_server_error
+from pgadmin.utils.ajax import make_response as ajax_response,\
+    internal_server_error
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
@@ -68,7 +69,8 @@ class DashboardModule(PgAdminModule):
         Register preferences for this module.
         """
         # Register options for the PG and PPAS help paths
-        self.dashboard_preference = Preferences('dashboards', gettext('Dashboards'))
+        self.dashboard_preference = Preferences('dashboards',
+                                                gettext('Dashboards'))
 
         self.session_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'session_stats_refresh',
@@ -133,9 +135,31 @@ def check_precondition(f):
 
         # If DB not connected then return error to browser
         if not g.conn.connected():
-            return precondition_required(
-                gettext("Connection to the server has been lost.")
-            )
+            if f.__name__ in ['activity', 'prepared', 'locks', 'config']:
+                return precondition_required(
+                    gettext("Please connect to the selected server"
+                            " to view the table.")
+                )
+            else:
+                return precondition_required(
+                    gettext("Please connect to the selected server"
+                            " to view the graph.")
+                )
+
+        if 'did' in kwargs:
+            db_conn = g.manager.connection(did=kwargs['did'])
+            # If the selected DB not connected then return error to browser
+            if not db_conn.connected():
+                if f.__name__ in ['activity', 'prepared', 'locks', 'config']:
+                    return precondition_required(
+                        gettext("Please connect to the selected database"
+                                " to view the table.")
+                    )
+                else:
+                    return precondition_required(
+                        gettext("Please connect to the selected database to"
+                                " view the graph.")
+                    )
 
         # Set template path for sql scripts
         g.server_type = g.manager.server_type
@@ -155,7 +179,8 @@ def check_precondition(f):
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("dashboard/js/dashboard.js", _=gettext),
+    return Response(response=render_template("dashboard/js/dashboard.js",
+                                             _=gettext),
                     status=200,
                     mimetype="application/javascript")
 
@@ -204,9 +229,16 @@ def index(sid=None, did=None):
     if sid is None and did is None:
         return render_template('/dashboard/welcome_dashboard.html')
     if did is None:
-        return render_template('/dashboard/server_dashboard.html', sid=sid, rates=rates, version=g.version)
+        return render_template('/dashboard/server_dashboard.html',
+                               sid=sid,
+                               rates=rates,
+                               version=g.version)
     else:
-        return render_template('/dashboard/database_dashboard.html', sid=sid, did=did, rates=rates, version=g.version)
+        return render_template('/dashboard/database_dashboard.html',
+                               sid=sid,
+                               did=did,
+                               rates=rates,
+                               version=g.version)
 
 
 def get_data(sid, did, template):

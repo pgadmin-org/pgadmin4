@@ -86,7 +86,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'create_foreign_data_wrapper', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Foreign Data Wrapper...') }}',
-          icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'}
+          icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'},
+          enable: pgBrowser.Nodes['database'].is_conn_allow
         }
         ]);
       },

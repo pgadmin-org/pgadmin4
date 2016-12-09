@@ -72,7 +72,8 @@ function($, _, S, pgAdmin, pgBrowser) {
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('Extension...') }}',
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'}
+          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          enable: pgBrowser.Nodes['database'].is_conn_allow
         }
         ]);
       },

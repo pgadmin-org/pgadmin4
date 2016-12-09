@@ -214,7 +214,8 @@ class DatabaseView(PGChildNodeView):
                     allowConn=row['datallowconn'],
                     canCreate=row['cancreate'],
                     canDisconn=canDisConn,
-                    canDrop = canDrop
+                    canDrop=canDrop,
+                    inode=True if row['datallowconn'] else False
                 )
             )
 
@@ -276,11 +277,13 @@ class DatabaseView(PGChildNodeView):
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
+        conn = self.manager.connection()
+
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            did=did, conn=self.conn, last_system_oid=0
+            did=did, conn=conn, last_system_oid=0
         )
-        status, res = self.conn.execute_dict(SQL)
+        status, res = conn.execute_dict(SQL)
 
         if len(res['rows']) == 0:
             return gone(
@@ -292,9 +295,9 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=conn
         )
-        status, dataclres = self.conn.execute_dict(SQL)
+        status, dataclres = conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -302,9 +305,9 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=conn
         )
-        status, defaclres = self.conn.execute_dict(SQL)
+        status, defaclres = conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -314,10 +317,10 @@ class DatabaseView(PGChildNodeView):
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=self.conn
+            did=did, conn=conn
         )
 
-        status, res1 = self.conn.execute_dict(SQL)
+        status, res1 = conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res1)
@@ -535,12 +538,13 @@ class DatabaseView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
 
+        conn = self.manager.connection()
         if did is not None:
             # Fetch the name of database for comparison
-            status, rset = self.conn.execute_dict(
+            status, rset = conn.execute_dict(
                 render_template(
                     "/".join([self.template_path, 'nodes.sql']),
-                    did=did, conn=self.conn, last_system_oid=0
+                    did=did, conn=conn, last_system_oid=0
                 )
             )
             if not status:
@@ -556,7 +560,6 @@ class DatabaseView(PGChildNodeView):
                 data['name'] = data['old_name']
 
         status = self.manager.release(did=did)
-        conn = self.manager.connection()
         for action in ["rename_database", "tablespace"]:
             SQL = self.get_offline_sql(gid, sid, data, did, action)
             SQL = SQL.strip('\n').strip(' ')
@@ -564,6 +567,18 @@ class DatabaseView(PGChildNodeView):
                 status, msg = conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=msg)
+
+        if not self.manager.db_info[did]['datallowconn']:
+            return jsonify(
+                node=self.blueprint.generate_browser_node(
+                    did,
+                    sid,
+                    data['name'],
+                    "icon-database-not-connected",
+                    connected=False,
+                    allowConn=False
+                )
+            )
 
         self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
         status, errmsg = self.conn.connect()
@@ -655,10 +670,11 @@ class DatabaseView(PGChildNodeView):
         SQL = ''
         if did is not None:
             # Fetch the name of database for comparison
-            status, rset = self.conn.execute_dict(
+            conn = self.manager.connection()
+            status, rset = conn.execute_dict(
                 render_template(
                     "/".join([self.template_path, 'nodes.sql']),
-                    did=did, conn=self.conn, last_system_oid=0
+                    did=did, conn=conn, last_system_oid=0
                 )
             )
             if not status:
@@ -677,7 +693,8 @@ class DatabaseView(PGChildNodeView):
             for action in ["rename_database", "tablespace"]:
                 SQL += self.get_offline_sql(gid, sid, data, did, action)
 
-            SQL += self.get_online_sql(gid, sid, data, did)
+            if rset['rows'][0]['datallowconn']:
+                SQL += self.get_online_sql(gid, sid, data, did)
         else:
             SQL += self.get_new_sql(gid, sid, data, did)
 
@@ -696,31 +713,37 @@ class DatabaseView(PGChildNodeView):
                 return _(" -- definition incomplete")
 
         acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
+        SQL_acl = ''
 
-        # Privileges
-        for aclcol in acls:
-            if aclcol in data:
-                allowedacl = acls[aclcol]
-                data[aclcol] = parse_priv_to_db(
-                    data[aclcol], allowedacl['acl']
+        if data['datallowconn']:
+            try:
+                acls = render_template(
+                    "/".join([self.template_path, 'allowed_privs.json'])
                 )
+                acls = json.loads(acls, encoding='utf-8')
+            except Exception as e:
+                current_app.logger.exception(e)
 
+            # Privileges
+            for aclcol in acls:
+                if aclcol in data:
+                    allowedacl = acls[aclcol]
+                    data[aclcol] = parse_priv_to_db(
+                        data[aclcol], allowedacl['acl']
+                    )
+
+            SQL_acl = render_template(
+                        "/".join([self.template_path, 'grant.sql']),
+                        data=data, conn=self.conn
+                    )
+
+        conn = self.manager.connection()
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),
-            data=data, conn=self.conn
+            data=data, conn=conn
         )
         SQL += "\n"
-        SQL += render_template(
-            "/".join([self.template_path, 'grant.sql']),
-            data=data, conn=self.conn
-        )
+        SQL += SQL_acl
         return SQL
 
     def get_online_sql(self, gid, sid, data, did=None):
@@ -792,10 +815,11 @@ class DatabaseView(PGChildNodeView):
             if self.manager.db_info is not None and \
             self.manager.did in self.manager.db_info else 0
 
-        status, res = self.conn.execute_dict(
+        conn = self.manager.connection()
+        status, res = conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'stats.sql']),
-                did=did, conn=self.conn, last_system_oid=last_system_oid
+                did=did, conn=conn, last_system_oid=last_system_oid
             )
         )
 
@@ -812,52 +836,56 @@ class DatabaseView(PGChildNodeView):
         """
         This function will generate sql for sql panel
         """
+
+        conn = self.manager.connection()
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            did=did, conn=self.conn, last_system_oid=0
+            did=did, conn=conn, last_system_oid=0
         )
-        status, res = self.conn.execute_dict(SQL)
+        status, res = conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
-        SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=self.conn
-        )
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-        res = self.formatdbacl(res, dataclres['rows'])
+        if res['rows'][0]['datallowconn']:
+            SQL = render_template(
+                "/".join([self.template_path, 'acl.sql']),
+                did=did, conn=self.conn
+            )
+            status, dataclres = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=dataclres)
+            res = self.formatdbacl(res, dataclres['rows'])
 
-        SQL = render_template(
-            "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
-        )
-        status, defaclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+            SQL = render_template(
+                "/".join([self.template_path, 'defacl.sql']),
+                did=did, conn=self.conn
+            )
+            status, defaclres = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=defaclres)
 
-        res = self.formatdbacl(res, defaclres['rows'])
+            res = self.formatdbacl(res, defaclres['rows'])
 
         result = res['rows'][0]
 
-        SQL = render_template(
-            "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=self.conn
-        )
-        status, res1 = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res1)
+        if result['datallowconn']:
+            SQL = render_template(
+                "/".join([self.template_path, 'get_variables.sql']),
+                did=did, conn=self.conn
+            )
+            status, res1 = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res1)
 
-        # Get Formatted Security Labels
-        if 'seclabels' in result:
-            # Security Labels is not available for PostgreSQL <= 9.1
-            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-            result.update(frmtd_sec_labels)
+            # Get Formatted Security Labels
+            if 'seclabels' in result:
+                # Security Labels is not available for PostgreSQL <= 9.1
+                frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+                result.update(frmtd_sec_labels)
 
-        # Get Formatted Variables
-        frmtd_variables = parse_variables_from_db(res1['rows'])
-        result.update(frmtd_variables)
+            # Get Formatted Variables
+            frmtd_variables = parse_variables_from_db(res1['rows'])
+            result.update(frmtd_variables)
 
         sql_header = "-- Database: {0}\n\n-- ".format(result['name'])
         if hasattr(str, 'decode'):
@@ -865,7 +893,7 @@ class DatabaseView(PGChildNodeView):
 
         sql_header += render_template(
             "/".join([self.template_path, 'delete.sql']),
-            datname=result['name'], conn=self.conn
+            datname=result['name'], conn=conn
         )
 
         SQL = self.get_new_sql(gid, sid, result, did)
@@ -886,7 +914,8 @@ class DatabaseView(PGChildNodeView):
             sid: Server ID
             did: Database ID
         """
-        dependents_result = self.get_dependents(self.conn, did)
+        dependents_result = self.get_dependents(self.conn, did) if\
+            self.conn.connected() else []
         return ajax_response(
             response=dependents_result,
             status=200
@@ -903,7 +932,8 @@ class DatabaseView(PGChildNodeView):
             sid: Server ID
             did: Database ID
         """
-        dependencies_result = self.get_dependencies(self.conn, did)
+        dependencies_result = self.get_dependencies(self.conn, did) if\
+            self.conn.connected() else []
         return ajax_response(
             response=dependencies_result,
             status=200

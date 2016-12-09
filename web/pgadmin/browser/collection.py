@@ -66,7 +66,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "id": "%s/%s" % (self.node_type, node_id),
             "label": label,
             "icon": self.node_icon if not icon else icon,
-            "inode": self.node_inode,
+            "inode": self.node_inode if 'inode' not in kwargs else kwargs['inode'],
             "_type": self.node_type,
             "_id": node_id,
             "_pid": parent_id,

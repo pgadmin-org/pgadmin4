@@ -56,7 +56,14 @@ define(
          */
         query_tool_menu_enabled = function(obj) {
           if(!_.isUndefined(obj) && !_.isNull(obj))
-            return (_.indexOf(unsupported_nodes, obj._type) !== -1 ? false: true);
+            if(_.indexOf(unsupported_nodes, obj._type) == -1) {
+              if (obj._type == 'database' && obj.allowConn)
+                return true;
+              else if(obj._type != 'database')
+                return true;
+              else
+                return false;
+             }
           else
             return false;
         };

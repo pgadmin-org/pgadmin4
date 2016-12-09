@@ -217,9 +217,13 @@ function(r, $, pgAdmin, _, Backbone) {
                         pgAdmin.Dashboard.render_chart(container, data, dataset, sid, did, url, options, counter, refresh);
                     },
                     error: function (xhr, status, msg) {
+                        var err = $.parseJSON(xhr.responseText),
+                            msg = err.errormsg
                         // If we get a 428, it means the server isn't connected
                         if (xhr.status == 428) {
-                            msg = '{{ gettext('Please connect to the selected server to view the graph.') }}';
+                            if (_.isUndefined(msg) || _.isNull(msg)) {
+                              msg = '{{ gettext('Please connect to the selected server to view the graph.') }}';
+                            }
                             cls = 'info';
                         } else {
                             msg = '{{ gettext('An error occurred whilst rendering the graph.') }}';
@@ -325,9 +329,13 @@ function(r, $, pgAdmin, _, Backbone) {
                     filter.search();
                 },
                 error: function(model, xhr, options) {
+                     var err = $.parseJSON(xhr.responseText),
+                         msg = err.errormsg
                     // If we get a 428, it means the server isn't connected
                     if (xhr.status == 428) {
-                        msg = '{{ gettext('Please connect to the selected server to view the table.') }}';
+                        if (_.isUndefined(msg) || _.isNull(msg)) {
+                            msg = '{{ gettext('Please connect to the selected server to view the table.') }}';
+                        }
                         cls = 'info';
                     } else {
                         msg = '{{ gettext('An error occurred whilst rendering the table.') }}';
