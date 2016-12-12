@@ -353,11 +353,11 @@ class TableCommand(GridCommand):
         if sql_filter is None:
             sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
                                   nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  limit=self.limit)
+                                  limit=self.limit, primary_keys=primary_keys)
         else:
             sql = render_template("/".join([self.sql_path, 'objectquery.sql']), object_name=self.object_name,
                                   nsp_name=self.nsp_name, pk_names=pk_names, cmd_type=self.cmd_type,
-                                  sql_filter=sql_filter, limit=self.limit)
+                                  sql_filter=sql_filter, limit=self.limit, primary_keys=primary_keys)
 
         return sql
 
