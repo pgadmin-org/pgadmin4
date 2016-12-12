@@ -128,7 +128,12 @@ private:
     void createActions();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
+
+#ifdef __APPLE__
+  #if QT_VERSION >= 0x050500
     void triggerWebViewWindowEvents(QWebEnginePage::WebAction action);
+  #endif
+#endif
 };
 
 #endif // BROWSERWINDOW_H
