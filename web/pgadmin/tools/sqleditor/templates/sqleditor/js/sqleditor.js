@@ -477,6 +477,53 @@ define(
         return false;
       },
 
+      get_column_width: function (column_type, grid_width) {
+
+        switch(column_type) {
+          case "bigint":
+          case "bigint[]":
+          case "bigserial":
+          case "bit":
+          case "bit[]":
+          case "bit varying":
+          case "bit varying[]":
+          case "\"char\"":
+          case "decimal":
+          case "decimal[]":
+          case "double precision":
+          case "double precision[]":
+          case "int4range":
+          case "int4range[]":
+          case "int8range":
+          case "int8range[]":
+          case "integer":
+          case "integer[]":
+          case "money":
+          case "money[]":
+          case "numeric":
+          case "numeric[]":
+          case "numrange":
+          case "numrange[]":
+          case "oid":
+          case "oid[]":
+          case "real":
+          case "real[]":
+          case "serial":
+          case "smallint":
+          case "smallint[]":
+          case "smallserial":
+            return 80;
+          case "boolean":
+          case "boolean[]":
+            return 60;
+        }
+
+        /* In case of other data types we will calculate
+         * 20% of the total container width and return it.
+         */
+        return Math.round((grid_width * 20)/ 100)
+      },
+
       /* Regarding SlickGrid usage in render_grid function.
 
        SlickGrid Plugins:
@@ -570,12 +617,16 @@ define(
 
           grid_columns.push(checkboxSelector.getColumnDefinition());
 
+        var grid_width = $($('#editor-panel').find('.wcFrame')[1]).width()
         _.each(columns, function(c) {
             var options = {
               id: c.name,
               field: c.name,
               name: c.label
             };
+
+            // Get the columns width based on data type
+            options['width'] = self.get_column_width(c.type, grid_width);
 
             // If grid is editable then add editor else make it readonly
             if(c.cell == 'Json') {
