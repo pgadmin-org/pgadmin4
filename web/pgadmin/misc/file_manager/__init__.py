@@ -13,6 +13,7 @@ import os
 import os.path
 import random
 import string
+import sys
 import time
 from sys import platform as _platform
 
@@ -90,7 +91,8 @@ def is_folder_hidden(filepath):
     if _platform == "win32":
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(
-                unicode(filepath))
+                unicode(filepath) if sys.version_info[0] < 3 else filepath
+            )
             assert attrs != -1
             result = bool(attrs & 2)
         except (AttributeError, AssertionError):
