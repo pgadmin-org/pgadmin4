@@ -1560,7 +1560,8 @@ define(
           mode: "text/x-pgsql",
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-          tabSize: pgAdmin.Browser.editor_options.tabSize
+          tabSize: pgAdmin.Browser.editor_options.tabSize,
+          lineWrapping: pgAdmin.Browser.editor_options.wrapCode
         });
 
         // On loading the docker, register the callbacks

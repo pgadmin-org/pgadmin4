@@ -146,6 +146,12 @@ class SqlEditorModule(PgAdminModule):
             help_str=gettext('Specifies whether or not to insert spaces instead of tabs when the tab key is used.')
         )
 
+        self.wrap_code = self.preference.register(
+            'Options', 'wrap_code',
+            gettext("Line wrapping?"), 'boolean', False,
+            category_label=gettext('Options'),
+            help_str=gettext('Specifies whether or not to wrap SQL code in editor.')
+        )
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 

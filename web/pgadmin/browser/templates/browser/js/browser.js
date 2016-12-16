@@ -361,11 +361,11 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
       obj.editor = CodeMirror.fromTextArea(
           document.getElementById("sql-textarea"), {
             lineNumbers: true,
-            lineWrapping: true,
             mode: "text/x-pgsql",
             readOnly: true,
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-            tabSize: pgAdmin.Browser.editor_options.tabSize
+            tabSize: pgAdmin.Browser.editor_options.tabSize,
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
           });
 
       setTimeout(function() {
@@ -1625,7 +1625,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
       "Cmd-Alt-Right": "goGroupRight"
     },
     editor_options: {
-      tabSize: '{{ editor_tab_size }}'
+      tabSize: '{{ editor_tab_size }}',
+      wrapCode: '{{ editor_wrap_code }}' == 'True'
     }
 
   });

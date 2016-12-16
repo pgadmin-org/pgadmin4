@@ -252,7 +252,8 @@ define(
                   indentUnit: 4,
                   mode: "text/x-pgsql",
                   extraKeys: pgBrowser.editor_shortcut_keys,
-                  tabSize: pgBrowser.editor_options.tabSize
+                  tabSize: pgBrowser.editor_options.tabSize,
+                  lineWrapping: pgAdmin.Browser.editor_options.wrapCode
                 });
               },
 

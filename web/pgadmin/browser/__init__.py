@@ -504,6 +504,9 @@ def browser_js():
     editor_use_spaces_pref = prefs.preference('use_spaces')
     editor_use_spaces = editor_use_spaces_pref.get()
 
+    editor_wrap_code_pref = prefs.preference('wrap_code')
+    editor_wrap_code = editor_wrap_code_pref.get()
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -515,6 +518,7 @@ def browser_js():
             edbas_help_path=edbas_help_path,
             editor_tab_size=editor_tab_size,
             editor_use_spaces=editor_use_spaces,
+            editor_wrap_code=editor_wrap_code,
             _=gettext
         ),
         200, {'Content-Type': 'application/x-javascript'})

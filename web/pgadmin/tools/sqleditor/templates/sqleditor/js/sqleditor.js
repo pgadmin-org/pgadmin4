@@ -190,7 +190,8 @@ define(
             },
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: pgBrowser.editor_shortcut_keys,
-            tabSize: pgAdmin.Browser.editor_options.tabSize
+            tabSize: pgAdmin.Browser.editor_options.tabSize,
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
         });
 
         // Create main wcDocker instance
@@ -234,6 +235,7 @@ define(
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: pgBrowser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
             scrollbarStyle: 'simple'
         });
 

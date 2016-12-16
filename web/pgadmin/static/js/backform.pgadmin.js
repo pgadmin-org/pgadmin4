@@ -1400,7 +1400,8 @@
         mode: "text/x-pgsql",
         readOnly: true,
         extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-        tabSize: pgAdmin.Browser.editor_options.tabSize
+        tabSize: pgAdmin.Browser.editor_options.tabSize,
+        lineWrapping: pgAdmin.Browser.editor_options.wrapCode
       });
 
       /*
@@ -2171,7 +2172,8 @@
             lineNumbers: true,
             mode: "text/x-sql",
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-            tabSize: pgAdmin.Browser.editor_options.tabSize
+            tabSize: pgAdmin.Browser.editor_options.tabSize,
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
           });
 
       // Disable editor
