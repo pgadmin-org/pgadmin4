@@ -718,6 +718,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
 
 .pg-el-container ul.tab-content {
   min-height: calc(100% - 10px);
+  height: 100%;
 }
 
 .pgadmin-control-group {

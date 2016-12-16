@@ -157,22 +157,11 @@
 
 .CodeMirror, #editor-panel .CodeMirror-gutters {
     min-height: 100%;
+    height: 100%;
 }
 
-/* Changes specific to output panel of query tool */
-#output-panel, #output-panel .CodeMirror, #output-panel .CodeMirror-gutters {
+#output-panel {
   height: 100% !important;
-}
-
-#output-panel .CodeMirror-gutter-wrapper {
-  width: 43px;
-  height: 22px;
-  border-right: 1px solid #ddd !important;
-  background: #f7f7f7 !important;
-}
-
-.CodeMirror-foldgutter {
-  width: .9em;
 }
 
 .CodeMirror-foldgutter-open,
@@ -431,8 +420,8 @@ input.editor-checkbox {
   Ref: https://github.com/mleibman/SlickGrid/issues/742
 */
 .slickgrid, .slickgrid *, .slick-header-column {
-        box-sizing: content-box;
-        -moz-box-sizing: content-box;
-        -webkit-box-sizing: content-box;
-        -ms-box-sizing: content-box;
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -ms-box-sizing: content-box;
 }

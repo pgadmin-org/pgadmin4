@@ -52,8 +52,9 @@ iframe {
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */
-.CodeMirror, .CodeMirror-gutters {
+.CodeMirror, .CodeMirror-gutter {
     height: 100% !important;
+    min-height: 100% !important;
 }
 
 /* Padding for the treeview */
@@ -268,6 +269,7 @@ iframe {
 .pgadmin-controls.SQL {
   padding-right: 3px;
   padding-left: 1px;
+  height: 100%;
 }
 .pgadmin-controls > textarea.form-control,
 .pgadmin-controls > textarea.form-control[disabled] {
@@ -916,11 +918,13 @@ td.edit-cell.editable.sortable.renderable.editor {
 
 .tab-pane.SQL {
   padding: 0px 7px 0px 0px;
+  height: 100%;
 }
 
 .pgadmin-control-group.sql {
   margin: 0px;
   padding: 0px;
+  height: 100%;
 }
 
 .nav-tabs{
@@ -994,10 +998,6 @@ ul.nav.nav-tabs {
 .select2-results span.wcTabIcon {
   padding-left: 20px;
   background-position: 0px 2px;
-}
-
-.pgadmin-controls.SQL>.CodeMirror {
-  height: 500px !important;
 }
 
 /* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */ 

@@ -1456,13 +1456,6 @@
           this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
-
-        this.$el.find('.CodeMirror').css(
-            'cssText',
-            'height: ' + (
-              this.$el.closest('.tab-content').height() + 8
-              ) + 'px !important;'
-            );
       }
     },
     onPanelResized: function(o) {
