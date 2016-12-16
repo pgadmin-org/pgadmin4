@@ -715,7 +715,8 @@ class DatabaseView(PGChildNodeView):
         acls = []
         SQL_acl = ''
 
-        if data['datallowconn']:
+        if ('datallowconn' in data and data['datallowconn']) or \
+                        'datallowconn' not in data:
             try:
                 acls = render_template(
                     "/".join([self.template_path, 'allowed_privs.json'])
