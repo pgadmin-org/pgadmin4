@@ -27,4 +27,5 @@ FROM (
     LEFT OUTER JOIN pg_operator op ON (op.oid = c.conexclop[i.attnum])
     LEFT JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND a.attnum = i.attnum)
     LEFT OUTER JOIN pg_collation coll ON a.attcollation=coll.oid
-    LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid;
+    LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
+ORDER BY i.attnum;
