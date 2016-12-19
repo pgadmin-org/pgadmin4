@@ -1645,7 +1645,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
 
   window.onbeforeunload = function(ev) {
     var e = ev || window.event,
-        msg = '{{ _('Do you really want to leave the page?') }}';
+        msg = '{{ _('Are you sure you wish to close the %(appname)s browser?', appname=config.APP_NAME) }}';
 
     // For IE and Firefox prior to version 4
     if (e) {
