@@ -555,6 +555,7 @@ fieldset[disabled] .form-control {
 
 .backgrid.presentation td.renderable {
     padding: 3px;
+    font-size: 12px;
 }
 
 .backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {

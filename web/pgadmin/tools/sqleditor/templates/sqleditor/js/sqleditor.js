@@ -999,7 +999,7 @@ define(
         var grid = self.history_grid = new Backgrid.Grid({
             columns: columnsColl,
             collection: history_collection,
-            className: "backgrid table-bordered"
+            className: "backgrid table-bordered presentation table backgrid-striped"
         });
 
         // Render the grid
