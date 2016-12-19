@@ -1,4 +1,4 @@
-/** Grant Wizard CSS **/
+  /** Grant Wizard CSS **/
 
 /**
   CSS to make db object type table
@@ -12,7 +12,7 @@
 }
 
 .object_type_table {
-  height: 100%;
+  height: calc(100% - 16px);
   border: 0 !important;
   display: inline;
   padding: 0;
@@ -34,7 +34,7 @@
   overflow: auto;
   border: 1px solid #ddd;
   width: 100%;
-  height: calc(100% - 25px);
+  height: calc(100% - 41px);
 }
 
 .object_type_table tbody tr {
