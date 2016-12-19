@@ -506,6 +506,7 @@ fieldset[disabled] .form-control {
 
 .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
     border-bottom-width: 1px;
+    padding: 3px;
 }
 
 .subnode > table.backgrid{
@@ -521,7 +522,6 @@ fieldset[disabled] .form-control {
 
 .backgrid > thead > th, .backgrid > tbody > td {
   line-height: 18px;
-  font-size: 12px;
 }
 
 .backgrid > thead > th {
@@ -537,6 +537,7 @@ fieldset[disabled] .form-control {
 
 .backgrid > thead th a {
     color: white;
+    font-size: 12px;
 }
 
 .backgrid > th.object {
@@ -1480,4 +1481,11 @@ body {
     background-repeat: repeat-x;
     border-color: #245580;
     border-radius: 4px;
+}
+
+.dashboard-tab-container table,
+.pg-panel-statistics-container table,
+.pg-panel-depends-container table,
+.pg-panel-depends-container table {
+    font-size: 12px !important;
 }

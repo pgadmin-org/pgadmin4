@@ -281,7 +281,7 @@ function(r, $, pgAdmin, _, Backbone) {
             var grid = new Backgrid.Grid({
               columns: columns,
               collection: data,
-              className: "backgrid table-bordered table-striped"
+              className: "backgrid table-bordered presentation table backgrid-striped"
             });
 
             // Render the grid
