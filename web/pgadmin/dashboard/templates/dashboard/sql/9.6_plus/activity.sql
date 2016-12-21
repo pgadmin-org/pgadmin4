@@ -4,7 +4,7 @@ SELECT
     usename,
     application_name,
     client_addr,
-    to_char(backend_start, 'YYYY-MM-DD HH24:MM:SS TZ') AS backend_start,
+    to_char(backend_start, 'YYYY-MM-DD HH24:MI:SS TZ') AS backend_start,
     state,
     wait_event_type || ': ' || wait_event AS wait_event,
     pg_blocking_pids(pid) AS blocking_pids
