@@ -279,7 +279,7 @@ li {
   background-color: white;
 }
 
-.slick-cell.cell-move-handle {
+.sc.cell-move-handle {
   font-weight: bold;
   text-align: right;
   border-right: solid gray;
@@ -291,15 +291,15 @@ li {
   background: #b6b9bd;
 }
 
-.slick-row.selected .cell-move-handle {
+.sr.selected .cell-move-handle {
   background: #D5DC8D;
 }
 
-.slick-row .cell-actions {
+.sr .cell-actions {
   text-align: left;
 }
 
-.slick-row.complete {
+.sr.complete {
   background-color: #DFD;
   color: #555;
 }
@@ -332,11 +332,11 @@ li {
   font-size: 10px;
 }
 
-.slick-row.selected .cell-selection {
+.sr.selected .cell-selection {
   background-color: transparent; /* show default selected row background */
 }
 
-.slick-cell-checkboxsel {
+.sc-cb {
   background: #f0f0f0;
   border-right-color: silver;
   border-right-style: solid;
@@ -395,7 +395,7 @@ input.editor-checkbox {
 }
 
 /* Override selected row color */
-.slick-cell.selected {
+.sc.selected {
     background-color: #eeeeee !important;
 }
 

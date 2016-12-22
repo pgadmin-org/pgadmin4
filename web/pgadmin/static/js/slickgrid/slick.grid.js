@@ -337,8 +337,8 @@ if (typeof Slick === "undefined") {
             .bind("dragstart", {distance: 3}, handleDragStart)
             .bind("drag", handleDrag)
             .bind("dragend", handleDragEnd)
-            .delegate(".slick-cell", "mouseenter", handleMouseEnter)
-            .delegate(".slick-cell", "mouseleave", handleMouseLeave);
+            .delegate(".sc", "mouseenter", handleMouseEnter)
+            .delegate(".sc", "mouseleave", handleMouseLeave);
 
         // Work around http://crbug.com/312427.
         if (navigator.userAgent.toLowerCase().match(/webkit/) &&
@@ -953,8 +953,8 @@ if (typeof Slick === "undefined") {
       }
       el.remove();
 
-      var r = $("<div class='slick-row' />").appendTo($canvas);
-      el = $("<div class='slick-cell' id='' style='visibility:hidden'>-</div>").appendTo(r);
+      var r = $("<div class='sr' />").appendTo($canvas);
+      el = $("<div class='sc' id='' style='visibility:hidden'>-</div>").appendTo(r);
       cellWidthDiff = cellHeightDiff = 0;
       if (el.css("box-sizing") != "border-box" && el.css("-moz-box-sizing") != "border-box" && el.css("-webkit-box-sizing") != "border-box") {
         $.each(h, function (n, val) {
@@ -976,8 +976,8 @@ if (typeof Slick === "undefined") {
         "." + uid + " .slick-header-column { left: 1000px; }",
         "." + uid + " .slick-top-panel { height:" + options.topPanelHeight + "px; }",
         "." + uid + " .slick-headerrow-columns { height:" + options.headerRowHeight + "px; }",
-        "." + uid + " .slick-cell { height:" + rowHeight + "px; }",
-        "." + uid + " .slick-row { height:" + options.rowHeight + "px; }"
+        "." + uid + " .sc { height:" + rowHeight + "px; }",
+        "." + uid + " .sr { height:" + options.rowHeight + "px; }"
       ];
 
       for (var i = 0; i < columns.length; i++) {
@@ -1462,7 +1462,7 @@ if (typeof Slick === "undefined") {
       var d = getDataItem(row);
       var dataLoading = row < dataLength && !d;
       var diff = dataLength - row;
-      var rowCss = "slick-row" +
+      var rowCss = "sr" +
           (dataLoading ? " loading" : "") +
           (row === activeRow ? " active" : "") +
           (((options.enableAddRow && diff < 0) || diff == 0) ? "" : (row % 2 == 1 ? " odd" : " even"));
@@ -1521,7 +1521,7 @@ if (typeof Slick === "undefined") {
       // item: grid data for row
 
       var m = columns[cell];
-      var cellCss = "slick-cell l" + cell + " r" + Math.min(columns.length - 1, cell + colspan - 1) +
+      var cellCss = "sc l" + cell + " r" + Math.min(columns.length - 1, cell + colspan - 1) +
           (m.cssClass ? " " + m.cssClass : "");
       if (row === activeRow && cell === activeCell) {
         cellCss += (" active");
@@ -2322,7 +2322,7 @@ if (typeof Slick === "undefined") {
     // Interactivity
 
     function handleMouseWheel(e) {
-      var rowNode = $(e.target).closest(".slick-row")[0];
+      var rowNode = $(e.target).closest(".sr")[0];
       if (rowNode != rowNodeFromLastMouseWheelEvent) {
         if (zombieRowNodeFromLastMouseWheelEvent && zombieRowNodeFromLastMouseWheelEvent != rowNode) {
           if (options.enableAsyncPostRenderCleanup && zombieRowPostProcessedFromLastMouseWheelEvent) {
@@ -2448,7 +2448,7 @@ if (typeof Slick === "undefined") {
         // if this click resulted in some cell child node getting focus,
         // don't steal it back - keyboard events will still bubble up
         // IE9+ seems to default DIVs to tabIndex=0 instead of -1, so check for cell clicks directly.
-        if (e.target != document.activeElement || $(e.target).hasClass("slick-cell")) {
+        if (e.target != document.activeElement || $(e.target).hasClass("sc")) {
           setFocus();
         }
       }
@@ -2472,7 +2472,7 @@ if (typeof Slick === "undefined") {
     }
 
     function handleContextMenu(e) {
-      var $cell = $(e.target).closest(".slick-cell", $canvas);
+      var $cell = $(e.target).closest(".sc", $canvas);
       if ($cell.length === 0) {
         return;
       }
@@ -2578,7 +2578,7 @@ if (typeof Slick === "undefined") {
     }
 
     function getCellFromEvent(e) {
-      var $cell = $(e.target).closest(".slick-cell", $canvas);
+      var $cell = $(e.target).closest(".sc", $canvas);
       if (!$cell.length) {
         return null;
       }

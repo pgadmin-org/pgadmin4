@@ -81,13 +81,13 @@ classes should alter those!
   outline: 0;
 }
 
-.slick-row.ui-widget-content, .slick-row.ui-state-active {
+.sr.ui-widget-content, .sr.ui-state-active {
   position: absolute;
   border: 0px;
   width: 100%;
 }
 
-.slick-cell, .slick-headerrow-column {
+.sc, .slick-headerrow-column {
   position: absolute;
   border: 1px solid transparent;
   border-right: 1px dotted silver;
@@ -110,7 +110,7 @@ classes should alter those!
   display: inline-block;
 }
 
-.slick-cell.highlighted {
+.sc.highlighted {
   background: lightskyblue;
   background: rgba(0, 0, 255, 0.2);
   -webkit-transition: all 0.5s;
@@ -119,11 +119,11 @@ classes should alter those!
   transition: all 0.5s;
 }
 
-.slick-cell.flashing {
+.sc.flashing {
   border: 1px solid red !important;
 }
 
-.slick-cell.editable {
+.sc.editable {
   z-index: 11;
   overflow: visible;
   background: white;
@@ -131,7 +131,7 @@ classes should alter those!
   border-style: solid;
 }
 
-.slick-cell:focus {
+.sc:focus {
   outline: none;
 }
 

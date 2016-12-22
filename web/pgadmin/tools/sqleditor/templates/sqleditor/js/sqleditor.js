@@ -614,7 +614,7 @@ define(
           checkboxSelector;
 
           checkboxSelector = new Slick.CheckboxSelectColumn({
-            cssClass: "slick-cell-checkboxsel"
+            cssClass: "sc-cb"
           });
 
           grid_columns.push(checkboxSelector.getColumnDefinition());
@@ -673,7 +673,7 @@ define(
         // Add-on function which allow us to identify the faulty row after insert/update
         // and apply css accordingly
         collection.getItemMetadata = function(i) {
-          var res = {}, cssClass = 'normal_row';
+          var res = {}, cssClass = '';
           if (_.has(self.handler, 'data_store')) {
             if (i in self.handler.data_store.added_index) {
               cssClass = 'new_row';
