@@ -2,7 +2,7 @@ VERSION = 1.1.0.0
 QMAKE_TARGET_COMPANY = "The pgAdmin Development Team"
 QMAKE_TARGET_PRODUCT = "pgAdmin 4"
 QMAKE_TARGET_DESCRIPTION = "pgAdmin 4 Desktop Runtime"
-QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2016, The pgAdmin Development Team"
+QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2017, The pgAdmin Development Team"
 
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {

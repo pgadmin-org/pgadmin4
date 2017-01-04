@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2016, The pgAdmin Development Team
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # ##################################################################
@@ -81,7 +81,7 @@ def get_role_data(lr_pwd):
         "rolmembership": [],
         "rolname": "test_role_%s" % str(uuid.uuid4())[1:6],
         "rolpassword": lr_pwd,
-        "rolvaliduntil": "12/27/2016",
+        "rolvaliduntil": "12/27/2017",
         "seclabels": [],
         "variables": [{"name": "work_mem",
                        "database": "postgres",
