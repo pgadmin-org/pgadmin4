@@ -55,7 +55,7 @@ def make_json_response(
     doc['data'] = data
 
     return Response(
-        response=json.dumps(doc, cls=DataTypeJSONEncoder),
+        response=json.dumps(doc, cls=DataTypeJSONEncoder, separators=(',',':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()
@@ -65,7 +65,7 @@ def make_json_response(
 def make_response(response=None, status=200):
     """Create a JSON response handled by the backbone models."""
     return Response(
-        response=json.dumps(response, cls=DataTypeJSONEncoder),
+        response=json.dumps(response, cls=DataTypeJSONEncoder, separators=(',',':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()
