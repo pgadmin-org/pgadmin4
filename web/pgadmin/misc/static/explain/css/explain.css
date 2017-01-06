@@ -21,7 +21,6 @@
   display: table-cell;
   text-align: left;
   white-space: nowrap;
-  line-height: 10px !important;
   padding: 2px !important;
   font-size: small;
 }
@@ -30,7 +29,10 @@ td.explain-tooltip-val {
   display: table-cell;
   text-align: left;
   white-space: pre-wrap;
-  font-size: smaller;
+  padding: 2px !important;
+  font-size: small;
+  font-weight: normal;
+
 }
 
 .pgadmin-explain-tooltip {
