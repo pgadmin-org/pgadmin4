@@ -203,10 +203,18 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
             status_in, rid_tar = conn.execute_scalar(
                 "SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
-                current_app.logger.debug("Failed to check for the pldbg_get_target_info function.")
-                return internal_server_error(gettext("Failed to check for the pldbg_get_target_info function."))
+                current_app.logger.debug("Failed to find the pldbgapi extension in this database.")
+                return internal_server_error(gettext("Failed to find the pldbgapi extension in this database."))
 
-            if rid_tar == 0:
+            #We also need to check to make sure that the debugger library is also available.
+            status_in, ret_oid = conn.execute_scalar(
+                "SELECT count(*) FROM pg_proc WHERE proname = 'plpgsql_oid_debug'")
+            if not status_in:
+                current_app.logger.debug("Failed to find the pldbgapi extension in this database.")
+                return internal_server_error(gettext("Failed to find the pldbgapi extension in this database."))
+
+            # Debugger plugin is configured but pldggapi extension is not created so return error
+            if rid_tar == '0' or ret_oid == '0':
                 msg = gettext("The debugger plugin is not enabled. Please create the pldbgapi extension in this database.")
                 ret_status = False
     else:
