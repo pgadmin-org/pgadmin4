@@ -40,11 +40,21 @@ function($, _, pgAdmin, Backbone) {
           }
         ],
         validate: function(attrs, options) {
+           var err = {},
+              errmsg = null;
+          this.errorModel.clear();
+
           if (!this.isNew() && 'id' in this.changed) {
-            return '{{ _('The ID cannot be changed.') }}';
+            errmsg = '{{ _('The ID cannot be changed.') }}';
+            this.errorModel.set('id', errmsg);
+            return errmsg;
           }
-          if (String(this.name).replace(/^\s+|\s+$/g, '') == '') {
-            return '{{ _('Name cannot be empty.') }}';
+          if (_.isUndefined(this.get('name')) ||
+            _.isNull(this.get('name')) ||
+            String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
+            errmsg = '{{ _('Name cannot be empty.') }}';
+            this.errorModel.set('name', errmsg);
+            return errmsg;
           }
           return null;
         }
