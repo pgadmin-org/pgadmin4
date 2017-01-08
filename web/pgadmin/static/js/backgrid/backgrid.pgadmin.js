@@ -352,6 +352,7 @@
 
     enterEditMode: function() {
       this.$el.addClass('editor');
+      $(this.$el.find('input')).focus();
     },
 
     exitEditMode: function() {
@@ -372,7 +373,7 @@
     },
 
     render: function () {
-      var col = _.defaults(this.column.toJSON(), this.defaults),
+      var self = this, col = _.defaults(this.column.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
           attrArr = col.name.split('.'),
           name = attrArr.shift(),
@@ -400,6 +401,32 @@
           {'state': rawValue, 'disabled': !editable}, col.options,
           this.defaults.options
           ));
+
+      // Listen for Tab key
+      this.$el.on('keydown', function(e) {
+        var gotoCell;
+        if(e.keyCode == 9) {
+          // go to Next Cell & if Shift is also pressed go to Previous Cell
+          gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+        }
+
+        if(gotoCell) {
+            setTimeout(function() {
+              if(gotoCell.hasClass('editable')) {
+                e.preventDefault();
+                e.stopPropagation();
+                var command = new Backgrid.Command({
+                      key: "Tab", keyCode: 9,
+                      which: 9, shiftKey: e.shiftKey
+                    });
+                self.model.trigger("backgrid:edited", self.model,
+                                    self.column, command);
+                gotoCell.focus();
+              }
+            }, 20);
+        }
+
+      });
 
       this.delegateEvents();
 

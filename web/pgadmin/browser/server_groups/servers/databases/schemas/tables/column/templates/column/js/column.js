@@ -248,17 +248,27 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 this.$el.removeClass('editor');
                 // Once user have selected a value
                 // we can shift to next cell if it is editable
-                var el_length_cell = this.$el.next();
+                var next_cell, length_cell = this.$el.next(),
+                  not_null_cell = this.$el.next().next().next();
+
                 // Add delay so that Select2 cell tab event is captured
                 // first before triggerring backgrid:edited event.
                 setTimeout(function() {
-                  if(el_length_cell && el_length_cell.hasClass('editable') && e) {
+                  // First check Length column if it is disable then goto
+                  // Not Null column
+                  if(length_cell && length_cell.hasClass('editable') && e) {
+                    next_cell = length_cell;
+                  } else if(not_null_cell && not_null_cell.hasClass('editable') && e) {
+                    next_cell = not_null_cell;
+                  }
+
+                  if(next_cell) {
                     e.preventDefault();
                     e.stopPropagation();
                     var command = new Backgrid.Command({key: "Tab", keyCode: 9, which: 9});
                     self.model.trigger("backgrid:edited", self.model, self.column,
                                       command);
-                    el_length_cell.focus();
+                    next_cell.focus();
                   }
                 }, 20);
             }
