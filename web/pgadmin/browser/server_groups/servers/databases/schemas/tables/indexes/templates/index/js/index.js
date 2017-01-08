@@ -285,8 +285,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 var msg = '{{ _('Changing access method will clear columns collection') }}';
                 alertify.confirm(msg, function (e) {
                     // User clicks Ok, lets clear collection
-                    var column_collection = self.model.get('columns');
-                    column_collection.reset();
+                    var column_collection = self.model.get('columns'),
+                      col_length = column_collection.length;
+                    for (var i=(col_length-1);i>=0;i--) {
+                       column_collection.remove(column_collection.models[i]);
+                    }
                   }, function() {
                     // User clicks Cancel set previous value again in combo box
                     setTimeout(function(){
