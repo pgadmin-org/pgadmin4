@@ -804,10 +804,10 @@ define(
         // If gutterMarker is undefined that means there is no marker defined previously
         // So we need to set the breakpoint command here...
         if (info.gutterMarkers == undefined) {
-            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + self.active_line_no + "/" + "1";
+            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + (self.active_line_no + 1) + "/" + "1";
         }
         else {
-            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + self.active_line_no + "/" + "0";
+            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + (self.active_line_no + 1) + "/" + "0";
         }
 
         $.ajax({
@@ -1443,11 +1443,22 @@ define(
           controller.set_breakpoint(self.trans_id,m+1,1); //set the breakpoint
         }
         else {
-          controller.set_breakpoint(self.trans_id,m+1,0); //clear the breakpoint
+          if (info.gutterMarkers.breakpoints == undefined) {
+            controller.set_breakpoint(self.trans_id,m+1,1); //set the breakpoint
+          }
+          else {
+            controller.set_breakpoint(self.trans_id,m+1,0); //clear the breakpoint
+          }
         }
 
+        // If line folding is defined then gutterMarker will be defined so
+        // we need to find out 'breakpoints' information
+        var markers = info.gutterMarkers;
+        if (markers != undefined && info.gutterMarkers.breakpoints == undefined)
+          markers = info.gutterMarkers.breakpoints
+
         cm.setGutterMarker(
-          m, "breakpoints", info.gutterMarkers ? null : function() {
+          m, "breakpoints", markers ? null : function() {
             var marker = document.createElement("div");
 
             marker.style.color = "#822";
