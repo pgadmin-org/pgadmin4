@@ -497,9 +497,9 @@ class PGChildNodeView(NodeView):
                         elif type_str[1] == 'p':
                             type_name = 'primary_key'
                         elif type_str[1] == 'u':
-                            type_name = 'unique'
+                            type_name = 'unique_constraint'
                         elif type_str[1] == 'x':
-                            type_name = 'exclude'
+                            type_name = 'exclusion_constraint'
                     elif type_str[0] == 'A':
                         # Include only functions
                         if row['adbin'].startswith('{FUNCEXPR'):
