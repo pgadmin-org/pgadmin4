@@ -1460,7 +1460,7 @@ body {
   user-select: none;
 }
 
-.enable-selection, .form-control, .backgrid td {
+.enable-selection, .form-control, .backgrid td, .ajs-content {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
