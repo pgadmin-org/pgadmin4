@@ -563,9 +563,15 @@ class TablespaceView(PGChildNodeView):
             This function will return list of variables available for
             table spaces.
         """
-        SQL = render_template(
-            "/".join([self.template_path, 'variables.sql'])
-        )
+        ver = self.manager.version
+        if ver >= 90600:
+            SQL = render_template(
+                "/".join(['tablespaces/sql/9.6_plus', 'variables.sql'])
+            )
+        else:
+            SQL = render_template(
+                "/".join([self.template_path, 'variables.sql'])
+            )
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
