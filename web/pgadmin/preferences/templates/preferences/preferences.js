@@ -365,7 +365,8 @@ define(
                   overflow: !1,
                   title: '{{ _('Preferences')|safe }}',
                   closableByDimmer: false,
-                  modal:false
+                  modal:false,
+                  pinnable: false
                 }
               };
             },

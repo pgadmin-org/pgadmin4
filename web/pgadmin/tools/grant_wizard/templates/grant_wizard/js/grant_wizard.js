@@ -429,7 +429,7 @@ define([
 
               },
               prepare:function() {
-
+                var that = this;
                 $container.empty().append("<div class='grant_wizard_container'></div>");
 
                 // Define el for wizard view
@@ -1062,7 +1062,9 @@ define([
                     curr_page: 0,
                     show_left_panel: false,
                     show_header_cancel_btn: true,
+                    show_header_maximize_btn: true,
                     disable_finish: true,
+                    dialog_api: that,
                     wizard_help: "{{ url_for('help.static', filename='grant_wizard.html') }}"
                   },
 

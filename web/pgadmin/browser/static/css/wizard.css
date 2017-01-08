@@ -117,6 +117,21 @@
   margin-top: -1px;
 }
 
+
+div.wizard-header.wizard-badge > div > div.col-sm-2 > button.ajs-maximize.wizard-maximize-event.pull-right {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVQ4jcWTuw2AMAxEn5jBs7B/e0gpmAiKEGRS5QDBSS7v+Q8fSsCWQgDTA+DsGgJYuypumTNkWCWZg9q/HIAOSDim/xTUcu0exXXaxQG0teRVWQPLx2Gbe8B55yNqv7C4GV/TDq//J11odoZgAAAAAElFTkSuQmCC) no-repeat center center;
+  padding: 10px;
+  margin-top: -1px;
+  margin-right: 8px;
+}
+
+div.wizard-header.wizard-badge > div > div.col-sm-2 > button.ajs-maximized.ajs-maximize.wizard-maximize-event.pull-right {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA8klEQVQ4jZ3QMUpDQRCH8V+ewULQE4iERTyCrQiDCpbaCKKljbV4A89gqVgGrCMDWlpaWwVPoFYiIjYv8hBJXjLN7s7u9+3wZ4aKiOWI2IJOi8dHuM7MXxj3WMHe3CRBKeUGvVJKllJG8CrmoNty6jMsYKeGoY/jtgI4bez7OMjMr2oKwaieRzDMIljDRUSgXQZPeG2cv7GOffQ7ETGPcyw2HozWQWY+jLN3M/MzIu4wwNKf+zeMFVSQmY/YbfzeuiqIiAonZgi1quErHNa9F7xPM8FlAx5iA9ttJRVu8VHDm5k5rDNpLRERWxHR+6c/MZMfLIJDwzY66IkAAAAASUVORK5CYII=) no-repeat center center;
+  padding: 10px;
+  margin-top: -1px;
+  margin-right: 8px;
+}
+
 /* Wizard Status bar CSS */
 .pgadmin-wizard .wizard-description {
   padding: 1.0em 0.1em;

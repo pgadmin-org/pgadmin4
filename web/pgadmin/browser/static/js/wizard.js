@@ -43,6 +43,8 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       disable_finish: false,
       disable_cancel: false,
       show_header_cancel_btn: false, /* show cancel button at wizard header */
+      show_header_maximize_btn: false, /* show maximize button at wizard header */
+      dialog_api: null,
       height: 400,
       width: 650,
       show_left_panel: true,
@@ -53,13 +55,16 @@ function(_, Backbone, pgAdmin, pgBrowser) {
        + "    width: <%= this.options.width %>px'>"
        + "      <div class='wizard-header wizard-badge'>"
        + "        <div class='row'>"
-       + "          <div class='col-sm-9'>"
+       + "          <div class='col-sm-10'>"
        + "              <h3><span id='main-title'><%= this.options.title %></span> -"
        + "              <span id='step-title'><%= page_title %></span></h3>"
        + "          </div>"
        + "          <% if (this.options.show_header_cancel_btn) { %>"
-       + "            <div class='col-sm-3'>"
+       + "            <div class='col-sm-2'>"
        + "              <button class='ajs-close wizard-cancel-event pull-right'></button>"
+       + "              <% if (this.options.show_header_maximize_btn) { %>"
+       + "                <button class='ajs-maximize wizard-maximize-event pull-right'></button>"
+       + "              <% } %>"
        + "            </div>"
        + "          <% } %>"
        + "        </div>"
@@ -112,6 +117,7 @@ function(_, Backbone, pgAdmin, pgBrowser) {
       "click button.wizard-back" : "prevPage",
       "click button.wizard-cancel" : "onCancel",
       "click button.wizard-cancel-event" : "onCancel",
+      "click button.wizard-maximize-event" : "onMaximize",
       "click button.wizard-finish" : "finishWizard",
       "click button.wizard-help" : "onDialogHelp",
     },
@@ -232,6 +238,23 @@ function(_, Backbone, pgAdmin, pgBrowser) {
     onCancel: function() {
       this.$el.remove();
       return true;
+    },
+    onMaximize: function() {
+      var dialog_api = this.options.dialog_api,
+      old_classes, _el = this.$el.find('.wizard-maximize-event');
+
+      // If no dialog api found then return
+      if(!dialog_api) return;
+
+      if(dialog_api.isMaximized()) {
+        // toggle the icon
+        _el.removeClass('ajs-maximized');
+        dialog_api.restore();
+      } else {
+        // toggle the icon
+        _el.addClass('ajs-maximized ' + _el.attr('class'));
+        dialog_api.maximize();
+      }
     },
     evalASFunc: function(func, ctx) {
       var self = this;
