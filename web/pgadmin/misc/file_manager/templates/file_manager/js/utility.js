@@ -183,6 +183,7 @@ var setUploader = function(path) {
   $('.storage_dialog #uploader h1').html(file_path);
 
   $('.currentpath').val(path);
+  enab_dis_level_up();
   if ($('.storage_dialog #uploader h1 span').length === 0) {
     $('<span>'+lg.current_folder+'</span>').appendTo($('.storage_dialog #uploader h1'));
   }
@@ -1155,7 +1156,7 @@ var enab_dis_level_up = function() {
         $level_up = $('.file_manager').find('button.level-up'),
         $home_btn = $('.file_manager').find('button.home');
 
-    if (b === fileRoot) {
+    if (b === '/') {
       $level_up.attr('disabled', 'disabled');
       $home_btn.attr('disabled', 'disabled');
     } else {
@@ -1337,7 +1338,7 @@ $('.file_manager .uploader').on('click', 'a', function(e) {
 $('.file_manager .home').click(function() {
   var currentViewMode = $('.fileinfo').data('view');
   $('.fileinfo').data('view', currentViewMode);
-  getFolderInfo(fileRoot);
+  getFolderInfo('/');
   enab_dis_level_up();
 });
 
@@ -1348,7 +1349,7 @@ $(".file_manager .level-up").click(function() {
   // Enable/Disable level up button
   enab_dis_level_up();
 
-  if (b != fileRoot) {
+  if (b != '/') {
       parent = b.substring(0, b.slice(0, -1).lastIndexOf("/")) + "/";
       var d = $(".fileinfo").data("view");
       $(".fileinfo").data("view", d);

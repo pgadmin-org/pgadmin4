@@ -46,6 +46,15 @@ define([
               contentType: "application/json; charset=utf-8",
             });
           };
+
+          var set_last_traversed_dir = function(path, _url) {
+            return $.ajax({
+              url: _url,
+              type: 'POST',
+              data: JSON.stringify(path),
+              contentType: 'application/json'
+            });
+          };
         // Declare the Storage dialog
         alertify.dialog('storageManagerDlg', function() {
           var controls = [], // Keep tracking of all the backform controls
@@ -141,6 +150,12 @@ define([
                 var newFile = $('.currentpath').val() + sel_file;
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:storage_dialog', newFile);
+
+                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
+                var file_data = {
+                  'path': $('.currentpath').val()
+                };
+                set_last_traversed_dir(file_data, _Url);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
                 if (removeTransId(trans_id)) {
                   this.destroy();
@@ -258,6 +273,12 @@ define([
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_file', newFile);
                 removeTransId(trans_id);
+                // Ajax call to store the last directory visited once user press select button
+                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
+                var file_data = {
+                  'path': $('.currentpath').val()
+                };
+                set_last_traversed_dir(file_data, _Url);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
                 if (removeTransId(trans_id)) {
                   this.destroy();
@@ -375,6 +396,12 @@ define([
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_folder', newFile);
                 removeTransId(trans_id);
+                // Ajax call to store the last directory visited once user press select button
+                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
+                var file_data = {
+                  'path': $('.currentpath').val()
+                };
+                set_last_traversed_dir(file_data, _Url);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
                 if (removeTransId(trans_id)) {
                   this.destroy();
@@ -536,6 +563,12 @@ define([
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
                   removeTransId(trans_id);
                 }
+
+                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
+                var file_data = {
+                  'path': $('.currentpath').val()
+                };
+                set_last_traversed_dir(file_data, _Url);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
                 if (removeTransId(trans_id)) {
                   this.destroy();

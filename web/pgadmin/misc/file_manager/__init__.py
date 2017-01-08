@@ -148,6 +148,11 @@ class FileManagerModule(PgAdminModule):
             gettext("Maximum file upload size (MB)"), 'integer', 50,
             category_label=gettext('Options')
         )
+        self.last_directory_visited = self.preference.register(
+            'options', 'last_directory_visited',
+            gettext("Last directory visited"), 'text', '/',
+            category_label=gettext('Options')
+        )
 
 
 # Initialise the module
@@ -236,6 +241,14 @@ def delete_trans_id(trans_id):
         data={'status': True}
     )
 
+@blueprint.route("/save_last_dir/<int:trans_id>", methods=["POST"])
+@login_required
+def save_last_directory_visited(trans_id):
+    blueprint.last_directory_visited.set(req.json['path'])
+    return make_json_response(
+        data={'status': True}
+    )
+
 
 class Filemanager(object):
     """FileManager Class."""
@@ -299,9 +312,31 @@ class Filemanager(object):
             folders_only = False
             title = "Storage Manager"
 
+        # get last visited directory, if not present then traverse in reverse order
+        # to find closest parent directory
+        last_dir = blueprint.last_directory_visited.get()
+        if storage_dir is None:
+            if last_dir is None:
+                last_dir = "/"
+        else:
+            if last_dir is not None:
+                if len(last_dir) > 1 and last_dir.endswith('/'):
+                    last_dir = last_dir[:-1]
+                while last_dir:
+                    if os.path.exists(storage_dir + last_dir):
+                        break;
+                    index = last_dir.rfind('/')
+                    last_dir = last_dir[0:index]
+                if not last_dir:
+                    last_dir = "/"
+                if not last_dir.endswith('/'):
+                    last_dir += "/"
+            else:
+                last_dir = "/"
+
         # create configs using above configs
         configs = {
-            "fileroot": "/",
+            "fileroot": last_dir,
             "dialog_type": fm_type,
             "title": title,
             "upload": {
@@ -564,7 +599,10 @@ class Filemanager(object):
         Returns files and folders in give path
         """
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
-        dir = self.dir
+        dir = self.dir if self.dir is not None else ''
+        if not dir.endswith('/'):
+            dir += '/';
+
         filelist = self.list_filesystem(dir, path, trans_data, file_type)
         return filelist
 
