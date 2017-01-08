@@ -42,8 +42,8 @@ class PackageDeleteTestCase(BaseTestGenerator):
         server_con = server_utils.connect_server(self, self.server_id)
 
         if server_con:
-            if "server_type" in server_con["data"]:
-                if server_con["data"]["server_type"] == "pg":
+            if "type" in server_con["data"]:
+                if server_con["data"]["type"] == "pg":
                     message = "Packages not supported by PostgreSQL."
                     self.skipTest(message)
 

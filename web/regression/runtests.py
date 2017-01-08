@@ -226,10 +226,13 @@ if __name__ == '__main__':
     # Register cleanup function to cleanup on exit
     atexit.register(drop_objects)
     # Set signal handler for cleanup
-    signal.signal(signal.SIGTERM, sig_handler)
-    signal.signal(signal.SIGABRT, sig_handler)
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGQUIT, sig_handler)
+    signal_list = dir(signal)
+    required_signal_list = ['SIGTERM', 'SIGABRT', 'SIGQUIT', 'SIGINT']
+    # Get the OS wise supported signals
+    supported_signal_list = [sig for sig in required_signal_list if
+                             sig in signal_list]
+    for sig in supported_signal_list:
+        signal.signal(getattr(signal, sig), sig_handler)
 
     # Set basic logging configuration for log file
     logging.basicConfig(level=logging.DEBUG,

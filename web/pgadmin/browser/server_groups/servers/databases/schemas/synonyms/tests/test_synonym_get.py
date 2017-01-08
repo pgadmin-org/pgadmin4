@@ -36,8 +36,8 @@ class SynonymGetTestCase(BaseTestGenerator):
         self.db_id = schema_info["db_id"]
         server_con = server_utils.connect_server(self, self.server_id)
         if server_con:
-            if "server_type" in server_con["data"]:
-                if server_con["data"]["server_type"] == "pg":
+            if "type" in server_con["data"]:
+                if server_con["data"]["type"] == "pg":
                     message = "Synonym not supported by PG."
                     self.skipTest(message)
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,

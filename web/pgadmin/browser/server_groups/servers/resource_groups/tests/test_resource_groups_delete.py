@@ -27,8 +27,8 @@ class ResourceGroupsDeleteTestCase(BaseTestGenerator):
         if not server_response["info"] == "Server connected.":
             raise Exception("Could not connect to server to add resource "
                             "groups.")
-        if "server_type" in server_response["data"]:
-            if server_response["data"]["server_type"] == "pg":
+        if "type" in server_response["data"]:
+            if server_response["data"]["type"] == "pg":
                 message = "Resource groupa are not supported by PG."
                 self.skipTest(message)
         self.resource_group = "test_resource_group_delete%s" % \

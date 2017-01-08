@@ -24,7 +24,7 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.db_name = "test_db_put_%s" % str(uuid.uuid4())[1:8],
+        self.db_name = "test_db_put_%s" % str(uuid.uuid4())[1:8]
         self.db_id = utils.create_database(self.server, self.db_name)
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         db_dict = {"server_id": self.server_id, "db_id": self.db_id,
@@ -34,9 +34,9 @@ class DatabasesUpdateTestCase(BaseTestGenerator):
     def runTest(self):
         """ This function will update the comments field of database."""
         db_con = database_utils.connect_database(self,
-                                                utils.SERVER_GROUP,
-                                                self.server_id,
-                                                self.db_id)
+                                                 utils.SERVER_GROUP,
+                                                 self.server_id,
+                                                 self.db_id)
         if db_con["info"] == "Database connected.":
             try:
                 data = {

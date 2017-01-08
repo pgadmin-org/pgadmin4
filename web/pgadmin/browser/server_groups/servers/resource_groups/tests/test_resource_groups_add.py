@@ -28,8 +28,8 @@ class ResourceGroupsAddTestCase(BaseTestGenerator):
         if not server_con["info"] == "Server connected.":
             raise Exception("Could not connect to server to add resource "
                             "groups.")
-        if "server_type" in server_con["data"]:
-            if server_con["data"]["server_type"] == "pg":
+        if "type" in server_con["data"]:
+            if server_con["data"]["type"] == "pg":
                 message = "Resource groups are not supported by PG."
                 self.skipTest(message)
 
