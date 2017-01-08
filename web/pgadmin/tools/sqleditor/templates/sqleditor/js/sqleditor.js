@@ -307,15 +307,9 @@ define(
                   msg = '{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
                   notify = true;
                 }
-              } else if(self.handler.is_query_tool) {
-                // We will check for modified sql content
-                var sql = self.handler.gridView.query_tool_obj.getValue();
-                sql = sql.replace(/\s+/g, '');
-                // If it is an empty query, do nothing.
-                if (sql.length > 0) {
-                  msg = '{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
-                  notify = true;
-                }
+              } else if(self.handler.is_query_tool && self.handler.is_query_changed) {
+                msg = '{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}';
+                notify = true;
               }
               if(notify) {return self.user_confirmation(p, msg);}
               return true;
@@ -1330,23 +1324,24 @@ define(
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
 
-        // We will check for modified sql content
-        sql = self.query_tool_obj.getValue();
-        sql = sql.replace(/\s+/g, '');
-        // If there is nothing to save, clear it.
-        if (!sql.length) { self.query_tool_obj.setValue('');  return; }
-
-        alertify.confirm(
-          '{{ _('Unsaved changes') }}',
-          '{{ _('Are you sure you wish to discard the current changes?') }}',
-          function() {
-            // Do nothing as user do not want to save, just continue
-            self.query_tool_obj.setValue('');
-          },
-          function() {
-            return true;
-          }
-        ).set('labels', {ok:'Yes', cancel:'No'});
+        /* If is_query_changed flag is set to false then no need to
+         * confirm with the user for unsaved changes.
+         */
+        if (self.handler.is_query_changed) {
+          alertify.confirm(
+            '{{ _('Unsaved changes') }}',
+            '{{ _('Are you sure you wish to discard the current changes?') }}',
+            function() {
+              // Do nothing as user do not want to save, just continue
+              self.query_tool_obj.setValue('');
+            },
+            function() {
+              return true;
+            }
+          ).set('labels', {ok:'Yes', cancel:'No'});
+        } else {
+          self.query_tool_obj.setValue('');
+        }
       },
 
       // Callback function for the clear history button click.
@@ -2246,7 +2241,6 @@ define(
 
           // Open save file dialog if query tool
           if (self.is_query_tool) {
-
             var current_file = self.gridView.current_file;
             if (!_.isUndefined(current_file) && !save_as) {
               self._save_file_handler(current_file);
@@ -2428,22 +2422,25 @@ define(
         // load select file dialog
         _load_file: function() {
           var self = this;
-          // We will check for modified sql content
-          sql = self.gridView.query_tool_obj.getValue()
-          sql = sql.replace(/\s+/g, '');
-          // If there is nothing to save, open file manager.
-          if (!sql.length) { self._open_select_file_manager(); return; }
 
-          alertify.confirm('{{ _('Unsaved changes') }}',
-            '{{ _('Are you sure you wish to discard the current changes?') }}',
-            function() {
-              // User do not want to save, just continue
-              self._open_select_file_manager();
-           },
-            function() {
-              return true;
-            }
-          ).set('labels', {ok:'Yes', cancel:'No'});
+          /* If is_query_changed flag is set to false then no need to
+           * confirm with the user for unsaved changes.
+           */
+          if (self.is_query_changed) {
+            alertify.confirm('{{ _('Unsaved changes') }}',
+              '{{ _('Are you sure you wish to discard the current changes?') }}',
+              function() {
+                // User do not want to save, just continue
+                self._open_select_file_manager();
+              },
+              function() {
+                return true;
+              }
+            ).set('labels', {ok:'Yes', cancel:'No'});
+          } else {
+            self._open_select_file_manager();
+          }
+
         },
 
         // Open FileManager
@@ -2486,6 +2483,13 @@ define(
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
               // hide cursor
               $busy_icon_div.removeClass('show_progress');
+
+              // disable save button on file save
+              $("#btn-save").prop('disabled', true);
+              $("#btn-file-menu-save").css('display', 'none');
+
+              // Update the flag as new content is just loaded.
+              self.is_query_changed = false;
             },
             error: function(e) {
               var errmsg = $.parseJSON(e.responseText).errormsg;
@@ -2519,10 +2523,13 @@ define(
               if (res.data.status) {
                 alertify.success('{{ _('File saved successfully.') }}');
                 self.gridView.current_file = e;
-                self.setTitle(self.gridView.current_file.replace(/^\/|\/$/g, ''));
+                self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''));
                 // disable save button on file save
                 $("#btn-save").prop('disabled', true);
                 $("#btn-file-menu-save").css('display', 'none');
+
+                // Update the flag as query is already saved.
+                self.is_query_changed = false;
               }
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
             },
@@ -2542,15 +2549,28 @@ define(
         // codemirror text change event
         _on_query_change: function(query_tool_obj) {
           var self = this;
-          if(query_tool_obj.getValue().length == 0) {
-            $("#btn-save").prop('disabled', true);
-            $("#btn-file-menu-save").css('display', 'none');
-            $("#btn-file-menu-dropdown").prop('disabled', true);
-          } else {
+
+          if (!self.is_query_changed) {
+            // Update the flag as query is going to changed.
+            self.is_query_changed = true;
+
             if(self.gridView.current_file) {
-              var title = self.gridView.current_file.replace(/^\/|\/$/g, '') + ' *'
+              var title = self.gridView.current_file.replace(/^.*[\\\/]/g, '') + ' *'
+              self.setTitle(title);
+            } else {
+              var title = '';
+
+              // Find the title of the visible panel
+              _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+                if(p.isVisible()) {
+                  self.gridView.panel_title = p._title;
+                }
+              });
+
+              title = self.gridView.panel_title + ' *';
               self.setTitle(title);
             }
+
             $("#btn-save").prop('disabled', false);
             $("#btn-file-menu-save").css('display', 'block');
             $("#btn-file-menu-dropdown").prop('disabled', false);
