@@ -622,7 +622,7 @@ class ExclusionConstraintView(PGChildNodeView):
             return make_json_response(
                 status=400,
                 success=0,
-                errormsg=e
+                errormsg=str(e)
             )
 
     @check_precondition
