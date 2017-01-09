@@ -33,3 +33,4 @@ Unit (Length)       d8e6237     MIT          https://github.com/heygrady/Units/b
 Natural Sort        9565816     MIT          https://github.com/javve/natural-sort/blob/master/index.js
 SlickGrid           2.2.4       MIT          https://github.com/6pac/SlickGrid
 jQuery-UI           1.11.3      MIT          https://jqueryui.com/
+BigNumber           3.0.1       MIT          http://mikemcl.github.io/bignumber.js
