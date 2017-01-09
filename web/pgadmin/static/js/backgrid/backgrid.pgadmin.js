@@ -3,12 +3,12 @@
   if (typeof define === 'function' && define.amd) {
     define([
       'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-      'moment', 'bootstrap.datetimepicker'
+      'moment', 'bignumber', 'bootstrap.datetimepicker'
     ],
-     function(_, $, Backbone, Backform, Backgrid, Alertify, moment) {
+     function(_, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Alertify, moment);
+      return factory(root, _, $, Backbone, Backform, Alertify, moment, BigNumber);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -25,7 +25,7 @@
   } else {
     factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
   }
-} (this, function(root, _, $, Backbone, Backform, Alertify, moment) {
+} (this, function(root, _, $, Backbone, Backform, Alertify, moment, BigNumber) {
   /*
      * Add mechanism in backgrid to render different types of cells in
      * same column;
@@ -44,6 +44,107 @@
       ) {
         $el.attr('title', $.trim($el.text()));
       }
+    }
+  });
+
+  /* Overriding backgrid sort method.
+   * As we are getting numeric, integer values as string
+   * from server side, but on client side javascript truncates
+   * large numbers automatically due to which backgrid was unable
+   * to sort numeric values properly in the grid.
+   * To fix this issue, now we check if cell type is integer/number
+   * convert it into BigNumber object and make comparison to perform sorting.
+   */
+
+  _.extend(Backgrid.Body.prototype, {
+    sort: function (column, direction) {
+
+      if (!_.contains(["ascending", "descending", null], direction)) {
+        throw new RangeError('direction must be one of "ascending", "descending" or `null`');
+      }
+
+      if (_.isString(column)) column = this.columns.findWhere({name: column});
+
+      var collection = this.collection;
+
+      var order;
+      if (direction === "ascending") order = -1;
+      else if (direction === "descending") order = 1;
+      else order = null;
+
+      // Get column type and pass it to comparator.
+      var col_type = column.get('cell').prototype.className || 'string-cell',
+          comparator = this.makeComparator(column.get("name"), order,
+                                          order ?
+                                          column.sortValue() :
+                                          function (model) {
+                                            return model.cid.replace('c', '') * 1;
+                                          }, col_type);
+
+      if (Backbone.PageableCollection &&
+          collection instanceof Backbone.PageableCollection) {
+
+        collection.setSorting(order && column.get("name"), order,
+                              {sortValue: column.sortValue()});
+
+        if (collection.fullCollection) {
+          // If order is null, pageable will remove the comparator on both sides,
+          // in this case the default insertion order comparator needs to be
+          // attached to get back to the order before sorting.
+          if (collection.fullCollection.comparator == null) {
+            collection.fullCollection.comparator = comparator;
+          }
+          collection.fullCollection.sort();
+          collection.trigger("backgrid:sorted", column, direction, collection);
+        }
+        else collection.fetch({reset: true, success: function () {
+          collection.trigger("backgrid:sorted", column, direction, collection);
+        }});
+      }
+      else {
+        collection.comparator = comparator;
+        collection.sort();
+        collection.trigger("backgrid:sorted", column, direction, collection);
+      }
+
+      column.set("direction", direction);
+
+      return this;
+    },
+    makeComparator: function (attr, order, func, type) {
+
+      return function (left, right) {
+        // extract the values from the models
+
+        var l = func(left, attr), r = func(right, attr), t;
+
+        var types = ['number-cell', 'integer-cell'];
+        if (_.include(types, type)) {
+          var _l, _r;
+          // NaN if invalid number
+          try {
+            _l = new BigNumber(l);
+          } catch(err) {
+            _l = NaN;
+          }
+
+          try {
+            _r = new BigNumber(r);
+          } catch(err) {
+            _r = NaN;
+          }
+
+          // if descending order, swap left and right
+          if (order === 1) t = _l, _l = _r, _r = t;
+
+          if (_l.eq(_r))  // If both are equals
+            return 0;
+          else if (_l.lt(_r)) // If left is less than right
+            return -1;
+          else
+            return 1;
+        }
+      };
     }
   });
 

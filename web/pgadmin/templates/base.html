@@ -183,6 +183,7 @@
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
                     "jquery.event.drag": "{{ url_for('static', filename='js/jquery-ui/jquery.event.drag-2.2') }}",
                     "jquery.ui": "{{ url_for('static', filename='js/jquery-ui/jquery-ui-1.11.3' if config.DEBUG else 'js/jquery-ui/jquery-ui-1.11.3.min') }}",
+                    "bignumber": "{{ url_for('static', filename='js/bignumber/bignumber' if config.DEBUG else 'js/bignumber/bignumber.min') }}",
                     bean :"{{ url_for('static', filename='js/flotr2/' + ('bean' if config.DEBUG else 'bean-min')) }}",
                     flotr2 :"{{ url_for('static', filename='js/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
                     '{{ script.name }}': "{{ script.path }}"{% endfor %}
