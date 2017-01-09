@@ -474,7 +474,7 @@ class PGChildNodeView(NodeView):
             # Fetch the type name from the dictionary
             # if type is not present in the types dictionary then
             # we will continue and not going to add it.
-            if type_str[0] in types:
+            if len(type_str) and type_str[0] in types:
 
                 # if type is present in the types dictionary, but it's
                 # value is None then it requires special handling.
