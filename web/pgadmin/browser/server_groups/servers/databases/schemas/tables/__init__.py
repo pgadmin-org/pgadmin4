@@ -2247,9 +2247,6 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         if isArray:
                             old_data['cltype'] += "[]"
 
-                        if old_data['typnspname'] != 'pg_catalog':
-                            old_data['cltype'] = self.qtIdent(self.conn, old_data['typnspname']) \
-                                               + '.' + old_data['cltype']
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
                             column_sql += render_template("/".join(

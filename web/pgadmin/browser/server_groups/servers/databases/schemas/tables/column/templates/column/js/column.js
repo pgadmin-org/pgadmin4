@@ -381,7 +381,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
               !flag && setTimeout(function() {
                   if(m.get('attlen')) {
-                    m.set('attlen', null);
+                    m.set('attlen', null, {silent: true});
                   }
                 },10);
 
