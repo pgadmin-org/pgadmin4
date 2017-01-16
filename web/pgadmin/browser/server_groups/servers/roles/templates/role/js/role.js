@@ -44,10 +44,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         String(data.provider).replace(/^\s+|\s+$/g, '') == '') {
         var msg = '{{ _('Please specify the value for all the security providers.') }}';
 
-	this.errorModel.set('provider', msg);
+        this.errorModel.set('provider', msg);
         return msg;
       } else {
-	this.errorModel.unset('provider');
+        this.errorModel.unset('provider');
       }
 
       if (_.isUndefined(data.label) ||
@@ -55,10 +55,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         String(data.label).replace(/^\s+|\s+$/g, '') == '') {
         var msg = '{{ _('Please specify the value for all the security providers.') }}' ;
 
-	this.errorModel.set('label', msg);
+        this.errorModel.set('label', msg);
         return msg;
       } else {
-	this.errorModel.unset('label');
+        this.errorModel.unset('label');
       }
 
       return null;
@@ -105,16 +105,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       }
     },
     template: _.template([
-      '<label class="control-label col-xs-12"><%=label%></label>',
-      '<div class="pgadmin-controls col-xs-12">',
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlsClassName%>">',
       '  <select multiple="multiple" style="width:100%;" class="pgadmin-controls <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-JSON.stringify(value)%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>>',
       '    <% for (var i=0; i < options.length; i++) { %>',
       '      <% var option = options[i]; %>',
       '      <option value=<%-option.value%> data-icon=<%-option.image%> <%=value != null && _.indexOf(value, option.value) != -1 ? "selected" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
       '    <% } %>',
       '  </select>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
       '</div>',
-      '<div class="note <%=Backform.helpMessageClassName%> col-xs-12"></div>',
       ].join("\n")),
     selectionTemplate: _.template([
       '<span>',
@@ -150,13 +152,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }),
           evalF = function(f, d, m) {
             return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+          },
+          evalASFunc = function(f, d, m) {
+             return (_.isFunction(f) ? f.apply(d, [m]) : f);
           };
 
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
-        required: evalF(data.required, data, this.model)
+        required: evalF(data.required, data, this.model),
+        helpMessage: evalASFunc(data.helpMessage, data, this.model)
       });
       // Evaluation the options
       if (_.isFunction(data.options)) {
@@ -245,16 +251,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         templateSelection: formatSelection,
         multiple: true,
         tags: true,
-        allowClear: true,
-        placeholder: "Select members",
+        allowClear: data.disabled ? false : true,
+        placeholder: data.disabled ? "" : "Select members",
         width: 'style'
       }).on("change", function(e) {
         $(e.target).find(':selected').each(function() {
         });
       });
-      var msg = '{{ _('Select the checkbox for roles to include WITH ADMIN OPTION.') }}';
-
-      this.$el.find('div.note').html("<span>NOTE: " + msg + "</span>");
 
       return this;
     },
@@ -491,6 +494,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }),
           filter: function(d) {
             return this.model.isNew() || (this.model.get('rolname') != d.label);
+          },
+          helpMessage: function(m) {
+            if (m.has('read_only') && m.get('read_only') == false) {
+              return '{{ _('Select the checkbox for roles to include WITH ADMIN OPTION.') }}';
+            } else {
+              return '{{ _('Roles shown with a check mark have the WITH ADMIN OPTION set.') }}';
+            }
           }
         },{
           id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
