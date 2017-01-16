@@ -134,8 +134,16 @@ class DatabaseView(PGChildNodeView):
                     self.conn = self.manager.connection()
                 elif 'did' in kwargs:
                     self.conn = self.manager.connection(did=kwargs['did'])
+
+                    # If connection to database is not allowed then
+                    # provide generic connection
+                    if kwargs['did'] in self.conn.manager.db_info:
+                        self._db = self.conn.manager.db_info[kwargs['did']]
+                        if self._db['datallowconn'] is False:
+                            self.conn = self.manager.connection()
                 else:
                     self.conn = self.manager.connection()
+
 
                 ver = self.manager.version
                 # we will set template path for sql scripts
@@ -559,29 +567,14 @@ class DatabaseView(PGChildNodeView):
             if 'name' not in data:
                 data['name'] = data['old_name']
 
-        status = self.manager.release(did=did)
         for action in ["rename_database", "tablespace"]:
+            status = self.manager.release(did=did)
             SQL = self.get_offline_sql(gid, sid, data, did, action)
             SQL = SQL.strip('\n').strip(' ')
             if SQL and SQL != "":
                 status, msg = conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=msg)
-
-        if not self.manager.db_info[did]['datallowconn']:
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    did,
-                    sid,
-                    data['name'],
-                    "icon-database-not-connected",
-                    connected=False,
-                    allowConn=False
-                )
-            )
-
-        self.conn = self.manager.connection(database=data['name'], auto_reconnect=True)
-        status, errmsg = self.conn.connect()
 
         SQL = self.get_online_sql(gid, sid, data, did)
         SQL = SQL.strip('\n').strip(' ')
@@ -595,7 +588,11 @@ class DatabaseView(PGChildNodeView):
                 did,
                 sid,
                 data['name'],
-                "pg-icon-{0}".format(self.node_type)
+                "pg-icon-{0}".format(self.node_type) if
+                self._db['datallowconn'] else
+                "icon-database-not-connected",
+                connected=False,
+                allowConn=False
             )
         )
 
@@ -638,7 +635,6 @@ class DatabaseView(PGChildNodeView):
                 status, errmsg = conn.connect()
 
                 return internal_server_error(errormsg=msg)
-
 
         return make_json_response(success=1)
 
@@ -693,8 +689,7 @@ class DatabaseView(PGChildNodeView):
             for action in ["rename_database", "tablespace"]:
                 SQL += self.get_offline_sql(gid, sid, data, did, action)
 
-            if rset['rows'][0]['datallowconn']:
-                SQL += self.get_online_sql(gid, sid, data, did)
+            SQL += self.get_online_sql(gid, sid, data, did)
         else:
             SQL += self.get_new_sql(gid, sid, data, did)
 
@@ -715,33 +710,30 @@ class DatabaseView(PGChildNodeView):
         acls = []
         SQL_acl = ''
 
-        if ('datallowconn' in data and data['datallowconn']) or \
-                        'datallowconn' not in data:
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'allowed_privs.json'])
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'allowed_privs.json'])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
+        # Privileges
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+                data[aclcol] = parse_priv_to_db(
+                    data[aclcol], allowedacl['acl']
                 )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
 
-            # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-                    data[aclcol] = parse_priv_to_db(
-                        data[aclcol], allowedacl['acl']
-                    )
+        SQL_acl = render_template(
+                    "/".join([self.template_path, 'grant.sql']),
+                    data=data, conn=self.conn
+                )
 
-            SQL_acl = render_template(
-                        "/".join([self.template_path, 'grant.sql']),
-                        data=data, conn=self.conn
-                    )
-
-        conn = self.manager.connection()
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),
-            data=data, conn=conn
+            data=data, conn=self.conn
         )
         SQL += "\n"
         SQL += SQL_acl
@@ -847,46 +839,44 @@ class DatabaseView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
-        if res['rows'][0]['datallowconn']:
-            SQL = render_template(
-                "/".join([self.template_path, 'acl.sql']),
-                did=did, conn=self.conn
-            )
-            status, dataclres = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=dataclres)
-            res = self.formatdbacl(res, dataclres['rows'])
+        SQL = render_template(
+            "/".join([self.template_path, 'acl.sql']),
+            did=did, conn=self.conn
+        )
+        status, dataclres = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=dataclres)
+        res = self.formatdbacl(res, dataclres['rows'])
 
-            SQL = render_template(
-                "/".join([self.template_path, 'defacl.sql']),
-                did=did, conn=self.conn
-            )
-            status, defaclres = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=defaclres)
+        SQL = render_template(
+            "/".join([self.template_path, 'defacl.sql']),
+            did=did, conn=self.conn
+        )
+        status, defaclres = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=defaclres)
 
-            res = self.formatdbacl(res, defaclres['rows'])
+        res = self.formatdbacl(res, defaclres['rows'])
 
         result = res['rows'][0]
 
-        if result['datallowconn']:
-            SQL = render_template(
-                "/".join([self.template_path, 'get_variables.sql']),
-                did=did, conn=self.conn
-            )
-            status, res1 = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res1)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_variables.sql']),
+            did=did, conn=self.conn
+        )
+        status, res1 = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res1)
 
-            # Get Formatted Security Labels
-            if 'seclabels' in result:
-                # Security Labels is not available for PostgreSQL <= 9.1
-                frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-                result.update(frmtd_sec_labels)
+        # Get Formatted Security Labels
+        if 'seclabels' in result:
+            # Security Labels is not available for PostgreSQL <= 9.1
+            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+            result.update(frmtd_sec_labels)
 
-            # Get Formatted Variables
-            frmtd_variables = parse_variables_from_db(res1['rows'])
-            result.update(frmtd_variables)
+        # Get Formatted Variables
+        frmtd_variables = parse_variables_from_db(res1['rows'])
+        result.update(frmtd_variables)
 
         sql_header = "-- Database: {0}\n\n-- ".format(result['name'])
         if hasattr(str, 'decode'):
