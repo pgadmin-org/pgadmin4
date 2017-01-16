@@ -70,18 +70,12 @@ UPDATE pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
 	data.revoked_admins|length > 0
 %}
 
--- Revoked the admin options from the members
 REVOKE ADMIN OPTION FOR {{ conn|qtIdent(data.revoked_admins)|join(', ') }} FROM {{ conn|qtIdent(rolname) }};{% endif %}{% if 'revoked' in data and data.revoked|length > 0 %}
 
-
--- Following are no more the members
 REVOKE {{ conn|qtIdent(data.revoked)|join(', ') }} FROM {{ conn|qtIdent(rolname) }};{% endif %}{% if data.admins and data.admins|length > 0 %}
 
--- Following are the new admins (or, existing members made admins)
 GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(rolname) }} WITH ADMIN OPTION;{% endif %}{% if data.members and data.members|length > 0 %}
 
-
--- Following are the new members
 GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }};{% endif %}
 {% if 'variables' in data and data.variables|length > 0 %}
 {% set variables = data.variables %}
