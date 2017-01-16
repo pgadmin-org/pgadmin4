@@ -300,27 +300,23 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         $obj_mnu.append(create_submenu.$el);
       }
     },
+    save_current_layout: function(obj) {
+      if(obj.docker) {
+        state = obj.docker.save();
+        settings = { setting: "Browser/Layout", value: state };
+        $.ajax({
+          type: 'POST',
+          url: "{{ url_for('settings.store') }}",
+          data: settings
+        });
+      }
+    },
     init: function() {
       var obj=this;
       if (obj.initialized) {
         return;
       }
       obj.initialized = true;
-
-      // Store the main browser layout
-      $(window).bind('unload', function() {
-          if(obj.docker) {
-            state = obj.docker.save();
-            settings = { setting: "Browser/Layout", value: state };
-            $.ajax({
-              type: 'POST',
-              url: "{{ url_for('settings.store') }}",
-              data: settings,
-              async:false
-            });
-          }
-        return true;
-      });
 
       // Initialize the Docker
       obj.docker = new wcDocker(
@@ -355,6 +351,19 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         } else {
           obj.buildDefaultLayout()
         }
+
+        // Listen to panel attach/detach event so that last layout will be remembered
+        _.each(obj.panels, function(panel, name) {
+          panel.panel.on(wcDocker.EVENT.ATTACHED, function() {
+            obj.save_current_layout(obj);
+          });
+          panel.panel.on(wcDocker.EVENT.DETACHED, function() {
+            obj.save_current_layout(obj);
+          });
+          panel.panel.on(wcDocker.EVENT.MOVE_ENDED, function() {
+            obj.save_current_layout(obj);
+          });
+        });
       }
 
       // Syntax highlight the SQL Pane
