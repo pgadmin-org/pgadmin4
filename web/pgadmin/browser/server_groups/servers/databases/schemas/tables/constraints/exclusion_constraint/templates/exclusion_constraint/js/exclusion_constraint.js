@@ -427,9 +427,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         controls.push(control);
       });
 
-      // We should not show add but in properties mode
+      // We should not show in properties mode
       if (data.mode == 'properties') {
-        $header.find("button.add").remove();
+        $header.html('');
       }
 
       self.$header = $header;
@@ -443,12 +443,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                 ),
 
     showGridControl: function(data) {
-
       var self = this,
           titleTmpl = _.template("<div class='subnode-header'></div>"),
           $gridBody =
             $("<div class='pgadmin-control-group backgrid form-group col-xs-12 object subnode'></div>").append(
-              titleTmpl({label: data.label})
+              // Append titleTmpl only if create/edit mode
+              data.mode !== 'properties' ? titleTmpl({label: data.label}) : ''
             );
 
       $gridBody.append(self.generateHeader(data));
@@ -486,6 +486,10 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }, {silent:true}
           );
       }, 10);
+
+      // Remove unwanted class from grid to display it properly
+      if(data.mode === 'properties')
+        $gridBody.find('.subnode-header-form').removeClass('subnode-header-form');
 
       // Render node grid
       return $gridBody;

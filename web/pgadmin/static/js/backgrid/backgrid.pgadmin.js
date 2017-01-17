@@ -669,6 +669,11 @@
 
       this.delegateEvents();
 
+      // If disabled then no need to show placeholder
+      if(!editable || col.mode === 'properties') {
+        select2_opts['placeholder'] = '';
+      }
+
       // Initialize select2 control.
       this.$sel = this.$select.select2(select2_opts);
 

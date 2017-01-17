@@ -1949,6 +1949,11 @@
                 options: (this.field.get('options') || this.defaults.options)
             });
 
+      // If disabled then no need to show placeholder
+      if(data.disabled || data.mode === 'properties') {
+        select2Opts['placeholder'] = '';
+      }
+
       /*
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work and initialize select2 control.
