@@ -63,7 +63,7 @@
         return Backgrid.Extension.SwitchCell;
       break;
       case "enum":
-        model.set({'value': undefined}, {silent:true});
+        model.set({'value': value}, {silent:true});
         var options = [],
             enumVals = variable.enumvals;
 
