@@ -79,7 +79,7 @@ process is fairly simple - adapt as required for your distribution:
 
 1) Install the virtualenv packages into the system Python environment
 
-    $ sudo pip install virtualenv virtualenv-wrapper
+    $ sudo pip install virtualenv virtualenvwrapper
 
 2) Source the virtualenv wrapper tools script. You may want to add this command
    to your ~/.bash_profile file for future convenience:
