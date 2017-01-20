@@ -1206,6 +1206,9 @@
       if (this.grid) {
         this.grid.remove();
       }
+      if (this.collection) {
+        this.collection.off( "enteringEditMode");
+      }
     },
     clearInvalid: function() {
       this.$el.removeClass('subnode-error');
