@@ -198,51 +198,54 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
          });
        },
        reset_table_stats: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
 
           alertify.confirm(
-            S('{{ _('Are you sure you want to reset table statistics for %s?') }}').sprintf(d.label).value(),
+            '{{ _('Reset statistics') }}',
+            S('{{ _('Are you sure you want to reset the statistics for table %%s?') }}').sprintf(d._label).value(),
             function (e) {
-            if (e) {
-              var data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'reset' , d, true),
-                type:'DELETE',
-                success: function(res) {
-                  if (res.success == 1) {
-                    alertify.success("{{ _('" + res.info + "') }}");
-                    t.removeIcon(i);
-                    data.icon = 'icon-table';
-                    t.addIcon(i, {icon: data.icon});
-                    t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
-                  }
-                },
-                error: function(xhr, status, error) {
-                  try {
-                    var err = $.parseJSON(xhr.responseText);
-                    if (err.success == 0) {
-                      msg = S('{{ _(' + err.errormsg + ')}}').value();
-                      alertify.error("{{ _('" + err.errormsg + "') }}");
+              if (e) {
+                var data = d;
+                $.ajax({
+                  url: obj.generate_url(i, 'reset' , d, true),
+                  type:'DELETE',
+                  success: function(res) {
+                    if (res.success == 1) {
+                      alertify.success("{{ _('" + res.info + "') }}");
+                      t.removeIcon(i);
+                      data.icon = 'icon-table';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      t.deselect(i);
+                      // Fetch updated data from server
+                      setTimeout(function() {
+                        t.select(i);
+                      }, 10);
                     }
-                  } catch (e) {}
-                  t.unload(i);
-                }
-              });
-            }
-         });
+                  },
+                  error: function(xhr, status, error) {
+                    try {
+                      var err = $.parseJSON(xhr.responseText);
+                      if (err.success == 0) {
+                        msg = S('{{ _(' + err.errormsg + ')}}').value();
+                        alertify.error("{{ _('" + err.errormsg + "') }}");
+                      }
+                    } catch (e) {}
+                    t.unload(i);
+                  }
+                });
+              }
+            },
+            function() {}
+          );
        }
       },
       model: pgBrowser.Node.Model.extend({
