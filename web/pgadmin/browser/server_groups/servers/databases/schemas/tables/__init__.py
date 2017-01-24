@@ -1673,8 +1673,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             return make_json_response(
                 success=1,
-                info=gettext("Trigger(s) has been enabled") if is_enable
-                else gettext("Trigger(s) has been disabled"),
+                info=gettext("Trigger(s) have been enabled") if is_enable
+                else gettext("Trigger(s) have been disabled"),
                 data={
                     'id': tid,
                     'scid': scid
@@ -1706,7 +1706,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             return make_json_response(
                 success=1,
-                info=gettext("Table statistics has been reset"),
+                info=gettext("Table statistics have been reset"),
                 data={
                     'id': tid,
                     'scid': scid
