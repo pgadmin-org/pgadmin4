@@ -51,7 +51,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           collspcname: undefined,
           op_class: undefined,
           sort_order: false,
-          nulls: false
+          nulls: false,
+          is_sort_nulls_applicable: true
         },
         schema: [
           {
@@ -77,7 +78,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             control: 'node-ajax-options', url: 'get_collations', node: 'index'
           },{
             id: 'op_class', label:'{{ _('Operator class') }}',
-            cell: NodeAjaxOptionsDepsCell,
+            cell: NodeAjaxOptionsDepsCell, tags: true,
             type: 'text', disabled: 'checkAccessMethod',
             editable: function(m) {
                 // Header cell then skip
@@ -108,13 +109,19 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           },{
             id: 'sort_order', label:'{{ _('Sort order') }}',
             cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
-            disabled: 'checkAccessMethod',
             editable: function(m) {
-                // Header cell then skip
-                if (m instanceof Backbone.Collection) {
-                    return false;
+              // Header cell then skip
+              if (m instanceof Backbone.Collection) {
+                  return false;
+              }
+              else {
+                if (m.top.get('amname') === 'btree') {
+                  m.set('is_sort_nulls_applicable', true);
+                  return true;
                 }
-                return !(m.checkAccessMethod.apply(this, arguments));
+                m.set('is_sort_nulls_applicable', false);
+                return false;
+              }
             },
             deps: ['amname'],
             options: {
@@ -125,13 +132,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           },{
             id: 'nulls', label:'{{ _('NULLs') }}',
             cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
-            disabled: 'checkAccessMethod',
             editable: function(m) {
-                // Header cell then skip
-                if (m instanceof Backbone.Collection) {
+              // Header cell then skip
+              if (m instanceof Backbone.Collection) {
+                  return true;
+              } else {
+                  if (m.top.get('amname') === 'btree') {
+                    m.set('is_sort_nulls_applicable', true);
                     return true;
-                }
-                return !(m.checkAccessMethod.apply(this, arguments));
+                  }
+                  m.set('is_sort_nulls_applicable', false);
+                  return false;
+              }
             },
             deps: ['amname', 'sort_order'],
             options: {
@@ -184,9 +196,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
                setTimeout(function() { m.set('nulls', true) }, 10);
             }
-            return false;
           }
-          return true;
+          else {
+            m.set('is_sort_nulls_applicable', false);
+          }
+          return false;
         },
     });
 

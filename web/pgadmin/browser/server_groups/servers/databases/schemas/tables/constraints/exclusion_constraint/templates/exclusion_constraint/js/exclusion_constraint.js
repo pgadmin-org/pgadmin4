@@ -7,10 +7,11 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
     defaults: {
       column: undefined,
       oper_class: undefined,
-      order: undefined,
-      nulls_order: undefined,
+      order: false,
+      nulls_order: false,
       operator:undefined,
-      col_type:undefined
+      col_type:undefined,
+      is_sort_nulls_applicable: true
     },
     toJSON: function () {
       var d = pgBrowser.Node.Model.prototype.toJSON.apply(this, arguments);
@@ -23,26 +24,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       },{
         id: 'oper_class', label:'{{ _('Operator class') }}', type:'text',
         node: 'table', url: 'get_oper_class', first_empty: true,
-        editable: function(m) {
-          if (m instanceof Backbone.Collection) {
-            return true;
-          }
-          if ((_.has(m.collection, 'handler') &&
-                !_.isUndefined(m.collection.handler) &&
-                !_.isUndefined(m.collection.handler.get('oid')))) {
-            return false;
-          }
-
-          if (m.collection) {
-            var indexType = m.collection.handler.get('amname')
-            return (indexType == 'btree' || _.isUndefined(indexType) ||
-              _.isNull(indexType) || indexType == '');
-          } else {
-            return true;
-          }
-        },
+        editable: true,
         select2: {
-          allowClear: true, width: 'style',
+          allowClear: true, width: 'style', tags: true,
           placeholder: '{{ _("Select the operator class") }}'
         }, cell: Backgrid.Extension.Select2Cell.extend({
           initialize: function () {
@@ -55,6 +39,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
             if (url && (indextype == 'btree' || _.isUndefined(indextype) ||
                 _.isNull(indextype) || indextype == '')) {
+              // Set sort_order and nulls to true if access method is btree
+              setTimeout(function() {
+                m.set('order', true);
+                m.set('nulls_order', true);
+              }, 10);
+
               var node = this.column.get('schema_node'),
                   eventHandler = m.top || m,
                   node_info = this.column.get('node_info'),
@@ -108,6 +98,14 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           if (m instanceof Backbone.Collection) {
             return true;
           }
+          else {
+            if (m.top.get('amname') === 'btree') {
+              m.set('is_sort_nulls_applicable', true);
+              return true;
+            }
+            m.set('is_sort_nulls_applicable', false);
+            return false;
+          }
           if ((_.has(m.collection, 'handler') &&
                 !_.isUndefined(m.collection.handler) &&
                 !_.isUndefined(m.collection.handler.get('oid')))) {
@@ -124,6 +122,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           if (m instanceof Backbone.Collection) {
             return true;
           }
+          else {
+            if (m.top.get('amname') === 'btree') {
+              m.set('is_sort_nulls_applicable', true);
+              return true;
+            }
+            m.set('is_sort_nulls_applicable', false);
+            return false;
+          }
+
           if ((_.has(m.collection, 'handler') &&
                 !_.isUndefined(m.collection.handler) &&
                 !_.isUndefined(m.collection.handler.get('oid')))) {
@@ -898,8 +905,15 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         }],
         validate: function() {
           this.errorModel.clear();
-          var columns = this.get('columns');
-          if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
+          var columns = this.get('columns'),
+              name = this.get('name');
+
+          if ((_.isUndefined(name) || _.isNull(name) || name.length < 1)) {
+            var msg = '{{ _('Please specify name for exclusion constraint.') }}';
+            this.errorModel.set('name', msg);
+            return msg;
+          }
+          else  if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
             var msg = '{{ _('Please specify columns for exclusion constraint.') }}';
             this.errorModel.set('columns', msg);
             return msg;

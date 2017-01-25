@@ -816,7 +816,7 @@ class ExclusionConstraintView(PGChildNodeView):
             sql = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
 
-        return sql, data['name'] if 'name' in data else old_data['name']
+        return sql, data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, exid=None):
