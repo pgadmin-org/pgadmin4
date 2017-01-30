@@ -26,6 +26,10 @@ body {
   }
 }
 
+.pg-navbar {
+  z-index: 10;
+}
+
 .pg-docker {
   position:absolute;
   left:0px;
