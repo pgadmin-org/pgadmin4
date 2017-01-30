@@ -206,17 +206,11 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             # Set template path for sql scripts depending
             # on the server version.
 
-            ver = self.manager.version
-
-            # Set template path for sql scripts depending
-            # on the server version.
-
             self.sql_template_path = "/".join([
                 self.node_type,
                 self.manager.server_type,
-                '9.2_plus' if ver >= 90200 else
-                '9.1_plus'
-            ])
+                '#{0}#'
+            ]).format(self.manager.version)
 
             return f(*args, **kwargs)
 

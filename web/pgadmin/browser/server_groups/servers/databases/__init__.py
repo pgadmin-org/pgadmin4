@@ -137,14 +137,8 @@ class DatabaseView(PGChildNodeView):
                 else:
                     self.conn = self.manager.connection()
 
-                ver = self.manager.version
-                # we will set template path for sql scripts
-                if ver >= 90300:
-                    self.template_path = 'databases/sql/9.3_plus'
-                elif ver >= 90200:
-                    self.template_path = 'databases/sql/9.2_plus'
-                else:
-                    self.template_path = 'databases/sql/9.1_plus'
+                # set template path for sql scripts
+                self.template_path = 'databases/sql/#{0}#'.format(self.manager.version)
 
                 return f(self, *args, **kwargs)
 

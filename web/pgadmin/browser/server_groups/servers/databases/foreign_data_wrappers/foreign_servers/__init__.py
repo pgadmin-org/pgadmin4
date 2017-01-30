@@ -205,10 +205,7 @@ class ForeignServerView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            if self.manager.version >= 90300:
-                self.template_path = 'foreign_servers/sql/9.3_plus'
-            else:
-                self.template_path = 'foreign_servers/sql/9.1_plus'
+            self.template_path = "foreign_servers/sql/#{0}#".format(self.manager.version)
 
             return f(*args, **kwargs)
 

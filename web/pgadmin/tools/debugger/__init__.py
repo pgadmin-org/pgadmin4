@@ -140,7 +140,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     conn = manager.connection(did=did)
 
     # Get the server version, server type and user information
-    ver = manager.version
     server_type = manager.server_type
     user = manager.user_info
 

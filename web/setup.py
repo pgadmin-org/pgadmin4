@@ -30,6 +30,7 @@ import config
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
+from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 

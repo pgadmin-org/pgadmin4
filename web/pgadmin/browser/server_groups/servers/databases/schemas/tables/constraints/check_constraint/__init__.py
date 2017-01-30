@@ -208,12 +208,8 @@ class CheckConstraintView(PGChildNodeView):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
 
-            ver = self.manager.version
             # Set the template path for the SQL scripts
-            if ver >= 90200:
-                self.template_path = 'check_constraint/sql/9.2_plus'
-            elif ver >= 90100:
-                self.template_path = 'check_constraint/sql/9.1_plus'
+            self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
 
             SQL = render_template("/".join([self.template_path,
                                             'get_parent.sql']),
@@ -281,12 +277,8 @@ class CheckConstraintView(PGChildNodeView):
         self.conn = self.manager.connection(did=did)
         self.qtIdent = driver.qtIdent
 
-        ver = self.manager.version
         # Set the template path for the SQL scripts
-        if ver >= 90200:
-            self.template_path = 'check_constraint/sql/9.2_plus'
-        elif ver >= 90100:
-            self.template_path = 'check_constraint/sql/9.1_plus'
+        self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
 
         SQL = render_template("/".join([self.template_path,
                                         'get_parent.sql']),
@@ -402,12 +394,8 @@ class CheckConstraintView(PGChildNodeView):
         self.conn = self.manager.connection(did=did)
         self.qtIdent = driver.qtIdent
 
-        ver = self.manager.version
         # Set the template path for the SQL scripts
-        if ver >= 90200:
-            self.template_path = 'check_constraint/sql/9.2_plus'
-        elif ver >= 90100:
-            self.template_path = 'check_constraint/sql/9.1_plus'
+        self.template_path = 'check_constraint/sql/#{0}#'.format(self.manager.version)
 
         SQL = render_template("/".join([self.template_path,
                                         'get_parent.sql']),

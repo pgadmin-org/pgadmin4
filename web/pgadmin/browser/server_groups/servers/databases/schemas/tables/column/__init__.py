@@ -202,10 +202,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             self.qtTypeIdent = driver.qtTypeIdent
 
             # Set the template path for the SQL scripts
-            if self.manager.version >= 90200:
-                self.template_path = 'column/sql/9.2_plus'
-            else:
-                self.template_path = 'column/sql/9.1_plus'
+            self.template_path = 'column/sql/#{0}#'.format(self.manager.version)
+
             # Allowed ACL for column 'Select/Update/Insert/References'
             self.acl = ['a', 'r', 'w', 'x']
 

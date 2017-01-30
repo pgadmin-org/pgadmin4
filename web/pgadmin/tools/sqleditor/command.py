@@ -159,10 +159,8 @@ class SQLFilter(object):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
         conn = manager.connection(did=self.did)
 
-        ver = manager.version
         # we will set template path for sql scripts
-        if ver >= 90100:
-            self.sql_path = 'sqleditor/sql/9.1_plus'
+        self.sql_path = 'sqleditor/sql/#{0}#'.format(manager.version)
 
         if conn.connected():
             # Fetch the Namespace Name and object Name

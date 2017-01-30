@@ -396,9 +396,7 @@ class PGChildNodeView(NodeView):
         Returns: Dictionary of dependents for the selected node.
         """
         # Set the sql_path
-        sql_path = ''
-        if conn.manager.version >= 90100:
-            sql_path = 'depends/sql/9.1_plus'
+        sql_path = 'depends/sql/#{0}#'.format(conn.manager.version)
 
         if where is None:
             where_clause = "WHERE dep.refobjid={0}::oid".format(object_id)

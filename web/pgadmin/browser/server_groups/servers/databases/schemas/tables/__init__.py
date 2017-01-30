@@ -284,24 +284,12 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             ver = self.manager.version
             # Set the template path for the SQL scripts
-            if ver >= 90500:
-                self.template_path = 'table/sql/9.5_plus'
-            else:
-                self.template_path = 'table/sql/9.1_plus'
+            self.template_path = 'table/sql/#{0}#'.format(ver)
 
             # Template for Column ,check constraint and exclusion constraint node
-            if ver >= 90600:
-                self.column_template_path = 'column/sql/9.2_plus'
-                self.check_constraint_template_path = 'check_constraint/sql/9.2_plus'
-                self.exclusion_constraint_template_path = 'exclusion_constraint/sql/9.6_plus'
-            elif ver >= 90200:
-                self.column_template_path = 'column/sql/9.2_plus'
-                self.check_constraint_template_path = 'check_constraint/sql/9.2_plus'
-                self.exclusion_constraint_template_path = 'exclusion_constraint/sql/9.2_plus'
-            else:
-                self.column_template_path = 'column/sql/9.1_plus'
-                self.check_constraint_template_path = 'check_constraint/sql/9.1_plus'
-                self.exclusion_constraint_template_path = 'exclusion_constraint/sql/9.1_plus'
+            self.column_template_path = 'column/sql/#{0}#'.format(ver)
+            self.check_constraint_template_path = 'check_constraint/sql/#{0}#'.format(ver)
+            self.exclusion_constraint_template_path = 'exclusion_constraint/sql/#{0}#'.format(ver)
 
             # Template for PK & Unique constraint node
             self.index_constraint_template_path = 'index_constraint/sql'
@@ -310,10 +298,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             self.foreign_key_template_path = 'foreign_key/sql'
 
             # Template for index node
-            self.index_template_path = 'index/sql/9.1_plus'
+            self.index_template_path = 'index/sql/#{0}#'.format(ver)
 
             # Template for trigger node
-            self.trigger_template_path = 'trigger/sql/9.1_plus'
+            self.trigger_template_path = 'trigger/sql/#{0}#'.format(ver)
 
             # Template for rules node
             self.rules_template_path = 'rules/sql'

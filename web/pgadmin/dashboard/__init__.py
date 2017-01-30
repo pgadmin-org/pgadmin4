@@ -165,10 +165,7 @@ def check_precondition(f):
         g.server_type = g.manager.server_type
         g.version = g.manager.version
 
-        if g.version < 90600:
-            g.template_path = 'dashboard/sql/9.1_plus'
-        else:
-            g.template_path = 'dashboard/sql/9.6_plus'
+        g.template_path = 'dashboard/sql/#{0}#'.format(g.version)
 
         return f(*args, **kwargs)
 

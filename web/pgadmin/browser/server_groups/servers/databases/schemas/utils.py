@@ -86,14 +86,11 @@ class DataTypeReader:
         """
         res = []
         try:
-            sql_template_path = ''
-            if conn.manager.version >= 90100:
-                sql_template_path = 'datatype/sql/9.1_plus'
 
-            SQL = render_template("/".join([sql_template_path,
-                                            'get_types.sql']),
-                                  condition=condition,
-                                  add_serials=add_serials)
+            SQL = render_template(
+                '/datatype/sql/#{0}#/get_types.sql'.format(conn.manager.version),
+                condition=condition,
+                add_serials=add_serials)
             status, rset = conn.execute_2darray(SQL)
             if not status:
                 return status, rset

@@ -118,11 +118,7 @@ class TablespaceView(PGChildNodeView):
                     )
                 )
 
-            ver = self.manager.version
-            if ver >= 90200:
-                self.template_path = 'tablespaces/sql/9.2_plus'
-            else:
-                self.template_path = 'tablespaces/sql/9.1_plus'
+            self.template_path = 'tablespaces/sql/#{0}#'.format(self.manager.version)
             current_app.logger.debug(
                 "Using the template path: %s", self.template_path
             )

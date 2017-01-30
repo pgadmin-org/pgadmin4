@@ -183,11 +183,7 @@ def check_precondition(f):
             self.pg_template_path(self.manager.version)
         )
 
-        ver = self.manager.version
-        if ver >= 90200:
-            self.column_template_path = 'column/sql/9.2_plus'
-        else:
-            self.column_template_path = 'column/sql/9.1_plus'
+        self.column_template_path = 'column/sql/#{0}#'.format(self.manager.version)
 
         return f(*args, **kwargs)
 

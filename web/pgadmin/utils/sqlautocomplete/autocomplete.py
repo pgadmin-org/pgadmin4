@@ -88,10 +88,8 @@ class SQLAutoComplete(object):
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
 
-        ver = manager.version
         # we will set template path for sql scripts
-        if ver >= 90100:
-            self.sql_path = 'sqlautocomplete/sql/9.1_plus'
+        self.sql_path = 'sqlautocomplete/sql/#{0}#'.format(manager.version)
 
         self.search_path = []
         # Fetch the search path

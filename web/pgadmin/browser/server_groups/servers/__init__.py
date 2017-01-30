@@ -656,16 +656,6 @@ class ServerNode(PGChildNodeView):
     def modified_sql(self, gid, sid):
         return make_json_response(data='')
 
-    def get_template_directory(self, version):
-        """ This function will check and return template directory
-        based on postgres verion"""
-        if version >= 90600:
-            return '9.6_plus'
-        elif version >= 90200:
-            return '9.2_plus'
-        else:
-            return '9.1_plus'
-
     def statistics(self, gid, sid):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -673,11 +663,7 @@ class ServerNode(PGChildNodeView):
         if conn.connected():
             status, res = conn.execute_dict(
                 render_template(
-                    "/".join([
-                        'servers/sql',
-                        self.get_template_directory(manager.version),
-                        'stats.sql'
-                    ]),
+                    "/servers/sql/#{0}#/stats.sql".format(manager.version),
                     conn=conn, _=gettext
                 )
             )
@@ -1051,11 +1037,8 @@ class ServerNode(PGChildNodeView):
             # Hash new password before saving it.
             password = pqencryptpassword(data['newPassword'], manager.user)
 
-            SQL = render_template("/".join([
-                'servers/sql',
-                self.get_template_directory(manager.version),
-                'change_password.sql'
-            ]),
+            SQL = render_template(
+                "/servers/sql/#{0}#/change_password.sql".format(manager.version),
                 conn=conn, _=gettext,
                 user=manager.user, encrypted_password=password)
 

@@ -21,7 +21,10 @@ from flask_login import user_logged_in
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
+from werkzeug.datastructures import ImmutableDict
+
 from pgadmin.utils import PgAdminModule, driver
+from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from pgadmin.utils.session import create_session_interface
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
@@ -40,7 +43,16 @@ if sys.version_info[0] >= 3:
 elif os.name == 'nt':
     import _winreg as winreg
 
+
 class PgAdmin(Flask):
+    def __init__(self, *args, **kwargs):
+        # Set the template loader to a postgres-version-aware loader
+        self.jinja_options = ImmutableDict(
+            extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
+            loader=VersionedTemplateLoader(self)
+        )
+        super(PgAdmin, self).__init__(*args, **kwargs)
+
     def find_submodules(self, basemodule):
         for module_name in find_modules(basemodule, True):
             if module_name in self.config['MODULE_BLACKLIST']:

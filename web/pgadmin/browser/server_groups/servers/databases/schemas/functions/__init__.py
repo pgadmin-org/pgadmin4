@@ -327,8 +327,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             self.qtIdent = driver.qtIdent
             self.qtLiteral = driver.qtLiteral
 
-            ver = self.manager.version
-
             # Set the template path for the SQL scripts
             self.template_path = "/".join([
                 self.node_type
@@ -337,10 +335,8 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 self.template_path,
                 self.manager.server_type,
                 'sql',
-                '9.5_plus' if ver >= 90500 else
-                '9.2_plus' if ver >= 90200 else
-                '9.1_plus'
-            ])
+                '#{0}#'
+            ]).format(self.manager.version)
 
             return f(*args, **kwargs)
 

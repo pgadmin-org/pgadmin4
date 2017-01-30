@@ -200,9 +200,7 @@ class SynonymView(PGChildNodeView):
                 )
 
             # we will set template path for sql scripts
-            self.template_path = 'synonym/sql/'
-            self.template_path += '9.5_plus' if self.manager.version >= 90500 \
-                else '9.1_plus'
+            self.template_path = 'synonym/sql/#{0}#'.format(self.manager.version)
 
             return f(*args, **kwargs)
 

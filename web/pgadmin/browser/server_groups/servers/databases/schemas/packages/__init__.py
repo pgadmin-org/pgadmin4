@@ -145,9 +145,7 @@ class PackageView(PGChildNodeView):
                             "Connection to the server has been lost!"
                         )
                     )
-                self.template_path = 'package/ppas/9.2_plus'
-                if self.manager.version < 90200:
-                    self.template_path = 'package/ppas/9.1_plus'
+                self.template_path = 'package/ppas/#{0}#'.format(self.manager.version)
 
                 SQL = render_template(
                     "/".join([self.template_path, 'get_schema.sql']),

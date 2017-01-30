@@ -257,10 +257,7 @@ class DomainConstraintView(PGChildNodeView):
             self.qtIdent = driver.qtIdent
 
             # Set the template path for the SQL scripts
-            if self.manager.version >= 90200:
-                self.template_path = 'domain_constraints/sql/9.2_plus'
-            else:
-                self.template_path = 'domain_constraints/sql/9.1_plus'
+            self.template_path = 'domain_constraints/sql/#{0}#'.format(self.manager.version)
 
             return f(*args, **kwargs)
         return wrap

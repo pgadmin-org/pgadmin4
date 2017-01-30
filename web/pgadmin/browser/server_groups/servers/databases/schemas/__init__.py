@@ -238,18 +238,14 @@ class SchemaView(PGChildNodeView):
         """
         Returns the template path for PPAS servers.
         """
-        if ver >= 90200:
-            return 'ppas/9.2_plus'
-        return 'ppas/9.1_plus'
+        return 'ppas/#{0}#'.format(ver)
 
     @staticmethod
     def pg_template_path(ver):
         """
         Returns the template path for PostgreSQL servers.
         """
-        if ver >= 90200:
-            return 'pg/9.2_plus'
-        return 'pg/9.1_plus'
+        return 'pg/#{0}#'.format(ver)
 
     def format_request_acls(self, data, modified=False, specific=None):
         acls = {}
