@@ -1,0 +1,1 @@
+SELECT FALSE as inrecovery, FALSE as isreplaypaused;

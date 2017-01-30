@@ -12,7 +12,9 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
             {'name': "9.4_plus", 'number': 90400},
             {'name': "9.3_plus", 'number': 90300},
             {'name': "9.2_plus", 'number': 90200},
-            {'name': "9.1_plus", 'number': 90100}
+            {'name': "9.1_plus", 'number': 90100},
+            {'name': "9.0_plus", 'number': 90000},
+            {'name': "8.3_plus", 'number': 80300}
         )
 
         if len(template_path_parts) == 1:
@@ -29,3 +31,4 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
                     return super(VersionedTemplateLoader, self).get_source(environment, template_path)
                 except TemplateNotFound:
                     continue
+            raise TemplateNotFound(template)
