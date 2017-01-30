@@ -739,10 +739,19 @@ class TriggerView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            # We need oid to add object in browser tree and if user
+            # update the trigger then new OID is getting generated
+            # so we need to return new OID of trigger.
+            SQL = render_template("/".join([self.template_path, 'get_oid.sql']),
+                                  tid=tid, data=data)
+            status, new_trid = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=new_trid)
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    trid,
-                    scid,
+                    new_trid,
+                    tid,
                     name,
                     icon="icon-%s" % self.node_type
                 )

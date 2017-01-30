@@ -216,6 +216,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                     return false;
                 }
             } else {
+                // Check if it is row trigger then enabled it.
+                var is_row_trigger = m.get('is_row_trigger');
+                if (!_.isUndefined(is_row_trigger) && m.node_info['server']['server_type'] == 'ppas') {
+                  return false;
+                }
                 // Disable it
                 return true;
             }
@@ -335,6 +340,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return false;
             }
         } else {
+            // Check if it is row trigger then enabled it.
+            var fires_ = m.get('fires');
+            if (!_.isUndefined(fires_) && m.node_info['server']['server_type'] == 'ppas') {
+              return false;
+            }
             // Disable it
             return true;
         }
@@ -348,6 +358,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             group: '{{ _('Events') }}',
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
+                var evn_insert = m.get('evnt_insert');
+                if (!_.isUndefined(evn_insert) && m.node_info['server']['server_type'] == 'ppas')
+                  return false;
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
@@ -356,6 +369,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             group: '{{ _('Events') }}',
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
+                var evn_update = m.get('evnt_update');
+                if (!_.isUndefined(evn_update) && m.node_info['server']['server_type'] == 'ppas')
+                  return false;
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
@@ -364,6 +380,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             group: '{{ _('Events') }}',
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
+                var evn_delete = m.get('evnt_delete');
+                if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas')
+                  return false;
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
