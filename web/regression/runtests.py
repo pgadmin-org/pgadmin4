@@ -46,6 +46,11 @@ if os.path.isfile(config.TEST_SQLITE_PATH):
     os.remove(config.TEST_SQLITE_PATH)
 
 config.TESTING_MODE = True
+
+# Disable upgrade checks - no need during testing, and it'll cause an error if there's
+# no network connection when it runs.
+config.UPGRADE_CHECK_ENABLED = False
+
 pgadmin_credentials = test_setup.config_data
 
 # Set environment variables for email and password
