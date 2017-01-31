@@ -3,7 +3,12 @@ Copied from http://code.activestate.com/recipes/576611-counter-class/
 """
 
 from heapq import nlargest
-from itertools import repeat, ifilter
+from itertools import repeat
+try:
+    from itertools import ifilter
+except ImportError:
+    # ifilter is in-built function in Python3 as filter
+    ifilter = filter
 from operator import itemgetter
 
 
