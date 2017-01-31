@@ -47,8 +47,9 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
         try:
             self.loader.get_source(None, "some_feature/sql/#10100#/some_action.sql")
             self.fail("No exception raised")
-        except TemplateNotFound, e:
+        except TemplateNotFound:
             return
+
 
 class FakeApp(Flask):
     def __init__(self):
