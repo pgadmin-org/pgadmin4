@@ -1525,6 +1525,8 @@ WHERE db.oid = {0}""".format(did))
             if my_id in self.connections:
                 self.connections[my_id]._release()
                 del self.connections[my_id]
+                if did is not None:
+                    del self.db_info[did]
 
                 if len(self.connections) == 0:
                     self.ver = None
