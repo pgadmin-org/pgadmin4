@@ -146,8 +146,9 @@ class CatalogObjectView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'catalog_object/sql/{0}/9.1_plus'.format(
-                'ppas' if self.manager.server_type == 'ppas' else 'pg'
+            self.template_path = 'catalog_object/sql/{0}/#{1}#'.format(
+                'ppas' if self.manager.server_type == 'ppas' else 'pg',
+                self.manager.version
             )
 
             return f(*args, **kwargs)

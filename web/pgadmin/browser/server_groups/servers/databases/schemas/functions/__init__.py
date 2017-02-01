@@ -1437,7 +1437,7 @@ It may have been removed by another user or moved to another schema.
             # Get schema name
             status, schema_name = self.conn.execute_scalar(
                 render_template(
-                    'schema/pg/9.1_plus/sql/get_name.sql',
+                    'schema/pg/#{0}#/sql/get_name.sql'.format(self.manager.version),
                     scid=scid
                 )
             )

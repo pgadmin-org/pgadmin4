@@ -305,24 +305,14 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         """
         Returns the template path for PPAS servers.
         """
-        return 'ppas/{0}'.format(
-            '9.4_plus' if ver >= 90400 else
-            '9.3_plus' if ver >= 90300 else
-            '9.2_plus' if ver >= 90200 else
-            '9.1_plus'
-        )
+        return 'ppas/#{0}#'.format(ver)
 
     @staticmethod
     def pg_template_path(ver):
         """
         Returns the template path for PostgreSQL servers.
         """
-        return 'pg/{0}'.format(
-            '9.4_plus' if ver >= 90400 else
-            '9.3_plus' if ver >= 90300 else
-            '9.2_plus' if ver >= 90200 else
-            '9.1_plus'
-        )
+        return 'pg/#{0}#'.format(ver)
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -760,7 +750,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         self.index_temp_path = 'index'
         SQL = render_template("/".join([self.index_temp_path,
-                                        'sql/9.1_plus/column_details.sql']), idx=idx)
+                                        'sql/#{0}#/column_details.sql'.format(self.manager.version)]), idx=idx)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -874,7 +864,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         SQL_data = ''
         SQL = render_template("/".join(
-            [self.trigger_temp_path, 'sql/9.1_plus/properties.sql']),
+            [self.trigger_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
             tid=vid)
 
         status, data = self.conn.execute_dict(SQL)
@@ -883,7 +873,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         for trigger in data['rows']:
             SQL = render_template("/".join(
-                [self.trigger_temp_path, 'sql/9.1_plus/properties.sql']),
+                [self.trigger_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
                 tid=trigger['oid'],
                 tgrelid=vid
             )
@@ -904,7 +894,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             res_rows = trigger_definition(res_rows)
 
             SQL = render_template("/".join(
-                [self.trigger_temp_path, 'sql/9.1_plus/create.sql']),
+                [self.trigger_temp_path, 'sql/#{0}#/create.sql'.format(self.manager.version)]),
                 data=res_rows, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL
@@ -920,16 +910,16 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         self.index_temp_path = 'index'
         SQL_data = ''
-        SQL = render_template("/".join(
-            [self.index_temp_path, 'sql/9.1_plus/properties.sql']), tid=vid)
         status, data = self.conn.execute_dict(SQL)
         if not status:
+            SQL = render_template("/".join(
+                [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]), tid=vid)
             return internal_server_error(errormsg=data)
 
         for index in data['rows']:
             res = []
             SQL = render_template("/".join(
-                [self.index_temp_path, 'sql/9.1_plus/properties.sql']),
+                [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
                 idx=index['oid'],
                 tid=vid
             )
@@ -944,7 +934,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             data = self.get_index_column_details(index['oid'], data)
 
             SQL = render_template("/".join(
-                [self.index_temp_path, 'sql/9.1_plus/create.sql']),
+                [self.index_temp_path, 'sql/#{0}#/create.sql'.format(self.manager.version)]),
                 data=data, display_comments=True)
             SQL_data += '\n'
             SQL_data += SQL

@@ -201,7 +201,7 @@ class CastView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set template path for the SQL scripts
-            self.template_path = 'cast/sql/9.1_plus'
+            self.template_path = 'cast/sql/#{0}#'.format(self.manager.version)
 
             return f(*args, **kwargs)
 

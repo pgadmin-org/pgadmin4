@@ -111,10 +111,8 @@ def check_precondition(f):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
 
         server_info.clear()
-        server_info['manager'] = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(
-            kwargs['sid']
-        )
+        server_info['manager'] = get_driver(PG_DEFAULT_DRIVER)\
+            .connection_manager(kwargs['sid'])
         server_info['conn'] = server_info['manager'].connection(
             did=kwargs['did']
         )
@@ -128,9 +126,9 @@ def check_precondition(f):
         server_info['server_type'] = server_info['manager'].server_type
         server_info['version'] = server_info['manager'].version
         if server_info['server_type'] == 'pg':
-            server_info['template_path'] = 'grant_wizard/pg/9.1_plus'
+            server_info['template_path'] = 'grant_wizard/pg/#{0}#'.format(server_info['version'])
         elif server_info['server_type'] == 'ppas':
-            server_info['template_path'] = 'grant_wizard/ppas/9.1_plus'
+            server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(server_info['version'])
 
         return f(*args, **kwargs)
 

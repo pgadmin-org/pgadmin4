@@ -232,7 +232,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             self.acl = ['U']
 
             # we will set template path for sql scripts
-            self.template_path = 'type/sql/9.1_plus'
+            self.template_path = 'type/sql/#{0}#'.format(self.manager.version)
 
             return f(*args, **kwargs)
         return wrap

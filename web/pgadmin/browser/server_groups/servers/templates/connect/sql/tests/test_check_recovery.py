@@ -6,7 +6,7 @@ from regression import test_utils
 
 class TestCheckRecovery(BaseTestGenerator):
 
-    versions_to_test = ["8.3_plus", "9.0_plus"]
+    versions_to_test = ["default", "9.0_plus"]
 
     def runTest(self):
 

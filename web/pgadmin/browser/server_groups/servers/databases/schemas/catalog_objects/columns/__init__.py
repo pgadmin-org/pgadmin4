@@ -166,7 +166,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'catalog_object_column/sql/9.1_plus'
+            self.template_path = 'catalog_object_column/sql/#{0}#'.format(self.manager.version)
 
             return f(*args, **kwargs)
 

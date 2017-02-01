@@ -42,6 +42,13 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
         self.assertEqual("Some 9.2 SQL", content)
         self.assertIn("some_feature/sql/9.2_plus/some_action.sql", filename)
 
+    def test_get_source_when_the_version_is_9_0_and_there_are_templates_for_9_1_and_9_2_returns_default_template(self):
+
+        content, filename, up_to_dateness = self.loader.get_source(None, "some_feature/sql/#90000#/some_action_with_default.sql")
+
+        self.assertEqual("Some default SQL", content)
+        self.assertIn("some_feature/sql/default/some_action_with_default.sql", filename)
+
     def test_raise_not_found_exception_when_postgres_version_less_than_all_available_sql_templates(self):
 
         try:

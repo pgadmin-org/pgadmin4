@@ -73,7 +73,7 @@ class IndexesModule(CollectionNodeModule):
             if 'vid' not in kwargs:
                 return True
 
-            template_path = 'index/sql/9.1_plus'
+            template_path = 'index/sql/#{0}#'.format(manager.version)
             SQL = render_template("/".join(
                 [template_path, 'backend_support.sql']), vid=kwargs['vid'])
             status, res = conn.execute_scalar(SQL)
@@ -232,7 +232,7 @@ class IndexesView(PGChildNodeView):
                 kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
-            self.template_path = 'index/sql/9.1_plus'
+            self.template_path = 'index/sql/#{0}#'.format(self.manager.version)
 
             # We need parent's name eg table name and schema name
             # when we create new index in update we can fetch it using
