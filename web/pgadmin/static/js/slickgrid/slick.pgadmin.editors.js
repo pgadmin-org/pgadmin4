@@ -550,7 +550,13 @@
     };
 
     this.loadValue = function (item) {
-      defaultValue = item[args.column.field] || "";
+      var value = item[args.column.field];
+
+      // Check if value is null or undefined
+      if (value === undefined && typeof value === "undefined") {
+        value = ""
+      }
+      defaultValue = value;
       $input.val(defaultValue);
       $input[0].defaultValue = defaultValue;
       $input.select();
