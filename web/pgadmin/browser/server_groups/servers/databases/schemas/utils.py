@@ -234,6 +234,44 @@ class DataTypeReader:
         else:
             return name + length + array
 
+    @classmethod
+    def parse_type_name(cls, type_name):
+        """
+        Returns prase type name without length and precision
+        so that we can match the end result with types in the select2.
+
+        Args:
+            self: self
+            type_name: Type name
+        """
+
+        # Manual Data type formatting
+        # If data type has () with them then we need to remove them
+        # eg bit(1) because we need to match the name with combobox
+
+        is_array = False
+        if type_name.endswith('[]'):
+            is_array = True
+            type_name = type_name.rstrip('[]')
+
+        idx = type_name.find('(')
+        if idx and type_name.endswith(')'):
+            type_name = type_name[:idx]
+        # We need special handling of timestamp types as
+        # variable precision is between the type
+        elif idx and type_name.startswith("time"):
+            end_idx = type_name.find(')')
+            # If we found the end then form the type string
+            if end_idx != 1:
+                from re import sub as sub_str
+                pattern = r'(\(\d+\))'
+                type_name = sub_str(pattern, '', type_name)
+
+        if is_array:
+            type_name += "[]"
+
+        return type_name
+
 
 def trigger_definition(data):
     """

@@ -1,6 +1,6 @@
 {% import 'macros/schemas/security.macros' as SECLABEL %}
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
-{% if data %}
+{% import 'type/macros/get_full_type_sql_format.macros' as GET_TYPE %}
 {#======================================#}
 {# Below will change object owner #}
 {% if data.typeowner and data.typeowner != o_data.typeowner %}
@@ -28,28 +28,47 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% if 'added' in composite and composite.added|length > 0 %}
 {% for r in composite.added %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    ADD ATTRIBUTE {{conn|qtIdent(r.member_name)}} {{conn|qtTypeIdent(r.type)}}{% if r.is_tlength and r.tlength %}
-({{r.tlength}}{% if r.is_precision and r.precision %},{{r.precision}}{% endif %}){% endif %}{% if r.collation %}
+    ADD ATTRIBUTE {{conn|qtIdent(r.member_name)}} {{ GET_TYPE.CREATE_TYPE_SQL(conn, r.cltype, r.tlength, r.precision, r.hasSqrBracket) }}{% if r.collation %}
  COLLATE {{r.collation}}{% endif %};
 {% endfor %}
 {% endif %}
 {% if 'changed' in composite and composite.changed|length > 0 %}
 {% for r in composite.changed %}
 {% for o in o_data.composite %}
-{% if o.attnum == r.attnum and r.member_name and o.member_name != r.member_name %}
+{##### Variables for the loop #####}
+{% set member_name = o.member_name %}
+{% set cltype = o.cltype %}
+{% set tlength = o.tlength %}
+{% set precision = o.precision %}
+{% set hasSqrBracket = o.hasSqrBracket %}
+{##### If member name changed #####}
+{% if o.attnum == r.attnum %}
+{% if r.member_name and o.member_name != r.member_name %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
     RENAME ATTRIBUTE {{o.member_name}} TO {{r.member_name}};
-{% if r.type and o.type != r.type %}
+{% set member_name = r.member_name %}
+{% endif %}
+{##### If type changed #####}
+{% if r.cltype and cltype != r.cltype %}
+{% set cltype = r.cltype %}
+{% set hasSqrBracket = r.hasSqrBracket %}
+{##### If length is not allowed on type #####}
+{% if not r.is_tlength %}
+{% set tlength = 0 %}
+{% set precision = 0 %}
+{% endif %}
+{% endif %}
+{##### If length changed #####}
+{% if r.tlength and tlength != r.tlength %}
+{% set tlength = r.tlength %}
+{% endif %}
+{##### If precision changed #####}
+{% if tlength and r.precision and precision != r.precision %}
+{% set precision = r.precision %}
+{% endif %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-        ALTER ATTRIBUTE {{conn|qtIdent(r.member_name)}} SET DATA TYPE {{conn|qtTypeIdent(r.type)}}{% if r.is_tlength and r.tlength %}
-({{r.tlength}}{% if r.is_precision and r.precision %},{{r.precision}}{% endif %}){% endif %}{% if r.collation %}
+        ALTER ATTRIBUTE {{conn|qtIdent(member_name)}} SET DATA TYPE {{ GET_TYPE.CREATE_TYPE_SQL(conn, cltype, tlength, precision, hasSqrBracket) }}{% if r.collation %}
  COLLATE {{r.collation}}{% endif %};
-{% else %}
-ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-        ALTER ATTRIBUTE {{conn|qtIdent(r.member_name)}} SET DATA TYPE {{conn|qtTypeIdent(o.type)}}{% if o.is_tlength and o.tlength %}
-({{o.tlength}}{% if o.is_precision and o.precision %},{{o.precision}}{% endif %}){% endif %}{% if o.collation %}
- COLLATE {{r.collation}}{% endif %};
-{% endif%}
 {% endif%}
 {% endfor %}
 {% endfor %}
@@ -135,5 +154,4 @@ ALTER TYPE {% if data.name and data.name != o_data.name %}{{ conn|qtIdent(o_data
 {% else %}{{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% endif %}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
-{% endif %}
 {% endif %}

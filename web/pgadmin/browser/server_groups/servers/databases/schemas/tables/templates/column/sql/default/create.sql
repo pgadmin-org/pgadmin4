@@ -1,12 +1,11 @@
 {% import 'column/macros/security.macros' as SECLABEL %}
 {% import 'column/macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
+{% import 'type/macros/get_full_type_sql_format.macros' as GET_TYPE %}
 {###  Add column ###}
 {% if data.name and  data.cltype %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ADD COLUMN {{conn|qtIdent(data.name)}} {{conn|qtTypeIdent(data.cltype)}}{% if data.attlen %}
-({{data.attlen}}{% if data.attprecision%}, {{data.attprecision}}{% endif %}){% endif %}{% if data.hasSqrBracket %}
-[]{% endif %}{% if data.collspcname %}
+    ADD COLUMN {{conn|qtIdent(data.name)}} {{ GET_TYPE.CREATE_TYPE_SQL(conn, data.cltype, data.attlen, data.attprecision, data.hasSqrBracket) }}{% if data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %}{% if data.attnotnull %}
  NOT NULL{% endif %}{% if data.defval %}
  DEFAULT {{data.defval}}{% endif %};

@@ -1,6 +1,7 @@
 {% import 'column/macros/security.macros' as SECLABEL %}
 {% import 'column/macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/variable.macros' as VARIABLE %}
+{% import 'type/macros/get_full_type_sql_format.macros' as GET_TYPE %}
 {###  Rename column name ###}
 {% if data.name and data.name != o_data.name %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
@@ -8,11 +9,9 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Alter column type and collation ###}
-{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen and data.attlen != o_data.attlen) or (data.attprecision or data.attprecision != o_data.attprecision) %}
+{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen and data.attlen != o_data.attlen) or (data.attprecision and data.attprecision != o_data.attprecision) %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {% if data.cltype %}{{conn|qtTypeIdent(data.cltype)}} {% elif o_data.typnspname != 'pg_catalog' %}{{conn|qtTypeIdent(o_data.typnspname, o_data.cltype)}}{% else %}{{conn|qtTypeIdent(o_data.cltype)}} {% endif %}
-{% if data.attlen and data.attlen != 'None' %}({{data.attlen}}{% if data.attlen != 'None' and data.attprecision %}, {{data.attprecision}}){% elif (data.cltype is defined and not data.cltype) %}, {{o_data.attprecision}}){% elif data.attlen %}){% endif %}{% endif %}{% if data.hasSqrBracket %}
-[]{% endif %}{% if data.collspcname and data.collspcname != o_data.collspcname %}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname %}
  COLLATE {{data.collspcname}}{% endif %};
 {% endif %}
 {###  Alter column default value ###}

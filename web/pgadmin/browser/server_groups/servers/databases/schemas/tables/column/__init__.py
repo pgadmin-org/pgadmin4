@@ -436,20 +436,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         data['edit_types'] = edit_types_list
 
-        # Manual Data type formatting
-        # If data type has () with them then we need to remove them
-        # eg bit(1) because we need to match the name with combobox
-        isArray = False
-        if data['cltype'].endswith('[]'):
-            isArray = True
-            data['cltype'] = data['cltype'].rstrip('[]')
-
-        idx = data['cltype'].find('(')
-        if idx and data['cltype'].endswith(')'):
-            data['cltype'] = data['cltype'][:idx]
-
-        if isArray:
-            data['cltype'] += "[]"
+        data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
 
         return data
 
@@ -511,6 +498,24 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         return type
 
+    @staticmethod
+    def convert_length_precision_to_string(data):
+        """
+        This function is used to convert length & precision to string
+        to handle case like when user gives 0 as length
+
+        Args:
+            data: Data from client
+
+        Returns:
+            Converted data
+        """
+        if 'attlen' in data and data['attlen'] is not None:
+            data['attlen'] = str(data['attlen'])
+        if 'attprecision' in data and data['attprecision'] is not None:
+            data['attprecision'] = str(data['attprecision'])
+        return data
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
         """
@@ -560,6 +565,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # check type for '[]' in it
         data['cltype'] = self._cltype_formatter(data['cltype'])
         data['hasSqrBracket'] = self.hasSqrBracket
+        data = self.convert_length_precision_to_string(data)
 
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']),
@@ -733,6 +739,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         This function will genrate sql from model data
         """
+        data = self.convert_length_precision_to_string(data)
+
         if clid is not None:
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']), tid=tid, clid=clid
@@ -745,6 +753,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             old_data = dict(res['rows'][0])
             # We will add table & schema as well
             old_data = self._formatter(scid, tid, clid, old_data)
+
+            # check type for '[]' in it
+            if 'cltype' in old_data:
+                old_data['cltype'] = self._cltype_formatter(old_data['cltype'])
+                old_data['hasSqrBracket'] = self.hasSqrBracket
 
             # If name is not present in data then
             # we will fetch it from old data, we also need schema & table name

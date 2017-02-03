@@ -113,6 +113,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                   m.set('is_tlength', true, {silent: true});
                   m.set('min_val', o.min_val, {silent: true});
                   m.set('max_val', o.max_val, {silent: true});
+                } else {
+                  // set the values in model
+                  m.set('is_tlength', false, {silent: true});
                 }
             }
           });
@@ -140,6 +143,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                   m.set('is_precision', true, {silent: true});
                   m.set('min_val', o.min_val, {silent: true});
                   m.set('max_val', o.max_val, {silent: true});
+                } else {
+                  // set the values in model
+                  m.set('is_precision', false, {silent: true});
                 }
             }
           });
@@ -166,7 +172,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
          if (flag) {
            setTimeout(function(){
-             m.set('collspcname', "");
+             m.set('collspcname', "", {silent: true});
            }, 10);
          }
          return flag;

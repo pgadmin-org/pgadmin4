@@ -655,13 +655,13 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 # If we have length & precision both
                 matchObj = re.search(r'(\d+),(\d+)', fulltype)
                 if matchObj:
-                    column['attlen'] = int(matchObj.group(1))
-                    column['attprecision'] = int(matchObj.group(2))
+                    column['attlen'] = matchObj.group(1)
+                    column['attprecision'] = matchObj.group(2)
                 else:
                     # If we have length only
                     matchObj = re.search(r'(\d+)', fulltype)
                     if matchObj:
-                        column['attlen'] = int(matchObj.group(1))
+                        column['attlen'] = matchObj.group(1)
                         column['attprecision'] = None
                     else:
                         column['attlen'] = None
@@ -695,21 +695,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     edit_types_list.append(present_type)
 
                 column['edit_types'] = edit_types_list
-
-                # Manual Data type formatting
-                # If data type has () with them then we need to remove them
-                # eg bit(1) because we need to match the name with combobox
-                isArray = False
-                if column['cltype'].endswith('[]'):
-                    isArray = True
-                    column['cltype'] = column['cltype'].rstrip('[]')
-
-                idx = column['cltype'].find('(')
-                if idx and column['cltype'].endswith(')'):
-                    column['cltype'] = column['cltype'][:idx]
-
-                if isArray:
-                    column['cltype'] += "[]"
+                column['cltype'] = DataTypeReader.parse_type_name(column['cltype'])
 
                 if 'indkey' in column:
                     # Current column
@@ -1317,6 +1303,24 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         else:
             return data_type, False
 
+    @staticmethod
+    def convert_length_precision_to_string(data):
+        """
+        This function is used to convert length & precision to string
+        to handle case like when user gives 0 as length
+
+        Args:
+            data: Data from client
+
+        Returns:
+            Converted data
+        """
+        if 'attlen' in data and data['attlen'] is not None:
+            data['attlen'] = str(data['attlen'])
+        if 'attprecision' in data and data['attprecision'] is not None:
+            data['attprecision'] = str(data['attprecision'])
+        return data
+
     def _parse_format_columns(self, data, mode=None):
         """
         data:
@@ -1344,6 +1348,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             # check type for '[]' in it
                             c['cltype'], c['hasSqrBracket'] = self._cltype_formatter(c['cltype'])
 
+                        c = self.convert_length_precision_to_string(c)
+
                     data['columns'][action] = final_columns
         else:
             # We need to exclude all the columns which are inherited from other tables
@@ -1363,6 +1369,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 if 'cltype' in c:
                     # check type for '[]' in it
                     c['cltype'], c['hasSqrBracket'] = self._cltype_formatter(c['cltype'])
+
+                c = self.convert_length_precision_to_string(c)
 
             data['columns'] = final_columns
 
@@ -2200,6 +2208,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         old_data = res['rows'][0]
 
                         old_data['cltype'], old_data['hasSqrBracket'] = self._cltype_formatter(old_data['cltype'])
+                        old_data = self.convert_length_precision_to_string(old_data)
 
                         fulltype = self.get_full_type(
                             old_data['typnspname'], old_data['typname'],
@@ -2221,20 +2230,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                                 old_data['attlen'] = None
                                 old_data['attprecision'] = None
 
-                        # Manual Data type formatting
-                        # If data type has () with them then we need to remove them
-                        # eg bit(1) because we need to match the name with combobox
-                        isArray = False
-                        if old_data['cltype'].endswith('[]'):
-                            isArray = True
-                            old_data['cltype'] = old_data['cltype'].rstrip('[]')
-
-                        idx = old_data['cltype'].find('(')
-                        if idx and old_data['cltype'].endswith(')'):
-                            old_data['cltype'] = old_data['cltype'][:idx]
-
-                        if isArray:
-                            old_data['cltype'] += "[]"
+                        old_data['cltype'] = DataTypeReader.parse_type_name(old_data['cltype'])
 
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
@@ -2251,6 +2247,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         if 'attacl' in c:
                             c['attacl'] = parse_priv_to_db(c['attacl'],
                                                            self.column_acl)
+
+                        c = self.convert_length_precision_to_string(c)
+
                         if 'inheritedfrom' not in c:
                             column_sql += render_template("/".join(
                                 [self.column_template_path, 'create.sql']),

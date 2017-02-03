@@ -347,6 +347,43 @@ class TypeView(PGChildNodeView, DataTypeReader):
             status=200
         )
 
+    def _cltype_formatter(self, type):
+        """
+
+        Args:
+            data: Type string
+
+        Returns:
+            We need to remove [] from type and append it
+            after length/precision so we will set flag for
+            sql template
+        """
+        if '[]' in type:
+            type = type.replace('[]', '')
+            self.hasSqrBracket = True
+        else:
+            self.hasSqrBracket = False
+
+        return type
+
+    @staticmethod
+    def convert_length_precision_to_string(data):
+        """
+        This function is used to convert length & precision to string
+        to handle case like when user gives 0 as length
+
+        Args:
+            data: Data from client
+
+        Returns:
+            Converted data
+        """
+        if 'tlength' in data and data['tlength'] is not None:
+            data['tlength'] = str(data['tlength'])
+        if 'precision' in data and data['precision'] is not None:
+            data['precision'] = str(data['precision'])
+        return data
+
     def additional_properties(self, copy_dict, tid):
         """
         We will use this function to add additional properties according to type
@@ -412,11 +449,17 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 is_tlength = True if t_len else False
                 is_precision = True if t_prec else False
 
+                type_name = DataTypeReader.parse_type_name(row['typname'])
+
+                row['type'] = self._cltype_formatter(type_name)
+                row['hasSqrBracket'] = self.hasSqrBracket
+                row = self.convert_length_precision_to_string(row)
                 composite_lst.append({
-                    'attnum': row['attnum'], 'member_name': row['attname'], 'type': row['typname'],
-                    'collation': full_collate,
+                    'attnum': row['attnum'], 'member_name': row['attname'], 'type': type_name,
+                    'collation': full_collate, 'cltype': row['type'],
                     'tlength': t_len, 'precision': t_prec,
-                    'is_tlength': is_tlength, 'is_precision': is_precision})
+                    'is_tlength': is_tlength, 'is_precision': is_precision,
+                    'hasSqrBracket': row['hasSqrBracket']})
 
             # Adding both results
             res['member_list'] = ', '.join(properties_list)
@@ -900,6 +943,12 @@ class TypeView(PGChildNodeView, DataTypeReader):
         data = self._convert_for_sql(data)
 
         try:
+            if 'composite' in data and len(data['composite']) > 0:
+                for each_type in data['composite']:
+                    each_type = self.convert_length_precision_to_string(each_type)
+                    each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                    each_type['hasSqrBracket'] = self.hasSqrBracket
+
             SQL = render_template("/".join([self.template_path, 'create.sql']),
                                   data=data, conn=self.conn)
             status, res = self.conn.execute_dict(SQL)
@@ -1118,6 +1167,15 @@ class TypeView(PGChildNodeView, DataTypeReader):
                     if 'deleted' in data[key]:
                         data[key]['deleted'] = parse_priv_to_db(data[key]['deleted'], self.acl)
 
+            if 'composite' in data and len(data['composite']) > 0:
+                for key in ['added', 'changed', 'deleted']:
+                    if key in data['composite']:
+                        for each_type in data['composite'][key]:
+                            each_type = self.convert_length_precision_to_string(each_type)
+                            if 'type' in each_type:
+                                each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                                each_type['hasSqrBracket'] = self.hasSqrBracket
+
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
                                   scid=scid, tid=tid,
@@ -1169,7 +1227,15 @@ class TypeView(PGChildNodeView, DataTypeReader):
             # Privileges
             if 'typacl' in data and data['typacl'] is not None:
                 data['typacl'] = parse_priv_to_db(data['typacl'], self.acl)
+
             data = self._convert_for_sql(data)
+
+            if 'composite' in data and len(data['composite']) > 0:
+                for each_type in data['composite']:
+                    each_type = self.convert_length_precision_to_string(each_type)
+                    each_type['cltype'] = self._cltype_formatter(each_type['type'])
+                    each_type['hasSqrBracket'] = self.hasSqrBracket
+
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),
                                   data=data, conn=self.conn)
