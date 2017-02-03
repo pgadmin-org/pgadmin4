@@ -15,19 +15,17 @@
   top: 35px;
 }
 
-#uploader h1 {
+#uploader .input-path {
   font-size: 14px;
   margin: 0;
-  margin-left: 5px;
   padding: 0;
   display: block;
   float: left;
   text-align: left;
-  line-height:1.9em;
-  max-width: 367px;
+  line-height:1.6em;
+  width: calc(100% - 72px);
   text-overflow: ellipsis;
   overflow: hidden;
-  color: #999;
 }
 
 #uploader h1 b {

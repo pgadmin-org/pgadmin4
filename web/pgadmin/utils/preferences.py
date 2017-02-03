@@ -197,7 +197,7 @@ class _Preference(object):
             )
             db.session.add(pref)
         else:
-            pref.value = str(value)
+            pref.value = u"{}".format(value)
         db.session.commit()
 
         return True, None

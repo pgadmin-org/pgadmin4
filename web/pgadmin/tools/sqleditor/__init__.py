@@ -8,8 +8,6 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
-MODULE_NAME = 'sqleditor'
-
 import simplejson as json
 import os
 import pickle
@@ -25,8 +23,12 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
+from pgadmin.misc.file_manager import Filemanager
 
-from config import PG_DEFAULT_DRIVER
+
+from config import PG_DEFAULT_DRIVER, SERVER_MODE
+
+MODULE_NAME = 'sqleditor'
 
 # import unquote from urlib for python2.x and python3.x
 try:
@@ -1203,7 +1205,7 @@ def load_file():
         # generate full path of file
         file_path = os.path.join(
             storage_manager_path,
-            file_path.lstrip('/')
+            file_path.lstrip('/').lstrip('\\')
         )
 
     file_data = None
@@ -1268,10 +1270,16 @@ def save_file():
         file_path = unquote(
             file_data['file_name']
         ).encode('utf-8').decode('utf-8')
+
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
     if storage_manager_path is not None:
         file_path = os.path.join(
             storage_manager_path,
-            file_path.lstrip('/')
+            file_path.lstrip('/').lstrip('\\')
         )
 
     if hasattr(str, 'decode'):
@@ -1281,7 +1289,7 @@ def save_file():
 
     # write to file
     try:
-        with open(file_path, 'wb') as output_file:
+        with open(file_path, 'wb+') as output_file:
             if hasattr(str, 'decode'):
                 output_file.write(file_content.encode('utf-8'))
             else:

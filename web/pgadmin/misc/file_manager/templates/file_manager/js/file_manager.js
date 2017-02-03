@@ -47,9 +47,9 @@ define([
             });
           };
 
-          var set_last_traversed_dir = function(path, _url) {
+          var set_last_traversed_dir = function(path, trans_id) {
             return $.ajax({
-              url: _url,
+              url: "{{ url_for('file_manager.index') }}save_last_dir/" + trans_id,
               type: 'POST',
               data: JSON.stringify(path),
               contentType: 'application/json'
@@ -90,6 +90,7 @@ define([
           return {
             main: function(params) {
               // Set title and button name
+              var self = this;
               if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Storage manager';
               }
@@ -105,6 +106,11 @@ define([
               renderStoragePanel(params);
               this.elements.dialog.style.minWidth = '630px';
               this.show();
+              setTimeout(function() {
+                $($container.find('.file_manager')).on('enter-key', function() {
+                    $($(self.elements.footer).find('.file_manager_ok')).trigger('click')
+                });
+              }, 200);
             },
             settings: {
               label: undefined
@@ -127,7 +133,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", key: 13, className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: "{{ _('Cancel') }}", className: "btn btn-danger fa fa-times pg-alertify-button"
@@ -142,25 +148,21 @@ define([
             },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid') {
-                  sel_file = $('.fileinfo').find('#contents li.selected p span').attr('title');
-                } else {
-                  sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
-                }
-                var newFile = $('.currentpath').val() + sel_file;
+                var newFile = $('.storage_dialog #uploader .input-path').val(),
+                    file_data = {'path': $('.currentpath').val()};
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:storage_dialog', newFile);
 
-                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
-                var file_data = {
-                  'path': $('.currentpath').val()
-                };
-                set_last_traversed_dir(file_data, _Url);
+                set_last_traversed_dir(file_data, trans_id);
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
+                removeTransId(trans_id);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
-                if (removeTransId(trans_id)) {
-                  this.destroy();
-                  return;
-                }
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
+                removeTransId(trans_id);
               }
             },
             build: function() {
@@ -210,6 +212,7 @@ define([
           return {
             main: function(params) {
               // Set title and button name
+              var self = this;
               if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Select file';
               }
@@ -225,6 +228,11 @@ define([
               renderStoragePanel(params);
               this.elements.dialog.style.minWidth = '630px';
               this.show();
+              setTimeout(function() {
+                $($container.find('.file_manager')).on('enter-key', function() {
+                    $($(self.elements.footer).find('.file_manager_ok')).trigger('click')
+                });
+              }, 200);
             },
             settings: {
               label: undefined
@@ -247,7 +255,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", key: 13, className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
@@ -264,26 +272,22 @@ define([
             },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid') {
-                  sel_file = $('.fileinfo').find('#contents li.selected  p span').attr('title');
-                } else {
-                  sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
-                }
-                var newFile = $('.currentpath').val() + sel_file;
+                var newFile = $('.storage_dialog #uploader .input-path').val(),
+                    file_data = {'path': $('.currentpath').val()};
 
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_file', newFile);
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
                 removeTransId(trans_id);
                 // Ajax call to store the last directory visited once user press select button
-                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
-                var file_data = {
-                  'path': $('.currentpath').val()
-                };
-                set_last_traversed_dir(file_data, _Url);
+
+                set_last_traversed_dir(file_data, trans_id);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
-                if (removeTransId(trans_id)) {
-                  this.destroy();
-                  return;
-                }
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
+                removeTransId(trans_id);
               }
             },
             build: function() {
@@ -332,6 +336,7 @@ define([
           // Dialog property
           return {
             main: function(params) {
+              var self = this;
               // Set title and button name
               if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Select folder';
@@ -348,6 +353,11 @@ define([
               renderStoragePanel(params);
               this.elements.dialog.style.minWidth = '630px';
               this.show();
+              setTimeout(function() {
+                $($container.find('.file_manager')).on('enter-key', function() {
+                    $($(self.elements.footer).find('.file_manager_ok')).trigger('click')
+                });
+              }, 200);
             },
             settings: {
               label: undefined
@@ -370,7 +380,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", key: 13, className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
@@ -387,26 +397,20 @@ define([
             },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Select') }}") {
-                if($('.fileinfo').data('view') == 'grid') {
-                  sel_file = $('.fileinfo').find('#contents li.selected p span').attr('title');
-                } else {
-                  sel_file = $('.fileinfo tbody tr.selected td p span').attr('title');
-                }
-                var newFile = $('.currentpath').val() + sel_file;
-
+                var newFile = $('.storage_dialog #uploader .input-path').val(),
+                    file_data = {'path': $('.currentpath').val()};
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_folder', newFile);
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
                 removeTransId(trans_id);
                 // Ajax call to store the last directory visited once user press select button
-                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
-                var file_data = {
-                  'path': $('.currentpath').val()
-                };
-                set_last_traversed_dir(file_data, _Url);
+                set_last_traversed_dir(file_data, trans_id);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
-                if (removeTransId(trans_id)) {
-                  this.destroy();
-                  return;
-                }
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
+                removeTransId(trans_id);
               }
             },
             build: function() {
@@ -454,7 +458,8 @@ define([
           // Dialog property
           return {
             main: function(params) {
-              var trans_id;
+              var self = this,
+                  trans_id;
               // Set title and button name
               if (_.isUndefined(params['dialog_title'])) {
                 params['dialog_title'] = 'Create file';
@@ -471,6 +476,11 @@ define([
               renderStoragePanel(params);
               this.elements.dialog.style.minWidth = '630px';
               this.show();
+              setTimeout(function() {
+                $($container.find('.file_manager')).on('enter-key', function() {
+                    $($(self.elements.footer).find('.file_manager_ok')).trigger('click')
+                });
+              }, 200);
             },
             settings: {
               label: undefined
@@ -493,7 +503,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Create') }}", key: 13, className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
+                    text: "{{ _('Create') }}", className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times file_manager_create_cancel pg-alertify-button"
@@ -509,25 +519,41 @@ define([
               };
             },
             replace_file: function() {
+                var $yesBtn = $('.replace_file .btn_yes'),
+                     $noBtn = $('.replace_file .btn_no');
+
+                $('.storage_dialog #uploader .input-path').attr('disabled', true);
+                $('.file_manager_ok').addClass('disabled');
                 $('.replace_file, .fm_dimmer').show();
-                $('.replace_file .btn_yes').click(function(self) {
+
+                $yesBtn.click(function(e) {
                   $('.replace_file, .fm_dimmer').hide();
-                  var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
-                      newFile = $('.currentpath').val() + selected_item;
+                  $yesBtn.off();
+                  $noBtn.off();
+                  var newFile = $('.storage_dialog #uploader .input-path').val()
 
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
                   $('.file_manager_create_cancel').trigger('click');
+                  $('.storage_dialog #uploader .input-path').attr('disabled', false);
+                  $('.file_manager_ok').removeClass('disabled');
                 });
-                $('.replace_file .btn_no').click(function() {
+
+                $noBtn.click(function(e) {
                   $('.replace_file, .fm_dimmer').hide();
+                  $yesBtn.off();
+                  $noBtn.off();
+                  $('.storage_dialog #uploader .input-path').attr('disabled', false);
+                  $('.file_manager_ok').removeClass('disabled');
                 });
             },
             is_file_exist: function() {
-              var selected_item = $('.allowed_file_types .create_input input[type="text"]').val(),
+              var full_path  = $('.storage_dialog #uploader .input-path').val(),
+                  path = full_path.substr(0, full_path.lastIndexOf('/') + 1),
+                  selected_item = full_path.substr(full_path.lastIndexOf('/') + 1),
                   is_exist = false;
 
               var file_data = {
-                'path': $('.currentpath').val(),
+                'path': path,
                 'name': selected_item,
                 'mode': 'is_file_exist'
               };
@@ -541,7 +567,7 @@ define([
                 async: false,
                 success: function(resp) {
                   data = resp.data.result;
-                  if(data['Code'] === 0) {
+                  if(data['Code'] === 1) {
                     is_exist = true;
                   } else {
                     is_exist = false;
@@ -550,30 +576,63 @@ define([
               });
               return is_exist;
             },
+            check_permission: function(path) {
+              var permission = false,
+                  post_data = {
+                    'path': path,
+                    'mode': 'permission'
+                  };
+
+              $.ajax({
+                type: 'POST',
+                data: JSON.stringify(post_data),
+                url: fileConnector + trans_id+'/',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                success: function(resp) {
+                  var data = resp.data.result;
+                  if (data.Code === 1) {
+                    permission = true;
+                  } else {
+                    $('.file_manager_ok').addClass('disabled');
+                    alertify.error(data.Error);
+                  }
+                },
+                error: function() {
+                  $('.file_manager_ok').addClass('disabled');
+                  alertify.error('{{ _('Error occurred while checking access permission.') }}');
+                }
+              });
+              return permission;
+            },
             callback: function(closeEvent) {
               if (closeEvent.button.text == "{{ _('Create') }}") {
-                var selected_item = $('.allowed_file_types .create_input input[type="text"]').val();
-                var newFile = $('.currentpath').val() + selected_item;
+                var newFile = $('.storage_dialog #uploader .input-path').val(),
+                    file_data = {'path': $('.currentpath').val()};
 
-                if(!_.isUndefined(selected_item) && selected_item !== '' && this.is_file_exist()) {
+                if (!this.check_permission(newFile)) {
+                  closeEvent.cancel = true;
+                  return;
+                }
+
+                if(!_.isUndefined(newFile) && newFile !== '' && this.is_file_exist()) {
                   this.replace_file();
                   closeEvent.cancel = true;
-                }
-                else {
+                } else {
                   pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
+                  var innerbody = $(this.elements.body).find('.storage_content');
+                  $(innerbody).find('*').off();
+                  innerbody.remove();
                   removeTransId(trans_id);
                 }
 
-                var _Url = "{{ url_for('file_manager.index') }}" + "save_last_dir/" + trans_id;
-                var file_data = {
-                  'path': $('.currentpath').val()
-                };
-                set_last_traversed_dir(file_data, _Url);
+                set_last_traversed_dir(file_data, trans_id);
               } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
-                if (removeTransId(trans_id)) {
-                  this.destroy();
-                  return;
-                }
+                var innerbody = $(this.elements.body).find('.storage_content')
+                $(innerbody).find('*').off();
+                innerbody.remove();
+                removeTransId(trans_id);
               }
             },
             build: function() {

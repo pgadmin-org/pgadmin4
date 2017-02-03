@@ -5,13 +5,14 @@
 </head>
 <body>
 <div class="file_manager">
-    <form id="uploader" method="post" class='col-xs-12'>
+    <div id="uploader" class='col-xs-12'>
         <div class="btn-group filemanager-path-group col-sm-7 col-xs-12" role="group">
             <button name="home" type="button" value="Home" title="Home" class="fa fa-home btn home"><span></span>
             </button>
             <button name="level-up" type="button" title="Back" value="LevelUp" class="btn fa fa-level-up level-up"
                     disabled><span></span></button>
-            <h1 title=''></h1>
+            <input class='input-path' title='' type="text"/>
+
         </div>
         <div class="btn-group filemanager-btn-group" role="group">
             <div class="uploadresponse"></div>
@@ -29,7 +30,7 @@
             <button class="ON fa fa-th btn grid" type="button" title="View as grid"><span></span></button>
             <button type="button" class="btn fa fa-list list" title="View as Table"><span></span></button>
         </div>
-    </form>
+    </div>
     <div class="fileinfo">
     <span class="activity">
       <img src="{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}">
