@@ -259,7 +259,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           oid: undefined,
           nspname: undefined,
           tabname: undefined,
-          spcname: 'pg_default',
+          spcname: undefined,
           amname: 'btree'
         },
         schema: [{

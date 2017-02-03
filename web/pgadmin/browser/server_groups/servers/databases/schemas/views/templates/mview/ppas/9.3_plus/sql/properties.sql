@@ -6,7 +6,11 @@ SELECT
     c.relname AS name,
     c.reltablespace AS spcoid,
     c.relispopulated AS with_data,
-    (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
+    CASE WHEN length(spcname) > 0 THEN spcname ELSE
+        (SELECT sp.spcname FROM pg_database dtb
+        JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
+        WHERE dtb.oid = {{ did }}::oid)
+    END as spcname,
     c.relacl,
     nsp.nspname as schema,
     pg_get_userbyid(c.relowner) AS owner,

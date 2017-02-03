@@ -653,7 +653,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           name: undefined,
           oid: undefined,
           comment: undefined,
-          spcname: "pg_default",
+          spcname: undefined,
           amname: "gist",
           fillfactor: undefined,
           condeferrable: undefined,

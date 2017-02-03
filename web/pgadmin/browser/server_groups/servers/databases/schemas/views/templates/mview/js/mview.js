@@ -126,7 +126,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         defaults: {
-          spcname: 'pg_default',
+          spcname: undefined,
           toast_autovacuum_enabled: false,
           autovacuum_enabled: false
         },

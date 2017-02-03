@@ -285,6 +285,7 @@ class IndexConstraintView(PGChildNodeView):
 
         """
         sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              did=did,
                               tid=tid,
                               cid=cid,
                               constraint_type=self.constraint_type)
@@ -381,6 +382,7 @@ class IndexConstraintView(PGChildNodeView):
             self.table = row['table']
 
         SQL = render_template("/".join([self.template_path, 'properties.sql']),
+                              did=did,
                               tid=tid,
                               constraint_type=self.constraint_type)
         status, res = self.conn.execute_dict(SQL)
@@ -664,7 +666,7 @@ class IndexConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql, name = self.get_sql(data, tid, cid)
+            sql, name = self.get_sql(data, did, tid, cid)
             sql = sql.strip('\n').strip(' ')
 
             status, res = self.conn.execute_scalar(sql)
@@ -784,7 +786,7 @@ class IndexConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = self.get_sql(data, tid, cid)
+            sql, name = self.get_sql(data, did, tid, cid)
             sql = sql.strip('\n').strip(' ')
             if sql == '':
                 sql = "--modified SQL"
@@ -796,7 +798,7 @@ class IndexConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, data, tid, cid=None):
+    def get_sql(self, data, did, tid, cid=None):
         """
         This function will generate sql from model data.
 
@@ -810,6 +812,7 @@ class IndexConstraintView(PGChildNodeView):
         """
         if cid is not None:
             sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  did=did,
                                   tid=tid,
                                   cid=cid,
                                   constraint_type=self.constraint_type)
@@ -873,6 +876,7 @@ class IndexConstraintView(PGChildNodeView):
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
+                did=did,
                 tid=tid,
                 conn=self.conn,
                 cid=cid,
@@ -950,6 +954,7 @@ class IndexConstraintView(PGChildNodeView):
         if is_pgstattuple:
             # Fetch index details only if extended stats available
             sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  did=did,
                                   tid=tid,
                                   cid=cid,
                                   constraint_type=self.constraint_type)

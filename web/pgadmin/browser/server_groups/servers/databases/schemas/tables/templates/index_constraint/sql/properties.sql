@@ -1,7 +1,11 @@
 SELECT cls.oid,
     cls.relname as name,
     indnatts,
-    COALESCE(spcname, 'pg_default') as spcname,
+    CASE WHEN length(spcname) > 0 THEN spcname ELSE
+        (SELECT sp.spcname FROM pg_database dtb
+        JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
+        WHERE dtb.oid = {{ did }}::oid)
+    END as spcname,
     CASE contype
         WHEN 'p' THEN desp.description
         WHEN 'u' THEN desp.description

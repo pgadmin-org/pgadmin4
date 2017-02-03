@@ -266,7 +266,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
         """
         sql = render_template("/".join([self.template_path, 'properties.sql']),
-                              tid=tid, cid=exid)
+                              did=did, tid=tid, cid=exid)
 
         status, res = self.conn.execute_dict(sql)
 
@@ -374,6 +374,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
+                              did=did,
                               tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -635,7 +636,7 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql, name = self.get_sql(data, tid, exid)
+            sql, name = self.get_sql(data, did, tid, exid)
             sql = sql.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -750,7 +751,7 @@ class ExclusionConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = self.get_sql(data, tid, exid)
+            sql, name = self.get_sql(data, did, tid, exid)
             sql = sql.strip('\n').strip(' ')
             if sql == '':
                 sql = "--modified SQL"
@@ -762,7 +763,7 @@ class ExclusionConstraintView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, data, tid, exid=None):
+    def get_sql(self, data, did, tid, exid=None):
         """
         This function will generate sql from model data.
 
@@ -776,6 +777,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         if exid is not None:
             sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  did=did,
                                   tid=tid,
                                   cid=exid)
             status, res = self.conn.execute_dict(sql)
@@ -824,7 +826,7 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
-                tid=tid, conn=self.conn, cid=exid)
+                did=did, tid=tid, conn=self.conn, cid=exid)
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=result)
@@ -912,7 +914,7 @@ class ExclusionConstraintView(PGChildNodeView):
             # Fetch index details only if extended stats available
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
-                tid=tid, conn=self.conn, cid=exid)
+                did=did, tid=tid, conn=self.conn, cid=exid)
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=result)

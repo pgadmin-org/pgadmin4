@@ -521,7 +521,7 @@ class IndexesView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
-                              tid=tid, idx=idx,
+                              did=did, tid=tid, idx=idx,
                               datlastsysoid=self.datlastsysoid)
 
         status, res = self.conn.execute_dict(SQL)
@@ -665,7 +665,7 @@ class IndexesView(PGChildNodeView):
             # so that we create template for dropping index
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
-                                  tid=tid, idx=idx,
+                                  did=did, tid=tid, idx=idx,
                                   datlastsysoid=self.datlastsysoid)
 
             status, res = self.conn.execute_dict(SQL)
@@ -723,7 +723,7 @@ class IndexesView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            SQL, name = self.get_sql(scid, tid, idx, data)
+            SQL, name = self.get_sql(did, scid, tid, idx, data)
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -765,7 +765,7 @@ class IndexesView(PGChildNodeView):
         data['table'] = self.table
 
         try:
-            sql, name = self.get_sql(scid, tid, idx, data, mode='create')
+            sql, name = self.get_sql(did, scid, tid, idx, data, mode='create')
             sql = sql.strip('\n').strip(' ')
             if sql == '':
                 sql = "--modified SQL"
@@ -776,14 +776,14 @@ class IndexesView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, scid, tid, idx, data, mode=None):
+    def get_sql(self, did, scid, tid, idx, data, mode=None):
         """
         This function will genrate sql from model data
         """
         if idx is not None:
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
-                                  tid=tid, idx=idx,
+                                  did=did, tid=tid, idx=idx,
                                   datlastsysoid=self.datlastsysoid)
 
             status, res = self.conn.execute_dict(SQL)
@@ -842,7 +842,7 @@ class IndexesView(PGChildNodeView):
         try:
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
-                                  tid=tid, idx=idx,
+                                  did=did, tid=tid, idx=idx,
                                   datlastsysoid=self.datlastsysoid)
 
             status, res = self.conn.execute_dict(SQL)
@@ -857,7 +857,7 @@ class IndexesView(PGChildNodeView):
             # Add column details for current index
             data = self._column_details(idx, data)
 
-            SQL, name = self.get_sql(scid, tid, None, data)
+            SQL, name = self.get_sql(did, scid, tid, None, data)
 
             sql_header = "-- Index: {0}\n\n-- ".format(data['name'])
             if hasattr(str, 'decode'):
@@ -955,7 +955,7 @@ class IndexesView(PGChildNodeView):
                 # Fetch index details only if extended stats available
                 SQL = render_template("/".join([self.template_path,
                                                 'properties.sql']),
-                                      tid=tid, idx=idx,
+                                      did=did, tid=tid, idx=idx,
                                       datlastsysoid=self.datlastsysoid)
                 status, res = self.conn.execute_dict(SQL)
                 if not status:

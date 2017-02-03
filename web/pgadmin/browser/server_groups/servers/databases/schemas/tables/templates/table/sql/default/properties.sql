@@ -1,5 +1,9 @@
 SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS relacl_str,
-  (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
+  (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE
+    (SELECT sp.spcname FROM pg_database dtb
+    JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
+    WHERE dtb.oid = {{ did }}::oid)
+  END) as spcname,
   (select nspname FROM pg_namespace WHERE oid = {{scid}}::oid ) as schema,
   pg_get_userbyid(rel.relowner) AS relowner, rel.relhasoids,
   rel.relhassubclass, rel.reltuples, des.description, con.conname, con.conkey,

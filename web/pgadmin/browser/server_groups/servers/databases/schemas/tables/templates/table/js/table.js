@@ -253,7 +253,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: undefined,
           oid: undefined,
           spcoid: undefined,
-          spcname: 'pg_default',
+          spcname: undefined,
           relowner: undefined,
           relacl: undefined,
           relhasoids: undefined,
@@ -315,7 +315,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'spcname', label:'{{ _('Tablespace') }}', node: 'tablespace',
           type: 'text', control: 'node-list-by-name', disabled: 'inSchema',
-          mode: ['properties', 'create', 'edit'], select2:{allowClear:false},
+          mode: ['properties', 'create', 'edit'],
           filter: function(d) {
             // If tablespace name is not "pg_global" then we need to exclude them
             return (!(d && d.label.match(/pg_global/)))

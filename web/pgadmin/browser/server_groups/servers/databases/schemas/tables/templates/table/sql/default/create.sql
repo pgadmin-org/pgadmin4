@@ -79,10 +79,12 @@ WITH (
     toast.{{opt.name}} = {{opt.value}}{% endif %}
 {% endfor %}{% endif %}
 
-)
 {### SQL for Tablespace ###}
 {% if data.spcname %}
+)
 TABLESPACE {{ conn|qtIdent(data.spcname) }};
+{% else %}
+);
 {% endif %}
 {### Alter SQL for Owner ###}
 {% if data.relowner %}

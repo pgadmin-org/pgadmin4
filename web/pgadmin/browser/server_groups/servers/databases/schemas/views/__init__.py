@@ -320,7 +320,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         Fetches all views properties and render into properties tab
         """
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']), scid=scid)
+            [self.template_path, 'sql/properties.sql']), did=did, scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -462,7 +462,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     )
                 )
         try:
-            SQL, nameOrError = self.getSQL(gid, sid, data)
+            SQL, nameOrError = self.getSQL(gid, sid, did, data)
             if SQL is None:
                 return nameOrError
             SQL = SQL.strip('\n').strip(' ')
@@ -506,7 +506,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             request.data, encoding='utf-8'
         )
         try:
-            SQL, nameOrError = self.getSQL(gid, sid, data, vid)
+            SQL, nameOrError = self.getSQL(gid, sid, did, data, vid)
             if SQL is None:
                 return nameOrError
             SQL = SQL.strip('\n').strip(' ')
@@ -557,6 +557,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 "/".join([
                     self.template_path, 'sql/properties.sql'
                 ]),
+                did=did,
                 vid=vid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -631,7 +632,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             except ValueError:
                 data[k] = v
 
-        sql, nameOrError = self.getSQL(gid, sid, data, vid)
+        sql, nameOrError = self.getSQL(gid, sid, did, data, vid)
         if sql is None:
             return nameOrError
 
@@ -645,7 +646,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             status=200
         )
 
-    def getSQL(self, gid, sid, data, vid=None):
+    def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """
@@ -901,7 +902,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         return SQL_data
 
-    def get_index_sql(self, vid):
+    def get_index_sql(self, did, vid):
         """
         Get all index associated with view node,
         generate their sql and render
@@ -910,10 +911,12 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         self.index_temp_path = 'index'
         SQL_data = ''
+        SQL = render_template("/".join(
+            [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
+            did=did,
+            tid=vid)
         status, data = self.conn.execute_dict(SQL)
         if not status:
-            SQL = render_template("/".join(
-                [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]), tid=vid)
             return internal_server_error(errormsg=data)
 
         for index in data['rows']:
@@ -921,6 +924,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             SQL = render_template("/".join(
                 [self.index_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
                 idx=index['oid'],
+                did=did,
                 tid=vid
             )
             status, res = self.conn.execute_dict(SQL)
@@ -1007,7 +1011,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         SQL_data += SQL
         SQL_data += self.get_rule_sql(vid)
         SQL_data += self.get_trigger_sql(vid)
-        SQL_data += self.get_index_sql(vid)
+        SQL_data += self.get_index_sql(did, vid)
 
         return ajax_response(response=SQL_data)
 
@@ -1259,13 +1263,14 @@ class MViewNode(ViewNode, VacuumSettings):
             '9.3_plus'
         )
 
-    def getSQL(self, gid, sid, data, vid=None):
+    def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """
         if vid is not None:
             SQL = render_template("/".join(
                 [self.template_path, 'sql/properties.sql']),
+                did=did,
                 vid=vid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -1452,6 +1457,7 @@ class MViewNode(ViewNode, VacuumSettings):
         SQL_data = ''
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']),
+            did=did,
             vid=vid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1530,7 +1536,7 @@ class MViewNode(ViewNode, VacuumSettings):
         SQL_data += SQL
         SQL_data += self.get_rule_sql(vid)
         SQL_data += self.get_trigger_sql(vid)
-        SQL_data += self.get_index_sql(vid)
+        SQL_data += self.get_index_sql(did, vid)
         SQL_data = SQL_data.strip('\n')
         return ajax_response(response=SQL_data)
 
@@ -1576,7 +1582,7 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']
-        ), vid=vid, datlastsysoid=self.datlastsysoid)
+        ), did=did, vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)

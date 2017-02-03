@@ -85,7 +85,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: undefined,
           oid: undefined,
           comment: undefined,
-          spcname: "pg_default",
+          spcname: undefined,
           index: undefined,
           fillfactor: undefined,
           condeferrable: undefined,

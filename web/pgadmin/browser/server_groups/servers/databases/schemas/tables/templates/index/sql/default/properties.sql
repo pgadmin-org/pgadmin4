@@ -1,6 +1,11 @@
 SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered,
     indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid,
-    COALESCE(spcname, 'pg_default') as spcname, tab.relname as tabname, indclass, con.oid AS conoid,
+    CASE WHEN length(spcname) > 0 THEN spcname ELSE
+        (SELECT sp.spcname FROM pg_database dtb
+        JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
+        WHERE dtb.oid = {{ did }}::oid)
+    END as spcname,
+    tab.relname as tabname, indclass, con.oid AS conoid,
     CASE WHEN contype IN ('p', 'u', 'x') THEN desp.description
          ELSE des.description END AS description,
     pg_get_expr(indpred, indrelid, true) as indconstraint, contype, condeferrable, condeferred, amname,
