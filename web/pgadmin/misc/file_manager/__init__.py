@@ -317,33 +317,40 @@ class Filemanager(object):
         # get last visited directory, if not present then traverse in reverse
         # order to find closest parent directory
         last_dir = blueprint.last_directory_visited.get()
+        check_dir_exists = False
         if storage_dir is None:
             if last_dir is None:
                 last_dir = "/"
+            else:
+                check_dir_exists = True
         else:
             if last_dir is not None:
-                if len(last_dir) > 1 and \
-                        (last_dir.endswith('/') or last_dir.endswith('\\')):
-                    last_dir = last_dir[:-1]
-                while last_dir:
-                    if os.path.exists(storage_dir + last_dir):
-                        break
-                    if _platform == 'win32':
-                        index = max(last_dir.rfind('\\'), last_dir.rfind('/'))
-                    else:
-                        index = last_dir.rfind('/')
-                    last_dir = last_dir[0:index]
-                if not last_dir:
-                    last_dir = u"/"
-
-                if _platform == 'win32':
-                    if not (last_dir.endswith('\\') or last_dir.endswith('/')):
-                        last_dir += u"\\"
-                else:
-                    if not last_dir.endswith('/'):
-                        last_dir += u"/"
+                check_dir_exists = True
             else:
                 last_dir = u"/"
+
+        if check_dir_exists:
+            if len(last_dir) > 1 and \
+                    (last_dir.endswith('/') or last_dir.endswith('\\')):
+                last_dir = last_dir[:-1]
+            while last_dir:
+                if os.path.exists(
+                        (storage_dir if storage_dir is not None else '') + last_dir):
+                    break
+                if _platform == 'win32':
+                    index = max(last_dir.rfind('\\'), last_dir.rfind('/'))
+                else:
+                    index = last_dir.rfind('/')
+                last_dir = last_dir[0:index]
+            if not last_dir:
+                last_dir = u"/"
+
+            if _platform == 'win32':
+                if not (last_dir.endswith('\\') or last_dir.endswith('/')):
+                    last_dir += u"\\"
+            else:
+                if not last_dir.endswith('/'):
+                    last_dir += u"/"
 
         # create configs using above configs
         configs = {
