@@ -152,6 +152,14 @@ If the Query tool is opened through the *Query tool* menu option on the *Tools* 
 
 All rowsets from previous queries or commands that are displayed in the *Data Output* panel will be discarded when you invoke another query; open another query tool browser tab to keep your previous results available.
 
+If the Query Tool is opened using the *View Data* menu option and the data is updatable and has a primary key, then you can double-click on values on the *Data Output* tab and edit them:
+
+* To enter a NULL, clear the value of the string.
+* To enter a blank set the value of the cell to ''.
+* To enter the string ''. enter the value \'\'.
+
+Once the data has been edited as required, use the Save button to save the changes to the database.
+
 Use the *Explain* tab to view a graphical representation of a query: 
 
 .. image:: images/query_output_explain.png
