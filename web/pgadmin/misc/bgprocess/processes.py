@@ -19,11 +19,11 @@ import sys
 from abc import ABCMeta, abstractproperty, abstractmethod
 from datetime import datetime
 from pickle import dumps, loads
-from subprocess import Popen, PIPE
+from subprocess import Popen
 
 import pytz
 from dateutil import parser
-from flask import current_app as app
+from flask import current_app
 from flask_babel import gettext as _
 from flask_security import current_user
 
@@ -154,21 +154,52 @@ class BatchProcess(object):
         self.ecode = None
 
         # Arguments
+        self.args = _args
         args_csv_io = StringIO()
         csv_writer = csv.writer(
             args_csv_io, delimiter=str(','), quoting=csv.QUOTE_MINIMAL
         )
         csv_writer.writerow(_args)
-        self.args = args_csv_io.getvalue().strip(str('\r\n'))
 
         j = Process(
-            pid=int(id), command=_cmd, arguments=self.args, logdir=log_dir,
-            desc=dumps(self.desc), user_id=current_user.id
+            pid=int(id), command=_cmd,
+            arguments=args_csv_io.getvalue().strip(str('\r\n')),
+            logdir=log_dir, desc=dumps(self.desc), user_id=current_user.id
         )
         db.session.add(j)
         db.session.commit()
 
     def start(self):
+
+        def which(program, paths):
+            def is_exe(fpath):
+                return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
+            for path in paths:
+                if not os.path.isdir(path):
+                    continue
+                exe_file = os.path.join(path, program)
+                if is_exe(exe_file):
+                    return exe_file
+            return None
+
+        def convert_environment_variables(env):
+            """
+            This function is use to convert environment variable to string
+            because environment variable must be string in popen
+            :param env: Dict of environment variable
+            :return: Encoded environment variable as string
+            """
+            encoding = sys.getdefaultencoding()
+            temp_env = dict()
+            for key, value in env.items():
+                if not isinstance(key, str):
+                    key = key.encode(encoding)
+                if not isinstance(value, str):
+                    value = value.encode(encoding)
+                temp_env[key] = value
+            return temp_env
+
         if self.stime is not None:
             if self.etime is None:
                 raise Exception(_('The process has already been started.'))
@@ -179,21 +210,63 @@ class BatchProcess(object):
         executor = os.path.join(
             os.path.dirname(__file__), 'process_executor.py'
         )
+        paths = sys.path[:]
+        interpreter = None
+
+        if os.name == 'nt':
+            paths.insert(0, os.path.join(sys.prefix, 'Scripts'))
+            paths.insert(0, os.path.join(sys.prefix))
+
+            interpreter = which('pythonw.exe', paths)
+            if interpreter is None:
+                interpreter = which('python.exe', paths)
+        else:
+            paths.insert(0, os.path.join(sys.prefix, 'bin'))
+            interpreter = which('python', paths)
 
         p = None
         cmd = [
-            (sys.executable if not app.PGADMIN_RUNTIME else
-             'pythonw.exe' if os.name == 'nt' else 'python'),
-            executor,
-            '-p', self.id,
-            '-o', self.log_dir,
-            '-d', config.SQLITE_PATH
+            interpreter if interpreter is not None else 'python',
+            executor, self.cmd
         ]
+        cmd.extend(self.args)
+
+        command = []
+        for c in cmd:
+            command.append(str(c))
+
+        current_app.logger.info(
+            "Executing the process executor with the arguments: %s",
+            ' '.join(command)
+        )
+        cmd = command
+
+        # Make a copy of environment, and add new variables to support
+        env = os.environ.copy()
+        env['PROCID'] = self.id
+        env['OUTDIR'] = self.log_dir
+        env['PGA_BGP_FOREGROUND'] = "1"
+
+        # We need environment variables & values in string
+        env = convert_environment_variables(env)
 
         if os.name == 'nt':
+            DETACHED_PROCESS = 0x00000008
+            from subprocess import CREATE_NEW_PROCESS_GROUP
+
+            # We need to redirect the standard input, standard output, and
+            # standard error to devnull in order to allow it start in detached
+            # mode on
+            stdout = os.devnull
+            stderr = stdout
+            stdin = open(os.devnull, "r")
+            stdout = open(stdout, "a")
+            stderr = open(stderr, "a")
+
             p = Popen(
-                cmd, stdout=None, stderr=None, stdin=None, close_fds=True,
-                shell=False, creationflags=0x00000008
+                cmd, close_fds=False, env=env, stdout=stdout.fileno(),
+                stderr=stderr.fileno(), stdin=stdin.fileno(),
+                creationflags=(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
             )
         else:
             def preexec_function():
@@ -204,15 +277,19 @@ class BatchProcess(object):
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
 
             p = Popen(
-                cmd, stdout=PIPE, stderr=None, stdin=None, close_fds=True,
-                shell=False, preexec_fn=preexec_function
+                cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
+                preexec_fn=preexec_function, env=env
             )
 
         self.ecode = p.poll()
-        if self.ecode is not None and self.ecode != 0:
-            # TODO:// Find a way to read error from detached failed process
 
-            # Couldn't start execution
+        # Execution completed immediately.
+        # Process executor can not update the status, if it was not able to
+        # start properly.
+        if self.ecode is not None and self.ecode != 0:
+            # There is no way to find out the error message from this process
+            # as standard output, and standard error were redirected to
+            # devnull.
             p = Process.query.filter_by(
                 pid=self.id, user_id=current_user.id
             ).first()
@@ -222,54 +299,49 @@ class BatchProcess(object):
             db.session.commit()
 
     def status(self, out=0, err=0):
-        import codecs
+        import re
+
         ctime = get_current_time(format='%Y%m%d%H%M%S%f')
 
         stdout = []
         stderr = []
         out_completed = err_completed = False
         process_output = (out != -1 and err != -1)
+        enc = sys.getdefaultencoding()
 
-        def read_log(logfile, log, pos, ctime, check=True):
+        def read_log(logfile, log, pos, ctime):
             completed = True
-            lines = 0
+            idx = 0
+            c = re.compile(r"(\d+),(.*$)")
 
             if not os.path.isfile(logfile):
                 return 0, False
 
-            with codecs.open(logfile, 'r', 'utf-8') as stream:
-                stream.seek(pos)
-                for line in stream:
-                    logtime = StringIO()
-                    idx = 0
-                    for c in line:
-                        idx += 1
-                        if c == ',':
-                            break
-                        logtime.write(c)
-                    logtime = logtime.getvalue()
-
-                    if check and logtime > ctime:
+            with open(logfile, 'rb') as f:
+                eofs = os.fstat(f.fileno()).st_size
+                f.seek(pos, 0)
+                while pos < eofs:
+                    idx += 1
+                    line = f.readline()
+                    line = line.decode(enc, 'replace')
+                    r = c.split(line)
+                    if r[1] > ctime:
                         completed = False
                         break
-                    if lines == 5120:
-                        ctime = logtime
+                    log.append([r[1], r[2]])
+                    pos = f.tell()
+                    if idx == 1024:
                         completed = False
                         break
-
-                    lines += 1
-                    log.append([logtime, line[idx:]])
-                pos = stream.tell()
+                    if pos == eofs:
+                        completed = True
+                        break
 
             return pos, completed
 
         if process_output:
-            out, out_completed = read_log(
-                self.stdout, stdout, out, ctime, True
-            )
-            err, err_completed = read_log(
-                self.stderr, stderr, err, ctime, True
-            )
+            out, out_completed = read_log(self.stdout, stdout, out, ctime)
+            err, err_completed = read_log(self.stderr, stderr, err, ctime)
 
         j = Process.query.filter_by(
             pid=self.id, user_id=current_user.id
@@ -278,6 +350,9 @@ class BatchProcess(object):
         execution_time = None
 
         if j is not None:
+            status, updated = BatchProcess.update_process_info(j)
+            if updated:
+                db.session.commit()
             self.stime = j.start_time
             self.etime = j.end_time
             self.ecode = j.exit_code
@@ -289,19 +364,16 @@ class BatchProcess(object):
                 execution_time = (etime - stime).total_seconds()
 
             if process_output and self.ecode is not None and (
-                            len(stdout) + len(stderr) < 3073
+                len(stdout) + len(stderr) < 1024
             ):
-                out, out_completed = read_log(
-                    self.stdout, stdout, out, ctime, False
-                )
-                err, err_completed = read_log(
-                    self.stderr, stderr, err, ctime, False
-                )
+                out, out_completed = read_log(self.stdout, stdout, out, ctime)
+                err, err_completed = read_log(self.stderr, stderr, err, ctime)
         else:
             out_completed = err_completed = False
 
         if out == -1 or err == -1:
             return {
+                'start_time': self.stime,
                 'exit_code': self.ecode,
                 'execution_time': execution_time
             }
@@ -309,18 +381,67 @@ class BatchProcess(object):
         return {
             'out': {'pos': out, 'lines': stdout, 'done': out_completed},
             'err': {'pos': err, 'lines': stderr, 'done': err_completed},
+            'start_time': self.stime,
             'exit_code': self.ecode,
             'execution_time': execution_time
         }
 
     @staticmethod
+    def update_process_info(p):
+        if p.start_time is None or p.end_time is None:
+            status = os.path.join(p.logdir, 'status')
+            if not os.path.isfile(status):
+                return False, False
+
+            with open(status, 'r') as fp:
+                import json
+                try:
+                    data = json.load(fp)
+
+                    #  First - check for the existance of 'start_time'.
+                    if 'start_time' in data and data['start_time']:
+                        p.start_time = data['start_time']
+
+                        # We can't have 'exit_code' without the 'start_time'
+                        if 'exit_code' in data and \
+                                data['exit_code'] is not None:
+                            p.exit_code = data['exit_code']
+
+                            # We can't have 'end_time' without the 'exit_code'.
+                            if 'end_time' in data and data['end_time']:
+                                p.end_time = data['end_time']
+
+                    return True, True
+
+                except ValueError as e:
+                    current_app.logger.warning(
+                        _("Status for the background process '{0}' couldn't be loaded!").format(
+                            p.pid
+                        )
+                    )
+                    current_app.logger.exception(e)
+                    return False, False
+        return True, False
+
+    @staticmethod
     def list():
         processes = Process.query.filter_by(user_id=current_user.id)
+        changed = False
 
         res = []
         for p in processes:
-            if p.start_time is None or p.acknowledge is not None:
+            status, updated = BatchProcess.update_process_info(p)
+            if not status:
                 continue
+
+            if not changed:
+                changed = updated
+
+            if p.start_time is None or (
+                p.acknowledge is not None and p.end_time is None
+            ):
+                continue
+
             execution_time = None
 
             stime = parser.parse(p.start_time)
@@ -350,10 +471,20 @@ class BatchProcess(object):
                 'execution_time': execution_time
             })
 
+        if changed:
+            db.session.commit()
+
         return res
 
     @staticmethod
-    def acknowledge(_pid, _release):
+    def acknowledge(_pid):
+        """
+        Acknowledge from the user, he/she has alredy watched the status.
+
+        Update the acknowledgement status, if the process is still running.
+        And, delete the process information from the configuration, and the log
+        files related to the process, if it has already been completed.
+        """
         p = Process.query.filter_by(
             user_id=current_user.id, pid=_pid
         ).first()
@@ -363,33 +494,12 @@ class BatchProcess(object):
                 _("Could not find a process with the specified ID.")
             )
 
-        if _release:
-            import shutil
-            shutil.rmtree(p.logdir, True)
+        if p.end_time is not None:
+            logdir = p.logdir
             db.session.delete(p)
+            import shutil
+            shutil.rmtree(logdir, True)
         else:
             p.acknowledge = get_current_time()
 
         db.session.commit()
-
-    @staticmethod
-    def release(pid=None):
-        import shutil
-        processes = None
-
-        if pid is not None:
-            processes = Process.query.filter_by(
-                user_id=current_user.id, pid=pid
-            )
-        else:
-            processes = Process.query.filter_by(
-                user_id=current_user.id,
-                acknowledge=None
-            )
-
-        if processes:
-            for p in processes:
-                shutil.rmtree(p.logdir, True)
-
-                db.session.delete(p)
-                db.session.commit()

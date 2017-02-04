@@ -1,6 +1,7 @@
-define(
-   ['underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'alertify', 'pgadmin.browser.messages'],
-function(_, S, $, pgBrowser, alertify, pgMessages) {
+define([
+  'pgadmin', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
+  'alertify', 'pgadmin.browser.messages'
+], function(pgAdmin, _, S, $, pgBrowser, alertify, pgMessages) {
 
   pgBrowser.BackgroundProcessObsorver = pgBrowser.BackgroundProcessObsorver || {};
 
@@ -34,8 +35,9 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
           exit_code: null,
           acknowledge: info['acknowledge'],
           execution_time: null,
-          out: null,
-          err: null,
+          out: -1,
+          err: -1,
+          lot_more: false,
 
           notifier: null,
           container: null,
@@ -69,22 +71,15 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
       },
 
       url: function(type) {
-        var base_url = pgMessages['bgprocess.index'],
-            url = base_url;
+        var url = S('%s%s').sprintf(pgMessages['bgprocess.index'], this.id).value();
 
         switch (type) {
           case 'status':
-            url = S('%sstatus/%s/').sprintf(base_url, this.id).value();
-            if (this.details) {
-              url = S('%s%s/%s/').sprintf(
-                url, (this.out && this.out.pos) || 0,
-                (this.err && this.err.pos) || 0
+            if (this.details && this.out != -1 && this.err != -1) {
+              url = S('%s/%s/%s/').sprintf(
+                url, this.out, this.err
               ).value();
             }
-            break;
-          case 'info':
-          case 'acknowledge':
-            url = S('%s%s/%s/').sprintf(base_url, type, this.id).value();
             break;
         }
 
@@ -114,53 +109,49 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
 
         if ('out' in data) {
           self.out = data.out && data.out.pos;
-          self.completed = data.out.done;
 
           if (data.out && data.out.lines) {
-            data.out.lines.sort(function(a, b) { return a[0] < b[0]; });
             out = data.out.lines;
           }
         }
 
         if ('err' in data) {
           self.err = data.err && data.err.pos;
-          self.completed = (self.completed && data.err.done);
 
           if (data.err && data.err.lines) {
-            data.err.lines.sort(function(a, b) { return a[0] < b[0]; });
             err = data.err.lines;
           }
         }
+        self.completed = self.completed || (
+          'err' in data && 'out' in data && data.err.done && data.out.done
+        ) || (
+          !self.details && !_.isNull(self.exit_code)
+        );
 
-        var io = ie = 0;
+        var io = ie = 0, res = [],
+            escapeEl = document.createElement('textarea'),
+            escapeHTML = function(html) {
+              escapeEl.textContent = html;
+              return escapeEl.innerHTML;
+            };
 
-        while (io < out.length && ie < err.length &&
-               self.logs[0].children.length < 5120) {
-          if (out[io][0] < err[ie][0]){
-            self.logs.append(
-              $('<li></li>', {class: 'pg-bg-res-out'}).text(out[io++][1])
-            );
+        while (io < out.length && ie < err.length) {
+          if (pgAdmin.natural_sort(out[io][0], err[ie][0]) <= 0){
+            res.push('<li class="pg-bg-res-out">' + escapeHTML(out[io++][1]) + '</li>');
           } else {
-            self.logs.append(
-              $('<li></li>', {class: 'pg-bg-res-err'}).text(err[ie++][1])
-            );
+            res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
           }
         }
 
-        while (io < out.length && self.logs[0].children.length < 5120) {
-          self.logs.append(
-            $('<li></li>', {class: 'pg-bg-res-out'}).text(out[io++][1])
-          );
+        while (io < out.length) {
+          res.push('<li class="pg-bg-res-out">' + escapeHTML(out[io++][1]) + '</li>');
         }
 
-        while (ie < err.length && self.logs[0].children.length < 5120) {
-          self.logs.append(
-            $('<li></li>', {class: 'pg-bg-res-err'}).text(err[ie++][1])
-          );
+        while (ie < err.length) {
+          res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
         }
-
-        if (self.logs[0].children.length >= 5120) {
-          self.completed = true;
+        if (res.length) {
+          self.logs.append(res.join(''));
         }
 
         if (self.stime) {
@@ -197,7 +188,7 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
           setTimeout(function() {self.show.apply(self)}, 10);
         }
 
-        if (self.state != 2 || (self.details && !self.completed)) {
+        if (!self.completed) {
           setTimeout(
             function() {
               self.status.apply(self);
@@ -232,12 +223,11 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
 
         if (self.notify && !self.details) {
           if (!self.notifier) {
-            var content = $('<div class="pg-bg-bgprocess row"></div>').append(
-                  $('<div></div>', {
-                    class: "h5 pg-bg-notify-header"
-                  }).text(
-                    self.desc
-                  )
+            var header = $('<div></div>', {
+                  class: "h5 pg-bg-notify-header"
+                }).append($('<span></span>').text(self.desc)),
+                content = $('<div class="pg-bg-bgprocess row"></div>').append(
+                  header
                 ).append(
                   $('<div></div>', {class: 'pg-bg-notify-body h6' }).append(
                     $('<div></div>', {class: 'pg-bg-start col-xs-12' }).append(
@@ -249,12 +239,17 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
                 ),
                 for_details = $('<div></div>', {
                   class: "col-xs-12 text-center pg-bg-click h6"
-                }).text(pgMessages.CLICK_FOR_DETAILED_MSG).appendTo(content),
+                }).append(
+                  $('<span></span>').text(pgMessages.CLICK_FOR_DETAILED_MSG)
+                ).appendTo(content),
                 status = $('<div></div>', {
                   class: "pg-bg-status col-xs-12 h5 " + ((self.exit_code === 0) ?
                       'bg-success': (self.exit_code == 1) ?
                       'bg-failed' : '')
-                }).appendTo(content);
+                }).appendTo(content),
+                close_me = $(
+                  '<div class="bg-close"><i class="fa fa-close"></i></div>'
+                ).appendTo(header);
 
             self.container = content;
             self.notifier = alertify.notify(
@@ -268,9 +263,16 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
 
               this.notifier.dismiss();
               this.notifier = null;
+              this.completed = false;
 
               this.show_detailed_view.apply(this);
             }.bind(self));
+
+            close_me.on('click', function(ev) {
+              this.notifier.dismiss();
+              this.notifier = null;
+              this.acknowledge_server.apply(this);
+            }.bind(this));
 
             // Do not close the notifier, when clicked on the container, which
             // is a default behaviour.
@@ -351,6 +353,8 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
 
         if (is_new) {
           self.details = true;
+          self.err = 0;
+          self.out = 0;
           setTimeout(
             function() {
               self.status.apply(self);
@@ -419,28 +423,26 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
           function() {
             setTimeout(
               function() {
-                pgBrowser.BackgroundProcessObsorver.update_process_list();
+                pgBrowser.BackgroundProcessObsorver.update_process_list(true);
               }, 1000
             );
           }
         )
       },
 
-      update_process_list: function() {
+      update_process_list: function(recheck) {
         var observer = this;
 
         $.ajax({
           typs: 'GET',
           timeout: 30000,
-          url: pgMessages['bgprocess.list'],
+          url: pgMessages['bgprocess.index'],
           cache: false,
           async: true,
           contentType: "application/json",
           success: function(res) {
-            if (!res) {
-              // FIXME::
-              // Do you think - we should call the list agains after some
-              // interval?
+            var cnt = 0;
+            if (!res || !_.isArray(res)) {
               return;
             }
             for (idx in res) {
@@ -450,6 +452,14 @@ function(_, S, $, pgBrowser, alertify, pgMessages) {
                   observer.bgprocesses[process.id] = new BGProcess(process);
                 }
               }
+            }
+            if (recheck && res.length == 0) {
+              // Recheck after some more time
+              setTimeout(
+                function() {
+                  observer.update_process_list(false);
+                }, 3000
+              );
             }
           },
           error: function(res) {

@@ -15,7 +15,7 @@ from flask import url_for
 from flask_babel import gettext as _
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_response, gone, bad_request, success_return
+from pgadmin.utils.ajax import make_response, gone, success_return
 
 from .processes import BatchProcess
 
@@ -47,7 +47,6 @@ class BGProcessModule(PgAdminModule):
         """
         return {
             'bgprocess.index': url_for("bgprocess.index"),
-            'bgprocess.list': url_for("bgprocess.list"),
             'seconds': _('seconds'),
             'started': _('Started'),
             'START_TIME': _('Start time'),
@@ -55,7 +54,8 @@ class BGProcessModule(PgAdminModule):
             'EXECUTION_TIME': _('Execution time'),
             'running': _('Running...'),
             'successfully_finished': _("Successfully completed."),
-            'failed_with_exit_code': _("Failed (exit code: %s).")
+            'failed_with_exit_code': _("Failed (exit code: %s)."),
+            'BG_TOO_MANY_LOGS': _("Too many logs generated!")
         }
 
 
@@ -65,14 +65,14 @@ blueprint = BGProcessModule(
 )
 
 
-@blueprint.route('/')
+@blueprint.route('/', methods=['GET'])
 @login_required
 def index():
-    return bad_request(errormsg=_('This URL can not be called directly.'))
+    return make_response(response=BatchProcess.list())
 
 
-@blueprint.route('/status/<pid>/', methods=['GET'])
-@blueprint.route('/status/<pid>/<int:out>/<int:err>/', methods=['GET'])
+@blueprint.route('/<pid>', methods=['GET'])
+@blueprint.route('/<pid>/<int:out>/<int:err>/', methods=['GET'])
 @login_required
 def status(pid, out=-1, err=-1):
     """
@@ -96,12 +96,7 @@ def status(pid, out=-1, err=-1):
         return gone(errormsg=str(lerr))
 
 
-@blueprint.route('/list/', methods=['GET'])
-def list():
-    return make_response(response=BatchProcess.list())
-
-
-@blueprint.route('/acknowledge/<pid>/', methods=['PUT'])
+@blueprint.route('/<pid>', methods=['PUT'])
 @login_required
 def acknowledge(pid):
     """
@@ -114,7 +109,7 @@ def acknowledge(pid):
         Positive status
     """
     try:
-        BatchProcess.acknowledge(pid, True)
+        BatchProcess.acknowledge(pid)
 
         return success_return()
     except LookupError as lerr:

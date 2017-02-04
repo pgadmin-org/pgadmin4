@@ -20,6 +20,7 @@
   margin-top: 0px;
   margin-bottom: 5px;
   padding: 5px;
+  padding-right: 20px;
   white-space: pre-wrap;
   text-align: center;
   border-top-left-radius: 5px;
@@ -164,4 +165,29 @@ ol.pg-bg-process-logs {
 
 .bg-process-footer .bg-process-exec-time {
   padding-right: 0;
+}
+
+.pg-bg-bgprocess .ajs-commands {
+  right: -13px;
+  top: 2px;
+  opacity: 0.5;
+}
+
+.pg-bg-bgprocess .bg-close {
+  display: inline-block;
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  right: -12px;
+  top: 3px;
+  padding: 2px;
+  border: 2px solid #1f5fa6;
+  border-radius: 4px;
+  opacity: 0.5;
+  background-color: white;
+  color: red;
+}
+
+.pg-bg-bgprocess:hover .bg-close {
+  opacity: 0.95;
 }
