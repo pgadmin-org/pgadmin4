@@ -52,7 +52,6 @@ Expand the **SQL Editor** node to specify your preferences for the SQL Editor to
 
 Use the *Display* dialog to specify your preferences for the SQL Editor display.
 
-* Specify a value in the *Items per page in grid* field to instruct the *SQL Editor* on how many rows to display per page. The default is *50*.
 * Use the *Query info notifier timeout* to control the behaviour of the notifier that is displayed when query execution completes. A value of *-1* will disable the notifier, and a value of 0 will display it until clicked. If a positive value above zero is specified, the notifier will be displayed for the specified number of seconds. The default is *5*.
 
 .. image:: images/preferences_sql_explain_options.png
