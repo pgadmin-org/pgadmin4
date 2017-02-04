@@ -12,7 +12,8 @@
       "Formatters": {
         "JsonString": JsonFormatter,
         "Numbers": NumbersFormatter,
-        "Checkmark": CheckmarkFormatter
+        "Checkmark": CheckmarkFormatter,
+        "Text": TextFormatter,
       }
     }
   });
@@ -41,9 +42,13 @@
   }
 
   function NumbersFormatter(row, cell, value, columnDef, dataContext) {
-    if (value == null || value === "") {
-      return "";
-    } else {
+    if (_.isUndefined(value) || value === null) {
+      return "<span class='pull-right'>[null]</span>";
+    }
+    else if (value === "") {
+      return '';
+    }
+    else {
       return "<span style='float:right'>" + value + "</span>";
     }
   }
@@ -53,6 +58,15 @@
       return "";
     }
     return value ? "true" : "false";
+  }
+
+  function TextFormatter(row, cell, value, columnDef, dataContext) {
+    if (_.isUndefined(value) || value === null) {
+      return "<span class='pull-left'>[null]</span>";
+    }
+    else {
+      return value;
+    }
   }
 
 })(jQuery);

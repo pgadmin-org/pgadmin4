@@ -15,7 +15,8 @@
         "ReadOnlyText": ReadOnlyTextEditor,
         "ReadOnlyCheckbox": ReadOnlyCheckboxEditor,
         "ReadOnlypgText": ReadOnlypgTextEditor,
-        "ReadOnlyJsonText": ReadOnlyJsonTextEditor
+        "ReadOnlyJsonText": ReadOnlyJsonTextEditor,
+        "CustomNumber": CustomNumberEditor
       }
     }
   });
@@ -106,13 +107,36 @@
       $input.focus();
     };
 
+    // When text editor opens
     this.loadValue = function (item) {
-      $input.val(defaultValue = item[args.column.field]);
-      $input.select();
+      if (item[args.column.field] === "") {
+        $input.val("''");
+      }
+      else {
+        $input.val(defaultValue = item[args.column.field]);
+        $input.select();
+      }
     };
 
     this.serializeValue = function () {
-      return $input.val();
+      var value = $input.val();
+      // If empty return null
+      if (value === "") {
+        return null;
+      }
+      // single/double quotes represent an empty string
+      // If found return ''
+      else if (value === "''" || value === '""') {
+        return '';
+      }
+      else {
+        // If found string literals - \"\", \'\', \\'\\' and \\\\'\\\\'
+        // then remove slashes.
+        value = value.replace("\\'\\'", "''");
+        value = value.replace('\\"\\"', '""');
+        value = value = value.replace(/\\\\/g, '\\');
+        return value;
+      }
     };
 
     this.applyValue = function (item, state) {
@@ -246,6 +270,9 @@
     };
 
     this.serializeValue = function () {
+      if ($input.val() === "") {
+        return null;
+      }
       return $input.val();
     };
 
@@ -628,6 +655,78 @@
     };
 
     this.validate = function () {
+      return {
+        valid: true,
+        msg: null
+      };
+    };
+
+    this.init();
+  }
+
+  function CustomNumberEditor(args) {
+    var $input;
+    var defaultValue;
+    var scope = this;
+
+    this.init = function () {
+      $input = $("<INPUT type=text class='editor-text' />");
+
+      $input.bind("keydown.nav", function (e) {
+        if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
+          e.stopImmediatePropagation();
+        }
+      });
+
+      $input.appendTo(args.container);
+      $input.focus().select();
+    };
+
+    this.destroy = function () {
+      $input.remove();
+    };
+
+    this.focus = function () {
+      $input.focus();
+    };
+
+    this.loadValue = function (item) {
+      defaultValue = item[args.column.field];
+      $input.val(defaultValue);
+      $input[0].defaultValue = defaultValue;
+      $input.select();
+    };
+
+    this.serializeValue = function () {
+      if ($input.val() === "") {
+        return null;
+      }
+      return parseInt($input.val(), 10) || 0;
+    };
+
+    this.applyValue = function (item, state) {
+      item[args.column.field] = state;
+    };
+
+    this.isValueChanged = function () {
+      return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
+    };
+
+    this.validate = function () {
+      if (isNaN($input.val())) {
+        return {
+          valid: false,
+          msg: "Please enter a valid integer"
+        };
+      }
+
+      if (args.column.validator) {
+        var validationResults = args.column.validator($input.val());
+        if (!validationResults.valid) {
+          return validationResults;
+        }
+      }
+
       return {
         valid: true,
         msg: null

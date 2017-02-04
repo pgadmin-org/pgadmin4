@@ -630,7 +630,7 @@ define(
                                               : Slick.Editors.ReadOnlyJsonText;
               options['formatter'] = Slick.Formatters.JsonString;
             } else if(c.cell == 'number') {
-              options['editor'] = is_editable ? Slick.Editors.Text
+              options['editor'] = is_editable ? Slick.Editors.CustomNumber
                                               : Slick.Editors.ReadOnlyText;
               options['formatter'] = Slick.Formatters.Numbers;
             } else if(c.cell == 'boolean') {
@@ -640,6 +640,7 @@ define(
             } else {
               options['editor'] = is_editable ? Slick.Editors.pgText
                                               : Slick.Editors.ReadOnlypgText;
+              options['formatter'] = Slick.Formatters.Text;
             }
 
            grid_columns.push(options)
