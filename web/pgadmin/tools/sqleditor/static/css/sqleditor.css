@@ -394,6 +394,11 @@ input.editor-checkbox {
   border: 0;
 }
 
+/* remove outlined border on focus */
+input.editor-checkbox:focus {
+  outline: none;
+}
+
 /* Override selected row color */
 .sc.selected {
     background-color: #eeeeee !important;

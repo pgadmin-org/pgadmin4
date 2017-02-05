@@ -54,8 +54,13 @@
   }
 
   function CheckmarkFormatter(row, cell, value, columnDef, dataContext) {
+    /* Checkbox has 3 states
+     * 1) checked=true
+     * 2) unchecked=false
+     * 3) indeterminate=null/''
+     */
     if (value == null || value === "") {
-      return "";
+      return "<span class='pull-left'>[null]</span>";
     }
     return value ? "true" : "false";
   }

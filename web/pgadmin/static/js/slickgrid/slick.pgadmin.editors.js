@@ -14,6 +14,7 @@
         // Below editor will read only editors, Just to display data
         "ReadOnlyText": ReadOnlyTextEditor,
         "ReadOnlyCheckbox": ReadOnlyCheckboxEditor,
+        "Checkbox": CheckboxEditor, // Override editor to implement checkbox with three states
         "ReadOnlypgText": ReadOnlypgTextEditor,
         "ReadOnlyJsonText": ReadOnlyJsonTextEditor,
         "CustomNumber": CustomNumberEditor
@@ -408,6 +409,95 @@
         }
       }
 
+      return {
+        valid: true,
+        msg: null
+      };
+    };
+
+    this.init();
+  }
+
+  /* Override CheckboxEditor to implement checkbox with three states.
+   * 1) checked=true
+   * 2) unchecked=false
+   * 3) indeterminate=null/''
+   */
+  function CheckboxEditor(args) {
+    var $select, el;
+    var defaultValue;
+    var scope = this;
+
+    this.init = function () {
+      $select = $("<INPUT type=checkbox value='true' class='editor-checkbox' hideFocus>");
+      $select.appendTo(args.container);
+      $select.focus();
+
+      // The following code is taken from https://css-tricks.com/indeterminate-checkboxes/
+      $select.data('checked', 0).bind("click", function (e) {
+        el = $(this);
+        switch(el.data('checked')) {
+          // unchecked, going indeterminate
+          case 0:
+            el.data('checked', 1);
+            el.prop('indeterminate', true);
+            break;
+
+          // indeterminate, going checked
+          case 1:
+            el.data('checked', 2);
+            el.prop('indeterminate', false);
+            el.prop('checked', true);
+            break;
+
+          // checked, going unchecked
+          default:
+            el.data('checked', 0);
+            el.prop('indeterminate', false);
+            el.prop('checked', false);
+        }
+      });
+    };
+
+    this.destroy = function () {
+      $select.remove();
+    };
+
+    this.focus = function () {
+      $select.focus();
+    };
+
+    this.loadValue = function (item) {
+      defaultValue = item[args.column.field];
+      if (_.isNull(defaultValue)) {
+        $select.prop('indeterminate', true);
+      }
+      else {
+        defaultValue = !!item[args.column.field];
+        if (defaultValue) {
+          $select.prop('checked', true);
+        } else {
+          $select.prop('checked', false);
+        }
+      }
+    };
+
+    this.serializeValue = function () {
+      if ($select.prop('indeterminate')) {
+        return null;
+      }
+      return $select.prop('checked');
+    };
+
+    this.applyValue = function (item, state) {
+      item[args.column.field] = state;
+    };
+
+    this.isValueChanged = function () {
+      return (this.serializeValue() !== defaultValue);
+    };
+
+    this.validate = function () {
       return {
         valid: true,
         msg: null
