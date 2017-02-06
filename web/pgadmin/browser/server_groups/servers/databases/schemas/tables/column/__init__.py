@@ -490,6 +490,15 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             after length/precision so we will set flag for
             sql template
         """
+
+        # We need to add this exceptional case for manually adding " in type
+        # in json.loads('"char"') is valid json hence it
+        # converts '"char"' -> 'char' as string but if we
+        # send the same in collection json.loads() handles it properly in
+        # Table & Type nodes, This handling handling is Column node specific
+        if type == 'char':
+            type = '"char"'
+
         if '[]' in type:
             type = type.replace('[]', '')
             self.hasSqrBracket = True
@@ -710,7 +719,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         for k, v in request.args.items():
             try:
                 data[k] = json.loads(v, encoding='utf-8')
-            except ValueError:
+            except (ValueError, TypeError, KeyError):
                 data[k] = v
 
         # Adding parent into data dict, will be using it while creating sql
