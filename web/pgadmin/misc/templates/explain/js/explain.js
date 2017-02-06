@@ -145,11 +145,11 @@ var imageMapper = {
   }
 },
 "ModifyTable" : function(data) {
-  switch (data['Operaton']) {
-    case "insert": return { "image":"ex_insert.png",
+  switch (data['Operation']) {
+    case "Insert": return { "image":"ex_insert.png",
                             "image_text":"Insert"
                            };
-    case "update": return {"image":"ex_update.png","image_text":"Update"};
+    case "Update": return {"image":"ex_update.png","image_text":"Update"};
     case "Delete": return {"image":"ex_delete.png","image_text":"Delete"};
   }
 },
