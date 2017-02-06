@@ -152,7 +152,7 @@
                         }
                     }{% for script in current_app.javascripts %}{% if 'deps' in script or 'exports' in script %},
                     '{{ script.name }}': {
-                    {% if 'deps' in script %}"deps": [ {% set comma = False %}{% for dep in script['deps'] %} {% if comma %},{% else %}{% set comma = True %}{% endif %} '{{ dep }}'{% endfor %}],{% endif %}
+                    {% if 'deps' in script %}"deps": [{% for dep in script['deps'] %} {% if loop.index != 1 %}, {% endif %} '{{ dep }}'{% endfor %}],{% endif %}
                         {% if 'exports' in script %}"exports": "{{ script['exports'] }}"{% endif %}
                     }{% endif %}{% endfor %}
                 },
