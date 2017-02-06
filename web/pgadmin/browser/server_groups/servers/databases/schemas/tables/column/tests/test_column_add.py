@@ -55,7 +55,7 @@ class ColumnAddTestCase(BaseTestGenerator):
                 "attacl": [],
                 "is_primary_key": False,
                 "attnotnull": False,
-                "attlen": False,
+                "attlen": None,
                 "attprecision": None,
                 "attoptions": [],
                 "seclabels": []
