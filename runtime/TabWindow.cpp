@@ -89,8 +89,9 @@ void TabWindow::enableDisableToolButton(const int &index)
         {
             if (widgetPtr != NULL)
                 tmpwebviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-                if (tmpwebviewPtr != NULL)
-                    webviewPtr = tmpwebviewPtr;
+
+            if (tmpwebviewPtr != NULL)
+                webviewPtr = tmpwebviewPtr;
         }
     }
 
