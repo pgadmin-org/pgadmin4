@@ -231,11 +231,11 @@ def update_status(**kw):
     import json
 
     if os.environ['OUTDIR']:
-        status = {
-            k: v for k, v in kw.items() if k in [
+        status = dict(
+            (k, v) for k, v in kw.items() if k in [
                 'start_time', 'end_time', 'exit_code', 'pid'
             ]
-        }
+        )
         log('Updating the status:\n{0}'.format(json.dumps(status)))
         with open(os.path.join(os.environ['OUTDIR'], 'status'), 'w') as fp:
             json.dump(status, fp)

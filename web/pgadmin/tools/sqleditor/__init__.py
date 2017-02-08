@@ -470,11 +470,10 @@ def poll(trans_id):
         rows_affected = conn.rows_affected()
 
         for col in col_info:
-            items = list(col.items())
             col_type = dict()
-            col_type['type_code'] = items[1][1]
+            col_type['type_code'] = col['type_code']
             col_type['type_name'] = None
-            columns[items[0][1]] = col_type
+            columns[col['name']] = col_type
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.
