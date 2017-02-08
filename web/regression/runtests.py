@@ -227,6 +227,9 @@ class StreamToLogger(object):
 
 
 if __name__ == '__main__':
+    # Failure detected?
+    failure = False
+
     test_result = dict()
     # Register cleanup function to cleanup on exit
     atexit.register(drop_objects)
@@ -276,6 +279,10 @@ if __name__ == '__main__':
                 get_tests_result(tests)
             test_result[server['name']] = [ran_tests, failed_cases,
                                            skipped_cases]
+
+            if len(failed_cases) > 0:
+                failure = True
+
             # Delete test server
             # test_utils.delete_test_server(test_client)
     except SystemExit:
@@ -311,3 +318,8 @@ if __name__ == '__main__':
         "===\n", file=sys.stderr)
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
+
+    if failure == True:
+        sys.exit(1)
+    else:
+        sys.exit(0)
