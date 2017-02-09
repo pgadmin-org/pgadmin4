@@ -29,7 +29,7 @@ To build the runtime, the following packages must be installed:
 
 - QT 4.6 or above, up to 5.5 (older versions may work, but haven't been tested,
   newer versions are not yet supported as Qt Webkit has been deprecated).
-- Python 2.6 or above.
+- Python 2.6, 2.7 or 3.3+
 
 Assuming both qmake and python-config are in the path:
 
@@ -72,8 +72,9 @@ configure the project with a supported version of Qt when prompted.
 Configuring the Python Environment
 ----------------------------------
 
-In order to run the Python code, a suitable runtime environment is required. It
-is recommended that a Python Virtual Environment is setup for this purpose,
+In order to run the Python code, a suitable runtime environment is required.
+Python versions - Python 2.6, 2.7 or 3.3+ are currently supported. It is
+recommended that a Python Virtual Environment is setup for this purpose,
 rather than using the system Python environment. On Linux and Mac systems, the
 process is fairly simple - adapt as required for your distribution:
 
