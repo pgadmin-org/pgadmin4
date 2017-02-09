@@ -27,6 +27,9 @@ def create_fts_template(server, db_name, schema_name, fts_temp_name):
                                        server['port'])
         pg_cursor = connection.cursor()
 
+        query = "DROP TEXT SEARCH TEMPLATE IF EXISTS " + schema_name + "." + fts_temp_name
+        pg_cursor.execute(query)
+
         query = "CREATE TEXT SEARCH TEMPLATE " + schema_name + "." + fts_temp_name + \
                 "(INIT=dispell_init, LEXIZE=dispell_lexize)"
         pg_cursor.execute(query)
