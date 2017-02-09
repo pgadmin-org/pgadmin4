@@ -17,7 +17,7 @@ from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, validate_options, tokenize_options
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
@@ -119,9 +119,6 @@ class ForeignDataWrapperView(PGChildNodeView):
     * properties(gid, sid, did, fid)
       - This function will show the properties of the selected foreign data wrapper node
 
-    * tokenizeOptions(option_value)
-      - This function will tokenize the string stored in database
-
     * create(gid, sid, did)
       - This function will create the new foreign data wrapper node
 
@@ -208,11 +205,15 @@ class ForeignDataWrapperView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                kwargs['sid']
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # Set the template path for the SQL scripts
-            self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(
+                self.manager.version
+            )
 
             return f(*args, **kwargs)
 
@@ -221,14 +222,16 @@ class ForeignDataWrapperView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, did):
         """
-        This function is used to list all the foreign data wrapper nodes within that collection.
+        This function is used to list all the foreign data wrapper
+        nodes within that collection.
 
         Args:
             gid: Server Group ID
             sid: Server ID
             did: Database ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -236,7 +239,9 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         for row in res['rows']:
             if row['fdwoptions'] is not None:
-                row['fdwoptions'] = self.tokenize_options(row['fdwoptions'])
+                row['fdwoptions'] = tokenize_options(
+                    row['fdwoptions'], 'fdwoption', 'fdwvalue'
+                )
 
         return ajax_response(
             response=res['rows'],
@@ -255,7 +260,9 @@ class ForeignDataWrapperView(PGChildNodeView):
             did: Database ID
         """
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']), conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              conn=self.conn
+                              )
         status, r_set = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=r_set)
@@ -304,24 +311,6 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         return gone(gettext("Could not find the specified foreign data wrapper."))
 
-    def tokenize_options(self, option_value):
-        """
-        This function will tokenize the string stored in database
-        e.g. database store the value as below
-        key1=value1, key2=value2, key3=value3, ....
-        This function will extract key and value from above string
-
-        Args:
-            option_value: key value option/value pair read from database
-        """
-        if option_value is not None:
-            option_str = option_value.split(',')
-            fdw_options = []
-            for fdw_option in option_str:
-                k, v = fdw_option.split('=', 1)
-                fdw_options.append({'fdwoption': k, 'fdwvalue': v})
-            return fdw_options
-
     @check_precondition
     def properties(self, gid, sid, did, fid):
         """
@@ -333,7 +322,9 @@ class ForeignDataWrapperView(PGChildNodeView):
             did: Database ID
             fid: foreign data wrapper ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fid=fid, conn=self.conn
+                              )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -345,7 +336,10 @@ class ForeignDataWrapperView(PGChildNodeView):
             )
 
         if res['rows'][0]['fdwoptions'] is not None:
-            res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
+            res['rows'][0]['fdwoptions'] = tokenize_options(
+                res['rows'][0]['fdwoptions'],
+                'fdwoption', 'fdwvalue'
+            )
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), fid=fid)
         status, fdw_acl_res = self.conn.execute_dict(sql)
@@ -392,32 +386,26 @@ class ForeignDataWrapperView(PGChildNodeView):
                 )
 
         try:
-
             if 'fdwacl' in data:
                 data['fdwacl'] = parse_priv_to_db(data['fdwacl'], ['U'])
 
-            new_list = []
-
-            # Allow user to set the blank value in fdwvalue field in option model
+            is_valid_options = False
             if 'fdwoptions' in data:
-                for item in data['fdwoptions']:
-                    new_dict = {}
-                    if item['fdwoption']:
-                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                            new_dict.update(item);
-                        else:
-                            new_dict.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+                is_valid_options, data['fdwoptions'] = validate_options(
+                    data['fdwoptions'], 'fdwoption', 'fdwvalue'
+                )
 
-                    new_list.append(new_dict)
-
-                data['fdwoptions'] = new_list
-
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, conn=self.conn,
+                                  is_valid_options=is_valid_options
+                                  )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fname=data['name'], conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fname=data['name'], conn=self.conn
+                                  )
 
             status, r_set = self.conn.execute_dict(sql)
             if not status:
@@ -488,7 +476,9 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         try:
             # Get name of foreign data wrapper from fid
-            sql = render_template("/".join([self.template_path, 'delete.sql']), fid=fid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  fid=fid, conn=self.conn
+                                  )
             status, name = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=name)
@@ -505,7 +495,8 @@ class ForeignDataWrapperView(PGChildNodeView):
                     )
                 )
             # drop foreign data wrapper node
-            sql = render_template("/".join([self.template_path, 'delete.sql']), name=name, cascade=cascade,
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  name=name, cascade=cascade,
                                   conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -549,7 +540,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                 sql = "--modified SQL"
 
             return make_json_response(
-                data=sql,
+                data=sql.strip('\n'),
                 status=200
             )
         except Exception as e:
@@ -571,7 +562,9 @@ class ForeignDataWrapperView(PGChildNodeView):
         ]
 
         if fid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fid=fid, conn=self.conn
+                                  )
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -582,7 +575,10 @@ class ForeignDataWrapperView(PGChildNodeView):
                 )
 
             if res['rows'][0]['fdwoptions'] is not None:
-                res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
+                res['rows'][0]['fdwoptions'] = tokenize_options(
+                    res['rows'][0]['fdwoptions'],
+                    'fdwoption', 'fdwvalue'
+                )
 
             for key in ['fdwacl']:
                 if key in data and data[key] is not None:
@@ -598,63 +594,41 @@ class ForeignDataWrapperView(PGChildNodeView):
                 if arg not in data:
                     data[arg] = old_data[arg]
 
-            new_list_add = []
-            new_list_change = []
-
             # Allow user to set the blank value in fdwvalue field in option model
+            is_valid_added_options = is_valid_changed_options = False
             if 'fdwoptions' in data and 'added' in data['fdwoptions']:
-                for item in data['fdwoptions']['added']:
-                    new_dict_add = {}
-                    if item['fdwoption']:
-                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                            new_dict_add.update(item);
-                        else:
-                            new_dict_add.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
-
-                    new_list_add.append(new_dict_add)
-
-                data['fdwoptions']['added'] = new_list_add
-
-            # Allow user to set the blank value in fdwvalue field in option model
+                is_valid_added_options, data['fdwoptions']['added'] = validate_options(
+                    data['fdwoptions']['added'], 'fdwoption', 'fdwvalue'
+                )
             if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
-                for item in data['fdwoptions']['changed']:
-                    new_dict_change = {}
-                    if item['fdwoption']:
-                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                            new_dict_change.update(item);
-                        else:
-                            new_dict_change.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+                is_valid_changed_options, data['fdwoptions']['changed'] = validate_options(
+                    data['fdwoptions']['changed'], 'fdwoption', 'fdwvalue'
+                )
 
-                    new_list_change.append(new_dict_change)
-
-                data['fdwoptions']['changed'] = new_list_change
-
-            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
-                                  conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'update.sql']),
+                                  data=data, o_data=old_data,
+                                  is_valid_added_options=is_valid_added_options,
+                                  is_valid_changed_options=is_valid_changed_options,
+                                  conn=self.conn
+            )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
             for key in ['fdwacl']:
                 if key in data and data[key] is not None:
                     data[key] = parse_priv_to_db(data[key], ['U'])
 
-            new_list = []
-
             # Allow user to set the blank value in fdwvalue field in option model
+            is_valid_options = False
             if 'fdwoptions' in data:
-                for item in data['fdwoptions']:
-                    new_dict = {}
-                    if item['fdwoption']:
-                        if 'fdwvalue' in item and item['fdwvalue'] and item['fdwvalue'] != '':
-                            new_dict.update(item);
-                        else:
-                            new_dict.update({'fdwoption': item['fdwoption'], 'fdwvalue': ''})
+                is_valid_options, data['fdwoptions'] = validate_options(
+                    data['fdwoptions'], 'fdwoption', 'fdwvalue'
+                )
 
-                    new_list.append(new_dict)
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, conn=self.conn,
+                                  is_valid_options=is_valid_options
+                                  )
 
-                data['fdwoptions'] = new_list
-
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
-            sql += "\n"
         return sql, data['name']
 
 
@@ -669,13 +643,21 @@ class ForeignDataWrapperView(PGChildNodeView):
             did: Database ID
             fid: Foreign data wrapper ID
         """
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fid=fid, conn=self.conn
+                              )
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
+        is_valid_options = False
         if res['rows'][0]['fdwoptions'] is not None:
-            res['rows'][0]['fdwoptions'] = self.tokenize_options(res['rows'][0]['fdwoptions'])
+            res['rows'][0]['fdwoptions'] = tokenize_options(
+                res['rows'][0]['fdwoptions'], 'fdwoption', 'fdwvalue'
+            )
+
+            if len(res['rows'][0]['fdwoptions']) > 0:
+                is_valid_options = True
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), fid=fid)
         status, fdw_acl_res = self.conn.execute_dict(sql)
@@ -694,7 +676,10 @@ class ForeignDataWrapperView(PGChildNodeView):
             res['rows'][0]['fdwacl'] = parse_priv_to_db(res['rows'][0]['fdwacl'], ['U'])
 
         sql = ''
-        sql = render_template("/".join([self.template_path, 'create.sql']), data=res['rows'][0], conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'create.sql']),
+                              data=res['rows'][0], conn=self.conn,
+                              is_valid_options=is_valid_options
+                              )
         sql += "\n"
 
         sql_header = """-- Foreign Data Wrapper: {0}
@@ -708,7 +693,7 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         sql = sql_header + sql
 
-        return ajax_response(response=sql)
+        return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
     def get_validators(self, gid, sid, did):
@@ -722,14 +707,16 @@ class ForeignDataWrapperView(PGChildNodeView):
         """
         res = [{'label': '', 'value': ''}]
         try:
-            sql = render_template("/".join([self.template_path, 'validators.sql']), conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'validators.sql']),
+                                  conn=self.conn)
             status, r_set = self.conn.execute_2darray(sql)
 
             if not status:
                 return internal_server_error(errormsg=r_set)
 
             for row in r_set['rows']:
-                res.append({'label': row['schema_prefix_fdw_val'], 'value': row['schema_prefix_fdw_val']})
+                res.append({'label': row['schema_prefix_fdw_val'],
+                            'value': row['schema_prefix_fdw_val']})
 
             return make_json_response(data=res, status=200)
 
@@ -748,14 +735,16 @@ class ForeignDataWrapperView(PGChildNodeView):
         """
         res = [{'label': '', 'value': ''}]
         try:
-            sql = render_template("/".join([self.template_path, 'handlers.sql']), conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'handlers.sql']),
+                                  conn=self.conn)
             status, r_set = self.conn.execute_2darray(sql)
 
             if not status:
                 return internal_server_error(errormsg=r_set)
 
             for row in r_set['rows']:
-                res.append({'label': row['schema_prefix_fdw_hand'], 'value': row['schema_prefix_fdw_hand']})
+                res.append({'label': row['schema_prefix_fdw_hand'],
+                            'value': row['schema_prefix_fdw_hand']})
 
             return make_json_response(
                 data=res,

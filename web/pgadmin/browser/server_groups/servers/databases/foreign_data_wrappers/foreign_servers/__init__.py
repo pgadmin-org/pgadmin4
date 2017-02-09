@@ -17,7 +17,7 @@ from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, validate_options, tokenize_options
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response
@@ -120,9 +120,6 @@ class ForeignServerView(PGChildNodeView):
     * properties(gid, sid, did, fid, fsid)
       - This function will show the properties of the selected foreign server node
 
-    * tokenizeOptions(option_value)
-      - This function will tokenize the string stored in database
-
     * update(gid, sid, did, fid, fsid)
       - This function will update the data for the selected foreign server node
 
@@ -202,10 +199,15 @@ class ForeignServerView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                kwargs['sid']
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = "foreign_servers/sql/#{0}#".format(self.manager.version)
+            self.template_path = "foreign_servers/sql/#{0}#".format(
+                self.manager.version
+            )
+            self.is_valid_options = False
 
             return f(*args, **kwargs)
 
@@ -223,7 +225,8 @@ class ForeignServerView(PGChildNodeView):
             fid: Foreign data wrapper ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fid=fid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -248,7 +251,8 @@ class ForeignServerView(PGChildNodeView):
         """
 
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fid=fid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fid=fid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
         if not status:
@@ -303,25 +307,6 @@ class ForeignServerView(PGChildNodeView):
 
         return gone(gettext("Could not find the specified foreign server."))
 
-    def tokenizeOptions(self, option_value):
-        """
-        This function will tokenize the string stored in database
-        e.g. database store the value as below
-        key1=value1, key2=value2, key3=value3, ....
-        This function will extract key and value from above string
-
-        Args:
-            option_value: key value option/value pair read from database
-        """
-
-        if option_value is not None:
-            option_str = option_value.split(',')
-            fs_rv_options = []
-            for fs_rv_option in option_str:
-                k, v = fs_rv_option.split('=', 1)
-                fs_rv_options.append({'fsrvoption': k, 'fsrvvalue': v})
-            return fs_rv_options
-
     @check_precondition
     def properties(self, gid, sid, did, fid, fsid):
         """
@@ -335,7 +320,8 @@ class ForeignServerView(PGChildNodeView):
             fsid: foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -347,7 +333,9 @@ class ForeignServerView(PGChildNodeView):
             )
 
         if res['rows'][0]['fsrvoptions'] is not None:
-            res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
+            res['rows'][0]['fsrvoptions'] = tokenize_options(
+                res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
+            )
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), fsid=fsid)
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
@@ -399,35 +387,30 @@ class ForeignServerView(PGChildNodeView):
             if 'fsrvacl' in data:
                 data['fsrvacl'] = parse_priv_to_db(data['fsrvacl'], ['U'])
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fdwid=fid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fdwid=fid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res1)
 
             fdw_data = res1['rows'][0]
 
-            new_list = []
-
+            is_valid_options = False
             if 'fsrvoptions' in data:
-                for item in data['fsrvoptions']:
-                    new_dict = {}
-                    if item['fsrvoption']:
-                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                            new_dict.update(item);
-                        else:
-                            new_dict.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+                is_valid_options, data['fsrvoptions'] = validate_options(
+                    data['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
+                )
 
-                    new_list.append(new_dict)
-
-                data['fsrvoptions'] = new_list
-
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, fdwdata=fdw_data,
+                                  is_valid_options=is_valid_options,
                                   conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), data=data, fdwdata=fdw_data,
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  data=data, fdwdata=fdw_data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
             if not status:
@@ -501,7 +484,8 @@ class ForeignServerView(PGChildNodeView):
 
         try:
             # Get name of foreign data wrapper from fid
-            sql = render_template("/".join([self.template_path, 'delete.sql']), fsid=fsid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  fsid=fsid, conn=self.conn)
             status, name = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=name)
@@ -519,7 +503,8 @@ class ForeignServerView(PGChildNodeView):
                 )
 
             # drop foreign server
-            sql = render_template("/".join([self.template_path, 'delete.sql']), name=name, cascade=cascade,
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  name=name, cascade=cascade,
                                   conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -565,7 +550,7 @@ class ForeignServerView(PGChildNodeView):
                     sql = "--modified SQL"
 
             return make_json_response(
-                data=sql,
+                data=sql.strip('\n'),
                 status=200
                 )
 
@@ -590,13 +575,16 @@ class ForeignServerView(PGChildNodeView):
         ]
 
         if fsid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fsid=fsid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
             if res['rows'][0]['fsrvoptions'] is not None:
-                res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
+                res['rows'][0]['fsrvoptions'] = tokenize_options(
+                    res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
+                )
 
             for key in ['fsrvacl']:
                 if key in data and data[key] is not None:
@@ -612,42 +600,25 @@ class ForeignServerView(PGChildNodeView):
                 if arg not in data:
                     data[arg] = old_data[arg]
 
-            new_list_add = []
-            new_list_change = []
-
-            # Allow user to set the blank value in fsrvvalue field in option model
+            is_valid_added_options = is_valid_changed_options = False
             if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
-                for item in data['fsrvoptions']['added']:
-                    new_dict_add = {}
-                    if item['fsrvoption']:
-                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                            new_dict_add.update(item);
-                        else:
-                            new_dict_add.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
-
-                    new_list_add.append(new_dict_add)
-
-                data['fsrvoptions']['added'] = new_list_add
-
-            # Allow user to set the blank value in fsrvvalue field in option model
+                is_valid_added_options, data['fsrvoptions']['added'] = validate_options(
+                    data['fsrvoptions']['added'], 'fsrvoption', 'fsrvvalue'
+                )
             if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
-                for item in data['fsrvoptions']['changed']:
-                    new_dict_change = {}
-                    if item['fsrvoption']:
-                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                            new_dict_change.update(item);
-                        else:
-                            new_dict_change.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+                is_valid_changed_options, data['fsrvoptions']['changed'] = validate_options(
+                    data['fsrvoptions']['changed'], 'fsrvoption', 'fsrvvalue'
+                )
 
-                    new_list_change.append(new_dict_change)
-
-                data['fsrvoptions']['changed'] = new_list_change
-
-            sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
+            sql = render_template("/".join([self.template_path, 'update.sql']),
+                                  data=data, o_data=old_data,
+                                  is_valid_added_options=is_valid_added_options,
+                                  is_valid_changed_options=is_valid_changed_options,
                                   conn=self.conn)
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fdwid=fid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fdwid=fid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -658,22 +629,16 @@ class ForeignServerView(PGChildNodeView):
                 if key in data and data[key] is not None:
                     data[key] = parse_priv_to_db(data[key], ['U'])
 
-            new_list = []
 
+            is_valid_options = False
             if 'fsrvoptions' in data:
-                for item in data['fsrvoptions']:
-                    new_dict = {}
-                    if item['fsrvoption']:
-                        if 'fsrvvalue' in item and item['fsrvvalue'] and item['fsrvvalue'] != '':
-                            new_dict.update(item);
-                        else:
-                            new_dict.update({'fsrvoption': item['fsrvoption'], 'fsrvvalue': ''})
+                is_valid_options, data['fsrvoptions'] = validate_options(
+                    data['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
+                )
 
-                    new_list.append(new_dict)
-
-                data['fsrvoptions'] = new_list
-
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, fdwdata=fdw_data,
+                                  is_valid_options=is_valid_options,
                                   conn=self.conn)
             sql += "\n"
         return sql, data['name']
@@ -692,13 +657,20 @@ class ForeignServerView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
+        is_valid_options = False
         if res['rows'][0]['fsrvoptions'] is not None:
-            res['rows'][0]['fsrvoptions'] = self.tokenizeOptions(res['rows'][0]['fsrvoptions'])
+            res['rows'][0]['fsrvoptions'] = tokenize_options(
+                res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
+            )
+
+            if len(res['rows'][0]['fsrvoptions']) > 0:
+                is_valid_options = True
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), fsid=fsid)
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
@@ -716,7 +688,8 @@ class ForeignServerView(PGChildNodeView):
         if 'fsrvacl' in res['rows'][0]:
             res['rows'][0]['fsrvacl'] = parse_priv_to_db(res['rows'][0]['fsrvacl'], ['U'])
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fdwid=fid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fdwid=fid, conn=self.conn)
         status, res1 = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res1)
@@ -724,7 +697,9 @@ class ForeignServerView(PGChildNodeView):
         fdw_data = res1['rows'][0]
 
         sql = ''
-        sql = render_template("/".join([self.template_path, 'create.sql']), data=res['rows'][0], fdwdata=fdw_data,
+        sql = render_template("/".join([self.template_path, 'create.sql']),
+                              data=res['rows'][0], fdwdata=fdw_data,
+                              is_valid_options=is_valid_options,
                               conn=self.conn)
         sql += "\n"
 
@@ -738,7 +713,7 @@ class ForeignServerView(PGChildNodeView):
 
         sql = sql_header + sql
 
-        return ajax_response(response=sql)
+        return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
     def dependents(self, gid, sid, did, fid, fsid):
@@ -756,14 +731,16 @@ class ForeignServerView(PGChildNodeView):
         dependents_result = self.get_dependents(self.conn, fsid)
 
         # Fetching dependents of foreign servers
-        query = render_template("/".join([self.template_path, 'dependents.sql']), fsid=fsid)
+        query = render_template("/".join([self.template_path, 'dependents.sql']),
+                                fsid=fsid)
         status, result = self.conn.execute_dict(query)
         if not status:
             internal_server_error(errormsg=result)
 
         for row in result['rows']:
             dependents_result.append(
-                {'type': 'user_mapping', 'name': row['name'], 'field': 'normal' if (row['deptype'] == 'n') else ''})
+                {'type': 'user_mapping', 'name': row['name'],
+                 'field': 'normal' if (row['deptype'] == 'n') else ''})
 
         return ajax_response(
             response=dependents_result,

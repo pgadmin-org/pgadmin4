@@ -5,6 +5,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node model class to create a Options model
   var OptionsModel = pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'fsrvoption',
         defaults: {
           fsrvoption: undefined,
           fsrvvalue: undefined

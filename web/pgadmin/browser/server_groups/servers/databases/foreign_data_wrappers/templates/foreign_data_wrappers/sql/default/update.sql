@@ -41,44 +41,30 @@ COMMENT ON FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 
 {% endif %}
 {# ============= Update foreign data wrapper options and values ============= #}
-{% if data.fdwoptions and data.fdwoptions.deleted %}
-{% set addAlter = "False" %}
-{% for variable in data.fdwoptions.deleted %}
-{% if variable.fdwoption and variable.fdwoption != '' %}
-{% if addAlter == "False" %}
+{% if data.fdwoptions and data.fdwoptions.deleted and data.fdwoptions.deleted|length > 0 %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{%endif%}
-DROP {{ conn|qtIdent(variable.fdwoption) }}{% if not loop.last %},{% else %});{% endif %}
-{% endif %}
-{% endfor %}
-
+    OPTIONS ({% for variable in data.fdwoptions.deleted %}{% if loop.index != 1 %}, {% endif %}
+DROP {{ conn|qtIdent(variable.fdwoption) }}{% endfor %}
+);
 
 {% endif %}
 {% if data.fdwoptions and data.fdwoptions.added %}
-{% set addAlter = "False" %}
-{% for variable in data.fdwoptions.added %}
-{% if variable.fdwoption and variable.fdwoption != '' %}
-{% if addAlter == "False" %}
+{% if is_valid_added_options %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{% endif %}
-ADD {{ conn|qtIdent(variable.fdwoption) }} {{variable.fdwvalue|qtLiteral}}{% if not loop.last %},{% else %});{% endif %}
+    OPTIONS ({% for variable in data.fdwoptions.added %}{% if loop.index != 1 %}, {% endif %}
+ADD {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% endfor %}
+);
+
 {% endif %}
-{%endfor%}
-
-
 {% endif %}
 {% if data.fdwoptions and data.fdwoptions.changed %}
-{% set addAlter = "False" %}
-{% for variable in data.fdwoptions.changed %}
-{% if variable.fdwoption and variable.fdwoption != '' %}
-{% if addAlter == "False" %}
+{% if is_valid_changed_options %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{% endif %}
-SET {{ conn|qtIdent(variable.fdwoption) }} {{variable.fdwvalue|qtLiteral}}{% if not loop.last %},{% else %});{% endif %}
+    OPTIONS ({% for variable in data.fdwoptions.changed %}{% if loop.index != 1 %}, {% endif %}
+SET {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% endfor %}
+);
+
 {% endif %}
-{%endfor%}
-
-
 {% endif %}
 {# Change the privileges #}
 {% if data.fdwacl %}

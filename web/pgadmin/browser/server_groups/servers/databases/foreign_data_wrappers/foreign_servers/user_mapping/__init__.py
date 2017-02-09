@@ -13,6 +13,8 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups.servers.utils import \
+    validate_options, tokenize_options
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -133,9 +135,6 @@ class UserMappingView(PGChildNodeView):
     * properties(gid, sid, did, fid, fsid, umid)
       - This function will show the properties of the selected user mapping node
 
-    * tokenizeOptions(option_value)
-      - This function will tokenize the string stored in database
-
     * update(gid, sid, did, fid, fsid, umid)
       - This function will update the data for the selected user mapping node
 
@@ -216,11 +215,15 @@ class UserMappingView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
+            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                kwargs['sid']
+            )
             self.conn = self.manager.connection(did=kwargs['did'])
 
             # Set the template path for the SQL scripts
-            self.template_path = 'user_mappings/sql/#{0}#'.format(self.manager.version)
+            self.template_path = 'user_mappings/sql/#{0}#'.format(
+                self.manager.version
+            )
 
             return f(*args, **kwargs)
 
@@ -239,7 +242,8 @@ class UserMappingView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -265,7 +269,8 @@ class UserMappingView(PGChildNodeView):
         """
 
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fsid=fsid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
         if not status:
@@ -318,25 +323,6 @@ class UserMappingView(PGChildNodeView):
 
         return gone(gettext("Could not find the specified user mapping."))
 
-    def tokenizeOptions(self, option_value):
-        """
-        This function will tokenize the string stored in database
-        e.g. database store the value as below
-        key1=value1, key2=value2, key3=value3, ....
-        This function will extract key and value from above string
-
-        Args:
-            option_value: key value option/value pair read from database
-        """
-
-        if option_value is not None:
-            option_str = option_value.split(',')
-            um_options = []
-            for um_option in option_str:
-                k, v = um_option.split('=', 1)
-                um_options.append({'umoption': k, 'umvalue': v})
-            return um_options
-
     @check_precondition
     def properties(self, gid, sid, did, fid, fsid, umid):
         """
@@ -351,7 +337,8 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              umid=umid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -363,8 +350,10 @@ class UserMappingView(PGChildNodeView):
             )
 
         if res['rows'][0]['umoptions'] is not None:
-            res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
-
+            res['rows'][0]['umoptions'] = tokenize_options(
+                res['rows'][0]['umoptions'],
+                'umoption', 'umvalue'
+            )
         return ajax_response(
             response=res['rows'][0],
             status=200
@@ -401,7 +390,8 @@ class UserMappingView(PGChildNodeView):
                 )
 
         try:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fserid=fsid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
 
             if not status:
@@ -409,28 +399,22 @@ class UserMappingView(PGChildNodeView):
 
             fdw_data = res1['rows'][0]
 
-            new_list = []
-
+            is_valid_options = False
             if 'umoptions' in data:
-                for item in data['umoptions']:
-                    new_dict = {}
-                    if item['umoption']:
-                        if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
-                            new_dict.update(item);
-                        else:
-                            new_dict.update({'umoption': item['umoption'], 'umvalue': ''})
+                is_valid_options, data['umoptions'] = validate_options(
+                    data['umoptions'], 'umoption', 'umvalue'
+                )
 
-                    new_list.append(new_dict)
-
-                data['umoptions'] = new_list
-
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, fdwdata=fdw_data,
+                                  is_valid_options=is_valid_options,
                                   conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), fsid=fsid, data=data,
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fsid=fsid, data=data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
             if not status:
@@ -507,7 +491,8 @@ class UserMappingView(PGChildNodeView):
 
         try:
             # Get name of foreign server from fsid
-            sql = render_template("/".join([self.template_path, 'delete.sql']), fsid=fsid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  fsid=fsid, conn=self.conn)
             status, name = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=name)
@@ -524,7 +509,8 @@ class UserMappingView(PGChildNodeView):
                     )
                 )
 
-            sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -541,7 +527,8 @@ class UserMappingView(PGChildNodeView):
             data = res['rows'][0]
 
             # drop user mapping
-            sql = render_template("/".join([self.template_path, 'delete.sql']), data=data, name=name, cascade=cascade,
+            sql = render_template("/".join([self.template_path, 'delete.sql']),
+                                  data=data, name=name, cascade=cascade,
                                   conn=self.conn)
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -614,90 +601,68 @@ class UserMappingView(PGChildNodeView):
         ]
 
         if umid is not None:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
             if res['rows'][0]['umoptions'] is not None:
-                res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
-
+                res['rows'][0]['umoptions'] = tokenize_options(
+                    res['rows'][0]['umoptions'],
+                    'umoption', 'umvalue'
+                )
             old_data = res['rows'][0]
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
-        status, res1 = self.conn.execute_dict(sql)
-        if not status:
-            return internal_server_error(errormsg=res1)
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fserid=fsid, conn=self.conn)
+            status, res1 = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res1)
 
-        fdw_data = res1['rows'][0]
+            fdw_data = res1['rows'][0]
 
-        for arg in required_args:
-            if arg not in data:
-                data[arg] = old_data[arg]
+            for arg in required_args:
+                if arg not in data:
+                    data[arg] = old_data[arg]
 
-                new_list_add = []
-                new_list_change = []
+            # Allow user to set the blank value in fdwvalue field in option model
+            is_valid_added_options = is_valid_changed_options = False
+            if 'umoptions' in data and 'added' in data['umoptions']:
+                is_valid_added_options, data['umoptions']['added'] = validate_options(
+                    data['umoptions']['added'], 'umoption', 'umvalue'
+                )
+            if 'umoptions' in data and 'changed' in data['umoptions']:
+                is_valid_changed_options, data['umoptions']['changed'] = validate_options(
+                    data['umoptions']['changed'], 'umoption', 'umvalue'
+                )
 
-                # Allow user to set the blank value in fdwvalue field in option model
-                if 'umoptions' in data and 'added' in data['umoptions']:
-                    for item in data['umoptions']['added']:
-                        new_dict_add = {}
-                        if item['umoption']:
-                            if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
-                                new_dict_add.update(item);
-                            else:
-                                new_dict_add.update({'umoption': item['umoption'], 'umvalue': ''})
+            sql = render_template("/".join([self.template_path, 'update.sql']),
+                                  data=data, o_data=old_data,
+                                  is_valid_added_options=is_valid_added_options,
+                                  is_valid_changed_options=is_valid_changed_options,
+                                  fdwdata=fdw_data, conn=self.conn)
+            return sql, data['name'] if 'name' in data else old_data['name']
+        else:
+            sql = render_template("/".join([self.template_path, 'properties.sql']),
+                                  fserid=fsid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+            fdw_data = res['rows'][0]
 
-                        new_list_add.append(new_dict_add)
+            is_valid_options = False
+            if 'umoptions' in data:
+                is_valid_options, data['umoptions'] = validate_options(
+                    data['umoptions'], 'umoption', 'umvalue'
+                )
 
-                    data['umoptions']['added'] = new_list_add
-
-                # Allow user to set the blank value in fdwvalue field in option model
-                if 'umoptions' in data and 'changed' in data['umoptions']:
-                    for item in data['umoptions']['changed']:
-                        new_dict_change = {}
-                        if item['umoption']:
-                            if 'umvalue' in item and item['umvalue'] and item['umvalue'] != '':
-                                new_dict_change.update(item);
-                            else:
-                                new_dict_change.update({'umoption': item['umoption'], 'umvalue': ''})
-
-                        new_list_change.append(new_dict_change)
-
-                    data['umoptions']['changed'] = new_list_change
-
-                sql = render_template("/".join([self.template_path, 'update.sql']), data=data, o_data=old_data,
-                                      fdwdata=fdw_data, conn=self.conn)
-                return sql, data['name'] if 'name' in data else old_data['name']
-            else:
-                sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
-                fdw_data = res['rows'][0]
-
-                new_list = []
-
-                if 'umoptions' in data:
-                    for item in data['umoptions']:
-                        new_dict = {}
-                        if item['umoption']:
-                            if 'umvalue' in item and item['umvalue'] \
-                                    and item['umvalue'] != '':
-                                new_dict.update(item);
-                            else:
-                                new_dict.update(
-                                    {'umoption': item['umoption'],
-                                     'umvalue': ''}
-                                )
-                        new_list.append(new_dict)
-
-                    data['umoptions'] = new_list
-
-                sql = render_template("/".join([self.template_path, 'create.sql']), data=data, fdwdata=fdw_data,
-                                      conn=self.conn)
-                sql += "\n"
-            return sql, data['name']
+            sql = render_template("/".join([self.template_path, 'create.sql']),
+                                  data=data, fdwdata=fdw_data,
+                                  is_valid_options=is_valid_options,
+                                  conn=self.conn)
+            sql += "\n"
+        return sql, data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid, umid):
@@ -713,15 +678,24 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), umid=umid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              umid=umid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
+        is_valid_options = False
         if res['rows'][0]['umoptions'] is not None:
-            res['rows'][0]['umoptions'] = self.tokenizeOptions(res['rows'][0]['umoptions'])
+            res['rows'][0]['umoptions'] = tokenize_options(
+                res['rows'][0]['umoptions'],
+                'umoption', 'umvalue'
+            )
+            if len(res['rows'][0]['umoptions']) > 0:
+                is_valid_options = True
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']), fserid=fsid, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'properties.sql']),
+                              fserid=fsid, conn=self.conn
+                              )
         status, res1 = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res1)
@@ -729,7 +703,9 @@ class UserMappingView(PGChildNodeView):
         fdw_data = res1['rows'][0]
 
         sql = ''
-        sql = render_template("/".join([self.template_path, 'create.sql']), data=res['rows'][0], fdwdata=fdw_data,
+        sql = render_template("/".join([self.template_path, 'create.sql']),
+                              data=res['rows'][0], fdwdata=fdw_data,
+                              is_valid_options=is_valid_options,
                               conn=self.conn)
         sql += "\n"
 
@@ -743,7 +719,7 @@ class UserMappingView(PGChildNodeView):
 
         sql = sql_header + sql
 
-        return ajax_response(response=sql)
+        return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
     def dependents(self, gid, sid, did, fid, fsid, umid):

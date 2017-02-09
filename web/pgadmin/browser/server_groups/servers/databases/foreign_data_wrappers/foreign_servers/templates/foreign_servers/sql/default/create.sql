@@ -9,15 +9,9 @@ CREATE SERVER {{ conn|qtIdent(data.name) }}{% if data.fsrvtype %}
 
     FOREIGN DATA WRAPPER {{ conn|qtIdent(fdwdata.name) }}{% endif %}{% if data.fsrvoptions %}
 
-{% set addAlter = "False" %}
-{% for variable in data.fsrvoptions %}
-{% if variable.fsrvoption and variable.fsrvoption != '' %}
-{% if addAlter == "False" %}
-    OPTIONS ({% set addAlter = "True" %}{% endif %}
-{{ conn|qtIdent(variable.fsrvoption) }} {{variable.fsrvvalue|qtLiteral}}{% if not loop.last %},{% else %}){% endif %}
-{% endif %}
-{% endfor %}
-{% endif %}{% if data %};{% endif %}
+{% if is_valid_options %}
+    OPTIONS ({% for variable in data.fsrvoptions %}{% if loop.index != 1 %}, {% endif %}
+{{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}){% endif %}{% endif %};
 
 {# ============= Set the owner for foreign server ============= #}
 {% if data.fsrvowner %}

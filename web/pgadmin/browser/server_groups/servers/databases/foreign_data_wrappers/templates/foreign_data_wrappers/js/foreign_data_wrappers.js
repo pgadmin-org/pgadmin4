@@ -6,6 +6,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
     var OptionsModel = pgBrowser.Node.Model.extend({
+        idAttribute: 'fdwoption',
         defaults: {
           fdwoption: undefined,
           fdwvalue: undefined

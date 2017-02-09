@@ -25,44 +25,30 @@ COMMENT ON SERVER {{ conn|qtIdent(data.name) }}
 
 {% endif %}
 {# ============= Update foreign server options and values ============= #}
-{% if data.fsrvoptions and data.fsrvoptions.deleted %}
-{% set addAlter = "False" %}
-{% for variable in data.fsrvoptions.deleted %}
-{% if variable.fsrvoption and variable.fsrvoption != '' %}
-{% if addAlter == "False" %}
+{% if data.fsrvoptions and data.fsrvoptions.deleted and data.fsrvoptions.deleted|length > 0 %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{%endif%}
-DROP {{conn|qtIdent(variable.fsrvoption)}}{% if not loop.last %},{% else %});{% endif %}
-{% endif %}
-{% endfor %}
-
+    OPTIONS ({% for variable in data.fsrvoptions.deleted %}{% if loop.index != 1 %}, {% endif %}
+DROP {{ conn|qtIdent(variable.fsrvoption) }}{% endfor %}
+);
 
 {% endif %}
 {% if data.fsrvoptions and data.fsrvoptions.added %}
-{% set addAlter = "False" %}
-{% for variable in data.fsrvoptions.added %}
-{% if variable.fsrvoption and variable.fsrvoption != '' %}
-{% if addAlter == "False" %}
+{% if is_valid_added_options %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{%endif%}
-ADD {{ conn|qtIdent(variable.fsrvoption) }} {{variable.fsrvvalue|qtLiteral}}{% if not loop.last %},{% else %});{% endif %}
+    OPTIONS ({% for variable in data.fsrvoptions.added %}{% if loop.index != 1 %}, {% endif %}
+ADD {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}
+);
+
 {% endif %}
-{% endfor %}
-
-
 {% endif %}
 {% if data.fsrvoptions and data.fsrvoptions.changed %}
-{% set addAlter = "False" %}
-{% for variable in data.fsrvoptions.changed %}
-{% if variable.fsrvoption and variable.fsrvoption != '' %}
-{% if addAlter == "False" %}
+{% if is_valid_changed_options %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
-    OPTIONS ({% set addAlter = "True" %}{%endif%}
-SET {{conn|qtIdent(variable.fsrvoption)}} {{variable.fsrvvalue|qtLiteral}}{% if not loop.last %},{% else %});{% endif %}
+    OPTIONS ({% for variable in data.fsrvoptions.changed %}{% if loop.index != 1 %}, {% endif %}
+SET {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}
+);
+
 {% endif %}
-{% endfor %}
-
-
 {% endif %}
 {# Change the privileges #}
 {% if data.fsrvacl %}
