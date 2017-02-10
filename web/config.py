@@ -104,7 +104,7 @@ DEBUG = False
 #   DEBUG    10
 #   NOTSET    0
 CONSOLE_LOG_LEVEL = WARNING
-FILE_LOG_LEVEL = INFO
+FILE_LOG_LEVEL = WARNING
 
 # Log format.
 CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
