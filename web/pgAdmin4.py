@@ -75,6 +75,17 @@ if __name__ == '__main__':
         print("Starting %s. Please navigate to http://%s:%d in your browser." %
               (config.APP_NAME, config.DEFAULT_SERVER, server_port))
         sys.stdout.flush()
+    else:
+        # For unknown reason the Qt runtime does not pass the environment
+        # variables (i.e. PYTHONHOME, and PYTHONPATH), to the Python
+        # sub-processes, leading to failures executing background processes.
+        #
+        # This has been observed only on windows. On *nix systems, it is likely
+        # picking the system python environment, which is good enough to run
+        # the process-executor.
+        #
+        # Setting PYTHONHOME launch them properly.
+        os.environ['PYTHONHOME'] = sys.prefix
 
     try:
         app.run(
