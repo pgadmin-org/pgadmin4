@@ -30,7 +30,8 @@ APP_ICON = 'icon-postgres-alt'
 # If you change any of APP_RELEASE, APP_REVISION or APP_SUFFIX, then you
 # must also change APP_VERSION_INT to match.
 #
-# Any changes made here must also be made in runtime/pgAdmin4.pro
+# Any changes made here must also be made in runtime/pgAdmin4.pro and
+# runtime/Info.plist
 #
 
 # Application version number components
