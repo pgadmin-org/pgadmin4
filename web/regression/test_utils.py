@@ -428,7 +428,7 @@ class Database:
         self.connection = None
 
     def __enter__(self):
-        self.name = "test_db_{}".format(str(uuid.uuid4())[0:7])
+        self.name = "test_db_{0}".format(str(uuid.uuid4())[0:7])
         self.maintenance_connection = get_db_connection(self.server['db'],
                                                         self.server['username'],
                                                         self.server['db_password'],
