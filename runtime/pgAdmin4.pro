@@ -7,6 +7,8 @@ QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2017, The pgAdmin Development Team"
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
+
+    # Users can force the use of WebKit in Qt5, e.g. qmake "DEFINES += PGADMIN4_USE_WEBKIT"
     contains(DEFINES, PGADMIN4_USE_WEBKIT) {
         message(Forcing use of QWebKit...)
         message()
