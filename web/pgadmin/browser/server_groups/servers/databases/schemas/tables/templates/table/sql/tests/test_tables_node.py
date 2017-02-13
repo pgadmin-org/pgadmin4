@@ -1,4 +1,5 @@
 import os
+import sys
 
 from jinja2 import BaseLoader
 from jinja2 import Environment
@@ -6,6 +7,8 @@ from jinja2 import Environment
 from pgadmin.utils.route import BaseTestGenerator
 from regression import test_utils
 
+if sys.version_info[0] >= 3:
+    long = int
 
 class TestTablesNode(BaseTestGenerator):
     def runTest(self):
@@ -48,7 +51,7 @@ class TestTablesNode(BaseTestGenerator):
                 self.assertIsNotNone(long(oid))
                 self.assertEqual('test_table', name)
                 # triggercount is sometimes returned as a string for some reason
-                self.assertEqual(0L, long(triggercount))
+                self.assertEqual(0, long(triggercount))
                 self.assertIsNotNone(long(has_enable_triggers))
 
 
