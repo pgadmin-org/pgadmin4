@@ -1404,6 +1404,15 @@ table.backgrid {
   background: #EEEEEE;
 }
 
+/* make syntax-highlighting bold */
+.cm-s-default .cm-keyword {
+  font-weight: 600;
+}
+
+.cm-s-default .cm-number {
+  font-weight: 600;
+}
+
 .pgadmin-controls.sql_field_layout {
   margin: 0;
   padding: 0;
