@@ -13,7 +13,7 @@
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 #include <QtWebEngineWidgets>
 #else
 #include <QtWebKitWidgets>
@@ -57,7 +57,7 @@ BrowserWindow::BrowserWindow(QString url)
     m_last_open_folder_path = "";
     m_dir = "";
     m_reply = NULL;
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     m_download = NULL;
 #endif
 
@@ -73,7 +73,7 @@ BrowserWindow::BrowserWindow(QString url)
     m_tabGridLayout = new QGridLayout(m_pgAdminMainTab);
     m_tabGridLayout->setContentsMargins(0, 0, 0, 0);
     m_mainWebView = new WebViewWindow(m_pgAdminMainTab);
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     m_mainWebView->setPage(new WebEnginePage());
 #endif
 
@@ -81,7 +81,7 @@ BrowserWindow::BrowserWindow(QString url)
     // If pgAdmin4 is run in debug mode, then we should enable the
     // "Inspect" option, when the user right clicks on QWebView widget.
     // This option is useful to debug the pgAdmin4 desktop application and open the developer tools.
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     // With QWebEngine, run with QTWEBENGINE_REMOTE_DEBUGGING=<port> and then point Google
     // Chrome at 127.0.0.1:<port> to debug the runtime's web engine
 #else
@@ -103,7 +103,7 @@ BrowserWindow::BrowserWindow(QString url)
 
     connect(m_mainWebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     // Register the slot when click on the URL link for QWebEnginePage
     connect(m_mainWebView->page(), SIGNAL(createTabWindow(QWebEnginePage * &)),SLOT(createNewTabWindow(QWebEnginePage * &)));
 #else
@@ -115,7 +115,7 @@ BrowserWindow::BrowserWindow(QString url)
     connect(m_tabWidget,SIGNAL(currentChanged(int )),this,SLOT(tabIndexChanged(int )));
 
     // Listen for download file request from the web page
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     // Register downloadRequested signal of QWenEngineProfile to start download file to client side.
     connect(m_mainWebView->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(downloadRequested(QWebEngineDownloadItem*)));
 #else
@@ -198,7 +198,7 @@ void BrowserWindow::createActions()
     connect(zoomOutShortcut, SIGNAL(activated()), this, SLOT(zoomOut()));
 
 #ifdef __APPLE__
-  #if QT_VERSION >= 0x050500
+  #ifdef PGADMIN4_USE_WEBENGINE
     QShortcut *cut_shortcut = new QShortcut(QKeySequence("Ctrl+X"), this);
     QObject::connect(cut_shortcut, SIGNAL(activated()), this, SLOT(onMacCut()));
 
@@ -213,7 +213,7 @@ void BrowserWindow::createActions()
 }
 
 #ifdef __APPLE__
-  #if QT_VERSION >= 0x050500
+  #ifdef PGADMIN4_USE_WEBENGINE
 // Find current tab widget's webview widget and trigger the respective events of web page
 void BrowserWindow::triggerWebViewWindowEvents(QWebEnginePage::WebAction action)
 {
@@ -335,7 +335,7 @@ int BrowserWindow::findURLTab(const QUrl &name)
     return 0;
 }
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 // Below slot will be called when user start download (Only for QWebEngine. Qt version >= 5.5)
 void BrowserWindow::downloadRequested(QWebEngineDownloadItem *download)
 {
@@ -493,14 +493,14 @@ void BrowserWindow::download(const QNetworkRequest &request)
         QObject *obj_web_page = QObject::sender();
         if (obj_web_page != NULL)
         {
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
             WebEnginePage *sender_web_page = dynamic_cast<WebEnginePage*>(obj_web_page);
 #else
             QWebPage *sender_web_page = dynamic_cast<QWebPage*>(obj_web_page);
 #endif
             if (sender_web_page != NULL)
             {
-#if QT_VERSION < 0x050500
+#ifdef PGADMIN4_USE_WEBKIT
                 QNetworkAccessManager *networkManager = sender_web_page->networkAccessManager();
                 QNetworkReply *reply = networkManager->get(newRequest);
                 if (reply != NULL)
@@ -518,7 +518,7 @@ void BrowserWindow::download(const QNetworkRequest &request)
     }
 }
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 // Below slot will be called when file download is in progress ( Only for QWebEngine Qt version >= 5.5 )
 void BrowserWindow::downloadEngineFileProgress(qint64 readData, qint64 totalData)
 {
@@ -636,7 +636,7 @@ void BrowserWindow::progressCanceled()
         m_progressDialog = NULL;
     }
 
-#if QT_VERSION < 0x050500
+#ifdef PGADMIN4_USE_WEBKIT
     if (m_file)
     {
         m_file->close();
@@ -660,8 +660,8 @@ void BrowserWindow::progressCanceled()
     m_downloadStarted = 0;
 }
 
-#if QT_VERSION >= 0x050500
-// Below slot will called when file download is finished ( Only for QWebEngine, Qt version >= 5.5 )
+#ifdef PGADMIN4_USE_WEBENGINE
+// Below slot will called when file download is finished (Only for QWebEngine)
 void BrowserWindow::downloadEngineFinished()
 {
     // Check download finished state.
@@ -955,7 +955,7 @@ void BrowserWindow::current_dir_path(const QString &dir)
     settings.setValue("Browser/LastSaveLocation", m_last_open_folder_path);
 }
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 // Below slot will be called when link is required to open in new tab.
 void BrowserWindow::createNewTabWindow(QWebEnginePage * &p)
 {
@@ -1037,7 +1037,7 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
         m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
 
         // Listen for the download request from the web page
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
         connect(m_addNewWebView->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(downloadRequested(QWebEngineDownloadItem*)));
 #else
         m_addNewWebView->page()->setForwardUnsupportedContent(true);

@@ -15,7 +15,7 @@
 #include "pgAdmin4.h"
 
 #if QT_VERSION >= 0x050000
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 #include <QtWebEngineWidgets>
 #else
 #include <QtWebKitWidgets>
@@ -25,7 +25,7 @@
 #endif
 
 // Override QWebEnginePage to handle link delegation
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 class WebEnginePage : public QWebEnginePage
 {
     Q_OBJECT
@@ -38,7 +38,7 @@ signals:
 };
 #endif
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 class WebViewWindow : public QWebEngineView
 #else
 class WebViewWindow : public QWebView

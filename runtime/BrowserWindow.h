@@ -18,14 +18,14 @@
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 #include <QtWebEngineWidgets>
 #else
 #include <QtWebKitWidgets>
 #endif
 #else
 #include <QMainWindow>
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 #include <QtWebEngineView>
 #else
 #include <QWebView>
@@ -53,7 +53,7 @@ protected slots:
     void closetabs();
     void tabTitleChanged(const QString &);
 #ifdef __APPLE__
-  #if QT_VERSION >= 0x050500
+  #ifdef PGADMIN4_USE_WEBENGINE
     void onMacCut();
     void onMacCopy();
     void onMacPaste();
@@ -66,7 +66,7 @@ private slots:
     void about();
     void zoomIn();
     void zoomOut();
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     void downloadRequested(QWebEngineDownloadItem *download);
 #endif
 
@@ -80,7 +80,7 @@ public slots:
     void downloadFileProgress(qint64 , qint64 );
     void progressCanceled();
     void current_dir_path(const QString &dir);
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     void createNewTabWindow(QWebEnginePage * &);
     void downloadEngineFileProgress(qint64 , qint64 );
     void downloadEngineFinished();
@@ -121,7 +121,7 @@ private:
     QString m_last_open_folder_path;
     QString m_dir;
     QNetworkReply *m_reply;
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     QWebEngineDownloadItem *m_download;
 #endif
 
@@ -130,7 +130,7 @@ private:
     int  findURLTab(const QUrl &name);
 
 #ifdef __APPLE__
-  #if QT_VERSION >= 0x050500
+  #ifdef PGADMIN4_USE_WEBENGINE
     void triggerWebViewWindowEvents(QWebEnginePage::WebAction action);
   #endif
 #endif

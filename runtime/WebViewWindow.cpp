@@ -15,7 +15,7 @@
 #include "WebViewWindow.h"
 
 // Override QWebEnginePage to handle link delegation
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 bool WebEnginePage::acceptNavigationRequest(const QUrl & url, NavigationType type, bool isMainFrame)
 {
     Q_UNUSED(type);
@@ -38,7 +38,7 @@ QWebEnginePage *WebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
 #endif
 
 WebViewWindow::WebViewWindow(QWidget *parent) :
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
     QWebEngineView(parent)
 #else
     QWebView(parent)

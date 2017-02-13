@@ -7,23 +7,42 @@ QMAKE_TARGET_COPYRIGHT = "Copyright 2013 - 2017, The pgAdmin Development Team"
 # Configure QT modules for the appropriate version of QT
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Building for QT5+...)
-    greaterThan(QT_MINOR_VERSION, 4) {
-        message(Using QWebEngine...)
-        QT += webenginewidgets network widgets
-    } else {
-        message(Using QWebKit...)
+    contains(DEFINES, PGADMIN4_USE_WEBKIT) {
+        message(Forcing use of QWebKit...)
         message()
         message(************************************** WARNING **************************************)
         message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
         message(*************************************************************************************)
         message()
         QT += webkitwidgets network widgets
-    }
-    win32 {
-      RC_ICONS += pgAdmin4.ico
+    } else {
+        greaterThan(QT_MINOR_VERSION, 4) {
+            message(Using QWebEngine...)
+            DEFINES += PGADMIN4_USE_WEBENGINE
+            QT += webenginewidgets network widgets
+        } else {
+            message(Using QWebKit...)
+            message()
+            message(************************************** WARNING **************************************)
+            message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
+            message(*************************************************************************************)
+            message()
+            DEFINES *= PGADMIN4_USE_WEBKIT
+            QT += webkitwidgets network widgets
+        }
+        win32 {
+          RC_ICONS += pgAdmin4.ico
+        }
     }
 } else { 
     message(Building for QT4...)
+    message(Using QWebKit...)
+    message()
+    message(************************************** WARNING **************************************)
+    message(* It is strongly advised that Qt 5.5.0 or later is used to build the pgAdmin runtime.)
+    message(*************************************************************************************)
+    message()
+    DEFINES += PGADMIN4_USE_WEBKIT
     QT += webkit network
     win32 {
       RC_FILE += pgAdmin4.rc

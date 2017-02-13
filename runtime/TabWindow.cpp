@@ -14,7 +14,7 @@
 // App headers
 #include "TabWindow.h"
 
-#if QT_VERSION >= 0x050500
+#ifdef PGADMIN4_USE_WEBENGINE
 #include <QWebEngineHistory>
 #else
 #include <QWebHistory>
