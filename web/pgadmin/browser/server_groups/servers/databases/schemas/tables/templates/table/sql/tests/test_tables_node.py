@@ -38,7 +38,7 @@ class TestTablesNode(BaseTestGenerator):
                 for index, description in enumerate(cursor.description):
                     first_row[description.name] = fetch_result[0][index]
 
-                print first_row
+                print (first_row)
 
                 oid = first_row['oid']
                 name = first_row['name']
