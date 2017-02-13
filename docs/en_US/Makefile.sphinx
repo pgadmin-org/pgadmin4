@@ -2,6 +2,7 @@
 #
 
 # You can set these variables from the command line.
+PYTHON        = python
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
@@ -18,7 +19,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # development environment).
 code_snippet:
 	@echo "Generating code-snippet.rst for some of the important classes..."
-	-@python build_code_snippet.py
+	-@$(PYTHON) build_code_snippet.py
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
