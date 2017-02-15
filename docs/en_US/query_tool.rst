@@ -128,11 +128,6 @@ The editor also offers several features that help with code formatting:
 
 * The auto-indent feature will automatically indent text to the same depth as the previous line when you press the Return key.
 * Block indent text by selecting two or more lines and pressing the Tab key.
-* Block outdent text that has been indented using the Shift+Tab key combination.
-* Comment out SQL by selecting some text and pressing Control+K.
-* Uncomment SQL by selecting some text starting with a comment and pressing Control+Shift+K.
-* Shift the selected text to upper case by pressing Control+U.
-* Shift the selected text to lower case by pressing Control+Shift+U.
 
 **The Data Output Panel**
 
