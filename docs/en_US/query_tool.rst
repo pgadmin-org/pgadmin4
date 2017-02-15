@@ -139,7 +139,6 @@ The *Data Output* panel organizes output through the following tabs: *Data Outpu
 
 If the Query tool is opened through the *Query tool* menu option on the *Tools* menu, you can use the *Data Output* tab to view the results of an arbitrary query in a table format. If the Query tool is opened through a *View Data* context menu, the *Data Output* tab will display the data stored in the table from which the Query tool was opened.
 
-* Click a column header to sort data by that column. Click again to reverse the sorting order.
 * If enabled, use the *Filter* options from the Query tool toolbar to refine the result set displayed on the *Data Output* tab.
 * If enabled, use the *No limit* drop-down to specify how many rows to display on the *Data Output* tab.
 * If enabled, use the *Execute/Refresh* options to retrieve query execution information and set query execution options.
