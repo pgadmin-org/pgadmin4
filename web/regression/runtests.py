@@ -138,12 +138,20 @@ def get_test_modules(arguments):
 
     from pgadmin.utils.route import TestsGeneratorRegistry
 
+    exclude_pkgs = []
+
+    if not config.SERVER_MODE:
+        exclude_pkgs.append("browser.tests")
+    if arguments['exclude'] is not None:
+        exclude_pkgs += arguments['exclude'].split(',')
+
     # Load the test modules which are in given package(i.e. in arguments.pkg)
     if arguments['pkg'] is None or arguments['pkg'] == "all":
-        TestsGeneratorRegistry.load_generators('pgadmin')
+        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
     else:
-        TestsGeneratorRegistry.load_generators('pgadmin.%s.tests' %
-                                               arguments['pkg'])
+        TestsGeneratorRegistry.load_generators('pgadmin.%s' %
+                                               arguments['pkg'],
+                                               exclude_pkgs)
 
     # Sort module list so that test suite executes the test cases sequentially
     module_list = TestsGeneratorRegistry.registry.items()
@@ -163,7 +171,9 @@ def add_arguments():
 
     parser = argparse.ArgumentParser(description='Test suite for pgAdmin4')
     parser.add_argument('--pkg', help='Executes the test cases of particular'
-                                      ' package')
+                                      ' package and subpackages')
+    parser.add_argument('--exclude', help='Skips execution of the test '
+                                          'cases of particular package and sub-packages')
     arg = parser.parse_args()
 
     return arg
@@ -268,7 +278,7 @@ if __name__ == '__main__':
             print("\n=============Running the test cases for '%s'============="
                   % server['name'], file=sys.stderr)
             # Create test server
-            test_utils.create_parent_server_node(server, node_name)
+            test_utils.create_parent_server_node(server)
 
             suite = get_suite(test_module_list, server, test_client)
             tests = unittest.TextTestRunner(stream=sys.stderr,
@@ -284,7 +294,7 @@ if __name__ == '__main__':
                 failure = True
 
             # Delete test server
-            # test_utils.delete_test_server(test_client)
+            test_utils.delete_test_server(test_client)
     except SystemExit:
         drop_objects()
 

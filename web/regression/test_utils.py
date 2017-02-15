@@ -230,53 +230,30 @@ def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
                                                   "schema_name": schema_name})
 
 
-def create_parent_server_node(server_info, node_name):
+def create_parent_server_node(server_info):
     """
     This function create the test server which will act as parent server,
     the other node will add under this server
     :param server_info: server details
     :type server_info: dict
-    :param node_name: node name
-    :type node_name: str
     :return: None
     """
     srv_id = create_server(server_info)
-    if node_name == "databases":
-        # Create test database
-        test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
-        db_id = create_database(server_info, test_db_name)
-        add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
-    elif node_name == "schemas":
-        test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
-        db_id = create_database(server_info, test_db_name)
-        add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
-        # Create schema
-        schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
-        connection = get_db_connection(test_db_name,
-                                       server_info['username'],
-                                       server_info['db_password'],
-                                       server_info['host'],
-                                       server_info['port'])
+    # Create database
+    test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
+    db_id = create_database(server_info, test_db_name)
+    add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
+    # Create schema
+    schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
+    connection = get_db_connection(test_db_name,
+                                   server_info['username'],
+                                   server_info['db_password'],
+                                   server_info['host'],
+                                   server_info['port'])
 
-        schema = regression.schema_utils.create_schema(connection, schema_name)
-        add_schema_to_parent_node_dict(srv_id, db_id, schema[0],
-                                       schema[1])
-    elif node_name not in ["servers", "roles", "tablespaces", "browser"]:
-        # Create test database
-        test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
-        db_id = create_database(server_info, test_db_name)
-        add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
-        # Create schema
-        schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
-        connection = get_db_connection(test_db_name,
-                                       server_info['username'],
-                                       server_info['db_password'],
-                                       server_info['host'],
-                                       server_info['port'])
-
-        schema = regression.schema_utils.create_schema(connection, schema_name)
-        add_schema_to_parent_node_dict(srv_id, db_id, schema[0],
-                                       schema[1])
+    schema = regression.schema_utils.create_schema(connection, schema_name)
+    add_schema_to_parent_node_dict(srv_id, db_id, schema[0],
+                                   schema[1])
 
 
 def delete_test_server(tester):

@@ -54,27 +54,23 @@ class TestsGeneratorRegistry(ABCMeta):
         ABCMeta.__init__(cls, name, bases, d)
 
     @classmethod
-    def load_generators(cls, pkg):
+    def load_generators(cls, pkg_root, exclude_pkgs):
 
         cls.registry = dict()
 
+        all_modules = []
+
+        all_modules += find_modules(pkg_root, False, True)
+
         # Check for SERVER mode
-        if config.SERVER_MODE:
-            for module_name in find_modules(pkg, False, True):
-                try:
-                    if "tests." in str(module_name):
-                        import_module(module_name)
-                except ImportError:
-                    traceback.print_exc(file=sys.stderr)
-        else:
-            for module_name in find_modules(pkg, False, True):
-                try:
-                    # Exclude the test cases in browser node if SERVER_MODE
-                    # is False
-                    if "pgadmin.browser.tests" not in module_name:
-                        import_module(module_name)
-                except ImportError:
-                    traceback.print_exc(file=sys.stderr)
+        for module_name in all_modules:
+            try:
+                if "tests." in str(module_name) and not any(
+                        str(module_name).startswith('pgadmin.' + str(exclude_pkg)) for exclude_pkg in exclude_pkgs
+                ):
+                    import_module(module_name)
+            except ImportError:
+                traceback.print_exc(file=sys.stderr)
 
 
 import six

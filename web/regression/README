@@ -115,10 +115,26 @@ Execution:
      run 'python runtests.py --pkg all' or just:
          'python runtests.py'
 
+- Execute test framework for entire package
+
+     Example 1) Run test framework for 'browser' package
+     run 'python runtests.py --pkg browser'
+
+     Example 2) Run test framework for 'database' package
+     run 'python runtests.py --pkg browser.server_groups.servers.databases'
+
 - Execute test framework for single node at a time
 
      Example 1) Run test framework for 'browser' node
-     run 'python runtests.py --pkg browser'
+     run 'python runtests.py --pkg browser.tests'
 
      Example 2) Run test framework for 'database' node
-     run 'python runtests.py --pkg browser.server_groups.servers.databases'
+     run 'python runtests.py --pkg browser.server_groups.servers.databases.tests'
+
+- Exclude a package and its subpackages when running tests:
+
+    Example: exclude acceptance tests but run all others:
+    run 'python runtests.py --exclude acceptance'
+
+    Example: exclude multiple packages:
+    run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
