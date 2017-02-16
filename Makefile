@@ -46,4 +46,7 @@ clean-docs:
 clean-dist:
 	rm -rf dist/
 
+check:
+	python web/regression/runtests.py
+
 .PHONY: docs
