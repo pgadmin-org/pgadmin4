@@ -29,9 +29,13 @@ def encrypt(plaintext, key):
 
     iv = Random.new().read(AES.block_size)
     cipher = AES.new(pad(key), AES.MODE_CFB, iv)
-    excrypted = base64.b64encode(iv + cipher.encrypt(plaintext))
+    # If user has entered non ascii password (Python2)
+    # we have to encode it first
+    if hasattr(str, 'decode'):
+        plaintext = plaintext.encode('utf-8')
+    encrypted = base64.b64encode(iv + cipher.encrypt(plaintext))
 
-    return excrypted
+    return encrypted
 
 
 def decrypt(ciphertext, key):
@@ -99,8 +103,15 @@ def pqencryptpassword(password, user):
 
     # Place salt at the end because it may be known by users trying to crack
     # the MD5 output.
+    # Handling of non-ascii password (Python2)
+    if hasattr(str, 'decode'):
+        password = password.encode('utf-8')
+        user = user.encode('utf-8')
+    else:
+        password = password.encode()
+        user = user.encode()
 
-    m.update(password.encode())
-    m.update(user.encode())
+    m.update(password)
+    m.update(user)
 
     return "md5" + m.hexdigest()

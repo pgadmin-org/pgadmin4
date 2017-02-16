@@ -260,10 +260,13 @@ class Connection(BaseConnection):
 
             try:
                 password = decrypt(encpass, user.password)
-
+                # Handling of non ascii password (Python2)
+                if hasattr(str, 'decode'):
+                    password = password.decode('utf-8').encode('utf-8')
                 # password is in bytes, for python3 we need it in string
-                if isinstance(password, bytes):
+                elif isinstance(password, bytes):
                     password = password.decode()
+
             except Exception as e:
                 current_app.logger.exception(e)
                 return False, \
@@ -306,12 +309,12 @@ class Connection(BaseConnection):
                 msg = e.diag.message_detail
             else:
                 msg = str(e)
-            current_app.logger.info("""
+            current_app.logger.info(u"""
 Failed to connect to the database server(#{server_id}) for connection ({conn_id}) with error message as below:
 {msg}""".format(
                 server_id=self.manager.sid,
                 conn_id=conn_id,
-                msg=msg
+                msg=msg.decode('utf-8') if hasattr(str, 'decode') else msg
             )
             )
 

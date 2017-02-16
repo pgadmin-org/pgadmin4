@@ -584,14 +584,15 @@ class ServerNode(PGChildNodeView):
                     password=password,
                     server_types=ServerType.types()
                 )
-
+                if hasattr(str, 'decode'):
+                    errmsg = errmsg.decode('utf-8')
                 if not status:
                     db.session.delete(server)
                     db.session.commit()
                     return make_json_response(
                         status=401,
                         success=0,
-                        errormsg=gettext("Unable to connect to server:\n\n%s" % errmsg)
+                        errormsg=gettext(u"Unable to connect to server:\n\n%s" % errmsg)
                     )
                 else:
                     if 'save_password' in data and data['save_password'] and have_password:

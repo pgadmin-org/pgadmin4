@@ -505,7 +505,7 @@ class Filemanager(object):
         if not path_exists(orig_path):
             return {
                 'Code': 0,
-                'Error': gettext(u"'{}' file does not exist.".format(path))
+                'Error': gettext(u"'{0}' file does not exist.".format(path))
             }
 
         user_dir = path
@@ -599,7 +599,7 @@ class Filemanager(object):
         # Do not allow user to access outside his storage dir in server mode.
         if not orig_path.startswith(dir):
             raise Exception(
-                gettext(u"Access denied ({})".format(path)))
+                gettext(u"Access denied ({0})".format(path)))
         return True
 
     @staticmethod
@@ -690,7 +690,7 @@ class Filemanager(object):
         }
 
         if not path_exists(orig_path):
-            thefile['Error'] = gettext(u"'{}' file does not exist.".format(
+            thefile['Error'] = gettext(u"'{0}' file does not exist.".format(
                 path))
             thefile['Code'] = -1
             return thefile

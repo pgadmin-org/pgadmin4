@@ -385,9 +385,15 @@ def create_app(app_name=config.APP_NAME):
                     svr_superuser = registry.get(section, 'Superuser')
                     svr_port = registry.getint(section, 'Port')
                     svr_discovery_id = section
-                    svr_comment = gettext("Auto-detected %s installation with the data directory at %s" % (
-                        registry.get(section, 'Description'),
-                        registry.get(section, 'DataDirectory')))
+                    description = registry.get(section, 'Description')
+                    data_directory = registry.get(section, 'DataDirectory')
+                    if hasattr(str, 'decode'):
+                        description = description.decode('utf-8')
+                        data_directory = data_directory.decode('utf-8')
+                    svr_comment = gettext(u"Auto-detected %s installation with the data directory at %s" % (
+                        description,
+                        data_directory
+                    ))
                     add_server(user_id, servergroup_id, svr_name, svr_superuser, svr_port, svr_discovery_id, svr_comment)
 
         except:
