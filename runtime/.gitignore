@@ -1,6 +1,7 @@
 .qmake.cache
 .qmake.stash
 Makefile
+moc_predefs.h
 moc_BrowserWindow.cpp
 moc_ConfigWindow.cpp
 moc_Server.cpp
