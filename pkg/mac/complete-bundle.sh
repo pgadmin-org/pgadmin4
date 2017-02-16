@@ -121,6 +121,7 @@ function CompleteSingleApp() {
 				if echo $lib | grep Python > /dev/null ; then
 					fw_relpath="$fw_relpath/$pyfw_path"
 				fi
+				chmod +w $todo_obj
 				echo "Rewriting library $lib to @loader_path/$fw_relpath/$lib_bn in $todo_obj"
                                         echo install_name_tool -change "$lib" "@loader_path/$fw_relpath/$lib_bn" "$todo_obj"
 				install_name_tool -change \

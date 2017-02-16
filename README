@@ -239,6 +239,12 @@ On a Mac, build an application bundle in a disk image (DMG file) with:
 
     (pgadmin4) $ make appbundle
 
+Configure the framework.conf to match the QT and Python versions the app is
+being built with:
+
+    $ cp $PGADMIN4_SRC/pkg/mac/framework.conf.in $PGADMIN4_SRC/pkg/mac/framework.conf
+    $ vi $PGADMIN4_SRC/pkg/mac/framework.conf
+
 If you have an Apple code signing certificate, both the app bundle and disk
 image can be automatically signed by configuring signing:
 

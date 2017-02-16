@@ -1,0 +1,10 @@
+# copy this file to framework.conf, and edit the values below to reflect your environment
+# (versions of Python/Qt used)
+
+PYTHON_SHORT_VERSION=2.7
+PYTHON_FULL_VERSION=2.7.10
+
+QT_SHORT_VERSION=5.8
+QT_FULL_VERSION=5.8.0
+
+

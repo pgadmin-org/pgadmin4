@@ -8,6 +8,14 @@ export BUILDROOT=$WD/../../mac-build
 export DISTROOT=$WD/../../dist
 export VIRTUALENV=venv
 
+if [ ! -f $SOURCEDIR/pkg/mac/framework.conf ]; then
+    echo
+    echo "Error: pkg/mac/framework.conf not found!"
+    echo "Copy pkg/mac/framework.conf.in to pkg/mac/framework.conf and edit as required for the current system."
+    echo
+    exit 1
+fi
+
 if [ "x$PYTHON_HOME" == "x" ]; then
     echo "PYTHON_HOME not set. Setting it to default"
     export PYTHON_HOME=/System/Library/Frameworks/Python.framework/Versions/2.7
@@ -24,7 +32,7 @@ else
     exit 1
 fi
 
-if [ "$PYTHON_VERSION" -gt "35" -a "$PYTHON_VERSION" -lt "26" ]; then
+if [ "$PYTHON_VERSION" -gt "36" -a "$PYTHON_VERSION" -lt "26" ]; then
     echo "Python version not supported"
     exit 1
 fi
@@ -41,7 +49,7 @@ fi
 
 if [ "x$QTDIR" == "x" ]; then
     echo "QTDIR not set. Setting it to default"
-    export QTDIR=~/Qt/5.7/clang_64
+    export QTDIR=~/Qt/5.8/clang_64
 fi
 export QMAKE=$QTDIR/bin/qmake
 if ! $QMAKE --version > /dev/null 2>&1; then
@@ -175,9 +183,14 @@ _complete_bundle() {
     find . -name *.pyc | xargs rm -f
 }
 
+_framework_config() {
+    cd $SOURCEDIR/pkg/mac
+    ./framework-config.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo "framework-config.sh failed"; exit 1; }
+}
+
 _codesign_bundle() {
     cd $SOURCEDIR/pkg/mac
-    
+
     if [ ! -f codesign.conf ]; then
         echo
         echo "******************************************************************"
@@ -188,7 +201,7 @@ _codesign_bundle() {
         return
     fi
 
-    ./codesign-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo codesign-bundle.sh failed; exit 1; }    
+    ./codesign-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo codesign-bundle.sh failed; exit 1; }
 }
 
 _create_dmg() {
@@ -219,6 +232,7 @@ _cleanup
 _build_runtime || { echo Runtime build failed; exit 1; }
 _build_doc
 _complete_bundle
+_framework_config
 _codesign_bundle
 _create_dmg
 _codesign_dmg

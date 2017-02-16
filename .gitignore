@@ -19,6 +19,8 @@ _build
 build-*
 pgadmin4.log
 pkg/win32/installer.iss
+pkg/mac/codesign.conf
+pkg/mac/framework.conf
 runtime/.qmake.cache
 runtime/.qmake.stash
 runtime/Makefile

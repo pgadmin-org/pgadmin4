@@ -2,13 +2,3 @@
 # codesign.conf, and edit the value below to reflect your developer ID
 
 DEVELOPER_ID="Developer ID Application: My Name (12345ABCD)"
-
-# Edit the settings below if different versions of Python/Qt are used
-
-PYTHON_SHORT_VERSION=2.7
-PYTHON_FULL_VERSION=2.7.0
-
-QT_SHORT_VERSION=5.5
-QT_FULL_VERSION=5.5.1
-
-
