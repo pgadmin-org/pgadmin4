@@ -584,7 +584,7 @@ class ServerNode(PGChildNodeView):
                     password=password,
                     server_types=ServerType.types()
                 )
-                if hasattr(str, 'decode'):
+                if hasattr(str, 'decode') and errmsg is not None:
                     errmsg = errmsg.decode('utf-8')
                 if not status:
                     db.session.delete(server)
