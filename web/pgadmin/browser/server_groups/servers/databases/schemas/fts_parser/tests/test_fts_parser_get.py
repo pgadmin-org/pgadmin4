@@ -45,7 +45,7 @@ class FtsParserGetTestCase(BaseTestGenerator):
             self.fts_parser_name)
 
     def runTest(self):
-
+        """ This function will fetch new FTS parser under test schema. """
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,

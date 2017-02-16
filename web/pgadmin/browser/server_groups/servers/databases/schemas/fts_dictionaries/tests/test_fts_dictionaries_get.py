@@ -46,7 +46,7 @@ class FtsDictionaryGetTestCase(BaseTestGenerator):
             self.fts_dict_name)
 
     def runTest(self):
-
+        """ This function will fetch new FTS dictionaries under test schema. """
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,

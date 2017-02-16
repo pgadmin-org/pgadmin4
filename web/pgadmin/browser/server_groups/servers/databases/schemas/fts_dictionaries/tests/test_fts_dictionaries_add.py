@@ -30,7 +30,7 @@ class FtsDictionaryAddTestCase(BaseTestGenerator):
     ]
 
     def runTest(self):
-
+        """ This function will add new FTS dictionary under test schema. """
         self.schema_data = parent_node_dict['schema'][-1]
         self.schema_name = self.schema_data['schema_name']
         self.schema_id = self.schema_data['schema_id']

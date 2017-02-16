@@ -29,7 +29,7 @@ class FtsParserAddTestCase(BaseTestGenerator):
     ]
 
     def runTest(self):
-
+        """ This function will add a new FTS parser under test schema. """
         self.schema_data = parent_node_dict['schema'][-1]
         self.schema_name = self.schema_data['schema_name']
         self.schema_id = self.schema_data['schema_id']

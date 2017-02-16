@@ -44,8 +44,7 @@ class FTSConfGetTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.fts_conf_name)
 
     def runTest(self):
-        """ This function will fetch new FTS configuration under
-        test schema. """
+        """ This function will fetch new FTS configuration under test schema. """
 
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,

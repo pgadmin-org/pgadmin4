@@ -12,9 +12,7 @@ if sys.version_info[0] >= 3:
 
 class TestTablesNode(BaseTestGenerator):
     def runTest(self):
-        """
-            This tests that all applicable sql template versions can fetch table names
-        """
+        """ This tests that all applicable sql template versions can fetch table names """
         with test_utils.Database(self.server) as (connection, database_name):
             test_utils.create_table(self.server, database_name, "test_table")
 
@@ -40,8 +38,6 @@ class TestTablesNode(BaseTestGenerator):
                 first_row = {}
                 for index, description in enumerate(cursor.description):
                     first_row[description.name] = fetch_result[0][index]
-
-                print (first_row)
 
                 oid = first_row['oid']
                 name = first_row['name']

@@ -46,10 +46,7 @@ class FtsParserPutTestCase(BaseTestGenerator):
             self.fts_parser_name)
 
     def runTest(self):
-
-        """ This function will update FTS parser present under
-            test schema. """
-
+        """ This function will update FTS parser present under test schema. """
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
