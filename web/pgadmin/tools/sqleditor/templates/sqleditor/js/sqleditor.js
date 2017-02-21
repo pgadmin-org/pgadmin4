@@ -2022,7 +2022,7 @@ define(
                   else
                     col_type += ' [PK] ' + type;
 
-                  if (c.precision && c.precision != 65535) {
+                  if (c.precision && c.precision >= 0 && c.precision != 65535) {
                     col_type += ' (' + c.precision;
                     col_type += c.scale && c.scale != 65535 ?
                                 ',' + c.scale + ')':
@@ -2053,7 +2053,7 @@ define(
                     case "character[]":
                     case "character varying":
                     case "character varying[]":
-                      if (c.internal_size && c.internal_size != 65535) {
+                      if (c.internal_size && c.internal_size >= 0 && c.internal_size != 65535) {
                         // Update column type to display length on column header
                         col_type += ' (' + c.internal_size + ')';
                       }
