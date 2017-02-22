@@ -48,7 +48,7 @@ class TestsGeneratorRegistry(ABCMeta):
         # Register this type of module, based on the module name
         # Avoid registering the BaseDriver itself
 
-        if name != 'BaseTestGenerator':
+        if name != 'BaseTestGenerator' and name != 'BaseFeatureTest':
             TestsGeneratorRegistry.registry[d['__module__']] = cls
 
         ABCMeta.__init__(cls, name, bases, d)

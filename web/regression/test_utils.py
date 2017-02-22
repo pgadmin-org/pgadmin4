@@ -153,10 +153,34 @@ def create_table(server, db_name, table_name):
         traceback.print_exc(file=sys.stderr)
 
 
+def create_table(server, db_name, table_name):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''CREATE TABLE "%s" (name VARCHAR, value NUMERIC)''' % table_name)
+        pg_cursor.execute('''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def drop_database(connection, database_name):
     """This function used to drop the database"""
     if database_name not in ["postgres", "template1", "template0"]:
         pg_cursor = connection.cursor()
+
+        pg_cursor.execute(
+            "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
+            "WHERE pg_stat_activity.datname ='%s' and pid <> pg_backend_pid();" % database_name
+                          )
         pg_cursor.execute("SELECT * FROM pg_database db WHERE"
                           " db.datname='%s'" % database_name)
         if pg_cursor.fetchall():

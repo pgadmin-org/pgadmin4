@@ -1,4 +1,5 @@
 parent_id.pkl
 regression.log
+test_greenplum_config.json
 test_advanced_config.json
 test_config.json

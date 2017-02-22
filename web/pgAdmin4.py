@@ -59,6 +59,12 @@ if 'PGADMIN_PORT' in globals():
                      globals()['PGADMIN_PORT'])
     server_port = int(globals()['PGADMIN_PORT'])
     PGADMIN_RUNTIME = True
+elif 'PGADMIN_PORT' in os.environ:
+    port = os.environ['PGADMIN_PORT']
+    app.logger.debug(
+        'Not running under the desktop runtime, port: %s',
+        port)
+    server_port = int(port)
 else:
     app.logger.debug(
         'Not running under the desktop runtime, port: %s',

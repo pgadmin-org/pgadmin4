@@ -54,10 +54,10 @@ General Information
                pgadmin4/web/regression/test_config.json
 
     2b) After creating the server and test configuration file, add (or modify)
-        parameter values as per requirements. The pgAdmin4 regression framework expects
-        to find the files in the  directory '/<installation dir>/web/regression/'.
-        If you move the file to another location, you must create a symbolic
-        link that specifies the new location.
+        parameter values as per requirements. The pgAdmin4 regression framework
+        expects to find the files in the  directory
+        '/<installation dir>/web/regression/'. If you move the file to another
+        location, you must create a symbolic link that specifies the new location.
 
     2c) Specifying Server Configuration file:
 
@@ -103,6 +103,11 @@ Test Data Details
 Execution:
 -----------
 
+- For feature tests to run as part of the entire test suite, Chrome and
+  chromedriver need to be installed; get chromedriver from
+  https://sites.google.com/a/chromium.org/chromedriver/downloads or a
+  package manager and make sure it is in the PATH
+
 - The test framework is modular and pluggable and dynamically locates tests
   for modules which are discovered at runtime. All test cases are found
   and registered automatically by its module name in
@@ -126,15 +131,15 @@ Execution:
 - Execute test framework for single node at a time
 
      Example 1) Run test framework for 'browser' node
-     run 'python runtests.py --pkg browser.tests'
+     run 'python runtests.py --pkg browser.server_groups.tests'
 
      Example 2) Run test framework for 'database' node
      run 'python runtests.py --pkg browser.server_groups.servers.databases.tests'
 
 - Exclude a package and its subpackages when running tests:
 
-    Example: exclude acceptance tests but run all others:
-    run 'python runtests.py --exclude acceptance'
+    Example: exclude feature tests but run all others:
+    run 'python runtests.py --exclude feature_tests'
 
     Example: exclude multiple packages:
     run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
