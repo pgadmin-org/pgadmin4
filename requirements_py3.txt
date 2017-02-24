@@ -27,6 +27,7 @@ pyrsistent==0.11.13
 python-dateutil==2.5.0
 python-mimeparse==1.5.1
 pytz==2014.10
+selenium==3.0.2
 simplejson==3.6.5
 six>=1.9.0
 speaklater==1.3
