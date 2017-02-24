@@ -1,6 +1,6 @@
 {% if fetch_dependencies %}
 SELECT DISTINCT dep.deptype, dep.refclassid, cl.relkind, ad.adbin, ad.adsrc,
-    CASE WHEN cl.relkind IS NOT NULL THEN cl.relkind || COALESCE(dep.refobjsubid::text, '')
+    CASE WHEN cl.relkind IS NOT NULL THEN cl.relkind || COALESCE(dep.refobjsubid::character varying, '')
         WHEN tg.oid IS NOT NULL THEN 'T'::text
         WHEN ty.oid IS NOT NULL AND ty.typbasetype = 0 THEN 'y'::text
         WHEN ty.oid IS NOT NULL AND ty.typbasetype != 0 THEN 'd'::text
