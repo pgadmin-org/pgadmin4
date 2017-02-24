@@ -20,63 +20,63 @@
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/bootstrap.css' if config.DEBUG else 'css/bootstrap.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.css' if config.DEBUG else 'vendor/bootstrap/bootstrap.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/alertifyjs/alertify.css' if config.DEBUG else 'css/alertifyjs/alertify.min.css') }}"/>
+          href="{{ url_for('static', filename='vendor/alertifyjs/alertify.css' if config.DEBUG else 'vendor/alertifyjs/alertify.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'css/alertifyjs/themes/bootstrap.min.css') }}"/>
+          href="{{ url_for('static', filename='vendor/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'vendor/alertifyjs/themes/bootstrap.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/bootstrap-theme.css' if config.DEBUG else 'css/bootstrap-theme.min.css') }}"/>
+          href="{{ url_for('static', filename='vendor/bootstrap/bootstrap-theme.css' if config.DEBUG else 'vendor/bootstrap/bootstrap-theme.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/font-awesome.css' if config.DEBUG else 'css/font-awesome.min.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/font-mfizz.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datetimepicker.min.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-switch.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/backgrid/backgrid.css')}}"/>
+          href="{{ url_for('static', filename='vendor/font-awesome/css/font-awesome.css' if config.DEBUG else 'vendor/font-awesome/css/font-awesome.min.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/font-mfizz/font-mfizz.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap-datepicker3.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap-datetimepicker.min.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap-switch.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/backgrid/backgrid.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/backgrid/backgrid-select-all.css' if config.DEBUG else 'css/backgrid/backgrid-select-all.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/backgrid/backgrid-select-all.css' if config.DEBUG else 'vendor/backgrid/backgrid-select-all.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/backgrid/backgrid-paginator.css' if config.DEBUG else 'css/backgrid/backgrid-paginator.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/backgrid/backgrid-paginator.css' if config.DEBUG else 'vendor/backgrid/backgrid-paginator.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/backgrid/backgrid-filter.css' if config.DEBUG else 'css/backgrid/backgrid-filter.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/backgrid/backgrid-filter.css' if config.DEBUG else 'vendor/backgrid/backgrid-filter.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/backgrid/backgrid-sizeable-columns.css')}}"/>
+          href="{{ url_for('static', filename='vendor/backgrid/backgrid-sizeable-columns.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/select2/select2.css' if config.DEBUG else 'css/select2/select2.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/select2/select2.css' if config.DEBUG else 'vendor/select2/select2.min.css')}}"/>
 
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/slickgrid/slick.grid.css')}}"/>
+          href="{{ url_for('static', filename='vendor/slickgrid/slick.grid.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/slickgrid/slick-default-theme.css')}}"/>
+          href="{{ url_for('static', filename='vendor/slickgrid/slick-default-theme.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='css/slickgrid/smoothness/jquery-ui-1.11.3.custom.css' if config.DEBUG else 'css/slickgrid/smoothness/jquery-ui-1.11.3.custom.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/slickgrid/smoothness/jquery-ui-1.11.3.custom.css' if config.DEBUG else 'vendor/slickgrid/smoothness/jquery-ui-1.11.3.custom.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='js/codemirror/addon/scroll/simplescrollbars.css')}}"/>
+          href="{{ url_for('static', filename='vendor/codemirror/addon/scroll/simplescrollbars.css')}}"/>
 
     <!-- View specified stylesheets -->
     {% for stylesheet in current_app.stylesheets %}
     <link type="text/css" rel="stylesheet" href="{{ stylesheet }}">
     {% endfor %}
 
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.overrides.css') }}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/pgadmin.css') }}"/>
     {% block css_link %}{% endblock %}
 
     <!-- Base template scripts -->
     <script type="text/javascript"
-            src="{{ url_for('static', filename='js/require.js' if config.DEBUG else 'js/require.min.js') }}"></script>
+            src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
     <script type="text/javascript">
             require.config({
                 baseUrl: '',
                 waitSeconds: 0,
                 packages: [{
                   name: 'codemirror',
-                  location: '{{ url_for('static', filename='js/codemirror')}}',
+                  location: '{{ url_for('static', filename='vendor/codemirror')}}',
                   main: 'lib/codemirror'
                 },{
                   name: 'slickgrid',
-                  location: '{{ url_for('static', filename='js/slickgrid')}}',
+                  location: '{{ url_for('static', filename='vendor/slickgrid')}}',
                   main: 'slick.core'
                 }],
                 shim: {
@@ -158,35 +158,38 @@
                 },
                 paths: {
                     pgadmin: "{{ url_for('static', filename='js/pgadmin') }}",
-                    modernizr: "{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min') }}",
-                    jquery: "{{ url_for('static', filename='js/' + ('jquery-1.11.2' if config.DEBUG else 'jquery-1.11.2.min')) }}",
-                    select2: "{{ url_for('static', filename='js/select2/' + ('select2.full' if config.DEBUG else 'select2.full.min')) }}",
-                    moment: "{{ url_for('static', filename='js/moment-with-locales' + ('' if config.DEBUG else '.min')) }}",
-                    underscore: "{{ url_for('static', filename='js/' + ('underscore' if config.DEBUG else 'underscore-min')) }}",
-                    "underscore.string": "{{ url_for('static', filename='js/' + ('underscore.string' if config.DEBUG else 'underscore.string.min')) }}",
-                    bootstrap: "{{ url_for('static', filename='js/' + ('bootstrap' if config.DEBUG else 'bootstrap.min')) }}",
-                    alertifyjs: "{{ url_for('static', filename='js/alertifyjs/' + ('alertify' if config.DEBUG else 'alertify.min')) }}",
-                    'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertifyjs/pgadmin.defaults') }}",
-                    backbone: "{{ url_for('static', filename='js/' + ('backbone' if config.DEBUG else 'backbone-min')) }}",
-                    "backbone.paginator": "{{ url_for('static', filename='js/' + ('backbone.paginator' if config.DEBUG else 'backbone.paginator.min')) }}",
-                    "bootstrap.datepicker": "{{ url_for('static', filename='js/bootstrap-datepicker' + ('' if config.DEBUG else '.min')) }}",
-                    "bootstrap.datetimepicker": "{{ url_for('static', filename='js/bootstrap-datetimepicker' + ('' if config.DEBUG else '.min')) }}",
-                    "bootstrap.switch": "{{ url_for('static', filename='js/' + ('bootstrap-switch' if config.DEBUG else 'bootstrap-switch.min')) }}",
-                    backform: "{{ url_for('static', filename='js/backform') }}",
-                    backgrid: "{{ url_for('static', filename='js/backgrid/' + ('backgrid' if config.DEBUG else 'backgrid.min')) }}",
-                    "backgrid.select.all": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-select-all' if config.DEBUG else 'backgrid-select-all.min')) }}",
-                    "backgrid.paginator": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-paginator' if config.DEBUG else 'backgrid-paginator.min')) }}",
-                    "backgrid.filter": "{{ url_for('static', filename='js/backgrid/' + ('backgrid-filter' if config.DEBUG else 'backgrid-filter.min')) }}",
-                    "backgrid.sizeable.columns": "{{ url_for('static', filename='js/backgrid/backgrid-sizeable-columns') }}",
-                    "backbone.undo": "{{ url_for('static', filename='js/' + ('backbone.undo' if config.DEBUG else 'backbone.undo.min')) }}",
-                    "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid/backgrid.pgadmin') }}",
+                    'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertify.pgadmin.defaults') }}",
+                    "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
-                    "jquery.event.drag": "{{ url_for('static', filename='js/jquery-ui/jquery.event.drag-2.2') }}",
-                    "jquery.ui": "{{ url_for('static', filename='js/jquery-ui/jquery-ui-1.11.3' if config.DEBUG else 'js/jquery-ui/jquery-ui-1.11.3.min') }}",
-                    "bignumber": "{{ url_for('static', filename='js/bignumber/bignumber' if config.DEBUG else 'js/bignumber/bignumber.min') }}",
-                    bean :"{{ url_for('static', filename='js/flotr2/' + ('bean' if config.DEBUG else 'bean-min')) }}",
-                    flotr2 :"{{ url_for('static', filename='js/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
-                    '{{ script.name }}': "{{ script.path }}"{% endfor %}
+
+                    modernizr: "{{ url_for('static', filename='vendor/modernizr/modernizr-2.6.2-respond-1.1.0.min') }}",
+                    jquery: "{{ url_for('static', filename='vendor/jquery/jquery-1.11.2' + ('' if config.DEBUG else '.min')) }}",
+                    select2: "{{ url_for('static', filename='vendor/select2/select2.full'+ ('' if config.DEBUG else '.min')) }}",
+                    moment: "{{ url_for('static', filename='vendor/moment/moment-with-locales' + ('' if config.DEBUG else '.min')) }}",
+                    underscore: "{{ url_for('static', filename='vendor/underscore/underscore'+ ('' if config.DEBUG else '-min')) }}",
+                    "underscore.string": "{{ url_for('static', filename='vendor/underscore/underscore.string' + ('' if config.DEBUG else '.min')) }}",
+                    bootstrap: "{{ url_for('static', filename='vendor/bootstrap/bootstrap' + ('' if config.DEBUG else '.min')) }}",
+                    alertifyjs: "{{ url_for('static', filename='vendor/alertifyjs/alertify' + ('' if config.DEBUG else '.min')) }}",
+                    backbone: "{{ url_for('static', filename='vendor/backbone/backbone' + ('' if config.DEBUG else '-min')) }}",
+                    "backbone.paginator": "{{ url_for('static', filename='vendor/backbone/backbone.paginator' + ('' if config.DEBUG else '.min')) }}",
+                    "bootstrap.datepicker": "{{ url_for('static', filename='vendor/bootstrap/bootstrap-datepicker' + ('' if config.DEBUG else '.min')) }}",
+                    "bootstrap.datetimepicker": "{{ url_for('static', filename='vendor/bootstrap/bootstrap-datetimepicker' + ('' if config.DEBUG else '.min')) }}",
+                    "bootstrap.switch": "{{ url_for('static', filename='vendor/bootstrap/bootstrap-switch' + ('' if config.DEBUG else '.min')) }}",
+                    backform: "{{ url_for('static', filename='vendor/backform/backform') }}",
+                    backgrid: "{{ url_for('static', filename='vendor/backgrid/backgrid' + ('' if config.DEBUG else '.min')) }}",
+                    "backgrid.select.all": "{{ url_for('static', filename='vendor/backgrid/backgrid-select-all' + ('' if config.DEBUG else '.min')) }}",
+                    "backgrid.paginator": "{{ url_for('static', filename='vendor/backgrid/backgrid-paginator' + ('' if config.DEBUG else '.min')) }}",
+                    "backgrid.filter": "{{ url_for('static', filename='vendor/backgrid/backgrid-filter' + ('' if config.DEBUG else '.min')) }}",
+                    "backgrid.sizeable.columns": "{{ url_for('static', filename='vendor/backgrid/backgrid-sizeable-columns') }}",
+                    "backbone.undo": "{{ url_for('static', filename='vendor/backbone/backbone.undo' + ('' if config.DEBUG else '.min')) }}",
+                    "jquery.event.drag": "{{ url_for('static', filename='vendor/jquery-ui/jquery.event.drag-2.2') }}",
+                    "jquery.ui": "{{ url_for('static', filename='vendor/jquery-ui/jquery-ui-1.11.3' + ('' if config.DEBUG else '.min')) }}",
+                    "bignumber": "{{ url_for('static', filename='vendor/bignumber/bignumber' if config.DEBUG else 'vendor/bignumber/bignumber.min') }}",
+                    bean :"{{ url_for('static', filename='vendor/flotr2/bean' + ('' if config.DEBUG else '-min')) }}",
+                    flotr2 :"{{ url_for('static', filename='vendor/flotr2/flotr2.amd') }}"
+                    {% for script in current_app.javascripts %}
+                        ,'{{ script.name }}': "{{ script.path }}"
+                    {% endfor %}
                 }
             });
 

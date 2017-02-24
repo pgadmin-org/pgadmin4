@@ -39,14 +39,14 @@ class BrowserModule(PgAdminModule):
         stylesheets = []
         # Add browser stylesheets
         for (endpoint, filename) in [
-            ('static', 'css/codemirror/codemirror.css'),
-            ('static', 'js/codemirror/addon/dialog/dialog.css'),
-            ('static', 'css/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
+            ('static', 'vendor/codemirror/codemirror.css'),
+            ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
+            ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
             else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
-            ('static', 'css/wcDocker/wcDocker.css' if current_app.debug
-            else 'css/wcDocker/wcDocker.min.css'),
+            ('static', 'vendor/wcDocker/wcDocker.css' if current_app.debug
+            else 'vendor/wcDocker/wcDocker.min.css'),
             ('browser.static', 'css/browser.css'),
-            ('browser.static', 'css/aciTree/css/aciTree.css')
+            ('browser.static', 'vendor/aciTree/css/aciTree.css')
         ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         stylesheets.append(url_for('browser.browser_css'))
@@ -58,8 +58,8 @@ class BrowserModule(PgAdminModule):
             'name': 'alertify',
             'path': url_for(
                 'static',
-                filename='js/alertifyjs/alertify' if current_app.debug
-                else 'js/alertifyjs/alertify.min'
+                filename='vendor/alertifyjs/alertify' if current_app.debug
+                else 'vendor/alertifyjs/alertify.min'
             ),
             'exports': 'alertify',
             'preloaded': True
@@ -68,9 +68,9 @@ class BrowserModule(PgAdminModule):
             'name': 'jqueryui.position',
             'path': url_for(
                 'static',
-                filename='js/jQuery-contextMenu/jquery.ui.position' if \
+                filename='vendor/jQuery-contextMenu/jquery.ui.position' if \
                     current_app.debug else \
-                    'js/jQuery-contextMenu/jquery.ui.position.min'
+                    'vendor/jQuery-contextMenu/jquery.ui.position.min'
             ),
             'deps': ['jquery'],
             'exports': 'jQuery.ui.position',
@@ -80,9 +80,9 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.contextmenu',
             'path': url_for(
                 'static',
-                filename='js/jQuery-contextMenu/jquery.contextMenu' if \
+                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if \
                     current_app.debug else \
-                    'js/jQuery-contextMenu/jquery.contextMenu.min'
+                    'vendor/jQuery-contextMenu/jquery.contextMenu.min'
             ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
@@ -92,7 +92,7 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.aciplugin',
             'path': url_for(
                 'browser.static',
-                filename='js/aciTree/jquery.aciPlugin.min'
+                filename='vendor/aciTree/jquery.aciPlugin.min'
             ),
             'deps': ['jquery'],
             'exports': 'aciPluginClass',
@@ -102,8 +102,8 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.acitree',
             'path': url_for(
                 'browser.static',
-                filename='js/aciTree/jquery.aciTree' if
-                current_app.debug else 'js/aciTree/jquery.aciTree.min'
+                filename='vendor/aciTree/jquery.aciTree' if
+                current_app.debug else 'vendor/aciTree/jquery.aciTree.min'
             ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciTree',
@@ -113,7 +113,7 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.acisortable',
             'path': url_for(
                 'browser.static',
-                filename='js/aciTree/jquery.aciSortable.min'
+                filename='vendor/aciTree/jquery.aciSortable.min'
             ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciSortable',
@@ -124,7 +124,7 @@ class BrowserModule(PgAdminModule):
             'name': 'jquery.acifragment',
             'path': url_for(
                 'browser.static',
-                filename='js/aciTree/jquery.aciFragment.min'
+                filename='vendor/aciTree/jquery.aciFragment.min'
             ),
             'deps': ['jquery', 'jquery.aciplugin'],
             'exports': 'aciPluginClass.plugins.aciFragment',
@@ -135,8 +135,8 @@ class BrowserModule(PgAdminModule):
             'name': 'wcdocker',
             'path': url_for(
                 'static',
-                filename='js/wcDocker/wcDocker' if current_app.debug
-                else 'js/wcDocker/wcDocker.min'
+                filename='vendor/wcDocker/wcDocker' if current_app.debug
+                else 'vendor/wcDocker/wcDocker.min'
             ),
             'deps': ['jquery.contextmenu'],
             'exports': '',

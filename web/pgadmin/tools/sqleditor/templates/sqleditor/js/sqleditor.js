@@ -199,8 +199,8 @@ define(
           '#editor-panel', {
           allowContextMenu: false,
           allowCollapse: false,
-          themePath: '{{ url_for('static', filename='css/wcDocker/Themes') }}',
-          theme: 'pgadmin'
+          themePath: '{{ url_for("static", filename="css") }}',
+          theme: 'webcabin.overrides.css'
         });
 
         var sql_panel = new pgAdmin.Browser.Panel({

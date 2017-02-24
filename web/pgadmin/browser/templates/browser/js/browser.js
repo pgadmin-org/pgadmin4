@@ -327,8 +327,8 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         '#dockerContainer', {
         allowContextMenu: true,
         allowCollapse: false,
-        themePath: '../static/css/wcDocker/Themes',
-        theme: 'pgadmin'
+        themePath: '../static/css/',
+        theme: 'webcabin.overrides.css'
       });
       if (obj.docker) {
         // Initialize all the panels
