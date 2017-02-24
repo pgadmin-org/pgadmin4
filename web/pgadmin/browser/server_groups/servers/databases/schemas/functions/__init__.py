@@ -1075,6 +1075,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
+        parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
 
         # Get Schema Name from its OID.
         if 'pronamespace' in data:
@@ -1086,6 +1087,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         if fnid is not None:
             # Edit Mode
 
+            if 'proparallel' in data:
+                data['proparallel'] = parallel_dict[data['proparallel']]
+
             # Fetch Old Data from database.
             old_data = self._fetch_properties(gid, sid, did, scid, fnid)
 
@@ -1096,11 +1100,15 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'provolatile' in old_data:
                 old_data['provolatile'] = vol_dict[old_data['provolatile']]
 
+            if 'proparallel' in old_data:
+                old_data['proparallel'] = parallel_dict[old_data['proparallel']]
+
             # If any of the below argument is changed,
             # then CREATE OR REPLACE SQL statement should be called
             fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
                                'provolatile', 'proisstrict', 'prosecdef',
-                               'procost', 'proleakproof', 'arguments']
+                               'proparallel', 'procost', 'proleakproof',
+                               'arguments']
 
             data['change_func'] = False
             for arg in fun_change_args:

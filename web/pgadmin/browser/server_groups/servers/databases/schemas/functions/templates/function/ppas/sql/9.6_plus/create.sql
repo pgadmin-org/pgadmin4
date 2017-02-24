@@ -7,26 +7,24 @@
 CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{func_def}}
 {% else %}
 CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.args %}
-{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
+{% for p in data.args %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname) }} {% endif %}{% if p.argtype %}{{ conn|qtTypeIdent(p.argtype) }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %},{% endif %}
 {% endfor %}
 {% endif -%}
-)
+    )
 {% endif -%}
     RETURNS{% if data.proretset and data.prorettypename.startswith('SETOF ') %} {{ data.prorettypename }} {% elif data.proretset %} SETOF {{ conn|qtTypeIdent(data.prorettypename) }}{% else %} {{ conn|qtTypeIdent(data.prorettypename) }}{% endif %}
 
     LANGUAGE {{ data.lanname|qtLiteral }}
-{% if data.procost %}
-    COST {{data.procost}}
-{% endif %}
-    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %} LEAKPROOF {% endif %}
+    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
 {% if data.proiswindow %}WINDOW{% endif %}
-{% if data.prorows %}
-
+{% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's') %}
+{% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif %}
+{% if data.procost %}
+    COST {{data.procost}}{% endif %}{% if data.prorows %}
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
-
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 
@@ -44,9 +42,8 @@ ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args
 {% if data.acl %}
 {% for p in data.acl %}
 
-{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args_withouts)}}
-{% endfor -%}
-{% endif -%}
+{{ PRIVILEGE.SET(conn, "FUNCTION", p.grantee, data.name, p.without_grant, p.with_grant, data.pronamespace, data.func_args_without)}}
+{% endfor %}{% endif %}
 {% if data.description %}
 
 COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
@@ -56,9 +53,9 @@ COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func
 {% for r in data.seclabels %}
 {% if r.label and r.provider %}
 
-{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args_withouts) }}
+{{ SECLABEL.SET(conn, 'FUNCTION', data.name, r.provider, r.label, data.pronamespace, data.func_args_without) }}
 {% endif %}
 {% endfor %}
 {% endif -%}
 
-{% endif -%}
+{% endif %}

@@ -28,6 +28,8 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %} SECURITY DEFINER{% endif %}
 {% if ('proiswindow' in data and data.proiswindow) or ('proiswindow' not in data and o_data.proiswindow) %} WINDOW{% endif %}
 
+    {% if 'proparallel' in data and data.proparallel %}PARALLEL {{ data.proparallel }}{% elif 'proparallel' not in data and o_data.proparallel %}PARALLEL {{ o_data.proparallel }}{% endif %}
+
     {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows %}
 
     ROWS {{data.prorows}}{% elif o_data.prorows %}ROWS {{o_data.prorows}} {%endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}

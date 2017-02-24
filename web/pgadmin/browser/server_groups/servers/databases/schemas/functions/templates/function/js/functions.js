@@ -157,6 +157,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           proisstrict: undefined,
           prosecdef: undefined, /* Security of definer */
           proiswindow: undefined, /* Window Function ? */
+          proparallel: undefined, /* Parallel mode */
           procost: undefined, /* Estimated execution Cost */
           prorows: undefined, /* Estimated number of rows */
           proleakproof: undefined,
@@ -255,7 +256,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             {'label': 'VOLATILE', 'value': 'v'},
             {'label': 'STABLE', 'value': 's'},
             {'label': 'IMMUTABLE', 'value': 'i'},
-          ], disabled: 'isDisabled'
+          ], disabled: 'isDisabled', select2: {allowClear: false}
         },{
           id: 'proretset', label: '{{ _('Returns a set?') }}', type: 'switch',
           disabled: 'isDisabled', group: '{{ _('Options') }}',
@@ -276,6 +277,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'proiswindow', label: '{{ _('Window?') }}',
            group: '{{ _('Options') }}', cell:'boolean', type: 'switch',
             disabled: 'isDisabled', visible: 'isVisible'
+        },{
+          id: 'proparallel', label: '{{ _('Parallel') }}', cell: 'string',
+          control: 'node-ajax-options', type: 'text', group: '{{ _('Options') }}',
+          options:[
+            {'label': '{{ _('UNSAFE') }}', 'value': 'u'},
+            {'label': '{{ _('RESTRICTED') }}', 'value': 'r'},
+            {'label': '{{ _('SAFE') }}', 'value': 's'},
+          ], disabled: 'isDisabled', min_version: 90600,
+          select2: {allowClear: false}
         },{
           id: 'procost', label: '{{ _('Estimated cost') }}', group: '{{ _('Options') }}',
           cell:'string', type: 'text', disabled: 'isDisabled'

@@ -16,12 +16,11 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
 
     {{ data.provolatile }}{% if data.proleakproof %} LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
-{% if data.prosecdef %}SECURITY DEFINER {% endif %}{% if data.procost %}
-
+{% if data.prosecdef %}SECURITY DEFINER {% endif %}
+{% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's') %}
+{% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif %}{% if data.procost %}
     COST {{data.procost}}{% endif %}{% if data.prorows %}
-
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
-
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
 {% endif %}{% endif %}
 
