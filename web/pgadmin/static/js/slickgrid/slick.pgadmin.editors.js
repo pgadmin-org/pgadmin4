@@ -791,7 +791,7 @@
       if ($input.val() === "") {
         return null;
       }
-      return parseInt($input.val(), 10) || 0;
+      return $input.val();
     };
 
     this.applyValue = function (item, state) {

@@ -50,49 +50,19 @@ psycopg2.extensions.register_type(
                                  psycopg2.extensions.UNICODE)
 )
 
-# Cast bytea fields to text. By default, this will render as hex strings with
-# Postgres 9+ and as escaped binary in earlier versions.
-psycopg2.extensions.register_type(
-    psycopg2.extensions.new_type((17,), 'BYTEA_TEXT', psycopg2.STRING)
-)
-
-# This registers a type caster for datatype 'NaN'.
-psycopg2.extensions.register_type(
-    psycopg2.extensions.new_type((701,), 'NaN_TEXT', psycopg2.STRING)
-)
-
-# This registers a type caster for datatype 'interval'.
-psycopg2.extensions.register_type(
-    psycopg2.extensions.new_type((1186,), 'INTERVAL_TEXT', psycopg2.STRING)
-)
-
-# This registers a type caster for int4range, int8range, numrange
-# tsrange, tstzrange, daterange
+# This registers a type caster to convert various pg types into string type
 psycopg2.extensions.register_type(
     psycopg2.extensions.new_type(
-        (3904, 3926, 3906, 3908, 3910, 3912),
-        'NUMERIC_RANGE_TEXT', psycopg2.STRING)
+        (
+            # To cast bytea and interval type
+            17, 1186,
+            # to cast int4range, int8range, numrange tsrange, tstzrange
+            3904,3926, 3906, 3908, 3910, 3912,
+            # date, timestamp, timestamptz, bigint, double precision
+            1700, 1082, 1114, 1184, 20, 701
+         ),
+        'TYPECAST_TO_STRING', psycopg2.STRING)
 )
-
-def register_string_typecasters(connection):
-    """
-    Casts various types to string, resolving issues with out of
-    range dates (e.g. BC) and rounded numbers which psycopg2 can't
-    handle
-    """
-
-    def return_as_string(value, cursor):
-        return value
-
-    cursor = connection.cursor()
-    cursor.execute('SELECT NULL::date, NULL::timestamp, NULL::timestamptz, NULL::bigint')
-    # Oid(s): Date, timestamp, timestamptz, bigint, double precision
-    oids = (
-        cursor.description[0][1], cursor.description[1][1],
-        cursor.description[2][1], cursor.description[3][1]
-    )
-    new_type = psycopg2.extensions.new_type(oids, 'RETURN_STRING', return_as_string)
-    psycopg2.extensions.register_type(new_type)
 
 class Connection(BaseConnection):
     """
@@ -367,7 +337,6 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
                 self.conn.autocommit = False
             else:
                 self.conn.autocommit = True
-            register_string_typecasters(self.conn)
 
         status = _execute(cur, """
 SET DateStyle=ISO;
