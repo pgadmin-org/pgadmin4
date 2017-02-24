@@ -1,7 +1,12 @@
 SELECT e.oid, e.xmin, e.evtname AS name, upper(e.evtevent) AS eventname,
 pg_catalog.pg_get_userbyid(e.evtowner) AS eventowner,
 e.evtenabled AS enabled,
-e.evtfoid AS eventfuncoid, quote_ident(n.nspname) || '.' || e.evtfoid::regproc AS eventfunname,
+e.evtfoid AS eventfuncoid,
+CASE
+  WHEN n.nspname = 'public'
+  THEN quote_ident(n.nspname) || '.' || cast(e.evtfoid::regproc as text)
+  ELSE cast(e.evtfoid::regproc as text)
+END AS  eventfunname,
 array_to_string(array(select quote_literal(x) from unnest(evttags) as t(x)), ', ') AS when,
  pg_catalog.obj_description(e.oid, 'pg_event_trigger') AS comment,
  (SELECT array_agg(provider || '=' || label) FROM pg_seclabel sl1 WHERE sl1.objoid=e.oid) AS seclabels,
