@@ -145,7 +145,7 @@ int main(int argc, char * argv[])
     // will also retry - that shouldn't (in theory) be necessary, but it won't
     // hurt.
     int attempt = 0;
-    while (attempt++ < 3)
+    while (attempt++ < 10)
     {
         bool alive = PingServer(QUrl(appServerUrl));
 
@@ -185,7 +185,7 @@ bool PingServer(QUrl url)
     QNetworkReply *reply;
     QVariant redirectUrl;
 
-    url.setPath("/ping");
+    url.setPath("/misc/ping");
 
     do
     {
