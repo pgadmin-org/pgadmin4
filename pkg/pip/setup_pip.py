@@ -24,6 +24,12 @@ with open(req_file) as reqf:
     else:
         required = reqf.read().decode("utf-8").splitlines()
 
+# Remove any requirements with environment specifiers. These
+# must be explicitly listed in extras_require below.
+for req in required:
+    if ";" in req:
+        required.remove(req)
+
 # Get the app version
 modl = imp.load_source('APP_VERSION', '../web/config.py')
 
@@ -70,7 +76,11 @@ setup(
 
     install_requires=required,
 
-    ##extras_require=,
+    extras_require={
+        # ...
+        ":python_version<'2.7'": ["ordereddict"],
+        ":python_version<='2.7'": ["importlib"],
+    },
 
     # Specify date files to be included. For Python 2.6 need to include them in MANIFEST.in
     ##package_data="",
