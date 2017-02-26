@@ -8,12 +8,10 @@
 ##########################################################################
 
 import sys
-import os
 import imp
 
 from setuptools import setup
 from codecs import open
-from os import path
 
 """This script is used to help generate PIP packages"""
 
