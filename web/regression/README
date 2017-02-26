@@ -12,6 +12,16 @@ Assumptions
 - Currently each module will have testcases related to ONLY GET, POST, PUT,
   and DELETE api’s.
 
+Environment
+-----------
+
+Regression tests should be run in a Python environment that has all the
+pre-requisite packages installed from $PGADMIN4_SRC/requirements.txt. There
+are some additional dependencies for running the test suite; these can be
+installed with:
+
+(pgadmin4) $ pip install -r $PGADMIN4_SRC/web/regression/requirements.txt
+
 General Information
 -------------------
 

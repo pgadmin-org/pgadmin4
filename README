@@ -100,9 +100,12 @@ process is fairly simple - adapt as required for your distribution:
    pg_config can be found for building psycopg2), and install the required
    packages:
 
-    (pgadmin4) $ PATH=$PATH:/usr/local/pgsql/bin pip install -r $PGADMIN4_SRC/requirements_py2.txt
+    (pgadmin4) $ PATH=$PATH:/usr/local/pgsql/bin pip install -r $PGADMIN4_SRC/requirements.txt
 
-   If you are using Python 3, use the requirements_py3.txt file instead.
+   If you are planning to run the regression tests, you also need to install
+   additional requirements from web/regression/requirements.txt:
+
+   (pgadmin4) $ pip install -r $PGADMIN4_SRC/web/regression/requirements.txt
 
 5) Create a local configuration file for pgAdmin. Edit
    $PGADMIN4_SRC/web/config_local.py and add any desired configuration options

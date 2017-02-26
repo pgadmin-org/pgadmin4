@@ -199,10 +199,6 @@ GOTO:EOF
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
 
-    SET REQUIRMENTTXT=""
-    IF "%PYTHON_MAJOR%"=="2" SET REQUIRMENTTXT=requirements_py2.txt
-    IF "%PYTHON_MAJOR%"=="3" SET REQUIRMENTTXT=requirements_py3.txt
-    IF %REQUIRMENTTXT% == ""           GOTO err_handle_pythonversion
     SET PATH=%PGDIR%;%PGDIR%\bin;%PATH%
 goto:EXIT
 
@@ -220,7 +216,7 @@ goto:EXIT
     SET PATH=%PGDIR%\bin;%PATH%
 
     ECHO Installing dependencies...
-    pip install -r "%WD%\%REQUIRMENTTXT%"
+    pip install -r "%WD%\requirements.txt"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     pip install sphinx
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%

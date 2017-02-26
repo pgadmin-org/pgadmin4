@@ -1,0 +1,4 @@
+selenium==3.0.2
+testscenarios==0.5.0
+testtools==2.0.0
+traceback2==1.4.0

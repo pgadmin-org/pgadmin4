@@ -40,11 +40,9 @@ fi
 if [ "$PYTHON_VERSION" -ge "30" ]; then
     export PYTHON=$PYTHON_HOME/bin/python3
     export PIP=pip3
-    export REQUIREMENTS=requirements_py3.txt
 else
     export PYTHON=$PYTHON_HOME/bin/python2
     export PIP=pip
-    export REQUIREMENTS=requirements_py2.txt
 fi
 
 if [ "x$QTDIR" == "x" ]; then
@@ -89,7 +87,7 @@ _create_python_virtualenv() {
     cd $BUILDROOT
     test -d $VIRTUALENV || virtualenv -p $PYTHON $VIRTUALENV || exit 1
     source $VIRTUALENV/bin/activate
-    $PIP install -r $SOURCEDIR/$REQUIREMENTS || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
+    $PIP install -r $SOURCEDIR/requirements.txt || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
 
     # Figure out some paths for use when completing the venv
     # Use "python" here as we want the venv path
