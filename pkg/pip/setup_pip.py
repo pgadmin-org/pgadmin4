@@ -18,7 +18,7 @@ from os import path
 """This script is used to help generate PIP packages"""
 
 # Get the requirements list for the current version of Python
-req_file='../requirements_py' + str(sys.version_info[0]) + '.txt'
+req_file='../requirements.txt'
 
 with open(req_file) as reqf:
     if sys.version_info[0] >= 3:
@@ -56,10 +56,10 @@ setup(
     # Suppported Programming Languages
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6'
 ],
 
     keywords='pgadmin4,postgresql,postgres',
