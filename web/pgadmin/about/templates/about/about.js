@@ -19,7 +19,13 @@ define(
               setup: function() {
                 return {
                   buttons:[{ text: "OK", key: 27, className: "btn btn-primary" }],
-                  options: {modal: 0, resizable: true}
+                  options: {
+                    modal: false,
+                    resizable: true,
+                    maximizable: true,
+                    pinnable: false,
+                    closableByDimmer: false
+                  }
                 };
               },
               build: function() {
