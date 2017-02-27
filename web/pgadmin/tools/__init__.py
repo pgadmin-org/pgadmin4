@@ -15,8 +15,34 @@ from pgadmin.utils.ajax import bad_request
 
 MODULE_NAME = 'tools'
 
+class ToolsModule(PgAdminModule):
+    def get_own_javascripts(self):
+        from flask import url_for
+        return [{
+            'name': 'pgadmin-sqlfoldcode',
+            'path': url_for(
+                'static',
+                filename='js/codemirror/addon/fold/pgadmin-sqlfoldcode'
+            ),
+            'when': 'debugger'
+        },{
+            'name': 'slick.pgadmin.editors',
+            'path': url_for(
+                'static',
+                filename='js/slickgrid/slick.pgadmin.editors'
+            ),
+            'when': 'debugger'
+        },{
+            'name': 'slick.pgadmin.formatters',
+            'path': url_for(
+                'static',
+                filename='js/slickgrid/slick.pgadmin.formatters'
+            ),
+            'when': 'debugger'
+        }]
+
 # Initialise the module
-blueprint = PgAdminModule(MODULE_NAME, __name__)
+blueprint = ToolsModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/")
