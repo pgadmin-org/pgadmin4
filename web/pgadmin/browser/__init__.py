@@ -42,7 +42,7 @@ class BrowserModule(PgAdminModule):
             ('static', 'vendor/codemirror/codemirror.css'),
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
             ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
-            else 'css/jQuery-contextMenu/jquery.contextMenu.min.css'),
+            else 'vendor/jQuery-contextMenu/jquery.contextMenu.min.css'),
             ('static', 'vendor/wcDocker/wcDocker.css' if current_app.debug
             else 'vendor/wcDocker/wcDocker.min.css'),
             ('browser.static', 'css/browser.css'),
