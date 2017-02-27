@@ -48,7 +48,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 protected slots:
-    void finishLoading(bool);
     void urlLinkClicked(const QUrl &);
     void closetabs();
     void tabTitleChanged(const QString &);
@@ -110,8 +109,6 @@ private:
     QToolButton       *m_toolBtnBack;
     QToolButton       *m_toolBtnForward;
 
-    bool m_initialLoad;
-    int m_loadAttempt;
     QString m_downloadFilename;
     int m_downloadStarted;
     int m_downloadCancelled;

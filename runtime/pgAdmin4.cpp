@@ -81,6 +81,8 @@ int main(int argc, char * argv[])
 
         if (!server->Init())
         {
+            splash->finish(NULL);
+
             qDebug() << server->getError();
 
             QString error = QString(QWidget::tr("An error occurred initialising the application server:\n\n%1")).arg(server->getError());
@@ -141,11 +143,9 @@ int main(int argc, char * argv[])
     QString appServerUrl = QString("http://localhost:%1/").arg(port);
 
     // Now the server should be up, we'll attempt to connect and get a response.
-    // We'll retry in a loop a few time before aborting if necessary. The browser
-    // will also retry - that shouldn't (in theory) be necessary, but it won't
-    // hurt.
+    // We'll retry in a loop a few time before aborting if necessary.
     int attempt = 0;
-    while (attempt++ < 10)
+    while (attempt++ < 30)
     {
         bool alive = PingServer(QUrl(appServerUrl));
 
@@ -154,8 +154,9 @@ int main(int argc, char * argv[])
             break;
         }
 
-        if (attempt == 10)
+        if (attempt == 30)
         {
+            splash->finish(NULL);
             QString error(QWidget::tr("The application server could not be contacted."));
             QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
 

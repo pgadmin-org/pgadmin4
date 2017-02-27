@@ -101,8 +101,6 @@ BrowserWindow::BrowserWindow(QString url)
 
     setCentralWidget(m_tabWidget);
 
-    connect(m_mainWebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
-
 #ifdef PGADMIN4_USE_WEBENGINE
     // Register the slot when click on the URL link for QWebEnginePage
     connect(m_mainWebView->page(), SIGNAL(createTabWindow(QWebEnginePage * &)),SLOT(createNewTabWindow(QWebEnginePage * &)));
@@ -149,8 +147,6 @@ BrowserWindow::BrowserWindow(QString url)
     m_last_open_folder_path = settings.value("Browser/LastSaveLocation", QDir::homePath()).toString();
 
     // Display the app
-    m_initialLoad = true;
-    m_loadAttempt = 1;
     m_mainWebView->setUrl(m_appServerUrl);
 }
 
@@ -266,43 +262,6 @@ void BrowserWindow::onMacPaste()
 }
   #endif
 #endif
-
-// Process loading finished signals from the web view.
-void BrowserWindow::finishLoading(bool ok)
-{
-    if (m_initialLoad && !ok)
-    {
-        // The load attempt failed. Try again up to 4 times with an
-        // incremental backoff.
-        if (m_loadAttempt < 5)
-        {
-            if (m_loadAttempt > 1)
-            {
-                qDebug() << "Initial connection failed. Retrying in" << m_loadAttempt << "seconds.";
-                m_mainWebView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. Retrying in %1 seconds, ") +
-                                         tr("or click <a href=\"%2\">here</a> to try again now.</p>")).arg(m_loadAttempt).arg(m_appServerUrl));
-            }
-            else
-            {
-               m_mainWebView->setHtml(QString(tr("<p>Connecting to the application server...</p>")));
-            }
-
-            pause(m_loadAttempt);
-            m_mainWebView->setUrl(m_appServerUrl);
-            m_loadAttempt++;
-
-            return;
-        }
-        else
-        {
-            qDebug() << "Initial connection failed after multiple attempts. Aborting.";
-            m_mainWebView->setHtml(QString(tr("<p>Failed to connect to the pgAdmin application server. ") +
-                                     tr("Click <a href=\"%1\">here</a> to try again.</p>")).arg(m_appServerUrl));
-        }
-    }
-
-    m_initialLoad = false;
-}
 
 // Check if Tab is already open with given URL name
 int BrowserWindow::findURLTab(const QUrl &name)
