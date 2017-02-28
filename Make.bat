@@ -14,35 +14,35 @@ SET ARCHITECTURE=%1
 
 IF "%ARCHITECTURE%"=="clean" (
     GOTO CLEAN_RELEASE
-    goto:exit
+    GOTO EXIT
 )
 
 REM Main Functions
 
-call :SET_PGADMIN4_ENVIRONMENT
+CALL :SET_PGADMIN4_ENVIRONMENT
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :CLEAN_RELEASE
+CALL :CLEAN_RELEASE
 
-call :CREATE_VIRTUAL_ENV
+CALL :CREATE_VIRTUAL_ENV
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :CREATE_RUNTIME_ENV
+CALL :CREATE_RUNTIME_ENV
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :CREATE_PYTHON_ENV
+CALL :CREATE_PYTHON_ENV
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :CLEANUP_ENV
+CALL :CLEANUP_ENV
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :CREATE_INSTALLER
+CALL :CREATE_INSTALLER
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-call :SIGN_INSTALLER
+CALL :SIGN_INSTALLER
 
 CD %WD%
-goto:EXIT
+GOTO EXIT
 REM Main function Ends
 
 :CLEAN_RELEASE
@@ -53,7 +53,7 @@ REM Main function Ends
     IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q
     IF EXIST DEL /q "%WD%\pkg\win32\installer.iss" > nul
     CD %WD%
-GOTO:EOF
+    GOTO:EOF
 
 :SET_PGADMIN4_ENVIRONMENT
    REM Check os architecture x86 or amd64
@@ -71,21 +71,21 @@ GOTO:EOF
     IF "%OSTYPE%"=="x86" (
         IF "%ARCHITECTURE%"=="amd64" (
             ECHO ARCHITECTURE - %ARCHITECTURE% cannot be run on 32 bit machine
-            goto:exit
+            GOTO EXIT
         )
         SET OSVALUE=%OSTYPE%
     )
 
     REM Check IF its is windows 32 bit machine and selected architecture is x86
     IF %OSVALUE%=="x86" (
-        IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27123"
+        IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
         IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.5"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.6"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         SET "VCREDISTNAME=vcredist_x86.exe"
-        goto SKIPARCVALIDATION
+        GOTO SKIPARCVALIDATION
     )
 
     REM Check IF its is windows 64 bit machine and selected architecture is x86 or amd64
@@ -93,23 +93,26 @@ GOTO:EOF
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
         IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\9.5"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\9.6"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
         SET "VCREDISTNAME=vcredist_x86.exe"
+        GOTO SKIPARCVALIDATION
     )
 
     IF "%ARCHITECTURE%"=="amd64" (
         IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27-x64"
         IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
         IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.7\msvc2013"
-        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.5"
+        IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files\PostgreSQL\9.6"
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x64.exe"
         SET "VCREDISTNAME=vcredist_x64.exe"
+        GOTO SKIPARCVALIDATION
     )
+
 
 :SKIPARCVALIDATION
     REM SET the variables IF not availalbe in windows enviroment
@@ -200,8 +203,8 @@ GOTO:EOF
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
 
     SET PATH=%PGDIR%;%PGDIR%\bin;%PATH%
-goto:EXIT
 
+    GOTO:eof
 
 :CREATE_VIRTUAL_ENV
     ECHO Creating Virtual Enviroment...
@@ -220,21 +223,21 @@ goto:EXIT
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     pip install sphinx
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    ECHO Virtual Enviroment created successfully.
+    ECHO Virtual Environment created successfully.
 
     ECHO Deactivating Virtual Enviroment - %PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate...
     CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\deactivate"
 
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :CREATE_RUNTIME_ENV
     ECHO Compiling source code...
     MKDIR "%PGBUILDPATH%\runtime" > nul
 
     REM --- Processing WEB ---
-    CD "%WD%"
-    CD web
+    CD "%WD%\web"
+
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
@@ -253,31 +256,37 @@ GOTO:EOF
     ECHO     'ppas': '' >> "%PGBUILDPATH%\web\config_distro.py"
     ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
 
+    ECHO Activating Virtual Enviroment -  %PGBUILDPATH%\%VIRTUALENV%\Scripts\activate...
+    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate"
+
     ECHO Building docs...
     MKDIR "%PGBUILDPATH%\docs\en_US\html"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    CD "%WD%\docs\en_US"
+    "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
     "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
     ECHO Removing Sphinx
-    pip uninstall -y sphinx
+    pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
 
     ECHO Assembling runtime environment...
-    CD "%WD%"
-    CD runtime
+    CD "%WD%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    call "%VCVAR%" %ARCHITECTURE%
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    ECHO Calling -  call "%VCVAR%" %ARCHITECTURE%
-
-    call "%QMAKE%"
+    CALL "%VCVAR%" %ARCHITECTURE%
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    call "%VCNMAKE%" clean
+    CALL "%QMAKE%"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-    call "%VCNMAKE%"
+    CALL "%VCNMAKE%" clean
+    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    CALL "%VCNMAKE%"
     IF ERRORLEVEL 1 GOTO ERR_HANDLER
     REM Copy binary to Release Folder
     copy "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime"
@@ -314,6 +323,11 @@ GOTO:EOF
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
     REM Install the appropriate browser components. We use QtWebEngine with Qt 5.5+
+    IF %QT_VERSION% GEQ 5.7 (
+        copy "%QTDIR%\bin\Qt5QuickWidgets.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    )
+
     IF %QT_VERSION% GEQ 5.7 (
         copy "%QTDIR%\resources\icudtl.dat" "%PGBUILDPATH%\runtime"
         IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
@@ -404,7 +418,7 @@ GOTO:EOF
     ECHO Runtime built successfully.
 
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :CREATE_PYTHON_ENV
     copy %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul
@@ -421,8 +435,11 @@ GOTO:EOF
     XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
+    ECHO Cleaning up unnecessary files...
+    FOR /R "%PGBUILDPATH%\%VIRTUALENV%" %%f in (*.pyc *.pyo) do DEL /q "%%f"
+
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :CREATE_INSTALLER
     ECHO Preparing for creation of windows installer...
@@ -460,7 +477,7 @@ GOTO:EOF
     ECHO Installer generated successfully.
 
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
@@ -474,7 +491,7 @@ GOTO:EOF
     )
 
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :CLEANUP_ENV
     ECHO Cleaning up private environment...
@@ -484,14 +501,14 @@ GOTO:EOF
 
     ECHO Cleaned up private environment successfully.
     CD %WD%
-GOTO:EOF
+    GOTO:eof
 
 :err_handle_inno
     ECHO %INNOTOOL% does not exist
     ECHO Please Install Innotool and SET INNOTOOL enviroment Variable.
     ECHO SET "INNOTOOL=<PATH>"
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_visualstudio
     ECHO %VCDIR% does not exist, or
@@ -502,14 +519,14 @@ goto EXIT
     ECHO SET "VCVAR%=<PATH>"
     ECHO SET "VCNMAKE%=<PATH>"
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_visualstudio_dist
     ECHO %VCREDIST% does not exist
     ECHO Please Install Microsoft Visual studio and SET the VCDIST enviroment Variable.
     ECHO SET "VCDIST%=<PATH>"
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 
 :err_handle_python
@@ -521,14 +538,14 @@ goto EXIT
     ECHO SET "PYTHON_HOME=<PATH>"
     ECHO SET "PYTHON_DLL=<PATH>"
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_qt
     ECHO %QTDIR% does not exist.
     ECHO Please Install QT SDK and SET the QTDIR enviroment variable.
     ECHO SET "QTDIR=<PATH>"
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_qt_mismatch
     ECHO %QTDIR%\..\%QT_MSVC_PATH%" does not match with your current Visual Studio, version %QT_MSVC_PATH%
@@ -536,46 +553,41 @@ goto EXIT
     ECHO Please use a valid QT installation with a folder %QT_MSVC_PATH%. You can use the Qt Maintenance
     ECHO Tool to add or remove compiler kits.
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_qt_compactissue
     ECHO %QTDIR%" does support the current architecture selected %ARCHITECTURE%
     ECHO Please use a valid QT installation with a folder %QT_MSVC_PATH%. You can use the Qt Maintenance
     ECHO Tool to add or remove compiler kits.
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_pg
     ECHO %PGDIR% does not exist.
     ECHO Please Install Postgres and SET enviroment Variable
     ECHO SET "PGDIR=<PATH>"
     exit /B 1
-goto EXIT
-
-:err_handle_pythonversion
-    ECHO Python version supported Above 2.6, 2.xx and 3.xx only
-    exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :err_handle_pythonvirtualenv
     ECHO Python virtualenv is missing @ location - %PYTHON_HOME%\Scripts\virtualenv.exe
     exit /B 1
-goto EXIT
+    GOTO EXIT
 
 :ERR_HANDLER
     ECHO.
     ECHO Aborting build!
     CD %WD%
     exit /B 1
-GOTO:EOF
+    GOTO:eof
 
 :USAGE
     ECHO Invalid command line options....
     ECHO Usage: "Make.bat <x86 | amd64 | clean>"
     ECHO.
     exit /B 1
-GOTO EXIT
+    GOTO:eof
 
 :EXIT
-     endlocal
+    endlocal
     exit /B 0
