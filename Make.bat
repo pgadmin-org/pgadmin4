@@ -22,6 +22,8 @@ REM Main Functions
 CALL :SET_PGADMIN4_ENVIRONMENT
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
+CALL :VALIDATE_ENVIRONMENT
+
 CALL :CLEAN_RELEASE
 
 CALL :CREATE_VIRTUAL_ENV
@@ -40,6 +42,7 @@ CALL :CREATE_INSTALLER
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
 CALL :SIGN_INSTALLER
+IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
 CD %WD%
 GOTO EXIT
@@ -53,7 +56,7 @@ REM Main function Ends
     IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q
     IF EXIST DEL /q "%WD%\pkg\win32\installer.iss" > nul
     CD %WD%
-    GOTO:EOF
+    GOTO:eof
 
 :SET_PGADMIN4_ENVIRONMENT
    REM Check os architecture x86 or amd64
@@ -85,7 +88,6 @@ REM Main function Ends
         IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files\Inno Setup 5"
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         SET "VCREDISTNAME=vcredist_x86.exe"
-        GOTO SKIPARCVALIDATION
     )
 
     REM Check IF its is windows 64 bit machine and selected architecture is x86 or amd64
@@ -98,7 +100,6 @@ REM Main function Ends
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
         SET "VCREDISTNAME=vcredist_x86.exe"
-        GOTO SKIPARCVALIDATION
     )
 
     IF "%ARCHITECTURE%"=="amd64" (
@@ -110,12 +111,11 @@ REM Main function Ends
         IF "%VCDIR%" == ""         SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
         IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x64.exe"
         SET "VCREDISTNAME=vcredist_x64.exe"
-        GOTO SKIPARCVALIDATION
     )
+    GOTO:eof
 
-
-:SKIPARCVALIDATION
-    REM SET the variables IF not availalbe in windows enviroment
+:VALIDATE_ENVIRONMENT
+    REM SET the variables IF not availalbe in windows environment
     SET "VCVAR=%VCDIR%\vcvarsall.bat"
     SET "VCNMAKE=%VCDIR%\bin\nmake.exe"
     SET "QMAKE=%QTDIR%\bin\qmake.exe"
@@ -130,7 +130,7 @@ REM Main function Ends
     SET APP_SUFFIX_VERSION=%APP_SUFFIX_VERSION:'=%
     SET APP_NAME=""
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
-    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print '%APP_NAME%'.lower().replace(' ', '')"') DO SET APP_SHORTNAME=%%G
+    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
     
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_RELEASE%.%APP_REVISION_VERSION%-%APP_SUFFIX_VERSION%-%ARCHITECTURE%.exe
@@ -173,9 +173,8 @@ REM Main function Ends
     IF NOT EXIST "%PGDIR%"             GOTO err_handle_pg
 
     REM Check for QT and VC dependences
-    FOR /L %%G IN (15,1,19) DO "%VCDIR%\bin\cl.exe" /? 2>&1 | findstr /C:"Version %%G" > nul && SET MSVC_MAJOR_VERSION=%%G && GOTO QT_MSVC
+    FOR /L %%G IN (15,1,19) DO "%VCDIR%\bin\cl.exe" /? 2>&1 | findstr /C:"Version %%G" > nul && SET MSVC_MAJOR_VERSION=%%G
 
-    :QT_MSVC
     IF %MSVC_MAJOR_VERSION%==19     SET QT_MSVC_PATH=msvc2015
     IF %MSVC_MAJOR_VERSION%==18     SET QT_MSVC_PATH=msvc2013
     IF %MSVC_MAJOR_VERSION%==17     SET QT_MSVC_PATH=msvc2012
@@ -196,8 +195,8 @@ REM Main function Ends
     IF NOT EXIST "%QTDIR%\..\%QT_MSVC_PATH%"       GOTO err_handle_qt_mismatch
 
     REM get Python version ex. 2.7.1 will get as 27
-    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MAJOR=%%G
-    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print sys.version.split(' ')[0]"') DO SET PYTHON_MINOR=%%G
+    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
+    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
     SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
 
     IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" GOTO err_handle_pythonvirtualenv
@@ -579,15 +578,14 @@ REM Main function Ends
     ECHO Aborting build!
     CD %WD%
     exit /B 1
-    GOTO:eof
+    GOTO EXIT
 
 :USAGE
     ECHO Invalid command line options....
     ECHO Usage: "Make.bat <x86 | amd64 | clean>"
     ECHO.
     exit /B 1
-    GOTO:eof
+    GOTO EXIT
 
 :EXIT
-    endlocal
-    exit /B 0
+
