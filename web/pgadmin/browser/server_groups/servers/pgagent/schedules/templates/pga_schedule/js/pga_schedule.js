@@ -107,7 +107,6 @@ function($, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
             for (; i < l; i++) {
               res.push(_.indexOf(d, String(i + 1)) != -1);
             }
-            console.log(res);
             return res;
           }
 
