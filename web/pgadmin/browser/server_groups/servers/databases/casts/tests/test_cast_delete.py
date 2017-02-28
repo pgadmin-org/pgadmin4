@@ -28,8 +28,8 @@ class CastsDeleteTestCase(BaseTestGenerator):
         self.database_info = parent_node_dict['database'][-1]
         self.db_name = self.database_info['db_name']
         self.server["db"] = self.db_name
-        self.source_type = 'circle'
-        self.target_type = 'line'
+        self.source_type = 'money'
+        self.target_type = 'bigint'
         self.cast_id = cast_utils.create_cast(self.server, self.source_type,
                                               self.target_type)
 

@@ -32,6 +32,11 @@ class ResourceGroupsPutTestCase(BaseTestGenerator):
             if server_response["data"]["type"] == "pg":
                 message = "Resource groups are not supported by PG."
                 self.skipTest(message)
+            else:
+                if server_response["data"]["version"] < 90400:
+                    message = "Resource groups are not supported by PPAS 9.3" \
+                              " and below."
+                    self.skipTest(message)
         self.resource_group_name = "test_resource_group_put%s" % \
                                    str(uuid.uuid4())[1:6]
         self.resource_group_id = resource_groups_utils.create_resource_groups(

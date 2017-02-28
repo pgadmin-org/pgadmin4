@@ -29,7 +29,7 @@ class ExtensionsPutTestCase(BaseTestGenerator):
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
         self.schema_name = self.schema_data['schema_name']
-        self.extension_name = "postgres_fdw"
+        self.extension_name = "cube"
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.extension_id = extension_utils.create_extension(
             self.server, self.db_name, self.extension_name, self.schema_name)

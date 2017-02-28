@@ -16,6 +16,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
+from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class ViewsAddTestCase(BaseTestGenerator):
@@ -67,6 +68,13 @@ class ViewsAddTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
+        server_response = server_utils.connect_server(self, self.server_id)
+
+        if server_response["data"]["version"] < 90300 and "mview" in self.url:
+            message = "Materialized Views are not supported by PG9.2 " \
+                      "and PPAS9.2 and below."
+            self.skipTest(message)
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:

@@ -31,10 +31,8 @@ def get_fdw_data(schema_name, db_user):
                         ]
                 }
             ],
-        "fdwhan": "%s.%s" % (schema_name, "postgres_fdw_handler"),
         "fdwoptions": [],
         "fdwowner": db_user,
-        "fdwvalue": "%s.%s" % (schema_name, "postgres_fdw_validator"),
         "name": "fdw_add_%s" % (str(uuid.uuid4())[1:6])
     }
     return data

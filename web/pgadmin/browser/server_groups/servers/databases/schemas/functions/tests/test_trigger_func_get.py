@@ -16,6 +16,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from . import utils as trigger_funcs_utils
+from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class TriggerFuncGetTestCase(BaseTestGenerator):
@@ -30,16 +31,26 @@ class TriggerFuncGetTestCase(BaseTestGenerator):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = parent_node_dict["schema"][-1]["schema_name"]
         self.schema_id = parent_node_dict["schema"][-1]["schema_id"]
-        func_name = "test_event_get_%s" % str(uuid.uuid4())[1:6]
-        db_user = self.server["username"]
-        self.function_info = trigger_funcs_utils.create_trigger_function(
-            self.server, self.db_name, self.schema_name, func_name)
 
     def runTest(self):
         """ This function will delete trigger function under database node. """
         schema_info = parent_node_dict["schema"][-1]
         server_id = schema_info["server_id"]
         db_id = schema_info["db_id"]
+        func_name = "test_event_get_%s" % str(uuid.uuid4())[1:6]
+        db_user = self.server["username"]
+        server_con = server_utils.connect_server(self, server_id)
+        if not server_con["info"] == "Server connected.":
+            raise Exception("Could not connect to server to add resource "
+                            "groups.")
+        server_version = 0
+        if "type" in server_con["data"]:
+            if server_con["data"]["version"] < 90300:
+                server_version = server_con["data"]["version"]
+        self.function_info = trigger_funcs_utils.create_trigger_function(
+            self.server, self.db_name, self.schema_name, func_name,
+            server_version)
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  server_id, db_id)
         if not db_con['data']["connected"]:

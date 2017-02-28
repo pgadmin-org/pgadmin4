@@ -37,7 +37,7 @@ class UserMappingDeleteTestCase(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.extension_name = "postgres_fdw"
+        self.extension_name = "cube"
         self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:6])
         self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:6])
         self.extension_id = extension_utils.create_extension(

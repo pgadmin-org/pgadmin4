@@ -46,7 +46,7 @@ class PackagePutTestCase(BaseTestGenerator):
         if server_con:
             if "type" in server_con["data"]:
                 if server_con["data"]["type"] == "pg":
-                    message = "Packages not supported by PostgreSQL."
+                    message = "Packages are not supported by PG."
                     self.skipTest(message)
 
         self.package_id = package_utils.create_package(self.server,

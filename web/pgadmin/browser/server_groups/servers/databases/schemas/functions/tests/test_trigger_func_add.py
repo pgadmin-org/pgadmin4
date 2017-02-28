@@ -16,6 +16,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
+from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class TriggerFuncAddTestCase(BaseTestGenerator):
@@ -32,6 +33,15 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         server_id = schema_info["server_id"]
         db_id = schema_info["db_id"]
+        prorettypename = "event_trigger/trigger"
+        server_con = server_utils.connect_server(self, server_id)
+        if not server_con["info"] == "Server connected.":
+            raise Exception("Could not connect to server to add resource "
+                            "groups.")
+        if "type" in server_con["data"]:
+            if server_con["data"]["version"] < 90300:
+                prorettypename = "trigger"
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  server_id, db_id)
         if not db_con['data']["connected"]:
@@ -66,7 +76,7 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
             "options": [],
             "proleakproof": True,
             "pronamespace": 2200,
-            "prorettypename": "event_trigger/trigger",
+            "prorettypename": prorettypename,
             "prosecdef": True,
             "prosrc": "BEGIN RAISE EXCEPTION 'command % is disabled',"
                       " tg_tag; END;",

@@ -31,8 +31,8 @@ def create_fts_parser(server, db_name, schema_name, fts_parser_name):
         pg_cursor.execute(query)
 
         query = "CREATE TEXT SEARCH PARSER " + schema_name + "." + fts_parser_name + \
-                "(START=int4_accum, GETTOKEN=gist_box_penalty, " \
-                "END=btfloat4sortsupport, LEXTYPES=dsynonym_init)"
+                "(START=prsd_start, GETTOKEN=prsd_nexttoken, " \
+                "END=prsd_end, LEXTYPES=dispell_init)"
 
         pg_cursor.execute(query)
         connection.commit()

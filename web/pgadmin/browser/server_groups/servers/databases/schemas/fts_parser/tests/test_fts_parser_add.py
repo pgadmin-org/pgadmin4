@@ -55,11 +55,11 @@ class FtsParserAddTestCase(BaseTestGenerator):
             {
                 "name": "fts_parser_%s" % str(uuid.uuid4())[1:4],
                 "schema": self.schema_id,
-                "prsend": "btfloat4sortsupport",
+                "prsend": "prsd_end",
                 "prsheadline": "prsd_headline",
                 "prslextype": "dsynonym_init",
-                "prsstart": "int4_accum",
-                "prstoken": "gist_box_penalty"
+                "prsstart": "prsd_start",
+                "prstoken": "prsd_nexttoken"
             }
 
         response = self.tester.post(

@@ -13,7 +13,8 @@ import sys
 from regression import test_utils as utils
 
 
-def create_trigger_function(server, db_name, schema_name, func_name):
+def create_trigger_function(server, db_name, schema_name, func_name,
+                            server_version=0):
     """This function add the trigger function to schema"""
     try:
         connection = utils.get_db_connection(db_name,
@@ -22,10 +23,13 @@ def create_trigger_function(server, db_name, schema_name, func_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
+        r_type = "event_trigger"
+        if server_version != 0:
+            r_type = "trigger"
         query = "CREATE FUNCTION "+schema_name+"."+func_name+"()" \
-                " RETURNS event_trigger LANGUAGE 'plpgsql' STABLE LEAKPROOF" \
+                " RETURNS {0} LANGUAGE 'plpgsql' STABLE LEAKPROOF" \
                 " SECURITY DEFINER SET enable_sort=true AS $BODY$ BEGIN" \
-                " NULL; END; $BODY$"
+                " NULL; END; $BODY$".format(r_type)
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created function

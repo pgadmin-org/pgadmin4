@@ -32,6 +32,11 @@ class ResourceGroupsAddTestCase(BaseTestGenerator):
             if server_con["data"]["type"] == "pg":
                 message = "Resource groups are not supported by PG."
                 self.skipTest(message)
+            else:
+                if server_con["data"]["version"] < 90400:
+                    message = "Resource groups are not supported by PPAS 9.3" \
+                              " and below."
+                    self.skipTest(message)
 
     def runTest(self):
         """This function will add resource groups under server node"""

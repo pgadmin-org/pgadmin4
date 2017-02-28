@@ -35,10 +35,7 @@ class FDWDGetTestCase(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.extension_name = "postgres_fdw"
         self.fdw_name = "fdw_{0}".format(str(uuid.uuid4())[1:4])
-        self.extension_id = extension_utils.create_extension(
-            self.server, self.db_name, self.extension_name, self.schema_name)
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
@@ -51,10 +48,6 @@ class FDWDGetTestCase(BaseTestGenerator):
                                                  self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        extension_response = extension_utils.verify_extension(
-            self.server, self.db_name, self.extension_name)
-        if not extension_response:
-            raise Exception("Could not find extension.")
         response = self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' + str(
                 self.server_id) + '/' +
@@ -65,7 +58,5 @@ class FDWDGetTestCase(BaseTestGenerator):
     def tearDown(self):
         """This function disconnect the test database and drop added extension
          and dependant objects."""
-        extension_utils.drop_extension(self.server, self.db_name,
-                                       self.extension_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

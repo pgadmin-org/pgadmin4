@@ -39,11 +39,15 @@ class SynonymPutTestCase(BaseTestGenerator):
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
         server_con = server_utils.connect_server(self, self.server_id)
+        self.server_version = 0
         if server_con:
             if "type" in server_con["data"]:
                 if server_con["data"]["type"] == "pg":
-                    message = "Synonym not supported by PG."
+                    message = "Synonym are not supported by PG."
                     self.skipTest(message)
+                else:
+                    if server_con["data"]["version"] >= 90200:
+                        self.server_version = server_con["data"]["version"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
@@ -76,7 +80,8 @@ class SynonymPutTestCase(BaseTestGenerator):
             raise Exception("No synonym node to update.")
         func_name = "test_function_synonym_%s" % str(uuid.uuid4())[1:6]
         self.table_id = functions_utils.create_trigger_function(
-            self.server, self.db_name, self.schema_name, func_name)
+            self.server, self.db_name, self.schema_name, func_name,
+            self.server_version)
 
         data = {
             "name": self.synonym_name,

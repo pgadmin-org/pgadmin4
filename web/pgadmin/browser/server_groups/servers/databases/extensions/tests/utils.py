@@ -15,10 +15,9 @@ from regression.test_utils import get_db_connection
 
 def get_extension_data(schema_name):
     data = {
-        "name": "postgres_fdw",
+        "name": "cube",
         "relocatable": "true",
-        "schema": schema_name,
-        "version": "1.0"
+        "schema": schema_name
     }
     return data
 

@@ -18,6 +18,7 @@ from regression import test_utils as utils
 from regression import parent_node_dict
 from regression import trigger_funcs_utils
 from . import utils as event_trigger_utils
+from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class EventTriggerGetTestCase(BaseTestGenerator):
@@ -39,8 +40,19 @@ class EventTriggerGetTestCase(BaseTestGenerator):
         self.db_user = self.server["username"]
         self.func_name = "trigger_func_%s" % str(uuid.uuid4())[1:6]
         self.trigger_name = "event_trigger_get_%s" % (str(uuid.uuid4())[1:6])
+        server_con = server_utils.connect_server(self, self.server_id)
+        if not server_con["info"] == "Server connected.":
+            raise Exception("Could not connect to server to add resource "
+                            "groups.")
+        server_version = 0
+        if "type" in server_con["data"]:
+            if server_con["data"]["version"] < 90300:
+                message = "Event triggers are not supported by PG9.2 " \
+                          "and PPAS9.2 and below."
+                self.skipTest(message)
         self.function_info = trigger_funcs_utils.create_trigger_function(
-            self.server, self.db_name, self.schema_name, self.func_name)
+            self.server, self.db_name, self.schema_name, self.func_name,
+            server_version)
         self.event_trigger_id = event_trigger_utils.create_event_trigger(
             self.server, self.db_name, self.schema_name, self.func_name,
             self.trigger_name)
