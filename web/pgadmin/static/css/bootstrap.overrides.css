@@ -1407,10 +1407,12 @@ table.backgrid {
 /* make syntax-highlighting bold */
 .cm-s-default .cm-keyword {
   font-weight: 600;
+  color: #908;
 }
 
 .cm-s-default .cm-number {
   font-weight: 600;
+  color: #964;
 }
 
 .pgadmin-controls.sql_field_layout {
