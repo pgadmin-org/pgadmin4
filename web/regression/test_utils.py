@@ -211,7 +211,7 @@ def drop_tablespace(connection):
 def create_server(server):
     """This function is used to create server"""
     try:
-        conn = sqlite3.connect(config.SQLITE_PATH)
+        conn = sqlite3.connect(config.TEST_SQLITE_PATH)
         # Create the server
         cur = conn.cursor()
         server_details = (1, SERVER_GROUP, server['name'], server['host'],
@@ -334,7 +334,7 @@ def get_db_password(config_servers, name, host, db_port):
 
 def get_db_server(sid):
     connection = ''
-    conn = sqlite3.connect(config.SQLITE_PATH)
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
     cur = conn.cursor()
     server = cur.execute('SELECT name, host, port, maintenance_db,'
                          ' username FROM server where id=%s' % sid)
@@ -361,8 +361,8 @@ def get_db_server(sid):
 
 def remove_db_file():
     """This function use to remove SQLite DB file"""
-    if os.path.isfile(config.SQLITE_PATH):
-        os.remove(config.SQLITE_PATH)
+    if os.path.isfile(config.TEST_SQLITE_PATH):
+        os.remove(config.TEST_SQLITE_PATH)
 
 
 def _drop_objects(tester):

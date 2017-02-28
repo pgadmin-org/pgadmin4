@@ -176,10 +176,11 @@ MAX_SESSION_IDLE_TIME = 60
 # The default path to the SQLite database used to store user accounts and
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
-SQLITE_PATH = os.path.join(
-    DATA_DIR,
-    'pgadmin4.db'
-)
+SQLITE_PATH = os.environ.get("SQLITE_PATH") or \
+              os.path.join(
+                  DATA_DIR,
+                  'pgadmin4.db'
+              )
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
 # OperationError due to database lock. On slower system, you may need to change
 # this to some higher value.

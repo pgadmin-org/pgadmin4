@@ -16,10 +16,13 @@ class AppStarter:
 
     def start_app(self):
         random_server_port = str(random.randint(10000, 65535))
-        env = {"PGADMIN_PORT": random_server_port}
+        env = {
+            "PGADMIN_PORT": random_server_port,
+            "SQLITE_PATH": self.app_config.TEST_SQLITE_PATH
+               }
         env.update(os.environ)
 
-        self.pgadmin_process = subprocess.Popen(["python", "pgAdmin4.py", "magic-portal", random_server_port],
+        self.pgadmin_process = subprocess.Popen(["python", "pgAdmin4.py"],
                                                 shell=False,
                                                 preexec_fn=os.setsid,
                                                 stderr=open(os.devnull, 'w'),
