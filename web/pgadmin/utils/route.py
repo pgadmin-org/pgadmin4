@@ -96,3 +96,7 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setTestClient(cls, test_client):
         cls.tester = test_client
+
+    @classmethod
+    def setDriver(cls, driver):
+        cls.driver = driver

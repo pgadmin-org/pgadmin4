@@ -365,7 +365,7 @@ def remove_db_file():
         os.remove(config.TEST_SQLITE_PATH)
 
 
-def _drop_objects(tester):
+def _cleanup(tester, app_starter):
     """This function use to cleanup the created the objects(servers, databases,
      schemas etc) during the test suite run"""
     try:
@@ -404,11 +404,12 @@ def _drop_objects(tester):
         logout_tester_account(tester)
         # Remove SQLite db file
         remove_db_file()
+        app_starter.stop_app()
 
 
-def get_cleanup_handler(tester):
+def get_cleanup_handler(tester, app_starter):
     """This function use to bind variable to drop_objects function"""
-    return partial(_drop_objects, tester)
+    return partial(_cleanup, tester, app_starter)
 
 
 class Database:

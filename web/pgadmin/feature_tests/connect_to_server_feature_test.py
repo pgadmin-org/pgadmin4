@@ -40,7 +40,6 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
 
     def tearDown(self):
         self.page.remove_server(self.server)
-        self.app_starter.stop_app()
 
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],
