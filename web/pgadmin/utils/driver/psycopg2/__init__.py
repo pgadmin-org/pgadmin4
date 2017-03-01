@@ -42,8 +42,6 @@ else:
 
 _ = gettext
 
-ASYNC_WAIT_TIMEOUT = 0.01  # in seconds or 10 milliseconds
-
 # This registers a unicode type caster for datatype 'RECORD'.
 psycopg2.extensions.register_type(
     psycopg2.extensions.new_type((2249,), "RECORD",
@@ -696,7 +694,7 @@ WHERE
             self.__notices = []
             self.execution_aborted = False
             cur.execute(query, params)
-            res = self._wait_timeout(cur.connection, ASYNC_WAIT_TIMEOUT)
+            res = self._wait_timeout(cur.connection)
         except psycopg2.Error as pe:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(u"""
@@ -1003,7 +1001,7 @@ Failed to reset the connection to the server due to following error:
             else:
                 raise psycopg2.OperationalError("poll() returned %s from _wait function" % state)
 
-    def _wait_timeout(self, conn, time):
+    def _wait_timeout(self, conn):
         """
         This function is used for the asynchronous connection,
         it will call poll method and return the status. If state is
@@ -1021,7 +1019,7 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_WRITE:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([], [conn.fileno()], [], time)
+            timeout_status = select.select([], [conn.fileno()], [])
             if timeout_status == ([], [], []):
                 return self.ASYNC_WRITE_TIMEOUT
 
@@ -1034,16 +1032,25 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_READ:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([conn.fileno()], [], [], time)
+            timeout_status = select.select([conn.fileno()], [], [])
             if timeout_status == ([], [], []):
                 return self.ASYNC_READ_TIMEOUT
 
-            # poll again to check the state if it is still POLL_READ
-            # then return ASYNC_READ_TIMEOUT else return ASYNC_OK.
-            state = conn.poll()
-            if state == psycopg2.extensions.POLL_READ:
-                return self.ASYNC_READ_TIMEOUT
-            return self.ASYNC_OK
+            # select.select timeout option works only if we provide
+            #  empty [] [] [] file descriptor in select.select() function
+            # and that also works only on UNIX based system, it do not support Windows
+            # Hence we have wrote our own pooling mechanism to read data fast
+            # each call conn.poll() reads chunks of data from connection object
+            # more we poll more we read data from connection
+            cnt = 0
+            while cnt < 1000:
+                # poll again to check the state if it is still POLL_READ
+                # then return ASYNC_READ_TIMEOUT else return ASYNC_OK.
+                state = conn.poll()
+                if state == psycopg2.extensions.POLL_OK:
+                    return self.ASYNC_OK
+                cnt += 1
+            return self.ASYNC_READ_TIMEOUT
         else:
             raise psycopg2.OperationalError(
                 "poll() returned %s from _wait_timeout function" % state
@@ -1075,42 +1082,48 @@ Failed to reset the connection to the server due to following error:
         )
 
         try:
-            status = self._wait_timeout(self.conn, ASYNC_WAIT_TIMEOUT)
+            status = self._wait_timeout(self.conn)
         except psycopg2.Error as pe:
-            if cur.closed:
+            if self.conn.closed:
                 raise ConnectionLost(
                     self.manager.sid,
                     self.db,
                     self.conn_id[5:]
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
-            return False, errmsg, None
+            return False, errmsg
 
         if self.conn.notices and self.__notices is not None:
             while self.conn.notices:
                 self.__notices.append(self.conn.notices.pop(0)[:])
 
-        colinfo = None
         result = None
         self.row_count = 0
+        self.column_info = None
+
         if status == self.ASYNC_OK:
 
             # if user has cancelled the transaction then changed the status
             if self.execution_aborted:
                 status = self.ASYNC_EXECUTION_ABORTED
                 self.execution_aborted = False
-                return status, result, colinfo
+                return status, result
 
             # Fetch the column information
             if cur.description is not None:
-                colinfo = [
+                self.column_info = [
                     desc.to_dict() for desc in cur.ordered_description()
                 ]
 
+                pos = 0
+                for col in self.column_info:
+                    col['pos'] = pos
+                    pos = pos + 1
+
             self.row_count = cur.rowcount
+
             if cur.rowcount > 0:
                 result = []
-
                 # For DDL operation, we may not have result.
                 #
                 # Because - there is not direct way to differentiate DML and
@@ -1118,10 +1131,15 @@ Failed to reset the connection to the server due to following error:
                 # out at the moment.
                 try:
                     for row in cur:
-                        result.append(dict(row))
+                        new_row = []
+                        for col in self.column_info:
+                            new_row.append(row[col['name']])
+                        result.append(new_row)
+
                 except psycopg2.ProgrammingError:
                     result = None
-        return status, result, colinfo
+
+        return status, result
 
     def status_message(self):
         """
@@ -1147,6 +1165,14 @@ Failed to reset the connection to the server due to following error:
         """
 
         return self.row_count
+
+    def get_column_info(self):
+        """
+        This function will returns list of columns for last async sql command
+        executed on the server.
+        """
+
+        return self.column_info
 
     def cancel_transaction(self, conn_id, did=None):
         """

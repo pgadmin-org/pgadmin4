@@ -881,7 +881,7 @@ def messages(trans_id):
     port_number = ''
 
     if conn.connected():
-        status, result, my_result = conn.poll()
+        status, result = conn.poll()
         notify = conn.messages()
         if notify:
             # In notice message we need to find "PLDBGBREAK" string to find the port number to attach.
@@ -1363,7 +1363,7 @@ def poll_end_execution_result(trans_id):
         statusmsg = conn.status_message()
         if statusmsg and statusmsg == 'SELECT 1':
             statusmsg = ''
-        status, result, col_info = conn.poll()
+        status, result = conn.poll()
         if status == ASYNC_OK and \
                 not session['functionData'][str(trans_id)]['is_func'] and \
                 session['functionData'][str(trans_id)]['language'] == 'edbspl':
@@ -1396,6 +1396,7 @@ def poll_end_execution_result(trans_id):
                         statusmsg = additional_msgs
 
                 columns = []
+                col_info = conn.get_column_info()
                 # Check column info is available or not
                 if col_info is not None and len(col_info) > 0:
                     for col in col_info:
@@ -1404,6 +1405,21 @@ def poll_end_execution_result(trans_id):
                         column['name'] = items[0][1]
                         column['type_code'] = items[1][1]
                         columns.append(column)
+
+                # We need to convert result from 2D array to dict for BackGrid
+                # BackGrid do not support for 2D array result as it it Backbone Model based grid
+                # This Conversion is not an overhead as most of the time
+                # result will be smaller
+                _tmp_result = []
+                for row in result:
+                    temp = dict()
+                    count = 0
+                    for item in row:
+                        temp[columns[count]['name']] = item
+                        count += 1
+                    _tmp_result.append(temp)
+                # Replace 2d array with dict result
+                result = _tmp_result
 
                 return make_json_response(success=1, info=gettext("Execution Completed."),
                                           data={'status': status, 'result': result,
@@ -1453,7 +1469,7 @@ def poll_result(trans_id):
     conn = manager.connection(did=obj['database_id'], conn_id=obj['exe_conn_id'])
 
     if conn.connected():
-        status, result, my_result = conn.poll()
+        status, result = conn.poll()
         if status == ASYNC_OK and result is not None:
             status = 'Success'
         else:

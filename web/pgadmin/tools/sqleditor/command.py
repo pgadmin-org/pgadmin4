@@ -418,6 +418,14 @@ class TableCommand(GridCommand):
         list_of_sql = []
         _rowid = None
 
+        # Replace column positions with names
+        def set_column_names(data):
+            new_data = {}
+            for key in data:
+                new_data[changed_data['columns'][int(key)]['name']] = data[key]
+
+            return new_data
+
         if conn.connected():
 
             # Start the transaction
@@ -425,8 +433,10 @@ class TableCommand(GridCommand):
 
             # Iterate total number of records to be updated/inserted
             for of_type in changed_data:
-
-                # if no data to be saved then continue
+                # No need to go further if its not add/update/delete operation
+                if of_type not in ('added', 'updated', 'deleted'):
+                    continue
+                # if no data to be save then continue
                 if len(changed_data[of_type]) < 1:
                     continue
 
@@ -434,10 +444,12 @@ class TableCommand(GridCommand):
                 if of_type == 'added':
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
-                        data_type = changed_data[of_type][each_row]['data_type']
-                        list_of_rowid.append(data.get('__temp_PK'))
                         # Remove our unique tracking key
                         data.pop('__temp_PK', None)
+                        data = set_column_names(data)
+                        data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
+                        list_of_rowid.append(data.get('__temp_PK'))
+
                         sql = render_template("/".join([self.sql_path, 'insert.sql']),
                                               data_to_be_saved=data,
                                               primary_keys=None,
@@ -449,9 +461,9 @@ class TableCommand(GridCommand):
                 # For updated rows
                 elif of_type == 'updated':
                     for each_row in changed_data[of_type]:
-                        data = changed_data[of_type][each_row]['data']
-                        pk = changed_data[of_type][each_row]['primary_keys']
-                        data_type = changed_data[of_type][each_row]['data_type']
+                        data = set_column_names(changed_data[of_type][each_row]['data'])
+                        pk = set_column_names(changed_data[of_type][each_row]['primary_keys'])
+                        data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
                         sql = render_template("/".join([self.sql_path, 'update.sql']),
                                               data_to_be_saved=data,
                                               primary_keys=pk,
@@ -472,10 +484,22 @@ class TableCommand(GridCommand):
                         # Fetch the keys for SQL generation
                         if is_first:
                             # We need to covert dict_keys to normal list in Python3
-                            # In Python2, it's already a list
-                            keys = list(changed_data[of_type][each_row].keys())
+                            # In Python2, it's already a list & We will also fetch column names using index
+                            keys = [
+                                changed_data['columns'][int(k)]['name']
+                                       for k in list(changed_data[of_type][each_row].keys())
+                            ]
                             no_of_keys = len(keys)
                             is_first = False
+                    # Map index with column name for each row
+                    for row in rows_to_delete:
+                        for k, v in row.items():
+                            # Set primary key with label & delete index based mapped key
+                            try:
+                                row[keys[int(k)]] = v
+                            except ValueError:
+                                continue
+                            del row[k]
 
                     sql = render_template("/".join([self.sql_path, 'delete.sql']),
                                           data=rows_to_delete,

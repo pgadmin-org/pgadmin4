@@ -420,6 +420,43 @@ def preferences(trans_id):
         return success_return()
 
 
+@blueprint.route('/columns/<int:trans_id>', methods=["GET"])
+@login_required
+def get_columns(trans_id):
+    """
+    This method will returns list of columns of last async query.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    columns = dict()
+    columns_info = None
+    primary_keys = None
+    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    if status and conn is not None and session_obj is not None:
+        # Check PK column info is available or not
+        if 'primary_keys' in session_obj:
+            primary_keys = session_obj['primary_keys']
+
+        # Fetch column information
+        columns_info = conn.get_column_info()
+        if columns_info is not None:
+            for col in columns_info:
+                col_type = dict()
+                col_type['type_code'] = col['type_code']
+                col_type['type_name'] = None
+                columns[col['name']] = col_type
+
+        # As we changed the transaction object we need to
+        # restore it and update the session variable.
+        session_obj['columns_info'] = columns
+        update_session_grid_transaction(trans_id, session_obj)
+
+    return make_json_response(data={'status': True,
+                                    'columns': columns_info,
+                                    'primary_keys': primary_keys})
+
+
 @blueprint.route('/poll/<int:trans_id>', methods=["GET"])
 @login_required
 def poll(trans_id):
@@ -429,20 +466,19 @@ def poll(trans_id):
     Args:
         trans_id: unique transaction id
     """
-    col_info = None
     result = None
-    primary_keys = None
     rows_affected = 0
     additional_result = []
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
-        status, result, col_info = conn.poll()
+        status, result = conn.poll()
         if status == ASYNC_OK:
             status = 'Success'
             if 'primary_keys' in session_obj:
                 primary_keys = session_obj['primary_keys']
+            rows_affected = conn.rows_affected()
 
             # if transaction object is instance of QueryToolCommand
             # and transaction aborted for some reason then issue a
@@ -464,22 +500,6 @@ def poll(trans_id):
         status = 'NotConnected'
         result = error_msg
 
-    # Check column info is available or not
-    if col_info is not None and len(col_info) > 0:
-        columns = dict()
-        rows_affected = conn.rows_affected()
-
-        for col in col_info:
-            col_type = dict()
-            col_type['type_code'] = col['type_code']
-            col_type['type_name'] = None
-            columns[col['name']] = col_type
-
-        # As we changed the transaction object we need to
-        # restore it and update the session variable.
-        session_obj['columns_info'] = columns
-        update_session_grid_transaction(trans_id, session_obj)
-
     """
         Procedure/Function output may comes in the form of Notices from the
         database server, so we need to append those outputs with the
@@ -497,8 +517,6 @@ def poll(trans_id):
         else:
             result = additional_result
 
-        rows_affected = conn.rows_affected()
-
     # There may be additional messages even if result is present
     # eg: Function can provide result as well as RAISE messages
     additional_messages = None
@@ -510,7 +528,6 @@ def poll(trans_id):
     return make_json_response(
         data={
             'status': status, 'result': result,
-            'colinfo': col_info, 'primary_keys': primary_keys,
             'rows_affected': rows_affected,
             'additional_messages': additional_messages
         }

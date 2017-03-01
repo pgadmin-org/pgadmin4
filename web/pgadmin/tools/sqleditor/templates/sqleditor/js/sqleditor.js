@@ -577,6 +577,15 @@ define(
            - We are using this event for Copy operation on grid
        */
 
+      // Get the item column value using a custom 'fieldIdx' column param
+      get_item_column_value: function (item, column) {
+        if (column.pos !== undefined) {
+          return item[column.pos];
+        } else {
+          return null;
+        }
+      },
+
       // This function is responsible to create and render the SlickGrid.
       render_grid: function(collection, columns, is_editable) {
         var self = this;
@@ -617,6 +626,7 @@ define(
         _.each(columns, function(c) {
             var options = {
               id: c.name,
+              pos: c.pos,
               field: c.name,
               name: c.label
             };
@@ -652,7 +662,8 @@ define(
           enableCellNavigation: true,
           enableColumnReorder: false,
           asyncEditorLoading: false,
-          autoEdit: false
+          autoEdit: false,
+          dataItemColumnValueExtractor: this.get_item_column_value
         };
 
         var $data_grid = self.$el.find('#datagrid');
@@ -705,11 +716,26 @@ define(
         if (editor_data.selection) {
            editor_data.selection.onSelectedRangesChanged.subscribe(function(e, args) {
              var collection = this.grid.getData(),
-               _pk = _.keys(this.keys),
+               primary_key_list = _.keys(this.keys),
+               _tmp_keys = [],
+               _columns = this.columns,
                rows_for_stage = {}, selected_rows_list = [];
+
                // Only if entire row(s) are selected via check box
                if(_.has(this.selection, 'getSelectedRows')) {
                  selected_rows_list = this.selection.getSelectedRows();
+                 // We will map selected row primary key name with position
+                 // For each Primary key
+                 _.each(primary_key_list, function(p) {
+                   // For each columns search primary key position
+                   _.each(_columns, function(c) {
+                      if(c.name == p) {
+                        _tmp_keys.push(c.pos);
+                      }
+                   });
+                 });
+                 // Now assign mapped temp PK to PK
+                 primary_key_list =  _tmp_keys;
                }
 
               // If any row(s) selected ?
@@ -717,12 +743,14 @@ define(
                 if(this.editor.handler.can_edit)
                   // Enable delete rows button
                   $("#btn-delete-row").prop('disabled', false);
+
                 // Enable copy rows button
                 $("#btn-copy-row").prop('disabled', false);
                 // Collect primary key data from collection as needed for stage row
                 _.each(selected_rows_list, function(row_index) {
-                  var row_data = collection[row_index], _selected = {};
-                  rows_for_stage[row_data.__temp_PK] = _.pick(row_data, _pk);
+                  var row_data = collection[row_index];
+                  // Store Primary key data for selected rows
+                  rows_for_stage[row_data.__temp_PK] = _.pick(row_data, primary_key_list);
                 });
               } else {
                 // Clear the object as no rows to delete
@@ -733,7 +761,7 @@ define(
               }
 
              // Update main data store
-            this.editor.handler.data_store.staged_rows = rows_for_stage;
+             this.editor.handler.data_store.staged_rows = rows_for_stage;
            }.bind(editor_data));
         }
 
@@ -742,7 +770,7 @@ define(
         // This will be used to collect primary key for that row
         grid.onBeforeEditCell.subscribe(function (e, args) {
             var before_data = args.item;
-            if(before_data && '__temp_PK' in before_data) {
+            if(self.handler.can_edit && before_data && '__temp_PK' in before_data) {
               var _pk = before_data.__temp_PK,
                 _keys = self.handler.primary_keys,
                 current_pk = {}, each_pk_key = {};
@@ -753,8 +781,10 @@ define(
               }
 
               // Fetch primary keys for the row before they gets modified
+              var _columns = self.handler.columns;
               _.each(_keys, function(value, key) {
-                current_pk[key] = before_data[key];
+                pos = _.where(_columns, {name: key})[0]['pos']
+                current_pk[pos] = before_data[pos];
               });
               // Place it in main variable for later use
               self.handler.primary_keys_data[_pk] = current_pk
@@ -787,8 +817,8 @@ define(
             // Fetch current row data from grid
             column_values = grid.getDataItem(row, cell)
             //  Get the value from cell
-            value = column_values[column_info.field] || '';
-            //Copy this value to Clipborad
+            value = column_values[column_info.pos] || '';
+            // Copy this value to Clipboard
             if(value)
               this.editor.handler.copyTextToClipboard(value);
             // Go to cell again
@@ -801,7 +831,7 @@ define(
         // Listener function which will be called when user updates existing rows
         grid.onCellChange.subscribe(function (e, args) {
           // self.handler.data_store.updated will holds all the updated data
-          var changed_column = args.grid.getColumns()[args.cell].field, // Current filed name
+          var changed_column = args.grid.getColumns()[args.cell].pos, // Current field pos
             updated_data = args.item[changed_column],                   // New value for current field
             _pk = args.item.__temp_PK || null,                          // Unique key to identify row
             column_data = {},
@@ -817,7 +847,7 @@ define(
                   column_data);
               //Find type for current column
               self.handler.data_store.added[_pk]['err'] = false
-              self.handler.data_store.added[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
+              self.handler.data_store.added[_pk]['data_type'][changed_column] = _.where(this.columns, {pos: changed_column})[0]['type'];
             // Check if it is updated data from existing rows?
             } else if(_pk in self.handler.data_store.updated) {
               _.extend(
@@ -827,7 +857,7 @@ define(
               self.handler.data_store.updated[_pk]['err'] = false
 
              //Find type for current column
-             self.handler.data_store.updated[_pk]['data_type'][changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
+             self.handler.data_store.updated[_pk]['data_type'][changed_column] = _.where(this.columns, {pos: changed_column})[0]['type'];
             } else {
               // First updated data for this primary key
               self.handler.data_store.updated[_pk] = {
@@ -837,7 +867,7 @@ define(
               self.handler.data_store.updated_index[args.row] = _pk;
               // Find & add column data type for current changed column
               var temp = {};
-              temp[changed_column] = _.where(this.columns, {name: changed_column})[0]['type'];
+              temp[changed_column] = _.where(this.columns, {pos: changed_column})[0]['type'];
               self.handler.data_store.updated[_pk]['data_type'] = temp;
             }
           }
@@ -860,7 +890,7 @@ define(
           self.handler.data_store.added_index[data_length] = _key;
           // Fetch data type & add it for the column
           var temp = {};
-          temp[column.field] = _.where(this.columns, {name: column.field})[0]['type'];
+          temp[column.pos] = _.where(this.columns, {pos: column.pos})[0]['type'];
           self.handler.data_store.added[_key]['data_type'] =  temp;
           grid.invalidateRows([collection.length - 1]);
           grid.updateRowCount();
@@ -1666,6 +1696,7 @@ define(
           var self = this;
           self.query_start_time = new Date();
           self.rows_affected = 0;
+          self._init_polling_flags();
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -1744,6 +1775,74 @@ define(
           });
         },
 
+        // This function makes the ajax call to fetch columns for last async query,
+        get_columns: function(poll_result) {
+          var self = this;
+          // Check the flag and decide if we need to fetch columns from server
+          // or use the columns data stored locally from previous call?
+          if (self.FETCH_COLUMNS_FROM_SERVER) {
+            $.ajax({
+              url: "{{ url_for('sqleditor.index') }}" + "columns/" + self.transId,
+              method: 'GET',
+              success: function(res) {
+                poll_result.colinfo = res.data.columns;
+                poll_result.primary_keys = res.data.primary_keys;
+                self.call_render_after_poll(poll_result);
+                // Set a flag to get columns to false & set the value for future use
+                self.FETCH_COLUMNS_FROM_SERVER = false;
+                self.COLUMNS_DATA = res;
+              },
+              error: function(e) {
+                var msg = e.responseText;
+                if (e.responseJSON != undefined && e.responseJSON.errormsg != undefined)
+                  msg = e.responseJSON.errormsg;
+                  alertify.error(msg, 5);
+              }
+            });
+          } else {
+            // Use the previously saved columns data
+            poll_result.colinfo = self.COLUMNS_DATA.data.columns;
+            poll_result.primary_keys = self.COLUMNS_DATA.data.primary_keys;
+            self.call_render_after_poll(poll_result);
+          }
+        },
+
+        // This is a wrapper to call _render function
+        // We need this because we have separated columns route & result route
+        // We need to combine both result here in wrapper before rendering grid
+        call_render_after_poll: function(res) {
+          var self = this;
+          self.query_end_time = new Date();
+          self.rows_affected = res.rows_affected;
+
+          /* If no column information is available it means query
+             runs successfully with no result to display. In this
+             case no need to call render function.
+          */
+          if (res.colinfo != null)
+            self._render(res);
+          else {
+            // Show message in message and history tab in case of query tool
+            self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
+            var msg = S('{{ _('Query returned successfully in %s.') }}').sprintf(self.total_time).value();
+            res.result += "\n\n" + msg;
+            self.update_msg_history(true, res.result, false);
+            // Display the notifier if the timeout is set to >= 0
+            if (self.info_notifier_timeout >= 0) {
+              alertify.success(msg, self.info_notifier_timeout);
+            }
+          }
+
+          // Enable/Disable query tool button only if is_query_tool is true.
+          if (self.is_query_tool) {
+            self.disable_tool_buttons(false);
+            $("#btn-cancel-query").prop('disabled', true);
+          }
+          is_query_running = false;
+          self.trigger('pgadmin-sqleditor:loading-icon:hide');
+        },
+
+
         /* This function makes the ajax call to poll the result,
          * if status is Busy then recursively call the poll function
          * till the status is 'Success' or 'NotConnected'. If status is
@@ -1751,6 +1850,7 @@ define(
          */
         _poll: function() {
           var self = this;
+
           setTimeout(
             function() {
               $.ajax({
@@ -1762,35 +1862,7 @@ define(
                       'pgadmin-sqleditor:loading-icon:message',
                       '{{ _('Loading data from the database server and rendering...') }}'
                     );
-
-                    self.query_end_time = new Date();
-                    self.rows_affected = res.data.rows_affected;
-
-                    /* If no column information is available it means query
-                       runs successfully with no result to display. In this
-                       case no need to call render function.
-                     */
-                    if (res.data.colinfo != null)
-                      self._render(res.data);
-                    else {
-                      // Show message in message and history tab in case of query tool
-                      self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-                      var msg = S('{{ _('Query returned successfully in %s.') }}').sprintf(self.total_time).value();
-                      res.data.result += "\n\n" + msg;
-                      self.update_msg_history(true, res.data.result, false);
-                      // Display the notifier if the timeout is set to >= 0
-                      if (self.info_notifier_timeout >= 0) {
-                          alertify.success(msg, self.info_notifier_timeout);
-                      }
-                    }
-
-                    // Enable/Disable query tool button only if is_query_tool is true.
-                    if (self.is_query_tool) {
-                      self.disable_tool_buttons(false);
-                      $("#btn-cancel-query").prop('disabled', true);
-                    }
-                    is_query_running = false;
-                    self.trigger('pgadmin-sqleditor:loading-icon:hide');
+                    self.get_columns(res.data);
                   }
                   else if (res.data.status === 'Busy') {
                     // If status is Busy then poll the result by recursive call to the poll function
@@ -1837,7 +1909,7 @@ define(
                   self.update_msg_history(false, msg);
                 }
               });
-          }, 1);
+          }, self.POLL_FALLBACK_TIME());
         },
 
         /* This function is used to create the backgrid columns,
@@ -1922,13 +1994,13 @@ define(
                * and add json formatted data to collection and render.
                */
               var explain_data_array = [];
-              if(
+              if (
                 data.result && data.result.length >= 1 &&
-                  data.result[0] && data.result[0].hasOwnProperty(
-                    'QUERY PLAN'
-                  ) && _.isObject(data.result[0]['QUERY PLAN'])
+                data.result[0] && data.result[0][0] && data.result[0][0][0] &&
+                data.result[0][0][0].hasOwnProperty('Plan') &&
+                _.isObject(data.result[0][0][0]['Plan'])
               ) {
-                var explain_data = {'QUERY PLAN' : JSON.stringify(data.result[0]['QUERY PLAN'], null, 2)};
+                var explain_data = [JSON.stringify(data.result[0][0], null, 2)];
                 explain_data_array.push(explain_data);
                 // Make sure - the 'Data Output' panel is visible, before - we
                 // start rendering the grid.
@@ -1942,7 +2014,7 @@ define(
                     // start rendering the grid.
                     self.gridView.explain_panel.focus();
                     pgExplain.DrawJSONPlan(
-                      $('.sql-editor-explain'), data.result[0]['QUERY PLAN']
+                      $('.sql-editor-explain'), data.result[0][0]
                     );
                   }, 10
                 );
@@ -2067,6 +2139,7 @@ define(
 
                   var col = {
                     'name': c.name,
+                    'pos': c.pos,
                     'label': column_label,
                     'cell': col_cell,
                     'can_edit': self.can_edit,
@@ -2278,12 +2351,16 @@ define(
               '{{ _('Saving the updated data...') }}'
             );
 
+            // Add the columns to the data so the server can remap the data
+            req_data = self.data_store
+            req_data.columns = view ? view.handler.columns : self.columns;
+
             // Make ajax call to save the data
             $.ajax({
               url: "{{ url_for('sqleditor.index') }}" + "save/" + self.transId,
               method: 'POST',
               contentType: "application/json",
-              data: JSON.stringify(self.data_store),
+              data: JSON.stringify(req_data),
               success: function(res) {
                 var grid = self.slickgrid,
                   data = grid.getData();
@@ -2592,6 +2669,37 @@ define(
           }
         },
 
+        // This function will set the required flag for polling response data
+        _init_polling_flags: function() {
+          var self = this;
+          // Set a flag to get columns
+          self.FETCH_COLUMNS_FROM_SERVER = true;
+          // We will set columns data in this variable for future use once we fetch it
+          // from server
+          self.COLUMNS_DATA = {};
+
+          // To get a timeout for polling fallback timer in seconds in
+          // regards to elapsed time
+          self.POLL_FALLBACK_TIME = function() {
+            var seconds = parseInt((Date.now() - self.query_start_time.getTime())/1000);
+            // calculate & return fall back polling timeout
+            if(seconds >= 10 && seconds < 30) {
+              return 500;
+            }
+            else if(seconds >= 30 && seconds < 60) {
+              return 1000;
+            }
+            else if(seconds >= 60 && seconds < 90) {
+              return 2000;
+            }
+            else if(seconds >= 90) {
+              return 5000;
+            }
+            else
+              return 1;
+          }
+        },
+
         // This function will show the filter in the text area.
         _show_filter: function() {
           var self = this;
@@ -2663,8 +2771,8 @@ define(
           if (_.isNull(_values) || _.isUndefined(_values))
             return;
 
-          // Add column name and it's' value to data
-          data[column_info.field] = _values[column_info.field] || '';
+          // Add column position and it's value to data
+          data[column_info.pos] = _values[column_info.pos] || '';
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -2733,8 +2841,8 @@ define(
           if (_.isNull(_values) || _.isUndefined(_values))
             return;
 
-          // Add column name and it's' value to data
-          data[column_info.field] = _values[column_info.field] || '';
+          // Add column position and it's value to data
+          data[column_info.pos] = _values[column_info.pos] || '';
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -2971,10 +3079,10 @@ define(
             self.copied_rows.push(_rowData);
             // Convert it as CSV for clipboard
             for (var j = 0; j < self.columns.length; j += 1) {
-               var val = _rowData[self.columns[j].name];
+               var val = _rowData[self.columns[j].pos];
                if(val && _.isObject(val))
                  val = "'" + JSON.stringify(val) + "'";
-               else if(val && typeof val != "number")
+               else if(val && typeof val != "number" && typeof true != "boolean")
                  val = "'" + val.toString() + "'";
                else if (_.isNull(val) || _.isUndefined(val))
                  val = '';
@@ -2995,7 +3103,8 @@ define(
             grid = self.slickgrid,
             data = grid.getData();
             // Deep copy
-            var copied_rows = $.extend(true, [], self.copied_rows);
+            var copied_rows = $.extend(true, [], self.copied_rows),
+            _tmp_copied_row = {};
 
             // If there are rows to paste?
             if(copied_rows.length > 0) {
@@ -3016,7 +3125,7 @@ define(
 
               // Fetch column name & its data type
               _.each(self.columns, function(c) {
-                col_info[c.name] = c.type;
+                col_info[String(c.pos)] = c.type;
               });
 
               // insert these data in data_store as well to save them on server
@@ -3026,16 +3135,22 @@ define(
                   'data': {}
                 };
                 self.data_store.added[copied_rows[j].__temp_PK]['data_type'] = col_info;
+                // We need to convert it from array to dict so that server can
+                // understand the data properly
                 _.each(copied_rows[j], function(val, key) {
                   // If value is array then convert it to string
                   if(_.isArray(val)) {
-                    copied_rows[j][key] = val.toString();
+                    _tmp_copied_row[String(key)] = val.toString();
                   // If value is object then stringify it
                   } else if(_.isObject(val)) {
-                    copied_rows[j][key] = JSON.stringify(val);
+                    _tmp_copied_row[j][String(key)] = JSON.stringify(val);
+                  } else {
+                    _tmp_copied_row[String(key)] = val;
                   }
                 });
-                self.data_store.added[copied_rows[j].__temp_PK]['data'] = copied_rows[j];
+                self.data_store.added[copied_rows[j].__temp_PK]['data'] = _tmp_copied_row;
+                // reset the variable
+                _tmp_copied_row = {};
               }
             }
         },
@@ -3132,7 +3247,7 @@ define(
           self.query_start_time = new Date();
           self.query = sql;
           self.rows_affected = 0;
-
+          self._init_polling_flags();
           self.disable_tool_buttons(true);
           $("#btn-cancel-query").prop('disabled', false);
 

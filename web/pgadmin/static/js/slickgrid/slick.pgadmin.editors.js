@@ -110,11 +110,11 @@
 
     // When text editor opens
     this.loadValue = function (item) {
-      if (item[args.column.field] === "") {
+      if (item[args.column.pos] === "") {
         $input.val("''");
       }
       else {
-        $input.val(defaultValue = item[args.column.field]);
+        $input.val(defaultValue = item[args.column.pos]);
         $input.select();
       }
     };
@@ -141,7 +141,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
@@ -252,7 +252,7 @@
     };
 
     this.loadValue = function (item) {
-      var data = defaultValue = item[args.column.field];
+      var data = defaultValue = item[args.column.pos];
       if (typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
       } else if (Array.isArray(data)) {
@@ -278,7 +278,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
@@ -385,7 +385,7 @@
     };
 
     this.loadValue = function (item) {
-      $input.val(defaultValue = item[args.column.field]);
+      $input.val(defaultValue = item[args.column.pos]);
       $input.select();
     };
 
@@ -394,7 +394,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
@@ -468,12 +468,12 @@
     };
 
     this.loadValue = function (item) {
-      defaultValue = item[args.column.field];
+      defaultValue = item[args.column.pos];
       if (_.isNull(defaultValue)) {
         $select.prop('indeterminate', true);
       }
       else {
-        defaultValue = !!item[args.column.field];
+        defaultValue = !!item[args.column.pos];
         if (defaultValue) {
           $select.prop('checked', true);
         } else {
@@ -490,7 +490,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
@@ -590,7 +590,7 @@
     };
 
     this.loadValue = function (item) {
-      var data = defaultValue = item[args.column.field];
+      var data = defaultValue = item[args.column.pos];
       if (typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
       } else if (Array.isArray(data)) {
@@ -613,7 +613,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
@@ -667,7 +667,7 @@
     };
 
     this.loadValue = function (item) {
-      var value = item[args.column.field];
+      var value = item[args.column.pos];
 
       // Check if value is null or undefined
       if (value === undefined && typeof value === "undefined") {
@@ -819,7 +819,7 @@
     };
 
     this.loadValue = function (item) {
-      defaultValue = item[args.column.field];
+      defaultValue = item[args.column.pos];
       $input.val(defaultValue);
       $input[0].defaultValue = defaultValue;
       $input.select();
@@ -833,7 +833,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.field] = state;
+      item[args.column.pos] = state;
     };
 
     this.isValueChanged = function () {
