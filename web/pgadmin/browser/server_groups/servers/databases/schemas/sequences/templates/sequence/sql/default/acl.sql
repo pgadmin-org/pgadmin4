@@ -18,12 +18,11 @@ FROM
         ELSE 'UNKNOWN'
         END AS privilege_type
     FROM
-        (SELECT relacl
+        aclexplode((SELECT relacl
             FROM pg_class cl
             LEFT OUTER JOIN pg_description des ON (des.objoid=cl.oid AND des.classoid='pg_class'::regclass)
             WHERE relkind = 'S' AND relnamespace  = {{scid}}::oid
-            AND cl.oid = {{seid}}::oid ) acl,
-        aclexplode(relacl) d
+            AND cl.oid = {{seid}}::oid )) d
         ) d
     LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
     LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)
