@@ -43,7 +43,7 @@ class SynonymPutTestCase(BaseTestGenerator):
         if server_con:
             if "type" in server_con["data"]:
                 if server_con["data"]["type"] == "pg":
-                    message = "Synonym are not supported by PG."
+                    message = "Synonyms are not supported by PG."
                     self.skipTest(message)
                 else:
                     if server_con["data"]["version"] >= 90200:
