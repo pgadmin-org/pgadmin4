@@ -244,6 +244,8 @@ REM Main function Ends
     REM Clean up .pyc, .pyo, pgadmin4.db, config_local.py
     ECHO Cleaning up unnecessary files...
     FOR /R "%PGBUILDPATH%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f"
+    FOR /R "%PGBUILDPATH%\web" %%f in (tests feature_tests __pycache__) do RD /Q /S "%%f"
+    RD /Q /S "%PGBUILDPATH%\web\regression"
     DEL /q "%PGBUILDPATH%\web\pgadmin4.db"
     DEL /q "%PGBUILDPATH%\web\config_local.py"
     
@@ -436,6 +438,8 @@ REM Main function Ends
 
     ECHO Cleaning up unnecessary files...
     FOR /R "%PGBUILDPATH%\%VIRTUALENV%" %%f in (*.pyc *.pyo) do DEL /q "%%f"
+    FOR /R "%PGBUILDPATH%\%VIRTUALENV%\Lib" %%f in (test tests) do RD /Q /S "%%f"
+    RD /Q /S "%PGBUILDPATH%\%VIRTUALENV%\tcl"
 
     CD %WD%
     GOTO:eof
