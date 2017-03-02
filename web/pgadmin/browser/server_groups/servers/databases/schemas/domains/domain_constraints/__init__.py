@@ -601,13 +601,12 @@ class DomainConstraintView(PGChildNodeView):
                                         'create.sql']),
                               data=data, domain=domain, schema=schema)
 
-        sql_header = """-- CHECK: {1}.{0}
+        sql_header = u"""-- CHECK: {1}.{0}
 
 -- ALTER DOMAIN {1} DROP CONSTRAINT {0};
 
-""".format(data['name'], schema + '.' + domain)
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+""".format(self.qtIdent(self.conn, data['name']),
+           self.qtIdent(self.conn, schema, domain))
 
         SQL = sql_header + SQL
 

@@ -805,9 +805,7 @@ It may have been removed by another user.
             _=gettext, data=data, conn=self.conn
         )
 
-        sql_header = "-- SCHEMA: {0}\n\n-- ".format(data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+        sql_header = u"-- SCHEMA: {0}\n\n-- ".format(data['name'])
 
         # drop schema
         sql_header += render_template(
@@ -991,14 +989,12 @@ It may have been removed by another user.
             _=gettext, data=old_data, conn=self.conn
         )
 
-        sql_header = """
+        sql_header = u"""
 -- CATALOG: {0}
 
 -- DROP SCHEMA {0};(
 
 """.format(old_data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
 

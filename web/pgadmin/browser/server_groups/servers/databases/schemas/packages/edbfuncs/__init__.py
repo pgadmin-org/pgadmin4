@@ -542,11 +542,9 @@ It may have been removed by another user or moved to another schema.
         if not status:
             return internal_server_error(errormsg=res)
 
-        sql = "-- Package {}: {}".format(
+        sql = u"-- Package {}: {}".format(
             'Function' if self.node_type == 'edbfunc' else 'Procedure',
             name)
-        if hasattr(str, 'decode'):
-            sql = sql.decode('utf-8')
         if body != '':
             sql += "\n\n"
             sql += body

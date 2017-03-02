@@ -579,18 +579,15 @@ class FtsDictionaryView(PGChildNodeView):
             except ValueError:
                 data[k] = v
 
-        try:
-            # Fetch sql query for modified data
-            SQL, name = self.get_sql(gid, sid, did, scid, data, dcid)
-            if SQL == '':
-                SQL = "--modified SQL"
+        # Fetch sql query for modified data
+        SQL, name = self.get_sql(gid, sid, did, scid, data, dcid)
+        if SQL == '':
+            SQL = "--modified SQL"
 
-            return make_json_response(
-                data=SQL,
-                status=200
-                )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return make_json_response(
+            data=SQL,
+            status=200
+            )
 
     def get_sql(self, gid, sid, did, scid, data, dcid=None):
         """
@@ -653,7 +650,7 @@ class FtsDictionaryView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template("/".join([self.template_path, 'schema.sql']),
@@ -676,8 +673,8 @@ class FtsDictionaryView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = "-- incomplete definition"
-            return str(sql.strip('\n')), data['name']
+                sql = u"-- incomplete definition"
+            return sql.strip('\n'), data['name']
 
     @check_precondition
     def fetch_templates(self, gid, sid, did, scid):

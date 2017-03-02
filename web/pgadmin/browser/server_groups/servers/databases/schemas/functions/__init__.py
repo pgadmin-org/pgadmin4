@@ -955,13 +955,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
-            # generate function signature
-            header_func_name = '{0}.{1}({2})'.format(
-                resp_data['pronamespace'],
-                resp_data['proname'],
-                resp_data['proargtypenames']
-            )
-
             # Generate sql for "SQL panel"
             # func_def is procedure signature with default arguments
             # query_for - To distinguish the type of call
@@ -982,13 +975,6 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
-            # generate function signature
-            header_func_name = '{0}.{1}({2})'.format(
-                resp_data['pronamespace'],
-                resp_data['proname'],
-                resp_data['proargtypenames']
-            )
-
             SQL = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
                                            ), data=resp_data,
@@ -999,17 +985,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 return internal_server_error(errormsg=res)
 
             # Add newline and tab before each argument to format
-            name_with_default_args =  res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
-
-            if hasattr(str, 'decode'):
-                if resp_data['prosrc']:
-                    resp_data['prosrc'] = resp_data['prosrc'].decode(
-                        'utf-8'
-                    )
-                if resp_data['prosrc_c']:
-                    resp_data['prosrc_c'] = resp_data['prosrc_c'].decode(
-                        'utf-8'
-                    )
+            name_with_default_args = res['rows'][0]['name_with_default_args'].replace(', ', ',\r\t').replace('(', '(\r\t')
 
             # Generate sql for "SQL panel"
             # func_def is function signature with default arguments
@@ -1020,13 +996,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
 
-        sql_header = """-- {0}: {1}
+        sql_header = u"""-- {0}: {1}{2}
 
--- DROP {0} {1};
+-- DROP {0} {1}{2};
 
-""".format(object_type.upper(), header_func_name)
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+""".format(object_type.upper(),
+           self.qtIdent(
+               self.conn,
+               resp_data['pronamespace'],
+               resp_data['proname']),
+           resp_data['proargtypenames'])
 
         SQL = sql_header + func_def
         SQL = re.sub('\n{2,}', '\n\n', SQL)

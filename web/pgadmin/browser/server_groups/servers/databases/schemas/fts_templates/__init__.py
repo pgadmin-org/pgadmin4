@@ -275,7 +275,7 @@ class FtsTemplateView(PGChildNodeView):
                 status=200
             )
         return gone(
-            _("Could not the requested FTS template.")
+            gettext("Could not the requested FTS template.")
         )
 
     @check_precondition
@@ -547,7 +547,7 @@ class FtsTemplateView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template("/".join([self.template_path, 'schema.sql']),
@@ -570,8 +570,8 @@ class FtsTemplateView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = "-- incomplete definition"
-            return str(sql.strip('\n')), data['name']
+                sql = u"-- incomplete definition"
+            return sql.strip('\n'), data['name']
 
     @check_precondition
     def get_lexize(self, gid, sid, did, scid, tid=None):
@@ -649,7 +649,7 @@ class FtsTemplateView(PGChildNodeView):
         status, res = self.conn.execute_scalar(sql)
         if not status:
             return internal_server_error(
-                _(
+                gettext(
                     "Could not generate reversed engineered Query for the FTS Template.\n{0}").format(
                     res
                 )
@@ -657,7 +657,7 @@ class FtsTemplateView(PGChildNodeView):
 
         if res is None:
             return gone(
-                _(
+                gettext(
                     "Could not generate reversed engineered Query for FTS Template node.")
             )
 

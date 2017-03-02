@@ -1732,18 +1732,15 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
-        try:
-            SQL, name = self.get_sql(did, scid, tid, data)
-            SQL = re.sub('\n{2,}', '\n\n', SQL)
-            SQL = SQL.strip('\n')
-            if SQL == '':
-                SQL = "--modified SQL"
-            return make_json_response(
-                data=SQL,
-                status=200
-            )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        SQL, name = self.get_sql(did, scid, tid, data)
+        SQL = re.sub('\n{2,}', '\n\n', SQL)
+        SQL = SQL.strip('\n')
+        if SQL == '':
+            SQL = "--modified SQL"
+        return make_json_response(
+            data=SQL,
+            status=200
+        )
 
     def get_index_constraint_sql(self, did, tid, data):
         """
@@ -2025,7 +2022,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         else:
             return None
 
-    def get_exclusion_constraint_sql(self, tid, data):
+    def get_exclusion_constraint_sql(self, did, tid, data):
         """
          Args:
            tid: Table ID
@@ -2060,7 +2057,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
                     properties_sql = render_template("/".join(
                         [self.exclusion_constraint_template_path, 'properties.sql']),
-                        tid=tid, cid=c['oid'])
+                        did=did, tid=tid, cid=c['oid'])
                     status, res = self.conn.execute_dict(properties_sql)
                     if not status:
                         return internal_server_error(errormsg=res)
@@ -2097,7 +2094,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         if len(sql) > 0:
             # Join all the sql(s) as single string
-            return '\n\n'.join(sql)
+            return u'\n\n'.join(sql)
         else:
             return None
 
@@ -2277,7 +2274,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 SQL += '\n' + check_constraint_sql
 
             # Check if exclusion constraint(s) is/are added/changed/deleted
-            exclusion_constraint_sql = self.get_exclusion_constraint_sql(tid, data)
+            exclusion_constraint_sql = self.get_exclusion_constraint_sql(did, tid, data)
             # If we have check constraint sql then ad it in main sql
             if exclusion_constraint_sql is not None:
                 SQL += '\n' + exclusion_constraint_sql
@@ -2574,9 +2571,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             # Push as string
             data['cols'] = ', '.join(cols)
 
-            sql_header = "\n-- Index: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+            sql_header = u"\n-- Index: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template("/".join([self.index_template_path,
                                                     'delete.sql']),
@@ -2646,9 +2641,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             data = trigger_definition(data)
 
-            sql_header = "\n-- Trigger: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+            sql_header = u"\n-- Trigger: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template("/".join([self.trigger_template_path,
                                                     'delete.sql']),

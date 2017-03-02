@@ -5,9 +5,9 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search Dictionary: ' || nspname || E'.' || dict.dictname ||
-        E'\n\n-- DROP TEXT SEARCH DICTIONARY ' || nspname || E'.' || dict.dictname ||
-        E'\n\nCREATE TEXT SEARCH DICTIONARY ' || nspname || E'.' ||  dict.dictname || E' (\n' ||
+        E'-- Text Search Dictionary: ' || quote_ident(nspname) || E'.' || quote_ident(dict.dictname) ||
+        E'\n\n-- DROP TEXT SEARCH DICTIONARY ' || quote_ident(nspname) || E'.' || quote_ident(dict.dictname) ||
+        E'\n\nCREATE TEXT SEARCH DICTIONARY ' || quote_ident(nspname) || E'.' || quote_ident(dict.dictname) || E' (\n' ||
         E'\tTEMPLATE = ' || template ||
         CASE
             WHEN dict.dictinitoption IS NOT NULL THEN E',\n\t' || dict.dictinitoption
@@ -16,7 +16,7 @@ FROM
         E'\n);' ||
         CASE
             WHEN description IS NOT NULL THEN
-                E'\n\nCOMMENT ON TEXT SEARCH DICTIONARY ' || nspname || E'.' || dict.dictname ||
+                E'\n\nCOMMENT ON TEXT SEARCH DICTIONARY ' || quote_ident(nspname) || E'.' || quote_ident(dict.dictname) ||
                 E' IS ' || pg_catalog.quote_literal(description) || E';'
             ELSE ''  END as sql
     FROM

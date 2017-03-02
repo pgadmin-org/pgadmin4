@@ -839,40 +839,35 @@ class IndexesView(PGChildNodeView):
            tid: Table ID
            idx: Index ID
         """
-        try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  did=did, tid=tid, idx=idx,
-                                  datlastsysoid=self.datlastsysoid)
 
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path,
+                                        'properties.sql']),
+                              did=did, tid=tid, idx=idx,
+                              datlastsysoid=self.datlastsysoid)
 
-            data = dict(res['rows'][0])
-            # Adding parent into data dict, will be using it while creating sql
-            data['schema'] = self.schema
-            data['table'] = self.table
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # Add column details for current index
-            data = self._column_details(idx, data)
+        data = dict(res['rows'][0])
+        # Adding parent into data dict, will be using it while creating sql
+        data['schema'] = self.schema
+        data['table'] = self.table
 
-            SQL, name = self.get_sql(did, scid, tid, None, data)
+        # Add column details for current index
+        data = self._column_details(idx, data)
 
-            sql_header = "-- Index: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+        SQL, name = self.get_sql(did, scid, tid, None, data)
 
-            sql_header += render_template("/".join([self.template_path,
-                                                    'delete.sql']),
-                                          data=data, conn=self.conn)
+        sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])
 
-            SQL = sql_header + '\n\n' + SQL
+        sql_header += render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data, conn=self.conn)
 
-            return ajax_response(response=SQL)
+        SQL = sql_header + '\n\n' + SQL
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return ajax_response(response=SQL)
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, idx):

@@ -623,39 +623,33 @@ class EventTriggerView(PGChildNodeView):
         Returns:
 
         """
-        try:
-            sql = render_template("/".join([self.template_path, 'properties.sql']), etid=etid)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
+        sql = render_template("/".join([self.template_path, 'properties.sql']), etid=etid)
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            result = res['rows'][0]
-            result = self._formatter(result)
+        result = res['rows'][0]
+        result = self._formatter(result)
 
-            sql = render_template("/".join([self.template_path, 'create.sql']), data=result, conn=self.conn)
-            sql += "\n\n"
-            sql += render_template("/".join([self.template_path, 'grant.sql']), data=result, conn=self.conn)
+        sql = render_template("/".join([self.template_path, 'create.sql']), data=result, conn=self.conn)
+        sql += "\n\n"
+        sql += render_template("/".join([self.template_path, 'grant.sql']), data=result, conn=self.conn)
 
-            db_sql = render_template("/".join([self.template_path, 'get_db.sql']), did=did)
-            status, db_name = self.conn.execute_scalar(db_sql)
-            if not status:
-                return internal_server_error(errormsg=db_name)
+        db_sql = render_template("/".join([self.template_path, 'get_db.sql']), did=did)
+        status, db_name = self.conn.execute_scalar(db_sql)
+        if not status:
+            return internal_server_error(errormsg=db_name)
 
-            sql_header = "-- Event Trigger: {0} on database {1}\n\n-- ".format(result['name'], db_name)
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+        sql_header = u"-- Event Trigger: {0} on database {1}\n\n-- ".format(result['name'], db_name)
 
-            sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                name=result['name'], )
-            sql_header += "\n"
+        sql_header += render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            name=result['name'], )
+        sql_header += "\n"
 
-            sql = sql_header + sql
+        sql = sql_header + sql
 
-            return ajax_response(response=sql)
-
-        except Exception as e:
-            return ajax_response(response=str(e))
+        return ajax_response(response=sql)
 
     @check_precondition
     def get_event_funcs(self, gid, sid, did, etid=None):

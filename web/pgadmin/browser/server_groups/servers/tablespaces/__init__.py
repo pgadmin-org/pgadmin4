@@ -534,15 +534,12 @@ class TablespaceView(PGChildNodeView):
             data=old_data, conn=self.conn
         )
 
-        sql_header = """
+        sql_header = u"""
 -- Tablespace: {0}
 
 -- DROP TABLESPACE {0};
 
 """.format(old_data['name'])
-
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
 
         SQL = sql_header + SQL
         SQL = re.sub('\n{2,}', '\n\n', SQL)

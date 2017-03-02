@@ -873,57 +873,52 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        try:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                did=did,
-                tid=tid,
-                conn=self.conn,
-                cid=cid,
-                constraint_type=self.constraint_type)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
 
-            data = res['rows'][0]
-            data['schema'] = self.schema
-            data['table'] = self.table
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            did=did,
+            tid=tid,
+            conn=self.conn,
+            cid=cid,
+            constraint_type=self.constraint_type)
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            sql = render_template(
-                "/".join([self.template_path, 'get_constraint_cols.sql']),
-                cid=cid, colcnt=data['indnatts'])
+        data = res['rows'][0]
+        data['schema'] = self.schema
+        data['table'] = self.table
 
-            status, res = self.conn.execute_dict(sql)
+        sql = render_template(
+            "/".join([self.template_path, 'get_constraint_cols.sql']),
+            cid=cid, colcnt=data['indnatts'])
 
-            if not status:
-                return internal_server_error(errormsg=res)
+        status, res = self.conn.execute_dict(sql)
 
-            columns = []
-            for row in res['rows']:
-                columns.append({"column": row['column'].strip('"')})
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            data['columns'] = columns
+        columns = []
+        for row in res['rows']:
+            columns.append({"column": row['column'].strip('"')})
 
-            SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=data,
-                constraint_name=self.constraint_name)
+        data['columns'] = columns
 
-            sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data,
+            constraint_name=self.constraint_name)
 
-            sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data)
-            sql_header += "\n"
+        sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
-            SQL = sql_header + SQL
+        sql_header += render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            data=data)
+        sql_header += "\n"
 
-            return ajax_response(response=SQL)
+        SQL = sql_header + SQL
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return ajax_response(response=SQL)
 
     @check_precondition
     def statistics(self, gid, sid, did, scid, tid, cid):

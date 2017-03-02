@@ -606,11 +606,9 @@ class PackageView(PGChildNodeView):
             sql, name = self.getSQL(gid, sid, did, result, scid)
             sql = sql.strip('\n').strip(' ')
 
-            sql_header = "-- Package: {}\n\n-- ".format(
+            sql_header = u"-- Package: {}\n\n-- ".format(
                 self.qtIdent(self.conn, self.schema, result['name'])
             )
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
 
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),

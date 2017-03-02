@@ -502,18 +502,15 @@ class CastView(PGChildNodeView):
          :return:
         """
         data = request.args
-        try:
-            sql, name = self.get_sql(gid, sid, did, data, cid)
-            sql = sql.strip('\n').strip(' ')
-            if sql == '':
-                sql = "--modified SQL"
+        sql, name = self.get_sql(gid, sid, did, data, cid)
+        sql = sql.strip('\n').strip(' ')
+        if sql == '':
+            sql = "--modified SQL"
 
-            return make_json_response(
-                data=sql,
-                status=200
-            )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return make_json_response(
+            data=sql,
+            status=200
+        )
 
     def get_sql(self, gid, sid, did, data, cid=None):
         """
@@ -544,13 +541,13 @@ class CastView(PGChildNodeView):
                 "/".join([self.template_path, 'update.sql']),
                 data=data, o_data=old_data
             )
-            return str(sql), data['name'] if 'name' in data else old_data['name']
+            return sql, data['name'] if 'name' in data else old_data['name']
         else:
             if 'srctyp' in data and 'trgtyp' in data:
                 sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             else:
-                return "-- incomplete definition", None
-            return str(sql), data['srctyp'] + "->" + data["trgtyp"]
+                return u"-- incomplete definition", None
+            return sql, data['srctyp'] + "->" + data["trgtyp"]
 
     @check_precondition
     def get_functions(self, gid, sid, did, cid=None):

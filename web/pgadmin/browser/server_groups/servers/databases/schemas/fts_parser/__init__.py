@@ -513,18 +513,16 @@ class FtsParserView(PGChildNodeView):
         """
         data = request.args
         # Fetch sql query for modified data
-        try:
-            # Fetch sql query for modified data
-            SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
-            if SQL == '':
-                SQL = "--modified SQL"
 
-            return make_json_response(
-                data=SQL,
-                status=200
-                )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        # Fetch sql query for modified data
+        SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
+        if SQL == '':
+            SQL = "--modified SQL"
+
+        return make_json_response(
+            data=SQL,
+            status=200
+            )
 
     def get_sql(self, gid, sid, did, scid, data, pid=None):
         """
@@ -587,7 +585,7 @@ class FtsParserView(PGChildNodeView):
                 o_data=old_data
             )
             # Fetch sql query for modified data
-            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template(
@@ -616,7 +614,7 @@ class FtsParserView(PGChildNodeView):
                 )
             else:
                 sql = "-- incomplete definition"
-        return str(sql.strip('\n')), data['name']
+        return sql.strip('\n'), data['name']
 
     @check_precondition
     def start_functions(self, gid, sid, did, scid):

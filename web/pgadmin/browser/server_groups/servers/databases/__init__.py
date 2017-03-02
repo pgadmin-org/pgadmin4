@@ -194,8 +194,6 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             dbname = row['name']
-            if hasattr(str, 'decode'):
-                dbname = dbname.decode('utf-8')
             if self.manager.db == dbname:
                 connected = True
                 canDrop = canDisConn = False
@@ -253,8 +251,6 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             db = row['name']
-            if hasattr(str, 'decode'):
-                db = db.decode('utf-8')
             if self.manager.db == db:
                 connected = True
             else:
@@ -905,9 +901,7 @@ class DatabaseView(PGChildNodeView):
         frmtd_variables = parse_variables_from_db(res1['rows'])
         result.update(frmtd_variables)
 
-        sql_header = "-- Database: {0}\n\n-- ".format(result['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+        sql_header = u"-- Database: {0}\n\n-- ".format(result['name'])
 
         sql_header += render_template(
             "/".join([self.template_path, 'delete.sql']),

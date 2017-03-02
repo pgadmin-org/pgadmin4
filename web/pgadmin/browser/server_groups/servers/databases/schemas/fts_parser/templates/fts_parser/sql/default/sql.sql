@@ -5,9 +5,9 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search Parser: ' || nspname || E'.' || prs.prsname ||
-        E'\n\n-- DROP TEXT SEARCH PARSER ' || nspname || E'.' || prs.prsname ||
-        E'\n\nCREATE TEXT SEARCH PARSER ' || nspname || E'.' ||  prs.prsname || E' (\n' ||
+        E'-- Text Search Parser: ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) ||
+        E'\n\n-- DROP TEXT SEARCH PARSER ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) ||
+        E'\n\nCREATE TEXT SEARCH PARSER ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) || E' (\n' ||
         E'    START = ' || prs.prsstart || E',\n' ||
         E'    GETTOKEN = ' || prs.prstoken || E',\n' ||
         E'    END = ' || prs.prsend || E',\n' ||
@@ -17,7 +17,7 @@ FROM
             ELSE '' END || E'\n);' ||
         CASE
             WHEN description IS NOT NULL THEN
-                E'\n\nCOMMENT ON TEXT SEARCH PARSER ' || nspname || E'.' || prs.prsname ||
+                E'\n\nCOMMENT ON TEXT SEARCH PARSER ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) ||
                 E' IS ' || pg_catalog.quote_literal(description) || E';'
             ELSE ''  END as sql
     FROM

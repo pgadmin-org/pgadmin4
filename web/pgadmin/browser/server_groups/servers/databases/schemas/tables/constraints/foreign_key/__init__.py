@@ -918,66 +918,61 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
-        try:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                tid=tid, conn=self.conn, cid=fkid)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
 
-            data = res['rows'][0]
-            data['schema'] = self.schema
-            data['table'] = self.table
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            tid=tid, conn=self.conn, cid=fkid)
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            sql = render_template("/".join([self.template_path,
-                                            'get_constraint_cols.sql']),
-                                  tid=tid,
-                                  keys=zip(data['confkey'], data['conkey']),
-                                  confrelid=data['confrelid'])
+        data = res['rows'][0]
+        data['schema'] = self.schema
+        data['table'] = self.table
 
-            status, res = self.conn.execute_dict(sql)
+        sql = render_template("/".join([self.template_path,
+                                        'get_constraint_cols.sql']),
+                              tid=tid,
+                              keys=zip(data['confkey'], data['conkey']),
+                              confrelid=data['confrelid'])
 
-            if not status:
-                return internal_server_error(errormsg=res)
+        status, res = self.conn.execute_dict(sql)
 
-            columns = []
-            for row in res['rows']:
-                columns.append({"local_column": row['conattname'],
-                                "references": data['confrelid'],
-                                "referenced": row['confattname']})
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            data['columns'] = columns
+        columns = []
+        for row in res['rows']:
+            columns.append({"local_column": row['conattname'],
+                            "references": data['confrelid'],
+                            "referenced": row['confattname']})
 
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=data['columns'][0]['references'])
-            status, res = self.conn.execute_2darray(SQL)
+        data['columns'] = columns
 
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path,
+                                        'get_parent.sql']),
+                              tid=data['columns'][0]['references'])
+        status, res = self.conn.execute_2darray(SQL)
 
-            data['remote_schema'] = res['rows'][0]['schema']
-            data['remote_table'] = res['rows'][0]['table']
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            SQL = render_template(
-                "/".join([self.template_path, 'create.sql']), data=data)
+        data['remote_schema'] = res['rows'][0]['schema']
+        data['remote_table'] = res['rows'][0]['table']
 
-            sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']), data=data)
 
-            sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data)
-            sql_header += "\n"
+        sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
-            SQL = sql_header + SQL
+        sql_header += render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            data=data)
+        sql_header += "\n"
 
-            return ajax_response(response=SQL)
+        SQL = sql_header + SQL
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return ajax_response(response=SQL)
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, fkid=None):

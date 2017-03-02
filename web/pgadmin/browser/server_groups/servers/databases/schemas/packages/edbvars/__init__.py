@@ -317,11 +317,9 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=res)
         var = res['rows'][0]
 
-        sql = "-- Package Variable: {}".format(var['name'])
-        sql += "\n\n"
-        sql += "{} {};".format(var['name'], var['datatype'])
-        if hasattr(str, 'decode'):
-            sql = sql.decode('utf-8')
+        sql = u"-- Package Variable: {}".format(var['name'])
+        sql += u"\n\n"
+        sql += u"{} {};".format(var['name'], var['datatype'])
 
         return ajax_response(response=sql)
 

@@ -682,14 +682,11 @@ class ForeignDataWrapperView(PGChildNodeView):
                               )
         sql += "\n"
 
-        sql_header = """-- Foreign Data Wrapper: {0}
+        sql_header = u"""-- Foreign Data Wrapper: {0}
 
 -- DROP FOREIGN DATA WRAPPER {0}
 
 """.format(res['rows'][0]['name'])
-
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
 
         sql = sql_header + sql
 

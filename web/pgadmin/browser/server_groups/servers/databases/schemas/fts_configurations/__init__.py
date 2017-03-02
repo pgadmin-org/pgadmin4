@@ -594,18 +594,16 @@ class FtsConfigurationView(PGChildNodeView):
                 data[k] = json.loads(v, encoding='utf-8')
             except ValueError:
                 data[k] = v
-        try:
-            # Fetch sql query for modified data
-            SQL, name = self.get_sql(gid, sid, did, scid, data, cfgid)
-            if SQL == '':
-                SQL = "-- No change"
 
-            return make_json_response(
-                data=SQL,
-                status=200
-                )
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        # Fetch sql query for modified data
+        SQL, name = self.get_sql(gid, sid, did, scid, data, cfgid)
+        if SQL == '':
+            SQL = "-- No change"
+
+        return make_json_response(
+            data=SQL,
+            status=200
+            )
 
     def get_sql(self, gid, sid, did, scid, data, cfgid=None):
         """
@@ -668,7 +666,7 @@ class FtsConfigurationView(PGChildNodeView):
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
-            return str(sql.strip('\n')), data['name'] if 'name' in data else old_data['name']
+            return sql.strip('\n'), data['name'] if 'name' in data else old_data['name']
         else:
             # Fetch schema name from schema oid
             sql = render_template(
@@ -692,8 +690,8 @@ class FtsConfigurationView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = "-- incomplete definition"
-            return str(sql.strip('\n')), data['name']
+                sql = u"-- incomplete definition"
+            return sql.strip('\n'), data['name']
 
     @check_precondition
     def parsers(self, gid, sid, did, scid):

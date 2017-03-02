@@ -821,13 +821,11 @@ shifted to the another schema.
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']), data=data)
 
-        sql_header = """-- {0}: {1}
+        sql_header = u"""-- FOREIGN TABLE: {0}
 
--- DROP {0} {1};
+-- DROP FOREIGN TABLE {0};
 
-""".format('FOREIGN TABLE', data['basensp'] + "." + data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+""".format(self.qtIdent(self.conn, data['basensp'], data['name']))
 
         SQL = sql_header + SQL
 

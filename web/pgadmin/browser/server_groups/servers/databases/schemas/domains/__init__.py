@@ -699,14 +699,11 @@ AND relkind != 'c'))"""
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']), data=data)
 
-        sql_header = """-- DOMAIN: {0}
+        sql_header = u"""-- DOMAIN: {0}
 
 -- DROP DOMAIN {0};
 
-""".format(data['basensp'] + '.' + data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
-
+""".format(self.qtIdent(self.conn, data['basensp'], data['name']))
         SQL = sql_header + SQL
 
         return ajax_response(response=SQL.strip('\n'))

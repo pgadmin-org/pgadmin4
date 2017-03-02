@@ -875,8 +875,8 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         for trigger in data['rows']:
             SQL = render_template("/".join(
                 [self.trigger_temp_path, 'sql/#{0}#/properties.sql'.format(self.manager.version)]),
-                tid=trigger['oid'],
-                tgrelid=vid
+                tid=vid,
+                trid=trigger['oid']
             )
 
             status, res = self.conn.execute_dict(SQL)
@@ -893,6 +893,21 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                 res_rows['columns'] = self.get_trigger_column_details(
                     trigger['oid'], columns)
             res_rows = trigger_definition(res_rows)
+
+            res_rows['schema'] = res_rows['nspname']
+
+            # It should be relname and not table, but in create.sql
+            # (which is referred from many places) we have used
+            # data.table and not data.relname so compatibility add new key as
+            # table in res_rows.
+            res_rows['table'] = res_rows['relname']
+
+            res_rows['tfunction'] = self.qtIdent(self.conn, res_rows['schema'], res_rows['tfunction'])
+
+            # Format arguments
+            if len(res_rows['custom_tgargs']) > 1:
+                formatted_args = ["{0}".format(arg) for arg in res_rows['custom_tgargs']]
+                res_rows['tgargs'] = ', '.join(formatted_args)
 
             SQL = render_template("/".join(
                 [self.trigger_temp_path, 'sql/#{0}#/create.sql'.format(self.manager.version)]),

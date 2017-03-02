@@ -26,7 +26,7 @@ from flask import g, current_app, session
 from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt
-from psycopg2.extensions import adapt
+from psycopg2.extensions import adapt, encodings
 
 import config
 from pgadmin.model import Server, User
@@ -37,6 +37,8 @@ from .cursor import DictCursor
 
 if sys.version_info < (3,):
     from StringIO import StringIO
+    psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+    psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 else:
     from io import StringIO
 
@@ -61,6 +63,50 @@ psycopg2.extensions.register_type(
          ),
         'TYPECAST_TO_STRING', psycopg2.STRING)
 )
+
+
+def register_string_typecasters(connection):
+    if connection.encoding != 'UTF8':
+        # In python3 when database encoding is other than utf-8 and client
+        # encoding is set to UNICODE then we need to map data from database
+        # encoding to utf-8.
+        # This is required because when client encoding is set to UNICODE then
+        # psycopg assumes database encoding utf-8 and not the actual encoding.
+        # Not sure whether it's bug or feature in psycopg for python3.
+        if sys.version_info >= (3,):
+            def return_as_unicode(value, cursor):
+                if value is None:
+                    return None
+                # Treat value as byte sequence of database encoding and then
+                # decode it as utf-8 to get correct unicode value.
+                return bytes(
+                    value, encodings[cursor.connection.encoding]
+                ).decode('utf-8')
+
+            unicode_type = psycopg2.extensions.new_type(
+                # "char", name, text, character, character varying
+                (19, 18, 25, 1042, 1043, 0),
+                'UNICODE', return_as_unicode)
+        else:
+            def return_as_unicode(value, cursor):
+                if value is None:
+                    return None
+                # Decode it as utf-8 to get correct unicode value.
+                return value.decode('utf-8')
+
+            unicode_type = psycopg2.extensions.new_type(
+                # "char", name, text, character, character varying
+                (19, 18, 25, 1042, 1043, 0),
+                'UNICODE', return_as_unicode)
+
+        unicode_array_type = psycopg2.extensions.new_array_type(
+            # "char"[], name[], text[], character[], character varying[]
+            (1002, 1003, 1009, 1014, 1015, 0
+             ), 'UNICODEARRAY', unicode_type)
+
+        psycopg2.extensions.register_type(unicode_type)
+        psycopg2.extensions.register_type(unicode_array_type)
+
 
 class Connection(BaseConnection):
     """
@@ -336,6 +382,7 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
             else:
                 self.conn.autocommit = True
 
+        register_string_typecasters(self.conn)
         status = _execute(cur, """
 SET DateStyle=ISO;
 SET client_min_messages=notice;
@@ -538,10 +585,16 @@ WHERE
             query: SQL query to run.
             params: Extra parameters
         """
+
+        if sys.version_info < (3,):
+            if type(query) == unicode:
+                query = query.encode('utf-8')
+        else:
+            query = query.encode('utf-8')
+
         cur.execute(query, params)
         if self.async == 1:
             self._wait(cur.connection)
-
 
     def execute_on_server_as_csv(self, query, params=None, formatted_exception_msg=False, records=2000):
         status, cur = self.__cursor(server_cursor=True)
@@ -551,11 +604,14 @@ WHERE
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
+        if sys.version_info < (3,) and type(query) == unicode:
+            query = query.encode('utf-8')
+
         current_app.logger.log(25,
                                u"Execute (with server cursor) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                                    server_id=self.manager.sid,
                                    conn_id=self.conn_id,
-                                   query=query,
+                                   query=query.decode('utf-8') if sys.version_info < (3,) else query,
                                    query_id=query_id
                                )
                                )
@@ -673,6 +729,13 @@ WHERE
             params: extra parameters to the function
             formatted_exception_msg: if True then function return the formatted exception message
         """
+
+        if sys.version_info < (3,):
+            if type(query) == unicode:
+                query = query.encode('utf-8')
+        else:
+            query = query.encode('utf-8')
+
         self.__async_cursor = None
         status, cur = self.__cursor()
 
@@ -685,7 +748,7 @@ WHERE
             u"Execute (async) for server #{server_id} - {conn_id} (Query-id: {query_id}):\n{query}".format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
-                query=query,
+                query=query.decode('utf-8'),
                 query_id=query_id
             )
         )
@@ -703,7 +766,7 @@ Failed to execute query (execute_async) for the server #{server_id} - {conn_id}
 """.format(
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
-                query=query,
+                query=query.decode('utf-8'),
                 errmsg=errmsg,
                 query_id=query_id
             )
@@ -1275,44 +1338,53 @@ Failed to reset the connection to the server due to following error:
         if not formatted_msg:
             return errmsg
 
-        errmsg += '********** Error **********\n\n'
+        errmsg += u'********** Error **********\n\n'
 
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:
-            errmsg += exception_obj.diag.severity + ": " + \
-                      exception_obj.diag.message_primary
+            errmsg += u"{}: {}".format(
+                exception_obj.diag.severity,
+                exception_obj.diag.message_primary.decode('utf-8') if
+                hasattr(str, 'decode') else exception_obj.diag.message_primary)
+
         elif exception_obj.diag.message_primary is not None:
-            errmsg += exception_obj.diag.message_primary
+            errmsg += exception_obj.diag.message_primary.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.message_primary
 
         if exception_obj.diag.sqlstate is not None:
             if not errmsg[:-1].endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('SQL state: ')
-            errmsg += exception_obj.diag.sqlstate
+            errmsg += exception_obj.diag.sqlstate.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.sqlstate
 
         if exception_obj.diag.message_detail is not None:
             if not errmsg[:-1].endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Detail: ')
-            errmsg += exception_obj.diag.message_detail
+            errmsg += exception_obj.diag.message_detail.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.message_detail
 
         if exception_obj.diag.message_hint is not None:
             if not errmsg[:-1].endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Hint: ')
-            errmsg += exception_obj.diag.message_hint
+            errmsg += exception_obj.diag.message_hint.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.message_hint
 
         if exception_obj.diag.statement_position is not None:
             if not errmsg[:-1].endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Character: ')
-            errmsg += exception_obj.diag.statement_position
+            errmsg += exception_obj.diag.statement_position.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.statement_position
 
         if exception_obj.diag.context is not None:
             if not errmsg[:-1].endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Context: ')
-            errmsg += exception_obj.diag.context
+            errmsg += exception_obj.diag.context.decode('utf-8') if \
+                hasattr(str, 'decode') else exception_obj.diag.context
 
         return errmsg
 

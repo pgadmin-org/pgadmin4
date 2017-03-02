@@ -703,13 +703,11 @@ class ForeignServerView(PGChildNodeView):
                               conn=self.conn)
         sql += "\n"
 
-        sql_header = """-- Foreign Server: {0}
+        sql_header = u"""-- Foreign Server: {0}
 
 -- DROP SERVER {0}
 
 """.format(res['rows'][0]['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
 
         sql = sql_header + sql
 

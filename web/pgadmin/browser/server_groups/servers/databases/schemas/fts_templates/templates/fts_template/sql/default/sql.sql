@@ -4,16 +4,16 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search Template: ' || nspname || E'.' || tmpl.tmplname ||
-        E'\n\n-- DROP TEXT SEARCH TEMPLATE ' || nspname || E'.' || tmpl.tmplname ||
-        E'\n\nCREATE TEXT SEARCH TEMPLATE ' || nspname || E'.' ||  tmpl.tmplname || E' (\n' ||
+        E'-- Text Search Template: ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) ||
+        E'\n\n-- DROP TEXT SEARCH TEMPLATE ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) ||
+        E'\n\nCREATE TEXT SEARCH TEMPLATE ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) || E' (\n' ||
         CASE
             WHEN tmpl.tmplinit != '-'::regclass THEN E'    INIT = ' || tmpl.tmplinit || E',\n'
             ELSE '' END ||
         E'    LEXIZE = ' || tmpl.tmpllexize || E'\n);' ||
         CASE
             WHEN a.description IS NOT NULL THEN
-                E'\n\nCOMMENT ON TEXT SEARCH TEMPLATE ' || nspname || E'.' || tmpl.tmplname ||
+                E'\n\nCOMMENT ON TEXT SEARCH TEMPLATE ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) ||
                 E' IS ' || pg_catalog.quote_literal(description) || E';'
             ELSE ''  END as sql
 FROM

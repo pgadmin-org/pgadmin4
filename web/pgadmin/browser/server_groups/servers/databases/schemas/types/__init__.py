@@ -1300,9 +1300,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
         SQL, name = self.get_sql(gid, sid, data, scid, tid=None)
 
         # We are appending headers here for sql panel
-        sql_header = "-- Type: {0}\n\n-- ".format(data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
+        sql_header = u"-- Type: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([self.template_path,
                                                 'delete.sql']),

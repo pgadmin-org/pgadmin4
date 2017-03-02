@@ -526,7 +526,7 @@ class TriggerView(PGChildNodeView):
         Returns:
             Formated arguments for function
         """
-        formatted_args = ["'{0}'".format(arg) for arg in args]
+        formatted_args = ["{0}".format(arg) for arg in args]
         return ', '.join(formatted_args)
 
 
@@ -889,56 +889,51 @@ class TriggerView(PGChildNodeView):
            tid: Table ID
            trid: Trigger ID
         """
-        try:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
 
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        SQL = render_template("/".join([self.template_path,
+                                        'properties.sql']),
+                              tid=tid, trid=trid,
+                              datlastsysoid=self.datlastsysoid)
 
-            data = dict(res['rows'][0])
-            # Adding parent into data dict, will be using it while creating sql
-            data['schema'] = self.schema
-            data['table'] = self.table
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            data = self.get_trigger_function_schema(data)
+        data = dict(res['rows'][0])
+        # Adding parent into data dict, will be using it while creating sql
+        data['schema'] = self.schema
+        data['table'] = self.table
 
-            if len(data['custom_tgargs']) > 1:
-                # We know that trigger has more than 1 argument, let's join them
-                data['tgargs'] = self._format_args(data['custom_tgargs'])
+        data = self.get_trigger_function_schema(data)
 
-            if len(data['tgattr']) > 1:
-                columns = ', '.join(data['tgattr'].split(' '))
-                data['columns'] = self._column_details(tid, columns)
+        if len(data['custom_tgargs']) > 1:
+            # We know that trigger has more than 1 argument, let's join them
+            data['tgargs'] = self._format_args(data['custom_tgargs'])
 
-            data = self._trigger_definition(data)
+        if len(data['tgattr']) > 1:
+            columns = ', '.join(data['tgattr'].split(' '))
+            data['columns'] = self._column_details(tid, columns)
 
-            SQL, name = self.get_sql(scid, tid, None, data)
+        data = self._trigger_definition(data)
 
-            sql_header = "-- Trigger: {0}\n\n-- ".format(data['name'])
-            if hasattr(str, 'decode'):
-                sql_header = sql_header.decode('utf-8')
+        SQL, name = self.get_sql(scid, tid, None, data)
 
-            sql_header += render_template("/".join([self.template_path,
-                                                    'delete.sql']),
-                                          data=data, conn=self.conn)
+        sql_header = u"-- Trigger: {0}\n\n-- ".format(data['name'])
 
-            SQL = sql_header + '\n\n' + SQL.strip('\n')
+        sql_header += render_template("/".join([self.template_path,
+                                                'delete.sql']),
+                                      data=data, conn=self.conn)
 
-            # If trigger is disbaled then add sql code for the same
-            if not data['is_enable_trigger']:
-                SQL += '\n\n'
-                SQL += render_template("/".join([self.template_path,
-                                                 'enable_disable_trigger.sql']),
-                                       data=data, conn=self.conn)
+        SQL = sql_header + '\n\n' + SQL.strip('\n')
 
-            return ajax_response(response=SQL)
+        # If trigger is disbaled then add sql code for the same
+        if not data['is_enable_trigger']:
+            SQL += '\n\n'
+            SQL += render_template("/".join([self.template_path,
+                                             'enable_disable_trigger.sql']),
+                                   data=data, conn=self.conn)
 
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        return ajax_response(response=SQL)
 
     @check_precondition
     def enable_disable_trigger(self, gid, sid, did, scid, tid, trid):

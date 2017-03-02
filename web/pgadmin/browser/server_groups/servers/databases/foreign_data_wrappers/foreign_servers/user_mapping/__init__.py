@@ -709,13 +709,11 @@ class UserMappingView(PGChildNodeView):
                               conn=self.conn)
         sql += "\n"
 
-        sql_header = """-- User Mapping : {0}
+        sql_header = u"""-- User Mapping : {0}
 
 -- DROP USER MAPPING FOR {0} SERVER {1}
 
 """.format(res['rows'][0]['name'], fdw_data['name'])
-        if hasattr(str, 'decode'):
-            sql_header = sql_header.decode('utf-8')
 
         sql = sql_header + sql
 

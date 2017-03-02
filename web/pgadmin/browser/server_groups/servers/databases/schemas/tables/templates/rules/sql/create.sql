@@ -1,8 +1,8 @@
 {# ============Create Rule============= #}
 {% if display_comments %}
--- Rule: {{ data.name }} ON {{ conn|qtIdent(data.schema, data.name) }}
+-- Rule: {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.name) }}
 
--- DROP Rule {{ data.name }} ON {{ conn|qtIdent(data.schema, data.name) }};
+-- DROP Rule {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.name) }};
 
 {% endif %}
 {% if data.name and data.schema and data.view %}
