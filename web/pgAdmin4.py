@@ -74,6 +74,13 @@ else:
 # Let the application save the status about the runtime for using it later.
 app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
 
+# Set the key if appropriate
+if 'PGADMIN_KEY' in globals():
+    app.PGADMIN_KEY = globals()['PGADMIN_KEY']
+    app.logger.debug("Desktop security key: %s" % app.PGADMIN_KEY)
+else:
+    app.PGADMIN_KEY = ''
+
 # Output a startup message if we're not under the runtime and startup.
 # If we're under WSGI, we don't need to worry about this
 if __name__ == '__main__':

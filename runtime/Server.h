@@ -23,7 +23,7 @@ class Server : public QThread
     Q_OBJECT
 
 public:
-    Server(quint16 port);
+    Server(quint16 port, QString key);
     ~Server();
 
     bool Init();
@@ -39,6 +39,7 @@ private:
     QString m_error;
 
     quint16  m_port;
+    QString m_key;
     wchar_t *m_wcAppName;
 };
 

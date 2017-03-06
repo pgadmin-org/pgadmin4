@@ -23,6 +23,7 @@
 #include <QLineEdit>
 #include <QInputDialog>
 #include <QSplashScreen>
+#include <QUuid>
 #endif
 
 // App headers
@@ -70,6 +71,10 @@ int main(int argc, char * argv[])
         port = socket.localPort();
     }
 
+    // Generate a random key to authenticate the client to the server
+    QString key = QUuid::createUuid().toString();
+    key = key.mid(1, key.length() - 2);
+
     // Fire up the webserver
     Server *server;
 
@@ -77,7 +82,7 @@ int main(int argc, char * argv[])
 
     while (done != true)
     {
-        server = new Server(port);
+        server = new Server(port, key);
 
         if (!server->Init())
         {
@@ -140,7 +145,7 @@ int main(int argc, char * argv[])
 
 
     // Generate the app server URL
-    QString appServerUrl = QString("http://localhost:%1/").arg(port);
+    QString appServerUrl = QString("http://localhost:%1/?key=%2").arg(port).arg(key);
 
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.

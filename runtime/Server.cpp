@@ -43,10 +43,11 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
     }
 }
 
-Server::Server(quint16 port)
+Server::Server(quint16 port, QString key)
 {
-    // Appserver port
+    // Appserver port etc
     m_port = port;
+    m_key = key;
     m_wcAppName = NULL;
 
     // Initialise Python
@@ -255,6 +256,7 @@ void Server::run()
 
     // Set the port number
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
+    PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
 
     // Run the app!
 #ifdef PYTHON2
