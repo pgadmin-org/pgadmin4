@@ -469,7 +469,7 @@
 
     this.loadValue = function (item) {
       defaultValue = item[args.column.pos];
-      if (_.isNull(defaultValue)) {
+      if (_.isNull(defaultValue)||_.isUndefined(defaultValue)) {
         $select.prop('indeterminate', true);
       }
       else {
@@ -754,7 +754,7 @@
 
     this.loadValue = function (item) {
       defaultValue = item[args.column.field];
-      if (_.isNull(defaultValue)) {
+      if (_.isNull(defaultValue)||_.isUndefined(defaultValue)) {
         $select.prop('indeterminate', true);
       }
       else {
