@@ -91,6 +91,7 @@ config.CONSOLE_LOG_LEVEL = WARNING
 # Create the app
 app = create_app()
 app.config['WTF_CSRF_ENABLED'] = False
+app.PGADMIN_KEY = ''
 test_client = app.test_client()
 driver = webdriver.Chrome()
 app_starter = AppStarter(driver, config)

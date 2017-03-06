@@ -414,13 +414,14 @@ def create_app(app_name=config.APP_NAME):
     @app.before_request
     def before_request():
         """Login the default user if running in desktop mode"""
-        if app.PGADMIN_RUNTIME == True:
+        if not config.SERVER_MODE and app.PGADMIN_KEY != '':
             if (
                 (not 'key' in request.args or request.args['key'] != app.PGADMIN_KEY) and
                 request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY
             ):
                 abort(401)
 
+        if not config.SERVER_MODE:
             user = user_datastore.get_user(config.DESKTOP_USER)
 
             # Throw an error if we failed to find the desktop user, to give
