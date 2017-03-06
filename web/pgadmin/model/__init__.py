@@ -124,7 +124,9 @@ class Server(db.Model):
         nullable=False)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
-
+    servers = db.relationship('ServerGroup',
+                           backref=db.backref('server', cascade="all, delete-orphan"),
+                           lazy='joined')
 
 class ModulePreference(db.Model):
     """Define a preferences table for any modules."""
