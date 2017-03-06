@@ -121,7 +121,7 @@ class JobView(PGChildNodeView):
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'run_now': [{'post': 'run_now'}],
+        'run_now': [{'put': 'run_now'}],
         'classes': [{}, {'get': 'job_classes'}],
         'children': [{'get': 'children'}],
         'stats': [{'get': 'statistics'}],

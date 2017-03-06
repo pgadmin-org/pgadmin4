@@ -52,6 +52,11 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: '{{ _('pgAgent Job...') }}',
           icon: 'wcTabIcon icon-pga_job', data: {action: 'create'}
+        }, {
+          name: 'run_now_pga_job', node: 'pga_job', module: this,
+          applies: ['object', 'context'], callback: 'run_pga_job_now',
+          priority: 4, label: '{{ _('Run now') }}', data: {action: 'create'},
+          icon: 'fa fa-play-circle'
         }]);
       },
       model: pgBrowser.Node.Model.extend({
@@ -154,7 +159,48 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
           return null;
         }
-      })
+      }),
+      /* Run pgagent job now */
+      run_pga_job_now: function(args) {
+        var input = args || {},
+          obj = this,
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+        if (!d)
+          return false;
+
+        $.ajax({
+          url: obj.generate_url(i, 'run_now', d, true),
+          method:'PUT',
+          success: function(res) {
+            // 'pgagent.pga_job' table updated with current time
+            // to run the job now.
+            t.unload(i);
+          },
+          error: function(xhr, status, error) {
+	    var error_msg = "Unable to run pgagent job.";
+            if (xhr.readyState == 0) {
+              alertify.error('{{ _('Not connected to the server or the connection to the server has been closed.') }}');
+            }
+            else {
+              if (_.isUndefined(xhr.responseText)) {
+                alertify.error("{{ _('" + error_msg + "') }}");
+              }
+              else {
+                var err = $.parseJSON(xhr.responseText);
+                if (err.success == 0) {
+                  alertify.error("{{ _('" + err.errormsg + "') }}");
+                }
+              }
+            }
+            t.unload(i);
+          }
+        });
+
+        return false;
+      },
     });
   }
 
