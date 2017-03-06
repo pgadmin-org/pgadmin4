@@ -677,7 +677,7 @@ var getFolderInfo = function(path, file_type) {
 
   // Display an activity indicator.
   $('.fileinfo').find('span.activity').html(
-    "<img src='{{ url_for('browser.static', filename='css/aciTree/image/load-root.gif') }}'>"
+    "<img src='{{ url_for('browser.static', filename='vendor/aciTree/image/load-root.gif') }}'>"
   );
 
   var post_data = {
