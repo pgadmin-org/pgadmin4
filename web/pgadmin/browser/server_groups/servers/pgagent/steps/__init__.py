@@ -243,7 +243,7 @@ SELECT EXISTS(
 
         if jstid is not None:
             if len(result['rows']) == 0:
-                return gone(errormsg="Couldn't find the specified job step.")
+                return gone(errormsg="Could not find the specified job step.")
 
             row = result['rows'][0]
             return make_json_response(
@@ -297,7 +297,7 @@ SELECT EXISTS(
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(errormsg="Couldn't find the specified job step.")
+            return gone(errormsg="Could not find the specified job step.")
 
         return ajax_response(
             response=res['rows'][0],
@@ -392,7 +392,7 @@ SELECT EXISTS(
             if len(res['rows']) == 0:
                 return gone(
                     errormsg=gettext(
-                        "Couldn't find the specified job step."
+                        "Could not find the specified job step."
                     )
                 )
             row = res['rows'][0]
@@ -486,7 +486,7 @@ SELECT EXISTS(
                 if len(res['rows']) == 0:
                     return gone(
                         errormsg=gettext(
-                            "Couldn't find the specified job step."
+                            "Could not find the specified job step."
                         )
                     )
                 row = res['rows'][0]

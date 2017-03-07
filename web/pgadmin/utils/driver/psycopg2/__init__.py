@@ -1512,7 +1512,7 @@ WHERE db.oid = {0}""".format(did))
 
                         if did not in self.db_info:
                             raise Exception(gettext(
-                                "Couldn't find the specified database."
+                                "Could not find the specified database."
                             ))
 
         if database is None:

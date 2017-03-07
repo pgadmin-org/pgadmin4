@@ -576,7 +576,7 @@ class IndexesView(PGChildNodeView):
                 err_msg = "You must provide one or more column to create index"
 
             if arg not in data:
-                err_msg = "Couldn't find the required parameter (%s)." % \
+                err_msg = "Could not find the required parameter (%s)." % \
                           required_args[arg]
                 # Check if we have at least one column
             if err_msg is not None:

@@ -613,7 +613,7 @@ class TriggerView(PGChildNodeView):
                 return make_json_response(
                     status=410,
                     success=0,
-                    errormsg=gettext("Couldn't find the required parameter (%s)." % \
+                    errormsg=gettext("Could not find the required parameter (%s)." % \
                                      required_args[arg])
                 )
 

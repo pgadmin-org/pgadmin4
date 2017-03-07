@@ -128,7 +128,7 @@ class DatabaseView(PGChildNodeView):
 
                 self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
                 if self.manager is None:
-                    return gone(errormsg="Couldn't find the server.")
+                    return gone(errormsg="Could not find the server.")
 
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
@@ -285,7 +285,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Couldnot find the database on the server.")
+                _("Could not find the database on the server.")
             )
 
         if not status:

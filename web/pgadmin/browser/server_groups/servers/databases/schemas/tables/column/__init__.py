@@ -281,7 +281,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if clid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                    errormsg=gettext("Couldn't find the column.")
+                    errormsg=gettext("Could not find the column.")
                 )
             row = rset['rows'][0]
             return make_json_response(
@@ -558,7 +558,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter (%s)." %
+                        "Could not find the required parameter (%s)." %
                         required_args[arg]
                     )
                 )

@@ -203,7 +203,7 @@ def create_import_export_job(sid):
         id=sid).first()
 
     if server is None:
-        return bad_request(errormsg=_("Couldn't find the given server"))
+        return bad_request(errormsg=_("Could not find the given server"))
 
 
     # To fetch MetaData for the server

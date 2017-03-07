@@ -555,7 +555,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Couldn't find required parameter (%s)." % str(arg)
+                        "Could not find required parameter (%s)." % str(arg)
                     )
                 )
             elif isinstance(data[arg], list) and len(data[arg]) < 1:
@@ -563,7 +563,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Couldn't find required parameter (%s)." % str(arg)
+                        "Could not find required parameter (%s)." % str(arg)
                     )
                 )
 

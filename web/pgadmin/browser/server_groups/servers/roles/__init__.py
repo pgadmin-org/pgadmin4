@@ -527,7 +527,7 @@ rolmembership:{
 
                     if len(res['rows']) == 0:
                         return gone(
-                            _("Couldn't find the role on the database server.")
+                            _("Could not find the role on the database server.")
                         )
 
                     row = res['rows'][0]
@@ -683,7 +683,7 @@ rolmembership:{
         )
         if not status:
             return internal_server_error(
-                _("Couldn't drop the role.\n{0}").format(res)
+                _("Could not drop the role.\n{0}").format(res)
             )
 
         return success_return()

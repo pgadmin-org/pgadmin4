@@ -274,7 +274,7 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=gettext(
                     gettext(
-                        "Couldn't find the server with id# {0}!"
+                        "Could not find the server with id# {0}."
                     ).format(sid)
                 )
             )
@@ -959,7 +959,7 @@ class ServerNode(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=gettext(
-                        "Couldn't find the required parameter(s)."
+                        "Could not find the required parameter(s)."
                     )
                 )
 

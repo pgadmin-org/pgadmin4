@@ -283,7 +283,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         if edbfnid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                    errormsg=_("Couldn't find the function")
+                    errormsg=_("Could not find the function")
                 )
             row = rset['rows'][0]
             return make_json_response(

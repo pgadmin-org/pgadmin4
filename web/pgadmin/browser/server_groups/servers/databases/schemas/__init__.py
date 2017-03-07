@@ -127,7 +127,7 @@ def check_precondition(f):
             kwargs['sid']
         )
         if not self.manager:
-            return gone(errormsg="Couldn't find the server.")
+            return gone(errormsg="Could not find the server.")
 
         self.conn = self.manager.connection(did=kwargs['did'])
         # Set the template path for the SQL scripts

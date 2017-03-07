@@ -330,7 +330,7 @@ class EventTriggerView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the event trigger information.")
+                gettext("Could not find the event trigger information.")
             )
 
         result = res['rows'][0]
@@ -573,7 +573,7 @@ class EventTriggerView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    gettext("Couldnot find the event trigger information.")
+                    gettext("Could not find the event trigger information.")
                 )
 
             old_data = res['rows'][0]

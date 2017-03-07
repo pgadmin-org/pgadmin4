@@ -329,7 +329,7 @@ class ForeignServerView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the foreign server information.")
+                gettext("Could not find the foreign server information.")
             )
 
         if res['rows'][0]['fsrvoptions'] is not None:

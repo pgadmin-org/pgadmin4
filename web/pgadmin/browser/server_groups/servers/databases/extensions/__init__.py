@@ -229,7 +229,7 @@ class ExtensionView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the extension information.")
+                gettext("Could not find the extension information.")
             )
 
         return ajax_response(
@@ -401,7 +401,7 @@ class ExtensionView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    gettext("Couldnot find the extension information.")
+                    gettext("Could not find the extension information.")
                 )
 
             old_data = res['rows'][0]

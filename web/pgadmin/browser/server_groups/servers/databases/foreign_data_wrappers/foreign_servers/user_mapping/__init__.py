@@ -346,7 +346,7 @@ class UserMappingView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the user mapping information.")
+                gettext("Could not find the user mapping information.")
             )
 
         if res['rows'][0]['umoptions'] is not None:

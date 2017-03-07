@@ -436,7 +436,7 @@ class BatchProcess(object):
 
                 except ValueError as e:
                     current_app.logger.warning(
-                        _("Status for the background process '{0}' couldn't be loaded!").format(
+                        _("Status for the background process '{0}' could not be loaded.").format(
                             p.pid
                         )
                     )

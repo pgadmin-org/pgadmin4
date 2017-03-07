@@ -217,7 +217,7 @@ class PackageView(PGChildNodeView):
         if pkgid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                     errormsg=_("Couldn't find the package.")
+                     errormsg=_("Could not find the package.")
                 )
 
             row = rset['rows'][0]

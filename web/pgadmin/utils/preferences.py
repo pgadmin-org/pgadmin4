@@ -73,7 +73,7 @@ class _Preference(object):
         ).first()
 
         if res is None:
-            # Couldn't find in the configuration table, we will create new
+            # Could not find in the configuration table, we will create new
             # entry for it.
             res = PrefTable(name=self.name, cid=cid)
             db.session.add(res)
@@ -98,7 +98,7 @@ class _Preference(object):
             pid=self.pid
         ).filter_by(uid=current_user.id).first()
 
-        # Couldn't find any preference for this user, return default value.
+        # Could not find any preference for this user, return default value.
         if res is None:
             return self.default
 

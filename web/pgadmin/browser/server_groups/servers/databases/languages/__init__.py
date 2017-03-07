@@ -336,7 +336,7 @@ class LanguageView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                gettext("Couldnot find the language information.")
+                gettext("Could not find the language information.")
             )
 
         sql = render_template("/".join([self.template_path, 'acl.sql']), lid=lid)
@@ -561,7 +561,7 @@ class LanguageView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    gettext("Couldnot find the language information.")
+                    gettext("Could not find the language information.")
                 )
 
             for key in ['lanacl']:

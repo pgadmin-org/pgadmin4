@@ -562,7 +562,7 @@ class IndexConstraintView(PGChildNodeView):
                         status=400,
                         success=0,
                         errormsg=_(
-                            "Couldn't find at least one required parameter (%s)." % str(param)
+                            "Could not find at least one required parameter (%s)." % str(param)
                         )
                     )
 
@@ -571,7 +571,7 @@ class IndexConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Couldn't find the required parameter (%s)." % arg
+                        "Could not find the required parameter (%s)." % arg
                     )
                 )
 

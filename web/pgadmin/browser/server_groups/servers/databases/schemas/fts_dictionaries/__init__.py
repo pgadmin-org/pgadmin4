@@ -729,7 +729,7 @@ class FtsDictionaryView(PGChildNodeView):
             if not status:
                 return internal_server_error(
                     _(
-                        "Couldn't generate reversed engineered query for the FTS Dictionary!\n{0}").format(
+                        "Could not generate reversed engineered query for the FTS Dictionary!\n{0}").format(
                         res
                     )
                 )
@@ -737,7 +737,7 @@ class FtsDictionaryView(PGChildNodeView):
             if res is None:
                 return gone(
                     _(
-                        "Couldn't generate reversed engineered query for FTS Dictionary node!")
+                        "Could not generate reversed engineered query for FTS Dictionary node!")
                 )
 
             return ajax_response(response=res)

@@ -204,7 +204,7 @@ class SequenceView(PGChildNodeView):
         if seid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                     errormsg=_("Couldn't find the sequence.")
+                     errormsg=_("Could not find the sequence.")
                 )
             row = rset['rows'][0]
             return make_json_response(
@@ -253,7 +253,7 @@ class SequenceView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("""could not find the sequence in the database."""))
+            return gone(_("""Could not find the sequence in the database."""))
 
         for row in res['rows']:
             SQL = render_template("/".join([self.template_path, 'get_def.sql']), data=row)

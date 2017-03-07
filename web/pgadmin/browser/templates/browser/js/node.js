@@ -344,7 +344,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   }
                 );
               }
-              // Close the panel (if couldn't fetch properties)
+              // Close the panel (if could not fetch properties)
               if (cancelFunc) {
                 cancelFunc();
               }

@@ -230,7 +230,7 @@ class JobScheduleView(PGChildNodeView):
 
         if jscid is not None:
             if len(result['rows']) == 0:
-                return gone(errormsg="Couldn't find the specified job step.")
+                return gone(errormsg="Could not find the specified job step.")
 
             row = result['rows'][0]
             return make_json_response(
@@ -280,7 +280,7 @@ class JobScheduleView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(errormsg="Couldn't find the specified job step.")
+            return gone(errormsg="Could not find the specified job step.")
 
         return ajax_response(
             response=res['rows'][0],
