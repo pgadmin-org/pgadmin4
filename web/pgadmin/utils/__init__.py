@@ -131,3 +131,105 @@ class PgAdminModule(Blueprint):
         menu_items = dict((key, sorted(value, key=attrgetter('priority')))
                           for key, value in menu_items.items())
         return menu_items
+
+
+import os
+import sys
+
+IS_PY2 = (sys.version_info[0] == 2)
+IS_WIN = (os.name == 'nt')
+
+sys_encoding = sys.getdefaultencoding()
+if not sys_encoding or sys_encoding == 'ascii':
+    # Fall back to 'utf-8', if we couldn't determine the default encoding,
+    # or 'ascii'.
+    sys_encoding = 'utf-8'
+
+fs_encoding = sys.getfilesystemencoding()
+if not fs_encoding or fs_encoding == 'ascii':
+    # Fall back to 'utf-8', if we couldn't determine the file-system encoding,
+    # or 'ascii'.
+    fs_encoding = 'utf-8'
+
+
+def u(_s, _encoding=sys_encoding):
+    if IS_PY2:
+        if isinstance(_s, str):
+            return unicode(_s, _encoding)
+    return _s
+
+
+def file_quote(_p):
+    if IS_PY2:
+        if isinstance(_p, unicode):
+            return _p.encode(fs_encoding)
+    return _p
+
+
+if IS_WIN:
+    import ctypes
+    from ctypes import wintypes
+
+    if IS_PY2:
+        def env(name):
+            if IS_PY2:
+                # Make sure string argument is unicode
+                name = unicode(name)
+            n = ctypes.windll.kernel32.GetEnvironmentVariableW(name, None, 0)
+
+            if n == 0:
+                return None
+
+            buf= ctypes.create_unicode_buffer(u'\0'*n)
+            ctypes.windll.kernel32.GetEnvironmentVariableW(name, buf, n)
+
+            return buf.value
+    else:
+        def env(name):
+            if name in os.environ:
+                return os.environ[name]
+            return None
+
+    _GetShortPathNameW = ctypes.windll.kernel32.GetShortPathNameW
+    _GetShortPathNameW.argtypes = [
+        wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD
+    ]
+    _GetShortPathNameW.restype = wintypes.DWORD
+
+    def fs_short_path(_path):
+        """
+        Gets the short path name of a given long path.
+        http://stackoverflow.com/a/23598461/200291
+        """
+        buf_size = len(_path)
+        while True:
+            res = ctypes.create_unicode_buffer(buf_size)
+            needed = _GetShortPathNameW(_path, res, buf_size)
+
+            if buf_size >= needed:
+                return res.value
+            else:
+                buf_size += needed
+
+    def document_dir():
+        CSIDL_PERSONAL = 5  # My Documents
+        SHGFP_TYPE_CURRENT = 0  # Get current, not default value
+
+        buf = ctypes.create_unicode_buffer(wintypes.MAX_PATH)
+        ctypes.windll.shell32.SHGetFolderPathW(
+            None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf
+        )
+
+        return buf.value
+
+else:
+    def env(name):
+        if name in os.environ:
+            return os.environ[name]
+        return None
+
+    def fs_short_path(_path):
+        return _path
+
+    def document_dir():
+        return os.path.realpath(os.path.expanduser(u'~/'))

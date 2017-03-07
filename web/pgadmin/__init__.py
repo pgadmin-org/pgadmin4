@@ -30,8 +30,6 @@ from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 
 from pgadmin.model import db, Role, Server, ServerGroup, User, Version, Keys
-# Configuration settings
-import config
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -129,7 +127,13 @@ def _find_blueprint():
 current_blueprint = LocalProxy(_find_blueprint)
 
 
-def create_app(app_name=config.APP_NAME):
+def create_app(app_name=None):
+
+    # Configuration settings
+    import config
+    if not app_name:
+        app_name = config.APP_NAME
+
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
     app = PgAdmin(__name__, static_url_path='/static')
@@ -193,8 +197,8 @@ def create_app(app_name=config.APP_NAME):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}'.format(
-        config.SQLITE_PATH.replace('\\', '/'),
+    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}'.format(
+        config.SQLITE_PATH.replace(u'\\', u'/'),
         getattr(config, 'SQLITE_TIMEOUT', 500)
     )
 

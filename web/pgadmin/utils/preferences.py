@@ -193,7 +193,7 @@ class _Preference(object):
 
         if pref is None:
             pref = UserPrefTable(
-                uid=current_user.id, pid=self.pid, value=str(value)
+                uid=current_user.id, pid=self.pid, value=value
             )
             db.session.add(pref)
         else:

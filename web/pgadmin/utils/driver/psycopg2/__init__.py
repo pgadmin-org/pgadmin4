@@ -1491,8 +1491,6 @@ class ServerManager(object):
                 database = self.db
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
-                if hasattr(str, 'decode'):
-                    database = database.decode('utf-8')
             else:
                 maintenance_db_id = u'DB:{0}'.format(self.db)
                 if maintenance_db_id in self.connections:
@@ -1510,9 +1508,6 @@ WHERE db.oid = {0}""".format(did))
                         if status and len(res['rows']) > 0:
                             for row in res['rows']:
                                 self.db_info[did] = row
-                                if hasattr(str, 'decode'):
-                                    self.db_info[did]['datname'] = \
-                                        self.db_info[did]['datname'].decode('utf-8')
                                 database = self.db_info[did]['datname']
 
                         if did not in self.db_info:
@@ -1843,7 +1838,10 @@ class Driver(BaseDriver):
         # Returns in bytes, we need to convert it in string
         if isinstance(res, bytes):
             try:
-                res = res.decode()
+                try:
+                    res = res.decode()
+                except UnicodeDecodeError:
+                    res = res.decode(sys.getfilesystemencoding())
             except UnicodeDecodeError:
                 res = res.decode('utf-8')
 

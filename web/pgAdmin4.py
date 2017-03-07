@@ -34,9 +34,11 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 # Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
-    setupfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             'setup.py')
-    exec (open(setupfile).read())
+    from pgadmin.utils import u, fs_encoding, file_quote
+    setupfile = os.path.join(
+        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))), u'setup.py'
+    )
+    exec(open(file_quote(setupfile), 'r').read())
 
 ##########################################################################
 # Server starup

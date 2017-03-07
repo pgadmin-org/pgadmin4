@@ -143,7 +143,10 @@ class CachingSessionManager(SessionManager):
     def put(self, session):
         self.parent.put(session)
         if session.sid in self._cache:
-            del self._cache[session.sid]
+            try:
+                del self._cache[session.sid]
+            except:
+                pass
         self._cache[session.sid] = session
         self._normalize()
 

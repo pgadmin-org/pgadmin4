@@ -16,7 +16,8 @@ from flask import url_for, Response, render_template, request, current_app
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html
+from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
+    fs_short_path, document_dir, IS_WIN
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
@@ -56,19 +57,47 @@ class ImportExportModule(PgAdminModule):
 blueprint = ImportExportModule(MODULE_NAME, __name__)
 
 
-class Message(IProcessDesc):
+class IEMessage(IProcessDesc):
     """
-    Message(IProcessDesc)
+    IEMessage(IProcessDesc)
 
-    Defines the message shown for the Message operation.
+    Defines the message shown for the import/export operation.
     """
 
-    def __init__(self, _sid, _schema, _tbl, _database, _storage):
+    def __init__(self, _sid, _schema, _tbl, _database, _storage, *_args):
         self.sid = _sid
         self.schema = _schema
         self.table = _tbl
         self.database = _database
-        self.storage = _storage
+        self._cmd = ''
+
+        if _storage:
+            _storage = _storage.replace('\\', '/')
+
+        def cmdArg(x):
+            if x:
+                x = html.safe_str(x)
+                x = x.replace('\\', '\\\\')
+                x = x.replace('"', '\\"')
+                x = x.replace('""', '\\"')
+
+                return ' "' + x  + '"'
+            return ''
+
+        replace_next = False
+        for arg in _args:
+            if arg and len(arg) >= 2 and arg[:2] == '--':
+                if arg == '--command':
+                    replace_next = True
+                self._cmd += ' ' + arg
+            elif replace_next:
+                arg = cmdArg(arg)
+                if _storage is not None:
+                    arg = arg.replace(_storage, '<STORAGE_DIR>')
+                self._cmd += ' "' + arg  + '"'
+            else:
+                self._cmd+= cmdArg(arg)
+
 
     @property
     def message(self):
@@ -90,45 +119,17 @@ class Message(IProcessDesc):
         ).first()
 
         res = '<div class="h5">'
-        res += html.safe_str(
-            _(
-                "Copying table data '{0}.{1}' on database '{2}' for the server - '{3}'"
-            ).format(
-                self.schema, self.table, self.database,
-                "{0} ({1}:{2})".format(s.name, s.host, s.port)
-            )
+        res += _(
+            "Copying table data '{0}.{1}' on database '{2}' for the server - '{3}'"
+        ).format(
+            self.schema, self.table, self.database,
+            "{0} ({1}:{2})".format(s.name, s.host, s.port)
         )
 
         res += '</div><div class="h5">'
-        res += html.safe_str(
-            _("Running command:")
-        )
+        res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
-        res += html.safe_str(cmd)
-
-        replace_next = False
-
-        def cmdArg(x):
-            if x:
-                x = x.replace('\\', '\\\\')
-                x = x.replace('"', '\\"')
-                x = x.replace('""', '\\"')
-
-                return ' "' + html.safe_str(x) + '"'
-
-            return ''
-
-        for arg in args:
-            if arg and len(arg) >= 2 and arg[:2] == '--':
-                if arg == '--command':
-                    replace_next = True
-                res += ' ' + arg
-            elif replace_next:
-                if self.storage:
-                    arg = arg.replace(self.storage, '<STORAGE_DIR>')
-                res += ' "' + html.safe_str(arg) + '"'
-            else:
-                res += cmdArg(arg)
+        res += self._cmd
         res += '</span></div>'
 
         return res
@@ -149,6 +150,33 @@ def script():
         status=200,
         mimetype="application/javascript"
     )
+
+
+def filename_with_file_manager_path(_file, _present=False):
+    """
+    Args:
+        file: File name returned from client file manager
+
+    Returns:
+        Filename to use for backup with full path taken from preference
+    """
+    # Set file manager directory from preference
+    storage_dir = get_storage_directory()
+
+    if storage_dir:
+        _file = os.path.join(storage_dir, _file.lstrip(u'/').lstrip(u'\\'))
+    elif not os.path.isabs(_file):
+        _file = os.path.join(document_dir(), _file)
+
+    if not _present:
+        # Touch the file to get the short path of the file on windows.
+        with open(_file, 'a'):
+            pass
+    else:
+        if not os.path.isfile(_file):
+            return None
+
+    return fs_short_path(_file)
 
 
 @blueprint.route('/create_job/<int:sid>', methods=['POST'])
@@ -175,10 +203,8 @@ def create_import_export_job(sid):
         id=sid).first()
 
     if server is None:
-        return make_json_response(
-            success=0,
-            errormsg=_("Couldn't find the given server")
-        )
+        return bad_request(errormsg=_("Couldn't find the given server"))
+
 
     # To fetch MetaData for the server
     from pgadmin.utils.driver import get_driver
@@ -188,10 +214,7 @@ def create_import_export_job(sid):
     connected = conn.connected()
 
     if not connected:
-        return make_json_response(
-            success=0,
-            errormsg=_("Please connect to the server first...")
-        )
+        return bad_request(errormsg=_("Please connect to the server first..."))
 
     # Get the utility path from the connection manager
     utility = manager.utility('sql')
@@ -200,21 +223,16 @@ def create_import_export_job(sid):
     storage_dir = get_storage_directory()
 
     if 'filename' in data:
-        if os.name == 'nt':
-            data['filename'] = data['filename'].replace('/', '\\')
-            if storage_dir:
-                storage_dir = storage_dir.replace('/', '\\')
-            data['filename'] = data['filename'].replace('\\', '\\\\')
-            data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
-        elif storage_dir:
-            data['filename'] = os.path.join(storage_dir, data['filename'].lstrip('/'))
-        else:
-            data['filename'] = data['filename']
+        _file = filename_with_file_manager_path(data['filename'], data['is_import'])
+        if not _file:
+            return bad_request(errormsg=_('Please specify a valid file'))
 
+        if IS_WIN:
+            _file = _file.replace('\\', '/')
+
+        data['filename'] = _file
     else:
-        return make_json_response(
-            data={'status': False, 'info': 'Please specify a valid file'}
-        )
+        return bad_request(errormsg=_('Please specify a valid file'))
 
     cols = None
     icols = None
@@ -255,33 +273,32 @@ def create_import_export_job(sid):
         ignore_column_list=icols
     )
 
-    args = [
-        '--host', server.host, '--port', str(server.port),
-        '--username', server.username, '--dbname', data['database'],
-        '--command', query
-    ]
+    args = ['--command', query]
 
     try:
         p = BatchProcess(
-            desc=Message(
+            desc=IEMessage(
                 sid,
                 data['schema'],
                 data['table'],
                 data['database'],
-                storage_dir
+                storage_dir,
+                utility, *args
             ),
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
-        p.start()
+        def export_pg_env(env):
+            env['PGHOST'] = server.host
+            env['PGPORT'] = str(server.port)
+            env['PGUSER'] = server.username
+            env['PGDATABASE'] = data['database']
+
+        p.start(export_pg_env)
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
-        return make_json_response(
-            status=410,
-            success=0,
-            errormsg=str(e)
-        )
+        return bad_request(errormsg=str(e))
 
     # Return response
     return make_json_response(

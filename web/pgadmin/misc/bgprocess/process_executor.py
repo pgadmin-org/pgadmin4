@@ -29,7 +29,7 @@ It also depends on the following environment variable for proper execution.
 PROCID - Process-id
 OUTDIR - Output directory
 """
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 
 # To make print function compatible with python2 & python3
 import sys
@@ -37,27 +37,31 @@ import os
 from datetime import datetime, timedelta, tzinfo
 from subprocess import Popen, PIPE
 from threading import Thread
-import codecs
 import signal
 
-def log(msg):
-    if 'OUTDIR' not in os.environ:
-        return
+_IS_WIN = (os.name == 'nt')
+_IS_PY2 = (sys.version_info[0] == 2)
+_ZERO = timedelta(0)
+_sys_encoding = None
+_fs_encoding = None
+_u = None
+_out_dir = None
+_log_file = None
 
-    with open(
-        os.path.join(os.environ['OUTDIR'], ('log_%s' % os.getpid())), 'a'
-    ) as fp:
-        fp.write(('INFO:: %s\n' % str(msg)))
+if _IS_PY2:
+    def _log(msg):
+        with open(_log_file, 'a') as fp:
+            fp.write(('INFO:: %s\n' % str(msg)))
+else:
+    def _log(msg):
+        with open(_log_file, 'a') as fp:
+            fp.write(('INFO:: %s\n' % msg.encode('ascii', 'xmlcharrefreplace')))
 
 
-def log_exception():
-    if 'OUTDIR' not in os.environ:
-        return
+def _log_exception():
     type_, value_, traceback_ = info=sys.exc_info()
 
-    with open(
-        os.path.join(os.environ['OUTDIR'], ('log_%s' % os.getpid())), 'a'
-    ) as fp:
+    with open(_log_file, 'ab') as fp:
         from traceback import format_exception
         res = ''.join(
             format_exception(type_, value_, traceback_)
@@ -66,11 +70,6 @@ def log_exception():
         fp.write('EXCEPTION::\n{0}'.format(res))
         return res
 
-
-IS_WIN = (os.name == 'nt')
-
-ZERO = timedelta(0)
-default_encoding = sys.getdefaultencoding() or "utf-8"
 
 # Copied the 'UTC' class from the 'pytz' package to allow to run this script
 # without any external dependent library, and can be used with any python
@@ -83,8 +82,8 @@ class UTC(tzinfo):
     """
     zone = "UTC"
 
-    _utcoffset = ZERO
-    _dst = ZERO
+    _utcoffset = _ZERO
+    _dst = _ZERO
     _tzname = zone
 
     def fromutc(self, dt):
@@ -93,13 +92,13 @@ class UTC(tzinfo):
         return super(UTC.__class__, self).fromutc(dt)
 
     def utcoffset(self, dt):
-        return ZERO
+        return _ZERO
 
     def tzname(self, dt):
         return "UTC"
 
     def dst(self, dt):
-        return ZERO
+        return _ZERO
 
     def localize(self, dt, is_dst=False):
         '''Convert naive time to local time'''
@@ -155,15 +154,12 @@ class ProcessLogger(Thread):
         Returns:
             None
         """
+        import codecs
+
         Thread.__init__(self)
         self.process = None
         self.stream = None
-        self.encoding = default_encoding
-        self.logger = codecs.open(
-            os.path.join(
-                os.environ['OUTDIR'], stream_type
-            ), 'w', self.encoding, "ignore"
-        )
+        self.logger = open(os.path.join(_out_dir, stream_type),  'wb')
 
     def attach_process_stream(self, process, stream):
         """
@@ -179,27 +175,52 @@ class ProcessLogger(Thread):
         self.process = process
         self.stream = stream
 
-    def log(self, msg):
-        """
-        This function will update log file
+    if not _IS_PY2:
+        def log(self, msg):
+            """
+            This function will update log file
 
-        Args:
-            msg: message
+            Args:
+                msg: message
 
-        Returns:
-            None
-        """
-        # Write into log file
-        if self.logger:
-            if msg:
-                self.logger.write(
-                    str('{0},{1}').format(
-		        get_current_time(format='%y%m%d%H%M%S%f'),
-                        msg.decode(self.encoding, 'replace')
+            Returns:
+                None
+            """
+            # Write into log file
+            if self.logger:
+                if msg:
+                    self.logger.write(get_current_time(format='%y%m%d%H%M%S%f').encode('utf-8'))
+                    self.logger.write(b',')
+                    self.logger.write(msg.lstrip(b'\r\n' if _IS_WIN else b'\n'))
+                    self.logger.write(os.linesep.encode('utf-8'))
+
+                return True
+            return False
+    else:
+        def log(self, msg):
+            """
+            This function will update log file
+
+            Args:
+                msg: message
+
+            Returns:
+                None
+            """
+            # Write into log file
+            if self.logger:
+                if msg:
+                    self.logger.write(
+                        b'{0},{1}{2}'.format(
+                            get_current_time(
+                                format='%y%m%d%H%M%S%f'
+                            ),
+                            msg.lstrip(b'\r\n' if _IS_WIN else b'\n'), os.linesep
+                        )
                     )
-                )
-            return True
-        return False
+
+                return True
+            return False
 
     def run(self):
         if self.process and self.stream:
@@ -230,14 +251,14 @@ def update_status(**kw):
     """
     import json
 
-    if os.environ['OUTDIR']:
+    if _out_dir:
         status = dict(
             (k, v) for k, v in kw.items() if k in [
                 'start_time', 'end_time', 'exit_code', 'pid'
             ]
         )
-        log('Updating the status:\n{0}'.format(json.dumps(status)))
-        with open(os.path.join(os.environ['OUTDIR'], 'status'), 'w') as fp:
+        _log('Updating the status:\n{0}'.format(json.dumps(status)))
+        with open(os.path.join(_out_dir, 'status'), 'w') as fp:
             json.dump(status, fp)
     else:
         raise ValueError("Please verify pid and db_file arguments.")
@@ -252,7 +273,7 @@ def execute():
     """
     command = sys.argv[1:]
     args = dict()
-    log('Initialize the process execution: {0}'.format(command))
+    _log('Initialize the process execution: {0}'.format(command))
 
     # Create seprate thread for stdout and stderr
     process_stdout = ProcessLogger('out')
@@ -270,25 +291,28 @@ def execute():
 
         # Update start time
         update_status(**args)
-        log('Status updated...')
+        _log('Status updated...')
 
         if 'PROCID' in os.environ and os.environ['PROCID'] in os.environ:
             os.environ['PGPASSWORD'] = os.environ[os.environ['PROCID']]
 
         kwargs = dict()
         kwargs['close_fds'] = False
-        kwargs['shell'] = True if IS_WIN else False
+        kwargs['shell'] = True if _IS_WIN else False
 
         # We need environment variables & values in string
-        log('Converting the environment variable in the bytes format...')
-        kwargs['env'] = convert_environment_variables(os.environ.copy())
+        if _IS_PY2:
+            _log('Converting the environment variable in the bytes format...')
+            kwargs['env'] = convert_environment_variables(os.environ.copy())
+        else:
+            kwargs['env'] = os.environ.copy()
 
-        log('Starting the command execution...')
+        _log('Starting the command execution...')
         process = Popen(
             command, stdout=PIPE, stderr=PIPE, stdin=None, **kwargs
         )
 
-        log('Attaching the loggers to stdout, and stderr...')
+        _log('Attaching the loggers to stdout, and stderr...')
         # Attach the stream to the process logger, and start logging.
         process_stdout.attach_process_stream(process, process.stdout)
         process_stdout.start()
@@ -299,14 +323,14 @@ def execute():
         process_stdout.join()
         process_stderr.join()
 
-        log('Waiting for the process to finish...')
+        _log('Waiting for the process to finish...')
         # Child process return code
         exitCode = process.wait()
 
         if exitCode is None:
             exitCode = process.poll()
 
-        log('Process exited with code: {0}'.format(exitCode))
+        _log('Process exited with code: {0}'.format(exitCode))
         args.update({'exit_code': exitCode})
 
         # Add end_time
@@ -322,7 +346,7 @@ def execute():
 
     # If executable not found or invalid arguments passed
     except OSError:
-        info = log_exception()
+        info = _log_exception()
         args.update({'exit_code': 500})
         if process_stderr:
             process_stderr.log(info)
@@ -333,7 +357,7 @@ def execute():
 
     # Unknown errors
     except Exception:
-        info = log_exception()
+        info = _log_exception()
         args.update({'exit_code': 501})
         if process_stderr:
             process_stderr.log(info)
@@ -344,12 +368,12 @@ def execute():
     finally:
         # Update the execution end_time, and exit-code.
         update_status(**args)
-        log('Exiting the process executor...')
+        _log('Exiting the process executor...')
         if process_stderr:
             process_stderr.release()
         if process_stdout:
             process_stdout.release()
-        log('Bye!')
+        _log('Bye!')
 
 
 # Let's ignore all the signal comming to us.
@@ -368,27 +392,50 @@ def convert_environment_variables(env):
     for key, value in env.items():
         try:
             if not isinstance(key, str):
-                key = key.encode(default_encoding)
-                if not isinstance(value, str):
-                    value = value.encode(default_encoding)
+                key = key.encode(_sys_encoding)
+            if not isinstance(value, str):
+                value = value.encode(_sys_encoding)
             temp_env[key] = value
         except Exception as e:
-            log_exception()
+            _log_exception()
     return temp_env
 
 
 if __name__ == '__main__':
-    log('Starting the process executor...')
+
+    _sys_encoding = sys.getdefaultencoding()
+    if not _sys_encoding or _sys_encoding == 'ascii':
+        # Fall back to 'utf-8', if we couldn't determine the default encoding,
+        # or 'ascii'.
+        _sys_encoding = 'utf-8'
+
+    _fs_encoding = sys.getfilesystemencoding()
+    if not _fs_encoding or _fs_encoding == 'ascii':
+        # Fall back to 'utf-8', if we couldn't determine the file-system encoding,
+        # or 'ascii'.
+        _fs_encoding = 'utf-8'
+
+    def u(_s, _encoding=_sys_encoding):
+        if _IS_PY2:
+            if isinstance(_s, str):
+                return unicode(_s, _encoding)
+        return _s
+    _u = u
+
+    _out_dir = u(os.environ['OUTDIR'])
+    _log_file = os.path.join(_out_dir, ('log_%s' % os.getpid()))
+
+    _log('Starting the process executor...')
 
     # Ignore any signals
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    log('Disabled the SIGINT, SIGTERM signals...')
+    _log('Disabled the SIGINT, SIGTERM signals...')
 
-    if IS_WIN:
-        log('Disable the SIGBREAKM signal (windows)...')
+    if _IS_WIN:
+        _log('Disable the SIGBREAKM signal (windows)...')
         signal.signal(signal.SIGBREAK, signal_handler)
-        log('Disabled the SIGBREAKM signal (windows)...')
+        _log('Disabled the SIGBREAKM signal (windows)...')
 
         # For windows:
         # We would run the process_executor in the detached mode again to make
@@ -396,11 +443,14 @@ if __name__ == '__main__':
         # depending on the status of the web-server.
         if 'PGA_BGP_FOREGROUND' in os.environ and \
         os.environ['PGA_BGP_FOREGROUND'] == "1":
-            log('[CHILD] Start process execution...')
-            log('Executing the command now from the detached child...')
+            _log('[CHILD] Start process execution...')
             # This is a child process running as the daemon process.
-            # Let's do the job assing to it.
-            execute()
+            # Let's do the job assigning to it.
+            try:
+                _log('Executing the command now from the detached child...')
+                execute()
+            except:
+                _log_exception()
         else:
             from subprocess import CREATE_NEW_PROCESS_GROUP
             DETACHED_PROCESS = 0x00000008
@@ -414,11 +464,11 @@ if __name__ == '__main__':
             env['PGA_BGP_FOREGROUND'] = "1"
 
             # We need environment variables & values in string
-            log('[PARENT] Converting the environment variable in the bytes format...')
+            _log('[PARENT] Converting the environment variable in the bytes format...')
             try:
                 env = convert_environment_variables(env)
             except Exception as e:
-                log_exception()
+                _log_exception()
 
             kwargs = {
                 'stdin': stdin.fileno(),
@@ -426,33 +476,33 @@ if __name__ == '__main__':
                 'stderr': stderr.fileno(),
                 'creationflags': CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS,
                 'close_fds': False,
-                'cwd': os.environ['OUTDIR'],
+                'cwd': _out_dir,
                 'env':  env
             }
 
             cmd = [sys.executable]
             cmd.extend(sys.argv)
 
-            log('[PARENT] Command executings: {0}'.format(cmd))
+            _log('[PARENT] Command executings: {0}'.format(cmd))
 
             p = Popen(cmd, **kwargs)
 
             exitCode = p.poll()
 
             if exitCode is not None:
-                log(
+                _log(
                     '[PARENT] Child exited with exit-code#{0}...'.format(
                         exitCode
                     )
                 )
             else:
-                log('[PARENT] Started the child with PID#{0}'.format(p.pid))
+                _log('[PARENT] Started the child with PID#{0}'.format(p.pid))
 
             # Question: Should we wait for sometime?
             # Answer: Looks the case...
             from time import sleep
             sleep(2)
-            log('[PARENT] Exiting...')
+            _log('[PARENT] Exiting...')
             sys.exit(0)
     else:
         r, w = os.pipe()
@@ -461,35 +511,36 @@ if __name__ == '__main__':
         # We will fork the process, and run the child process as daemon, and
         # let it do the job.
         if os.fork() == 0:
-            log('[CHILD] Forked the child process...')
+            _log('[CHILD] Forked the child process...')
             # Hmm... So - I need to do the job now...
             try:
                 os.close(r)
 
-                log('[CHILD] Make the child process leader...')
+                _log('[CHILD] Make the child process leader...')
                 # Let me be the process leader first.
                 os.setsid()
                 os.umask(0)
 
-                log('[CHILD] Make the child process leader...')
+                _log('[CHILD] Make the child process leader...')
                 w = os.fdopen(w, 'w')
                 # Let me inform my parent - I will do the job, do not worry
                 # now, and die peacefully.
-                log('[CHILD] Inform parent about successful child forking...')
+                _log('[CHILD] Inform parent about successful child forking...')
                 w.write('1')
                 w.close()
 
-                log('[CHILD] Start executing the background process...')
+                _log('[CHILD] Start executing the background process...')
                 execute()
             except Exception:
+                _log_exception()
                 sys.exit(1)
         else:
             os.close(w)
             r = os.fdopen(r)
             # I do not care, what the child send.
             r.read()
-            log('[PARENT] Got message from the child...')
+            _log('[PARENT] Got message from the child...')
             r.close()
 
-            log('[PARENT] Exiting...')
+            _log('[PARENT] Exiting...')
             sys.exit(0)

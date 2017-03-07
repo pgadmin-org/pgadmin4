@@ -9,6 +9,7 @@
 
 """Implements Backup Utility"""
 
+from __future__ import unicode_literals
 import simplejson as json
 import os
 
@@ -17,7 +18,8 @@ from flask import render_template, request, current_app, \
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html
+from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
+    fs_short_path, document_dir
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
@@ -79,14 +81,28 @@ class BackupMessage(IProcessDesc):
     Defines the message shown for the backup operation.
     """
 
-    def __init__(self, _type, _sid, _bfile, **kwargs):
+    def __init__(self, _type, _sid, _bfile, *_args, **_kwargs):
         self.backup_type = _type
         self.sid = _sid
         self.bfile = _bfile
-        self.database = None
+        self.database = _kwargs['database'] if 'database' in _kwargs else None
+        self.cmd = ''
 
-        if 'database' in kwargs:
-            self.database = kwargs['database']
+        def cmdArg(x):
+            if x:
+                # x = html.safe_str(x)
+                x = x.replace('\\', '\\\\')
+                x = x.replace('"', '\\"')
+                x = x.replace('""', '\\"')
+
+                return ' "' + x  + '"'
+            return ''
+
+        for arg in _args:
+            if arg and len(arg) >= 2 and arg[:2] == '--':
+                self.cmd += ' ' + arg
+            else:
+                self.cmd += cmdArg(arg)
 
     @property
     def message(self):
@@ -123,64 +139,31 @@ class BackupMessage(IProcessDesc):
         res = '<div class="h5">'
 
         if self.backup_type == BACKUP.OBJECT:
-            res += html.safe_str(
-                _(
-                    "Backing up an object on the server '{0}' from database '{1}'..."
-                ).format(
-                    "{0} ({1}:{2})".format(s.name, s.host, s.port),
-                    self.database
-                )
+            res += _(
+                "Backing up an object on the server '{0}' from database '{1}'..."
+            ).format(
+                "{0} ({1}:{2})".format(s.name, s.host, s.port),
+                self.database
             )
         elif self.backup_type == BACKUP.GLOBALS:
-            res += html.safe_str(
-                _("Backing up the global objects on the server '{0}'").format(
-                    "{0} ({1}:{2})".format(s.name, s.host, s.port)
-                )
+            res += _("Backing up the global objects on the server '{0}'").format(
+                "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         elif self.backup_type == BACKUP.SERVER:
-            res += html.safe_str(
-                _("Backing up the server '{0}'").format(
-                    "{0} ({1}:{2})".format(s.name, s.host, s.port)
-                )
+            res += _("Backing up the server '{0}'").format(
+                "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         else:
             # It should never reach here.
             res += "Backup"
 
         res += '</div><div class="h5">'
-        res += html.safe_str(
-            _("Running command:")
-        )
+        res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
-        res += html.safe_str(cmd)
-
-        replace_next = False
-
-        def cmdArg(x):
-            if x:
-                x = x.replace('\\', '\\\\')
-                x = x.replace('"', '\\"')
-                x = x.replace('""', '\\"')
-
-                return ' "' + html.safe_str(x) + '"'
-
-            return ''
-
-        for arg in args:
-            if arg and len(arg) >= 2 and arg[:2] == '--':
-                res += ' ' + arg
-            elif replace_next:
-                res += ' "' + html.safe_str(
-                    self.bfile
-                ) + '"'
-            else:
-                if arg == '--file':
-                    replace_next = True
-                res += cmdArg(arg)
+        res += self.cmd
         res += '</span></div>'
 
         return res
-
 
 @blueprint.route("/")
 @login_required
@@ -201,7 +184,7 @@ def script():
     )
 
 
-def filename_with_file_manager_path(file):
+def filename_with_file_manager_path(_file):
     """
     Args:
         file: File name returned from client file manager
@@ -213,9 +196,15 @@ def filename_with_file_manager_path(file):
     storage_dir = get_storage_directory()
 
     if storage_dir:
-        return os.path.join(storage_dir, file.lstrip('/'))
+        _file = os.path.join(storage_dir, _file.lstrip(u'/').lstrip(u'\\'))
+    elif not os.path.isabs(_file):
+        _file = os.path.join(document_dir(), _file)
 
-    return file
+    # Touch the file to get the short path of the file on windows.
+    with open(_file, 'a'):
+        pass
+
+    return fs_short_path(_file)
 
 
 @blueprint.route('/create_job/<int:sid>', methods=['POST'])
@@ -292,7 +281,11 @@ def create_backup_job(sid):
         p = BatchProcess(
             desc=BackupMessage(
                 BACKUP.SERVER if data['type'] != 'global' else BACKUP.GLOBALS,
-                sid, data['file']
+                sid,
+                data['file'].encode('utf-8') if hasattr(
+                    data['file'], 'encode'
+                ) else data['file'],
+                *args
             ),
             cmd=utility, args=args
         )
@@ -440,9 +433,15 @@ def create_backup_objects_job(sid):
     try:
         p = BatchProcess(
             desc=BackupMessage(
-                BACKUP.OBJECT, sid, data['file'], database=data['database']
+                BACKUP.OBJECT, sid,
+                data['file'].encode('utf-8') if hasattr(
+                    data['file'], 'encode'
+                ) else data['file'],
+                *args,
+                database=data['database']
             ),
-            cmd=utility, args=args)
+            cmd=utility, args=args
+        )
         manager.export_password_env(p.id)
         p.start()
         jid = p.id

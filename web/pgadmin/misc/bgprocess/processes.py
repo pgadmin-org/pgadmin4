@@ -11,8 +11,6 @@
 """
 Introduce a function to run the process executor in detached mode.
 """
-from __future__ import print_function, unicode_literals
-
 import csv
 import os
 import sys
@@ -21,6 +19,12 @@ from datetime import datetime
 from pickle import dumps, loads
 from subprocess import Popen
 
+from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding
+
+if IS_PY2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 import pytz
 from dateutil import parser
 from flask import current_app
@@ -29,11 +33,6 @@ from flask_security import current_user
 
 import config
 from pgadmin.model import Process, db
-
-if sys.version_info < (3,):
-    from StringIO import StringIO
-else:
-    from io import StringIO
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
@@ -159,17 +158,23 @@ class BatchProcess(object):
         csv_writer = csv.writer(
             args_csv_io, delimiter=str(','), quoting=csv.QUOTE_MINIMAL
         )
-        csv_writer.writerow(_args)
+        if sys.version_info.major == 2:
+            csv_writer.writerow([a.encode('utf-8') if isinstance(a, unicode) else a for a in _args])
+        else:
+            csv_writer.writerow(_args)
+
+        args_val = args_csv_io.getvalue().strip(str('\r\n'))
 
         j = Process(
             pid=int(id), command=_cmd,
-            arguments=args_csv_io.getvalue().strip(str('\r\n')),
+            arguments=args_val.decode('utf-8', 'replace') if IS_PY2 and hasattr(args_val, 'decode') \
+                else args_val,
             logdir=log_dir, desc=dumps(self.desc), user_id=current_user.id
         )
         db.session.add(j)
         db.session.commit()
 
-    def start(self):
+    def start(self, cb=None):
 
         def which(program, paths):
             def is_exe(fpath):
@@ -178,9 +183,9 @@ class BatchProcess(object):
             for path in paths:
                 if not os.path.isdir(path):
                     continue
-                exe_file = os.path.join(path, program)
+                exe_file = os.path.join(u(path, fs_encoding), program)
                 if is_exe(exe_file):
-                    return exe_file
+                    return file_quote(exe_file)
             return None
 
         def convert_environment_variables(env):
@@ -191,6 +196,8 @@ class BatchProcess(object):
             :return: Encoded environment variable as string
             """
             encoding = sys.getdefaultencoding()
+            if encoding is None or encoding == 'ascii':
+                encoding = 'utf-8'
             temp_env = dict()
             for key, value in env.items():
                 if not isinstance(key, str):
@@ -207,22 +214,22 @@ class BatchProcess(object):
                 _('The process has already finished and can not be restarted.')
             )
 
-        executor = os.path.join(
-            os.path.dirname(__file__), 'process_executor.py'
-        )
+        executor = file_quote(os.path.join(
+            os.path.dirname(u(__file__)), u'process_executor.py'
+        ))
         paths = sys.path[:]
         interpreter = None
 
         if os.name == 'nt':
-            paths.insert(0, os.path.join(sys.prefix, 'Scripts'))
-            paths.insert(0, os.path.join(sys.prefix))
+            paths.insert(0, os.path.join(u(sys.prefix), u'Scripts'))
+            paths.insert(0, u(sys.prefix))
 
-            interpreter = which('pythonw.exe', paths)
+            interpreter = which(u'pythonw.exe', paths)
             if interpreter is None:
-                interpreter = which('python.exe', paths)
+                interpreter = which(u'python.exe', paths)
         else:
-            paths.insert(0, os.path.join(sys.prefix, 'bin'))
-            interpreter = which('python', paths)
+            paths.insert(0, os.path.join(u(sys.prefix), u'bin'))
+            interpreter = which(u'python', paths)
 
         p = None
         cmd = [
@@ -231,15 +238,21 @@ class BatchProcess(object):
         ]
         cmd.extend(self.args)
 
-        command = []
-        for c in cmd:
-            command.append(str(c))
+        if os.name == 'nt' and IS_PY2:
+            command = []
+            for c in cmd:
+                command.append(c.encode('utf-8') if isinstance(c, unicode) else str(c))
 
-        current_app.logger.info(
-            "Executing the process executor with the arguments: %s",
-            ' '.join(command)
-        )
-        cmd = command
+            current_app.logger.info(
+                u"Executing the process executor with the arguments: %s",
+                ''.join(command)
+            )
+
+            cmd = command
+        else:
+            current_app.logger.info(
+                u"Executing the process executor with the arguments: %s", str(cmd)
+            )
 
         # Make a copy of environment, and add new variables to support
         env = os.environ.copy()
@@ -247,8 +260,12 @@ class BatchProcess(object):
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
 
-        # We need environment variables & values in string
-        env = convert_environment_variables(env)
+        if cb is not None:
+            cb(env)
+
+        if IS_PY2:
+            # We need environment variables & values in string
+            env = convert_environment_variables(env)
 
         if os.name == 'nt':
             DETACHED_PROCESS = 0x00000008
@@ -325,12 +342,16 @@ class BatchProcess(object):
                     line = f.readline()
                     line = line.decode(enc, 'replace')
                     r = c.split(line)
+                    if len(r) < 3:
+                        # ignore this line
+                        pos = f.tell()
+                        continue
                     if r[1] > ctime:
                         completed = False
                         break
                     log.append([r[1], r[2]])
                     pos = f.tell()
-                    if idx == 1024:
+                    if idx >= 1024:
                         completed = False
                         break
                     if pos == eofs:
@@ -453,7 +474,10 @@ class BatchProcess(object):
 
             if isinstance(desc, IProcessDesc):
                 args = []
-                args_csv = StringIO(p.arguments)
+                args_csv = StringIO(
+                  p.arguments.encode('utf-8') \
+                      if hasattr(p.arguments, 'decode') else p.arguments
+                )
                 args_reader = csv.reader(args_csv, delimiter=str(','))
                 for arg in args_reader:
                     args = args + arg

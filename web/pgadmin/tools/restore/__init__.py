@@ -17,7 +17,8 @@ from flask import render_template, request, current_app, \
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html
+from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
+    fs_short_path, document_dir
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
@@ -58,9 +59,26 @@ blueprint = RestoreModule(
 
 
 class RestoreMessage(IProcessDesc):
-    def __init__(self, _sid, _bfile):
+    def __init__(self, _sid, _bfile, *_args):
         self.sid = _sid
         self.bfile = _bfile
+        self.cmd = ''
+
+        def cmdArg(x):
+            if x:
+                x = html.safe_str(x)
+                x = x.replace('\\', '\\\\')
+                x = x.replace('"', '\\"')
+                x = x.replace('""', '\\"')
+                return ' "' + x  + '"'
+            return ''
+
+        for arg in _args:
+            if arg and len(arg) >= 2 and arg[:2] == '--':
+                self.cmd += ' ' + arg
+            else:
+                self.cmd += cmdArg(arg)
+
 
     @property
     def message(self):
@@ -95,30 +113,7 @@ class RestoreMessage(IProcessDesc):
         )
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
         res += html.safe_str(cmd)
-
-        def cmdArg(x):
-            if x:
-                x = x.replace('\\', '\\\\')
-                x = x.replace('"', '\\"')
-                x = x.replace('""', '\\"')
-
-                return ' "' + html.safe_str(x) + '"'
-
-            return ''
-
-        idx = 0
-        no_args = len(args)
-        for arg in args:
-            if idx < no_args - 1:
-                if arg[:2] == '--':
-                    res += ' ' + arg
-                else:
-                    res += cmdArg(arg)
-            idx += 1
-
-        if no_args > 1:
-            res += ' "' + html.safe_str(arg) + '"'
-
+        res += self.cmd
         res += '</span></div>'
 
         return res
@@ -143,7 +138,7 @@ def script():
     )
 
 
-def filename_with_file_manager_path(file):
+def filename_with_file_manager_path(_file):
     """
     Args:
         file: File name returned from client file manager
@@ -155,9 +150,14 @@ def filename_with_file_manager_path(file):
     storage_dir = get_storage_directory()
 
     if storage_dir:
-        return os.path.join(storage_dir, file.lstrip('/'))
+        _file = os.path.join(storage_dir, _file.lstrip(u'/').lstrip(u'\\'))
+    elif not os.path.isabs(_file):
+        _file = os.path.join(document_dir(), _file)
 
-    return file
+    if not os.path.isfile(_file):
+        return None
+
+    return fs_short_path(_file)
 
 
 @blueprint.route('/create_job/<int:sid>', methods=['POST'])
@@ -179,7 +179,13 @@ def create_restore_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    backup_file = filename_with_file_manager_path(data['file'])
+    _file = filename_with_file_manager_path(data['file'])
+
+    if _file is None:
+        return make_json_response(
+            success=0,
+            errormsg=_("File couldn't be found!")
+        )
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
@@ -261,7 +267,7 @@ def create_restore_job(sid):
             return False
 
         args.extend([
-            '--host', server.host, '--port', server.port,
+            '--host', server.host, '--port', str(server.port),
             '--username', server.username, '--no-password'
         ])
 
@@ -300,11 +306,17 @@ def create_restore_job(sid):
         set_multiple('trigger_funcs', '--function')
         set_multiple('indexes', '--index')
 
-    args.append(backup_file)
+    args.append(fs_short_path(_file))
 
     try:
         p = BatchProcess(
-            desc=RestoreMessage(sid, data['file']),
+            desc=RestoreMessage(
+                sid,
+                data['file'].encode('utf-8') if hasattr(
+                    data['file'], 'encode'
+                ) else data['file'],
+		*args
+            ),
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)

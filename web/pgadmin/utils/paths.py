@@ -37,7 +37,11 @@ def get_storage_directory():
     if len(username) == 0 or username[0].isdigit():
         username = 'pga_user_' + username
 
-    storage_dir = os.path.join(storage_dir, username)
+    storage_dir = os.path.join(
+        storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode') \
+            else storage_dir,
+        username
+    )
 
     if not os.path.exists(storage_dir):
         os.makedirs(storage_dir, int('700', 8))

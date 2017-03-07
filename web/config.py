@@ -12,7 +12,7 @@
 ##########################################################################
 
 import os
-from logging import *
+from pgadmin.utils import env, IS_PY2, IS_WIN, fs_short_path
 
 ##########################################################################
 # Application settings
@@ -81,12 +81,17 @@ MODULE_BLACKLIST = ['test']
 # List of treeview browser nodes to skip when dynamically loading
 NODE_BLACKLIST = []
 
+
 # Data directory for storage of config settings etc. This shouldn't normally
 # need to be changed - it's here as various other settings depend on it.
-if os.name == 'nt':
-    DATA_DIR = os.path.realpath(os.getenv('APPDATA') + "/pgAdmin")
+if IS_WIN:
+    # Use the short path on windows
+    DATA_DIR = os.path.realpath(
+        os.path.join(fs_short_path(env('APPDATA')), u"pgAdmin")
+    )
 else:
-    DATA_DIR = os.path.realpath(os.path.expanduser('~/.pgadmin/'))
+    DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
+
 
 ##########################################################################
 # Log settings
@@ -94,6 +99,9 @@ else:
 
 # Debug mode?
 DEBUG = False
+
+
+import logging
 
 # Application log level - one of:
 #   CRITICAL 50
@@ -103,18 +111,16 @@ DEBUG = False
 #   INFO     20
 #   DEBUG    10
 #   NOTSET    0
-CONSOLE_LOG_LEVEL = WARNING
-FILE_LOG_LEVEL = WARNING
+CONSOLE_LOG_LEVEL = logging.WARNING
+FILE_LOG_LEVEL = logging.WARNING
 
 # Log format.
 CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
-LOG_FILE = os.path.join(
-    DATA_DIR,
-    'pgadmin4.log'
-)
+LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
+
 
 ##########################################################################
 # Server settings
@@ -176,11 +182,8 @@ MAX_SESSION_IDLE_TIME = 60
 # The default path to the SQLite database used to store user accounts and
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
-SQLITE_PATH = os.environ.get("SQLITE_PATH") or \
-              os.path.join(
-                  DATA_DIR,
-                  'pgadmin4.db'
-              )
+SQLITE_PATH = env('SQLITE_PATH') or os.path.join(DATA_DIR, 'pgadmin4.db')
+
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
 # OperationError due to database lock. On slower system, you may need to change
 # this to some higher value.
@@ -207,10 +210,7 @@ SQLITE_TIMEOUT = 500
 # SESSION_DB_PATH = '/run/shm/pgAdmin4_session'
 #
 ##########################################################################
-SESSION_DB_PATH = os.path.join(
-    DATA_DIR,
-    'sessions'
-)
+SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
@@ -262,10 +262,8 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 # 2. Set path manually like
 # STORAGE_DIR = "/path/to/directory/"
 ##########################################################################
-STORAGE_DIR = os.path.join(
-    DATA_DIR,
-    'storage'
-)
+STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
+
 
 ##########################################################################
 # Default locations for binary utilities (pg_dump, pg_restore etc)
@@ -295,6 +293,7 @@ TESTING_MODE = False
 
 # The default path for SQLite database for testing
 TEST_SQLITE_PATH = os.path.join(DATA_DIR, 'test_pgadmin4.db')
+
 
 ##########################################################################
 # Allows flask application to response to the each request asynchronously
