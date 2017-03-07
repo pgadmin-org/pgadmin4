@@ -13,7 +13,7 @@ import imp
 from setuptools import setup
 from codecs import open
 
-"""This script is used to help generate PIP packages"""
+"""This script helps to generate PIP packages"""
 
 # Get the requirements list for the current version of Python
 req_file='../requirements.txt'
@@ -57,7 +57,7 @@ setup(
     #   5 - Production/Stable
     'Development Status :: 5 - Production/Stable',
 
-    # Suppported Programming Languages
+    # Supported programming languages
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.3',
@@ -71,7 +71,7 @@ setup(
     # Specify package names here.
     packages=["pgadmin4",],
 
-    # To inclue dditional files into the package
+    # To include additional files within the package
     include_package_data=True,
 
     install_requires=required,
@@ -82,7 +82,7 @@ setup(
         ":python_version<='2.7'": ["importlib"],
     },
 
-    # Specify date files to be included. For Python 2.6 need to include them in MANIFEST.in
+    # Specify data files to be included. For Python 2.6 include them in MANIFEST.in
     ##package_data="",
 
     # To package data files outside package directory.
