@@ -13,11 +13,11 @@ import os
 
 from flask_security import current_user, login_required
 
-import config
 
 
 @login_required
 def get_storage_directory():
+    import config
     if config.SERVER_MODE is not True:
         return None
 
@@ -50,6 +50,7 @@ def get_storage_directory():
 
 
 def init_app(app):
+    import config
     if config.SERVER_MODE is not True:
         return None
 
