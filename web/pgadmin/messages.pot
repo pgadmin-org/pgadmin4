@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-07 11:19+0000\n"
+"POT-Creation-Date: 2017-03-08 10:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3436,7 +3436,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:212
 #, python-format
-msgid "Are you sure you want to reset the statistics for table %%s?"
+msgid "Are you sure you want to reset the statistics for table %s?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:332
@@ -7944,12 +7944,12 @@ msgid "Font size"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/__init__.py:129
-#, python-format
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
-"size. For example, to increase the font size by 20% use a value of 1.2, "
-"or to reduce by 20%, use a value of 0.8. Minimum 0.1, maximum 10."
+"size. For example, to increase the font size by 20 percent use a value of"
+" 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
+"maximum 10."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/__init__.py:137

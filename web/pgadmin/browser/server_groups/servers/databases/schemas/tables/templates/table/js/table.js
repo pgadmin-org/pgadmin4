@@ -209,7 +209,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           alertify.confirm(
             '{{ _('Reset statistics') }}',
-            S('{{ _('Are you sure you want to reset the statistics for table %%s?') }}').sprintf(d._label).value(),
+            S('{{ _('Are you sure you want to reset the statistics for table %s?') }}').sprintf(d._label).value(),
             function (e) {
               if (e) {
                 var data = d;
