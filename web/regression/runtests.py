@@ -93,11 +93,9 @@ app = create_app()
 app.config['WTF_CSRF_ENABLED'] = False
 app.PGADMIN_KEY = ''
 test_client = app.test_client()
-driver = webdriver.Chrome()
-app_starter = AppStarter(driver, config)
-app_starter.start_app()
-handle_cleanup = test_utils.get_cleanup_handler(test_client, app_starter)
-
+driver = None
+app_starter = None
+handle_cleanup = None
 
 def get_suite(module_list, test_server, test_app_client):
     """
@@ -148,11 +146,21 @@ def get_test_modules(arguments):
     from pgadmin.utils.route import TestsGeneratorRegistry
 
     exclude_pkgs = []
+    global driver, app_starter, handle_cleanup
 
     if not config.SERVER_MODE:
         exclude_pkgs.append("browser.tests")
     if arguments['exclude'] is not None:
         exclude_pkgs += arguments['exclude'].split(',')
+
+    if 'feature_tests' not in exclude_pkgs:
+        driver = webdriver.Chrome()
+        app_starter = AppStarter(driver, config)
+        app_starter.start_app()
+
+    handle_cleanup = test_utils.get_cleanup_handler(test_client, app_starter)
+    # Register cleanup function to cleanup on exit
+    atexit.register(handle_cleanup)
 
     # Load the test modules which are in given package(i.e. in arguments.pkg)
     if arguments['pkg'] is None or arguments['pkg'] == "all":
@@ -189,7 +197,8 @@ def add_arguments():
 
 
 def sig_handler(signo, frame):
-    handle_cleanup()
+    if handle_cleanup:
+        handle_cleanup()
 
 
 def get_tests_result(test_suite):
@@ -250,8 +259,6 @@ if __name__ == '__main__':
     failure = False
 
     test_result = dict()
-    # Register cleanup function to cleanup on exit
-    atexit.register(handle_cleanup)
     # Set signal handler for cleanup
     signal_list = dir(signal)
     required_signal_list = ['SIGTERM', 'SIGABRT', 'SIGQUIT', 'SIGINT']
@@ -305,7 +312,8 @@ if __name__ == '__main__':
             # Delete test server
             test_utils.delete_test_server(test_client)
     except SystemExit:
-        drop_objects()
+        if handle_cleanup:
+            handle_cleanup()
 
     print("\n==============================================================="
           "=======", file=sys.stderr)

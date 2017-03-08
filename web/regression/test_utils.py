@@ -404,7 +404,8 @@ def _cleanup(tester, app_starter):
         logout_tester_account(tester)
         # Remove SQLite db file
         remove_db_file()
-        app_starter.stop_app()
+        if app_starter:
+            app_starter.stop_app()
 
 
 def get_cleanup_handler(tester, app_starter):
