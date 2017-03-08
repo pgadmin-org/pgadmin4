@@ -55,10 +55,10 @@ class PgadminPage:
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "']/../*[@class='aciTreeButton']").click()
 
     def find_by_xpath(self, xpath):
-        return self.wait_for_element(lambda (driver): driver.find_element_by_xpath(xpath))
+        return self.wait_for_element(lambda driver: driver.find_element_by_xpath(xpath))
 
     def find_by_id(self, element_id):
-        return self.wait_for_element(lambda (driver): driver.find_element_by_id(element_id))
+        return self.wait_for_element(lambda driver: driver.find_element_by_id(element_id))
 
     def find_by_partial_link_text(self, link_text):
         return self._wait_for(
