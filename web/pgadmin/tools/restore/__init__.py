@@ -179,7 +179,10 @@ def create_restore_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    _file = filename_with_file_manager_path(data['file'])
+    try:
+        _file = filename_with_file_manager_path(data['file'])
+    except Exception as e:
+        return bad_request(errormsg=str(e))
 
     if _file is None:
         return make_json_response(

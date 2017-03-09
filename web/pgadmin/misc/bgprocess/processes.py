@@ -217,7 +217,7 @@ class BatchProcess(object):
         executor = file_quote(os.path.join(
             os.path.dirname(u(__file__)), u'process_executor.py'
         ))
-        paths = sys.path[:]
+        paths = os.environ['PATH'].split(os.pathsep)
         interpreter = None
 
         if os.name == 'nt':

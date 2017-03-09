@@ -226,7 +226,10 @@ def create_backup_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    backup_file = filename_with_file_manager_path(data['file'])
+    try:
+        backup_file = filename_with_file_manager_path(data['file'])
+    except Exception as e:
+        return bad_request(errormsg=str(e))
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
@@ -324,7 +327,10 @@ def create_backup_objects_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    backup_file = filename_with_file_manager_path(data['file'])
+    try:
+        backup_file = filename_with_file_manager_path(data['file'])
+    except Exception as e:
+        return bad_request(errormsg=str(e))
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(

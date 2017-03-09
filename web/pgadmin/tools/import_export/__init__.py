@@ -223,7 +223,11 @@ def create_import_export_job(sid):
     storage_dir = get_storage_directory()
 
     if 'filename' in data:
-        _file = filename_with_file_manager_path(data['filename'], data['is_import'])
+        try:
+            _file = filename_with_file_manager_path(data['filename'], data['is_import'])
+        except Exception as e:
+            return bad_request(errormsg=str(e))
+
         if not _file:
             return bad_request(errormsg=_('Please specify a valid file'))
 

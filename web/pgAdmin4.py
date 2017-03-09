@@ -100,7 +100,9 @@ if __name__ == '__main__':
         # the process-executor.
         #
         # Setting PYTHONHOME launch them properly.
-        os.environ['PYTHONHOME'] = sys.prefix
+        from pgadmin.utils import IS_WIN
+        if IS_WIN:
+            os.environ['PYTHONHOME'] = sys.prefix
 
     try:
         app.run(
