@@ -172,6 +172,8 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 #       configuration databases 'keys' table and are auto-generated.
 
 # Should HTML be minified on the fly when not in debug mode?
+# NOTE: The HTMLMIN module doesn't work with Python 2.6, so this option
+#       has no effect on <= Python 2.7.
 MINIFY_PAGE = True
 
 ##########################################################################

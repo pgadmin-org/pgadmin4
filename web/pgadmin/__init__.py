@@ -450,7 +450,8 @@ def create_app(app_name=None):
     ##########################################################################
     # Minify output
     ##########################################################################
-    if not config.DEBUG:
+    # HTMLMIN doesn't work with Python 2.6.
+    if not config.DEBUG and sys.version_info >= (2,7):
         HTMLMIN(app)
 
     @app.context_processor
