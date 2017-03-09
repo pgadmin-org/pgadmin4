@@ -1573,6 +1573,15 @@
         this.model.errorModel.unset(name);
         this.model.set(name, value);
         this.listenTo(this.model, "change:" + name, this.render);
+        if (this.model.collection || this.model.handler) {
+          (this.model.collection || this.model.handler).trigger(
+             'pgadmin-session:model:valid', this.model, (this.model.collection || this.model.handler)
+            );
+        } else {
+          (this.model).trigger(
+             'pgadmin-session:valid', this.model.sessChanged(), this.model
+            );
+        }
       } else {
         if (this.model.collection || this.model.handler) {
           (this.model.collection || this.model.handler).trigger(
@@ -1667,6 +1676,15 @@
         this.model.errorModel.unset(name);
         this.model.set(name, value);
         this.listenTo(this.model, "change:" + name, this.render);
+        if (this.model.collection || this.model.handler) {
+          (this.model.collection || this.model.handler).trigger(
+             'pgadmin-session:model:valid', this.model, (this.model.collection || this.model.handler)
+            );
+        } else {
+          (this.model).trigger(
+             'pgadmin-session:valid', this.model.sessChanged(), this.model
+            );
+        }
       } else {
         if (this.model.collection || this.model.handler) {
           (this.model.collection || this.model.handler).trigger(
