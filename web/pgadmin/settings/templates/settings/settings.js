@@ -23,12 +23,14 @@ define(
       // and reload the window
       show: function() {
         var obj = this;
-        alertify.confirm('{{ _('Reset layout') }}',
-          '{{ _('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.') }}',
+        alertify.confirm("{{ _('Reset layout') }}",
+          "{{ _('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.') }}",
           function() {
+            var reloadingIndicator = $('<div id="reloading-indicator"></div>');
+            $('body').append(reloadingIndicator);
             // Delete the record from database as well, then only reload page
             $.ajax({
-              url: '{{ url_for('settings.reset_layout') }}',
+              url: "{{ url_for('settings.reset_layout') }}",
               type: 'DELETE',
               async: false,
               success: function() {

@@ -19,9 +19,7 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
     Tests that a database connection can be created from the UI
     """
 
-    def setUp(self):
-        super(ConnectsToServerFeatureTest, self).setUp()
-
+    def before(self):
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],
                                                   self.server['db_password'],
@@ -38,7 +36,7 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
         self._connects_to_server()
         self._tables_node_expandable()
 
-    def tearDown(self):
+    def after(self):
         self.page.remove_server(self.server)
 
         connection = test_utils.get_db_connection(self.server['db'],

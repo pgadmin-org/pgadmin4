@@ -5,9 +5,7 @@ from regression.feature_utils.base_feature_test import BaseFeatureTest
 
 
 class TemplateSelectionFeatureTest(BaseFeatureTest):
-    def setUp(self):
-        super(TemplateSelectionFeatureTest, self).setUp()
-
+    def before(self):
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],
                                                   self.server['db_password'],
@@ -40,7 +38,7 @@ class TemplateSelectionFeatureTest(BaseFeatureTest):
 
         self.page.find_by_xpath("//*[contains(@class,'CodeMirror-lines') and contains(.,'LEAKPROOF')]")
 
-    def tearDown(self):
+    def after(self):
         self.page.find_by_xpath("//button[contains(.,'Cancel')]").click()
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(self.server['db'],

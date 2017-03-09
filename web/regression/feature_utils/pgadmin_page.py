@@ -22,9 +22,10 @@ class PgadminPage:
         self.click_element(self.find_by_partial_link_text("File"))
         self.find_by_partial_link_text("Reset Layout").click()
         self.click_modal_ok()
+        self.wait_for_reloading_indicator_to_disappear()
 
     def click_modal_ok(self):
-        time.sleep(0.1)
+        time.sleep(0.5)
         self.click_element(self.find_by_xpath("//button[contains(.,'OK')]"))
 
     def add_server(self, server_config):
@@ -112,6 +113,16 @@ class PgadminPage:
                 return False
 
         return self._wait_for("element to exist", element_if_it_exists)
+
+    def wait_for_reloading_indicator_to_disappear(self):
+        def reloading_indicator_has_disappeared(driver):
+            try:
+                driver.find_element_by_id("reloading-indicator")
+                return False
+            except NoSuchElementException:
+                return True
+
+        self._wait_for("reloading indicator to disappear", reloading_indicator_has_disappeared)
 
     def wait_for_spinner_to_disappear(self):
         def spinner_has_disappeared(driver):

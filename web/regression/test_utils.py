@@ -16,8 +16,8 @@ import sqlite3
 from functools import partial
 
 import config
-import test_setup
 import regression
+from regression import test_setup
 
 SERVER_GROUP = test_setup.config_data['server_group']
 file_name = os.path.realpath(__file__)
