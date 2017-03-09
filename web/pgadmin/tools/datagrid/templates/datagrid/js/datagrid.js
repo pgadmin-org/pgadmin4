@@ -55,7 +55,7 @@ define(
          * otherwise enabled.
          */
         query_tool_menu_enabled = function(obj) {
-          if(!_.isUndefined(obj) && !_.isNull(obj))
+          if(!_.isUndefined(obj) && !_.isNull(obj)) {
             if(_.indexOf(unsupported_nodes, obj._type) == -1) {
               if (obj._type == 'database' && obj.allowConn)
                 return true;
@@ -63,9 +63,12 @@ define(
                 return true;
               else
                 return false;
+             } else {
+                return false;
              }
-          else
+          } else {
             return false;
+          }
         };
 
         // Define the nodes on which the menus to be appear
