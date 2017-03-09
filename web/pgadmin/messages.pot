@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-08 10:10+0000\n"
+"POT-Creation-Date: 2017-03-09 09:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1869,12 +1869,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:731
 msgid ""
-"Could not generate reversed engineered query for the FTS Dictionary!\n"
+"Could not generate reversed engineered query for the FTS Dictionary.\n"
 "{0}"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:739
-msgid "Could not generate reversed engineered query for FTS Dictionary node!"
+msgid "Could not generate reversed engineered query for FTS Dictionary node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
@@ -2007,7 +2007,7 @@ msgid "FTS Templates"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:278
-msgid "Could not the requested FTS template."
+msgid "Could not find the requested FTS template."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:294
@@ -2024,12 +2024,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
 msgid ""
-"Could not generate reversed engineered Query for the FTS Template.\n"
+"Could not generate reversed engineered query for the FTS template.\n"
 "{0}"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
-msgid "Could not generate reversed engineered Query for FTS Template node."
+msgid "Could not generate reversed engineered query for FTS template node."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26

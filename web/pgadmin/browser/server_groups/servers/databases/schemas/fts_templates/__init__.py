@@ -275,7 +275,7 @@ class FtsTemplateView(PGChildNodeView):
                 status=200
             )
         return gone(
-            gettext("Could not the requested FTS template.")
+            gettext("Could not find the requested FTS template.")
         )
 
     @check_precondition
@@ -650,7 +650,7 @@ class FtsTemplateView(PGChildNodeView):
         if not status:
             return internal_server_error(
                 gettext(
-                    "Could not generate reversed engineered Query for the FTS Template.\n{0}").format(
+                    "Could not generate reversed engineered query for the FTS template.\n{0}").format(
                     res
                 )
             )
@@ -658,7 +658,7 @@ class FtsTemplateView(PGChildNodeView):
         if res is None:
             return gone(
                 gettext(
-                    "Could not generate reversed engineered Query for FTS Template node.")
+                    "Could not generate reversed engineered query for FTS template node.")
             )
 
         return ajax_response(response=res)

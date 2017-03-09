@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-08 10:10+0000\n"
+"POT-Creation-Date: 2017-03-09 09:21+0000\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -1899,13 +1899,13 @@ msgstr "找不到 FTS 字典节点"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:731
 #, fuzzy
 msgid ""
-"Could not generate reversed engineered query for the FTS Dictionary!\n"
+"Could not generate reversed engineered query for the FTS Dictionary.\n"
 "{0}"
 msgstr "无法生成反向工程的查询 FTS 字典"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:739
 #, fuzzy
-msgid "Could not generate reversed engineered query for FTS Dictionary node!"
+msgid "Could not generate reversed engineered query for FTS Dictionary node."
 msgstr "无法生成反向工程的查询 FTS 字典节点"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
@@ -2038,7 +2038,8 @@ msgid "FTS Templates"
 msgstr "FTS 模板"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:278
-msgid "Could not the requested FTS template."
+#, fuzzy
+msgid "Could not find the requested FTS template."
 msgstr "请求不到 FTS 模板"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:294
@@ -2054,15 +2055,17 @@ msgid "FTS template dropped"
 msgstr "FTS 模板已经删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
+#, fuzzy
 msgid ""
-"Could not generate reversed engineered Query for the FTS Template.\n"
+"Could not generate reversed engineered query for the FTS template.\n"
 "{0}"
 msgstr ""
 "无法为FTS模板生成反向工程查询。\n"
 " {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
-msgid "Could not generate reversed engineered Query for FTS Template node."
+#, fuzzy
+msgid "Could not generate reversed engineered query for FTS template node."
 msgstr "无法为TFS模板节点生成反向工程化查询。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26
@@ -8105,7 +8108,7 @@ msgid "Font size"
 msgstr "字体大小"
 
 #: pgadmin/tools/sqleditor/__init__.py:129
-#, fuzzy, python-format
+#, fuzzy
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "

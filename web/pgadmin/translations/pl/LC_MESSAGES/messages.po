@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-08 10:10+0000\n"
-"PO-Revision-Date: 2017-03-07 21:58+0200\n"
+"POT-Creation-Date: 2017-03-09 09:21+0000\n"
+"PO-Revision-Date: 2017-03-08 22:15+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language-Team: begina.felicysym@wp.eu\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
@@ -304,9 +304,8 @@ msgid "Named restore point created: {0}"
 msgstr "Utworzono nazwany punkt przywracania: {0}"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:961
-#, fuzzy
 msgid "Could not find the required parameter(s)."
-msgstr "Nie udało się znaleźć wymaganego parametru (%s)."
+msgstr "Nie udało się znaleźć wymaganego parametru(ów)."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:970
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:470
@@ -332,7 +331,7 @@ msgstr "Należy połączyć z serwerem!"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:20
 msgid "EDB Advanced Server"
-msgstr ""
+msgstr "Zaawansowany Serwer EDB"
 
 #: pgadmin/browser/server_groups/servers/types.py:48
 #: pgadmin/help/__init__.py:84
@@ -672,7 +671,6 @@ msgstr "Nie udało się znaleźć wskazanego wyzwalacza zdarzeniowego."
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:333
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:576
-#, fuzzy
 msgid "Could not find the event trigger information."
 msgstr "Nie znaleziono informacji o wyzwalaczu zdarzeniowym."
 
@@ -842,7 +840,6 @@ msgstr "Rozszerzenia"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:232
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:404
-#, fuzzy
 msgid "Could not find the extension information."
 msgstr "Nie znaleziono informacji o rozszerzeniu."
 
@@ -1091,7 +1088,6 @@ msgid "Could not find the specified foreign server."
 msgstr "Nie udało się znaleźć wskazanego serwera obcego."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:332
-#, fuzzy
 msgid "Could not find the foreign server information."
 msgstr "Nie znaleziono informacji o serwerze obcym."
 
@@ -1173,7 +1169,6 @@ msgid "Could not find the specified user mapping."
 msgstr "Nie udało się znaleźć wskazanego mapowania użytkownika."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/__init__.py:349
-#, fuzzy
 msgid "Could not find the user mapping information."
 msgstr "Nie znaleziono informacji o mapowaniu użytkownika."
 
@@ -1290,7 +1285,6 @@ msgstr "Nie udało się znaleźć wskazanego języka."
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:339
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:564
-#, fuzzy
 msgid "Could not find the language information."
 msgstr "Nie znaleziono informacji o języku."
 
@@ -1648,11 +1642,13 @@ msgid "Foreign Tables"
 msgstr "Tabele Obce"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:249
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Could not find the required parameter                                 "
 "(%s)."
-msgstr "Nie znaleziono wymaganego parametru                                  (%s)."
+msgstr ""
+"Nie znaleziono wymaganego parametru                                   "
+"(%s)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:436
 msgid "Could not find the specified foreign table."
@@ -1778,11 +1774,11 @@ msgstr "Konfiguracje FTS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:323
 msgid "Could not find the FTS Configuration node."
-msgstr ""
+msgstr "Nie znaleziono węzła Konfiguracji FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:362
 msgid "Could not find the FTS Configuration node in the database node."
-msgstr ""
+msgstr "Nie znaleziono węzła Konfiguracji FTS w węźle bazy danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:417
 msgid "provide atleast copy config or parser"
@@ -1790,7 +1786,7 @@ msgstr "podaj przynajmniej konfigurację kopiowania albo parser"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:502
 msgid "Could not find the FTS Configuration node to update."
-msgstr ""
+msgstr "Nie znaleziono węzła Konfiguracji FTS do zmiany."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:547
 msgid "The specified FTS configuration could not be found.\n"
@@ -1798,7 +1794,7 @@ msgstr "Wskazana konfiguracja FTS nie została znaleziona.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:567
 msgid "FTS Configuration dropped"
-msgstr ""
+msgstr "Konfiguracja FTS skasowana"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:630
 msgid ""
@@ -1806,24 +1802,28 @@ msgid ""
 "                    Could not find the FTS Configuration node.\n"
 "                "
 msgstr ""
+"\n"
+"                    Nie znaleziono węzła Konfiguracji FTS.\n"
+"                "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:855
-#, fuzzy
 msgid ""
 "ERROR: Could not generate reversed engineered query for the FTS "
 "Configuration!\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować Zapytania odwróconej inżynierii dla roli.\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla Konfiguracji "
+"FTS.\n"
 "\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:864
-#, fuzzy
 msgid ""
 "ERROR: Could not generate reversed engineered query for FTS Configuration"
 " node!"
-msgstr "Nie można wygenerować SQL odwróconej inżynierii dla węzła rzutowania.\n"
+msgstr ""
+"BŁĄD: Nie można wygenerować zapytania odwróconej inżynierii dla węzła "
+"Konfiguracji FTS!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:35
 msgid "Token can not be empty!"
@@ -1882,7 +1882,7 @@ msgstr "Słowniki FTS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:335
 msgid "Could not find the FTS Dictionary node."
-msgstr ""
+msgstr "Nie znaleziono węzła Słownika FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:372
 msgid ""
@@ -1891,18 +1891,21 @@ msgid ""
 "node.\n"
 "                "
 msgstr ""
+"\n"
+"                Nie znaleziono węzła Słownika FTS w węźle bazy danych.\n"
+"                "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:488
 msgid "Could not find the FTS Dictionary node to update."
-msgstr ""
+msgstr "Nie znaleziono węzła Słownika FTS do zmiany."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:531
 msgid "The specified FTS dictionary could not be found.\n"
-msgstr ""
+msgstr "Nie znaleziono wskazanego Słownika FTS.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:550
 msgid "FTS Dictionary dropped"
-msgstr ""
+msgstr "Słownik FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:615
 msgid ""
@@ -1910,21 +1913,23 @@ msgid ""
 "                    Could not find the FTS Dictionary node.\n"
 "                "
 msgstr ""
+"\n"
+"                    Nie znaleziono węzła Słownika FTS.\n"
+"                "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:731
 #, fuzzy
 msgid ""
-"Could not generate reversed engineered query for the FTS Dictionary!\n"
+"Could not generate reversed engineered query for the FTS Dictionary.\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować Zapytania odwróconej inżynierii dla roli.\n"
-"\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS!\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:739
 #, fuzzy
-msgid "Could not generate reversed engineered query for FTS Dictionary node!"
-msgstr "Nie można wygenerować SQL odwróconej inżynierii dla węzła rzutowania.\n"
+msgid "Could not generate reversed engineered query for FTS Dictionary node."
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
 msgid "Option can not be empty!"
@@ -1961,7 +1966,7 @@ msgstr "Parsery FTS"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:280
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:550
 msgid "Could not find the FTS Parser node."
-msgstr ""
+msgstr "Nie znaleziono węzła Parsera FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:306
 msgid ""
@@ -1969,28 +1974,33 @@ msgid ""
 "                Could not find the FTS Parser node in the database node.\n"
 "                "
 msgstr ""
+"\n"
+"                Nie znaleziono węzła Parsera FTS w węźle bazy danych.\n"
+"                "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:424
 msgid "Could not find the FTS Parser node to update."
-msgstr ""
+msgstr "Nie znaleziono węzła Parsera FTS do zmiany."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:470
 msgid "The specified FTS parser could not be found.\n"
-msgstr ""
+msgstr "Nie znaleziono wskazanego Parsera FTS.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:490
 msgid "FTS Parser dropped"
-msgstr ""
+msgstr "Parser FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:774
 msgid ""
 "Could not generate reversed engineered query for the FTS Parser.\n"
 "{0}"
 msgstr ""
+"Nie można wygenerować zapytania odwróconej inżynierii dla Parsera FTS.\n"
+"{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:781
 msgid "Could not generate reversed engineered query for FTS Parser node"
-msgstr ""
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Parsera FTS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:27
 msgid "FTS Parser"
@@ -2056,30 +2066,35 @@ msgid "FTS Templates"
 msgstr "Szablony FTS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:278
-msgid "Could not the requested FTS template."
-msgstr ""
+#, fuzzy
+msgid "Could not find the requested FTS template."
+msgstr "Nie znaleziono żądanego szablonu FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:294
 msgid "Could not find the FTS template node in the database."
-msgstr ""
+msgstr "Nie znaleziono szablonu FTS w bazie danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:442
 msgid "The specified FTS template could not be found.\n"
-msgstr ""
+msgstr "Nie znaleziono wskazanego szablonu FTS.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:461
 msgid "FTS template dropped"
 msgstr "Szablon FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
+#, fuzzy
 msgid ""
-"Could not generate reversed engineered Query for the FTS Template.\n"
+"Could not generate reversed engineered query for the FTS template.\n"
 "{0}"
 msgstr ""
+"Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS.\n"
+"{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
-msgid "Could not generate reversed engineered Query for FTS Template node."
-msgstr ""
+#, fuzzy
+msgid "Could not generate reversed engineered query for FTS template node."
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26
 msgid "FTS Template"
@@ -2113,9 +2128,9 @@ msgid "Functions"
 msgstr "Funkcje"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:394
-#, fuzzy, python-format
+#, python-format
 msgid "Could not find the specified %s"
-msgstr "Nie znaleziono wskazanego %s."
+msgstr "Nie znaleziono wskazanego %s"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:441
 msgid "Could not find the function node in the database."
@@ -2260,22 +2275,19 @@ msgstr "Okno?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:281
 msgid "Parallel"
-msgstr ""
+msgstr "Równoległy"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:284
-#, fuzzy
 msgid "UNSAFE"
-msgstr "nazwa"
+msgstr "UNSAFE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:285
-#, fuzzy
 msgid "RESTRICTED"
-msgstr "Odziedziczony?"
+msgstr "RESTRICTED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:286
-#, fuzzy
 msgid "SAFE"
-msgstr "Ucieczka"
+msgstr "SAFE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:290
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:219
@@ -2428,7 +2440,6 @@ msgid "Connection to the server has been lost!"
 msgstr "Stracono połączenie z serwerem!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:220
-#, fuzzy
 msgid "Could not find the package."
 msgstr "Nie znaleziono pakietu."
 
@@ -2446,12 +2457,10 @@ msgstr "Pakiet skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:108
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:687
-#, fuzzy
 msgid "Package {0}"
-msgstr "Pakiet"
+msgstr "Pakiet {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:286
-#, fuzzy
 msgid "Could not find the function"
 msgstr "Nie znaleziono funkcji"
 
@@ -2502,14 +2511,12 @@ msgid "Sequences"
 msgstr "Sekwencje"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:207
-#, fuzzy
 msgid "Could not find the sequence."
 msgstr "Nie znaleziono sekwencji."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:256
-#, fuzzy
 msgid "Could not find the sequence in the database."
-msgstr "Nie znaleziono sekwencji w bazie danych,"
+msgstr "Nie znaleziono sekwencji w bazie danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:409
 msgid "The specified sequence could not be found.\n"
@@ -2723,7 +2730,6 @@ msgid "-- incomplete definition for {0}"
 msgstr "-- niepełna definicja {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:284
-#, fuzzy
 msgid "Could not find the column."
 msgstr "Nie znaleziono kolumny."
 
@@ -2922,7 +2928,7 @@ msgstr "Nie znaleziono ograniczenia wykluczającego."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:549
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:558
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:566
-#, fuzzy, python-format
+#, python-format
 msgid "Could not find required parameter (%s)."
 msgstr "Nie udało się znaleźć wymaganego parametru (%s)."
 
@@ -3137,9 +3143,9 @@ msgid "Could not find the {} in the table."
 msgstr "Nie znaleziono {} w tabeli."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:565
-#, fuzzy, python-format
+#, python-format
 msgid "Could not find at least one required parameter (%s)."
-msgstr "Nie znaleziono nia jednego z wymaganych parametrów (%s)."
+msgstr "Nie znaleziono ani jednego z wymaganych parametrów (%s)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:732
 msgid "The specified constraint could not be found.\n"
@@ -4270,11 +4276,11 @@ msgstr "Bez danych"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mview/js/mview.js:101
 msgid "With data (concurrently)"
-msgstr ""
+msgstr "Z danymi (równolegle)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mview/js/mview.js:107
 msgid "With no data (concurrently)"
-msgstr ""
+msgstr "Bez danych (równolegle)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mview/js/mview.js:149
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/view/js/view.js:118
@@ -5120,7 +5126,6 @@ msgstr "Kroki"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:394
 #: pgadmin/browser/server_groups/servers/pgagent/steps/__init__.py:488
-#, fuzzy
 msgid "Could not find the specified job step."
 msgstr "Nie udało się znaleźć wskazanego kroku zadania."
 
@@ -5254,7 +5259,7 @@ msgstr "Zadanie pgAgenta..."
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/js/pga_job.js:58
 msgid "Run now"
-msgstr ""
+msgstr "Uruchom teraz"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/js/pga_job.js:84
 msgid "Not running currently."
@@ -5318,9 +5323,8 @@ msgid "Running at"
 msgstr "Uruchomiony w"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/js/pga_job.js:189
-#, fuzzy
 msgid "\" + error_msg + \""
-msgstr "\" + err.errormsg + \""
+msgstr "\" + error_msg + \""
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:2
@@ -5665,9 +5669,8 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:530
-#, fuzzy
 msgid "Could not find the role on the database server."
-msgstr "Nie znaleziono roli na serwerze bazy danych. "
+msgstr "Nie znaleziono roli na serwerze bazy danych."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:556
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:664
@@ -5697,7 +5700,6 @@ msgid "Could not find the role information."
 msgstr "Nie znaleziono informacji o roli."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:686
-#, fuzzy
 msgid ""
 "Could not drop the role.\n"
 "{0}"
@@ -6650,7 +6652,7 @@ msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
 msgid "Maximises PostgreSQL"
-msgstr ""
+msgstr "Maksymalizuje PostgreSQL"
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:9
 msgid "Open Source"
@@ -6701,7 +6703,7 @@ msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:69
 msgid "Community Support"
-msgstr ""
+msgstr "Wsparcie Społeczności"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:44
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:117
@@ -6901,13 +6903,15 @@ msgstr ""
 
 #: pgadmin/help/__init__.py:97
 msgid "EDB Advanced Server Help Path"
-msgstr ""
+msgstr "Ścieżka Pomocy Zaawansowanego Serwera EDB"
 
 #: pgadmin/help/__init__.py:100
 msgid ""
 "Path to the EDB Advanced Server documentation. $VERSION$ will be replaced"
 " with the major.minor version number."
 msgstr ""
+"Ścieżka do dokumentacji Zaawansowanego Serwera EDB. $VERSION$ zostanie "
+"zastąpiona przez główny.podrzędny numer wersji."
 
 #: pgadmin/misc/bgprocess/__init__.py:50
 msgid "seconds"
@@ -6952,9 +6956,8 @@ msgid "The process has already finished and can not be restarted."
 msgstr "Proces został już zakończony i nie może być uruchomiony ponownie."
 
 #: pgadmin/misc/bgprocess/processes.py:439
-#, fuzzy
 msgid "Status for the background process '{0}' could not be loaded."
-msgstr "Status procesu w tle '{0}' nie może być wczytany!"
+msgstr "Status procesu w tle '{0}' nie może być wczytany."
 
 #: pgadmin/misc/file_manager/__init__.py:149
 msgid "Maximum file upload size (MB)"
@@ -6974,18 +6977,16 @@ msgstr ""
 
 #: pgadmin/misc/file_manager/__init__.py:508
 #: pgadmin/misc/file_manager/__init__.py:693
-#, fuzzy
 msgid "'{0}' file does not exist."
-msgstr "Plik '{}' nie istnieje."
+msgstr "Plik '{0}' nie istnieje."
 
 #: pgadmin/misc/file_manager/__init__.py:568
 msgid "Permission denied"
 msgstr "Odmowa dostępu"
 
 #: pgadmin/misc/file_manager/__init__.py:602
-#, fuzzy
 msgid "Access denied ({0})"
-msgstr "Odmowa dostępu ({})"
+msgstr "Odmowa dostępu ({0})"
 
 #: pgadmin/misc/file_manager/__init__.py:662
 #: pgadmin/misc/file_manager/__init__.py:744
@@ -7225,6 +7226,8 @@ msgid ""
 "Only objects global to the entire database will be backed up in PLAIN "
 "format"
 msgstr ""
+"Tylko dla obiektów globalnych dla całej bazy danych będzie wykonana kopia"
+" zapasowa w formacie PLAIN"
 
 #: pgadmin/tools/backup/templates/backup/js/backup.js:132
 msgid "Compression ratio"
@@ -7406,6 +7409,8 @@ msgid ""
 "Please configure the EDB Advanced Server Binary Path in the Preferences "
 "dialog."
 msgstr ""
+"Należy skonfigurować Ścieżkę Binariów Zaawansowanego Serwera EDB w oknie "
+"Preferencji."
 
 #: pgadmin/tools/backup/templates/backup/js/backup.js:408
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:337
@@ -7444,6 +7449,8 @@ msgstr "Należy ustawić ścieżkę binariów Serwera PostgreSQL w preferencjach
 #: pgadmin/tools/backup/templates/backup/js/backup.js:617
 msgid "Please set binary path for EDB Advanced Server from preferences."
 msgstr ""
+"Należy ustawić ścieżkę binariów Zaawansowanego Serwera EDB w "
+"preferencjach."
 
 #: pgadmin/tools/backup/templates/backup/js/backup.js:731
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:514
@@ -7490,7 +7497,7 @@ msgstr "Zastąp wszystko"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:93
 msgid "Jump (Alt+G)"
-msgstr ""
+msgstr "Skocz (Alt+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:99
 msgid "Copy Row"
@@ -7639,7 +7646,7 @@ msgstr "Funkcje z dwukropkiem w nazwie nie mogą być debugowane."
 
 #: pgadmin/tools/debugger/__init__.py:189
 msgid "EDB Advanced Server wrapped functions cannot be debugged."
-msgstr ""
+msgstr "Nie można debugować opakowanych funkcji Zaawansowanego Serwera EDB."
 
 #: pgadmin/tools/debugger/__init__.py:195
 msgid "Could not fetch debugger plugin information."
@@ -7833,7 +7840,6 @@ msgstr "Kopiowanie danych tabeli '{0}.{1}' na bazie danych '{2}' serwera '{3}'"
 
 #: pgadmin/tools/import_export/__init__.py:206
 #: pgadmin/tools/maintenance/__init__.py:194
-#, fuzzy
 msgid "Could not find the given server"
 msgstr "Nie udało się znaleźć wskazanego serwera"
 
@@ -7843,9 +7849,8 @@ msgstr "Należy najpierw połączyć z serwerem..."
 
 #: pgadmin/tools/import_export/__init__.py:228
 #: pgadmin/tools/import_export/__init__.py:235
-#, fuzzy
 msgid "Please specify a valid file"
-msgstr "Należy określić wartość etykiety."
+msgstr "Należy określić poprawny plik"
 
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:38
 msgid "Import"
@@ -8114,9 +8119,8 @@ msgid "Restoring the backup on the server '{0}'..."
 msgstr "Odtworzenie kopii zapasowej na serwerze '{0}'..."
 
 #: pgadmin/tools/restore/__init__.py:187
-#, fuzzy
 msgid "File couldn't be found!"
-msgstr "Wskazana reguła nie została znaleziona.\n"
+msgstr "Plik nie został znaleziony!"
 
 #: pgadmin/tools/restore/templates/restore/js/restore.js:100
 #: pgadmin/tools/restore/templates/restore/js/restore.js:131
@@ -8212,7 +8216,6 @@ msgid "Font size"
 msgstr "Rozmiar czcionki"
 
 #: pgadmin/tools/sqleditor/__init__.py:129
-#, fuzzy, python-format
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
@@ -8222,9 +8225,9 @@ msgid ""
 msgstr ""
 "Rozmiar czcionki używany do pól tekstowych i edytorów SQL. Wpisana "
 "wartość stosowana jest w jednostkach \"em\", gdzie 1 jest relatywnym "
-"domyślnym rozmiarem czcionki. Na przykład by powiększyć czcionkę o 20% "
-"należy użyć wartości 1.2 a by zmniejszyć o 20% powinno się użyć 0.8. "
-"Minimum to 0.1, a maksimum 10."
+"domyślnym rozmiarem czcionki. Na przykład by powiększyć czcionkę o 20 "
+"procent należy użyć wartości 1.2 zaś by zmniejszyć o 20 procent powinno "
+"się użyć 0.8. Minimum to 0.1, a maksimum 10."
 
 #: pgadmin/tools/sqleditor/__init__.py:137
 msgid "Tab size"
@@ -8711,7 +8714,6 @@ msgid "Context: "
 msgstr "Kontekst: "
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:1514
-#, fuzzy
 msgid "Could not find the specified database."
 msgstr "Nie znaleziono wskazanej bazy danych."
 
