@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-03-09 09:21+0000\n"
-"PO-Revision-Date: 2017-03-08 22:15+0200\n"
+"PO-Revision-Date: 2017-03-09 18:02+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language-Team: begina.felicysym@wp.eu\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
@@ -1918,18 +1918,16 @@ msgstr ""
 "                "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:731
-#, fuzzy
 msgid ""
 "Could not generate reversed engineered query for the FTS Dictionary.\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS!\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS.\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:739
-#, fuzzy
 msgid "Could not generate reversed engineered query for FTS Dictionary node."
-msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS!"
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
 msgid "Option can not be empty!"
@@ -2066,7 +2064,6 @@ msgid "FTS Templates"
 msgstr "Szablony FTS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:278
-#, fuzzy
 msgid "Could not find the requested FTS template."
 msgstr "Nie znaleziono żądanego szablonu FTS."
 
@@ -2083,18 +2080,16 @@ msgid "FTS template dropped"
 msgstr "Szablon FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
-#, fuzzy
 msgid ""
 "Could not generate reversed engineered query for the FTS template.\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS.\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla szablonu FTS.\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
-#, fuzzy
 msgid "Could not generate reversed engineered query for FTS template node."
-msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS."
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla szablonu FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26
 msgid "FTS Template"
@@ -5396,7 +5391,7 @@ msgstr "Ograniczenie szybkości CPU (%%)"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:78
 msgid "Dirty rate limit (KB)"
-msgstr ""
+msgstr "Limit brudnego odsetka (KB)"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:112
 msgid "CPU rate limit cannot be empty."
@@ -5404,7 +5399,7 @@ msgstr "Ograniczenie szybkości CPU nie może być puste."
 
 #: pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups.js:128
 msgid "Dirty rate limit cannot be empty."
-msgstr ""
+msgstr "Ograniczenie brudnego odsetka nie może być puste."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:29
 msgid "Login/Group Roles"
@@ -5774,7 +5769,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:348
 msgid "Login Role"
-msgstr ""
+msgstr "Rola Loginu"
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:350
 msgid "Group Role"
@@ -6763,12 +6758,12 @@ msgstr "Krotka"
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:496
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:763
 msgid "vXID (target)"
-msgstr ""
+msgstr "vXID (cel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:501
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:768
 msgid "XID (target)"
-msgstr ""
+msgstr "XID (cel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:506
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:773
@@ -6783,7 +6778,7 @@ msgstr "ID Obiektu"
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:516
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:783
 msgid "vXID (owner)"
-msgstr ""
+msgstr "vXID (właściciel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:526
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:793
@@ -6793,7 +6788,7 @@ msgstr "Uprawniono?"
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:548
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:810
 msgid "XID"
-msgstr ""
+msgstr "XID"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:553
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:815
