@@ -227,8 +227,45 @@ class BatchProcess(object):
             interpreter = which(u'pythonw.exe', paths)
             if interpreter is None:
                 interpreter = which(u'python.exe', paths)
+
+            if interpreter is None and current_app.PGADMIN_RUNTIME:
+                # We've faced an issue with Windows 2008 R2 (x86) regarding,
+                # not honouring the environment variables set under the Qt
+                # (e.g. runtime), and also setting PYTHONHOME same as
+                # sys.executable (i.e. pgAdmin4.exe).
+                #
+                # As we know, we're running it under the runtime, we can assume
+                # that 'venv' directory will be available outside of 'bin'
+                # directory.
+                #
+                # We would try out luck to find python executable based on that
+                # assumptions.
+                bin_path = os.path.dirname(sys.executable)
+
+                venv = os.path.realpath(
+                    os.path.join(bin_path, u'..\\venv')
+                )
+
+                interpreter = which(u'pythonw.exe', [venv])
+                if interpreter is None:
+                    interpreter = which(u'pythonw.exe', [venv])
+
+                if interpreter is not None:
+                    # Our assumptions are proven right.
+                    # Let's append the 'bin' directory to the PATH environment
+                    # variable. And, also set PYTHONHOME environment variable
+                    # to 'venv' directory.
+                    os.environ['PATH'] = bin_path + ';' + os.environ['PATH']
+                    os.environ['PYTHONHOME'] = venv
         else:
-            paths.insert(0, os.path.join(u(sys.prefix), u'bin'))
+            # Let's not use sys.prefix in runtime.
+            # 'sys.prefix' is not identified on *nix systems for some unknown
+            # reason, while running under the runtime.
+            # We're already adding '<installation path>/pgAdmin 4/venv/bin'
+            # directory in the PATH environment variable. Hence - it will
+            # anyway be the redundant value in paths.
+            if not current_app.PGADMIN_RUNTIME:
+                paths.insert(0, os.path.join(u(sys.prefix), u'bin'))
             interpreter = which(u'python', paths)
 
         p = None

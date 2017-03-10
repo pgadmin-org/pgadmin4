@@ -28,15 +28,25 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
     {
         if (!prepend)
         {
+#if defined(Q_OS_WIN)
             if (!python_path.isEmpty() && !python_path.endsWith(";"))
                 python_path.append(";");
+#else
+            if (!python_path.isEmpty() && !python_path.endsWith(":"))
+                python_path.append(":");
+#endif
 
             python_path.append(path);
         }
         else
         {
+#if defined(Q_OS_WIN)
             if (!python_path.isEmpty() && !python_path.startsWith(";"))
                 python_path.prepend(";");
+#else
+            if (!python_path.isEmpty() && !python_path.startsWith(":"))
+                python_path.prepend(":");
+#endif
 
             python_path.prepend(path);
         }
