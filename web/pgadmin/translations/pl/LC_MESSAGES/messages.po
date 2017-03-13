@@ -8352,7 +8352,7 @@ msgstr "Pobieranie danych z serwera bazy i wyświetlanie..."
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1974
 #, python-format
 msgid "Total query runtime: %s."
-msgstr "Całkowity czas wykonania zapytania: %s\n"
+msgstr "Całkowity czas wykonania zapytania: %s"
 
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1975
 #, python-format
