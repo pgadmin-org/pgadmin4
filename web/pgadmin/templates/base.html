@@ -20,13 +20,13 @@
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.css' if config.DEBUG else 'vendor/bootstrap/bootstrap.min.css')}}"/>
+          href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.css' if config.DEBUG else 'vendor/bootstrap/css/bootstrap.min.css')}}"/>
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='vendor/alertifyjs/alertify.css' if config.DEBUG else 'vendor/alertifyjs/alertify.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='vendor/alertifyjs/themes/bootstrap.css' if config.DEBUG else 'vendor/alertifyjs/themes/bootstrap.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='vendor/bootstrap/bootstrap-theme.css' if config.DEBUG else 'vendor/bootstrap/bootstrap-theme.min.css') }}"/>
+          href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap-theme.css' if config.DEBUG else 'vendor/bootstrap/css/bootstrap-theme.min.css') }}"/>
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='vendor/font-awesome/css/font-awesome.css' if config.DEBUG else 'vendor/font-awesome/css/font-awesome.min.css') }}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/font-mfizz/font-mfizz.css') }}"/>
@@ -168,7 +168,7 @@
                     moment: "{{ url_for('static', filename='vendor/moment/moment-with-locales' + ('' if config.DEBUG else '.min')) }}",
                     underscore: "{{ url_for('static', filename='vendor/underscore/underscore'+ ('' if config.DEBUG else '-min')) }}",
                     "underscore.string": "{{ url_for('static', filename='vendor/underscore/underscore.string' + ('' if config.DEBUG else '.min')) }}",
-                    bootstrap: "{{ url_for('static', filename='vendor/bootstrap/bootstrap' + ('' if config.DEBUG else '.min')) }}",
+                    bootstrap: "{{ url_for('static', filename='vendor/bootstrap/js/bootstrap' + ('' if config.DEBUG else '.min')) }}",
                     alertifyjs: "{{ url_for('static', filename='vendor/alertifyjs/alertify' + ('' if config.DEBUG else '.min')) }}",
                     backbone: "{{ url_for('static', filename='vendor/backbone/backbone' + ('' if config.DEBUG else '-min')) }}",
                     "backbone.paginator": "{{ url_for('static', filename='vendor/backbone/backbone.paginator' + ('' if config.DEBUG else '.min')) }}",
