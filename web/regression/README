@@ -113,7 +113,7 @@ Test Data Details
 Execution:
 -----------
 
-Python Tests
+Python Tests:
 
 - For feature tests to run as part of the entire test suite, Chrome and
   chromedriver need to be installed; get chromedriver from
@@ -156,14 +156,27 @@ Python Tests
     Example: exclude multiple packages:
     run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
 
-Javascript Tests
+Javascript Tests:
+
+- Install node.js and yarn, in the appropriate way for your platform. On macOS with Homebrew you might use:
+
     brew install nodejs
     brew install yarn
 
-    javascript tests must be run from the web directory (since that is where node_modules and karma.conf reside)
+    Whilst with MacPorts:
+
+    sudo port install nodejs7 yarn
+
+- Javascript tests must be run from the web directory (since that is where node_modules and karma.conf reside):
+
     cd web/
+
+- Install the JS modules required for testing:
+
     yarn
 
-    to run tests:
+- Now run the tests:
+
     yarn run karma start --single-run
+
 
