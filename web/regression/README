@@ -157,16 +157,13 @@ Python Tests
     run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
 
 Javascript Tests
-    javascript tests must be run from the web directory (since that is where node_modules and karma.conf reside)
-    cd web/
-
     brew install nodejs
     brew install yarn
+
+    javascript tests must be run from the web directory (since that is where node_modules and karma.conf reside)
+    cd web/
     yarn
 
-    install the karma cli, so it is accessible globally:
-    npm install -g karma-cli
-
     to run tests:
-    karma start --single-run
+    yarn run karma start --single-run
 
