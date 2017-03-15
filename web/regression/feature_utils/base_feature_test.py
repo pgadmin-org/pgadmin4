@@ -61,8 +61,23 @@ class BaseFeatureTest(BaseTestGenerator):
         return False
 
     def _screenshot(self):
-        path = '{0}/../screenshots/{1}'.format(self.CURRENT_PATH, self.server["name"].replace(" ", "_"))
+        screenshots_directory = '{0}/../screenshots'.format(self.CURRENT_PATH)
+        screenshots_server_directory = '{0}/{1}'.format(screenshots_directory,
+                                                        self.server["name"].replace(" ", "_"))
 
+        self.ensure_directory_exists(screenshots_directory)
+        self.ensure_directory_exists(screenshots_server_directory)
+
+        date = datetime.now().strftime("%Y.%m.%d_%H.%M.%S")
+        python_version = sys.version.split(" ")[0]
+
+        self.page.driver.save_screenshot(
+            '{0}/{1}-{2}-Python-{3}.png'.format(screenshots_server_directory,
+                                                self.__class__.__name__,
+                                                date,
+                                                python_version))
+
+    def ensure_directory_exists(self, path):
         try:
             os.mkdir(path)
         except OSError as e:
@@ -70,9 +85,3 @@ class BaseFeatureTest(BaseTestGenerator):
                 pass
             else:
                 raise
-
-        date = datetime.now().strftime("%Y.%m.%d_%H.%M.%S")
-        python_version = sys.version.split(" ")[0]
-
-        self.page.driver.save_screenshot(
-            '{0}/{1}-{2}-Python-{3}.png'.format(path, self.__class__.__name__, date, python_version))
