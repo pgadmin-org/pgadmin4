@@ -2,7 +2,7 @@ define(
   [
     'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
     'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
-    'selection/clipboard',
+    'sources/selection/clipboard',
 
     'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
     'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',

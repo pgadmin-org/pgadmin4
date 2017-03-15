@@ -1,4 +1,4 @@
-define(['translate', 'alertify'], function (t, alertify) {
+define(['sources/translate', 'alertify'], function (t, alertify) {
   var clipboard = {
     copyTextToClipboard: function (text) {
       var textArea = document.createElement("textarea");
