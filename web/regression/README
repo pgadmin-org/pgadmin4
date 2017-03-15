@@ -113,6 +113,8 @@ Test Data Details
 Execution:
 -----------
 
+Python Tests
+
 - For feature tests to run as part of the entire test suite, Chrome and
   chromedriver need to be installed; get chromedriver from
   https://sites.google.com/a/chromium.org/chromedriver/downloads or a
@@ -153,3 +155,17 @@ Execution:
 
     Example: exclude multiple packages:
     run 'python runtests.py --exclude browser.server_groups.servers.databases,browser.server_groups.servers.tablespaces'
+
+Javascript Tests
+    brew install nodejs
+    npm install
+
+    you may wish to install the karma cli, so it is accessible globally:
+    npm install -g karma-cli
+
+    Otherwise you can use:
+    ./node_modules/karma/bin/karma
+
+    to run tests:
+    karma start --single-run
+
