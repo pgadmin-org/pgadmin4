@@ -15,18 +15,18 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'test/javascript/**/*.js', included: false},
-      {pattern: 'web/pgadmin/static/vendor/**/*.js', included: false},
-      {pattern: 'web/pgadmin/static/js/**/*.js', included: false},
-      'test/javascript/test-main.js'
+      {pattern: 'regression/javascript/**/*.js', included: false},
+      {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
+      {pattern: 'pgadmin/static/js/**/*.js', included: false},
+      'regression/javascript/test-main.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-      'web/pgadmin/static/js/pgadmin.js',
-      'web/pgadmin/static/vendor/**/*[Tt]est.js',
-      'web/pgadmin/static/vendor/**/*[Ss]pec.js'
+      'pgadmin/static/js/pgadmin.js',
+      'pgadmin/static/vendor/**/*[Tt]est.js',
+      'pgadmin/static/vendor/**/*[Ss]pec.js'
     ],
 
 
@@ -66,7 +66,7 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser should be started simultaneous

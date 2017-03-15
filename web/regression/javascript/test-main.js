@@ -12,7 +12,7 @@ Object.keys(window.__karma__.files).forEach(function (file) {
   }
 });
 
-var sourcesDir = '/base/web/pgadmin/static/';
+var sourcesDir = '/base/pgadmin/static/';
 require.config({
   // Karma serves files under /base, which is the basePath from your config file
   baseUrl: '/base',
@@ -26,7 +26,7 @@ require.config({
     'slickgrid': sourcesDir + 'vendor/slickgrid/slick.core',
     'slickgrid/slick.grid': sourcesDir + 'vendor/slickgrid/slick.grid',
     'slickgrid/slick.rowselectionmodel': sourcesDir + 'vendor/slickgrid/plugins/slick.rowselectionmodel',
-    'translations': '/base/test/javascript/fake_translations',
+    'translations': '/base/regression/javascript/fake_translations',
     'sources': sourcesDir + 'js'
   },
 
