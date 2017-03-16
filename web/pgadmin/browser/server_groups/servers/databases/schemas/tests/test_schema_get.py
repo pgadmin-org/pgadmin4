@@ -1,11 +1,12 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
+##########################################################################
+
 from regression import test_utils as utils
 from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator

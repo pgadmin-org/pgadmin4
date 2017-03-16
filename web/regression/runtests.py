@@ -1,11 +1,11 @@
-#############################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-##############################################################
+##########################################################################
 
 """ This file collect all modules/files present in tests directory and add
 them to TestSuite. """
