@@ -1576,7 +1576,8 @@ WHERE db.oid = {0}""".format(did))
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
-                if hasattr(str, 'decode'):
+                if hasattr(str, 'decode') and \
+                        not isinstance(database, unicode):
                     database = database.decode('utf-8')
                 if database is None:
                     return False
@@ -1838,10 +1839,7 @@ class Driver(BaseDriver):
         # Returns in bytes, we need to convert it in string
         if isinstance(res, bytes):
             try:
-                try:
-                    res = res.decode()
-                except UnicodeDecodeError:
-                    res = res.decode(sys.getfilesystemencoding())
+                res = res.decode()
             except UnicodeDecodeError:
                 res = res.decode('utf-8')
 
