@@ -11,8 +11,7 @@
 
 from flask import render_template, Response
 from flask import url_for
-from flask.ext.babel import get_translations
-from flask_babel import gettext
+from flask_babel import get_translations, gettext
 
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
