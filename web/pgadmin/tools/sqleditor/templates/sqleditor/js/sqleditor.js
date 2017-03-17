@@ -2705,7 +2705,7 @@ define(
             return;
 
           // Add column position and it's value to data
-          data[column_info.pos] = _values[column_info.pos] || '';
+          data[column_info.field] = _values[column_info.pos] || '';
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -2775,7 +2775,7 @@ define(
             return;
 
           // Add column position and it's value to data
-          data[column_info.pos] = _values[column_info.pos] || '';
+          data[column_info.field] = _values[column_info.pos] || '';
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
