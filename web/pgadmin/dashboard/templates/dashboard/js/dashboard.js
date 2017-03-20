@@ -55,73 +55,60 @@ function(r, $, pgAdmin, _, Backbone) {
 
         // Handle treeview clicks
         object_selected: function(item, itemData, node) {
-            var treeHierarchy = node.getTreeNodeHierarchy(item)
-            if (itemData && itemData._type)
-            {
-                switch(itemData._type) {
-                    case ('server-group'):
-                        url = '{{ url_for('dashboard.index') }}';
-                        break;
+            if (itemData && itemData._type) {
+                var treeHierarchy = node.getTreeNodeHierarchy(item),
+                    url = '{{ url_for('dashboard.index') }}',
+                    sid = -1, did = -1, b = pgAdmin.Browser,
+                    m = b && b.Nodes[itemData._type];
 
-                    case ('server'):
-                    case ('coll-database'):
-                    case ('coll-role'):
-                    case ('role'):
-                    case ('coll-tablespace'):
-                    case ('tablespace'):
-                        url = '{{ url_for('dashboard.index') }}'
-                            + treeHierarchy.server._id;
-                        break;
-
-                    default:
-                        url = '{{ url_for('dashboard.index') }}'
-                                + treeHierarchy.server._id
-                        if ('database' in treeHierarchy) {
-                          url += '/' + treeHierarchy.database._id;
-                        }
-                        break;
+                if (m && m.dashboard) {
+                    if (_.isFunction(m.dashboard)) {
+                        url = m.dashboard.apply(
+                            item, itemData, node, treeHierarchy
+                        );
+                    } else {
+                        url = m.dashboard;
+                    }
+                } else {
+                    if ('database' in treeHierarchy) {
+                        sid = treeHierarchy.server._id;
+                        did = treeHierarchy.database._id;
+                        url += sid + '/' + did;
+                    } else if ('server' in treeHierarchy) {
+                        sid = treeHierarchy.server._id;
+                        url += sid;
+                    }
                 }
-            }
 
-            var dashboardPanel = pgBrowser.panels['dashboard'].panel;
-            if (dashboardPanel) {
-                var div = dashboardPanel.layout().scene().find('.pg-panel-content');
+                var dashboardPanel = pgBrowser.panels['dashboard'].panel;
+                if (dashboardPanel) {
+                    var div = dashboardPanel.layout().scene().find(
+                            '.pg-panel-content'
+                        );
 
-                if (div) {
-                    // Avoid unnecessary reloads
-                    if (_.isUndefined(treeHierarchy.server) || _.isUndefined(treeHierarchy.server._id))
-                        sid = -1
-                    else
-                        sid = treeHierarchy.server._id
+                    if (div) {
+                        // Avoid unnecessary reloads
+                        if (url != $(dashboardPanel).data('dashboard_url')) {
+                            // Clear out everything so any existing timers die off
+                            $(div).empty();
 
-                    if (_.isUndefined(treeHierarchy.database) || _.isUndefined(treeHierarchy.database._id))
-                        did = -1
-                    else
-                        did = treeHierarchy.database._id
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                dataType: "html",
+                                success: function (data) {
+                                    $(div).html(data);
+                                },
+                                error: function (xhr, status) {
+                                    $(div).html(
+                                        '<div class="alert alert-danger pg-panel-message" role="alert">{{ gettext('An error occurred whilst loading the dashboard.') }}</div>'
+                                    );
+                                }
+                            });
 
-                    if (sid != $(dashboardPanel).data('sid') ||
-                        did != $(dashboardPanel).data('did')) {
-
-                        // Clear out everything so any existing timers die off
-                        $(div).empty();
-
-                        $.ajax({
-                            url: url,
-                            type: "GET",
-                            dataType: "html",
-                            success: function (data) {
-                                $(div).html(data);
-                            },
-                            error: function (xhr, status) {
-                                $(div).html(
-                                    '<div class="alert alert-danger pg-panel-message" role="alert">{{ gettext('An error occurred whilst loading the dashboard.') }}</div>'
-                                );
-                            }
-                        });
-
-                        // Cache the current IDs for next time
-                        $(dashboardPanel).data('sid', sid)
-                        $(dashboardPanel).data('did', did)
+                            // Cache the current IDs for next time
+                            $(dashboardPanel).data('dashboard_url', url);
+                        }
                     }
                 }
             }
