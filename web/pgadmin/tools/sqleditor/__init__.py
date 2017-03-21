@@ -104,7 +104,7 @@ class SqlEditorModule(PgAdminModule):
 
         self.explain_timing = self.preference.register(
             'Explain', 'explain_timing',
-            gettext("Show timing"), 'boolean', False,
+            gettext("Show timing?"), 'boolean', False,
             category_label=gettext('Explain')
         )
 
