@@ -118,7 +118,7 @@ class Connection(BaseConnection):
     Methods:
     -------
     * connect(**kwargs)
-      - Connect the PostgreSQL/Postgres Plus servers using the psycopg2 driver
+      - Connect the PostgreSQL/EDB Postgres Advanced Server using the psycopg2 driver
 
     * execute_scalar(query, params, formatted_exception_msg)
       - Execute the given query and returns single datum result
@@ -1665,7 +1665,7 @@ class Driver(BaseDriver):
 
     This driver acts as a wrapper around psycopg2 connection driver
     implementation. We will be using psycopg2 for makeing connection with
-    the PostgreSQL/Postgres Plus Advanced Server (EnterpriseDB).
+    the PostgreSQL/EDB Postgres Advanced Server (EnterpriseDB).
 
     Properties:
     ----------

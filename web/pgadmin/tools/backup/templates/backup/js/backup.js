@@ -614,7 +614,7 @@ TODO LIST FOR BACKUP:
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please set binary path for EDB Advanced Server from preferences.') }}';
+          msg = '{{ _('Please set binary path for EDB Postgres Advanced Server from preferences.') }}';
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);

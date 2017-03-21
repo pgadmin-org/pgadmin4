@@ -25,7 +25,7 @@ class BaseDriver(object):
     Inherit this class to implement different type of database driver
     implementation.
 
-    (For PostgreSQL/Postgres Plus Advanced Server, we will be using psycopg2)
+    (For PostgreSQL/EDB Postgres Advanced Server, we will be using psycopg2)
 
     Abstract Properties:
     -------- ----------
