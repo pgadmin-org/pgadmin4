@@ -237,7 +237,17 @@ function(r, $, pgAdmin, _, Backbone) {
         add_new_server: function() {
             if (pgBrowser && pgBrowser.tree) {
                 var i = pgBrowser.tree.first(null, false),
-                    serverModule = r('pgadmin.node.server');
+                    serverModule = r('pgadmin.node.server'),
+                    itemData = pgBrowser.tree.itemData(i);
+
+                while (itemData && itemData._type != "server-group") {
+                    i = pgBrowser.tree.next(i);
+                    itemData = pgBrowser.tree.itemData(i);
+                }
+
+                if (!itemData) {
+                    return;
+                }
 
                 if (serverModule) {
                     serverModule.callbacks.show_obj_properties.apply(
