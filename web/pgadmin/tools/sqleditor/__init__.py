@@ -26,14 +26,14 @@ from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.misc.file_manager import Filemanager
 
 
-from config import PG_DEFAULT_DRIVER, SERVER_MODE
+from config import PG_DEFAULT_DRIVER
 
 MODULE_NAME = 'sqleditor'
 
-# import unquote from urlib for python2.x and python3.x
+# import unquote from urllib for python2.x and python3.x
 try:
     from urllib import unquote
-except Exception as e:
+except ImportError:
     from urllib.parse import unquote
 
 # Async Constants
@@ -476,8 +476,6 @@ def poll(trans_id):
         status, result = conn.poll()
         if status == ASYNC_OK:
             status = 'Success'
-            if 'primary_keys' in session_obj:
-                primary_keys = session_obj['primary_keys']
             rows_affected = conn.rows_affected()
 
             # if transaction object is instance of QueryToolCommand
@@ -500,11 +498,10 @@ def poll(trans_id):
         status = 'NotConnected'
         result = error_msg
 
-    """
-        Procedure/Function output may comes in the form of Notices from the
-        database server, so we need to append those outputs with the
-        original result.
-    """
+    # Procedure/Function output may comes in the form of Notices from the
+    # database server, so we need to append those outputs with the
+    # original result.
+
     if status == 'Success' and result is None:
         result = conn.status_message()
         messages = conn.messages()
@@ -549,31 +546,26 @@ def fetch_pg_types(trans_id):
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
-
-        # List of oid for which we need type name from pg_type
-        oid = ''
         res = {}
         if 'columns_info' in session_obj \
                 and session_obj['columns_info'] is not None:
-            for col in session_obj['columns_info']:
-                type_obj = session_obj['columns_info'][col]
-                oid += str(type_obj['type_code']) + ','
 
-            # Remove extra comma
-            oid = oid[:-1]
-            status, res = conn.execute_dict(
-                """SELECT oid, format_type(oid,null) as typname FROM pg_type WHERE oid IN ({0}) ORDER BY oid;
-""".format(oid))
+            oids = [session_obj['columns_info'][col]['type_code'] for col in session_obj['columns_info']]
 
-            if status:
-                # iterate through pg_types and update the type name in session object
-                for record in res['rows']:
-                    for col in session_obj['columns_info']:
-                        type_obj = session_obj['columns_info'][col]
-                        if type_obj['type_code'] == record['oid']:
-                            type_obj['type_name'] = record['typname']
+            if oids:
+                status, res = conn.execute_dict(
+                    u"""SELECT oid, format_type(oid,null) as typname FROM pg_type WHERE oid IN %s ORDER BY oid;
+""", [tuple(oids)])
 
-                update_session_grid_transaction(trans_id, session_obj)
+                if status:
+                    # iterate through pg_types and update the type name in session object
+                    for record in res['rows']:
+                        for col in session_obj['columns_info']:
+                            type_obj = session_obj['columns_info'][col]
+                            if type_obj['type_code'] == record['oid']:
+                                type_obj['type_name'] = record['typname']
+
+                    update_session_grid_transaction(trans_id, session_obj)
     else:
         status = False
         res = error_msg
@@ -604,8 +596,10 @@ def save(trans_id):
         # If there is no primary key found then return from the function.
         if len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0:
             return make_json_response(
-                data={'status': False,
-                      'result': gettext('No primary key found for this object, so unable to save records.')}
+                data={
+                    'status': False,
+                    'result': gettext('No primary key found for this object, so unable to save records.')
+                }
             )
 
         status, res, query_res, _rowid = trans_obj.save(changed_data)
@@ -615,11 +609,13 @@ def save(trans_id):
         query_res = None
 
     return make_json_response(
-        data={ 'status': status,
-               'result': res,
-               'query_result': query_res,
-               '_rowid': _rowid }
-        )
+        data={
+            'status': status,
+            'result': res,
+            'query_result': query_res,
+            '_rowid': _rowid
+        }
+    )
 
 
 @blueprint.route('/filter/get/<int:trans_id>', methods=["GET"])
