@@ -1,8 +1,8 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.backform'],
+  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'sources/translate', 'pgadmin.backform'],
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform) {
+  function($, alertify, pgAdmin, _, Backform, t) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -23,8 +23,8 @@ define(
       // and reload the window
       show: function() {
         var obj = this;
-        alertify.confirm("{{ _('Reset layout') }}",
-          "{{ _('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.') }}",
+        alertify.confirm(t('Reset layout'),
+          t('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.'),
           function() {
             var reloadingIndicator = $('<div id="reloading-indicator"></div>');
             $('body').append(reloadingIndicator);

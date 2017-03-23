@@ -1,8 +1,9 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.browser', 'pgadmin.backform'],
+  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.browser',
+   'sources/translate', 'pgadmin.backform'],
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform, pgBrowser) {
+  function($, alertify, pgAdmin, _, Backform, pgBrowser, t) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -190,8 +191,8 @@ define(
                     return 'input';
                 case 'boolean':
                   p.options = {
-                      onText: '{{ _('True') }}',
-                      offText: '{{ _('False') }}',
+                      onText: t('True'),
+                      offText: t('False'),
                       onColor: 'success',
                       offColor: 'default',
                       size: 'mini'
@@ -199,8 +200,8 @@ define(
                   return 'switch';
                 case 'node':
                     p.options = {
-                      onText: '{{ _('Show') }}',
-                      offText: '{{ _('Hide') }}',
+                      onText: t('Show'),
+                      offText: t('Hide'),
                       onColor: 'success',
                       offColor: 'default',
                       size: 'mini'
@@ -328,7 +329,7 @@ define(
                 "<div class='pg-el-xs-3 preferences_tree aciTree'></div>"
               ).append(
                 "<div class='pg-el-xs-9 preferences_content'>" +
-                " {{ _('Category is not selected.')|safe }}" +
+                t('Category is not selected.') +
                 "</div>"
               );
 
@@ -354,16 +355,16 @@ define(
                     attrs:{name:'dialog_help', type:'button', label: '{{ _('Preferences') }}',
                     url: '{{ url_for('help.static', filename='preferences.html') }}'}
                   },{
-                    text: "{{ _('OK') }}", key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+                    text: t('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                   },{
-                    text: "{{ _('Cancel') }}", className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                    text: t('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
                 options: {
                   padding: !1,
                   overflow: !1,
-                  title: '{{ _('Preferences')|safe }}',
+                  title: t('Preferences'),
                   closableByDimmer: false,
                   modal:false,
                   pinnable: false
@@ -378,7 +379,7 @@ define(
                   return;
                }
 
-              if (e.button.text == "{{ _('OK') }}"){
+              if (e.button.text == t('OK')){
                 preferences.updateAll();
               }
             },
