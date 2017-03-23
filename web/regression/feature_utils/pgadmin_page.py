@@ -101,7 +101,8 @@ class PgadminPage:
         ActionChains(self.driver).send_keys(field_content).perform()
 
     def click_tab(self, tab_name):
-        self.find_by_xpath("//*[contains(@class,'wcPanelTab') and contains(.,'" + tab_name + "')]").click()
+        self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
+                           "and contains(.,'" + tab_name + "')]").click()
 
     def wait_for_input_field_content(self, field_name, content):
         def input_field_has_content(driver):

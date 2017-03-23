@@ -1,6 +1,4 @@
-SELECT
-      FALSE as convalidated,
-      ct.oid,
+SELECT ct.oid,
       conname as name,
       condeferrable,
       condeferred,
@@ -17,7 +15,8 @@ SELECT
       cl.relname as fktab,
       nr.nspname as refnsp,
       cr.relname as reftab,
-      description as comment
+      description as comment,
+      NOT convalidated as convalidated
 FROM pg_constraint ct
 JOIN pg_class cl ON cl.oid=conrelid
 JOIN pg_namespace nl ON nl.oid=cl.relnamespace
