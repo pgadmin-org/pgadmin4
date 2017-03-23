@@ -61,6 +61,9 @@ class PgadminPage:
         self.find_by_partial_link_text("Delete/Drop").click()
         self.click_modal_ok()
 
+    def select_tree_item(self, tree_item_text):
+        self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "' and @class='aciTreeItem']").click()
+
     def toggle_open_tree_item(self, tree_item_text):
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "']/../*[@class='aciTreeButton']").click()
 
@@ -72,7 +75,7 @@ class PgadminPage:
 
     def find_by_partial_link_text(self, link_text):
         return self._wait_for(
-            'link with text "#{0}"'.format(link_text),
+            'link with text "{0}"'.format(link_text),
             EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, link_text))
         )
 
