@@ -49,10 +49,10 @@ class TestTablesAcl(BaseTestGenerator):
                 cursor = connection.cursor()
                 cursor.execute(sql)
                 fetch_result = cursor.fetchall()
-                public_acls = filter(lambda (acl): acl[1] == 'PUBLIC', fetch_result)
+                public_acls = list(filter(lambda acl: acl[1] == 'PUBLIC', fetch_result))
                 self.assertEqual(len(public_acls), 1)
 
-                new_acl_map = dict(zip(map(lambda (column): column.name, cursor.description), public_acls[0]))
+                new_acl_map = dict(zip(map(lambda column: column.name, cursor.description), public_acls[0]))
 
                 self.assertEqual('PUBLIC', new_acl_map['grantee'])
                 self.assertEqual(self.server['username'], new_acl_map['grantor'])
