@@ -8,10 +8,11 @@
 ##########################################################################
 
 from __future__ import print_function
+
 import sys
 import traceback
 
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 
 def create_resource_groups(server, resource_group_name):

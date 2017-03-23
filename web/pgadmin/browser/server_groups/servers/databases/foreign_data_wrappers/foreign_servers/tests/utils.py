@@ -8,9 +8,11 @@
 ##########################################################################
 
 from __future__ import print_function
+
 import os
 import sys
-from regression.test_utils import get_db_connection
+
+from regression.python_test_utils.test_utils import get_db_connection
 
 file_name = os.path.basename(__file__)
 

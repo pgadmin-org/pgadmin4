@@ -17,7 +17,7 @@ from regression.python_test_utils.template_helper import file_as_template
 
 DriverRegistry.load_drivers()
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils
+from regression.python_test_utils import test_utils
 
 if sys.version_info[0] >= 3:
     long = int

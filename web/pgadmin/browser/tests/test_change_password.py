@@ -7,12 +7,12 @@
 #
 ##########################################################################
 
-import uuid
 import json
+import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
+from regression.python_test_utils import test_utils
 from regression.test_setup import config_data
-from regression import test_utils
 from . import utils
 
 

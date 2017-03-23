@@ -8,20 +8,21 @@
 ##########################################################################
 
 from __future__ import print_function
-import uuid
-import json
 
-from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
+import json
+import uuid
+
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
-    import utils as fdw_utils
-from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
+from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
+    import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.tests import \
+    utils as database_utils
+from pgadmin.utils.route import BaseTestGenerator
+from regression import parent_node_dict
+from regression.python_test_utils import test_utils as utils
 from . import utils as um_utils
 
 

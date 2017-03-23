@@ -10,11 +10,10 @@
 from __future__ import print_function
 
 import os
-import uuid
 import sys
+import uuid
 
-
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 TABLE_SPACE_URL = '/browser/tablespace/obj/'
 file_name = os.path.basename(__file__)

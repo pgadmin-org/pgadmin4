@@ -8,10 +8,11 @@
 ##########################################################################
 
 from __future__ import print_function
+
 import sys
 import traceback
 
-from regression.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection
 
 
 def get_extension_data(schema_name):

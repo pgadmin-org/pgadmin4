@@ -9,16 +9,13 @@
 
 from __future__ import print_function
 
-import json
 import os
 import pickle
-import uuid
 import sys
+import uuid
 
+from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from regression import test_utils as utils
-
 
 ROLE_URL = '/browser/role/obj/'
 file_name = os.path.basename(__file__)

@@ -8,14 +8,15 @@
 ##########################################################################
 
 from __future__ import print_function
+
 import json
 
-from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
-from regression import parent_node_dict
-from . import utils as cast_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
+from pgadmin.utils.route import BaseTestGenerator
+from regression import parent_node_dict
+from regression.python_test_utils import test_utils as utils
+from . import utils as cast_utils
 
 
 class CastsPutTestCase(BaseTestGenerator):

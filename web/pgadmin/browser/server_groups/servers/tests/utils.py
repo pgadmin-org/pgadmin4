@@ -11,7 +11,7 @@ from __future__ import print_function
 
 import json
 
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 SERVER_URL = '/browser/server/obj/'
 SERVER_CONNECT_URL = '/browser/server/connect/'

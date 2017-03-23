@@ -8,9 +8,10 @@
 ##########################################################################
 
 import uuid
+
 from pgadmin.utils.route import BaseTestGenerator
+from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
-from regression import test_utils as utils
 
 
 class LoginTestCase(BaseTestGenerator):

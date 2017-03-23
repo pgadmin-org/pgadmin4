@@ -8,8 +8,8 @@
 ##########################################################################
 
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
 from regression import parent_node_dict
+from regression.python_test_utils import test_utils as utils
 
 
 class ServersGetTestCase(BaseTestGenerator):

@@ -8,16 +8,17 @@
 ##########################################################################
 
 from __future__ import print_function
-import uuid
-import json
 
-from pgadmin.utils.route import BaseTestGenerator
-from regression import parent_node_dict
-from regression import test_utils as utils
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
+import json
+import uuid
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
+from pgadmin.browser.server_groups.servers.databases.tests import \
+    utils as database_utils
+from pgadmin.utils.route import BaseTestGenerator
+from regression import parent_node_dict
+from regression.python_test_utils import test_utils as utils
 
 
 class FtsParserAddTestCase(BaseTestGenerator):

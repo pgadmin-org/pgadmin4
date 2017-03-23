@@ -79,7 +79,7 @@ exec (open("setup.py").read())
 from pgadmin.model import SCHEMA_VERSION
 
 # Delay the import test_utils as it needs updated config.SQLITE_PATH
-from regression import test_utils
+from regression.python_test_utils import test_utils
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
