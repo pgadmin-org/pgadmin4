@@ -648,12 +648,12 @@
                label: optionText,
                value: optionValue,
                selected: (selectedValues == optionValue) ||
-                 (_.indexOf(selectedValues, optionValue) > -1)
+                 (select2_opts.multiple && _.indexOf(selectedValues, optionValue) > -1)
             }));
          } else {
           opt = _.defaults({}, opt, {
             selected: ((selectedValues == opt.value) ||
-                (_.indexOf(selectedValues, opt.value) > -1)),
+                (select2_opts.multiple && _.indexOf(selectedValues, opt.value) > -1)),
             }, self.defaults.opt);
           $select.append(self.template(opt));
         }
