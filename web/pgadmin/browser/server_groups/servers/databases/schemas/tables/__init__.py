@@ -295,7 +295,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             self.index_constraint_template_path = 'index_constraint/sql'
 
             # Template for foreign key constraint node
-            self.foreign_key_template_path = 'foreign_key/sql'
+            self.foreign_key_template_path = 'foreign_key/sql/#{0}#'.format(ver)
 
             # Template for index node
             self.index_template_path = 'index/sql/#{0}#'.format(ver)

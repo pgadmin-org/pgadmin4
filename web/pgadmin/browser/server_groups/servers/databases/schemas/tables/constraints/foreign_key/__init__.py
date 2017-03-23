@@ -234,7 +234,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'foreign_key/sql'
+            self.template_path = 'foreign_key/sql/#{0}#'.format(self.manager.version)
 
             # We need parent's name eg table name and schema name
             SQL = render_template("/".join([self.template_path,
@@ -369,7 +369,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 sid
             )
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'foreign_key/sql'
+        self.template_path = 'foreign_key/sql/#{0}#'.format(self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
@@ -485,7 +485,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 sid
             )
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'foreign_key/sql'
+        self.template_path = 'foreign_key/sql/#{0}#'.format(self.manager.version)
 
         # We need parent's name eg table name and schema name
         SQL = render_template("/".join([self.template_path,
