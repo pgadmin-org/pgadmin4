@@ -84,6 +84,14 @@ class SqlEditorModule(PgAdminModule):
                              'Values greater than 1 display the notifier for the number of seconds specified.')
         )
 
+        self.open_in_new_tab = self.preference.register(
+            'display', 'new_browser_tab',
+            gettext("Open in New Browser Tab"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, the Query Tool '
+                             'will be opened in a new browser tab.')
+        )
+
         self.explain_verbose = self.preference.register(
             'Explain', 'explain_verbose',
             gettext("Verbose output?"), 'boolean', False,

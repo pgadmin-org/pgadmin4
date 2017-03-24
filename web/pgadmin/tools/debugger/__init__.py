@@ -25,6 +25,7 @@ from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
+from pgadmin.utils.preferences import Preferences
 
 # Constants
 ASYNC_OK = 1
@@ -42,6 +43,7 @@ class DebuggerModule(PgAdminModule):
       - Method is used to load the required javascript files for debugger module
 
     """
+    LABEL = gettext("Debugger")
 
     def get_own_javascripts(self):
         scripts = list()
@@ -58,6 +60,14 @@ class DebuggerModule(PgAdminModule):
 
         return scripts
 
+    def register_preferences(self):
+        self.open_in_new_tab = self.preference.register(
+            'display', 'debugger_new_browser_tab',
+            gettext("Open in New Browser Tab"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, the Debugger '
+                             'will be opened in a new browser tab.')
+        )
 
 blueprint = DebuggerModule(MODULE_NAME, __name__)
 
@@ -317,7 +327,7 @@ def direct_new(trans_id):
     return render_template(
         "debugger/direct.html",
         _=gettext,
-        function_name='test',
+        function_name=obj['function_name'],
         uniqueId=trans_id,
         debug_type=debug_type,
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
@@ -435,6 +445,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
         'database_id': did,
         'schema_id': scid,
         'function_id': func_id,
+        'function_name': session['funcData']['name'],
         'debug_type': debug_type,
         'debugger_version': debugger_version,
         'frame_id': 0,
@@ -478,7 +489,13 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     # Delete the 'funcData' session variables as it is not used now as target is initialized
     del session['funcData']
 
-    return make_json_response(data={'status': status, 'debuggerTransId': trans_id})
+    pref = Preferences.module('debugger')
+    new_browser_tab = pref.preference('debugger_new_browser_tab').get()
+
+
+    return make_json_response(data={'status': status,
+                                    'debuggerTransId': trans_id,
+                                    'newBrowserTab': new_browser_tab})
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["GET"])

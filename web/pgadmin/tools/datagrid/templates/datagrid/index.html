@@ -310,7 +310,8 @@ function($, pgAdmin, R, S) {
 {% endif %}
 
     // Start the query tool.
-    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}", script_sql);
+    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}",
+                    script_sql, {{ is_new_browser_tab }});
   });
 });
 {% endblock %}

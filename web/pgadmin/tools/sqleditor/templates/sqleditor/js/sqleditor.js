@@ -228,36 +228,38 @@ define(
 
         self.render_history_grid();
 
-        // Listen on the panel closed event and notify user to save modifications.
-        _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
-          if(p.isVisible()) {
-            p.on(wcDocker.EVENT.CLOSING, function() {
-              // Only if we can edit data then perform this check
-              var notify = false, msg;
-              if(self.handler.can_edit) {
-                var data_store = self.handler.data_store;
-                if(data_store && (_.size(data_store.added) ||
-                    _.size(data_store.updated))) {
-                  msg = "{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
+        if (!self.handler.is_new_browser_tab) {
+          // Listen on the panel closed event and notify user to save modifications.
+          _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+            if(p.isVisible()) {
+              p.on(wcDocker.EVENT.CLOSING, function() {
+                // Only if we can edit data then perform this check
+                var notify = false, msg;
+                if(self.handler.can_edit) {
+                  var data_store = self.handler.data_store;
+                  if(data_store && (_.size(data_store.added) ||
+                      _.size(data_store.updated))) {
+                    msg = "{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
+                    notify = true;
+                  }
+                } else if(self.handler.is_query_tool && self.handler.is_query_changed) {
+                  msg = "{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
                   notify = true;
                 }
-              } else if(self.handler.is_query_tool && self.handler.is_query_changed) {
-                msg = "{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
-                notify = true;
-              }
-              if(notify) {return self.user_confirmation(p, msg);}
-              return true;
-            });
-            // Set focus on query tool of active panel
-            p.on(wcDocker.EVENT.GAIN_FOCUS, function() {
-              if (!$(p.$container).hasClass('wcPanelTabContentHidden')) {
-                setTimeout(function() {
-                  self.handler.gridView.query_tool_obj.focus();
-                }, 200);
-              }
-            });
-          }
-        });
+                if(notify) {return self.user_confirmation(p, msg);}
+                return true;
+              });
+              // Set focus on query tool of active panel
+              p.on(wcDocker.EVENT.GAIN_FOCUS, function() {
+                if (!$(p.$container).hasClass('wcPanelTabContentHidden')) {
+                  setTimeout(function() {
+                    self.handler.gridView.query_tool_obj.focus();
+                  }, 200);
+                }
+              });
+            }
+          });
+        }
 
         // set focus on query tool once loaded
         setTimeout(function() {
@@ -1517,7 +1519,7 @@ define(
          * call the render method of the grid view to render the backgrid
          * header and loading icon and start execution of the sql query.
          */
-        start: function(is_query_tool, editor_title, script_sql) {
+        start: function(is_query_tool, editor_title, script_sql, is_new_browser_tab) {
           var self = this;
 
           self.is_query_tool = is_query_tool;
@@ -1527,6 +1529,7 @@ define(
           self.explain_costs = false;
           self.explain_buffers = false;
           self.explain_timing = false;
+          self.is_new_browser_tab = is_new_browser_tab;
 
           // We do not allow to call the start multiple times.
           if (self.gridView)
@@ -2423,11 +2426,17 @@ define(
 
         // Set panel title.
         setTitle: function(title) {
-          _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
-            if(p.isVisible()) {
-              p.title(decodeURIComponent(title));
-            }
-          });
+          var self = this;
+
+          if (self.is_new_browser_tab) {
+            window.document.title = title;
+          } else {
+            _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+              if(p.isVisible()) {
+                p.title(decodeURIComponent(title));
+              }
+            });
+          }
         },
 
         // load select file dialog
@@ -2571,14 +2580,18 @@ define(
             } else {
               var title = '';
 
-              // Find the title of the visible panel
-              _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
-                if(p.isVisible()) {
-                  self.gridView.panel_title = p._title;
-                }
-              });
+              if (self.is_new_browser_tab) {
+                title = window.document.title + ' *';
+              } else {
+                // Find the title of the visible panel
+                _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
+                  if(p.isVisible()) {
+                    self.gridView.panel_title = p._title;
+                  }
+                });
 
-              title = self.gridView.panel_title + ' *';
+                title = self.gridView.panel_title + ' *';
+              }
               self.setTitle(title);
             }
 
