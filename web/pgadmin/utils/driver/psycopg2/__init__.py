@@ -1082,7 +1082,7 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_WRITE:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([], [conn.fileno()], [])
+            timeout_status = select.select([], [conn.fileno()], [], 0)
             if timeout_status == ([], [], []):
                 return self.ASYNC_WRITE_TIMEOUT
 
@@ -1095,7 +1095,7 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_READ:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([conn.fileno()], [], [])
+            timeout_status = select.select([conn.fileno()], [], [], 0)
             if timeout_status == ([], [], []):
                 return self.ASYNC_READ_TIMEOUT
 

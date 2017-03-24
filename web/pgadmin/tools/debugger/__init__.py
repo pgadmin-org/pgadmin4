@@ -1334,6 +1334,45 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
     return make_json_response(data={'status': True, 'result': 'Success'})
 
+def convert_data_to_dict(conn, result):
+    """
+    This function helps us to convert result set into dict
+
+    Args:
+        conn: Connection object
+        result: 2d array result set
+
+    Returns:
+        Converted dict data
+    """
+    columns = []
+    col_info = conn.get_column_info()
+    # Check column info is available or not
+    if col_info is not None and len(col_info) > 0:
+        for col in col_info:
+            items = list(col.items())
+            column = dict()
+            column['name'] = items[0][1]
+            column['type_code'] = items[1][1]
+            columns.append(column)
+
+    # We need to convert result from 2D array to dict for BackGrid
+    # BackGrid do not support for 2D array result as it it Backbone Model based grid
+    # This Conversion is not an overhead as most of the time
+    # result will be smaller
+    _tmp_result = []
+    for row in result:
+        temp = dict()
+        count = 0
+        for item in row:
+            temp[columns[count]['name']] = item
+            count += 1
+        _tmp_result.append(temp)
+    # Replace 2d array with dict result
+    result = _tmp_result
+
+    return columns, result
+
 
 @blueprint.route('/poll_end_execution_result/<int:trans_id>/', methods=["GET"])
 @login_required
@@ -1370,7 +1409,7 @@ def poll_end_execution_result(trans_id):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
                 additional_msgs = "<br>".join(additional_msgs)
                 if statusmsg:
                     statusmsg = additional_msgs + "<br>" + statusmsg
@@ -1388,38 +1427,14 @@ def poll_end_execution_result(trans_id):
                 status = 'Success'
                 additional_msgs = conn.messages()
                 if len(additional_msgs) > 0:
-                    additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                    additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
                     additional_msgs = "<br>".join(additional_msgs)
                     if statusmsg:
                         statusmsg = additional_msgs + "<br>" + statusmsg
                     else:
                         statusmsg = additional_msgs
 
-                columns = []
-                col_info = conn.get_column_info()
-                # Check column info is available or not
-                if col_info is not None and len(col_info) > 0:
-                    for col in col_info:
-                        items = list(col.items())
-                        column = dict()
-                        column['name'] = items[0][1]
-                        column['type_code'] = items[1][1]
-                        columns.append(column)
-
-                # We need to convert result from 2D array to dict for BackGrid
-                # BackGrid do not support for 2D array result as it it Backbone Model based grid
-                # This Conversion is not an overhead as most of the time
-                # result will be smaller
-                _tmp_result = []
-                for row in result:
-                    temp = dict()
-                    count = 0
-                    for item in row:
-                        temp[columns[count]['name']] = item
-                        count += 1
-                    _tmp_result.append(temp)
-                # Replace 2d array with dict result
-                result = _tmp_result
+                columns, result = convert_data_to_dict(conn, result)
 
                 return make_json_response(success=1, info=gettext("Execution Completed."),
                                           data={'status': status, 'result': result,
@@ -1472,6 +1487,7 @@ def poll_result(trans_id):
         status, result = conn.poll()
         if status == ASYNC_OK and result is not None:
             status = 'Success'
+            columns, result = convert_data_to_dict(conn, result)
         else:
             status = 'Busy'
     else:
