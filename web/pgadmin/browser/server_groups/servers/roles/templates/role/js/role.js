@@ -252,7 +252,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         multiple: true,
         tags: true,
         allowClear: data.disabled ? false : true,
-        placeholder: data.disabled ? "" : "Select members",
+        placeholder: data.disabled ? "" : "{{ _('Select members') }}",
         width: 'style'
       }).on("change", function(e) {
         $(e.target).find(':selected').each(function() {

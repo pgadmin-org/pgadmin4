@@ -219,7 +219,11 @@ define(
                   var opts = [];
                   // Convert the array to SelectControl understandable options.
                   _.each(p.options, function(o) {
-                    opts.push({'label': o, 'value': o});
+                    if('label' in o && 'value' in o){
+                      opts.push({'label': o.label, 'value': o.value});
+                    } else {
+                      opts.push({'label': o, 'value': o});
+                    }
                   });
                   p.options = opts;
                   return 'select2';

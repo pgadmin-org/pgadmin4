@@ -126,8 +126,9 @@ class _Preference(object):
                 current_app.logger.exeception(e)
                 return self.default
         if self._type == 'options':
-            if res.value in self.options:
-                return res.value
+            for opt in self.options:
+                if 'value' in opt and opt['value'] == res.value:
+                    return res.value
             return self.default
         if self._type == 'text':
             if res.value == '':
@@ -184,7 +185,12 @@ class _Preference(object):
                 current_app.logger.exeception(e)
                 return False, gettext("Invalid value for a datetime option.")
         elif self._type == 'options':
-            if value not in self.options:
+            has_value = False
+            for opt in self.options:
+                if 'value' in opt and opt['value'] == value:
+                    has_value = True
+
+            if not has_value:
                 return False, gettext("Invalid value for an options option.")
 
         pref = UserPrefTable.query.filter_by(

@@ -13,7 +13,7 @@ side and for getting/setting preferences.
 """
 
 import simplejson as json
-from flask import render_template, url_for, Response, request
+from flask import render_template, url_for, Response, request, session
 from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
@@ -109,23 +109,28 @@ def preferences(module=None, preference=None):
     res = []
 
     def label(p):
-        return p['label']
+        return gettext(p['label'])
 
     for m in pref:
         if len(m['categories']):
             om = {
                 "id": m['id'],
-                "label": m['label'],
+                "label": gettext(m['label']),
                 "inode": True,
                 "open": True,
                 "branch": []
             }
 
             for c in m['categories']:
+                for p in c['preferences']:
+                    if 'label' in p and p['label'] is not None:
+                        p['label'] = gettext(p['label'])
+                    if 'help_str' in p and p['help_str'] is not None:
+                        p['help_str'] = gettext(p['help_str'])
                 oc = {
                     "id": c['id'],
                     "mid": m['id'],
-                    "label": c['label'],
+                    "label": gettext(c['label']),
                     "inode": False,
                     "open": False,
                     "preferences": sorted(c['preferences'], key=label)
@@ -155,4 +160,23 @@ def save(pid):
     if not res:
         return internal_server_error(errormsg=msg)
 
-    return success_return()
+    response = success_return()
+
+    # Set cookie & session for language settings.
+    # This will execute every time as could not find the better way to know
+    # that which preference is getting updated.
+
+    misc_preference = Preferences.module('miscellaneous')
+    user_languages = misc_preference.preference(
+        'user_language'
+    )
+
+    language = 'en'
+    if user_languages:
+        language = user_languages.get() or language
+
+    setattr(session, 'PGADMIN_LANGUAGE', language)
+    response.set_cookie("PGADMIN_LANGUAGE", language)
+
+    return response
+

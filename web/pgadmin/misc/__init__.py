@@ -13,6 +13,7 @@ import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response
 from flask_babel import gettext as _
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.preferences import Preferences
 
 import config
 
@@ -40,6 +41,25 @@ class MiscModule(PgAdminModule):
             url_for('misc.static', filename='explain/css/explain.css')
         )
         return stylesheets
+
+    def register_preferences(self):
+        """
+        Register preferences for this module.
+        """
+        self.misc_preference = Preferences('miscellaneous', _('Miscellaneous'))
+
+        lang_options = []
+        for lang in config.LANGUAGES:
+            lang_options.append({'label': config.LANGUAGES[lang],
+                                 'value': lang})
+
+        # Register options for the User language settings
+        language = self.misc_preference.register(
+            'miscellaneous', 'user_language',
+            _("User language"), 'options', 'en',
+            category_label=_('User language'),
+            options=lang_options
+        )
 
 
 # Initialise the module

@@ -767,3 +767,16 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .show_progress {
   cursor: progress;
 }
+.user-language {
+  margin-top: 10px;
+}
+.user-language label{
+  float:left;
+  font-weight: normal !important;
+}
+.user-language div{
+  float:left;
+}
+.user-language select{
+  height: 25px !important;
+}
