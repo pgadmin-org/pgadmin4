@@ -30,7 +30,7 @@ Jinja:
     
 .. code-block:: javascript
 
-    define(['translate', ...], function(t, ...){
+    define(['sources/translate', ...], function(t, ...){
         ...
 
         var alert = alertify.prompt(
