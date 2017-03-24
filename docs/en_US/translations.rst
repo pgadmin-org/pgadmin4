@@ -30,12 +30,16 @@ Jinja:
     
 .. code-block:: javascript
 
-    var alert = alertify.prompt(
-        '{{ _('Add a server group') }}',
-        '{{ _('Enter a name for the new server group') }}', 
-        ''
+    define(['translate', ...], function(t, ...){
         ...
-    )
+
+        var alert = alertify.prompt(
+            t('Password Change'),
+            t('New password for %(userName)s', {userName: 'jsmith' }),
+            ...
+        )
+    })
+
     
 Updating and Merging
 ====================
