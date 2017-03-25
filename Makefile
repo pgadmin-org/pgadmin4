@@ -28,6 +28,9 @@ appbundle: docs
 src:
 	./pkg/src/build.sh
 
+minimise:
+	python web/tools/minimise.py ./web
+
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
 
