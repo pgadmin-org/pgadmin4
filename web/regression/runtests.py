@@ -346,7 +346,7 @@ if __name__ == '__main__':
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
 
-    if failure == True:
+    if failure:
         sys.exit(1)
     else:
         sys.exit(0)

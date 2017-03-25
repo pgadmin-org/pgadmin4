@@ -241,12 +241,11 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     else:
         function_data = session['funcData']
 
-    data = {}
-    data['name'] = r_set['rows'][0]['proargnames']
-    data['type'] = r_set['rows'][0]['proargtypenames']
-    data['use_default'] = r_set['rows'][0]['pronargdefaults']
-    data['default_value'] = r_set['rows'][0]['proargdefaults']
-    data['require_input'] = True
+    data = {'name': r_set['rows'][0]['proargnames'],
+            'type': r_set['rows'][0]['proargtypenames'],
+            'use_default': r_set['rows'][0]['pronargdefaults'],
+            'default_value': r_set['rows'][0]['proargdefaults'],
+            'require_input': True}
 
     # Below will check do we really required for the user input arguments and show input dialog
     if not r_set['rows'][0]['proargtypenames']:
@@ -907,7 +906,7 @@ def messages(trans_id):
             # and attach listened to that port number
             offset = notify[0].find('PLDBGBREAK')
             str_len = len('PLDBGBREAK')
-            str_len = str_len + 1
+            str_len += 1
             tmpOffset = 0
             tmpFlag = False
 
@@ -915,9 +914,9 @@ def messages(trans_id):
                 status = 'Success'
                 tmpFlag = True
                 port_number = port_number + notify[0][offset + str_len + tmpOffset]
-                tmpOffset = tmpOffset + 1
+                tmpOffset += 1
 
-            if tmpFlag == False:
+            if not tmpFlag:
                 status = 'Busy'
         else:
             status = 'Busy'

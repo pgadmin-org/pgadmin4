@@ -358,9 +358,8 @@ def msql(gid, sid, did):
 
         # Pass database objects and get SQL for privileges
         SQL_data = ''
-        data_func = {}
-        data_func['objects'] = data['objects']
-        data_func['priv'] = data['priv']['function']
+        data_func = {'objects': data['objects'],
+                     'priv': data['priv']['function']}
         SQL = render_template(
             "/".join([server_prop['template_path'],
                       '/sql/grant_function.sql']),
@@ -368,9 +367,8 @@ def msql(gid, sid, did):
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
-        data_seq = {}
-        data_seq['objects'] = data['objects']
-        data_seq['priv'] = data['priv']['sequence']
+        data_seq = {'objects': data['objects'],
+                    'priv': data['priv']['sequence']}
         SQL = render_template(
             "/".join([server_prop['template_path'],
                       '/sql/grant_sequence.sql']),
@@ -378,9 +376,8 @@ def msql(gid, sid, did):
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
-        data_table = {}
-        data_table['objects'] = data['objects']
-        data_table['priv'] = data['priv']['table']
+        data_table = {'objects': data['objects'],
+                      'priv': data['priv']['table']}
         SQL = render_template(
             "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
             data=data_table, conn=conn)
@@ -449,9 +446,8 @@ def save(gid, sid, did):
         # Pass database objects and get SQL for privileges
         # Pass database objects and get SQL for privileges
         SQL_data = ''
-        data_func = {}
-        data_func['objects'] = data['objects']
-        data_func['priv'] = data['priv']['function']
+        data_func = {'objects': data['objects'],
+                     'priv': data['priv']['function']}
         SQL = render_template(
             "/".join([server_prop['template_path'],
                       '/sql/grant_function.sql']),
@@ -459,9 +455,8 @@ def save(gid, sid, did):
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
-        data_seq = {}
-        data_seq['objects'] = data['objects']
-        data_seq['priv'] = data['priv']['sequence']
+        data_seq = {'objects': data['objects'],
+                    'priv': data['priv']['sequence']}
         SQL = render_template(
             "/".join([server_prop['template_path'],
                       '/sql/grant_sequence.sql']),
@@ -469,9 +464,8 @@ def save(gid, sid, did):
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
-        data_table = {}
-        data_table['objects'] = data['objects']
-        data_table['priv'] = data['priv']['table']
+        data_table = {'objects': data['objects'],
+                      'priv': data['priv']['table']}
         SQL = render_template(
             "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
             data=data_table, conn=conn)

@@ -529,7 +529,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             dif = len(proargmodes_fltrd) - len(proargdefaultvals)
             while (dif > 0):
                 proargdefaultvals.insert(0, '')
-                dif = dif - 1
+                dif -= 1
 
         # Prepare list of Argument list dict to be displayed in the Data Grid.
         params = {"arguments": [

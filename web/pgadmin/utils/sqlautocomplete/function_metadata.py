@@ -90,7 +90,7 @@ def parse_typed_field_list(tokens):
     #   " ( [ [ argmode ] [ argname ] argtype
     #               [ { DEFAULT | = } default_expr ] [, ...] ] )"
 
-    mode_names = set(('IN', 'OUT', 'INOUT', 'VARIADIC'))
+    mode_names = {'IN', 'OUT', 'INOUT', 'VARIADIC'}
     parse_state = 'type'
     parens = 0
     field = TypedFieldMetadata()

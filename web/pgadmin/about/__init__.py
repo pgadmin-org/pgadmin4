@@ -59,9 +59,7 @@ blueprint = AboutModule(MODULE_NAME, __name__,
 @login_required
 def index():
     """Render the about box."""
-    info = {}
-    info['python_version'] = sys.version
-    info['flask_version'] = __version__
+    info = {'python_version': sys.version, 'flask_version': __version__}
     if config.SERVER_MODE is True:
         info['app_mode'] = gettext('Server')
     else:

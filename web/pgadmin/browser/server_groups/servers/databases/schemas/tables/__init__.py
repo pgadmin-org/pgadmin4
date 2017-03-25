@@ -2544,25 +2544,25 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             # 'options' we need true/false to render switch ASC(false)/DESC(true)
             columns = []
             cols = []
-            for row in rset['rows']:
+            for col_row in rset['rows']:
                 # We need all data as collection for ColumnsModel
                 cols_data = {
-                    'colname': row['attdef'].strip('"'),
-                    'collspcname': row['collnspname'],
-                    'op_class': row['opcname'],
+                    'colname': col_row['attdef'].strip('"'),
+                    'collspcname': col_row['collnspname'],
+                    'op_class': col_row['opcname'],
                 }
-                if row['options'][0] == 'DESC':
+                if col_row['options'][0] == 'DESC':
                     cols_data['sort_order'] = True
                 columns.append(cols_data)
 
                 # We need same data as string to display in properties window
                 # If multiple column then separate it by colon
-                cols_str = row['attdef']
-                if row['collnspname']:
-                    cols_str += ' COLLATE ' + row['collnspname']
-                if row['opcname']:
-                    cols_str += ' ' + row['opcname']
-                if row['options'][0] == 'DESC':
+                cols_str = col_row['attdef']
+                if col_row['collnspname']:
+                    cols_str += ' COLLATE ' + col_row['collnspname']
+                if col_row['opcname']:
+                    cols_str += ' ' + col_row['opcname']
+                if col_row['options'][0] == 'DESC':
                     cols_str += ' DESC'
                 cols.append(cols_str)
 
@@ -2634,8 +2634,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 # 'tgattr' contains list of columns from table used in trigger
                 columns = []
 
-                for row in rset['rows']:
-                    columns.append({'column': row['name']})
+                for col_row in rset['rows']:
+                    columns.append({'column': col_row['name']})
 
                 data['columns'] = columns
 

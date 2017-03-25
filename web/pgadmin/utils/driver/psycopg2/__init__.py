@@ -1181,7 +1181,7 @@ Failed to reset the connection to the server due to following error:
                 pos = 0
                 for col in self.column_info:
                     col['pos'] = pos
-                    pos = pos + 1
+                    pos += 1
 
             self.row_count = cur.rowcount
 
