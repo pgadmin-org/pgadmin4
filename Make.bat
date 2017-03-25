@@ -246,6 +246,7 @@ REM Main function Ends
     FOR /R "%PGBUILDPATH%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f"
     FOR /R "%PGBUILDPATH%\web" %%f in (tests feature_tests __pycache__ node_modules) do RD /Q /S "%%f"
     RD /Q /S "%PGBUILDPATH%\web\regression"
+    RD /Q /S "%PGBUILDPATH%\web\tools"
     DEL /q "%PGBUILDPATH%\web\pgadmin4.db"
     DEL /q "%PGBUILDPATH%\web\config_local.py"
     
