@@ -184,7 +184,7 @@ def drop_database(connection, database_name):
                               )
         else:
             pg_cursor.execute(
-                "SELECT pg_cancel_backend(procpid) FROM pg_stat_activity " \
+                "SELECT pg_terminate_backend(procpid) FROM pg_stat_activity " \
                 "WHERE pg_stat_activity.datname ='%s' AND current_query='<IDLE>';" % database_name
             )
         pg_cursor.execute("SELECT * FROM pg_database db WHERE"
