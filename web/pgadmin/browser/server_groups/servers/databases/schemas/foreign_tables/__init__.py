@@ -877,11 +877,8 @@ shifted to the another schema.
                                               inherits=True)
 
             if not old_data:
-                return gone(gettext("""
-    Could not find the foreign table in the database.
-    It may have been removed by another user or
-    shifted to the another schema.
-    """))
+                return gone(gettext("Could not find the foreign table in the database." +
+                " It may have been removed by another user or shifted to the another schema."))
 
             # Prepare dict of columns with key = column's attnum
             # Will use this in the update template when any column is
