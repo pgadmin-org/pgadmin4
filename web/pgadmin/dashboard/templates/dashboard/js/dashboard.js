@@ -1,8 +1,8 @@
 define([
-    'require', 'jquery', 'pgadmin', 'underscore', 'backbone', 'sources/translate', 'flotr2', 'wcdocker',
+    'require', 'jquery', 'pgadmin', 'underscore', 'backbone', 'sources/gettext', 'flotr2', 'wcdocker',
     'pgadmin.browser', 'bootstrap'
     ],
-function(r, $, pgAdmin, _, Backbone, t) {
+function(r, $, pgAdmin, _, Backbone, gettext) {
 
   var wcDocker = window.wcDocker,
   pgBrowser = pgAdmin.Browser;
@@ -41,7 +41,7 @@ function(r, $, pgAdmin, _, Backbone, t) {
                         },
                         error: function (xhr, status) {
                             $(div).html(
-                                '<div class="alert alert-danger pg-panel-message" role="alert">' + t('An error occurred whilst loading the dashboard.') + '</div>'
+                                '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
                             );
                         }
                     });
@@ -101,7 +101,7 @@ function(r, $, pgAdmin, _, Backbone, t) {
                                 },
                                 error: function (xhr, status) {
                                     $(div).html(
-                                        '<div class="alert alert-danger pg-panel-message" role="alert">' + t('An error occurred whilst loading the dashboard.') + '</div>'
+                                        '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
                                     );
                                 }
                             });
@@ -209,11 +209,11 @@ function(r, $, pgAdmin, _, Backbone, t) {
                         // If we get a 428, it means the server isn't connected
                         if (xhr.status == 428) {
                             if (_.isUndefined(msg) || _.isNull(msg)) {
-                              msg = t('Please connect to the selected server to view the graph.');
+                              msg = gettext('Please connect to the selected server to view the graph.');
                             }
                             cls = 'info';
                         } else {
-                            msg = t('An error occurred whilst rendering the graph.');
+                            msg = gettext('An error occurred whilst rendering the graph.');
                             cls = 'danger';
                         }
 
@@ -331,11 +331,11 @@ function(r, $, pgAdmin, _, Backbone, t) {
                     // If we get a 428, it means the server isn't connected
                     if (xhr.status == 428) {
                         if (_.isUndefined(msg) || _.isNull(msg)) {
-                            msg = t('Please connect to the selected server to view the table.');
+                            msg = gettext('Please connect to the selected server to view the table.');
                         }
                         cls = 'info';
                     } else {
-                        msg = t('An error occurred whilst rendering the table.');
+                        msg = gettext('An error occurred whilst rendering the table.');
                         cls = 'danger';
                     }
 
@@ -400,37 +400,37 @@ function(r, $, pgAdmin, _, Backbone, t) {
 
             var server_activity_columns = [{
                 name: "pid",
-                label: t('PID'),
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "datname",
-                label: t('Database'),
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "usename",
-                label: t('User'),
+                label: gettext('User'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "application_name",
-                label: t('Application'),
+                label: gettext('Application'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: t('Client'),
+                label: gettext('Client'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "backend_start",
-                label: t('Backend start'),
+                label: gettext('Backend start'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "state",
-                label: t('State'),
+                label: gettext('State'),
                 editable: false,
                 cell: "string"
             }];
@@ -439,7 +439,7 @@ function(r, $, pgAdmin, _, Backbone, t) {
                 server_activity_columns = server_activity_columns.concat(
                 [{
                     name: "waiting",
-                    label: t('Waiting?'),
+                    label: gettext('Waiting?'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -447,12 +447,12 @@ function(r, $, pgAdmin, _, Backbone, t) {
                 server_activity_columns = server_activity_columns.concat(
                 [{
                     name: "wait_event",
-                    label: t('Wait Event'),
+                    label: gettext('Wait Event'),
                     editable: false,
                     cell: "string"
                 },{
                     name: "blocking_pids",
-                    label: t('Blocking PIDs'),
+                    label: gettext('Blocking PIDs'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -460,121 +460,121 @@ function(r, $, pgAdmin, _, Backbone, t) {
 
             var server_locks_columns = [{
                 name: "pid",
-                label: t('PID'),
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "datname",
-                label: t('Database'),
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "locktype",
-                label: t('Lock type'),
+                label: gettext('Lock type'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "relation",
-                label: t('Target relation'),
+                label: gettext('Target relation'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "page",
-                label: t('Page'),
+                label: gettext('Page'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "tuple",
-                label: t('Tuple'),
+                label: gettext('Tuple'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: t('vXID (target)'),
+                label: gettext('vXID (target)'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transactionid",
-                label: t('XID (target)'),
+                label: gettext('XID (target)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "classid",
-                label: t('Class'),
+                label: gettext('Class'),
                 editable: false,
                 cell: "string"
             },{
                 name: "objid",
-                label: t('Object ID'),
+                label: gettext('Object ID'),
                 editable: false,
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: t('vXID (owner)'),
+                label: gettext('vXID (owner)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "mode",
-                label: t('Mode'),
+                label: gettext('Mode'),
                 editable: false,
                 cell: "string"
             },{
                 name: "granted",
-                label: t('Granted?'),
+                label: gettext('Granted?'),
                 editable: false,
                 cell: "string"
             }];
 
             var server_prepared_columns = [{
                 name: "git",
-                label: t('Name'),
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "database",
-                label: t('Database'),
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "Owner",
-                label: t('Owner'),
+                label: gettext('Owner'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transaction",
-                label: t('XID'),
+                label: gettext('XID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "prepared",
-                label: t('Prepared at'),
+                label: gettext('Prepared at'),
                 editable: false,
                 cell: "string"
             }];
 
             var server_config_columns = [{
                 name: "name",
-                label: t('Name'),
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "category",
-                label: t('Category'),
+                label: gettext('Category'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "setting",
-                label: t('Setting'),
+                label: gettext('Setting'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "unit",
-                label: t('Unit'),
+                label: gettext('Unit'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "short_desc",
-                label: t('Description'),
+                label: gettext('Description'),
                 editable: false,
                 cell: "string"
             }];
@@ -677,32 +677,32 @@ function(r, $, pgAdmin, _, Backbone, t) {
 
             var database_activity_columns = [{
                 name: "pid",
-                label: t('PID'),
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "usename",
-                label: t('User'),
+                label: gettext('User'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "application_name",
-                label: t('Application'),
+                label: gettext('Application'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: t('Client'),
+                label: gettext('Client'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "backend_start",
-                label: t('Backend start'),
+                label: gettext('Backend start'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "state",
-                label: t('State'),
+                label: gettext('State'),
                 editable: false,
                 cell: "string"
             }];
@@ -711,7 +711,7 @@ function(r, $, pgAdmin, _, Backbone, t) {
                 database_activity_columns = database_activity_columns.concat(
                 [{
                     name: "waiting",
-                    label: t('Waiting?'),
+                    label: gettext('Waiting?'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -719,12 +719,12 @@ function(r, $, pgAdmin, _, Backbone, t) {
                 database_activity_columns = database_activity_columns.concat(
                 [{
                     name: "wait_event",
-                    label: t('Wait Event'),
+                    label: gettext('Wait Event'),
                     editable: false,
                     cell: "string"
                 },{
                     name: "blocking_pids",
-                    label: t('Blocking PIDs'),
+                    label: gettext('Blocking PIDs'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -732,84 +732,84 @@ function(r, $, pgAdmin, _, Backbone, t) {
 
             var database_locks_columns = [{
                 name: "pid",
-                label: t('PID'),
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "locktype",
-                label: t('Lock type'),
+                label: gettext('Lock type'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "relation",
-                label: t('Target relation'),
+                label: gettext('Target relation'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "page",
-                label: t('Page'),
+                label: gettext('Page'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "tuple",
-                label: t('Tuple'),
+                label: gettext('Tuple'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: t('vXID (target)'),
+                label: gettext('vXID (target)'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transactionid",
-                label: t('XID (target)'),
+                label: gettext('XID (target)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "classid",
-                label: t('Class'),
+                label: gettext('Class'),
                 editable: false,
                 cell: "string"
             },{
                 name: "objid",
-                label: t('Object ID'),
+                label: gettext('Object ID'),
                 editable: false,
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: t('vXID (owner)'),
+                label: gettext('vXID (owner)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "mode",
-                label: t('Mode'),
+                label: gettext('Mode'),
                 editable: false,
                 cell: "string"
             },{
                 name: "granted",
-                label: t('Granted?'),
+                label: gettext('Granted?'),
                 editable: false,
                 cell: "string"
             }];
 
             var database_prepared_columns = [{
                 name: "git",
-                label: t('Name'),
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "Owner",
-                label: t('Owner'),
+                label: gettext('Owner'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transaction",
-                label: t('XID'),
+                label: gettext('XID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "prepared",
-                label: t('Prepared at'),
+                label: gettext('Prepared at'),
                 editable: false,
                 cell: "string"
             }];
