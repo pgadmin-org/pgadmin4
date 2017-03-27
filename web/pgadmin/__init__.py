@@ -462,10 +462,14 @@ def create_app(app_name=None):
     @app.before_request
     def before_request():
         """Login the default user if running in desktop mode"""
+
+        # Check the auth key is valid, if it's set, and we're not in server
+        # mode, and it's not a help file request.
         if not config.SERVER_MODE and app.PGADMIN_KEY != '':
             if (
                 (not 'key' in request.args or request.args['key'] != app.PGADMIN_KEY) and
-                request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY
+                request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY and
+                request.endpoint != 'help.static'
             ):
                 abort(401)
 
