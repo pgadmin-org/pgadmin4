@@ -1,6 +1,6 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'sources/gettext'],
-  function($, alertify, pgAdmin, gettext) {
+  ['jquery', 'alertify', 'pgadmin', 'sources/translate'],
+  function($, alertify, pgAdmin, t) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
@@ -18,7 +18,7 @@ define(
               },
               setup: function() {
                 return {
-                  buttons:[{ text: gettext("OK"), key: 27, className: "btn btn-primary" }],
+                  buttons:[{ text: t("OK"), key: 27, className: "btn btn-primary" }],
                   options: {
                     modal: false,
                     resizable: true,
@@ -41,7 +41,7 @@ define(
         var content = '';
         $.get("{{ url_for('about.index') }}",
             function(data) {
-              alertify.aboutDialog(gettext("About %(appname)s", {appname: "{{ config.APP_NAME }}"}), data).resizeTo(800, 450);
+              alertify.aboutDialog(t("About %(appname)s", {appname: "{{ config.APP_NAME }}"}), data).resizeTo(800, 450);
             });
       }
     };

@@ -7,20 +7,20 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-define(["sources/gettext", "translations"], function (gettext, translations) {
+define(["sources/translate", "translations"], function (translate, translations) {
   describe("translate", function () {
     describe("when there is no translation", function () {
       it("returns the original string", function () {
-        expect(gettext("something to be translated")).toEqual("something to be translated");
+        expect(translate("something to be translated")).toEqual("something to be translated");
       });
 
       describe("when there are substitutions", function () {
         it("interpolates a substitution", function () {
-          expect(gettext("translate text for %(person)s", {"person": "Sarah"})).toEqual("translate text for Sarah")
+          expect(translate("translate text for %(person)s", {"person": "Sarah"})).toEqual("translate text for Sarah")
         });
 
         it("interpolates multiple substitutions", function () {
-          expect(gettext("translate '%(text)s' for %(person)s",
+          expect(translate("translate '%(text)s' for %(person)s",
             {
               "text": "constitution",
               "person": "Sarah"
@@ -38,12 +38,12 @@ define(["sources/gettext", "translations"], function (gettext, translations) {
       });
 
       it("returns the translation", function () {
-        expect(gettext("something to be translated")).toEqual("etwas zum uebersetzen");
+        expect(translate("something to be translated")).toEqual("etwas zum uebersetzen");
       });
 
       describe("when there is a substitution", function () {
         it("interpolates the substitution", function () {
-          expect(gettext("another translation for %(person)s", {"person": "Sarah"}))
+          expect(translate("another translation for %(person)s", {"person": "Sarah"}))
             .toEqual("eine weitere Uebersetzung fuer Sarah");
         });
       });
