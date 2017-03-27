@@ -197,13 +197,14 @@ class _Preference(object):
             pid=self.pid
         ).filter_by(uid=current_user.id).first()
 
+        value = u"{}".format(value)
         if pref is None:
             pref = UserPrefTable(
                 uid=current_user.id, pid=self.pid, value=value
             )
             db.session.add(pref)
         else:
-            pref.value = u"{}".format(value)
+            pref.value = value
         db.session.commit()
 
         return True, None
