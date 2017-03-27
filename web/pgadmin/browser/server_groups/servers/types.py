@@ -45,27 +45,23 @@ class ServerType(object):
 
     @classmethod
     def register_preferences(cls):
-        # Introduce inner function as we need to register the preferences after
-        # we get the user language and its translation.
-        def register_paths():
-            paths = Preferences('paths', _('Paths'))
+        paths = Preferences('paths', _('Paths'))
 
-            for key in cls.registry:
-                st = cls.registry[key]
-                default_path = config.DEFAULT_BINARY_PATHS[st.stype] or ""
+        for key in cls.registry:
+            st = cls.registry[key]
+            default_path = config.DEFAULT_BINARY_PATHS[st.stype] or ""
 
-                st.utility_path = paths.register(
-                    'bin_paths', st.stype + '_bin_dir',
-                    _("{0} Binary Path").format(st.desc),
-                    'text', default_path, category_label=_('Binary paths'),
-                    help_str=_(
-                        "Path to the directory containing the {0} utility"
-                        " programs (pg_dump, pg_restore etc).".format(
-                            st.desc
-                        )
+            st.utility_path = paths.register(
+                'bin_paths', st.stype + '_bin_dir',
+                _("{0} Binary Path").format(st.desc),
+                'text', default_path, category_label=_('Binary paths'),
+                help_str=_(
+                    "Path to the directory containing the {0} utility"
+                    " programs (pg_dump, pg_restore etc).".format(
+                        st.desc
                     )
                 )
-        return register_paths
+            )
 
     @property
     def priority(self):
