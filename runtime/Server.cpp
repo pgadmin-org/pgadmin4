@@ -59,16 +59,19 @@ Server::Server(quint16 port, QString key)
     m_port = port;
     m_key = key;
     m_wcAppName = NULL;
+    m_wcPythonHome = NULL;
 
     // Initialise Python
     Py_NoSiteFlag=1;
     Py_DontWriteBytecodeFlag=1;
 
+    PGA_APP_NAME_UTF8 = PGA_APP_NAME.toUtf8();
+
     // Python3 requires conversion of char  * to wchar_t *, so...
 #ifdef PYTHON2
-    Py_SetProgramName(PGA_APP_NAME.toUtf8().data());
+    Py_SetProgramName(PGA_APP_NAME_UTF8.data());
 #else
-    char *appName = PGA_APP_NAME.toUtf8().data();
+    char *appName = PGA_APP_NAME_UTF8.data();
     const size_t cSize = strlen(appName)+1;
     m_wcAppName = new wchar_t[cSize];
     mbstowcs (m_wcAppName, appName, cSize);
@@ -171,15 +174,16 @@ Server::Server(quint16 port, QString key)
              << "\nPython Home: " << pythonHome;
     if (!pythonHome.isEmpty())
     {
+        pythonHome_utf8 = pythonHome.toUtf8();
 #ifdef PYTHON2
-        Py_SetPythonHome(pythonHome.toUtf8().data());
+        Py_SetPythonHome(pythonHome_utf8.data());
 #else
-        char *python_home = pythonHome.toUtf8().data();
+        char *python_home = pythonHome_utf8.data();
         const size_t cSize = strlen(python_home) + 1;
-        wchar_t* wcPythonHome = new wchar_t[cSize];
+        m_wcPythonHome = new wchar_t[cSize];
         mbstowcs (wcPythonHome, python_home, cSize);
 
-        Py_SetPythonHome(wcPythonHome);
+        Py_SetPythonHome(m_wcPythonHome);
 #endif
     }
 
@@ -207,6 +211,9 @@ Server::~Server()
 {
     if (m_wcAppName)
         delete m_wcAppName;
+
+    if (m_wcPythonHome)
+        delete m_wcPythonHome;
 
     // Shutdown Python
     Py_Finalize();
@@ -269,6 +276,7 @@ void Server::run()
     PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
 
     // Run the app!
+    QByteArray m_appfile_utf8 = m_appfile.toUtf8();
 #ifdef PYTHON2
     /*
      * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
@@ -276,11 +284,11 @@ void Server::run()
      * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
      * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
      */
-    char* n_argv[] = { m_appfile.toUtf8().data() };
+    char* n_argv[] = { m_appfile_utf8.data() };
     PySys_SetArgv(1, n_argv);
 
-    PyObject* PyFileObject = PyFile_FromString(m_appfile.toUtf8().data(), (char *)"r");
-    int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile.toUtf8().data());
+    PyObject* PyFileObject = PyFile_FromString(m_appfile_utf8.data(), (char *)"r");
+    int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile_utf8.data());
     if (ret != 0)
         setError(tr("Failed to launch the application server, server thread exiting."));
 #else
@@ -290,7 +298,7 @@ void Server::run()
      * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
      * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
      */
-    char *appName = m_appfile.toUtf8().data();
+    char *appName = m_appfile_utf8.data();
     const size_t cSize = strlen(appName)+1;
     wchar_t* wcAppName = new wchar_t[cSize];
     mbstowcs (wcAppName, appName, cSize);
@@ -298,8 +306,8 @@ void Server::run()
     PySys_SetArgv(1, n_argv);
 
     int fd = fileno(cp);
-    PyObject* PyFileObject = PyFile_FromFd(fd, m_appfile.toUtf8().data(), (char *)"r", -1, NULL, NULL,NULL,1);
-    if (PyRun_SimpleFile(fdopen(PyObject_AsFileDescriptor(PyFileObject),"r"), m_appfile.toUtf8().data()) != 0)
+    PyObject* PyFileObject = PyFile_FromFd(fd, m_appfile_utf8.data(), (char *)"r", -1, NULL, NULL,NULL,1);
+    if (PyRun_SimpleFile(fdopen(PyObject_AsFileDescriptor(PyFileObject),"r"), m_appfile_utf8.data()) != 0)
         setError(tr("Failed to launch the application server, server thread exiting."));
 #endif
 
