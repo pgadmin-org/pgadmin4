@@ -22,10 +22,6 @@
 // App headers
 #include "Server.h"
 
-#ifndef PYTHON2
-#include <stdlib.h>
-#endif
-
 static void add_to_path(QString &python_path, QString path, bool prepend=false)
 {
     if (!python_path.contains(path))
@@ -185,7 +181,7 @@ Server::Server(quint16 port, QString key)
         char *python_home = pythonHome_utf8.data();
         const size_t cSize = strlen(python_home) + 1;
         m_wcPythonHome = new wchar_t[cSize];
-        mbstowcs (wcPythonHome, python_home, cSize);
+        mbstowcs (m_wcPythonHome, python_home, cSize);
 
         Py_SetPythonHome(m_wcPythonHome);
 #endif
