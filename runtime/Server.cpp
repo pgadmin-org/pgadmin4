@@ -22,6 +22,10 @@
 // App headers
 #include "Server.h"
 
+#ifndef PYTHON2
+#include <stdlib.h>
+#endif
+
 static void add_to_path(QString &python_path, QString path, bool prepend=false)
 {
     if (!python_path.contains(path))
