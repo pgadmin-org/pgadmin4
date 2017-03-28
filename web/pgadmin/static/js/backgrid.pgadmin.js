@@ -144,6 +144,15 @@
           else
             return 1;
         }
+        else {
+          // if descending order, swap left and right
+          if (order === 1) t = l, l = r, r = t;
+
+           // compare as usual
+          if (l === r) return 0;
+          else if (l < r) return -1;
+          return 1;
+        }
       };
     }
   });
