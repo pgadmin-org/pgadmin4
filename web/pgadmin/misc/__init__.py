@@ -29,7 +29,7 @@ class MiscModule(PgAdminModule):
         }, {
             'name': 'snap.svg',
             'path': url_for(
-                'misc.static', filename='explain/js/' + (
+                'misc.static', filename='explain/vendor/snap.svg/' + (
                     'snap.svg' if config.DEBUG else 'snap.svg-min'
                 )),
             'preloaded': False

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-27 02:06+0200\n"
+"POT-Creation-Date: 2017-03-28 15:16-0400\n"
 "PO-Revision-Date: 2017-03-09 18:02+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language-Team: begina.felicysym@wp.eu\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "Wykryto automatycznie instalację %s z folderem danych %s"
 
-#: pgadmin/about/__init__.py:36
+#: pgadmin/about/__init__.py:36 pgadmin/about/templates/about/about.js:44
 #, python-format
 msgid "About %(appname)s"
 msgstr "O aplikacji %(appname)s"
@@ -36,6 +36,19 @@ msgstr "Serwer"
 #: pgadmin/about/__init__.py:66
 msgid "Desktop"
 msgstr "Desktop"
+
+#: pgadmin/about/templates/about/about.js:21
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:179
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:258
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:896
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:922
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:265
+#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:376
+#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:396
+#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:272
+#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:292
+msgid "OK"
+msgstr "OK"
 
 #: pgadmin/about/templates/about/index.html:3
 #: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:202
@@ -335,31 +348,31 @@ msgstr "Należy połączyć z serwerem!"
 msgid "EDB Advanced Server"
 msgstr "Zaawansowany Serwer EDB"
 
-#: pgadmin/browser/server_groups/servers/types.py:51
+#: pgadmin/browser/server_groups/servers/types.py:48
 #: pgadmin/help/__init__.py:84
 msgid "Paths"
 msgstr "Ścieżki"
 
-#: pgadmin/browser/server_groups/servers/types.py:59
+#: pgadmin/browser/server_groups/servers/types.py:56
 msgid "{0} Binary Path"
 msgstr "Ścieżka Binarna {0}"
 
-#: pgadmin/browser/server_groups/servers/types.py:60
+#: pgadmin/browser/server_groups/servers/types.py:57
 msgid "Binary paths"
 msgstr "Ścieżki binarne"
 
-#: pgadmin/browser/server_groups/servers/types.py:63
+#: pgadmin/browser/server_groups/servers/types.py:60
 msgid ""
 "Path to the directory containing the {0} utility programs (pg_dump, "
 "pg_restore etc)."
 msgstr "Ścieżka zawierająca programy narzędziowe {0} (pg_dump, pg_restore itd)."
 
-#: pgadmin/browser/server_groups/servers/types.py:115
+#: pgadmin/browser/server_groups/servers/types.py:111
 #, python-format
 msgid "Could not find the utility for the operation '%s'"
 msgstr "Nie można odnaleźć narzędzia dla operacji '%s'"
 
-#: pgadmin/browser/server_groups/servers/types.py:129
+#: pgadmin/browser/server_groups/servers/types.py:125
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
@@ -535,6 +548,9 @@ msgstr "Rzutowanie..."
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:628
 #: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:38
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:530
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:557
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:797
 msgid "Name"
 msgstr "Nazwa"
 
@@ -725,6 +741,8 @@ msgstr "Wyzwalacz Zdarzeniowy..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/view/js/view.js:109
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:308
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:340
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:540
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:802
 #: pgadmin/tools/backup/templates/backup/js/backup.js:201
 #: pgadmin/tools/restore/templates/restore/js/restore.js:159
 msgid "Owner"
@@ -1196,6 +1214,8 @@ msgstr "Mapowanie Użytkownika..."
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:28
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:413
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:685
 msgid "User"
 msgstr "Użytkownik"
 
@@ -2129,6 +2149,8 @@ msgid "Trigger Functions"
 msgstr "Funkcje Wyzwalaczy"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:44
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:518
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:785
 msgid "Mode"
 msgstr "Tryb"
 
@@ -4294,6 +4316,9 @@ msgstr "Kaskadowe"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:408
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:468
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:535
 msgid "Database"
 msgstr "Baza danych"
 
@@ -5858,18 +5883,6 @@ msgstr "Przenieś obiekty do innej przestrzeni tabel"
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:179
-#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:258
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:896
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:922
-#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:265
-#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:376
-#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:396
-#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:272
-#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:292
-msgid "OK"
-msgstr "OK"
-
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:181
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:416
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:899
@@ -6069,6 +6082,8 @@ msgstr "Połącz z Serwerem"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:428
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:700
 msgid "Backend start"
 msgstr "Start procesu w tle"
 
@@ -6078,6 +6093,8 @@ msgstr "Start procesu w tle"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:40
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:423
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:695
 msgid "Client"
 msgstr "Klient"
 
@@ -6087,6 +6104,8 @@ msgstr "Klient"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:418
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:690
 msgid "Application"
 msgstr "Aplikacja"
 
@@ -6094,6 +6113,8 @@ msgstr "Aplikacja"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:17
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:442
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:714
 msgid "Waiting?"
 msgstr "Oczekiwanie?"
 
@@ -6508,10 +6529,12 @@ msgid "Block I/O statistics refresh rate"
 msgstr "Częstotliwość odświeżania statystyk We/Wy bloków"
 
 #: pgadmin/dashboard/__init__.py:140
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:334
 msgid "Please connect to the selected server to view the table."
 msgstr "Należy połączyć się do wybranego serwera by zobaczyć tabelę."
 
 #: pgadmin/dashboard/__init__.py:145
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:212
 msgid "Please connect to the selected server to view the graph."
 msgstr "Należy połączyć się do wybranego serwera by zobaczyć wykres."
 
@@ -6650,6 +6673,132 @@ msgstr ""
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:69
 msgid "Community Support"
 msgstr "Wsparcie Społeczności"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:44
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:104
+msgid "An error occurred whilst loading the dashboard."
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:216
+msgid "An error occurred whilst rendering the graph."
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:338
+#, fuzzy
+msgid "An error occurred whilst rendering the table."
+msgstr "Wystąpił błąd podczas odczytu opcji narzędzia zapytania"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:403
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:463
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:680
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:735
+#, fuzzy
+msgid "PID"
+msgstr "Oid"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:433
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:705
+#, fuzzy
+msgid "State"
+msgstr "Uruchomione"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:450
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:722
+#, fuzzy
+msgid "Wait Event"
+msgstr "Typ zdarzenia oczekiwania"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:455
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:727
+msgid "Blocking PIDs"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:473
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:740
+#, fuzzy
+msgid "Lock type"
+msgstr "Typ Źródłowy"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:478
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:745
+#, fuzzy
+msgid "Target relation"
+msgstr "Współzależność"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:483
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:750
+msgid "Page"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:488
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:755
+#, fuzzy
+msgid "Tuple"
+msgstr "reguła"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:493
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:760
+msgid "vXID (target)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:498
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:765
+msgid "XID (target)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:503
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:770
+#, fuzzy
+msgid "Class"
+msgstr "Klasa zadania"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:508
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:775
+#, fuzzy
+msgid "Object ID"
+msgstr "Plik obiektu"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:513
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:780
+msgid "vXID (owner)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:523
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:790
+#, fuzzy
+msgid "Granted?"
+msgstr "Utworzono"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:545
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:807
+#, fuzzy
+msgid "XID"
+msgstr "Oid"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:550
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:812
+#, fuzzy
+msgid "Prepared at"
+msgstr "Przygotowane Transakcje"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:562
+#, fuzzy
+msgid "Category"
+msgstr "Typ kategorii"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:567
+#, fuzzy
+msgid "Setting"
+msgstr "Ustawienia przechowywania"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:572
+msgid "Unit"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:577
+#, fuzzy
+msgid "Description"
+msgstr "Sekcje"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/activity.sql:9
 msgid "yes"
@@ -6921,6 +7070,15 @@ msgstr "Wyczyść Układ"
 #: pgadmin/tools/user_management/__init__.py:99
 msgid "This URL can not be called directly."
 msgstr "Ten URL nie może być wywołany bezpośrednio."
+
+#: pgadmin/static/js/selection/clipboard.js:53
+#, fuzzy
+msgid "Error"
+msgstr "Przy błedzie"
+
+#: pgadmin/static/js/selection/clipboard.js:54
+msgid "Oops, unable to copy to clipboard"
+msgstr ""
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -8449,19 +8607,19 @@ msgstr "Niepoprawna wartość dla opcji daty i czasu."
 msgid "Invalid value for an options option."
 msgstr "Niepoprawna wartość dla opcji z opcjami."
 
-#: pgadmin/utils/preferences.py:513
+#: pgadmin/utils/preferences.py:514
 msgid "Could not fine the specified module."
 msgstr "Nie udało się znaleźć wskazanego modułu"
 
-#: pgadmin/utils/preferences.py:518
+#: pgadmin/utils/preferences.py:519
 msgid "Module '{0}' is no longer in use."
 msgstr "Moduł '{0}' nie jest już używany."
 
-#: pgadmin/utils/preferences.py:531
+#: pgadmin/utils/preferences.py:532
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "Moduł '{0}' nie ma kategorii o id '{1}'"
 
-#: pgadmin/utils/preferences.py:545
+#: pgadmin/utils/preferences.py:546
 msgid "Could not find the specified preference."
 msgstr "Nie udało się znaleźć wskazanej preferencji."
 

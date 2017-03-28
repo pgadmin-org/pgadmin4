@@ -1,9 +1,9 @@
 define(
   ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.browser',
-   'sources/translate', 'pgadmin.backform'],
+   'sources/gettext', 'pgadmin.backform'],
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform, pgBrowser, t) {
+  function($, alertify, pgAdmin, _, Backform, pgBrowser, gettext) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -191,8 +191,8 @@ define(
                     return 'input';
                 case 'boolean':
                   p.options = {
-                      onText: t('True'),
-                      offText: t('False'),
+                      onText: gettext('True'),
+                      offText: gettext('False'),
                       onColor: 'success',
                       offColor: 'default',
                       size: 'mini'
@@ -200,8 +200,8 @@ define(
                   return 'switch';
                 case 'node':
                     p.options = {
-                      onText: t('Show'),
-                      offText: t('Hide'),
+                      onText: gettext('Show'),
+                      offText: gettext('Hide'),
                       onColor: 'success',
                       offColor: 'default',
                       size: 'mini'
@@ -333,7 +333,7 @@ define(
                 "<div class='pg-el-xs-3 preferences_tree aciTree'></div>"
               ).append(
                 "<div class='pg-el-xs-9 preferences_content'>" +
-                t('Category is not selected.') +
+                gettext('Category is not selected.') +
                 "</div>"
               );
 
@@ -359,16 +359,16 @@ define(
                     attrs:{name:'dialog_help', type:'button', label: '{{ _('Preferences') }}',
                     url: '{{ url_for('help.static', filename='preferences.html') }}'}
                   },{
-                    text: t('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+                    text: gettext('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                   },{
-                    text: t('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                    text: gettext('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
                 options: {
                   padding: !1,
                   overflow: !1,
-                  title: t('Preferences'),
+                  title: gettext('Preferences'),
                   closableByDimmer: false,
                   modal:false,
                   pinnable: false
@@ -383,7 +383,7 @@ define(
                   return;
                }
 
-              if (e.button.text == t('OK')){
+              if (e.button.text == gettext('OK')){
                 preferences.updateAll();
               }
             },

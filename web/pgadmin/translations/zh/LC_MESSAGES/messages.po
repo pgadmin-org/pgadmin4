@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-27 02:06+0200\n"
+"POT-Creation-Date: 2017-03-28 15:16-0400\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Auto-detected %s installation with the data directory at %s"
 msgstr "自动检测到%s的安装,数据目录在%s "
 
-#: pgadmin/about/__init__.py:36
+#: pgadmin/about/__init__.py:36 pgadmin/about/templates/about/about.js:44
 #, python-format
 msgid "About %(appname)s"
 msgstr "About %(appname)s"
@@ -35,6 +35,19 @@ msgstr "服务器"
 #: pgadmin/about/__init__.py:66
 msgid "Desktop"
 msgstr "桌面"
+
+#: pgadmin/about/templates/about/about.js:21
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:179
+#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:258
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:896
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:922
+#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:265
+#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:376
+#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:396
+#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:272
+#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:292
+msgid "OK"
+msgstr "好"
 
 #: pgadmin/about/templates/about/index.html:3
 #: pgadmin/browser/server_groups/servers/databases/extensions/templates/extensions/js/extensions.js:202
@@ -335,31 +348,31 @@ msgstr "请连接服务器"
 msgid "EDB Advanced Server"
 msgstr "EDB Advanced Server"
 
-#: pgadmin/browser/server_groups/servers/types.py:51
+#: pgadmin/browser/server_groups/servers/types.py:48
 #: pgadmin/help/__init__.py:84
 msgid "Paths"
 msgstr "路径"
 
-#: pgadmin/browser/server_groups/servers/types.py:59
+#: pgadmin/browser/server_groups/servers/types.py:56
 msgid "{0} Binary Path"
 msgstr "{0} 二进制文件路径"
 
-#: pgadmin/browser/server_groups/servers/types.py:60
+#: pgadmin/browser/server_groups/servers/types.py:57
 msgid "Binary paths"
 msgstr "二进制路径"
 
-#: pgadmin/browser/server_groups/servers/types.py:63
+#: pgadmin/browser/server_groups/servers/types.py:60
 msgid ""
 "Path to the directory containing the {0} utility programs (pg_dump, "
 "pg_restore etc)."
 msgstr "包含{0} 实用程序（pg_dump，pg_restore等）的目录的路径。"
 
-#: pgadmin/browser/server_groups/servers/types.py:115
+#: pgadmin/browser/server_groups/servers/types.py:111
 #, python-format
 msgid "Could not find the utility for the operation '%s'"
 msgstr "找不到的该程序的操作 %s"
 
-#: pgadmin/browser/server_groups/servers/types.py:129
+#: pgadmin/browser/server_groups/servers/types.py:125
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
@@ -535,6 +548,9 @@ msgstr "转换中..."
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:628
 #: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:38
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:530
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:557
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:797
 msgid "Name"
 msgstr "名称"
 
@@ -726,6 +742,8 @@ msgstr "事件触发器..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/view/js/view.js:109
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:308
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:340
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:540
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:802
 #: pgadmin/tools/backup/templates/backup/js/backup.js:201
 #: pgadmin/tools/restore/templates/restore/js/restore.js:159
 msgid "Owner"
@@ -1200,6 +1218,8 @@ msgstr "用户映射..."
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:28
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:413
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:685
 msgid "User"
 msgstr "用户"
 
@@ -2114,6 +2134,8 @@ msgid "Trigger Functions"
 msgstr "触发器函数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:44
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:518
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:785
 msgid "Mode"
 msgstr "模式"
 
@@ -4294,6 +4316,9 @@ msgstr "级联"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:408
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:468
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:535
 msgid "Database"
 msgstr "数据库"
 
@@ -5809,18 +5834,6 @@ msgstr "移动对象到另一个表空间"
 msgid "Users"
 msgstr "用户"
 
-#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:179
-#: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:258
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:896
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:922
-#: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:265
-#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:376
-#: pgadmin/tools/import_export/templates/import_export/js/import_export.js:396
-#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:272
-#: pgadmin/tools/maintenance/templates/maintenance/js/maintenance.js:292
-msgid "OK"
-msgstr "好"
-
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:181
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:416
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:899
@@ -6020,6 +6033,8 @@ msgstr "连接到服务器"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:428
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:700
 msgid "Backend start"
 msgstr "Backend start"
 
@@ -6029,6 +6044,8 @@ msgstr "Backend start"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:40
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:423
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:695
 msgid "Client"
 msgstr "Client"
 
@@ -6038,6 +6055,8 @@ msgstr "Client"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:418
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:690
 msgid "Application"
 msgstr "Application"
 
@@ -6045,6 +6064,8 @@ msgstr "Application"
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:17
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:442
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:714
 msgid "Waiting?"
 msgstr "Waiting?"
 
@@ -6456,10 +6477,12 @@ msgid "Block I/O statistics refresh rate"
 msgstr "数据块 I/O 统计刷新率"
 
 #: pgadmin/dashboard/__init__.py:140
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:334
 msgid "Please connect to the selected server to view the table."
 msgstr "请连接到所选的服务器，以便查看表"
 
 #: pgadmin/dashboard/__init__.py:145
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:212
 msgid "Please connect to the selected server to view the graph."
 msgstr "请连接到所选的服务器，以便查看图表"
 
@@ -6595,6 +6618,133 @@ msgstr ""
 #: pgadmin/dashboard/templates/dashboard/welcome_dashboard.html:69
 msgid "Community Support"
 msgstr "社区支持"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:44
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:104
+msgid "An error occurred whilst loading the dashboard."
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:216
+msgid "An error occurred whilst rendering the graph."
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:338
+#, fuzzy
+msgid "An error occurred whilst rendering the table."
+msgstr "获取查询工具选项时发生错误"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:403
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:463
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:680
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:735
+#, fuzzy
+msgid "PID"
+msgstr "Oid"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:433
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:705
+#, fuzzy
+msgid "State"
+msgstr "已启动"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:450
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:722
+#, fuzzy
+msgid "Wait Event"
+msgstr "Wait event type"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:455
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:727
+msgid "Blocking PIDs"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:473
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:740
+#, fuzzy
+msgid "Lock type"
+msgstr "源类型"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:478
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:745
+#, fuzzy
+msgid "Target relation"
+msgstr "相关性"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:483
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:750
+msgid "Page"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:488
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:755
+#, fuzzy
+msgid "Tuple"
+msgstr "规则"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:493
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:760
+msgid "vXID (target)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:498
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:765
+msgid "XID (target)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:503
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:770
+#, fuzzy
+msgid "Class"
+msgstr "任务类"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:508
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:775
+#, fuzzy
+msgid "Object ID"
+msgstr "对象文件"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:513
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:780
+msgid "vXID (owner)"
+msgstr ""
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:523
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:790
+#, fuzzy
+msgid "Granted?"
+msgstr "创建"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:545
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:807
+#, fuzzy
+msgid "XID"
+msgstr "Oid"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:550
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:812
+#, fuzzy
+msgid "Prepared at"
+msgstr "准备事务"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:562
+#, fuzzy
+msgid "Category"
+msgstr "类别类型"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:567
+#, fuzzy
+msgid "Setting"
+msgstr "存储设置"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:572
+#, fuzzy
+msgid "Unit"
+msgstr "没有标题"
+
+#: pgadmin/dashboard/templates/dashboard/js/dashboard.js:577
+#, fuzzy
+msgid "Description"
+msgstr "节数"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/activity.sql:9
 msgid "yes"
@@ -6862,6 +7012,15 @@ msgstr "重置布局"
 #: pgadmin/tools/user_management/__init__.py:99
 msgid "This URL can not be called directly."
 msgstr "此 URL 可以不能直接被调用"
+
+#: pgadmin/static/js/selection/clipboard.js:53
+#, fuzzy
+msgid "Error"
+msgstr "出现错误"
+
+#: pgadmin/static/js/selection/clipboard.js:54
+msgid "Oops, unable to copy to clipboard"
+msgstr ""
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -8353,19 +8512,19 @@ msgstr "datetime 选项的无效值"
 msgid "Invalid value for an options option."
 msgstr "选项配置的无效"
 
-#: pgadmin/utils/preferences.py:513
+#: pgadmin/utils/preferences.py:514
 msgid "Could not fine the specified module."
 msgstr "找不到指定的模块"
 
-#: pgadmin/utils/preferences.py:518
+#: pgadmin/utils/preferences.py:519
 msgid "Module '{0}' is no longer in use."
 msgstr "模块'{0}'不再使用"
 
-#: pgadmin/utils/preferences.py:531
+#: pgadmin/utils/preferences.py:532
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "模块'{0}'没有 id 为'{1}'类别"
 
-#: pgadmin/utils/preferences.py:545
+#: pgadmin/utils/preferences.py:546
 msgid "Could not find the specified preference."
 msgstr "找不到指定的首选项"
 

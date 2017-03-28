@@ -30,12 +30,12 @@ Jinja:
     
 .. code-block:: javascript
 
-    define(['sources/translate', ...], function(t, ...){
+    define(['sources/gettext', ...], function(gettext, ...){
         ...
 
         var alert = alertify.prompt(
-            t('Password Change'),
-            t('New password for %(userName)s', {userName: 'jsmith' }),
+            gettext('Password Change'),
+            gettext('New password for %(userName)s', {userName: 'jsmith' }),
             ...
         )
     })
