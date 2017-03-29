@@ -26,6 +26,8 @@
 #include <QInputDialog>
 #include <QSplashScreen>
 #include <QUuid>
+#include <QNetworkProxyFactory>
+#include <QSslConfiguration>
 #endif
 
 // App headers
@@ -34,6 +36,132 @@
 #include "Server.h"
 
 #include <QTime>
+
+// Implement support for system proxies for Qt 4.x on Linux
+#if defined (Q_OS_LINUX) && QT_VERSION < 0x050000
+
+#include "qnetworkproxy.h"
+
+#include <QtCore/QByteArray>
+#include <QtCore/QUrl>
+
+#ifndef QT_NO_NETWORKPROXY
+
+QT_BEGIN_NAMESPACE
+
+static bool ignoreProxyFor(const QNetworkProxyQuery &query)
+{
+    const QByteArray noProxy = qgetenv("no_proxy").trimmed();
+    if (noProxy.isEmpty())
+        return false;
+
+    const QList<QByteArray> noProxyTokens = noProxy.split(',');
+
+    foreach (const QByteArray &rawToken, noProxyTokens) {
+        QByteArray token = rawToken.trimmed();
+        QString peerHostName = query.peerHostName();
+
+        // Since we use suffix matching, "*" is our 'default' behaviour
+        if (token.startsWith("*"))
+            token = token.mid(1);
+
+        // Harmonize trailing dot notation
+        if (token.endsWith('.') && !peerHostName.endsWith('.'))
+            token = token.left(token.length()-1);
+
+        // We prepend a dot to both values, so that when we do a suffix match,
+        // we don't match "donotmatch.com" with "match.com"
+        if (!token.startsWith('.'))
+            token.prepend('.');
+
+        if (!peerHostName.startsWith('.'))
+            peerHostName.prepend('.');
+
+        if (peerHostName.endsWith(QString::fromLatin1(token)))
+            return true;
+    }
+
+    return false;
+}
+
+static QList<QNetworkProxy> pgAdminSystemProxyForQuery(const QNetworkProxyQuery &query)
+{
+    QList<QNetworkProxy> proxyList;
+
+    if (ignoreProxyFor(query))
+        return proxyList << QNetworkProxy::NoProxy;
+
+    // No need to care about casing here, QUrl lowercases values already
+    const QString queryProtocol = query.protocolTag();
+    QByteArray proxy_env;
+
+    if (queryProtocol == QLatin1String("http"))
+        proxy_env = qgetenv("http_proxy");
+    else if (queryProtocol == QLatin1String("https"))
+        proxy_env = qgetenv("https_proxy");
+    else if (queryProtocol == QLatin1String("ftp"))
+        proxy_env = qgetenv("ftp_proxy");
+    else
+        proxy_env = qgetenv("all_proxy");
+
+    // Fallback to http_proxy is no protocol specific proxy was found
+    if (proxy_env.isEmpty())
+        proxy_env = qgetenv("http_proxy");
+
+    if (!proxy_env.isEmpty()) 
+    {
+        QUrl url = QUrl(QString::fromLocal8Bit(proxy_env));
+	if (url.scheme() == QLatin1String("socks5"))
+	{
+	    QNetworkProxy proxy(QNetworkProxy::Socks5Proxy, url.host(),
+				url.port() ? url.port() : 1080, url.userName(), url.password());
+	    proxyList << proxy;
+	} else if (url.scheme() == QLatin1String("socks5h"))
+	{
+	    QNetworkProxy proxy(QNetworkProxy::Socks5Proxy, url.host(),
+				url.port() ? url.port() : 1080, url.userName(), url.password());
+	    proxy.setCapabilities(QNetworkProxy::HostNameLookupCapability);
+	    proxyList << proxy;
+	} else if ((url.scheme() == QLatin1String("http") || url.scheme() == QLatin1String("https") || url.scheme().isEmpty())
+		   && query.queryType() != QNetworkProxyQuery::UdpSocket
+		   && query.queryType() != QNetworkProxyQuery::TcpServer)
+	{
+	    QNetworkProxy proxy(QNetworkProxy::HttpProxy, url.host(),
+				url.port() ? url.port() : 8080, url.userName(), url.password());
+	    proxyList << proxy;
+	}
+    }
+    if (proxyList.isEmpty())
+        proxyList << QNetworkProxy::NoProxy;
+
+    return proxyList;
+}
+
+class pgAdminSystemConfigurationProxyFactory : public QNetworkProxyFactory
+{
+public:
+    pgAdminSystemConfigurationProxyFactory() : QNetworkProxyFactory() {}
+
+    virtual QList<QNetworkProxy> queryProxy(const QNetworkProxyQuery& query)
+    {
+        QList<QNetworkProxy> proxies = pgAdminSystemProxyForQuery(query);
+
+        // Make sure NoProxy is in the list, so that QTcpServer can work:
+        // it searches for the first proxy that can has the ListeningCapability capability
+        // if none have (as is the case with HTTP proxies), it fails to bind.
+        // NoProxy allows it to fallback to the 'no proxy' case and bind.
+        proxies.append(QNetworkProxy::NoProxy);
+
+        return proxies;
+    }
+};
+
+QT_END_NAMESPACE
+
+#endif // QT_NO_NETWORKINTERFACE
+
+#endif
+
 
 void delay( int milliseconds )
 {
@@ -81,6 +209,20 @@ int main(int argc, char * argv[])
     // Generate a random key to authenticate the client to the server
     QString key = QUuid::createUuid().toString();
     key = key.mid(1, key.length() - 2);
+
+#if defined (Q_OS_LINUX) && QT_VERSION < 0x050000
+    QNetworkProxyFactory::setApplicationProxyFactory(new pgAdminSystemConfigurationProxyFactory);
+    QSslConfiguration sslCfg = QSslConfiguration::defaultConfiguration();
+    QList<QSslCertificate> ca_list = sslCfg.caCertificates();
+    QList<QSslCertificate> ca_new = QSslCertificate::fromData("CaCertificates");
+    ca_list += ca_new;
+
+    sslCfg.setCaCertificates(ca_list);
+    sslCfg.setProtocol(QSsl::AnyProtocol);
+    QSslConfiguration::setDefaultConfiguration(sslCfg);
+#else
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+#endif
 
     // Fire up the webserver
     Server *server;
