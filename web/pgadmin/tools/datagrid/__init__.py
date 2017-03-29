@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.preferences import Preferences
 
 
 class DataGridModule(PgAdminModule):
@@ -135,7 +136,11 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
     # Store the grid dictionary into the session variable
     session['gridData'] = sql_grid_data
 
-    return make_json_response(data={'gridTransId': trans_id})
+    pref = Preferences.module('sqleditor')
+    new_browser_tab = pref.preference('new_browser_tab').get()
+
+    return make_json_response(data={'gridTransId': trans_id,
+                                    'newBrowserTab': new_browser_tab})
 
 
 @blueprint.route('/panel/<int:trans_id>/<is_query_tool>/<path:editor_title>', methods=["GET"])
@@ -171,10 +176,18 @@ def panel(trans_id, is_query_tool, editor_title):
     if "linux" in _platform:
         is_linux_platform = True
 
+    pref = Preferences.module('sqleditor')
+    if pref.preference('new_browser_tab').get():
+        new_browser_tab = 'true'
+    else:
+        new_browser_tab = 'false'
+
     return render_template("datagrid/index.html", _=gettext, uniqueId=trans_id,
-                           is_query_tool=is_query_tool, editor_title=editor_title,
-                           script_type_url=sURL, is_desktop_mode=app.PGADMIN_RUNTIME,
-                           is_linux=is_linux_platform)
+                           is_query_tool=is_query_tool,
+                           editor_title=editor_title, script_type_url=sURL,
+                           is_desktop_mode=app.PGADMIN_RUNTIME,
+                           is_linux=is_linux_platform,
+                           is_new_browser_tab=new_browser_tab)
 
 
 @blueprint.route(
@@ -234,7 +247,11 @@ def initialize_query_tool(sid, did=None):
     # Store the grid dictionary into the session variable
     session['gridData'] = sql_grid_data
 
-    return make_json_response(data={'gridTransId': trans_id})
+    pref = Preferences.module('sqleditor')
+    new_browser_tab = pref.preference('new_browser_tab').get()
+
+    return make_json_response(data={'gridTransId': trans_id,
+                                    'newBrowserTab': new_browser_tab})
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["GET"])

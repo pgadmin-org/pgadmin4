@@ -788,14 +788,14 @@ class ServerNode(PGChildNodeView):
             )
 
         if not status:
+            if hasattr(str, 'decode'):
+                errmsg = errmsg.decode('utf-8')
+
             current_app.logger.error(
                 "Could not connected to server(#{0}) - '{1}'.\nError: {2}".format(
                     server.id, server.name, errmsg
                 )
             )
-
-            if hasattr(str, 'decode'):
-                errmsg = errmsg.decode('utf-8')
 
             return make_json_response(
                 success=0,

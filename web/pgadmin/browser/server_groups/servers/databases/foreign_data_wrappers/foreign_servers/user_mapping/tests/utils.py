@@ -1,16 +1,18 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
+##########################################################################
+
 from __future__ import print_function
+
 import sys
 import traceback
 
-from regression.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection
 
 
 def create_user_mapping(server, db_name, fsrv_name):

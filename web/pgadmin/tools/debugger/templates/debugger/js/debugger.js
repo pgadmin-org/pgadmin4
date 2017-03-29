@@ -241,14 +241,26 @@ define(
           success: function(res) {
             var url = "{{ url_for('debugger.index') }}" + "direct/" + res.data.debuggerTransId;
 
-            pgBrowser.Events.once(
-              'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {
-              frame.openURL(url);
-            });
+            if (res.data.newBrowserTab) {
+              var newWin = window.open(url, '_blank');
 
-            // Create the debugger panel as per the data received from user input dialog.
-            var dashboardPanel = pgBrowser.docker.findPanels(
-              'dashboard'
+              // Listen on the window closed event.
+              newWin.addEventListener("unload", function(e){
+                var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
+                $.ajax({
+                  url: closeUrl,
+                  method: 'GET'
+                });
+              }, false);
+            } else {
+              pgBrowser.Events.once(
+                'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {
+                frame.openURL(url);
+              });
+
+              // Create the debugger panel as per the data received from user input dialog.
+              var dashboardPanel = pgBrowser.docker.findPanels(
+                'dashboard'
               ),
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
@@ -264,12 +276,13 @@ define(
                   method: 'GET'
                 });
               });
-            },
-            error: function(e) {
-              Alertify.alert(
-                'Debugger target Initialize Error'
-              );
             }
+          },
+          error: function(e) {
+            Alertify.alert(
+              'Debugger target initialization error'
+            );
+          }
         });
       },
 
@@ -331,29 +344,42 @@ define(
 
                   var url = "{{ url_for('debugger.index') }}" + "direct/" + res.data.debuggerTransId;
 
-                  pgBrowser.Events.once(
-                    'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {
-                    frame.openURL(url);
-                  });
+                  if (res.data.newBrowserTab) {
+                    var newWin = window.open(url, '_blank');
 
-                  // Create the debugger panel as per the data received from user input dialog.
-                  var dashboardPanel = pgBrowser.docker.findPanels(
-                    'dashboard'
-                    ),
-                    panel = pgBrowser.docker.addPanel(
-                      'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-                      );
-
-                  panel.focus();
-
-                  // Register Panel Closed event
-                  panel.on(wcDocker.EVENT.CLOSED, function() {
-                    var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
-                    $.ajax({
-                      url: closeUrl,
-                      method: 'GET'
+                    // Listen on the window closed event.
+                    newWin.addEventListener("unload", function(e){
+                      var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
+                      $.ajax({
+                        url: closeUrl,
+                        method: 'GET'
+                      });
+                    }, false);
+                  } else {
+                    pgBrowser.Events.once(
+                      'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {
+                      frame.openURL(url);
                     });
-                  });
+
+                    // Create the debugger panel as per the data received from user input dialog.
+                    var dashboardPanel = pgBrowser.docker.findPanels(
+                      'dashboard'
+                      ),
+                      panel = pgBrowser.docker.addPanel(
+                        'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
+                        );
+
+                    panel.focus();
+
+                    // Register Panel Closed event
+                    panel.on(wcDocker.EVENT.CLOSED, function() {
+                      var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
+                      $.ajax({
+                        url: closeUrl,
+                        method: 'GET'
+                      });
+                    });
+                  }
                 },
                 error: function(e) {
                   Alertify.alert(

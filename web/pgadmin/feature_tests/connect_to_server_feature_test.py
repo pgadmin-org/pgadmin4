@@ -1,17 +1,17 @@
-#############################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-##############################################################
+##########################################################################
 
 from selenium.webdriver import ActionChains
 
 import config as app_config
-from regression import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from regression.python_test_utils import test_utils
 
 
 class ConnectsToServerFeatureTest(BaseFeatureTest):

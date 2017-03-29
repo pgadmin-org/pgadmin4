@@ -9,7 +9,7 @@ define(["translations"], function (translations) {
    * @param {String} text
    * @param {Object} substitutions
    */
-  return function translate(text, substitutions) {
+  return function gettext(text, substitutions) {
 
     var rawTranslation = translations[text] ? translations[text] : text;
 

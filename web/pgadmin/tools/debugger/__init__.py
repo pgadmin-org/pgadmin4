@@ -25,6 +25,7 @@ from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
+from pgadmin.utils.preferences import Preferences
 
 # Constants
 ASYNC_OK = 1
@@ -42,6 +43,7 @@ class DebuggerModule(PgAdminModule):
       - Method is used to load the required javascript files for debugger module
 
     """
+    LABEL = gettext("Debugger")
 
     def get_own_javascripts(self):
         scripts = list()
@@ -58,6 +60,14 @@ class DebuggerModule(PgAdminModule):
 
         return scripts
 
+    def register_preferences(self):
+        self.open_in_new_tab = self.preference.register(
+            'display', 'debugger_new_browser_tab',
+            gettext("Open in New Browser Tab"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, the Debugger '
+                             'will be opened in a new browser tab.')
+        )
 
 blueprint = DebuggerModule(MODULE_NAME, __name__)
 
@@ -231,12 +241,11 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     else:
         function_data = session['funcData']
 
-    data = {}
-    data['name'] = r_set['rows'][0]['proargnames']
-    data['type'] = r_set['rows'][0]['proargtypenames']
-    data['use_default'] = r_set['rows'][0]['pronargdefaults']
-    data['default_value'] = r_set['rows'][0]['proargdefaults']
-    data['require_input'] = True
+    data = {'name': r_set['rows'][0]['proargnames'],
+            'type': r_set['rows'][0]['proargtypenames'],
+            'use_default': r_set['rows'][0]['pronargdefaults'],
+            'default_value': r_set['rows'][0]['proargdefaults'],
+            'require_input': True}
 
     # Below will check do we really required for the user input arguments and show input dialog
     if not r_set['rows'][0]['proargtypenames']:
@@ -317,7 +326,7 @@ def direct_new(trans_id):
     return render_template(
         "debugger/direct.html",
         _=gettext,
-        function_name='test',
+        function_name=obj['function_name'],
         uniqueId=trans_id,
         debug_type=debug_type,
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
@@ -435,6 +444,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
         'database_id': did,
         'schema_id': scid,
         'function_id': func_id,
+        'function_name': session['funcData']['name'],
         'debug_type': debug_type,
         'debugger_version': debugger_version,
         'frame_id': 0,
@@ -478,7 +488,13 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     # Delete the 'funcData' session variables as it is not used now as target is initialized
     del session['funcData']
 
-    return make_json_response(data={'status': status, 'debuggerTransId': trans_id})
+    pref = Preferences.module('debugger')
+    new_browser_tab = pref.preference('debugger_new_browser_tab').get()
+
+
+    return make_json_response(data={'status': status,
+                                    'debuggerTransId': trans_id,
+                                    'newBrowserTab': new_browser_tab})
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["GET"])
@@ -890,7 +906,7 @@ def messages(trans_id):
             # and attach listened to that port number
             offset = notify[0].find('PLDBGBREAK')
             str_len = len('PLDBGBREAK')
-            str_len = str_len + 1
+            str_len += 1
             tmpOffset = 0
             tmpFlag = False
 
@@ -898,9 +914,9 @@ def messages(trans_id):
                 status = 'Success'
                 tmpFlag = True
                 port_number = port_number + notify[0][offset + str_len + tmpOffset]
-                tmpOffset = tmpOffset + 1
+                tmpOffset += 1
 
-            if tmpFlag == False:
+            if not tmpFlag:
                 status = 'Busy'
         else:
             status = 'Busy'
@@ -1334,6 +1350,45 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
     return make_json_response(data={'status': True, 'result': 'Success'})
 
+def convert_data_to_dict(conn, result):
+    """
+    This function helps us to convert result set into dict
+
+    Args:
+        conn: Connection object
+        result: 2d array result set
+
+    Returns:
+        Converted dict data
+    """
+    columns = []
+    col_info = conn.get_column_info()
+    # Check column info is available or not
+    if col_info is not None and len(col_info) > 0:
+        for col in col_info:
+            items = list(col.items())
+            column = dict()
+            column['name'] = items[0][1]
+            column['type_code'] = items[1][1]
+            columns.append(column)
+
+    # We need to convert result from 2D array to dict for BackGrid
+    # BackGrid do not support for 2D array result as it it Backbone Model based grid
+    # This Conversion is not an overhead as most of the time
+    # result will be smaller
+    _tmp_result = []
+    for row in result:
+        temp = dict()
+        count = 0
+        for item in row:
+            temp[columns[count]['name']] = item
+            count += 1
+        _tmp_result.append(temp)
+    # Replace 2d array with dict result
+    result = _tmp_result
+
+    return columns, result
+
 
 @blueprint.route('/poll_end_execution_result/<int:trans_id>/', methods=["GET"])
 @login_required
@@ -1370,7 +1425,7 @@ def poll_end_execution_result(trans_id):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
                 additional_msgs = "<br>".join(additional_msgs)
                 if statusmsg:
                     statusmsg = additional_msgs + "<br>" + statusmsg
@@ -1388,38 +1443,14 @@ def poll_end_execution_result(trans_id):
                 status = 'Success'
                 additional_msgs = conn.messages()
                 if len(additional_msgs) > 0:
-                    additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                    additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
                     additional_msgs = "<br>".join(additional_msgs)
                     if statusmsg:
                         statusmsg = additional_msgs + "<br>" + statusmsg
                     else:
                         statusmsg = additional_msgs
 
-                columns = []
-                col_info = conn.get_column_info()
-                # Check column info is available or not
-                if col_info is not None and len(col_info) > 0:
-                    for col in col_info:
-                        items = list(col.items())
-                        column = dict()
-                        column['name'] = items[0][1]
-                        column['type_code'] = items[1][1]
-                        columns.append(column)
-
-                # We need to convert result from 2D array to dict for BackGrid
-                # BackGrid do not support for 2D array result as it it Backbone Model based grid
-                # This Conversion is not an overhead as most of the time
-                # result will be smaller
-                _tmp_result = []
-                for row in result:
-                    temp = dict()
-                    count = 0
-                    for item in row:
-                        temp[columns[count]['name']] = item
-                        count += 1
-                    _tmp_result.append(temp)
-                # Replace 2d array with dict result
-                result = _tmp_result
+                columns, result = convert_data_to_dict(conn, result)
 
                 return make_json_response(success=1, info=gettext("Execution Completed."),
                                           data={'status': status, 'result': result,
@@ -1472,6 +1503,7 @@ def poll_result(trans_id):
         status, result = conn.poll()
         if status == ASYNC_OK and result is not None:
             status = 'Success'
+            columns, result = convert_data_to_dict(conn, result)
         else:
             status = 'Busy'
     else:

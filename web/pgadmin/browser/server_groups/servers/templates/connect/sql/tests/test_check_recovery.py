@@ -1,7 +1,7 @@
 import os
 
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils
+from regression.python_test_utils import test_utils
 
 
 class TestCheckRecovery(BaseTestGenerator):

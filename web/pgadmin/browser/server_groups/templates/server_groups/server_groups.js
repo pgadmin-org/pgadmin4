@@ -32,10 +32,10 @@ function($, _, pgAdmin, Backbone) {
         },
         schema: [
           {
-            id: 'id', label: 'ID', type: 'int', group: null,
+            id: 'id', label: '{{ _('ID') }}', type: 'int', group: null,
             mode: ['properties']
           },{
-            id: 'name', label:'Name', type: 'text', group: null,
+            id: 'name', label:'{{ _('Name') }}', type: 'text', group: null,
             mode: ['properties', 'edit', 'create']
           }
         ],

@@ -1,21 +1,22 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
-import uuid
-import json
+##########################################################################
 
-from regression import test_utils as utils
-from regression import parent_node_dict
-from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.databases.tests import utils as \
-    database_utils
+import json
+import uuid
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
+from pgadmin.browser.server_groups.servers.databases.tests import utils as \
+    database_utils
+from pgadmin.utils.route import BaseTestGenerator
+from regression import parent_node_dict
+from regression.python_test_utils import test_utils as utils
 
 
 class CollationAddTestCase(BaseTestGenerator):

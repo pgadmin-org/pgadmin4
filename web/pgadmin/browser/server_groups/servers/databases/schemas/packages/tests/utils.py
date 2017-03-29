@@ -1,17 +1,18 @@
-# ##########################################################################
+##########################################################################
 #
-# #pgAdmin 4 - PostgreSQL Tools
+# pgAdmin 4 - PostgreSQL Tools
 #
-# #Copyright (C) 2013 - 2017, The pgAdmin Development Team
-# #This software is released under the PostgreSQL Licence
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
 #
-# ##########################################################################
+##########################################################################
 
 from __future__ import print_function
-import traceback
-import sys
 
-from regression import test_utils as utils
+import sys
+import traceback
+
+from regression.python_test_utils import test_utils as utils
 
 
 def create_package(server, db_name, schema_name, pkg_name, proc_name):

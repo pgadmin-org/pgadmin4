@@ -369,9 +369,7 @@ class FtsDictionaryView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("""
-                Could not find the FTS Dictionary node in the database node.
-                """))
+            return gone(_("Could not find the FTS Dictionary node in the database node."))
 
         if res['rows'][0]['options'] is not None:
             res['rows'][0]['options'] = self.tokenize_options(res['rows'][0]['options'])
@@ -612,9 +610,7 @@ class FtsDictionaryView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(_("""
-                    Could not find the FTS Dictionary node.
-                """))
+                return gone(_("Could not find the FTS Dictionary node."))
 
             old_data = res['rows'][0]
 

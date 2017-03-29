@@ -1,24 +1,26 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
-from __future__ import print_function
-import uuid
-import json
+##########################################################################
 
-from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
+from __future__ import print_function
+
+import json
+import uuid
+
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
     utils as extension_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.tests \
     import utils as fdw_utils
+from pgadmin.browser.server_groups.servers.databases.tests import \
+    utils as database_utils
+from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 
 class ForeignServerAddTestCase(BaseTestGenerator):

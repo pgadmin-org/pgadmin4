@@ -14,7 +14,7 @@ import os, sys, time
 from collections import defaultdict
 from importlib import import_module
 
-from flask import Flask, abort, request, current_app
+from flask import Flask, abort, request, current_app, session
 from flask_babel import Babel, gettext
 from flask_htmlmin import HTMLMIN
 from flask_login import user_logged_in
@@ -28,6 +28,8 @@ from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from pgadmin.utils.session import create_session_interface
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
+
+from pgadmin.utils.preferences import Preferences
 
 from pgadmin.model import db, Role, Server, ServerGroup, User, Version, Keys
 
@@ -189,8 +191,29 @@ def create_app(app_name=None):
 
     @babel.localeselector
     def get_locale():
-        """Get the best language for the user."""
-        language = request.accept_languages.best_match(config.LANGUAGES.keys())
+        """Get the language for the user."""
+        language = 'en'
+        if config.SERVER_MODE is False:
+            # Get the user language preference from the miscellaneous module
+            misc_preference = Preferences.module('miscellaneous', False)
+            if misc_preference:
+                user_languages = misc_preference.preference(
+                    'user_language'
+                )
+                if user_languages:
+                    language = user_languages.get() or language
+        else:
+            # If language is available in get request then return the same
+            # otherwise check the session or cookie
+            data = request.form
+            if 'language' in data:
+                language = data['language'] or language
+                setattr(session, 'PGADMIN_LANGUAGE', language)
+            elif hasattr(session, 'PGADMIN_LANGUAGE'):
+                language = getattr(session, 'PGADMIN_LANGUAGE', language)
+            elif hasattr(request.cookies, 'PGADMIN_LANGUAGE'):
+                language = getattr(request.cookies, 'PGADMIN_LANGUAGE', language)
+
         return language
 
     ##########################################################################
@@ -268,6 +291,27 @@ def create_app(app_name=None):
     # Load all available server drivers
     ##########################################################################
     driver.init_app(app)
+
+    ##########################################################################
+    # Register language to the preferences after login
+    ##########################################################################
+    @user_logged_in.connect_via(app)
+    def register_language(sender, user):
+        # After logged in, set the language in the preferences if we get from
+        # the login page
+        data = request.form
+        if 'language' in data:
+            language = data['language']
+
+            # Set the user language preference
+            misc_preference = Preferences.module('miscellaneous')
+            user_languages = misc_preference.preference(
+                'user_language'
+            )
+
+            if user_languages and language:
+                language = user_languages.set(language)
+
 
     ##########################################################################
     # Register any local servers we can discover
@@ -418,10 +462,14 @@ def create_app(app_name=None):
     @app.before_request
     def before_request():
         """Login the default user if running in desktop mode"""
+
+        # Check the auth key is valid, if it's set, and we're not in server
+        # mode, and it's not a help file request.
         if not config.SERVER_MODE and app.PGADMIN_KEY != '':
             if (
                 (not 'key' in request.args or request.args['key'] != app.PGADMIN_KEY) and
-                request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY
+                request.cookies.get('PGADMIN_KEY') != app.PGADMIN_KEY and
+                request.endpoint != 'help.static'
             ):
                 abort(401)
 

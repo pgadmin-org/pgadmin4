@@ -1,16 +1,17 @@
-# ##########################################################################
+##########################################################################
 #
-# #pgAdmin 4 - PostgreSQL Tools
+# pgAdmin 4 - PostgreSQL Tools
 #
-# #Copyright (C) 2013 - 2017, The pgAdmin Development Team
-# #This software is released under the PostgreSQL Licence
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
 #
-# ##########################################################################
+##########################################################################
+
 import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.tests import utils as server_utils
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 DATABASE_CONNECT_URL = '/browser/database/connect/'
 

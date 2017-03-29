@@ -496,7 +496,7 @@ class TableCommand(GridCommand):
                         for k, v in row.items():
                             # Set primary key with label & delete index based mapped key
                             try:
-                                row[keys[int(k)]] = v
+                                row[changed_data['columns'][int(k)]['name']] = v
                             except ValueError:
                                 continue
                             del row[k]

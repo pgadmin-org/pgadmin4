@@ -1,11 +1,11 @@
-#############################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-##############################################################
+##########################################################################
 
 """ This file collect all modules/files present in tests directory and add
 them to TestSuite. """
@@ -79,7 +79,7 @@ exec (open("setup.py").read())
 from pgadmin.model import SCHEMA_VERSION
 
 # Delay the import test_utils as it needs updated config.SQLITE_PATH
-from regression import test_utils
+from regression.python_test_utils import test_utils
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
@@ -346,7 +346,7 @@ if __name__ == '__main__':
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
 
-    if failure == True:
+    if failure:
         sys.exit(1)
     else:
         sys.exit(0)

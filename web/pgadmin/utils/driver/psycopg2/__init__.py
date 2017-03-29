@@ -56,8 +56,8 @@ psycopg2.extensions.register_type(
         (
             # To cast bytea and interval type
             17, 1186,
-            # to cast int4range, int8range, numrange tsrange, tstzrange
-            3904,3926, 3906, 3908, 3910, 3912,
+            # to cast int4range, int8range, numrange tsrange, tstzrange, daterange
+            3904,3926, 3906, 3908, 3910, 3912, 3913,
             # date, timestamp, timestamptz, bigint, double precision
             1700, 1082, 1114, 1184, 20, 701
          ),
@@ -118,7 +118,7 @@ class Connection(BaseConnection):
     Methods:
     -------
     * connect(**kwargs)
-      - Connect the PostgreSQL/Postgres Plus servers using the psycopg2 driver
+      - Connect the PostgreSQL/EDB Postgres Advanced Server using the psycopg2 driver
 
     * execute_scalar(query, params, formatted_exception_msg)
       - Execute the given query and returns single datum result
@@ -1082,7 +1082,7 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_WRITE:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([], [conn.fileno()], [])
+            timeout_status = select.select([], [conn.fileno()], [], 0)
             if timeout_status == ([], [], []):
                 return self.ASYNC_WRITE_TIMEOUT
 
@@ -1095,7 +1095,7 @@ Failed to reset the connection to the server due to following error:
         elif state == psycopg2.extensions.POLL_READ:
             # Wait for the given time and then check the return status
             # If three empty lists are returned then the time-out is reached.
-            timeout_status = select.select([conn.fileno()], [], [])
+            timeout_status = select.select([conn.fileno()], [], [], 0)
             if timeout_status == ([], [], []):
                 return self.ASYNC_READ_TIMEOUT
 
@@ -1181,7 +1181,7 @@ Failed to reset the connection to the server due to following error:
                 pos = 0
                 for col in self.column_info:
                     col['pos'] = pos
-                    pos = pos + 1
+                    pos += 1
 
             self.row_count = cur.rowcount
 
@@ -1576,7 +1576,8 @@ WHERE db.oid = {0}""".format(did))
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
-                if hasattr(str, 'decode'):
+                if hasattr(str, 'decode') and \
+                        not isinstance(database, unicode):
                     database = database.decode('utf-8')
                 if database is None:
                     return False
@@ -1664,7 +1665,7 @@ class Driver(BaseDriver):
 
     This driver acts as a wrapper around psycopg2 connection driver
     implementation. We will be using psycopg2 for makeing connection with
-    the PostgreSQL/Postgres Plus Advanced Server (EnterpriseDB).
+    the PostgreSQL/EDB Postgres Advanced Server (EnterpriseDB).
 
     Properties:
     ----------
@@ -1838,10 +1839,7 @@ class Driver(BaseDriver):
         # Returns in bytes, we need to convert it in string
         if isinstance(res, bytes):
             try:
-                try:
-                    res = res.decode()
-                except UnicodeDecodeError:
-                    res = res.decode(sys.getfilesystemencoding())
+                res = res.decode()
             except UnicodeDecodeError:
                 res = res.decode('utf-8')
 

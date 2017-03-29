@@ -25,7 +25,7 @@ class PGChildModule(object):
     class PGChildModule
 
     This is a base class for children/grand-children of PostgreSQL, and
-    all Postgres Plus version (i.e. Postgres Plus Advanced Server, Green Plum,
+    all EDB Postgres Advanced Server version (i.e. EDB Postgres Advanced Server, Green Plum,
     etc).
 
     Method:

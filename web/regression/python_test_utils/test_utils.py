@@ -1,11 +1,12 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
+##########################################################################
+
 from __future__ import print_function
 import traceback
 import os
@@ -144,7 +145,7 @@ def create_table(server, db_name, table_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE TABLE "%s" (name VARCHAR, value NUMERIC)''' % table_name)
+        pg_cursor.execute('''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
         pg_cursor.execute('''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
@@ -163,7 +164,7 @@ def create_table(server, db_name, table_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE TABLE "%s" (name VARCHAR, value NUMERIC)''' % table_name)
+        pg_cursor.execute('''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
         pg_cursor.execute('''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
@@ -176,11 +177,16 @@ def drop_database(connection, database_name):
     """This function used to drop the database"""
     if database_name not in ["postgres", "template1", "template0"]:
         pg_cursor = connection.cursor()
-
-        pg_cursor.execute(
-            "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
-            "WHERE pg_stat_activity.datname ='%s' and pid <> pg_backend_pid();" % database_name
-                          )
+        if connection.server_version >= 90100:
+            pg_cursor.execute(
+                "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
+                "WHERE pg_stat_activity.datname ='%s' AND pid <> pg_backend_pid();" % database_name
+                              )
+        else:
+            pg_cursor.execute(
+                "SELECT pg_terminate_backend(procpid) FROM pg_stat_activity " \
+                "WHERE pg_stat_activity.datname ='%s' AND current_query='<IDLE>';" % database_name
+            )
         pg_cursor.execute("SELECT * FROM pg_database db WHERE"
                           " db.datname='%s'" % database_name)
         if pg_cursor.fetchall():
@@ -423,7 +429,6 @@ class Database:
         connection.cursor().execute(...)
 
     """
-
     def __init__(self, server):
         self.name = None
         self.server = server

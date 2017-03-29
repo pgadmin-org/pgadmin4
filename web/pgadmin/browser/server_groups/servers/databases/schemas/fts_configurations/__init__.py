@@ -627,9 +627,7 @@ class FtsConfigurationView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(_("""
-                    Could not find the FTS Configuration node.
-                """))
+                return gone(_("Could not find the FTS Configuration node."))
 
             old_data = res['rows'][0]
 

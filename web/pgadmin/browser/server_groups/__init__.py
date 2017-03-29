@@ -6,6 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
 """Defines views for management of server groups"""
 
 import simplejson as json

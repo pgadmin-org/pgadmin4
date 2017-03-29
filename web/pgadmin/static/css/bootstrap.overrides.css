@@ -366,6 +366,11 @@ iframe {
     vertical-align: middle;
 }
 
+button.btn:disabled {
+    pointer-events: auto;
+    cursor: default;
+}
+
 .pg-prop-btn-group {
   background-color: #D2D2D2;
   border: 2px solid #A9A9A9;

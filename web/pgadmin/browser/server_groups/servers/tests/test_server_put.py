@@ -1,15 +1,16 @@
-# ##########################################################################
+##########################################################################
 #
-# #pgAdmin 4 - PostgreSQL Tools
+# pgAdmin 4 - PostgreSQL Tools
 #
-# #Copyright (C) 2013 - 2017, The pgAdmin Development Team
-# #This software is released under the PostgreSQL Licence
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
 #
-# ##########################################################################
+##########################################################################
 
 import json
+
 from pgadmin.utils.route import BaseTestGenerator
-from regression import test_utils as utils
+from regression.python_test_utils import test_utils as utils
 
 
 class ServerUpdateTestCase(BaseTestGenerator):

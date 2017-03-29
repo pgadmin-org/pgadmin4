@@ -1,17 +1,19 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
-from __future__ import print_function
-import sys
-import uuid
-import traceback
+##########################################################################
 
-from regression import test_utils as utils
+from __future__ import print_function
+
+import sys
+import traceback
+import uuid
+
+from regression.python_test_utils import test_utils as utils
 
 
 def get_schema_config_data(db_user):

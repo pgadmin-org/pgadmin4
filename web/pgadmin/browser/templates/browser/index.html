@@ -73,25 +73,27 @@ require.onResourceLoad = function (context, map, depMaps) {
   opacity: 0.6;
   z-index: 1056;
 }
-#pg-spinner .pg-sp-icon {
+#pg-spinner .pg-sp-content {
   position: absolute;
-  font-size: 50px;
-  color: #ccc;
+  width: 100%;
   top: 40%;
-  left: 48.8%;
+}
+#pg-spinner .pg-sp-icon {
+  font-size: 50px;
+  text-align: center;
+  color: #ccc;
 }
 #pg-spinner .pg-sp-text {
-  top: 46%;
-  color: #fff;
-  width: 100%;
   font-size: 20px;
-  position: absolute;
   text-align: center;
+  color: #fff;
 }
 </style>
 <div id="pg-spinner">
-  <span class="pg-sp-icon fa fa-spinner fa-pulse"></span>
-  <span class="pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</span>
+  <div class="pg-sp-content">
+    <div class="row"><div class="col-xs-12 pg-sp-icon fa fa-spinner fa-pulse"></div></div>
+    <div class="row"><div class="col-xs-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
+  </div>
 </div>
 <nav class="navbar-inverse navbar-fixed-top pg-navbar">
     <div class="container-fluid">

@@ -1,4 +1,4 @@
-define(['sources/translate', 'alertify'], function (t, alertify) {
+define(['sources/gettext', 'alertify'], function (gettext, alertify) {
   var clipboard = {
     copyTextToClipboard: function (text) {
       var textArea = document.createElement("textarea");
@@ -50,8 +50,8 @@ define(['sources/translate', 'alertify'], function (t, alertify) {
         document.execCommand('copy');
       } catch (err) {
         alertify.alert(
-          t('Error'),
-          t('Oops, unable to copy to clipboard'));
+          gettext('Error'),
+          gettext('Oops, unable to copy to clipboard'));
       }
 
       document.body.removeChild(textArea);

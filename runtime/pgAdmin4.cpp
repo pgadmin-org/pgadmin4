@@ -16,6 +16,8 @@
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #else
 #include <QApplication>
 #include <QDebug>
@@ -66,8 +68,8 @@ int main(int argc, char * argv[])
     // Hence - putting this code in a code block so the scope of the socket
     // variable vanishes to make that socket available.
     {
-        QUdpSocket socket;
-        socket.bind(0, QUdpSocket::ShareAddress);
+        QTcpSocket socket;
+        socket.bind(0, QTcpSocket::ShareAddress);
         port = socket.localPort();
     }
 

@@ -1,16 +1,18 @@
-# ##########################################################################
+##########################################################################
 #
-# #pgAdmin 4 - PostgreSQL Tools
+# pgAdmin 4 - PostgreSQL Tools
 #
-# #Copyright (C) 2013 - 2017, The pgAdmin Development Team
-# #This software is released under the PostgreSQL Licence
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
 #
-# ##########################################################################
-from __future__ import print_function
-import traceback
-import sys
+##########################################################################
 
-from regression import test_utils as utils
+from __future__ import print_function
+
+import sys
+import traceback
+
+from regression.python_test_utils import test_utils as utils
 
 
 def create_trigger(server, db_name, schema_name, table_name, trigger_name,

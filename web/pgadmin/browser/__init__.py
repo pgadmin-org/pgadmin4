@@ -11,7 +11,8 @@ import json
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import six
-from flask import current_app, render_template, url_for, make_response, flash
+from flask import current_app, render_template, url_for, make_response, flash,\
+    Response, request
 from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
@@ -473,13 +474,26 @@ def index():
 
                 flash(msg, 'warning')
 
-    return render_template(
+    response = Response(render_template(
         MODULE_NAME + "/index.html",
         username=current_user.email,
         is_admin=current_user.has_role("Administrator"),
         _=gettext
-    )
+    ))
 
+    # Set the language cookie after login, so next time the user will have that
+    # same option at the login time.
+    misc_preference = Preferences.module('miscellaneous')
+    user_languages = misc_preference.preference(
+        'user_language'
+    )
+    language = 'en'
+    if user_languages:
+        language = user_languages.get() or 'en'
+
+    response.set_cookie("PGADMIN_LANGUAGE", language)
+
+    return response
 
 @blueprint.route("/js/browser.js")
 @login_required

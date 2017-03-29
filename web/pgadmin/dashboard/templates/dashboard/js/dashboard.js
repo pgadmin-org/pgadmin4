@@ -1,8 +1,8 @@
 define([
-    'require', 'jquery', 'pgadmin', 'underscore', 'backbone', 'flotr2', 'wcdocker',
+    'require', 'jquery', 'pgadmin', 'underscore', 'backbone', 'sources/gettext', 'flotr2', 'wcdocker',
     'pgadmin.browser', 'bootstrap'
     ],
-function(r, $, pgAdmin, _, Backbone) {
+function(r, $, pgAdmin, _, Backbone, gettext) {
 
   var wcDocker = window.wcDocker,
   pgBrowser = pgAdmin.Browser;
@@ -41,7 +41,7 @@ function(r, $, pgAdmin, _, Backbone) {
                         },
                         error: function (xhr, status) {
                             $(div).html(
-                                '<div class="alert alert-danger pg-panel-message" role="alert">{{ gettext('An error occurred whilst loading the dashboard.') }}</div>'
+                                '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
                             );
                         }
                     });
@@ -55,73 +55,60 @@ function(r, $, pgAdmin, _, Backbone) {
 
         // Handle treeview clicks
         object_selected: function(item, itemData, node) {
-            var treeHierarchy = node.getTreeNodeHierarchy(item)
-            if (itemData && itemData._type)
-            {
-                switch(itemData._type) {
-                    case ('server-group'):
-                        url = '{{ url_for('dashboard.index') }}';
-                        break;
+            if (itemData && itemData._type) {
+                var treeHierarchy = node.getTreeNodeHierarchy(item),
+                    url = '{{ url_for('dashboard.index') }}',
+                    sid = -1, did = -1, b = pgAdmin.Browser,
+                    m = b && b.Nodes[itemData._type];
 
-                    case ('server'):
-                    case ('coll-database'):
-                    case ('coll-role'):
-                    case ('role'):
-                    case ('coll-tablespace'):
-                    case ('tablespace'):
-                        url = '{{ url_for('dashboard.index') }}'
-                            + treeHierarchy.server._id;
-                        break;
-
-                    default:
-                        url = '{{ url_for('dashboard.index') }}'
-                                + treeHierarchy.server._id
-                        if ('database' in treeHierarchy) {
-                          url += '/' + treeHierarchy.database._id;
-                        }
-                        break;
+                if (m && m.dashboard) {
+                    if (_.isFunction(m.dashboard)) {
+                        url = m.dashboard.apply(
+                            item, itemData, node, treeHierarchy
+                        );
+                    } else {
+                        url = m.dashboard;
+                    }
+                } else {
+                    if ('database' in treeHierarchy) {
+                        sid = treeHierarchy.server._id;
+                        did = treeHierarchy.database._id;
+                        url += sid + '/' + did;
+                    } else if ('server' in treeHierarchy) {
+                        sid = treeHierarchy.server._id;
+                        url += sid;
+                    }
                 }
-            }
 
-            var dashboardPanel = pgBrowser.panels['dashboard'].panel;
-            if (dashboardPanel) {
-                var div = dashboardPanel.layout().scene().find('.pg-panel-content');
+                var dashboardPanel = pgBrowser.panels['dashboard'].panel;
+                if (dashboardPanel) {
+                    var div = dashboardPanel.layout().scene().find(
+                            '.pg-panel-content'
+                        );
 
-                if (div) {
-                    // Avoid unnecessary reloads
-                    if (_.isUndefined(treeHierarchy.server) || _.isUndefined(treeHierarchy.server._id))
-                        sid = -1
-                    else
-                        sid = treeHierarchy.server._id
+                    if (div) {
+                        // Avoid unnecessary reloads
+                        if (url != $(dashboardPanel).data('dashboard_url')) {
+                            // Clear out everything so any existing timers die off
+                            $(div).empty();
 
-                    if (_.isUndefined(treeHierarchy.database) || _.isUndefined(treeHierarchy.database._id))
-                        did = -1
-                    else
-                        did = treeHierarchy.database._id
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                dataType: "html",
+                                success: function (data) {
+                                    $(div).html(data);
+                                },
+                                error: function (xhr, status) {
+                                    $(div).html(
+                                        '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                                    );
+                                }
+                            });
 
-                    if (sid != $(dashboardPanel).data('sid') ||
-                        did != $(dashboardPanel).data('did')) {
-
-                        // Clear out everything so any existing timers die off
-                        $(div).empty();
-
-                        $.ajax({
-                            url: url,
-                            type: "GET",
-                            dataType: "html",
-                            success: function (data) {
-                                $(div).html(data);
-                            },
-                            error: function (xhr, status) {
-                                $(div).html(
-                                    '<div class="alert alert-danger pg-panel-message" role="alert">{{ gettext('An error occurred whilst loading the dashboard.') }}</div>'
-                                );
-                            }
-                        });
-
-                        // Cache the current IDs for next time
-                        $(dashboardPanel).data('sid', sid)
-                        $(dashboardPanel).data('did', did)
+                            // Cache the current IDs for next time
+                            $(dashboardPanel).data('dashboard_url', url);
+                        }
                     }
                 }
             }
@@ -222,11 +209,11 @@ function(r, $, pgAdmin, _, Backbone) {
                         // If we get a 428, it means the server isn't connected
                         if (xhr.status == 428) {
                             if (_.isUndefined(msg) || _.isNull(msg)) {
-                              msg = '{{ gettext('Please connect to the selected server to view the graph.') }}';
+                              msg = gettext('Please connect to the selected server to view the graph.');
                             }
                             cls = 'info';
                         } else {
-                            msg = '{{ gettext('An error occurred whilst rendering the graph.') }}';
+                            msg = gettext('An error occurred whilst rendering the graph.');
                             cls = 'danger';
                         }
 
@@ -250,7 +237,17 @@ function(r, $, pgAdmin, _, Backbone) {
         add_new_server: function() {
             if (pgBrowser && pgBrowser.tree) {
                 var i = pgBrowser.tree.first(null, false),
-                    serverModule = r('pgadmin.node.server');
+                    serverModule = r('pgadmin.node.server'),
+                    itemData = pgBrowser.tree.itemData(i);
+
+                while (itemData && itemData._type != "server-group") {
+                    i = pgBrowser.tree.next(i);
+                    itemData = pgBrowser.tree.itemData(i);
+                }
+
+                if (!itemData) {
+                    return;
+                }
 
                 if (serverModule) {
                     serverModule.callbacks.show_obj_properties.apply(
@@ -334,11 +331,11 @@ function(r, $, pgAdmin, _, Backbone) {
                     // If we get a 428, it means the server isn't connected
                     if (xhr.status == 428) {
                         if (_.isUndefined(msg) || _.isNull(msg)) {
-                            msg = '{{ gettext('Please connect to the selected server to view the table.') }}';
+                            msg = gettext('Please connect to the selected server to view the table.');
                         }
                         cls = 'info';
                     } else {
-                        msg = '{{ gettext('An error occurred whilst rendering the table.') }}';
+                        msg = gettext('An error occurred whilst rendering the table.');
                         cls = 'danger';
                     }
 
@@ -403,37 +400,37 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var server_activity_columns = [{
                 name: "pid",
-                label: "{{ _('PID') }}",
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "datname",
-                label: "{{ _('Database') }}",
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "usename",
-                label: "{{ _('User') }}",
+                label: gettext('User'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "application_name",
-                label: "{{ _('Application') }}",
+                label: gettext('Application'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: "{{ _('Client') }}",
+                label: gettext('Client'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "backend_start",
-                label: "{{ _('Backend start') }}",
+                label: gettext('Backend start'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "state",
-                label: "{{ _('State') }}",
+                label: gettext('State'),
                 editable: false,
                 cell: "string"
             }];
@@ -442,7 +439,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 server_activity_columns = server_activity_columns.concat(
                 [{
                     name: "waiting",
-                    label: "{{ _('Waiting?') }}",
+                    label: gettext('Waiting?'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -450,12 +447,12 @@ function(r, $, pgAdmin, _, Backbone) {
                 server_activity_columns = server_activity_columns.concat(
                 [{
                     name: "wait_event",
-                    label: "{{ _('Wait Event') }}",
+                    label: gettext('Wait Event'),
                     editable: false,
                     cell: "string"
                 },{
                     name: "blocking_pids",
-                    label: "{{ _('Blocking PIDs') }}",
+                    label: gettext('Blocking PIDs'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -463,121 +460,121 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var server_locks_columns = [{
                 name: "pid",
-                label: "{{ _('PID') }}",
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "datname",
-                label: "{{ _('Database') }}",
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "locktype",
-                label: "{{ _('Lock type') }}",
+                label: gettext('Lock type'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "relation",
-                label: "{{ _('Target relation') }}",
+                label: gettext('Target relation'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "page",
-                label: "{{ _('Page') }}",
+                label: gettext('Page'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "tuple",
-                label: "{{ _('Tuple') }}",
+                label: gettext('Tuple'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: "{{ _('vXID (target)') }}",
+                label: gettext('vXID (target)'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transactionid",
-                label: "{{ _('XID (target)') }}",
+                label: gettext('XID (target)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "classid",
-                label: "{{ _('Class') }}",
+                label: gettext('Class'),
                 editable: false,
                 cell: "string"
             },{
                 name: "objid",
-                label: "{{ _('Object ID') }}",
+                label: gettext('Object ID'),
                 editable: false,
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: "{{ _('vXID (owner)') }}",
+                label: gettext('vXID (owner)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "mode",
-                label: "{{ _('Mode') }}",
+                label: gettext('Mode'),
                 editable: false,
                 cell: "string"
             },{
                 name: "granted",
-                label: "{{ _('Granted?') }}",
+                label: gettext('Granted?'),
                 editable: false,
                 cell: "string"
             }];
 
             var server_prepared_columns = [{
                 name: "git",
-                label: "{{ _('Name') }}",
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "database",
-                label: "{{ _('Database') }}",
+                label: gettext('Database'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "Owner",
-                label: "{{ _('Owner') }}",
+                label: gettext('Owner'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transaction",
-                label: "{{ _('XID') }}",
+                label: gettext('XID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "prepared",
-                label: "{{ _('Prepared at') }}",
+                label: gettext('Prepared at'),
                 editable: false,
                 cell: "string"
             }];
 
             var server_config_columns = [{
                 name: "name",
-                label: "{{ _('Name') }}",
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "category",
-                label: "{{ _('Category') }}",
+                label: gettext('Category'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "setting",
-                label: "{{ _('Setting') }}",
+                label: gettext('Setting'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "unit",
-                label: "{{ _('Unit') }}",
+                label: gettext('Unit'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "short_desc",
-                label: "{{ _('Description') }}",
+                label: gettext('Description'),
                 editable: false,
                 cell: "string"
             }];
@@ -680,32 +677,32 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var database_activity_columns = [{
                 name: "pid",
-                label: "{{ _('PID') }}",
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "usename",
-                label: "{{ _('User') }}",
+                label: gettext('User'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "application_name",
-                label: "{{ _('Application') }}",
+                label: gettext('Application'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "client_addr",
-                label: "{{ _('Client') }}",
+                label: gettext('Client'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "backend_start",
-                label: "{{ _('Backend start') }}",
+                label: gettext('Backend start'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "state",
-                label: "{{ _('State') }}",
+                label: gettext('State'),
                 editable: false,
                 cell: "string"
             }];
@@ -714,7 +711,7 @@ function(r, $, pgAdmin, _, Backbone) {
                 database_activity_columns = database_activity_columns.concat(
                 [{
                     name: "waiting",
-                    label: "{{ _('Waiting?') }}",
+                    label: gettext('Waiting?'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -722,12 +719,12 @@ function(r, $, pgAdmin, _, Backbone) {
                 database_activity_columns = database_activity_columns.concat(
                 [{
                     name: "wait_event",
-                    label: "{{ _('Wait Event') }}",
+                    label: gettext('Wait Event'),
                     editable: false,
                     cell: "string"
                 },{
                     name: "blocking_pids",
-                    label: "{{ _('Blocking PIDs') }}",
+                    label: gettext('Blocking PIDs'),
                     editable: false,
                     cell: "string"
                 }]);
@@ -735,84 +732,84 @@ function(r, $, pgAdmin, _, Backbone) {
 
             var database_locks_columns = [{
                 name: "pid",
-                label: "{{ _('PID') }}",
+                label: gettext('PID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "locktype",
-                label: "{{ _('Lock type') }}",
+                label: gettext('Lock type'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "relation",
-                label: "{{ _('Target relation') }}",
+                label: gettext('Target relation'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "page",
-                label: "{{ _('Page') }}",
+                label: gettext('Page'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "tuple",
-                label: "{{ _('Tuple') }}",
+                label: gettext('Tuple'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "virtualxid",
-                label: "{{ _('vXID (target)') }}",
+                label: gettext('vXID (target)'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transactionid",
-                label: "{{ _('XID (target)') }}",
+                label: gettext('XID (target)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "classid",
-                label: "{{ _('Class') }}",
+                label: gettext('Class'),
                 editable: false,
                 cell: "string"
             },{
                 name: "objid",
-                label: "{{ _('Object ID') }}",
+                label: gettext('Object ID'),
                 editable: false,
                 cell: "string"
             },{
                 name: "virtualtransaction",
-                label: "{{ _('vXID (owner)') }}",
+                label: gettext('vXID (owner)'),
                 editable: false,
                 cell: "string"
             },{
                 name: "mode",
-                label: "{{ _('Mode') }}",
+                label: gettext('Mode'),
                 editable: false,
                 cell: "string"
             },{
                 name: "granted",
-                label: "{{ _('Granted?') }}",
+                label: gettext('Granted?'),
                 editable: false,
                 cell: "string"
             }];
 
             var database_prepared_columns = [{
                 name: "git",
-                label: "{{ _('Name') }}",
+                label: gettext('Name'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "Owner",
-                label: "{{ _('Owner') }}",
+                label: gettext('Owner'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "transaction",
-                label: "{{ _('XID') }}",
+                label: gettext('XID'),
                 editable: false,
                 cell: "string"
             }, {
                 name: "prepared",
-                label: "{{ _('Prepared at') }}",
+                label: gettext('Prepared at'),
                 editable: false,
                 cell: "string"
             }];

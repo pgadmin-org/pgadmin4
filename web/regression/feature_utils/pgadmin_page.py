@@ -1,3 +1,12 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 import time
 
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -52,6 +61,9 @@ class PgadminPage:
         self.find_by_partial_link_text("Delete/Drop").click()
         self.click_modal_ok()
 
+    def select_tree_item(self, tree_item_text):
+        self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "' and @class='aciTreeItem']").click()
+
     def toggle_open_tree_item(self, tree_item_text):
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "']/../*[@class='aciTreeButton']").click()
 
@@ -63,7 +75,7 @@ class PgadminPage:
 
     def find_by_partial_link_text(self, link_text):
         return self._wait_for(
-            'link with text "#{0}"'.format(link_text),
+            'link with text "{0}"'.format(link_text),
             EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, link_text))
         )
 
@@ -92,7 +104,8 @@ class PgadminPage:
         ActionChains(self.driver).send_keys(field_content).perform()
 
     def click_tab(self, tab_name):
-        self.find_by_xpath("//*[contains(@class,'wcPanelTab') and contains(.,'" + tab_name + "')]").click()
+        self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
+                           "and contains(.,'" + tab_name + "')]").click()
 
     def wait_for_input_field_content(self, field_name, content):
         def input_field_has_content(driver):

@@ -1,24 +1,25 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
-import uuid
-import json
+##########################################################################
 
-from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.browser.server_groups.servers.databases.tests import \
-    utils as database_utils
+import json
+import uuid
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
-from regression import test_utils as utils
+from pgadmin.browser.server_groups.servers.databases.tests import \
+    utils as database_utils
+from pgadmin.browser.server_groups.servers.tests import utils as server_utils
+from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression import trigger_funcs_utils
+from regression.python_test_utils import test_utils as utils
 from . import utils as event_trigger_utils
-from pgadmin.browser.server_groups.servers.tests import utils as server_utils
 
 
 class EventTriggerPutTestCase(BaseTestGenerator):

@@ -118,7 +118,12 @@ _create_python_virtualenv() {
             ln -s $FULLPATH $FILE
         fi
     done
-    
+
+    # Remove tests
+    cd site-packages
+    find . -name "test" -type d -exec rm -rf "{}" \;
+    find . -name "tests" -type d -exec rm -rf "{}" \;
+
     # Move the python<version> directory to python so that the private environment path is found by the application.
     if test -d $DIR_PYMODULES_PATH; then
         mv $DIR_PYMODULES_PATH $DIR_PYMODULES_PATH/../python
@@ -169,7 +174,10 @@ _complete_bundle() {
     cp -r $SOURCEDIR/web "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/" || exit 1
     cd "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/web"
     rm -f pgadmin4.db config_local.*
-    rm -rf node_modules/
+    rm -rf karma.conf.js package.json node_modules/ regression/ tools/
+    find . -name "tests" -type d -exec rm -rf "{}" \;
+    find . -name "feature_tests" -type d -exec rm -rf "{}" \;
+    find . -name ".DS_Store" -exec rm -f "{}" \;
 
     echo "SERVER_MODE = False" > config_distro.py
     echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py

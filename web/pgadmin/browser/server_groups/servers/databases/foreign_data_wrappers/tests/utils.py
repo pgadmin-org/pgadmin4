@@ -1,17 +1,19 @@
-# #################################################################
+##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2017, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
-# ##################################################################
+##########################################################################
+
 from __future__ import print_function
+
+import sys
 import traceback
 import uuid
-import sys
 
-from regression.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection
 
 
 def get_fdw_data(schema_name, db_user):

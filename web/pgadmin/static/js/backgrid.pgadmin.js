@@ -144,6 +144,15 @@
           else
             return 1;
         }
+        else {
+          // if descending order, swap left and right
+          if (order === 1) t = l, l = r, r = t;
+
+           // compare as usual
+          if (l === r) return 0;
+          else if (l < r) return -1;
+          return 1;
+        }
       };
     }
   });
@@ -648,12 +657,12 @@
                label: optionText,
                value: optionValue,
                selected: (selectedValues == optionValue) ||
-                 (_.indexOf(selectedValues, optionValue) > -1)
+                 (select2_opts.multiple && _.indexOf(selectedValues, optionValue) > -1)
             }));
          } else {
           opt = _.defaults({}, opt, {
             selected: ((selectedValues == opt.value) ||
-                (_.indexOf(selectedValues, opt.value) > -1)),
+                (select2_opts.multiple && _.indexOf(selectedValues, opt.value) > -1)),
             }, self.defaults.opt);
           $select.append(self.template(opt));
         }

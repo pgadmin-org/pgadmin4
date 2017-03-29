@@ -238,7 +238,7 @@
         <div id="filter" class="filter-container hidden">
             <div class="filter-title">Filter</div>
             <div class="sql-textarea">
-                <textarea id="sql_filter" row="5"></textarea>
+                <textarea id="sql_filter" rows="5"></textarea>
             </div>
             <div class="btn-group">
                 <button id="btn-cancel" type="button" class="btn btn-danger" title="{{ _('Cancel') }}">
@@ -310,7 +310,8 @@ function($, pgAdmin, R, S) {
 {% endif %}
 
     // Start the query tool.
-    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}", script_sql);
+    sqlEditorController.start({{ is_query_tool }}, "{{ editor_title }}",
+                    script_sql, {{ is_new_browser_tab }});
   });
 });
 {% endblock %}

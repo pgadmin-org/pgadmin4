@@ -1,17 +1,18 @@
-# ##########################################################################
+##########################################################################
 #
-# #pgAdmin 4 - PostgreSQL Tools
+# pgAdmin 4 - PostgreSQL Tools
 #
-# #Copyright (C) 2013 - 2017, The pgAdmin Development Team
-# #This software is released under the PostgreSQL Licence
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
 #
-# ##########################################################################
+##########################################################################
+
 import uuid
 
 from pgadmin.utils.route import BaseTestGenerator
+from regression.python_test_utils.test_utils import login_tester_account
+from regression.python_test_utils.test_utils import logout_tester_account
 from regression.test_setup import config_data
-from regression.test_utils import login_tester_account
-from regression.test_utils import logout_tester_account
 
 
 class ResetPasswordTestCase(BaseTestGenerator):

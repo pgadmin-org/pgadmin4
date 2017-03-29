@@ -529,7 +529,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             dif = len(proargmodes_fltrd) - len(proargdefaultvals)
             while (dif > 0):
                 proargdefaultvals.insert(0, '')
-                dif = dif - 1
+                dif -= 1
 
         # Prepare list of Argument list dict to be displayed in the Data Grid.
         params = {"arguments": [
@@ -996,16 +996,16 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
 
-        sql_header = u"""-- {0}: {1}{2}
+        sql_header = u"""-- {0}: {1}({2})
 
--- DROP {0} {1}{2};
+-- DROP {0} {1}({2});
 
 """.format(object_type.upper(),
            self.qtIdent(
                self.conn,
                resp_data['pronamespace'],
                resp_data['proname']),
-           resp_data['proargtypenames'])
+           resp_data['proargtypenames'].lstrip('(').rstrip(')'))
 
         SQL = sql_header + func_def
         SQL = re.sub('\n{2,}', '\n\n', SQL)
