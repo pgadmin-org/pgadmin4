@@ -14,7 +14,13 @@ echo "Creating Python ${PYTHON_VERSION} virtual environment..."
 echo "################################################################################"
 echo
 
-/usr/bin/virtualenv -p /usr/local/python-$PYTHON_VERSION/bin/python $WORKSPACE/pgadmin-venv
+PYTHON_SUFFIX=""
+
+if [[ "$PYTHON_VER" == 3* ]]; then
+    PYTHON_SUFFIX="3"
+fi
+
+/usr/bin/virtualenv -p /usr/local/python-$PYTHON_VERSION$PYTHON_SUFFIX/bin/python $WORKSPACE/pgadmin-venv
 . $WORKSPACE/pgadmin-venv/bin/activate
 $WORKSPACE/pgadmin-venv/bin/pip install -r requirements.txt
 $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt
