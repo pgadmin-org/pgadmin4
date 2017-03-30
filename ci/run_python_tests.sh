@@ -16,7 +16,7 @@ echo
 
 PYTHON_SUFFIX=""
 
-if [[ "$PYTHON_VER" == 3* ]]; then
+if [[ "$PYTHON_VERSION" == 3* ]]; then
     PYTHON_SUFFIX="3"
 fi
 
