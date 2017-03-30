@@ -8,7 +8,7 @@ echo
 . $WORKSPACE/pgadmin-venv/bin/activate
 
 SPHINX_VER=""
-if [ "$PYTHON_VERSION" = "2.6" -o ""$PYTHON_VERSION" = "3.3" ]; then
+if [ "$PYTHON_VERSION" = "2.6" -o "$PYTHON_VERSION" = "3.3" ]; then
     SPHINX_VER="==1.4.9"
 fi
 
