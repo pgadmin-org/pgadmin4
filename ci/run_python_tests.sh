@@ -14,6 +14,8 @@ echo "Creating Python ${PYTHON_VERSION} virtual environment..."
 echo "################################################################################"
 echo
 
+cd $WORKSPACE/
+
 PYTHON_SUFFIX=""
 
 if [[ "$PYTHON_VERSION" == 3* ]]; then

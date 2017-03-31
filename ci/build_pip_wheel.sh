@@ -5,6 +5,8 @@ echo "Building PIP wheel..."
 echo "################################################################################"
 echo
 
+cd $WORKSPACE
+
 . $WORKSPACE/pgadmin-venv/bin/activate
 
 SPHINX_VER=""
@@ -14,5 +16,4 @@ fi
 
 $WORKSPACE/pgadmin-venv/bin/pip install Sphinx$SPHINX_VER
 
-cd $WORKSPACE/
 make pip

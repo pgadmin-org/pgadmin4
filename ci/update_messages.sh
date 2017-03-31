@@ -5,8 +5,9 @@ echo "Extracting, merging and compiling strings..."
 echo "################################################################################"
 echo
 
-. $WORKSPACE/pgadmin-venv/bin/activate
 cd $WORKSPACE/web
+
+. $WORKSPACE/pgadmin-venv/bin/activate
 
 pybabel extract -F babel.cfg -o pgadmin/messages.pot pgadmin || { echo 'Failed to extract messages from the source code.' ; exit 1; }
 

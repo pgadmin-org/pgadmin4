@@ -5,6 +5,8 @@ echo "Building Tarballs..."
 echo "################################################################################"
 echo
 
+cd $WORKSPACE
+
 . $WORKSPACE/pgadmin-venv/bin/activate
 
 SPHINX_VER=""
