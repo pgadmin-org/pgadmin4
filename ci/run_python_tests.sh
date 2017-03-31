@@ -1,17 +1,16 @@
 #!/bin/sh
 
-echo "################################################################################"
+echo "EXECUTING: Python tests"
+echo
+
 echo "Starting virtual frame buffer..."
-echo "################################################################################"
 echo
 
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 FB_PID=$!
 export DISPLAY=:99
 
-echo "################################################################################"
 echo "Creating Python ${PYTHON_VERSION} virtual environment..."
-echo "################################################################################"
 echo
 
 cd $WORKSPACE/
@@ -27,16 +26,12 @@ fi
 $WORKSPACE/pgadmin-venv/bin/pip install -r requirements.txt
 $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt
 
-echo "################################################################################"
-echo "Executing regression tests..."
-echo "################################################################################"
+echo "Running regression tests..."
 echo
 
 $WORKSPACE/pgadmin-venv/bin/python $WORKSPACE/web/regression/runtests.py --exclude feature_tests
 
-echo "################################################################################"
 echo "Cleaning up..."
-echo "################################################################################"
 echo
 
 kill $FB_PID

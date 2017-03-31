@@ -1,8 +1,6 @@
 #!/bin/sh
 
-echo "################################################################################"
-echo "Creating pgAdmin configuration..."
-echo "################################################################################"
+echo "EXECUTING: Create pgAdmin config"
 echo
 
 cd $WORKSPACE
