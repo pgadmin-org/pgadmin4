@@ -11,4 +11,4 @@ pybabel extract -F babel.cfg -o pgadmin/messages.pot pgadmin || { echo 'ERROR: F
 
 pybabel update -i pgadmin/messages.pot -d pgadmin/translations || { echo 'ERROR: Failed to update message catalogs from the template.' ; exit 1; }
 
-pybabel compile -d pgadmin/translations || { echo 'ERROR: Failed to compile the message catalogs.' ; exit 1
+pybabel compile -d pgadmin/translations || { echo 'ERROR: Failed to compile the message catalogs.' ; exit 1 }
