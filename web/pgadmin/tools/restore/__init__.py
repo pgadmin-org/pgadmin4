@@ -303,11 +303,11 @@ def create_restore_job(sid):
         set_param('verbose', '--verbose')
 
         set_multiple('schemas', '--schema', False)
-        set_multiple('tables', '--table')
-        set_multiple('functions', '--function')
-        set_multiple('triggers', '--trigger')
-        set_multiple('trigger_funcs', '--function')
-        set_multiple('indexes', '--index')
+        set_multiple('tables', '--table', False)
+        set_multiple('functions', '--function', False)
+        set_multiple('triggers', '--trigger', False)
+        set_multiple('trigger_funcs', '--function', False)
+        set_multiple('indexes', '--index', False)
 
     args.append(fs_short_path(_file))
 

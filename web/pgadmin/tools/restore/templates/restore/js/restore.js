@@ -484,22 +484,27 @@ define([
                   if (!m.get('custom')) {
                     switch (d._type) {
                       case 'schema':
-                        m.set('schemas', d._label);
+                        m.set('schemas', [d._label]);
                         break;
                       case 'table':
-                        m.set('tables', [info.schema._label, d._label]);
+                        m.set('schemas', [info.schema._label]);
+                        m.set('tables', [d._label]);
                         break;
                       case 'function':
-                        m.set('functions', [info.schema._label, d._label]);
+                        m.set('schemas', [info.schema._label]);
+                        m.set('functions', [d._label]);
                         break;
                       case 'index':
-                        m.set('indexes', [info.schema._label, d._label]);
+                        m.set('schemas', [info.schema._label]);
+                        m.set('indexes', [d._label]);
                         break;
                       case 'trigger':
-                        m.set('triggers', [info.schema._label, d._label]);
+                        m.set('schemas', [info.schema._label]);
+                        m.set('triggers', [d._label]);
                         break;
                       case 'trigger_func':
-                        m.set('trigger_funcs', [info.schema._label, d._label]);
+                        m.set('schemas', [info.schema._label]);
+                        m.set('trigger_funcs', [d._label]);
                         break;
                     }
                   } else {
