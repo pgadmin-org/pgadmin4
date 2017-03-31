@@ -401,7 +401,7 @@ input.editor-checkbox:focus {
 
 /* Override selected row color */
 .sc.selected {
-    background-color: #eeeeee !important;
+    background-color: #DEE8F1 !important;
 }
 
 /* To highlight all newly inserted rows */
