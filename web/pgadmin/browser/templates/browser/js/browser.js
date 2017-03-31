@@ -705,20 +705,27 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         pnlSqlHelp.focus();
         iframe.openURL(fullUrl);
       } else if(type == "dialog_help") {
-        // See if we can find an existing panel, if not, create one
-        pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
-
-        if (pnlDialogHelp == null) {
-          pnlProperties = this.docker.findPanels('properties')[0];
-          this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+        if(this.docker) {
+          // See if we can find an existing panel, if not, create one
           pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+
+          if (pnlDialogHelp == null) {
+            pnlProperties = this.docker.findPanels('properties')[0];
+            this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+            pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+          }
+
+          // Update the panel
+          iframe = $(pnlDialogHelp).data('embeddedFrame');
+
+          pnlDialogHelp.focus();
+          iframe.openURL(url);
+        } else {
+          // We have added new functionality of opening Query tool & debugger in new
+          // browser tab, In that case we will not have docker object available
+          // so we will open dialog help in new browser tab
+          window.open(url, '_blank');
         }
-
-        // Update the panel
-        iframe = $(pnlDialogHelp).data('embeddedFrame');
-
-        pnlDialogHelp.focus();
-        iframe.openURL(url);
       }
     },
 
