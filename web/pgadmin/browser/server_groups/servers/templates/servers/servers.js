@@ -676,6 +676,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           group: "{{ 'Connection' }}", mode: ['create'], deps: ['connect_now'],
           visible: function(m) {
             return m.get('connect_now') && m.isNew();
+          },
+          disabled: function(m) {
+            return {% if config.ALLOW_SAVE_PASSWORD %}false{% else %}true{% endif %};
           }
         },{
           id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",

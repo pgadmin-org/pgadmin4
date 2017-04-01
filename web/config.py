@@ -202,6 +202,10 @@ SQLITE_PATH = env('SQLITE_PATH') or os.path.join(DATA_DIR, 'pgadmin4.db')
 # (Default: 500 milliseconds)
 SQLITE_TIMEOUT = 500
 
+# Allow database connection passwords to be saved if the user chooses.
+# Set to False to disable password saving.
+ALLOW_SAVE_PASSWORD = True
+
 ##########################################################################
 # Server-side session storage path
 #
@@ -333,3 +337,4 @@ try:
     from config_local import *
 except ImportError:
     pass
+

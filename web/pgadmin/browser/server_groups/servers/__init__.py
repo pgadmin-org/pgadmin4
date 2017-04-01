@@ -595,7 +595,8 @@ class ServerNode(PGChildNodeView):
                         errormsg=gettext(u"Unable to connect to server:\n\n%s" % errmsg)
                     )
                 else:
-                    if 'save_password' in data and data['save_password'] and have_password:
+                    if 'save_password' in data and data['save_password'] and \
+                            have_password and config.ALLOW_SAVE_PASSWORD:
                         setattr(server, 'password', password)
                         db.session.commit()
 
@@ -809,7 +810,7 @@ class ServerNode(PGChildNodeView):
                 )
             )
         else:
-            if save_password:
+            if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
                     # Save the encrypted password using the user's login
                     # password key.
@@ -1012,7 +1013,7 @@ class ServerNode(PGChildNodeView):
             password = encrypt(data['newPassword'], user.password)
             # Check if old password was stored in pgadmin4 sqlite database.
             # If yes then update that password.
-            if server.password is not None:
+            if server.password is not None and config.ALLOW_SAVE_PASSWORD:
                 setattr(server, 'password', password)
                 db.session.commit()
             # Also update password in connection manager.
