@@ -1446,6 +1446,12 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            # PostgreSQL truncates the table name to 63 characters.
+            # Have to truncate the name as like PostgreSQL to get the proper schema id 
+            CONST_MAX_CHAR_COUNT = 63 
+            if len(data['name']) > CONST_MAX_CHAR_COUNT:
+                data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
+
             # Get updated schema oid
             SQL = render_template("/".join([self.template_path,
                                   'get_schema_oid.sql']), tname=data['name'])
