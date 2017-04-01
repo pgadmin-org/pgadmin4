@@ -1828,21 +1828,20 @@ class Driver(BaseDriver):
 
     @staticmethod
     def qtLiteral(value):
-        try:
-            res = adapt(value).getquoted()
-        except UnicodeEncodeError:
-            # We will handle special characters with utf8 encoding
-            adapted = adapt(value)
+        adapted = adapt(value)
+
+        # Not all adapted objects have encoding
+        # e.g.
+        # psycopg2.extensions.BOOLEAN
+        # psycopg2.extensions.FLOAT
+        # psycopg2.extensions.INTEGER
+        # etc...
+        if hasattr(adapted, 'encoding'):
             adapted.encoding = 'utf8'
-            res = adapted.getquoted()
+        res = adapted.getquoted()
 
-        # Returns in bytes, we need to convert it in string
         if isinstance(res, bytes):
-            try:
-                res = res.decode()
-            except UnicodeDecodeError:
-                res = res.decode('utf-8')
-
+            return res.decode('utf-8')
         return res
 
     @staticmethod
