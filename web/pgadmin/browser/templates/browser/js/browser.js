@@ -938,7 +938,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.before(i, {
                       itemData: _data,
                       success: function() {
-                        console.log('Add before..');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -1306,7 +1305,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.before(i, {
                       itemData: _new,
                       success: function() {
-                        console.log('Add before..');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -1326,7 +1324,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.append(ctx.i, {
                       itemData: _new,
                       success: function() {
-                        console.log('Appended');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
