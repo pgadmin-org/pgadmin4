@@ -481,8 +481,10 @@ def poll(trans_id):
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
-        status, result = conn.poll()
-        if status == ASYNC_OK:
+        status, result = conn.poll(formatted_exception_msg=True)
+        if not status:
+            return internal_server_error(result)
+        elif status == ASYNC_OK:
             status = 'Success'
             rows_affected = conn.rows_affected()
 
