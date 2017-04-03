@@ -120,7 +120,7 @@ class ServerType(object):
                 sys.modules['__main__'], '__file__', None
             )
 
-            if main_module_file is None:
+            if main_module_file is not None:
                 bin_path = bin_path.replace(
                     "$DIR", os.path.dirname(main_module_file)
                 )
