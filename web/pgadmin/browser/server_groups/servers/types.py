@@ -112,8 +112,9 @@ class ServerType(object):
                     operation
                 ))
             )
-
-        bin_path = self.utility_path.get().replace("$DIR", os.path.dirname(sys.modules['__main__'].__file__))
+        bin_path = self.utility_path.get()
+        if "$DIR" in bin_path:
+            bin_path = bin_path.replace("$DIR", os.path.dirname(sys.modules['__main__'].__file__))
 
         return os.path.abspath(os.path.join(
             bin_path,
