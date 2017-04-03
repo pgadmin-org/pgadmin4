@@ -113,7 +113,8 @@ class ServerType(object):
                 ))
             )
         bin_path = self.utility_path.get()
-        if "$DIR" in bin_path:
+        # AS WSGI application, we will not find the '__main__' module.
+        if "__main__" in sys.modules:
             bin_path = bin_path.replace("$DIR", os.path.dirname(sys.modules['__main__'].__file__))
 
         return os.path.abspath(os.path.join(
