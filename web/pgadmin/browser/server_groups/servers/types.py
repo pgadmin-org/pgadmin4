@@ -113,9 +113,17 @@ class ServerType(object):
                 ))
             )
         bin_path = self.utility_path.get()
-        # AS WSGI application, we will not find the '__main__' module.
-        if "__main__" in sys.modules:
-            bin_path = bin_path.replace("$DIR", os.path.dirname(sys.modules['__main__'].__file__))
+        if "$DIR" in bin_path:
+            # When running as an WSGI application, we will not find the
+            # '__file__' attribute for the '__main__' module.
+            main_module_file = getattr(
+                sys.modules['__main__'], '__file__', None
+            )
+
+            if main_module_file is None:
+                bin_path = bin_path.replace(
+                    "$DIR", os.path.dirname(main_module_file)
+                )
 
         return os.path.abspath(os.path.join(
             bin_path,
