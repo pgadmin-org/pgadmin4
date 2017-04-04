@@ -105,9 +105,14 @@ if __name__ == '__main__':
             os.environ['PYTHONHOME'] = sys.prefix
 
     try:
+        PORT = int(os.environ.get('SERVER_PORT', server_port))
+    except ValueError:
+        PORT = server_port
+
+    try:
         app.run(
             host=config.DEFAULT_SERVER,
-            port=server_port,
+            port=PORT,
             use_reloader=((not PGADMIN_RUNTIME) and app.debug),
             threaded=config.THREADED_MODE
         )

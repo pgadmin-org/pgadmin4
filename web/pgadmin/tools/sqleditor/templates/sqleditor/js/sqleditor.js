@@ -3130,8 +3130,8 @@ define(
 
           $("#btn-flash").prop('disabled', true);
 
-          if (explain_prefix != undefined)
-            sql = explain_prefix + ' ' + sql;
+          if (explain_prefix != undefined && !sql.toUpperCase().startsWith("EXPLAIN"))
+              sql = explain_prefix + ' ' + sql;
 
           self.query_start_time = new Date();
           self.query = sql;
