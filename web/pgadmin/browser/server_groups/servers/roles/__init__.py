@@ -161,7 +161,7 @@ class RoleView(PGChildNodeView):
             if u'rolmembership' in data:
                 if u'rid' not in kwargs or kwargs['rid'] == -1:
                     msg = _("""
-Role membership information must be passed as an array of JSON object in the
+Role membership information must be passed as an array of JSON objects in the
 following format:
 
 rolmembership:[{
@@ -186,8 +186,8 @@ rolmembership:[{
                                 data[u'members'].append(r[u'role'])
                 else:
                     msg = _("""
-Role membership information must be passed a string representing an array of
-JSON object in the following format:
+Role membership information must be passed as a string representing an array of
+JSON objects in the following format:
 rolmembership:{
     'added': [{
         role: [rolename],
@@ -264,7 +264,7 @@ rolmembership:{
                 if u'seclabels' in data:
                     if u'rid' not in kwargs or kwargs['rid'] == -1:
                         msg = _("""
-Security Label must be passed as an array of JSON object in the following
+Security Label must be passed as an array of JSON objects in the following
 format:
 seclabels:[{
     provider: <provider>,
@@ -281,7 +281,7 @@ seclabels:[{
                                 return precondition_required(msg)
                     else:
                         msg = _("""
-Security Label must be passed as an array of JSON object in the following
+Security Label must be passed as an array of JSON objects in the following
 format:
 seclabels:{
     'added': [{
@@ -342,8 +342,8 @@ seclabels:{
             if u'variables' in data:
                 if u'rid' not in kwargs or kwargs['rid'] == -1:
                     msg = _("""
-Configuration parameters/variables must be passed as an array of JSON object in
-the following format (create mode):
+Configuration parameters/variables must be passed as an array of JSON objects in
+the following format in create mode:
 variables:[{
     database: <database> or null,
     name: <configuration>,
@@ -361,8 +361,8 @@ variables:[{
                             return precondition_required(msg)
                 else:
                     msg = _("""
-Configuration parameters/variables must be passed as an array of JSON object in
-the following format (update mode):
+Configuration parameters/variables must be passed as an array of JSON objects in
+the following format in update mode:
 rolmembership:{
     'added': [{
         database: <database> or null,
@@ -699,14 +699,14 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _("Could not generate reversed engineered Query for the role.\n{0}").format(
+                _("Could not generate reversed engineered query for the role.\n{0}").format(
                     res
                 )
             )
 
         if res is None:
             return gone(
-                _("Could not generate reversed engineered Query for the role.")
+                _("Could not generate reversed engineered query for the role.")
             )
 
         return ajax_response(response=res.strip('\n'))

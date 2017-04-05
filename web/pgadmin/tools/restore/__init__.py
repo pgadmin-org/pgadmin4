@@ -101,7 +101,7 @@ class RestoreMessage(IProcessDesc):
 
         res += html.safe_str(
             _(
-                "Restoring the backup on the server '{0}'..."
+                "Restoring backup on the server '{0}'..."
             ).format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )

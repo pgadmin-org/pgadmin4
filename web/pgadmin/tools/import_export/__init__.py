@@ -107,7 +107,7 @@ class IEMessage(IProcessDesc):
         ).first()
 
         return _(
-            "Copying table data - '{0}.{1}' on database '{2}' and server ({3}{4})..."
+            "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
         ).format(
             self.schema, self.table, self.database, s.host, s.port
         )
@@ -120,7 +120,7 @@ class IEMessage(IProcessDesc):
 
         res = '<div class="h5">'
         res += _(
-            "Copying table data '{0}.{1}' on database '{2}' for the server - '{3}'"
+            "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
         ).format(
             self.schema, self.table, self.database,
             "{0} ({1}:{2})".format(s.name, s.host, s.port)

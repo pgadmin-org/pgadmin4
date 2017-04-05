@@ -163,7 +163,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             copy_coll_flag = true;
           }
           if (locale_flag && (lc_coll_flag || lc_coll_flag) && copy_coll_flag) {
-            msg = '{{ _('Incomplete definition, Please provide Locale OR Copy collation OR LC_TYPE/LC_COLLATE!') }}';
+            msg = '{{ _('Incomplete definition. Please provide locale OR copy collation OR LC_TYPE/LC_COLLATE!') }}';
             err['locale'] = msg
           }
           return null;

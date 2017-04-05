@@ -174,7 +174,7 @@ define(
           placeholder: '{{ _('Not null columns...') }}'
         },
         helpMessage:
-          '{{ _('Do not match the specified columns values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.') }}'
+          '{{ _('Do not match the specified column values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.') }}'
       }, {
         type: 'nested', control: 'fieldset', label: '{{ _('Miscellaneous') }}',
         group: '{{ _('Options') }}',

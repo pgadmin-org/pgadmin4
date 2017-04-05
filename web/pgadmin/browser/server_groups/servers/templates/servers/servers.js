@@ -663,7 +663,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'db', label:'{{ _('Maintenance database') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'username', label:'{{ _('User name') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'username', label:'{{ _('Username') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'password', label:'{{ _('Password') }}', type: 'password',

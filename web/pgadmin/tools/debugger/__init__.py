@@ -63,7 +63,7 @@ class DebuggerModule(PgAdminModule):
     def register_preferences(self):
         self.open_in_new_tab = self.preference.register(
             'display', 'debugger_new_browser_tab',
-            gettext("Open in New Browser Tab"), 'boolean', False,
+            gettext("Open in new browser tab"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Debugger '
                              'will be opened in a new browser tab.')
@@ -566,7 +566,7 @@ def restart_debugging(trans_id):
     if str(trans_id) not in debugger_data:
         return make_json_response(
             data={'status': False,
-                  'result': gettext('Not connected to server Or connection with the server has been closed.')}
+                  'result': gettext('Not connected to server or connection with the server has been closed.')}
         )
     obj = debugger_data[str(trans_id)]
 
@@ -603,7 +603,7 @@ def restart_debugging(trans_id):
         return make_json_response(data={'status': True, 'restart_debug': True, 'result': function_data})
     else:
         status = False
-        result = gettext('Not connected to server Or connection with the server has been closed.')
+        result = gettext('Not connected to server or connection with the server has been closed.')
 
     return make_json_response(data={'status': status})
 
@@ -625,7 +625,7 @@ def start_debugger_listener(trans_id):
     if str(trans_id) not in debugger_data:
         return make_json_response(
             data={'status': False,
-                  'result': gettext('Not connected to server Or connection with the server has been closed.')}
+                  'result': gettext('Not connected to server or connection with the server has been closed.')}
         )
     obj = debugger_data[str(trans_id)]
 

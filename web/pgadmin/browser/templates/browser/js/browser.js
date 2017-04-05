@@ -450,7 +450,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                             console.log(err);
 
                             obj.report_error(
-                              '{{ _('Error Initializing script - ') }}' + s.path, err);
+                              '{{ _('Error initializing script - ') }}' + s.path, err);
                           }
                         }
                       }, function() {

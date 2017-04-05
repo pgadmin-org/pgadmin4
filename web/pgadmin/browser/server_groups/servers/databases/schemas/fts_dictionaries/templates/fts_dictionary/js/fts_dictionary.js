@@ -60,7 +60,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='fts_dictionary_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS dictionary') }}',
+      label: '{{ _('FTS Dictionary') }}',
       hasSQL: true,
       hasDepends: true,
       Init: function() {
