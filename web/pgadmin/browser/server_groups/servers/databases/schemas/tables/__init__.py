@@ -1447,8 +1447,8 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
 
             # PostgreSQL truncates the table name to 63 characters.
-            # Have to truncate the name as like PostgreSQL to get the proper schema id 
-            CONST_MAX_CHAR_COUNT = 63 
+            # Have to truncate the name like PostgreSQL to get the proper schema id
+            CONST_MAX_CHAR_COUNT = 63
             if len(data['name']) > CONST_MAX_CHAR_COUNT:
                 data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
 
@@ -1823,7 +1823,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                         else:
                             sql.append(
                                 gettext(
-                                    '-- incomplete definition for {0} constraint'.format(index_constraints[ctype])
+                                    '-- definition incomplete for {0} constraint'.format(index_constraints[ctype])
                                 )
                             )
         if len(sql) > 0:
@@ -1884,7 +1884,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     if not self.validate_constrains('foreign_key', c):
                         sql.append(
                             gettext(
-                                '-- incomplete definition for foreign_key constraint'
+                                '-- definition incomplete for foreign_key constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -1915,7 +1915,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     if not self.validate_constrains('foreign_key', c):
                         sql.append(
                             gettext(
-                                '-- incomplete definition for foreign_key constraint'
+                                '-- definition incomplete for foreign_key constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -2009,7 +2009,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     if not self.validate_constrains('check_constraint', c):
                         sql.append(
                             gettext(
-                                '-- incomplete definition for check_constraint'
+                                '-- definition incomplete for check_constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -2085,7 +2085,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     if not self.validate_constrains('exclude_constraint', c):
                         sql.append(
                             gettext(
-                                '-- incomplete definition for exclusion_constraint'
+                                '-- definition incomplete for exclusion_constraint'
                             )
                         )
                         return '\n\n'.join(sql)
@@ -2292,7 +2292,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             for arg in required_args:
                 if arg not in data:
-                    return gettext('-- incomplete definition')
+                    return gettext('-- definition incomplete')
 
             # validate constraint data.
             for key in ['primary_key', 'unique_constraint',
@@ -2301,7 +2301,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 if key in data and len(data[key]) > 0:
                     for constraint in data[key]:
                         if not self.validate_constrains(key, constraint):
-                            return gettext('-- incomplete definition for {0}'.format(key))
+                            return gettext('-- definition incomplete for {0}'.format(key))
 
             # We will convert privileges coming from client required
             # in server side format

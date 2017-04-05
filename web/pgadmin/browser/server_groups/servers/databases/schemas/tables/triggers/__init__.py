@@ -869,7 +869,7 @@ class TriggerView(PGChildNodeView):
 
             for arg in required_args:
                 if arg not in data:
-                    return gettext('-- incomplete definition')
+                    return gettext('-- definition incomplete')
 
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),

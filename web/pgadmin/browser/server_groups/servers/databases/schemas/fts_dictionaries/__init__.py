@@ -669,7 +669,7 @@ class FtsDictionaryView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = u"-- incomplete definition"
+                sql = u"-- definition incomplete"
             return sql.strip('\n'), data['name']
 
     @check_precondition

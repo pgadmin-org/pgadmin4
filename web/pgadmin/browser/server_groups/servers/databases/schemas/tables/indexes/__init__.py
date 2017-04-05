@@ -815,7 +815,7 @@ class IndexesView(PGChildNodeView):
                     err = True
                     # Check if we have at least one column
                 if err:
-                    return gettext('-- incomplete definition')
+                    return gettext('-- definition incomplete')
 
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),
