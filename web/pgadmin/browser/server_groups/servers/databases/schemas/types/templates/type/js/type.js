@@ -814,7 +814,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           } else if (_.has(changedAttrs, 'typtype') &&
                 (_.isUndefined(this.get('typtype'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Type can not be empty.') }}';
+            msg = '{{ _('Type cannot be empty.') }}';
             this.errorModel.set('typtype', msg);
           } else if (this.get('typtype') == 'r' &&
                 _.has(changedAttrs, 'typname')
@@ -826,13 +826,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 _.has(changedAttrs, 'typinput')
               && (_.isUndefined(this.get('typinput'))
               || String(this.get('typinput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Input function can not be empty.') }}';
+            msg = '{{ _('Input function cannot be empty.') }}';
             this.errorModel.set('typinput', msg);
           } else if (this.get('typtype') == 'x' &&
                 _.has(changedAttrs, 'typoutput')
               && (_.isUndefined(this.get('typoutput'))
               || String(this.get('typoutput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Output function can not be empty.') }}';
+            msg = '{{ _('Output function cannot be empty.') }}';
             this.errorModel.set('typoutput', msg);
           }
 

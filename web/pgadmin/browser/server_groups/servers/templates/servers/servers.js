@@ -713,7 +713,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
 
           if (!self.isNew() && 'id' in self.sessAttrs) {
-            err['id'] = '{{ _('The ID can not be changed.') }}';;
+            err['id'] = '{{ _('The ID cannot be changed.') }}';;
             errmsg = err['id'];
           } else {
             self.errorModel.unset('id');

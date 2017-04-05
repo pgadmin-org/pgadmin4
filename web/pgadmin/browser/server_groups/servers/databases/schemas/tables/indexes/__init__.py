@@ -602,7 +602,7 @@ class IndexesView(PGChildNodeView):
                 self.conn.execute_scalar("END;")
                 return internal_server_error(errormsg=res)
 
-            # If user chooses concurrent index then we can not run it along
+            # If user chooses concurrent index then we cannot run it along
             # with other alter statements so we will separate alter index part
             SQL = render_template("/".join([self.template_path,
                                             'alter.sql']),

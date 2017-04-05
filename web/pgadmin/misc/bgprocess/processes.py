@@ -211,7 +211,7 @@ class BatchProcess(object):
             if self.etime is None:
                 raise Exception(_('The process has already been started.'))
             raise Exception(
-                _('The process has already finished and can not be restarted.')
+                _('The process has already finished and cannot be restarted.')
             )
 
         executor = file_quote(os.path.join(
@@ -338,7 +338,7 @@ class BatchProcess(object):
         self.ecode = p.poll()
 
         # Execution completed immediately.
-        # Process executor can not update the status, if it was not able to
+        # Process executor cannot update the status, if it was not able to
         # start properly.
         if self.ecode is not None and self.ecode != 0:
             # There is no way to find out the error message from this process

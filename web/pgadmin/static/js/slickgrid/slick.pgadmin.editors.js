@@ -84,7 +84,7 @@
     this.position = function (position) {
       var _elem_height = $wrapper.parent().find('#datagrid').height(),
       is_hidden, _position;
-      // We can not display editor partially visible so we will lift it above select column
+      // We cannot display editor partially visible so we will lift it above select column
       if(position.top > _elem_height) {
         is_hidden = position.bottom - _elem_height;
       }
@@ -227,7 +227,7 @@
     this.position = function (position) {
       var _elem_height = $wrapper.parent().find('#datagrid').height(),
       is_hidden, _position;
-      // We can not display editor partially visible so we will lift it above select column
+      // We cannot display editor partially visible so we will lift it above select column
       if(position.top > _elem_height) {
         is_hidden = position.bottom - _elem_height;
       }
@@ -360,7 +360,7 @@
     this.position = function (position) {
       var _elem_height = $wrapper.parent().find('#datagrid').height(),
         is_hidden, _position;
-      // We can not display editor partially visible so we will lift it above select column
+      // We cannot display editor partially visible so we will lift it above select column
       if(position.top > _elem_height) {
         is_hidden = position.bottom - _elem_height;
       }
@@ -565,7 +565,7 @@
     this.position = function (position) {
       var _elem_height = $wrapper.parent().find('#datagrid').height(),
         is_hidden, _position;
-      // We can not display editor partially visible so we will lift it above select column
+      // We cannot display editor partially visible so we will lift it above select column
       if(position.top > _elem_height) {
         is_hidden = position.bottom - _elem_height;
       }

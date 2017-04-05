@@ -25,13 +25,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
             if (_.isUndefined(this.get('option')) ||
                 String(this.get('option')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Option can not be empty!') }}';
+                var msg = '{{ _('Option cannot be empty!') }}';
                 this.errorModel.set('option',msg);
                 return msg;
             }
             if (_.isUndefined(this.get('value')) ||
                 String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Value can not be empty!') }}';
+                var msg = '{{ _('Value cannot be empty!') }}';
                 this.errorModel.set('value',msg);
                 return msg;
             }

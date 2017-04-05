@@ -75,7 +75,7 @@ blueprint = DebuggerModule(MODULE_NAME, __name__)
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=gettext("This URL can not be called directly!"))
+    return bad_request(errormsg=gettext("This URL cannot be called directly!"))
 
 
 @blueprint.route("/js/debugger.js")
@@ -190,7 +190,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     if r_set['rows'][0]:
         # Function with a colon in the name cannot be debugged.
         # If this is an EDB wrapped function, no debugging allowed
-        # Function with return type "trigger" can not be debugged.
+        # Function with return type "trigger" cannot be debugged.
         if ":" in r_set['rows'][0]['name']:
             ret_status = False
             msg = gettext("Functions with a colon in the name cannot be debugged.")
@@ -230,7 +230,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         ret_status = False
         msg = gettext("The function/procedure cannot be debugged")
 
-    # Return the response that function can not be debug...
+    # Return the response that function cannot be debug...
     if not ret_status:
         current_app.logger.debug(msg)
         return internal_server_error(msg)

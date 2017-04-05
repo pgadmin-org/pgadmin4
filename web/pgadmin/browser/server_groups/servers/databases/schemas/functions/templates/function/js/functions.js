@@ -70,7 +70,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         return false;
       }
       // Below will disable default value cell if argument mode is 'INOUT' or 'OUT' as
-      // user can not set default value for out parameters.
+      // user cannot set default value for out parameters.
       if(!_.isUndefined(m.get('argmode')) && !_.isUndefined(this.get('name')) &&
          this.get('name') == 'argdefval' &&
          (m.get('argmode') == 'INOUT' || m.get('argmode') == 'OUT')) {

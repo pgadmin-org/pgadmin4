@@ -138,7 +138,7 @@ class IEMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL can not be called directly!"))
+    return bad_request(errormsg=_("This URL cannot be called directly!"))
 
 
 @blueprint.route("/js/import_export.js")

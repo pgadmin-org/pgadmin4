@@ -312,7 +312,7 @@ class ServerNode(PGChildNodeView):
         """Delete a server node in the settings database."""
         servers = Server.query.filter_by(user_id=current_user.id, id=sid)
 
-        # TODO:: A server, which is connected, can not be deleted
+        # TODO:: A server, which is connected, cannot be deleted
         if servers is None:
             return make_json_response(
                 status=410,

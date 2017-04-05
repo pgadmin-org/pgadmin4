@@ -217,7 +217,7 @@ class Connection(BaseConnection):
         """
         Returns the dictionary object representing this object.
         """
-        # In case, it can not be auto reconnectable, or already been released,
+        # In case, it cannot be auto reconnectable, or already been released,
         # then we will return None.
         if not self.auto_reconnect and not self.conn:
             return None

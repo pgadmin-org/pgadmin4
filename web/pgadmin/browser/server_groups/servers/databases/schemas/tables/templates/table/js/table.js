@@ -746,17 +746,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table name can not be empty.') }}';
+            msg = '{{ _('Table name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           } else if (_.isUndefined(schema) || _.isNull(schema) ||
             String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table schema can not be empty.') }}';
+            msg = '{{ _('Table schema cannot be empty.') }}';
             this.errorModel.set('schema', msg);
             return msg;
           } else if (_.isUndefined(relowner) || _.isNull(relowner) ||
             String(relowner).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table owner can not be empty.') }}';
+            msg = '{{ _('Table owner cannot be empty.') }}';
             this.errorModel.set('relowner', msg);
             return msg;
           }
