@@ -133,7 +133,12 @@ _create_python_virtualenv() {
 _build_runtime() {
     _create_python_virtualenv || exit 1
     cd $SOURCEDIR/runtime
-    $QMAKE || { echo qmake failed; exit 1; }
+    make clean
+    if [ "$PGADMIN4_USE_WEBKIT" == "1" ]; then
+        $QMAKE DEFINES+=PGADMIN4_USE_WEBKIT || { echo qmake failed; exit 1; }
+    else
+        $QMAKE || { echo qmake failed; exit 1; }
+    fi
     make || { echo make failed; exit 1; }
     cp -r pgAdmin4.app "$BUILDROOT/$APP_BUNDLE_NAME"
 }

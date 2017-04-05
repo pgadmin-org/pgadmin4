@@ -25,6 +25,9 @@ pip: docs
 appbundle: docs
 	./pkg/mac/build.sh
 
+appbundle-webkit: docs
+	PGADMIN4_USE_WEBKIT=1 ./pkg/mac/build.sh
+
 src:
 	./pkg/src/build.sh
 
