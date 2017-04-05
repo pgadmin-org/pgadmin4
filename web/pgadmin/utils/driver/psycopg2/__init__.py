@@ -637,7 +637,7 @@ WHERE
             if not results:
                 if not cur.closed:
                     cur.close()
-                yield gettext('"The query executed did not return any data."')
+                yield gettext('The query executed did not return any data.')
                 return
 
             header = [c.to_dict()['name'] for c in cur.ordered_description()]
