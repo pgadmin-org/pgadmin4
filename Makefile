@@ -34,6 +34,15 @@ src:
 minimise:
 	python web/tools/minimise.py ./web
 
+msg-extract:
+	cd web && pybabel extract -F babel.cfg -o pgadmin/messages.pot pgadmin
+
+msg-update:
+	cd web && pybabel update -i pgadmin/messages.pot -d pgadmin/translations
+
+msg-compile:
+	cd web && pybabel compile -d pgadmin/translations
+
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html
 
