@@ -385,7 +385,7 @@ if __name__ == '__main__':
         test_result_json.update(temp_dict_for_server)
 
     # Dump test result into json file
-    json_file_path = CURRENT_PATH + "/tests_result.json"
+    json_file_path = CURRENT_PATH + "/test_result.json"
     with open(json_file_path, 'w') as outfile:
         json.dump(test_result_json, outfile, indent=2)
 
