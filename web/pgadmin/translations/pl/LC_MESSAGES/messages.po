@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-04-05 14:01+0100\n"
-"PO-Revision-Date: 2017-03-09 18:02+0200\n"
+"PO-Revision-Date: 2017-04-05 19:03+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language-Team: begina.felicysym@wp.eu\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
-"(n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Virtaal 0.7.1\n"
 "Generated-By: Babel 1.3\n"
 
 #: pgadmin/__init__.py:401 pgadmin/__init__.py:441
@@ -1486,6 +1488,8 @@ msgid ""
 "Definition incomplete. Please provide Locale OR Copy Collation OR "
 "LC_TYPE/LC_COLLATE"
 msgstr ""
+"Niepełna definicja. Należy zapewnić Locale LUB Copy Collation LUB "
+"LC_TYPE/LC_COLLATE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:496
 msgid "The specified collation could not be found.\n"
@@ -1518,12 +1522,11 @@ msgid "LC_TYPE"
 msgstr "LC_TYPE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:166
-#, fuzzy
 msgid ""
 "Definition incomplete, Please provide Locale OR Copy collation OR "
 "LC_TYPE/LC_COLLATE!"
 msgstr ""
-"Niepełna definicja. Należy zapewnić Locale LUB Copy Collation LUB "
+"Niepełna definicja, Należy zapewnić Locale LUB Copy Collation LUB "
 "LC_TYPE/LC_COLLATE!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:50
@@ -1694,15 +1697,12 @@ msgid "Foreign Table dropped"
 msgstr "Tabela obca skasowana"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:880
-#, fuzzy
 msgid ""
 "Could not find the foreign table in the database. It may have been "
 "removed by another user or shifted to the another schema."
 msgstr ""
-"\n"
-"Nie znaleziono tabeli obcej w bazie danych.\n"
-"Być może została usunięta przez innego użytkownika \n"
-"lub przesunięta do innego schematu.\n"
+"Nie znaleziono tabeli obcej w bazie danych. Być może została usunięta przez "
+"innego użytkownika lub przesunięta do innego schematu."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1233
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1274
@@ -1733,12 +1733,10 @@ msgid "Inherited From"
 msgstr "Dziedziczone Z"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:223
-#, fuzzy
 msgid "Column Name cannot be empty!"
-msgstr "Nazwa kolumny nie może być pusta."
+msgstr "Nazwa kolumny nie może być pusta!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:229
-#, fuzzy
 msgid "Column Datatype cannot be empty!"
 msgstr "Typ danych kolumny nie może być pusty!"
 
@@ -1747,12 +1745,10 @@ msgid "No Inherit"
 msgstr "Brak Dziedziczenia"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:406
-#, fuzzy
 msgid "Constraint Name cannot be empty!"
 msgstr "Nazwa Ograniczenia nie może być pusta!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:412
-#, fuzzy
 msgid "Constraint Check cannot be empty!"
 msgstr "Kontrola Ograniczenia nie może być pusta!"
 
@@ -1802,9 +1798,8 @@ msgid "Could not find the FTS Configuration node in the database node."
 msgstr "Nie znaleziono węzła Konfiguracji FTS w węźle bazy danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:417
-#, fuzzy
 msgid "Provide at least copy config or parser."
-msgstr "podaj przynajmniej konfigurację kopiowania albo parser"
+msgstr "Podaj przynajmniej konfigurację kopiowania albo parser."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:502
 msgid "Could not find the FTS Configuration node to update."
@@ -1838,12 +1833,10 @@ msgstr ""
 "Konfiguracji FTS!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:35
-#, fuzzy
 msgid "Token cannot be empty!"
 msgstr "Token nie może być pusty!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:43
-#, fuzzy
 msgid "Dictionary name cannot be empty!"
 msgstr "Nazwa słownika nie może być pusta!"
 
@@ -1900,9 +1893,8 @@ msgid "Could not find the FTS Dictionary node."
 msgstr "Nie znaleziono węzła Słownika FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:372
-#, fuzzy
 msgid "Could not find the FTS Dictionary node in the database node."
-msgstr "Nie znaleziono węzła funkcji w bazie danych."
+msgstr "Nie znaleziono węzła Słownika FTS w węźle bazy danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:486
 msgid "Could not find the FTS Dictionary node to update."
@@ -1929,17 +1921,14 @@ msgid "Could not generate reversed engineered query for FTS Dictionary node."
 msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Słownika FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
-#, fuzzy
 msgid "Option cannot be empty!"
 msgstr "Opcja nie może być pusta!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:34
-#, fuzzy
 msgid "Value cannot be empty!"
 msgstr "Wartość nie może być pusta!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:63
-#, fuzzy
 msgid "FTS Dictionary"
 msgstr "Słownik FTS"
 
@@ -1969,9 +1958,8 @@ msgid "Could not find the FTS Parser node."
 msgstr "Nie znaleziono węzła Parsera FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:306
-#, fuzzy
 msgid "Could not find the FTS Parser node in the database node."
-msgstr "Nie znaleziono węzła funkcji w bazie danych."
+msgstr "Nie znaleziono węzła Parsera FTS w węźle bazy danych."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/__init__.py:422
 msgid "Could not find the FTS Parser node to update."
@@ -2073,23 +2061,20 @@ msgid "The specified FTS template could not be found.\n"
 msgstr "Nie znaleziono wskazanego szablonu FTS.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:461
-#, fuzzy
 msgid "FTS Template dropped"
 msgstr "Szablon FTS skasowany"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
-#, fuzzy
 msgid ""
 "Could not generate reversed engineered query for the FTS Template.\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować zapytania odwróconej inżynierii dla szablonu FTS.\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS.\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
-#, fuzzy
 msgid "Could not generate reversed engineered query for FTS Template node."
-msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla szablonu FTS."
+msgstr "Nie można wygenerować zapytania odwróconej inżynierii dla Szablonu FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26
 msgid "FTS Template"
@@ -2321,9 +2306,8 @@ msgstr "Właściciel nie może być pusty."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:360
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:281
-#, fuzzy
 msgid "Return type cannot be empty."
-msgstr "Typ Zwracany nie może być pusty."
+msgstr "Typ zwracany nie może być pusty."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/procedure/js/procedures.js:157
@@ -2695,23 +2679,19 @@ msgid "Table statistics have been reset"
 msgstr "Statystyki tabeli zostały wyczyszczone"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1826
-#, fuzzy
 msgid "-- definition incomplete for {0} constraint"
 msgstr "-- niepełna definicja ograniczenia {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1886
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1917
-#, fuzzy
 msgid "-- definition incomplete for foreign_key constraint"
 msgstr "-- niepełna definicja ograniczenia foreign_key"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2011
-#, fuzzy
 msgid "-- definition incomplete for check_constraint"
 msgstr "-- niepełna definicja ograniczenia check_constraint"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2087
-#, fuzzy
 msgid "-- definition incomplete for exclusion_constraint"
 msgstr "-- niepełna definicja ograniczenia exclusion_constraint"
 
@@ -2733,9 +2713,8 @@ msgid "-- definition incomplete"
 msgstr "-- definicja niepełna"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2304
-#, fuzzy
 msgid "-- definition incomplete for {0}"
-msgstr "-- definicja niepełna"
+msgstr "-- niepełna definicja {0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:284
 msgid "Could not find the column."
@@ -2813,12 +2792,10 @@ msgid "System column?"
 msgstr "Kolumna systemowa?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:566
-#, fuzzy
 msgid "Column name cannot be empty."
 msgstr "Nazwa kolumny nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:573
-#, fuzzy
 msgid "Column type cannot be empty."
 msgstr "Typ kolumny nie może być pusty."
 
@@ -2851,9 +2828,8 @@ msgid "The specified check constraint could not be found.\n"
 msgstr "Wskazane ograniczenie sprawdzające nie zostało znalezione.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:614
-#, fuzzy
 msgid "Check Constraint dropped."
-msgstr "Ograniczenie Sprawdzające skasowane"
+msgstr "Ograniczenie Sprawdzające skasowane."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:876
 msgid "Check constraint updated."
@@ -2908,7 +2884,6 @@ msgid "Don't validate?"
 msgstr "Bez weryfikacji?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/templates/check_constraint/js/check_constraint.js:164
-#, fuzzy
 msgid "Check cannot be empty!"
 msgstr "Sprawdzenie nie może być puste!"
 
@@ -3209,7 +3184,6 @@ msgid "NULLs"
 msgstr "NULLe"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:161
-#, fuzzy
 msgid "Column Name cannot be empty."
 msgstr "Nazwa kolumny nie może być pusta."
 
@@ -3249,12 +3223,10 @@ msgid "Concurrent build?"
 msgstr "Jednoczesne tworzenie?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:400
-#, fuzzy
 msgid "Tablespace cannot be empty."
 msgstr "Przestrzeń tabel nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:406
-#, fuzzy
 msgid "Access method cannot be empty."
 msgstr "Metoda dostępu nie może być pusta."
 
@@ -3630,19 +3602,16 @@ msgid "Storage settings"
 msgstr "Ustawienia przechowywania"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:749
-#, fuzzy
 msgid "Table name cannot be empty."
 msgstr "Nazwa tabeli nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:754
-#, fuzzy
 msgid "Table schema cannot be empty."
 msgstr "Schemat tabeli nie może być pusty."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:759
-#, fuzzy
 msgid "Table owner cannot be empty."
-msgstr "Właściciel tabeli nie może być pusta."
+msgstr "Właściciel tabeli nie może być pusty."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:2
 msgid "Table name"
@@ -3884,7 +3853,6 @@ msgid "Constraint?"
 msgstr "Ograniczenie?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:488
-#, fuzzy
 msgid "Trigger function cannot be empty."
 msgstr "Funkcja wyzwalacza nie może być pusta."
 
@@ -3893,7 +3861,6 @@ msgid "Specify at least one event."
 msgstr "Wskaż co najmniej jedno zdarzenie."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:508
-#, fuzzy
 msgid "Trigger code cannot be empty."
 msgstr "Kod wyzwalacza nie może być pusty."
 
@@ -4026,9 +3993,8 @@ msgid "Subtype must be defined for range types."
 msgstr "Dla typów przedziału musi być zdefiniowany podtyp."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:934
-#, fuzzy
 msgid "External types require both input and output conversion functions."
-msgstr "Typy zewnętrzne wymagają funkcji konwersji Wejścia i Wyjścia."
+msgstr "Typy zewnętrzne wymagają funkcji konwersji wejścia i wyjścia."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1065
 msgid "The specified type could not be found.\n"
@@ -4093,9 +4059,8 @@ msgid "Enumeration Type"
 msgstr "Typ Enumeracyjny"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:410
-#, fuzzy
 msgid "Subtype"
-msgstr "Pod-typ"
+msgstr "Podtyp"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:414
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:421
@@ -4106,18 +4071,16 @@ msgid "Range Type"
 msgstr "Typ Przedziału"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:420
-#, fuzzy
 msgid "Subtype operator class"
-msgstr "Klasa operatora pod-typu"
+msgstr "Klasa operatora podtypu"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:486
 msgid "Canonical function"
 msgstr "Funkcja kanoniczna"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:520
-#, fuzzy
 msgid "Subtype diff function"
-msgstr "Funkcja różnicy pod-typu"
+msgstr "Funkcja różnicy podtypu"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:558
 msgid "External Type"
@@ -4213,7 +4176,6 @@ msgid "System type?"
 msgstr "Typ systemowy?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:817
-#, fuzzy
 msgid "Type cannot be empty."
 msgstr "Typ nie może być pusty."
 
@@ -4222,12 +4184,10 @@ msgid "Subtype name cannot be empty."
 msgstr "Nazwa podtypu nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:829
-#, fuzzy
 msgid "Input function cannot be empty."
 msgstr "Funkcja wejścia nie może być pusta."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:835
-#, fuzzy
 msgid "Output function cannot be empty."
 msgstr "Funkcja wyjścia nie może być pusta."
 
@@ -4497,9 +4457,8 @@ msgid "Could not find the pgAgent job on the server."
 msgstr "Nie odnaleziono zadania pgAgenta na serwerze."
 
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:507
-#, fuzzy
 msgid "Updated the next runtime to now."
-msgstr "Zmieniono następne uruchomienie na teraz!"
+msgstr "Zmieniono następne uruchomienie na teraz."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:42
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:11
@@ -5417,7 +5376,7 @@ msgstr "Ograniczenie brudnego odsetka nie może być puste."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:29
 msgid "Login/Group Roles"
-msgstr ""
+msgstr "Role Loginów/Grup"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:150
 msgid "Date format is invalid."
@@ -5428,7 +5387,6 @@ msgid "Connection limit must be an integer value or equal to -1."
 msgstr "Ograniczenie połączeń musi być liczbą naturalna lub równe -1."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:163
-#, fuzzy
 msgid ""
 "\n"
 "Role membership information must be passed as an array of JSON objects in"
@@ -5443,8 +5401,8 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"Informacja o uczestnictwie w roli musi być przekazane jako tabela "
-"obiektów JSON\n"
+"Informacja o uczestnictwie w roli musi być przekazane jako tabela obiektów "
+"JSON\n"
 "w następującym formacie:\n"
 "\n"
 "rolmembership:[{\n"
@@ -5455,7 +5413,6 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:188
-#, fuzzy
 msgid ""
 "\n"
 "Role membership information must be passed as a string representing an "
@@ -5506,7 +5463,6 @@ msgstr ""
 "        ]\n"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:266
-#, fuzzy
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -5530,7 +5486,6 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:283
-#, fuzzy
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -5580,7 +5535,6 @@ msgstr ""
 "        ]\n"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:344
-#, fuzzy
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -5595,9 +5549,9 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"Parametry konfiguracji/zmienne muszą być przekazywane jako tablica "
-"obiektów JSON\n"
-"w następującym formacie (trym tworzenia):\n"
+"Parametry konfiguracji/zmienne muszą być przekazywane jako tablica obiektów "
+"JSON\n"
+"w następującym formacie w trybie tworzenia:\n"
 "variables:[{\n"
 "    database: <baza_danych> lub null,\n"
 "    name: <konfiguracja>,\n"
@@ -5607,7 +5561,6 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:363
-#, fuzzy
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -5637,9 +5590,9 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"Parametry konfiguracji/zmienne muszą być przekazywane jako tablica "
-"obiektów JSON\n"
-"w następującym formacie (trym modyfikacji):\n"
+"Parametry konfiguracji/zmienne muszą być przekazywane jako tablica obiektów "
+"JSON\n"
+"w następującym formacie w trybie modyfikacji:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        database: <baza_danych> lub null,\n"
@@ -5723,17 +5676,14 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:702
-#, fuzzy
 msgid ""
 "Could not generate reversed engineered query for the role.\n"
 "{0}"
 msgstr ""
-"Nie można wygenerować Zapytania odwróconej inżynierii dla roli.\n"
-"\n"
+"Nie można wygenerować zapytania odwróconej inżynierii dla roli.\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:709
-#, fuzzy
 msgid "Could not generate reversed engineered query for the role."
 msgstr "Nie można wygenerować Zapytania odwróconej inżynierii dla roli."
 
@@ -5786,13 +5736,12 @@ msgid "Please specify the value for all the security providers."
 msgstr "Należy określić wartość dla wszystkich dostawców bezpieczeństwa."
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:255
-#, fuzzy
 msgid "Select members"
-msgstr "Grudzień"
+msgstr "Wybierz członków"
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:316
 msgid "Login/Group Role"
-msgstr ""
+msgstr "Rola Loginu/Grupy"
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:348
 msgid "Login Role"
@@ -5806,7 +5755,7 @@ msgstr "Grupa Roli"
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:368
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:374
 msgid "Login/Group Role..."
-msgstr ""
+msgstr "Rola Loginu/Grupy..."
 
 #: pgadmin/browser/server_groups/servers/roles/templates/role/js/role.js:411
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:669
@@ -6282,7 +6231,6 @@ msgid "No object selected"
 msgstr "Nie wybrano obiektu"
 
 #: pgadmin/browser/templates/browser/js/browser.js:453
-#, fuzzy
 msgid "Error initializing script - "
 msgstr "Błąd uruchamiania skryptu - "
 
@@ -6333,9 +6281,8 @@ msgid "General"
 msgstr "Ogólne"
 
 #: pgadmin/browser/templates/browser/js/messages.js:15
-#, fuzzy
 msgid "Definition incomplete"
-msgstr "-- definicja niepełna"
+msgstr "Definicja niepełna"
 
 #: pgadmin/browser/templates/browser/js/messages.js:16
 msgid "Nothing changed"
@@ -6704,128 +6651,113 @@ msgstr "Wsparcie Społeczności"
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:44
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:104
 msgid "An error occurred whilst loading the dashboard."
-msgstr ""
+msgstr "Wystąpił błąd podczas wczytywania pulpitu."
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:216
 msgid "An error occurred whilst rendering the graph."
-msgstr ""
+msgstr "Wystąpił błąd podczas rysowania wykresu."
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:338
-#, fuzzy
 msgid "An error occurred whilst rendering the table."
-msgstr "Wystąpił błąd podczas odczytu opcji narzędzia zapytania"
+msgstr "Wystąpił błąd podczas rysowania tabeli."
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:403
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:463
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:680
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:735
-#, fuzzy
 msgid "PID"
-msgstr "Oid"
+msgstr "PID"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:433
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:705
-#, fuzzy
 msgid "State"
-msgstr "Uruchomione"
+msgstr "Stan"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:450
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:722
-#, fuzzy
 msgid "Wait Event"
-msgstr "Typ zdarzenia oczekiwania"
+msgstr "Zdarzenie Oczekiwania"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:455
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:727
 msgid "Blocking PIDs"
-msgstr ""
+msgstr "Blokujące PIDy"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:473
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:740
-#, fuzzy
 msgid "Lock type"
-msgstr "Typ Źródłowy"
+msgstr "Typ blokady"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:478
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:745
-#, fuzzy
 msgid "Target relation"
 msgstr "Współzależność"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:483
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:750
 msgid "Page"
-msgstr ""
+msgstr "Strona"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:488
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:755
-#, fuzzy
 msgid "Tuple"
-msgstr "reguła"
+msgstr "Krotka"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:493
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:760
 msgid "vXID (target)"
-msgstr ""
+msgstr "vXID (cel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:498
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:765
 msgid "XID (target)"
-msgstr ""
+msgstr "XID (cel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:503
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:770
-#, fuzzy
 msgid "Class"
-msgstr "Klasa zadania"
+msgstr "Klasa"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:508
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:775
-#, fuzzy
 msgid "Object ID"
-msgstr "Plik obiektu"
+msgstr "ID Obiektu"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:513
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:780
 msgid "vXID (owner)"
-msgstr ""
+msgstr "vXID (właściciel)"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:523
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:790
-#, fuzzy
 msgid "Granted?"
-msgstr "Utworzono"
+msgstr "Uprawniono?"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:545
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:807
-#, fuzzy
 msgid "XID"
-msgstr "Oid"
+msgstr "XID"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:550
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:812
-#, fuzzy
 msgid "Prepared at"
-msgstr "Przygotowane Transakcje"
+msgstr "Przygotowano na"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:562
-#, fuzzy
 msgid "Category"
-msgstr "Typ kategorii"
+msgstr "Kategoria"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:567
-#, fuzzy
 msgid "Setting"
-msgstr "Ustawienia przechowywania"
+msgstr "Ustawienie"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:572
 msgid "Unit"
-msgstr ""
+msgstr "Jednostka"
 
 #: pgadmin/dashboard/templates/dashboard/js/dashboard.js:577
-#, fuzzy
 msgid "Description"
-msgstr "Sekcje"
+msgstr "Opis"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/activity.sql:9
 msgid "yes"
@@ -6943,9 +6875,8 @@ msgid "Miscellaneous"
 msgstr "Pozostałe"
 
 #: pgadmin/misc/__init__.py:59 pgadmin/misc/__init__.py:60
-#, fuzzy
 msgid "User language"
-msgstr "Język"
+msgstr "Język użytkownika"
 
 #: pgadmin/misc/bgprocess/__init__.py:50
 msgid "seconds"
@@ -6986,7 +6917,6 @@ msgid "The process has already been started."
 msgstr "Proces został już uruchomiony."
 
 #: pgadmin/misc/bgprocess/processes.py:214
-#, fuzzy
 msgid "The process has already finished and cannot be restarted."
 msgstr "Proces został już zakończony i nie może być uruchomiony ponownie."
 
@@ -7081,9 +7011,8 @@ msgstr "Preferencje"
 
 #: pgadmin/preferences/__init__.py:112 pgadmin/preferences/__init__.py:118
 #: pgadmin/preferences/__init__.py:127 pgadmin/preferences/__init__.py:133
-#, fuzzy
 msgid "label"
-msgstr "Etykieta"
+msgstr "etykieta"
 
 #: pgadmin/preferences/__init__.py:129
 msgid "help_str"
@@ -7096,18 +7025,16 @@ msgstr "Wyczyść Układ"
 #: pgadmin/settings/__init__.py:73 pgadmin/tools/backup/__init__.py:171
 #: pgadmin/tools/restore/__init__.py:125
 #: pgadmin/tools/user_management/__init__.py:99
-#, fuzzy
 msgid "This URL cannot be called directly."
 msgstr "Ten URL nie może być wywołany bezpośrednio."
 
 #: pgadmin/static/js/selection/clipboard.js:53
-#, fuzzy
 msgid "Error"
-msgstr "Przy błedzie"
+msgstr "Błąd"
 
 #: pgadmin/static/js/selection/clipboard.js:54
 msgid "Oops, unable to copy to clipboard"
-msgstr ""
+msgstr "Niestety nie da się skopiować do schowka"
 
 #: pgadmin/templates/security/change_password.html:2
 #, python-format
@@ -7173,9 +7100,8 @@ msgid "Backing up an object on the server '{0}' from database '{1}'..."
 msgstr "Tworzenie kopii zapasowej obiektu na serwerze '{0}' z bazy danych '{1}'..."
 
 #: pgadmin/tools/backup/__init__.py:122 pgadmin/tools/backup/__init__.py:149
-#, fuzzy
 msgid "Backing up the global objects on the server '{0}'..."
-msgstr "Tworzenie kopii zapasowej obiektów globalnych serwera - '{0}'..."
+msgstr "Tworzenie kopii zapasowej obiektów globalnych serwera '{0}'..."
 
 #: pgadmin/tools/backup/__init__.py:126 pgadmin/tools/backup/__init__.py:153
 msgid "Backing up the server '{0}'..."
@@ -7453,10 +7379,9 @@ msgid "Please set binary path for PostgreSQL Server from preferences."
 msgstr "Należy ustawić ścieżkę binariów Serwera PostgreSQL w preferencjach."
 
 #: pgadmin/tools/backup/templates/backup/js/backup.js:617
-#, fuzzy
 msgid "Please set binary path for EDB Postgres Advanced Server from preferences."
 msgstr ""
-"Należy ustawić ścieżkę binariów Zaawansowanego Serwera EDB w "
+"Należy ustawić ścieżkę binariów Zaawansowanego Serwera Postgres EDB w "
 "preferencjach."
 
 #: pgadmin/tools/backup/templates/backup/js/backup.js:731
@@ -7466,9 +7391,8 @@ msgid "Please provide filename"
 msgstr "Należy podać nazwę pliku"
 
 #: pgadmin/tools/datagrid/__init__.py:223
-#, fuzzy
 msgid "Server disconnected. Please connect and try again."
-msgstr "Serwer rozłączony. Należy połączyć się i spróbować ponownie"
+msgstr "Serwer rozłączony. Należy połączyć się i spróbować ponownie."
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:27
 msgid "Open File"
@@ -7649,16 +7573,17 @@ msgstr "Debugger"
 
 #: pgadmin/tools/debugger/__init__.py:66 pgadmin/tools/sqleditor/__init__.py:89
 msgid "Open in new browser tab"
-msgstr ""
+msgstr "Otwórz w zakładce przeglądarki"
 
 #: pgadmin/tools/debugger/__init__.py:68
 msgid "If set to True, the Debugger will be opened in a new browser tab."
 msgstr ""
+"Jeśli ustawiono na True, Debugger zostanie otwarty w nowej zakładce "
+"przeglądarki."
 
 #: pgadmin/tools/debugger/__init__.py:78
 #: pgadmin/tools/import_export/__init__.py:141
 #: pgadmin/tools/maintenance/__init__.py:143
-#, fuzzy
 msgid "This URL cannot be called directly!"
 msgstr "Ten URL nie może być wywołany bezpośrednio!"
 
@@ -7844,16 +7769,15 @@ msgid "Import/Export"
 msgstr "Import/Eksport"
 
 #: pgadmin/tools/import_export/__init__.py:109
-#, fuzzy
 msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
 msgstr ""
-"Kopiowanie danych tabeli - '{0}.{1}' na bazie danych '{2}' i serwerze "
-"({3}{4})..."
+"Kopiowanie danych tabeli '{0}.{1}' na bazie danych '{2}' i serwerze "
+"({3}:{4})..."
 
 #: pgadmin/tools/import_export/__init__.py:122
-#, fuzzy
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
-msgstr "Kopiowanie danych tabeli '{0}.{1}' na bazie danych '{2}' serwera '{3}'"
+msgstr ""
+"Kopiowanie danych tabeli '{0}.{1}' na bazie danych '{2}' serwera '{3}'..."
 
 #: pgadmin/tools/import_export/__init__.py:206
 #: pgadmin/tools/maintenance/__init__.py:194
@@ -7937,7 +7861,6 @@ msgid "Not null columns..."
 msgstr "Kolumny bez null..."
 
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:177
-#, fuzzy
 msgid ""
 "Do not match the specified column values against the null string. In the "
 "default case where the null string is empty, this means that empty values"
@@ -7945,11 +7868,11 @@ msgid ""
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
 msgstr ""
-"Nie sprawdzać wskazanych kolumn na ciąg null. W podstawowym przypadku gdy"
-" ciąg znaków null jest pusty, oznacza to że puste wartości będą "
-"traktowane jak ciąg znaków o zerowej długości a nie nulle, nawet gdy nie "
-"są w apostrofach. Ta opcja dostępna jest tylko dla importu, i tylko z "
-"formatu CSV."
+"Nie sprawdzać wskazanych kolumn na ciąg null. W podstawowym przypadku gdy "
+"ciąg znaków null jest pusty, oznacza to że puste wartości będą traktowane "
+"jak ciąg znaków o zerowej długości a nie nulle, nawet gdy nie są w "
+"apostrofach. Ta opcja dostępna jest tylko dla importu, i tylko z formatu "
+"CSV."
 
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:201
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:216
@@ -8204,6 +8127,8 @@ msgstr ""
 #: pgadmin/tools/sqleditor/__init__.py:91
 msgid "If set to True, the Query Tool will be opened in a new browser tab."
 msgstr ""
+"Jeśli ustawiono na True, Narzędzie Zapytań zostanie otwarte w nowej zakładce "
+"przeglądarki."
 
 #: pgadmin/tools/sqleditor/__init__.py:97
 msgid "Verbose output?"
@@ -8226,9 +8151,8 @@ msgid "Show buffers?"
 msgstr "Pokazać bufory?"
 
 #: pgadmin/tools/sqleditor/__init__.py:115
-#, fuzzy
 msgid "Show timing?"
-msgstr "Pokaż timing."
+msgstr "Pokazać timing?"
 
 #: pgadmin/tools/sqleditor/__init__.py:133
 msgid "Font size"
@@ -8284,9 +8208,8 @@ msgstr "ID Transakcji nie znaleziono w sesji."
 
 #: pgadmin/tools/sqleditor/__init__.py:366
 #: pgadmin/tools/sqleditor/__init__.py:895
-#, fuzzy
 msgid "Either transaction object or session object not found."
-msgstr "Nie znaleziono obiektu ani Transakcji ani Sesji."
+msgstr "Nie znaleziono obiektu ani transakcji ani sesji."
 
 #: pgadmin/tools/sqleditor/__init__.py:611
 msgid "No primary key found for this object, so unable to save records."
@@ -8683,9 +8606,8 @@ msgstr ""
 "'{conn_id}'."
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:640
-#, fuzzy
 msgid "The query executed did not return any data."
-msgstr "\"Wykonane zapytanie nie zwróciło żadnych danych.\""
+msgstr "Wykonane zapytanie nie zwróciło żadnych danych."
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:1016
 msgid ""
@@ -8886,4 +8808,3 @@ msgstr "Nie znaleziono wskazanej bazy danych."
 
 #~ msgid "Restoring the backup on the server '{0}'..."
 #~ msgstr "Odtworzenie kopii zapasowej na serwerze '{0}'..."
-
