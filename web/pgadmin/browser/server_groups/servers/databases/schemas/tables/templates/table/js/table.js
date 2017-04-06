@@ -734,8 +734,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               schema = this.get('schema'),
               relowner = this.get('relowner');
 
-          this.errorModel.clear();
-
           // If nothing to validate or VacuumSetting keys then
           // return from here
           if ( keys && (keys.length == 0
@@ -743,6 +741,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                         || _.indexOf(keys, 'toast_autovacuum_enabled') != -1) ) {
             return null;
           }
+
+          // Have to clear existing validation before initiating current state validation only
+          this.errorModel.clear();
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
