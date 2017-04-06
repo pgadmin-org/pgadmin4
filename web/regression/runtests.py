@@ -18,6 +18,7 @@ import os
 import signal
 import sys
 import traceback
+import json
 
 from selenium import webdriver
 
@@ -29,7 +30,7 @@ else:
 logger = logging.getLogger(__name__)
 file_name = os.path.basename(__file__)
 
-from testscenarios.scenarios import generate_scenarios
+from testscenarios import scenarios
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -51,8 +52,8 @@ if os.path.isfile(config.TEST_SQLITE_PATH):
 
 config.TESTING_MODE = True
 
-# Disable upgrade checks - no need during testing, and it'll cause an error if there's
-# no network connection when it runs.
+# Disable upgrade checks - no need during testing, and it'll cause an error
+# if there's no network connection when it runs.
 config.UPGRADE_CHECK_ENABLED = False
 
 pgadmin_credentials = test_setup.config_data
@@ -72,7 +73,7 @@ if pgadmin_credentials:
                 'login_password']
 
 # Execute the setup file
-exec (open("setup.py").read())
+exec(open("setup.py").read())
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
@@ -96,6 +97,10 @@ test_client = app.test_client()
 driver = None
 app_starter = None
 handle_cleanup = None
+
+# Override apply_scenario method as we need custom test description/name
+scenarios.apply_scenario = test_utils.apply_scenario
+
 
 def get_suite(module_list, test_server, test_app_client):
     """
@@ -125,7 +130,7 @@ def get_suite(module_list, test_server, test_app_client):
         obj.setTestClient(test_app_client)
         obj.setTestServer(test_server)
         obj.setDriver(driver)
-        scenario = generate_scenarios(obj)
+        scenario = scenarios.generate_scenarios(obj)
         pgadmin_suite.addTests(scenario)
 
     return pgadmin_suite
@@ -138,7 +143,7 @@ def get_test_modules(arguments):
 
     :param arguments: this is command line arguments for module name to
     which test suite will run
-    :type arguments: str
+    :type arguments: dict
     :return module list: test module list
     :rtype: list
     """
@@ -197,6 +202,7 @@ def add_arguments():
 
 
 def sig_handler(signo, frame):
+    global handle_cleanup
     if handle_cleanup:
         handle_cleanup()
 
@@ -205,26 +211,44 @@ def get_tests_result(test_suite):
     """This function returns the total ran and total failed test cases count"""
     try:
         total_ran = test_suite.testsRun
-        failed_cases_result = []
-        skipped_cases_result = []
+        failed_cases_result = {}
+        skipped_cases_result = {}
         if total_ran:
             if test_suite.failures:
                 for failed_case in test_suite.failures:
-                    class_name = str(
-                        failed_case[0]).split('.')[-1].split()[0].strip(')')
-                    failed_cases_result.append(class_name)
+                    if hasattr(failed_case[0], "scenario_name"):
+                        class_name = str(
+                            failed_case[0]).split('.')[-1].split()[0].strip(
+                            ')')
+                        if class_name in failed_cases_result:
+                            failed_cases_result[class_name].append(
+                                {failed_case[0].scenario_name: failed_case[1]})
+                        else:
+                            failed_cases_result[class_name] = \
+                                [{failed_case[0].scenario_name: failed_case[
+                                    1]}]
             if test_suite.errors:
                 for error_case in test_suite.errors:
-                    class_name = str(
-                        error_case[0]).split('.')[-1].split()[0].strip(')')
-                    if class_name not in failed_cases_result:
-                        failed_cases_result.append(class_name)
+                    if hasattr(error_case[0], "scenario_name"):
+                        class_name = str(
+                            error_case[0]).split('.')[-1].split()[0].strip(')')
+                        if class_name in failed_cases_result:
+                            failed_cases_result[class_name].append(
+                                {error_case[0].scenario_name: error_case[1]})
+                        else:
+                            failed_cases_result[class_name] = \
+                                [{error_case[0].scenario_name: error_case[1]}]
             if test_suite.skipped:
                 for skip_test in test_suite.skipped:
+                    # if hasattr(skip_test[0], "scenario_name"):
                     class_name = str(
                         skip_test[0]).split('.')[-1].split()[0].strip(')')
-                    if class_name not in failed_cases_result:
-                        skipped_cases_result.append(class_name)
+                    if class_name in skipped_cases_result:
+                        skipped_cases_result[class_name].append(
+                            {skip_test[0].scenario_name: skip_test[1]})
+                    else:
+                        skipped_cases_result[class_name] = \
+                            [{skip_test[0].scenario_name: skip_test[1]}]
         return total_ran, failed_cases_result, skipped_cases_result
     except Exception:
         traceback.print_exc(file=sys.stderr)
@@ -257,8 +281,8 @@ class StreamToLogger(object):
 if __name__ == '__main__':
     # Failure detected?
     failure = False
-
     test_result = dict()
+
     # Set signal handler for cleanup
     signal_list = dir(signal)
     required_signal_list = ['SIGTERM', 'SIGABRT', 'SIGQUIT', 'SIGINT']
@@ -321,11 +345,19 @@ if __name__ == '__main__':
     print(
         "==================================================================="
         "===\n", file=sys.stderr)
+
+    test_result_json = {}
     for server_res in test_result:
-        failed_cases = "\n\t\t".join(test_result[server_res][1])
-        skipped_cases = "\n\t\t".join(test_result[server_res][2])
-        total_failed = len(test_result[server_res][1])
-        total_skipped = len(test_result[server_res][2])
+        failed_cases = test_result[server_res][1]
+        skipped_cases = test_result[server_res][2]
+        skipped_cases, skipped_cases_json = test_utils.get_scenario_name(
+                skipped_cases)
+        failed_cases, failed_cases_json = test_utils.get_scenario_name(
+                failed_cases)
+        total_failed = sum({key: len(value) for key, value in
+                            failed_cases.items()}.values())
+        total_skipped = sum({key: len(value) for key, value in
+                             skipped_cases.items()}.values())
         total_passed_cases = int(
             test_result[server_res][0]) - total_failed - total_skipped
 
@@ -335,10 +367,27 @@ if __name__ == '__main__':
             (server_res, total_passed_cases,
              (total_passed_cases != 1 and "s" or ""),
              total_failed, (total_failed != 1 and "s" or ""),
-             (total_failed != 0 and ":\n\t\t" or ""), failed_cases,
+             (total_failed != 0 and ":\n\t\t" or ""),
+             "\n\t\t".join("{} ({})".format(k, ",\n\t\t\t\t\t".join(
+                 map(str, v))) for k, v in failed_cases.items()),
              total_skipped, (total_skipped != 1 and "s" or ""),
-             (total_skipped != 0 and ":\n\t\t" or ""), skipped_cases),
+             (total_skipped != 0 and ":\n\t\t" or ""),
+             "\n\t\t".join("{} ({})".format(k, ",\n\t\t\t\t\t".join(
+                 map(str, v))) for k, v in skipped_cases.items())),
             file=sys.stderr)
+
+        temp_dict_for_server = {
+            server_res: {"tests_passed": total_passed_cases,
+                         "tests_failed": [total_failed, failed_cases_json],
+                         "tests_skipped": [total_skipped, skipped_cases_json]
+                         }
+        }
+        test_result_json.update(temp_dict_for_server)
+
+    # Dump test result into json file
+    json_file_path = CURRENT_PATH + "/tests_result.json"
+    with open(json_file_path, 'w') as outfile:
+        json.dump(test_result_json, outfile, indent=2)
 
     print(
         "==================================================================="

@@ -15,6 +15,7 @@ import uuid
 import psycopg2
 import sqlite3
 from functools import partial
+from testtools.testcase import clone_test_with_new_id
 
 import config
 import regression
@@ -48,9 +49,10 @@ def login_tester_account(tester):
         tester.post('/login', data=dict(email=email, password=password),
                     follow_redirects=True)
     else:
+        from regression.runtests import app_starter
         print("Unable to login test client, email and password not found.",
               file=sys.stderr)
-        _drop_objects(tester)
+        _cleanup(tester, app_starter)
         sys.exit(1)
 
 
@@ -131,25 +133,6 @@ def create_database(server, db_name):
             db_id = oid[0]
         connection.close()
         return db_id
-    except Exception:
-        traceback.print_exc(file=sys.stderr)
-
-
-def create_table(server, db_name, table_name):
-    try:
-        connection = get_db_connection(db_name,
-                                       server['username'],
-                                       server['db_password'],
-                                       server['host'],
-                                       server['port'])
-        old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
-        pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
-        pg_cursor.execute('''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
-        connection.set_isolation_level(old_isolation_level)
-        connection.commit()
-
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
@@ -417,6 +400,56 @@ def _cleanup(tester, app_starter):
 def get_cleanup_handler(tester, app_starter):
     """This function use to bind variable to drop_objects function"""
     return partial(_cleanup, tester, app_starter)
+
+
+def apply_scenario(scenario, test):
+    """Apply scenario to test.
+    :param scenario: A tuple (name, parameters) to apply to the test. The test
+        is cloned, its id adjusted to have (name) after it, and the parameters
+        dict is used to update the new test.
+    :param test: The test to apply the scenario to. This test is unaltered.
+    :return: A new test cloned from test, with the scenario applied.
+    """
+    name, parameters = scenario
+    parameters["scenario_name"] = name
+    scenario_suffix = '(' + name + ')'
+    newtest = clone_test_with_new_id(test,
+                                     test.id() + scenario_suffix)
+    # Replace test description with test scenario name
+    test_desc = name
+    if test_desc is not None:
+        newtest_desc = test_desc
+        newtest.shortDescription = (lambda: newtest_desc)
+    for key, value in parameters.items():
+        setattr(newtest, key, value)
+    return newtest
+
+
+def get_scenario_name(cases):
+    """
+    This function filters the test cases from list of test cases and returns
+    the test cases list
+    :param cases: test cases
+    :type cases: dict
+    :return: test cases in dict
+    :rtype: dict
+    """
+    test_cases_dict = {}
+    test_cases_dict_json = {}
+    for class_name, test_case_list in cases.items():
+        result = {class_name: []}
+        for case_name_dict in test_case_list:
+            key, value = list(case_name_dict.items())[0]
+            if key not in {c_name for scenario in result[class_name] for
+                           c_name in
+                           scenario.keys()}:
+                result[class_name].append(case_name_dict)
+        test_cases_dict_json.update(result)
+        test_cases_dict.update({class_name: list({case for test_case in
+                                                  test_case_list
+                                                  for case in test_case})})
+    return test_cases_dict, test_cases_dict_json
+
 
 
 class Database:

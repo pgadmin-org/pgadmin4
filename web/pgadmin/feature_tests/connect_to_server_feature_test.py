@@ -18,6 +18,9 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
     """
     Tests that a database connection can be created from the UI
     """
+    scenarios = [
+        ("Test database connection", dict())
+    ]
 
     def before(self):
         connection = test_utils.get_db_connection(self.server['db'],
@@ -30,6 +33,8 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
         test_utils.create_table(self.server, "acceptance_test_db", "test_table")
 
     def runTest(self):
+        """This function tests that a database connection can be created from
+        the UI"""
         self.assertEqual(app_config.APP_NAME, self.page.driver.title)
         self.page.wait_for_spinner_to_disappear()
 
