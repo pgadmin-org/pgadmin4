@@ -15,10 +15,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'regression/javascript/test-main.js'
+      'regression/javascript/test-main.js',
       {pattern: 'regression/javascript/**/*.js', included: false},
       {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
-      {pattern: 'pgadmin/static/js/**/*.js', included: false},
+      {pattern: 'pgadmin/static/js/**/*.js', included: false}
     ],
 
 
