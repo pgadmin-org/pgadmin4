@@ -5,5 +5,5 @@ echo
 
 cd $WORKSPACE/web/
 
-/bin/npm install
-./node_modules/.bin/karma start --single-run
+/bin/npm install || { echo 'ERROR: Failed to install the required Javascript modules.' ; exit 1; }
+./node_modules/.bin/karma start --single-run || { echo 'ERROR: Error detected when running the Jasmine tests.' ; exit 1; }
