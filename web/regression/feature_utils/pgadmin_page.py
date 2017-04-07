@@ -65,7 +65,6 @@ class PgadminPage:
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "' and @class='aciTreeItem']").click()
 
     def toggle_open_tree_item(self, tree_item_text):
-        time.sleep(0.5)
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "']/../*[@class='aciTreeButton']").click()
 
     def find_by_xpath(self, xpath):
