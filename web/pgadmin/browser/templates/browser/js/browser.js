@@ -965,14 +965,25 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                               var i = $(options.items[0]);
                               // Open the item path only if its parent is loaded
                               // or parent type is same as nodes
-                              if(_parent_data._type.search(_data._type) > -1 ||
-                                is_parent_loaded_before) {
+                              if(
+                                is_parent_loaded_before &&
+                                _parent_data &&  _parent_data._type.search(
+                                  _data._type
+                                ) > -1
+                              ) {
                                 ctx.t.openPath(i);
                                 ctx.t.select(i);
                               } else {
-                                // Unload the parent node so that we'll get
-                                // latest data when we try to expand it
-                                ctx.t.unload(ctx.i);
+                                if (_parent_data) {
+                                  // Unload the parent node so that we'll get
+                                  // latest data when we try to expand it
+                                  ctx.t.unload(ctx.i, {
+                                    success: function (item, options) {
+                                      // Lets try to load it now
+                                      ctx.t.open(item);
+                                    }
+                                  });
+                                }
                               }
                               if (
                                 ctx.o && ctx.o.success &&
