@@ -29,7 +29,7 @@ $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt
 echo "Running regression tests..."
 echo
 
-$WORKSPACE/pgadmin-venv/bin/python $WORKSPACE/web/regression/runtests.py --exclude feature_tests
+$WORKSPACE/pgadmin-venv/bin/python $WORKSPACE/web/regression/runtests.py
 
 echo "Cleaning up..."
 echo
