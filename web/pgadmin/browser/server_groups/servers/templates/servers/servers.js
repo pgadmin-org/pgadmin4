@@ -205,6 +205,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                     delete pgBrowser.serverInfo[d._id]
                   }
+                  pgBrowser.enable_disable_menus(i);
                   obj.trigger('server-disconnected', obj, i, d);
                 }
                 else {
