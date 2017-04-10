@@ -33,7 +33,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
             QT += webkitwidgets network widgets
         }
         win32 {
-          RC_ICONS += pgAdmin4.ico
+          RC_FILE += pgAdmin4.rc
         }
     }
 } else { 
