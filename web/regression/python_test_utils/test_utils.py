@@ -120,7 +120,8 @@ def create_database(server, db_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
@@ -147,8 +148,10 @@ def create_table(server, db_name, table_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
-        pg_cursor.execute('''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
+        pg_cursor.execute(
+            '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
+        pg_cursor.execute(
+            '''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 
@@ -164,7 +167,7 @@ def drop_database(connection, database_name):
             pg_cursor.execute(
                 "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity "
                 "WHERE pg_stat_activity.datname ='%s' AND pid <> pg_backend_pid();" % database_name
-                              )
+            )
         else:
             pg_cursor.execute(
                 "SELECT pg_terminate_backend(procpid) FROM pg_stat_activity " \
@@ -440,16 +443,16 @@ def get_scenario_name(cases):
         result = {class_name: []}
         for case_name_dict in test_case_list:
             key, value = list(case_name_dict.items())[0]
-            if key not in {c_name for scenario in result[class_name] for
-                           c_name in
-                           scenario.keys()}:
+            class_names_dict = dict(
+                (c_name, "") for scenario in result[class_name] for
+                c_name in scenario.keys())
+            if key not in class_names_dict:
                 result[class_name].append(case_name_dict)
         test_cases_dict_json.update(result)
-        test_cases_dict.update({class_name: list({case for test_case in
-                                                  test_case_list
-                                                  for case in test_case})})
+        test_cases_list = list(dict((case, "") for test_case in test_case_list
+                               for case in test_case))
+        test_cases_dict.update({class_name: test_cases_list})
     return test_cases_dict, test_cases_dict_json
-
 
 
 class Database:
@@ -462,6 +465,7 @@ class Database:
         connection.cursor().execute(...)
 
     """
+
     def __init__(self, server):
         self.name = None
         self.server = server
@@ -471,8 +475,10 @@ class Database:
     def __enter__(self):
         self.name = "test_db_{0}".format(str(uuid.uuid4())[0:7])
         self.maintenance_connection = get_db_connection(self.server['db'],
-                                                        self.server['username'],
-                                                        self.server['db_password'],
+                                                        self.server[
+                                                            'username'],
+                                                        self.server[
+                                                            'db_password'],
                                                         self.server['host'],
                                                         self.server['port'])
         create_database(self.server, self.name)

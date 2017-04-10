@@ -73,7 +73,7 @@ if pgadmin_credentials:
                 'login_password']
 
 # Execute the setup file
-exec(open("setup.py").read())
+exec (open("setup.py").read())
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
@@ -351,13 +351,14 @@ if __name__ == '__main__':
         failed_cases = test_result[server_res][1]
         skipped_cases = test_result[server_res][2]
         skipped_cases, skipped_cases_json = test_utils.get_scenario_name(
-                skipped_cases)
+            skipped_cases)
         failed_cases, failed_cases_json = test_utils.get_scenario_name(
-                failed_cases)
-        total_failed = sum({key: len(value) for key, value in
-                            failed_cases.items()}.values())
-        total_skipped = sum({key: len(value) for key, value in
-                             skipped_cases.items()}.values())
+            failed_cases)
+
+        total_failed = len(dict((key, value) for key, value in
+                                failed_cases.items()).values())
+        total_skipped = len(dict((key, value) for key, value in
+                                 skipped_cases.items()).values())
         total_passed_cases = int(
             test_result[server_res][0]) - total_failed - total_skipped
 
@@ -368,12 +369,12 @@ if __name__ == '__main__':
              (total_passed_cases != 1 and "s" or ""),
              total_failed, (total_failed != 1 and "s" or ""),
              (total_failed != 0 and ":\n\t\t" or ""),
-             "\n\t\t".join("{} ({})".format(k, ",\n\t\t\t\t\t".join(
-                 map(str, v))) for k, v in failed_cases.items()),
+             "\n\t\t".join("{0} ({1})".format(key, ",\n\t\t\t\t\t".join(
+                 map(str, value))) for key, value in failed_cases.items()),
              total_skipped, (total_skipped != 1 and "s" or ""),
              (total_skipped != 0 and ":\n\t\t" or ""),
-             "\n\t\t".join("{} ({})".format(k, ",\n\t\t\t\t\t".join(
-                 map(str, v))) for k, v in skipped_cases.items())),
+             "\n\t\t".join("{0} ({1})".format(key, ",\n\t\t\t\t\t".join(
+                 map(str, value))) for key, value in skipped_cases.items())),
             file=sys.stderr)
 
         temp_dict_for_server = {
