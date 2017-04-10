@@ -1486,6 +1486,9 @@ class ServerManager(object):
             if hasattr(str, 'decode') and \
                     not isinstance(database, unicode):
                 database = database.decode('utf-8')
+            if did is not None:
+                if did in self.db_info:                        
+                    self.db_info[did]['datname']=database            
         else:
             if did is None:
                 database = self.db
