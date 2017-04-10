@@ -1,4 +1,4 @@
-VERSION = 1.3.0.0
+VERSION = 1.4.0.0
 QMAKE_TARGET_COMPANY = "The pgAdmin Development Team"
 QMAKE_TARGET_PRODUCT = "pgAdmin 4"
 QMAKE_TARGET_DESCRIPTION = "pgAdmin 4 Desktop Runtime"
@@ -32,9 +32,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
             DEFINES *= PGADMIN4_USE_WEBKIT
             QT += webkitwidgets network widgets
         }
-        win32 {
-          RC_FILE += pgAdmin4.rc
-        }
     }
 } else { 
     message(Building for QT4...)
@@ -46,9 +43,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     message()
     DEFINES += PGADMIN4_USE_WEBKIT
     QT += webkit network
-    win32 {
-      RC_FILE += pgAdmin4.rc
-    }
+}
+win32 {
+  RC_ICONS += pgAdmin4.ico
 }
 
 CONFIG(debug, debug|release) {
