@@ -35,7 +35,10 @@ class PgadminPage:
 
     def click_modal_ok(self):
         time.sleep(0.5)
-        self.click_element(self.find_by_xpath("//button[contains(.,'OK')]"))
+        # Find active alertify dialog in case of multiple alertify dialog & click on that dialog
+        self.click_element(
+            self.find_by_xpath("//div[contains(@class, 'alertify') and not(contains(@class, 'ajs-hidden'))]//button[.='OK']")
+        )
 
     def add_server(self, server_config):
         self.find_by_xpath("//*[@class='aciTreeText' and contains(.,'Servers')]").click()

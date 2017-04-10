@@ -383,6 +383,9 @@ define(
 
     // This function will update messages tab
     update_messages: function(msg) {
+      // To prevent xss
+      msg = _.escape(msg);
+
       var old_msgs='', new_msgs='';
         old_msgs = pgTools.DirectDebug.messages_panel.$container.find('.messages').html();
         if(old_msgs) {

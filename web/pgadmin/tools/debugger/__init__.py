@@ -1425,10 +1425,10 @@ def poll_end_execution_result(trans_id):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
-                additional_msgs = "<br>".join(additional_msgs)
+                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = "\n".join(additional_msgs)
                 if statusmsg:
-                    statusmsg = additional_msgs + "<br>" + statusmsg
+                    statusmsg = additional_msgs + "\n" + statusmsg
                 else:
                     statusmsg = additional_msgs
 
@@ -1443,10 +1443,10 @@ def poll_end_execution_result(trans_id):
                 status = 'Success'
                 additional_msgs = conn.messages()
                 if len(additional_msgs) > 0:
-                    additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
-                    additional_msgs = "<br>".join(additional_msgs)
+                    additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                    additional_msgs = "\n".join(additional_msgs)
                     if statusmsg:
-                        statusmsg = additional_msgs + "<br>" + statusmsg
+                        statusmsg = additional_msgs + "\n" + statusmsg
                     else:
                         statusmsg = additional_msgs
 
@@ -1460,9 +1460,9 @@ def poll_end_execution_result(trans_id):
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
                 additional_msgs = [msg.strip("\n") for msg in additional_msgs]
-                additional_msgs = "<br>".join(additional_msgs)
+                additional_msgs = "\n".join(additional_msgs)
                 if statusmsg:
-                    statusmsg = additional_msgs + "<br>" + statusmsg
+                    statusmsg = additional_msgs + "\n" + statusmsg
                 else:
                     statusmsg = additional_msgs
             return make_json_response(data={

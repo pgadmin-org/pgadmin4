@@ -158,6 +158,83 @@ def create_table(server, db_name, table_name):
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
+def create_constraint(
+        server, db_name, table_name,
+        constraint_type="unique", constraint_name="test_unique"):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''
+            ALTER TABLE "%s"
+              ADD CONSTRAINT "%s" %s (some_column)
+            ''' % (table_name, constraint_name, constraint_type.upper())
+        )
+
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+def create_debug_function(server, db_name, function_name="test_func"):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''
+            CREATE OR REPLACE FUNCTION public."%s"()
+              RETURNS text
+                LANGUAGE 'plpgsql'
+                COST 100.0
+                VOLATILE
+            AS $function$
+              BEGIN
+                RAISE INFO 'This is a test function';
+                RAISE NOTICE '<img src="x" onerror="console.log(1)">';
+                RAISE NOTICE '<h1 onmouseover="console.log(1);">';
+                RETURN 'Hello, pgAdmin4';
+              END;
+            $function$;
+            ''' % (function_name)
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def drop_debug_function(server, db_name, function_name="test_func"):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''
+            DROP FUNCTION public."%s"();
+            ''' % (function_name)
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
 
 def drop_database(connection, database_name):
     """This function used to drop the database"""
