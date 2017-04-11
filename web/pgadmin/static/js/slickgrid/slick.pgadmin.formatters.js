@@ -24,7 +24,7 @@
     } else {
       // Stringify only if it's json object
       if (typeof value === "object" && !Array.isArray(value)) {
-        return JSON.stringify(value);
+        return _.escape(JSON.stringify(value));
       } else if (Array.isArray(value)) {
         var temp = [];
         $.each(value, function(i, val) {
@@ -34,9 +34,9 @@
             temp.push(val)
           }
         });
-        return "[" + temp.join() + "]"
+        return _.escape("[" + temp.join() + "]")
       } else {
-        return value;
+        return _.escape(value);
       }
     }
   }
@@ -49,7 +49,7 @@
       return '';
     }
     else {
-      return "<span style='float:right'>" + value + "</span>";
+      return "<span style='float:right'>" + _.escape(value) + "</span>";
     }
   }
 
@@ -70,7 +70,7 @@
       return "<span class='pull-left'>[null]</span>";
     }
     else {
-      return value;
+      return _.escape(value);
     }
   }
 

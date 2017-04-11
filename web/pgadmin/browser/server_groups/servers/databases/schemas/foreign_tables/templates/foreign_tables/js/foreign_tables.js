@@ -220,13 +220,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       errmsg;
 
       if (_.isUndefined(this.get('attname')) || String(this.get('attname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['name'] = '{{ _('Column Name can not be empty!') }}';
+        err['name'] = '{{ _('Column Name cannot be empty!') }}';
         errmsg = errmsg || err['attname'];
       }
 
       if (_.isUndefined(this.get('datatype')) || String(this.get('datatype'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['basensp'] = '{{ _('Column Datatype can not be empty!') }}';
+        err['basensp'] = '{{ _('Column Datatype cannot be empty!') }}';
         errmsg = errmsg || err['datatype'];
       }
 
@@ -403,13 +403,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       errmsg;
 
       if (_.isUndefined(this.get('conname')) || String(this.get('conname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['conname'] = '{{ _('Constraint Name can not be empty!') }}';
+        err['conname'] = '{{ _('Constraint Name cannot be empty!') }}';
         errmsg = errmsg || err['conname'];
       }
 
       if (_.isUndefined(this.get('consrc')) || String(this.get('consrc'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['consrc'] = '{{ _('Constraint Check can not be empty!') }}';
+        err['consrc'] = '{{ _('Constraint Check cannot be empty!') }}';
         errmsg = errmsg || err['consrc'];
       }
 

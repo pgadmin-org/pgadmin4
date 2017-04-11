@@ -606,7 +606,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
             Alertify.notify(
-                S('The %s "%s" can not be dropped!')
+                S('The %s "%s" cannot be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error',
                 10
@@ -621,7 +621,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!(_.isFunction(obj.canDrop) ?
                 obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
             Alertify.notify(
-                S('The %s "%s" can not be dropped!')
+                S('The %s "%s" cannot be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 'error', 10
                 );

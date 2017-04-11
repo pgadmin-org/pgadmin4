@@ -563,14 +563,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Column name can not be empty.') }}';
+            msg = '{{ _('Column name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('cltype'))
               || String(this.get('cltype')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Column type can not be empty.') }}';
+            msg = '{{ _('Column type cannot be empty.') }}';
             this.errorModel.set('cltype', msg);
             return msg;
           }

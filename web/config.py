@@ -45,7 +45,7 @@ APP_ICON = 'icon-postgres-alt'
 
 # Application version number components
 APP_RELEASE = 1
-APP_REVISION = 3
+APP_REVISION = 4
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -56,7 +56,7 @@ APP_SUFFIX = ''
 # zero if needed, and Z represents the suffix, with a leading zero if needed
 # Note that we messed this up in v1.x, where the format is [X]XYZZZ. This
 # should be fixed for v2.x!!
-APP_VERSION_INT = 13001
+APP_VERSION_INT = 14001
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -79,8 +79,9 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 # Languages we support in the UI
 LANGUAGES = {
     'en': 'English',
-    'pl': 'Polish',
-    'zh': 'Chinese (Simplified)'
+    'zh': 'Chinese (Simplified)',
+    'de': 'German',
+    'pl': 'Polish'
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
@@ -201,6 +202,10 @@ SQLITE_PATH = env('SQLITE_PATH') or os.path.join(DATA_DIR, 'pgadmin4.db')
 # this to some higher value.
 # (Default: 500 milliseconds)
 SQLITE_TIMEOUT = 500
+
+# Allow database connection passwords to be saved if the user chooses.
+# Set to False to disable password saving.
+ALLOW_SAVE_PASSWORD = True
 
 ##########################################################################
 # Server-side session storage path
@@ -333,3 +338,4 @@ try:
     from config_local import *
 except ImportError:
     pass
+

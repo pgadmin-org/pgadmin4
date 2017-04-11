@@ -796,7 +796,7 @@ class TablespaceView(PGChildNodeView):
         for arg in required_args:
             if arg not in data:
                 return make_json_response(
-                    data=gettext("-- Incomplete definition"),
+                    data=gettext("-- definition incomplete"),
                     status=200
                 )
 

@@ -63,7 +63,7 @@ class DebuggerModule(PgAdminModule):
     def register_preferences(self):
         self.open_in_new_tab = self.preference.register(
             'display', 'debugger_new_browser_tab',
-            gettext("Open in New Browser Tab"), 'boolean', False,
+            gettext("Open in new browser tab"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Debugger '
                              'will be opened in a new browser tab.')
@@ -75,7 +75,7 @@ blueprint = DebuggerModule(MODULE_NAME, __name__)
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=gettext("This URL can not be called directly!"))
+    return bad_request(errormsg=gettext("This URL cannot be called directly!"))
 
 
 @blueprint.route("/js/debugger.js")
@@ -190,7 +190,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     if r_set['rows'][0]:
         # Function with a colon in the name cannot be debugged.
         # If this is an EDB wrapped function, no debugging allowed
-        # Function with return type "trigger" can not be debugged.
+        # Function with return type "trigger" cannot be debugged.
         if ":" in r_set['rows'][0]['name']:
             ret_status = False
             msg = gettext("Functions with a colon in the name cannot be debugged.")
@@ -230,7 +230,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         ret_status = False
         msg = gettext("The function/procedure cannot be debugged")
 
-    # Return the response that function can not be debug...
+    # Return the response that function cannot be debug...
     if not ret_status:
         current_app.logger.debug(msg)
         return internal_server_error(msg)
@@ -566,7 +566,7 @@ def restart_debugging(trans_id):
     if str(trans_id) not in debugger_data:
         return make_json_response(
             data={'status': False,
-                  'result': gettext('Not connected to server Or connection with the server has been closed.')}
+                  'result': gettext('Not connected to server or connection with the server has been closed.')}
         )
     obj = debugger_data[str(trans_id)]
 
@@ -603,7 +603,7 @@ def restart_debugging(trans_id):
         return make_json_response(data={'status': True, 'restart_debug': True, 'result': function_data})
     else:
         status = False
-        result = gettext('Not connected to server Or connection with the server has been closed.')
+        result = gettext('Not connected to server or connection with the server has been closed.')
 
     return make_json_response(data={'status': status})
 
@@ -625,7 +625,7 @@ def start_debugger_listener(trans_id):
     if str(trans_id) not in debugger_data:
         return make_json_response(
             data={'status': False,
-                  'result': gettext('Not connected to server Or connection with the server has been closed.')}
+                  'result': gettext('Not connected to server or connection with the server has been closed.')}
         )
     obj = debugger_data[str(trans_id)]
 
@@ -1425,10 +1425,10 @@ def poll_end_execution_result(trans_id):
             status = 'Success'
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
-                additional_msgs = "<br>".join(additional_msgs)
+                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                additional_msgs = "\n".join(additional_msgs)
                 if statusmsg:
-                    statusmsg = additional_msgs + "<br>" + statusmsg
+                    statusmsg = additional_msgs + "\n" + statusmsg
                 else:
                     statusmsg = additional_msgs
 
@@ -1443,10 +1443,10 @@ def poll_end_execution_result(trans_id):
                 status = 'Success'
                 additional_msgs = conn.messages()
                 if len(additional_msgs) > 0:
-                    additional_msgs = [msg.strip("<br>") for msg in additional_msgs]
-                    additional_msgs = "<br>".join(additional_msgs)
+                    additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+                    additional_msgs = "\n".join(additional_msgs)
                     if statusmsg:
-                        statusmsg = additional_msgs + "<br>" + statusmsg
+                        statusmsg = additional_msgs + "\n" + statusmsg
                     else:
                         statusmsg = additional_msgs
 
@@ -1460,9 +1460,9 @@ def poll_end_execution_result(trans_id):
             additional_msgs = conn.messages()
             if len(additional_msgs) > 0:
                 additional_msgs = [msg.strip("\n") for msg in additional_msgs]
-                additional_msgs = "<br>".join(additional_msgs)
+                additional_msgs = "\n".join(additional_msgs)
                 if statusmsg:
-                    statusmsg = additional_msgs + "<br>" + statusmsg
+                    statusmsg = additional_msgs + "\n" + statusmsg
                 else:
                     statusmsg = additional_msgs
             return make_json_response(data={

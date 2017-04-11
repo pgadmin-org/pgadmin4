@@ -932,7 +932,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                         status=410,
                         success=0,
                         errormsg=gettext(
-                            'External types require both Input and Output conversion functions.'
+                            'External types require both input and output conversion functions.'
                         )
                     )
 

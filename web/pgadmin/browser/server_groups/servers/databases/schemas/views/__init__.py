@@ -1235,13 +1235,13 @@ class MViewNode(ViewNode, VacuumSettings):
         Override this property for your own logic
 
     * create(gid, sid, did, scid)
-      - Raise an error - we can not create a material view.
+      - Raise an error - we cannot create a material view.
 
     * update(gid, sid, did, scid)
       - This function will update the data for the selected material node
 
     * delete(self, gid, sid, scid):
-      - Raise an error - we can not delete a material view.
+      - Raise an error - we cannot delete a material view.
 
     * getSQL(data, scid)
       - This function will generate sql from model data

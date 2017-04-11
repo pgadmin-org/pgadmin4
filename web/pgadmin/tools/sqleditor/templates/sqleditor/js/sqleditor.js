@@ -1843,6 +1843,8 @@ define(
                     msg = e.responseJSON.errormsg;
 
                   self.update_msg_history(false, msg);
+                  // Highlight the error in the sql panel
+                  self._highlight_error(msg);
                 }
               });
           }, self.POLL_FALLBACK_TIME());
@@ -3131,7 +3133,11 @@ define(
           $("#btn-flash").prop('disabled', true);
 
           if (explain_prefix != undefined && !sql.trim().toUpperCase().startsWith("EXPLAIN"))
+<<<<<<< HEAD
               sql = explain_prefix + ' ' + sql;
+=======
+            sql = explain_prefix + ' ' + sql;
+>>>>>>> upstream/master
 
           self.query_start_time = new Date();
           self.query = sql;

@@ -18,7 +18,7 @@ from codecs import open
 # Get the requirements list for the current version of Python
 req_file='../requirements.txt'
 
-with open(req_file) as reqf:
+with open(req_file, 'r') as reqf:
     if sys.version_info[0] >= 3:
         required = reqf.read().splitlines()
     else:

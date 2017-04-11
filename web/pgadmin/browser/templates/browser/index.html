@@ -104,7 +104,7 @@ require.onResourceLoad = function (context, map, depMaps) {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="{{ '#' if config.SERVER_MODE else '?key=' + current_app.PGADMIN_KEY }}">
                 <i class="app-icon {{ config.APP_ICON }}"></i>
                 <span>&nbsp;{{ config.APP_NAME }}</span>
             </a>

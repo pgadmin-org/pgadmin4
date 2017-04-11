@@ -450,7 +450,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                             console.log(err);
 
                             obj.report_error(
-                              '{{ _('Error Initializing script - ') }}' + s.path, err);
+                              '{{ _('Error initializing script - ') }}' + s.path, err);
                           }
                         }
                       }, function() {
@@ -705,20 +705,27 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         pnlSqlHelp.focus();
         iframe.openURL(fullUrl);
       } else if(type == "dialog_help") {
-        // See if we can find an existing panel, if not, create one
-        pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
-
-        if (pnlDialogHelp == null) {
-          pnlProperties = this.docker.findPanels('properties')[0];
-          this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+        if(this.docker) {
+          // See if we can find an existing panel, if not, create one
           pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+
+          if (pnlDialogHelp == null) {
+            pnlProperties = this.docker.findPanels('properties')[0];
+            this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
+            pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+          }
+
+          // Update the panel
+          iframe = $(pnlDialogHelp).data('embeddedFrame');
+
+          pnlDialogHelp.focus();
+          iframe.openURL(url);
+        } else {
+          // We have added new functionality of opening Query tool & debugger in new
+          // browser tab, In that case we will not have docker object available
+          // so we will open dialog help in new browser tab
+          window.open(url, '_blank');
         }
-
-        // Update the panel
-        iframe = $(pnlDialogHelp).data('embeddedFrame');
-
-        pnlDialogHelp.focus();
-        iframe.openURL(url);
       }
     },
 
@@ -931,7 +938,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.before(i, {
                       itemData: _data,
                       success: function() {
-                        console.log('Add before..');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -959,14 +965,25 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                               var i = $(options.items[0]);
                               // Open the item path only if its parent is loaded
                               // or parent type is same as nodes
-                              if(_parent_data._type.search(_data._type) > -1 ||
-                                is_parent_loaded_before) {
+                              if(
+                                is_parent_loaded_before &&
+                                _parent_data &&  _parent_data._type.search(
+                                  _data._type
+                                ) > -1
+                              ) {
                                 ctx.t.openPath(i);
                                 ctx.t.select(i);
                               } else {
-                                // Unload the parent node so that we'll get
-                                // latest data when we try to expand it
-                                ctx.t.unload(ctx.i);
+                                if (_parent_data) {
+                                  // Unload the parent node so that we'll get
+                                  // latest data when we try to expand it
+                                  ctx.t.unload(ctx.i, {
+                                    success: function (item, options) {
+                                      // Lets try to load it now
+                                      ctx.t.open(item);
+                                    }
+                                  });
+                                }
                               }
                               if (
                                 ctx.o && ctx.o.success &&
@@ -1299,7 +1316,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.before(i, {
                       itemData: _new,
                       success: function() {
-                        console.log('Add before..');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -1319,7 +1335,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                     ctx.t.append(ctx.i, {
                       itemData: _new,
                       success: function() {
-                        console.log('Appended');
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {

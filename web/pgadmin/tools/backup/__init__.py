@@ -119,7 +119,7 @@ class BackupMessage(IProcessDesc):
                 self.database
             )
         if self.backup_type == BACKUP.GLOBALS:
-            return _("Backing up the global objects on the server - '{0}'...").format(
+            return _("Backing up the global objects on the server '{0}'...").format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         elif self.backup_type == BACKUP.SERVER:
@@ -146,11 +146,11 @@ class BackupMessage(IProcessDesc):
                 self.database
             )
         elif self.backup_type == BACKUP.GLOBALS:
-            res += _("Backing up the global objects on the server '{0}'").format(
+            res += _("Backing up the global objects on the server '{0}'...").format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         elif self.backup_type == BACKUP.SERVER:
-            res += _("Backing up the server '{0}'").format(
+            res += _("Backing up the server '{0}'...").format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
         else:
@@ -168,7 +168,7 @@ class BackupMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL can not be called directly."))
+    return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/backup.js")
