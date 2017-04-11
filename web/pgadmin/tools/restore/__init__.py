@@ -101,7 +101,7 @@ class RestoreMessage(IProcessDesc):
 
         res += html.safe_str(
             _(
-                "Restoring the backup on the server '{0}'..."
+                "Restoring backup on the server '{0}'..."
             ).format(
                 "{0} ({1}:{2})".format(s.name, s.host, s.port)
             )
@@ -122,7 +122,7 @@ class RestoreMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL can not be called directly."))
+    return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/restore.js")
@@ -303,11 +303,11 @@ def create_restore_job(sid):
         set_param('verbose', '--verbose')
 
         set_multiple('schemas', '--schema', False)
-        set_multiple('tables', '--table')
-        set_multiple('functions', '--function')
-        set_multiple('triggers', '--trigger')
-        set_multiple('trigger_funcs', '--function')
-        set_multiple('indexes', '--index')
+        set_multiple('tables', '--table', False)
+        set_multiple('functions', '--function', False)
+        set_multiple('triggers', '--trigger', False)
+        set_multiple('trigger_funcs', '--function', False)
+        set_multiple('indexes', '--index', False)
 
     args.append(fs_short_path(_file))
 

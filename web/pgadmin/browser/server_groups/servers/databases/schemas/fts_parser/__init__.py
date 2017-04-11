@@ -611,7 +611,7 @@ class FtsParserView(PGChildNodeView):
                     conn=self.conn
                 )
             else:
-                sql = "-- incomplete definition"
+                sql = "-- definition incomplete"
         return sql.strip('\n'), data['name']
 
     @check_precondition

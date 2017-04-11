@@ -54,7 +54,7 @@
     switch(variable && variable.vartype) {
       case "bool":
         /*
-         * bool cell and variable can not be stateless (i.e undefined).
+         * bool cell and variable cannot be stateless (i.e undefined).
          * It should be either true or false.
          */
 

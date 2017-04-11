@@ -479,13 +479,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if(_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name can not be empty.') }}';
+            msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
             }
           if(_.isUndefined(this.get('tfunction'))
               || String(this.get('tfunction')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Trigger function can not be empty.') }}';
+            msg = '{{ _('Trigger function cannot be empty.') }}';
             this.errorModel.set('tfunction', msg);
             return msg;
           }
@@ -505,7 +505,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             (_.isUndefined(this.get('prosrc'))
               || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == ''))
           {
-            msg = '{{ _('Trigger code can not be empty.') }}';
+            msg = '{{ _('Trigger code cannot be empty.') }}';
             this.errorModel.set('prosrc', msg);
             return msg;
           }

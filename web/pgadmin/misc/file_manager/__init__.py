@@ -259,8 +259,7 @@ class Filemanager(object):
         self.trans_id = trans_id
         self.patherror = encode_json(
             {
-                'Error': gettext('No permission to operate on \
-                                  specified path.'),
+                'Error': gettext('No permission to operate on specified path.'),
                 'Code': 0
             }
         )

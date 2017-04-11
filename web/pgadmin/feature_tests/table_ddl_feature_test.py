@@ -12,6 +12,12 @@ from regression.python_test_utils import test_utils
 
 
 class TableDdlFeatureTest(BaseFeatureTest):
+    """ This class test acceptance test scenarios """
+
+    scenarios = [
+        ("Test table DDL generation", dict())
+    ]
+
     def before(self):
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],

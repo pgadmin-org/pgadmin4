@@ -504,7 +504,7 @@ SELECT EXISTS(
             return internal_server_error(errormsg=res)
 
         return success_return(
-            message=_("Updated the next-runtime to now!")
+            message=_("Updated the next runtime to now.")
         )
 
     @check_precondition

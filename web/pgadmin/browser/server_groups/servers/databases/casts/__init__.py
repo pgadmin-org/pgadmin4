@@ -546,7 +546,7 @@ class CastView(PGChildNodeView):
             if 'srctyp' in data and 'trgtyp' in data:
                 sql = render_template("/".join([self.template_path, 'create.sql']), data=data, conn=self.conn)
             else:
-                return u"-- incomplete definition", None
+                return u"-- definition incomplete", None
             return sql, data['srctyp'] + "->" + data["trgtyp"]
 
     @check_precondition

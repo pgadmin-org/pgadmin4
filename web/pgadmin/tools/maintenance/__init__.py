@@ -140,7 +140,7 @@ class Message(IProcessDesc):
 @login_required
 def index():
     return bad_request(
-        errormsg=_("This URL can not be called directly!")
+        errormsg=_("This URL cannot be called directly!")
     )
 
 

@@ -611,7 +611,7 @@ class CheckConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Check Constraint dropped"),
+                info=_("Check Constraint dropped."),
                 data={
                     'id': tid,
                     'scid': scid,

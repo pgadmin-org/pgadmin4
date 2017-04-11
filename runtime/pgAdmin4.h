@@ -14,6 +14,9 @@
 
 // Include the Python header here as it needs to appear before any QT 
 // headers anywhere in the app.
+#ifdef __MINGW32__
+#include <cmath>
+#endif
 #include <Python.h>
 
 // QT headers

@@ -161,7 +161,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               errmsg;
 
           if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['consrc'] = '{{ _('Check can not be empty!') }}';
+            err['consrc'] = '{{ _('Check cannot be empty!') }}';
             errmsg = errmsg || err['consrc'];
           }
 

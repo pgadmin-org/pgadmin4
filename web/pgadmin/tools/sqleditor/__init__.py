@@ -86,7 +86,7 @@ class SqlEditorModule(PgAdminModule):
 
         self.open_in_new_tab = self.preference.register(
             'display', 'new_browser_tab',
-            gettext("Open in New Browser Tab"), 'boolean', False,
+            gettext("Open in new browser tab"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Query Tool '
                              'will be opened in a new browser tab.')
@@ -363,7 +363,7 @@ def start_query_tool(trans_id):
 
     else:
         status = False
-        result = gettext('Either Transaction object or Session object not found.')
+        result = gettext('Either transaction object or session object not found.')
 
     return make_json_response(
         data={
@@ -481,8 +481,10 @@ def poll(trans_id):
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
-        status, result = conn.poll()
-        if status == ASYNC_OK:
+        status, result = conn.poll(formatted_exception_msg=True)
+        if not status:
+            return internal_server_error(result)
+        elif status == ASYNC_OK:
             status = 'Success'
             rows_affected = conn.rows_affected()
 
@@ -890,7 +892,7 @@ def cancel_transaction(trans_id):
             result = gettext('Not connected to server or connection with the server has been closed.')
     else:
         status = False
-        result = gettext('Either Transaction object or Session object not found.')
+        result = gettext('Either transaction object or session object not found.')
 
     return make_json_response(
         data={

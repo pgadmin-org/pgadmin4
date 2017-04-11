@@ -664,7 +664,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'db', label:'{{ _('Maintenance database') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'username', label:'{{ _('User name') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'username', label:'{{ _('Username') }}', type: 'text', group: "{{ 'Connection' }}",
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
           id: 'password', label:'{{ _('Password') }}', type: 'password',
@@ -677,6 +677,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           group: "{{ 'Connection' }}", mode: ['create'], deps: ['connect_now'],
           visible: function(m) {
             return m.get('connect_now') && m.isNew();
+          },
+          disabled: function(m) {
+            return {% if config.ALLOW_SAVE_PASSWORD %}false{% else %}true{% endif %};
           }
         },{
           id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",
@@ -711,7 +714,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
 
           if (!self.isNew() && 'id' in self.sessAttrs) {
-            err['id'] = '{{ _('The ID can not be changed.') }}';;
+            err['id'] = '{{ _('The ID cannot be changed.') }}';;
             errmsg = err['id'];
           } else {
             self.errorModel.unset('id');

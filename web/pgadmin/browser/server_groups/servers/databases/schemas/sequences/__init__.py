@@ -342,7 +342,7 @@ class SequenceView(PGChildNodeView):
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], 'DATABASE')
 
-        # The SQL below will execute rest DMLs because we can not execute CREATE with any other
+        # The SQL below will execute rest DMLs because we cannot execute CREATE with any other
         SQL = render_template("/".join([self.template_path, 'grant.sql']), data=data, conn=self.conn)
         SQL = SQL.strip('\n').strip(' ')
         if SQL and SQL != "":

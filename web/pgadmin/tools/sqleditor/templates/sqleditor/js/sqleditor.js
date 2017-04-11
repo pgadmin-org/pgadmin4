@@ -1843,6 +1843,8 @@ define(
                     msg = e.responseJSON.errormsg;
 
                   self.update_msg_history(false, msg);
+                  // Highlight the error in the sql panel
+                  self._highlight_error(msg);
                 }
               });
           }, self.POLL_FALLBACK_TIME());

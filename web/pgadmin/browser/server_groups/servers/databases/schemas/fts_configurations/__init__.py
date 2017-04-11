@@ -415,7 +415,7 @@ class FtsConfigurationView(PGChildNodeView):
                 status=410,
                 success=0,
                 errormsg=_(
-                    "provide atleast copy config or parser"
+                    "Provide at least copy config or parser."
                 )
             )
 
@@ -688,7 +688,7 @@ class FtsConfigurationView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = u"-- incomplete definition"
+                sql = u"-- definition incomplete"
             return sql.strip('\n'), data['name']
 
     @check_precondition
