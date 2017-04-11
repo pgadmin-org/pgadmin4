@@ -32,7 +32,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isNull(token) ||
               _.isUndefined(token) ||
               String(token).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Token can not be empty!') }}';
+            msg = '{{ _('Token cannot be empty!') }}';
             this.errorModel.set('token',msg);
             return msg;
           }
@@ -40,7 +40,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isNull(dictionary) ||
               _.isUndefined(dictionary) ||
               String(dictionary).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Dictionary name can not be empty!') }}';
+            msg = '{{ _('Dictionary name cannot be empty!') }}';
             this.errorModel.set('dictname',msg);
             return msg;
           }

@@ -158,7 +158,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if (_.isUndefined(this.get('colname'))
               || String(this.get('colname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Column Name can not be empty.') }}';
+            msg = '{{ _('Column Name cannot be empty.') }}';
             this.errorModel.set('colname', msg);
             return msg;
           }
@@ -391,19 +391,19 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name can not be empty.') }}';
+            msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
             return msg;
           }
           if (_.isUndefined(this.get('spcname'))
               || String(this.get('spcname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Tablespace can not be empty.') }}';
+            msg = '{{ _('Tablespace cannot be empty.') }}';
             this.errorModel.set('spcname', msg);
             return msg;
           }
           if (_.isUndefined(this.get('amname'))
               || String(this.get('amname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Access method can not be empty.') }}';
+            msg = '{{ _('Access method cannot be empty.') }}';
             this.errorModel.set('amname', msg);
             return msg;
           }

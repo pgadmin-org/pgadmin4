@@ -30,7 +30,7 @@ from config import PG_DEFAULT_DRIVER
     2) Catalog
 
     We have created single file because catalog & schema has same
-    functionality, the only difference is we can not perform DDL/DML operations
+    functionality, the only difference is we cannot perform DDL/DML operations
     on catalog, also - it allows us to share the same submodules for both
     catalog, and schema modules.
 
@@ -906,13 +906,13 @@ class CatalogView(SchemaView):
         Override this property for your own logic
 
     * create(gid, sid, did, scid)
-      - Raise an error - we can not create a catalog.
+      - Raise an error - we cannot create a catalog.
 
     * update(gid, sid, did, scid)
       - This function will update the data for the selected catalog node
 
     * delete(self, gid, sid, scid):
-      - Raise an error - we can not delete a catalog.
+      - Raise an error - we cannot delete a catalog.
 
     * get_sql(data, scid)
       - This function will generate sql from model data

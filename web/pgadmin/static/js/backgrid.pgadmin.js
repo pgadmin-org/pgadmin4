@@ -410,7 +410,7 @@
             }
           );
         } else {
-          Alertify.alert("This object can not be deleted",
+          Alertify.alert("This object cannot be deleted",
             function(){
               return true;
             }

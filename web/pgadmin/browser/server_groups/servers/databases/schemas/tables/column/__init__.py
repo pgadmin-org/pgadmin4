@@ -801,7 +801,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             for arg in required_args:
                 if arg not in data:
-                    return gettext('-- incomplete definition')
+                    return gettext('-- definition incomplete')
 
             # We will convert privileges coming from client required
             # in server side format

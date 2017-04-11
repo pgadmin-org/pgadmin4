@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-28 15:16-0400\n"
+"POT-Creation-Date: 2017-04-05 14:01+0100\n"
 "PO-Revision-Date: 2017-11-14 23:55+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -39,8 +39,8 @@ msgstr "桌面"
 #: pgadmin/about/templates/about/about.js:21
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:179
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:258
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:896
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:922
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:899
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:925
 #: pgadmin/tools/datagrid/templates/datagrid/js/datagrid.js:265
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:376
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:396
@@ -155,7 +155,7 @@ msgstr "服务器已经被删除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:350
 #: pgadmin/browser/server_groups/servers/__init__.py:486
-#: pgadmin/browser/server_groups/servers/__init__.py:1044
+#: pgadmin/browser/server_groups/servers/__init__.py:1045
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器"
 
@@ -179,6 +179,7 @@ msgid "Maintenance database"
 msgstr "维护数据库"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:371
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:666
 msgid "Username"
 msgstr "用户名"
 
@@ -193,7 +194,7 @@ msgid "Comments"
 msgstr "注释"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:374
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:681
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:684
 #: pgadmin/tools/user_management/templates/user_management/js/user_management.js:100
 msgid "Role"
 msgstr "角色"
@@ -254,93 +255,93 @@ msgstr ""
 "\n"
 "%s"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:654
+#: pgadmin/browser/server_groups/servers/__init__.py:655
 msgid "Server has no active connection for generating statistics."
 msgstr "服务器有没有活动的连接，所以没有生成统计信息"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:722
-#: pgadmin/browser/server_groups/servers/__init__.py:854
-#: pgadmin/browser/server_groups/servers/__init__.py:978
+#: pgadmin/browser/server_groups/servers/__init__.py:723
+#: pgadmin/browser/server_groups/servers/__init__.py:855
+#: pgadmin/browser/server_groups/servers/__init__.py:979
 msgid "Server not found."
 msgstr "服务器未找到"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:727
-#: pgadmin/browser/server_groups/servers/__init__.py:983
+#: pgadmin/browser/server_groups/servers/__init__.py:728
+#: pgadmin/browser/server_groups/servers/__init__.py:984
 #: pgadmin/utils/driver/psycopg2/__init__.py:273
 #: pgadmin/utils/driver/psycopg2/__init__.py:997
 #: pgadmin/utils/driver/psycopg2/__init__.py:1264
 msgid "Unauthorized request."
 msgstr "未经授权的请求"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:833
+#: pgadmin/browser/server_groups/servers/__init__.py:834
 msgid "Server connected."
 msgstr "服务器已连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:862
+#: pgadmin/browser/server_groups/servers/__init__.py:863
 msgid "Server could not be disconnected."
 msgstr "服务器不能被断开"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:866
+#: pgadmin/browser/server_groups/servers/__init__.py:867
 msgid "Server disconnected."
 msgstr "服务器已经断开连接"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:886
+#: pgadmin/browser/server_groups/servers/__init__.py:887
 msgid "Could not reload the server configuration."
 msgstr "不可以重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:890
+#: pgadmin/browser/server_groups/servers/__init__.py:891
 msgid "Server configuration reloaded."
 msgstr "已经重新加载服务器配置"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:894
+#: pgadmin/browser/server_groups/servers/__init__.py:895
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/js/pga_job.js:185
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1699
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1835
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2374
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2685
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2754
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2825
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2875
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2930
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3081
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3189
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3287
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3332
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3385
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3424
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2376
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2687
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2756
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2827
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2877
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2932
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3083
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3191
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3289
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3334
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3387
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3426
 msgid ""
 "Not connected to the server or the connection to the server has been "
 "closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:931
+#: pgadmin/browser/server_groups/servers/__init__.py:932
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:961
+#: pgadmin/browser/server_groups/servers/__init__.py:962
 #, fuzzy
 msgid "Could not find the required parameter(s)."
 msgstr "找不到所需的参数 (%s)"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:970
+#: pgadmin/browser/server_groups/servers/__init__.py:971
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:470
 #: pgadmin/tools/user_management/__init__.py:79
 msgid "Passwords do not match."
 msgstr "密码不匹配"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:997
+#: pgadmin/browser/server_groups/servers/__init__.py:998
 msgid "Incorrect password."
 msgstr "密码不正确"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1025
+#: pgadmin/browser/server_groups/servers/__init__.py:1026
 msgid "Password changed successfully."
 msgstr "成功更改密码"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1071
+#: pgadmin/browser/server_groups/servers/__init__.py:1072
 msgid "WAL replay paused"
 msgstr "WAL 重演已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1074
+#: pgadmin/browser/server_groups/servers/__init__.py:1075
 msgid "Please connect the server!"
 msgstr "请连接服务器"
 
@@ -372,7 +373,7 @@ msgstr "包含{0} 实用程序（pg_dump，pg_restore等）的目录的路径。
 msgid "Could not find the utility for the operation '%s'"
 msgstr "找不到的该程序的操作 %s"
 
-#: pgadmin/browser/server_groups/servers/types.py:125
+#: pgadmin/browser/server_groups/servers/types.py:135
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
@@ -422,7 +423,7 @@ msgstr "数据库已经断开连接"
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:386
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:485
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:638
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1556
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1562
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:632
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:595
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:694
@@ -1061,6 +1062,8 @@ msgstr "可重定位?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/templates/package/js/package.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:207
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/templates/synonym/js/synonym.js:189
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:394
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:482
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:428
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:807
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:458
@@ -1481,9 +1484,9 @@ msgstr "在数据库中找不到排序规则对象。 可能已被其他用户�
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:427
 msgid ""
-"Incomplete definition. Please provide Locale OR Copy Collation OR "
+"Definition incomplete. Please provide Locale OR Copy Collation OR "
 "LC_TYPE/LC_COLLATE"
-msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE/LC_COLLATE"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:496
 msgid "The specified collation could not be found.\n"
@@ -1516,8 +1519,9 @@ msgid "LC_TYPE"
 msgstr "LC_TYPE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/templates/collation/js/collation.js:166
+#, fuzzy
 msgid ""
-"Incomplete definition, Please provide Locale OR Copy collation OR "
+"Definition incomplete, Please provide Locale OR Copy collation OR "
 "LC_TYPE/LC_COLLATE!"
 msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE / LC_COLLATE"
 
@@ -1694,8 +1698,8 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1233
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1274
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2792
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2841
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2798
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2847
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1211
 msgid "-- Please create column(s) first..."
 msgstr "--请先创建列..."
@@ -1721,11 +1725,13 @@ msgid "Inherited From"
 msgstr "继承自"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:223
-msgid "Column Name can not be empty!"
-msgstr "列名称不能为空!"
+#, fuzzy
+msgid "Column Name cannot be empty!"
+msgstr "列名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:229
-msgid "Column Datatype can not be empty!"
+#, fuzzy
+msgid "Column Datatype cannot be empty!"
 msgstr "列数据类型不能为空!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:382
@@ -1733,11 +1739,13 @@ msgid "No Inherit"
 msgstr "无继承"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:406
-msgid "Constraint Name can not be empty!"
+#, fuzzy
+msgid "Constraint Name cannot be empty!"
 msgstr "约束名称不能为空！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:412
-msgid "Constraint Check can not be empty!"
+#, fuzzy
+msgid "Constraint Check cannot be empty!"
 msgstr "约束检查不能为空！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/templates/foreign_tables/js/foreign_tables.js:453
@@ -1786,7 +1794,8 @@ msgid "Could not find the FTS Configuration node in the database node."
 msgstr "在数据库节点中，找不到 FTS 配置节点。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:417
-msgid "provide atleast copy config or parser"
+#, fuzzy
+msgid "Provide at least copy config or parser."
 msgstr "提供至少复制配置或解析器"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:502
@@ -1819,11 +1828,13 @@ msgid ""
 msgstr "错误：无法为FTS配置节点生成反向工程查询！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:35
-msgid "Token can not be empty!"
+#, fuzzy
+msgid "Token cannot be empty!"
 msgstr "标记不能为空!"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:43
-msgid "Dictionary name can not be empty!"
+#, fuzzy
+msgid "Dictionary name cannot be empty!"
 msgstr "词典名称不能为空！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/templates/fts_configuration/js/fts_configuration.js:150
@@ -1908,15 +1919,18 @@ msgid "Could not generate reversed engineered query for FTS Dictionary node."
 msgstr "无法生成反向工程的查询 FTS 字典节点"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:28
-msgid "Option can not be empty!"
+#, fuzzy
+msgid "Option cannot be empty!"
 msgstr "选项不能为空！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:34
-msgid "Value can not be empty!"
+#, fuzzy
+msgid "Value cannot be empty!"
 msgstr "值不能为空！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:63
-msgid "FTS dictionary"
+#, fuzzy
+msgid "FTS Dictionary"
 msgstr "FTS 词典"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/templates/fts_dictionary/js/fts_dictionary.js:78
@@ -2004,7 +2018,7 @@ msgstr "标题函数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/templates/fts_parser/js/fts_parser.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:116
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:135
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:718
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:721
 msgid "Name must be specified."
 msgstr "名称必须指定"
 
@@ -2048,13 +2062,14 @@ msgid "The specified FTS template could not be found.\n"
 msgstr "找不到指定的 FTS 模板。\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:461
-msgid "FTS template dropped"
+#, fuzzy
+msgid "FTS Template dropped"
 msgstr "FTS 模板已经删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:652
 #, fuzzy
 msgid ""
-"Could not generate reversed engineered query for the FTS template.\n"
+"Could not generate reversed engineered query for the FTS Template.\n"
 "{0}"
 msgstr ""
 "无法为FTS模板生成反向工程查询。\n"
@@ -2062,7 +2077,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:660
 #, fuzzy
-msgid "Could not generate reversed engineered query for FTS template node."
+msgid "Could not generate reversed engineered query for FTS Template node."
 msgstr "无法为TFS模板节点生成反向工程化查询。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/templates/fts_template/js/fts_templates.js:26
@@ -2287,13 +2302,15 @@ msgstr "参数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:350
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:271
+#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:214
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/schema/js/schema.js:434
 msgid "Owner cannot be empty."
 msgstr "所有者不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:360
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_function/js/trigger_functions.js:281
-msgid "Return Type cannot be empty."
+#, fuzzy
+msgid "Return type cannot be empty."
 msgstr "返回类型不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/function/js/functions.js:365
@@ -2543,10 +2560,6 @@ msgstr "循环"
 msgid "Securitiy Labels"
 msgstr "安全标签"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:214
-msgid "Owner can not be empty."
-msgstr "所有者不能为空"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/templates/sequence/js/sequence.js:226
 msgid "Minimum value must be less than maximum value."
 msgstr "最小值必须小于最大值"
@@ -2650,60 +2663,75 @@ msgstr "表"
 msgid "Could not find the table."
 msgstr "找不到表"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1559
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1565
 msgid "The specified table could not be found.\n"
 msgstr "找不到指定的表。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1576
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1582
 msgid "Table dropped"
 msgstr "表被删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1624
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1630
 msgid "Table truncated"
 msgstr "表被截断"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1673
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1679
 #, fuzzy
 msgid "Trigger(s) have been enabled"
 msgstr "触发器已启用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1674
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1680
 #, fuzzy
 msgid "Trigger(s) have been disabled"
 msgstr "触发器已被禁用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1706
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1712
 #, fuzzy
 msgid "Table statistics have been reset"
 msgstr "表统计信息已被重置"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1820
-msgid "-- incomplete definition for {0} constraint"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1826
+#, fuzzy
+msgid "-- definition incomplete for {0} constraint"
 msgstr "-- 不完全定义为 {0} 约束"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1880
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1911
-msgid "-- incomplete definition for foreign_key constraint"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1886
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1917
+#, fuzzy
+msgid "-- definition incomplete for foreign_key constraint"
 msgstr "-- foreign_key 约束不完整的定义"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2005
-msgid "-- incomplete definition for check_constraint"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2011
+#, fuzzy
+msgid "-- definition incomplete for check_constraint"
 msgstr "-- check_constraint 不完整的定义"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2081
-msgid "-- incomplete definition for exclusion_constraint"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2087
+#, fuzzy
+msgid "-- definition incomplete for exclusion_constraint"
 msgstr " -- exclusion_constraint不完整的定义"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2289
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2295
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:804
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:794
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:796
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:800
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:802
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:877
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:879
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:883
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:847
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:850
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:818
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:872
-msgid "-- incomplete definition"
-msgstr "-- 不完整的定义"
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:799
+msgid "-- definition incomplete"
+msgstr "-- 定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2298
-msgid "-- incomplete definition for {0}"
-msgstr "-- 不完整的定义"
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:2304
+#, fuzzy
+msgid "-- definition incomplete for {0}"
+msgstr "-- 定义不完整"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/__init__.py:284
 #, fuzzy
@@ -2782,11 +2810,13 @@ msgid "System column?"
 msgstr "系统列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:566
-msgid "Column name can not be empty."
+#, fuzzy
+msgid "Column name cannot be empty."
 msgstr "列名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:573
-msgid "Column type can not be empty."
+#, fuzzy
+msgid "Column type cannot be empty."
 msgstr "列类型不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column.js:584
@@ -2818,20 +2848,9 @@ msgid "The specified check constraint could not be found.\n"
 msgstr "找不到指定的 check 约束。 \n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:614
-msgid "Check Constraint dropped"
+#, fuzzy
+msgid "Check Constraint dropped."
 msgstr "Check 约束被删除"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:794
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:796
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:800
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:802
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:877
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:879
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:883
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:847
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:850
-msgid "-- definition incomplete"
-msgstr "-- 定义不完整"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:876
 msgid "Check constraint updated."
@@ -2886,7 +2905,8 @@ msgid "Don't validate?"
 msgstr "不验证么?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/templates/check_constraint/js/check_constraint.js:164
-msgid "Check can not be empty!"
+#, fuzzy
+msgid "Check cannot be empty!"
 msgstr "检查不能为空 ！"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:52
@@ -3187,7 +3207,8 @@ msgid "NULLs"
 msgstr "空值"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:161
-msgid "Column Name can not be empty."
+#, fuzzy
+msgid "Column Name cannot be empty."
 msgstr "列名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:228
@@ -3225,17 +3246,14 @@ msgstr "系统索引？"
 msgid "Concurrent build?"
 msgstr "并发生成?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:394
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:482
-msgid "Name can not be empty."
-msgstr "名称不能为空"
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:400
-msgid "Tablespace can not be empty."
+#, fuzzy
+msgid "Tablespace cannot be empty."
 msgstr "表空间不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:406
-msgid "Access method can not be empty."
+#, fuzzy
+msgid "Access method cannot be empty."
 msgstr "访问方法不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index.js:414
@@ -3611,15 +3629,18 @@ msgid "Storage settings"
 msgstr "存储设置"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:749
-msgid "Table name can not be empty."
+#, fuzzy
+msgid "Table name cannot be empty."
 msgstr "表名称不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:754
-msgid "Table schema can not be empty."
+#, fuzzy
+msgid "Table schema cannot be empty."
 msgstr "表模式不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/js/table.js:759
-msgid "Table owner can not be empty."
+#, fuzzy
+msgid "Table owner cannot be empty."
 msgstr "表所有者不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/table/sql/default/coll_table_stats.sql:2
@@ -3863,7 +3884,8 @@ msgid "Constraint?"
 msgstr "约束么?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:488
-msgid "Trigger function can not be empty."
+#, fuzzy
+msgid "Trigger function cannot be empty."
 msgstr "触发器函数不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:495
@@ -3871,7 +3893,8 @@ msgid "Specify at least one event."
 msgstr "指定至少一个事件。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger.js:508
-msgid "Trigger code can not be empty."
+#, fuzzy
+msgid "Trigger code cannot be empty."
 msgstr "触发器代码不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/js/catalog.js:21
@@ -4003,7 +4026,8 @@ msgid "Subtype must be defined for range types."
 msgstr "子类型必须为定义范围类型。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:934
-msgid "External types require both Input and Output conversion functions."
+#, fuzzy
+msgid "External types require both input and output conversion functions."
 msgstr "外部类型要求输入和输出转换函数。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1065
@@ -4069,7 +4093,8 @@ msgid "Enumeration Type"
 msgstr "枚举类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:410
-msgid "Sub-type"
+#, fuzzy
+msgid "Subtype"
 msgstr "子类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:414
@@ -4081,7 +4106,8 @@ msgid "Range Type"
 msgstr "区域类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:420
-msgid "Sub-type operator class"
+#, fuzzy
+msgid "Subtype operator class"
 msgstr "子类型操作符类"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:486
@@ -4089,7 +4115,8 @@ msgid "Canonical function"
 msgstr "规范函数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:520
-msgid "Sub-type diff function"
+#, fuzzy
+msgid "Subtype diff function"
 msgstr "子类型比较函数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:558
@@ -4186,7 +4213,8 @@ msgid "System type?"
 msgstr "系统类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:817
-msgid "Type can not be empty."
+#, fuzzy
+msgid "Type cannot be empty."
 msgstr "类型不能为空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:823
@@ -4194,11 +4222,13 @@ msgid "Subtype name cannot be empty."
 msgstr "子类型名称不能为空。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:829
-msgid "Input function can not be empty."
+#, fuzzy
+msgid "Input function cannot be empty."
 msgstr "输入函数不能为空。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/templates/type/js/type.js:835
-msgid "Output function can not be empty."
+#, fuzzy
+msgid "Output function cannot be empty."
 msgstr "输出函数不能为空。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:68
@@ -4337,12 +4367,12 @@ msgid "Disconnect Database..."
 msgstr "断开数据库..."
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:137
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:785
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:788
 msgid "Connection lost"
 msgstr "连接丢失"
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/js/databases.js:138
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:786
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:789
 msgid "Would you like to reconnect to the database?"
 msgstr "你愿意重新连接到数据库吗？"
 
@@ -4468,7 +4498,8 @@ msgid "Could not find the pgAgent job on the server."
 msgstr "在服务器上找不到pgAgent任务"
 
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:507
-msgid "Updated the next-runtime to now!"
+#, fuzzy
+msgid "Updated the next runtime to now."
 msgstr "更新 next-runtime 到当前！"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:42
@@ -4946,16 +4977,13 @@ msgid "59"
 msgstr "59"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:74
-msgid "<Any>"
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:138
+#: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:143
+msgid "<any>"
 msgstr "<任何>"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:137
 msgid "Date"
-msgstr "<任何>"
-
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:138
-#: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:143
-msgid "<any>"
 msgstr "<任何>"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/templates/pga_schedule/js/pga_schedule.js:144
@@ -5385,10 +5413,11 @@ msgid "Connection limit must be an integer value or equal to -1."
 msgstr "连接限制必须是一个整数值，或者等于-1"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:163
+#, fuzzy
 msgid ""
 "\n"
-"Role membership information must be passed as an array of JSON object in "
-"the\n"
+"Role membership information must be passed as an array of JSON objects in"
+" the\n"
 "following format:\n"
 "\n"
 "rolmembership:[{\n"
@@ -5406,11 +5435,12 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:188
+#, fuzzy
 msgid ""
 "\n"
-"Role membership information must be passed a string representing an array"
-" of\n"
-"JSON object in the following format:\n"
+"Role membership information must be passed as a string representing an "
+"array of\n"
+"JSON objects in the following format:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        role: [rolename],\n"
@@ -5452,10 +5482,11 @@ msgstr ""
 "        ]\n"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:266
+#, fuzzy
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON object in the following"
-"\n"
+"Security Label must be passed as an array of JSON objects in the "
+"following\n"
 "format:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -5474,10 +5505,11 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:283
+#, fuzzy
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON object in the following"
-"\n"
+"Security Label must be passed as an array of JSON objects in the "
+"following\n"
 "format:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -5522,11 +5554,12 @@ msgstr ""
 "        ]\n"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:344
+#, fuzzy
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
-"object in\n"
-"the following format (create mode):\n"
+"objects in\n"
+"the following format in create mode:\n"
 "variables:[{\n"
 "    database: <database> or null,\n"
 "    name: <configuration>,\n"
@@ -5545,11 +5578,12 @@ msgstr ""
 "]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:363
+#, fuzzy
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
-"object in\n"
-"the following format (update mode):\n"
+"objects in\n"
+"the following format in update mode:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
 "        database: <database> or null,\n"
@@ -5651,13 +5685,15 @@ msgid ""
 msgstr "不能删除角色{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:702
+#, fuzzy
 msgid ""
-"Could not generate reversed engineered Query for the role.\n"
+"Could not generate reversed engineered query for the role.\n"
 "{0}"
 msgstr "无法为角色生成反向工程化查询。{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:709
-msgid "Could not generate reversed engineered Query for the role."
+#, fuzzy
+msgid "Could not generate reversed engineered query for the role."
 msgstr "无法为角色生成反向工程化查询。"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:729
@@ -5797,10 +5833,6 @@ msgstr "找不到指定的表空间\n"
 msgid "Tablespace dropped"
 msgstr "表空间已删除"
 
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:799
-msgid "-- Incomplete definition"
-msgstr "-- 不完整的定义"
-
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:38
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:44
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:50
@@ -5836,7 +5868,7 @@ msgstr "用户"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces.js:181
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:416
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:899
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:902
 #: pgadmin/browser/templates/browser/js/node.js:1223
 #: pgadmin/misc/file_manager/templates/file_manager/js/file_manager.js:139
 #: pgadmin/misc/file_manager/templates/file_manager/js/file_manager.js:161
@@ -5995,35 +6027,32 @@ msgstr "已连接么？"
 msgid "Connect now?"
 msgstr "现在连接?"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:666
-msgid "User name"
-msgstr "用户名"
-
 #: pgadmin/browser/server_groups/servers/templates/servers/servers.js:675
 msgid "Save password?"
 msgstr "保存密码么？"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:684
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:687
 msgid "SSL mode"
 msgstr "SSL 模式"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:713
-msgid "The ID can not be changed."
-msgstr "ID 不能更改"
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:716
+#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:48
+msgid "The ID cannot be changed."
+msgstr "ID 不能被更改"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:721
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:724
 msgid "Hostname or address must be specified."
 msgstr "主机名或地址必须指定"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:724
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:727
 msgid "Maintenance database must be specified."
 msgstr "维护的数据库必须指定"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:727
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:730
 msgid "Username must be specified."
 msgstr "用户名必须被指定"
 
-#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:822
+#: pgadmin/browser/server_groups/servers/templates/servers/servers.js:825
 msgid "Connect to Server"
 msgstr "连接到服务器"
 
@@ -6120,10 +6149,6 @@ msgstr "服务器组"
 msgid "Server Group..."
 msgstr "服务器组..."
 
-#: pgadmin/browser/server_groups/templates/server_groups/server_groups.js:48
-msgid "The ID cannot be changed."
-msgstr "ID 不能被更改"
-
 #: pgadmin/browser/templates/browser/index.html:95
 msgid "Loading {0} v{1}..."
 msgstr "加载{0}v{1}.."
@@ -6205,7 +6230,8 @@ msgid "No object selected"
 msgstr "没有选中的对象"
 
 #: pgadmin/browser/templates/browser/js/browser.js:453
-msgid "Error Initializing script - "
+#, fuzzy
+msgid "Error initializing script - "
 msgstr "报错,初始化脚本-"
 
 #: pgadmin/browser/templates/browser/js/browser.js:460
@@ -6214,11 +6240,11 @@ msgstr "报错,初始化脚本-"
 msgid "Error loading script - "
 msgstr "报错，加载脚本-"
 
-#: pgadmin/browser/templates/browser/js/browser.js:1509
+#: pgadmin/browser/templates/browser/js/browser.js:1513
 msgid "Error retrieving details for the node."
 msgstr "检索节点的详细信息时出错"
 
-#: pgadmin/browser/templates/browser/js/browser.js:1661
+#: pgadmin/browser/templates/browser/js/browser.js:1665
 #, fuzzy, python-format
 msgid "Are you sure you wish to close the %(appname)s browser?"
 msgstr "是否确实要清除历史记录？"
@@ -6255,8 +6281,9 @@ msgid "General"
 msgstr "通常"
 
 #: pgadmin/browser/templates/browser/js/messages.js:15
-msgid "Incomplete definition"
-msgstr "不完整的定义"
+#, fuzzy
+msgid "Definition incomplete"
+msgstr "-- 定义不完整"
 
 #: pgadmin/browser/templates/browser/js/messages.js:16
 msgid "Nothing changed"
@@ -6901,7 +6928,8 @@ msgid "The process has already been started."
 msgstr "进程已被启动。"
 
 #: pgadmin/misc/bgprocess/processes.py:214
-msgid "The process has already finished and can not be restarted."
+#, fuzzy
+msgid "The process has already finished and cannot be restarted."
 msgstr "该进程过程已经结束，不能重新启动。"
 
 #: pgadmin/misc/bgprocess/processes.py:476
@@ -7010,7 +7038,8 @@ msgstr "重置布局"
 #: pgadmin/settings/__init__.py:73 pgadmin/tools/backup/__init__.py:171
 #: pgadmin/tools/restore/__init__.py:125
 #: pgadmin/tools/user_management/__init__.py:99
-msgid "This URL can not be called directly."
+#, fuzzy
+msgid "This URL cannot be called directly."
 msgstr "此 URL 可以不能直接被调用"
 
 #: pgadmin/static/js/selection/clipboard.js:53
@@ -7085,21 +7114,14 @@ msgstr "备份"
 msgid "Backing up an object on the server '{0}' from database '{1}'..."
 msgstr "服务器'{0}'上备份数据库'{1}'的一个对象..."
 
-#: pgadmin/tools/backup/__init__.py:122
-msgid "Backing up the global objects on the server - '{0}'..."
+#: pgadmin/tools/backup/__init__.py:122 pgadmin/tools/backup/__init__.py:149
+#, fuzzy
+msgid "Backing up the global objects on the server '{0}'..."
 msgstr "在服务器- '{0}' 上备份全局对象"
 
-#: pgadmin/tools/backup/__init__.py:126
+#: pgadmin/tools/backup/__init__.py:126 pgadmin/tools/backup/__init__.py:153
 msgid "Backing up the server '{0}'..."
 msgstr "备份服务器'{0}'..."
-
-#: pgadmin/tools/backup/__init__.py:149
-msgid "Backing up the global objects on the server '{0}'"
-msgstr "备份全局对象在服务器'{0}'上"
-
-#: pgadmin/tools/backup/__init__.py:153
-msgid "Backing up the server '{0}'"
-msgstr "备份服务器'{0}'"
 
 #: pgadmin/tools/backup/__init__.py:161
 #: pgadmin/tools/import_export/__init__.py:130
@@ -7380,7 +7402,8 @@ msgid "Please provide filename"
 msgstr "请输入文件名"
 
 #: pgadmin/tools/datagrid/__init__.py:223
-msgid "Server disconnected, Please connect and try again"
+#, fuzzy
+msgid "Server disconnected. Please connect and try again."
 msgstr "服务器断开连接，请连接并再试一次"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:27
@@ -7430,7 +7453,7 @@ msgid "Paste Row"
 msgstr "粘贴行"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:107
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2224
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2226
 msgid "Delete Row(s)"
 msgstr "删除行"
 
@@ -7562,7 +7585,7 @@ msgid "Debugger"
 msgstr "调试器"
 
 #: pgadmin/tools/debugger/__init__.py:66 pgadmin/tools/sqleditor/__init__.py:89
-msgid "Open in New Browser Tab"
+msgid "Open in new browser tab"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:68
@@ -7572,7 +7595,8 @@ msgstr ""
 #: pgadmin/tools/debugger/__init__.py:78
 #: pgadmin/tools/import_export/__init__.py:141
 #: pgadmin/tools/maintenance/__init__.py:143
-msgid "This URL can not be called directly!"
+#, fuzzy
+msgid "This URL cannot be called directly!"
 msgstr "此 URL 不能被直接调用 ！"
 
 #: pgadmin/tools/debugger/__init__.py:196
@@ -7613,9 +7637,6 @@ msgstr "函数/存储过程不能调试"
 #: pgadmin/tools/debugger/__init__.py:569
 #: pgadmin/tools/debugger/__init__.py:606
 #: pgadmin/tools/debugger/__init__.py:628
-msgid "Not connected to server Or connection with the server has been closed."
-msgstr "未连接到服务器或与服务器的连接已关闭"
-
 #: pgadmin/tools/debugger/__init__.py:790
 #: pgadmin/tools/debugger/__init__.py:794
 #: pgadmin/tools/debugger/__init__.py:822
@@ -7637,7 +7658,7 @@ msgstr "未连接到服务器或与服务器的连接已关闭"
 #: pgadmin/tools/debugger/__init__.py:1511
 #: pgadmin/tools/sqleditor/__init__.py:214
 #: pgadmin/tools/sqleditor/__init__.py:359
-#: pgadmin/tools/sqleditor/__init__.py:890
+#: pgadmin/tools/sqleditor/__init__.py:892
 #: pgadmin/tools/sqleditor/command.py:176
 #: pgadmin/tools/sqleditor/command.py:390
 msgid "Not connected to server or connection with the server has been closed."
@@ -7756,11 +7777,13 @@ msgid "Import/Export"
 msgstr "导入/导出"
 
 #: pgadmin/tools/import_export/__init__.py:109
-msgid "Copying table data - '{0}.{1}' on database '{2}' and server ({3}{4})..."
+#, fuzzy
+msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
 msgstr "复制表数据-'{0}.{1}' 在数据库 '{2}' 和服务器 ({3} {4})上."
 
 #: pgadmin/tools/import_export/__init__.py:122
-msgid "Copying table data '{0}.{1}' on database '{2}' for the server - '{3}'"
+#, fuzzy
+msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
 msgstr "复制表数据 '{0}.{1}' 数据库 '{2}' 到服务器-'{3}'"
 
 #: pgadmin/tools/import_export/__init__.py:206
@@ -7843,12 +7866,13 @@ msgid "Not null columns..."
 msgstr "非空列"
 
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:177
+#, fuzzy
 msgid ""
-"Do not match the specified columns values against the null string. In the"
-" default case where the null string is empty, this means that empty "
-"values will be read as zero-length strings rather than nulls, even when "
-"they are not quoted. This option is allowed only in import, and only when"
-" using CSV format."
+"Do not match the specified column values against the null string. In the "
+"default case where the null string is empty, this means that empty values"
+" will be read as zero-length strings rather than nulls, even when they "
+"are not quoted. This option is allowed only in import, and only when "
+"using CSV format."
 msgstr "不要将指定的列值与空字符串匹配。在默认情况下，空字符串为空，这意味着空值将被读取为零长度字符串，而不是null他们没有引用。此选项仅在导入时允许，且仅当使用CSV格式时才允许。"
 
 #: pgadmin/tools/import_export/templates/import_export/js/import_export.js:201
@@ -8019,13 +8043,9 @@ msgstr "维护任务创建失败"
 msgid "Restore"
 msgstr "还原"
 
-#: pgadmin/tools/restore/__init__.py:90
+#: pgadmin/tools/restore/__init__.py:90 pgadmin/tools/restore/__init__.py:103
 msgid "Restoring backup on the server '{0}'..."
 msgstr "还原备份在服务器'{0}'"
-
-#: pgadmin/tools/restore/__init__.py:103
-msgid "Restoring the backup on the server '{0}'..."
-msgstr "在服务器'{0}'上，还原备份"
 
 #: pgadmin/tools/restore/__init__.py:190
 #, fuzzy
@@ -8069,11 +8089,11 @@ msgstr "退出由于错误"
 msgid "Restore..."
 msgstr "还原中..."
 
-#: pgadmin/tools/restore/templates/restore/js/restore.js:524
+#: pgadmin/tools/restore/templates/restore/js/restore.js:529
 msgid "Restore job created."
 msgstr "还原任务创建"
 
-#: pgadmin/tools/restore/templates/restore/js/restore.js:535
+#: pgadmin/tools/restore/templates/restore/js/restore.js:540
 msgid "Restore failed."
 msgstr "还原失败"
 
@@ -8167,24 +8187,25 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/__init__.py:198
 #: pgadmin/tools/sqleditor/__init__.py:296
-#: pgadmin/tools/sqleditor/__init__.py:853
+#: pgadmin/tools/sqleditor/__init__.py:855
 msgid "Transaction ID not found in the session."
 msgstr "事务 ID 在该会话中找不到"
 
 #: pgadmin/tools/sqleditor/__init__.py:366
-#: pgadmin/tools/sqleditor/__init__.py:893
-msgid "Either Transaction object or Session object not found."
+#: pgadmin/tools/sqleditor/__init__.py:895
+#, fuzzy
+msgid "Either transaction object or session object not found."
 msgstr "可能是事务对象或者会话对象找不到."
 
-#: pgadmin/tools/sqleditor/__init__.py:609
+#: pgadmin/tools/sqleditor/__init__.py:611
 msgid "No primary key found for this object, so unable to save records."
 msgstr "该对象没有找到主键，所以无法保存记录"
 
-#: pgadmin/tools/sqleditor/__init__.py:1254
+#: pgadmin/tools/sqleditor/__init__.py:1256
 msgid "File type not supported"
 msgstr "不支持的文件类型"
 
-#: pgadmin/tools/sqleditor/__init__.py:1389
+#: pgadmin/tools/sqleditor/__init__.py:1391
 msgid "Transaction status check failed."
 msgstr "事务状态检查失败"
 
@@ -8224,12 +8245,12 @@ msgstr "查询已修改，但未保存。确定要放弃更改吗？"
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:396
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1298
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1614
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2450
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2452
 msgid "Unsaved changes"
 msgstr "未保存的更改"
 
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1299
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2451
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2453
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "是否确实要放弃当前更改？"
 
@@ -8246,7 +8267,7 @@ msgid "Initializing query execution."
 msgstr "初始化查询执行。"
 
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1646
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3162
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3164
 msgid "Waiting for the query execution to complete..."
 msgstr "等待查询执行完成..."
 
@@ -8256,109 +8277,109 @@ msgid "Query returned successfully in %s."
 msgstr "耗时%s 成功返回查询"
 
 #: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1799
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1903
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1905
 msgid "Loading data from the database server and rendering..."
 msgstr "从数据库服务器加载数据并渲染.."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1910
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1912
 #, python-format
 msgid "Total query runtime: %s."
 msgstr "总查询运行时: %s."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1911
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1913
 #, python-format
 msgid "%s rows retrieved."
 msgstr "检索到%s 行"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1989
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:1991
 msgid "Retrieving information about the columns returned..."
 msgstr "检索列信息时返回..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2215
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2217
 msgid "Row(s) deleted"
 msgstr "删除行"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2219
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2221
 msgid "Operation failed"
 msgstr "操作失败"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2220
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2222
 msgid ""
 "There are unsaved changes in grid, Please save them first to avoid "
 "inconsistency in data"
 msgstr "网格中有未保存的更改，请先保存它们，以避免数据不一致"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2225
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2227
 msgid "Are you sure you wish to delete selected row(s)?"
 msgstr "是否确实要删除选定的行？"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2287
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2289
 msgid "Saving the updated data..."
 msgstr "保存更新后的数据..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2343
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2345
 #, python-format
 msgid "%s."
 msgstr "%s."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2485
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2487
 msgid "Loading the file..."
 msgstr "加载文件..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2533
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2535
 msgid "Saving the queries in the file..."
 msgstr "将查询保存在文件..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2544
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2546
 msgid "File saved successfully."
 msgstr "文件保存成功。"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2655
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2657
 msgid "Loading the existing filter options..."
 msgstr "加载现有的筛选器选项..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2725
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2795
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2727
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2797
 msgid "Applying the new filter..."
 msgstr "应用新的筛选器..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2848
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2850
 msgid "Removing the filter..."
 msgstr "移除筛选器..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2899
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:2901
 msgid "Applying the filter..."
 msgstr "应用筛选器..."
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3054
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3056
 msgid "Setting the limit on the result..."
 msgstr "设置限制的结果......"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3128
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3130
 msgid "Initializing the query execution!"
 msgstr "初始化查询执行！"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3489
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3495
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3491
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3497
 msgid "Error occurred while setting verbose option in explain"
 msgstr "在解释设置verbose选项时发生错误"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3527
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3533
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3529
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3535
 msgid "Error occurred while setting costs option in explain"
 msgstr "在解释设置成本选项时发生错误"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3564
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3570
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3566
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3572
 msgid "Error occurred while setting buffers option in explain"
 msgstr "在解释设置缓冲区选项时发生错误"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3600
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3606
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3602
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3608
 msgid "Error occurred while setting timing option in explain"
 msgstr "在解释设置计时选项时发生错误"
 
-#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3684
+#: pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js:3686
 msgid "Error occurred while getting query tool options "
 msgstr "获取查询工具选项时发生错误"
 
@@ -8564,7 +8585,8 @@ msgid ""
 msgstr "正在尝试重新连接到连接的数据库服务器(#{server_id}) - '{conn_id}'"
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:640
-msgid "\"The query executed did not return any data.\""
+#, fuzzy
+msgid "The query executed did not return any data."
 msgstr "\"执行查询执行未返回任何数据。\""
 
 #: pgadmin/utils/driver/psycopg2/__init__.py:1016
@@ -8816,4 +8838,57 @@ msgstr "找不到指定的数据库"
 
 #~ msgid "Oops, unable to copy to clipboard"
 #~ msgstr "哎呀，不能复制到剪贴板"
+
+#~ msgid ""
+#~ "Incomplete definition. Please provide Locale"
+#~ " OR Copy Collation OR LC_TYPE/LC_COLLATE"
+#~ msgstr "不完整的定义。 请提供语言环境或复制排序规则或LC_CTYPE/LC_COLLATE"
+
+#~ msgid "Column Name can not be empty!"
+#~ msgstr "列名称不能为空!"
+
+#~ msgid "Owner can not be empty."
+#~ msgstr "所有者不能为空"
+
+#~ msgid "-- incomplete definition"
+#~ msgstr "-- 不完整的定义"
+
+#~ msgid "-- incomplete definition for {0}"
+#~ msgstr "-- 不完整的定义"
+
+#~ msgid "Column Name can not be empty."
+#~ msgstr "列名称不能为空"
+
+#~ msgid "Name can not be empty."
+#~ msgstr "名称不能为空"
+
+#~ msgid "<Any>"
+#~ msgstr "<任何>"
+
+#~ msgid "-- Incomplete definition"
+#~ msgstr "-- 不完整的定义"
+
+#~ msgid "User name"
+#~ msgstr "用户名"
+
+#~ msgid "The ID can not be changed."
+#~ msgstr "ID 不能更改"
+
+#~ msgid "Incomplete definition"
+#~ msgstr "不完整的定义"
+
+#~ msgid "Backing up the global objects on the server '{0}'"
+#~ msgstr "备份全局对象在服务器'{0}'上"
+
+#~ msgid "Backing up the server '{0}'"
+#~ msgstr "备份服务器'{0}'"
+
+#~ msgid "Open in New Browser Tab"
+#~ msgstr ""
+
+#~ msgid "Not connected to server Or connection with the server has been closed."
+#~ msgstr "未连接到服务器或与服务器的连接已关闭"
+
+#~ msgid "Restoring the backup on the server '{0}'..."
+#~ msgstr "在服务器'{0}'上，还原备份"
 

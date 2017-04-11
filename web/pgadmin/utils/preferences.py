@@ -390,12 +390,12 @@ class Preferences(object):
         if name in cat['preferences']:
             return (cat['preferences'])[name]
 
-        assert label is not None, "Label for a preference can not be none!"
-        assert _type is not None, "Type for a preference can not be none!"
+        assert label is not None, "Label for a preference cannot be none!"
+        assert _type is not None, "Type for a preference cannot be none!"
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
             'options', 'multiline', 'switch', 'node', 'text'
-        ), "Type can not be found in the defined list!"
+        ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str, min_val,

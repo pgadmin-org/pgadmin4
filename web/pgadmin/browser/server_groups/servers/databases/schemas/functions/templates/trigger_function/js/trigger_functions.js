@@ -278,7 +278,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
 
           if (_.isUndefined(this.get('prorettypename')) || String(this.get('prorettypename')).replace(/^\s+|\s+$/g, '') == '') {
-            err['prorettypename'] = '{{ _('Return Type cannot be empty.') }}';
+            err['prorettypename'] = '{{ _('Return type cannot be empty.') }}';
             errmsg = errmsg || err['prorettypename'];
           }
 

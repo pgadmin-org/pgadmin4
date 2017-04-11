@@ -458,7 +458,7 @@ class FtsTemplateView(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            info=gettext("FTS template dropped"),
+            info=gettext("FTS Template dropped"),
             data={
                 'id': tid,
                 'sid': sid,
@@ -570,7 +570,7 @@ class FtsTemplateView(PGChildNodeView):
                                       conn=self.conn
                                       )
             else:
-                sql = u"-- incomplete definition"
+                sql = u"-- definition incomplete"
             return sql.strip('\n'), data['name']
 
     @check_precondition
@@ -650,7 +650,7 @@ class FtsTemplateView(PGChildNodeView):
         if not status:
             return internal_server_error(
                 gettext(
-                    "Could not generate reversed engineered query for the FTS template.\n{0}").format(
+                    "Could not generate reversed engineered query for the FTS Template.\n{0}").format(
                     res
                 )
             )
@@ -658,7 +658,7 @@ class FtsTemplateView(PGChildNodeView):
         if res is None:
             return gone(
                 gettext(
-                    "Could not generate reversed engineered query for FTS template node.")
+                    "Could not generate reversed engineered query for FTS Template node.")
             )
 
         return ajax_response(response=res)

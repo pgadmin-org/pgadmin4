@@ -81,4 +81,46 @@ begin
   Result := True;
 end;
 
+// This function would be called during upgrade mode
+// In upgrade mode - delete web/* and exclude config_local.py
+procedure DelWebfolder(Path: string);
+var
+  FindRec: TFindRec;
+  FilePath: string;
+begin
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          FilePath := Path + '\' + FindRec.Name;
+          if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
+          begin
+            if CompareText(FindRec.Name, 'config_local.py') <> 0 then
+            begin
+              DeleteFile(FilePath);
+            end
+          end
+          else
+          begin
+            DelWebfolder(FilePath);
+            RemoveDir(FilePath);
+          end
+        end;
+        until not FindNext(FindRec);
+    finally
+    FindClose(FindRec);
+    end
+  end
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if CurPageID=wpReady then
+  begin
+    DelWebfolder(ExpandConstant('{app}\web'));
+  end
+end;
+
 // End of program

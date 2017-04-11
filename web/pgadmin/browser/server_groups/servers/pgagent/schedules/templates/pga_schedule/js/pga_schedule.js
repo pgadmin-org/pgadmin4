@@ -71,7 +71,7 @@ function($, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
           render: function() {
             this.$el.empty();
             var model = this.model;
-            this.$el.text(this.formatter.fromRaw(model.get(this.column.get("name")), model) || '{{ _('<Any>') }}');
+            this.$el.text(this.formatter.fromRaw(model.get(this.column.get("name")), model) || '{{ _('<any>') }}');
             this.delegateEvents();
 
             return this;

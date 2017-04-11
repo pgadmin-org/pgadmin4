@@ -221,7 +221,7 @@ def initialize_query_tool(sid, did=None):
         else:
             internal_server_error(
                 errormsg=gettext(
-                    'Server disconnected, Please connect and try again'
+                    'Server disconnected. Please connect and try again.'
                 )
             )
 

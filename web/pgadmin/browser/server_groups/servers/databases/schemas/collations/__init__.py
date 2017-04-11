@@ -425,7 +425,7 @@ class CollationView(PGChildNodeView):
                 status=410,
                 success=0,
                 errormsg=gettext(
-                    "Incomplete definition. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE"
+                    "Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE"
                 )
             )
 

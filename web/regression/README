@@ -140,6 +140,9 @@ Python Tests:
      Example 2) Run test framework for 'database' package
      run 'python runtests.py --pkg browser.server_groups.servers.databases'
 
+     Example 3) Run feature tests
+     run 'python runtests.py --pkg feature_tests
+
 - Execute test framework for single node at a time
 
      Example 1) Run test framework for 'browser' node

@@ -211,7 +211,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('seqowner'))
               || String(this.get('seqowner')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Owner can not be empty.') }}';
+            msg = '{{ _('Owner cannot be empty.') }}';
             this.errorModel.set('seqowner', msg);
             return msg;
           }
