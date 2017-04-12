@@ -916,14 +916,14 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                             ) != 1
                           )
                             return true;
-                          m = Math.round((e - s) / 2);
-                          i = items.eq(e);
+                          m = s + Math.round((e - s) / 2);
+                          i = items.eq(m);
                           d = ctx.t.itemData(i);
-                          if (
-                            pgAdmin.natural_sort(
-                              d._label, _data._label
-                            ) == 1
-                          ) {
+                          var res = pgAdmin.natural_sort(d._label, _data._label);
+                          if (res == 0)
+                            return true;
+
+                          if (res == -1) {
                             s = m + 1;
                             e--;
                           } else {
@@ -1203,8 +1203,18 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                 this.t.setLabel(ctx.i, {label: this.new.label});
                 this.t.addIcon(ctx.i, {icon: this.new.icon});
                 this.t.setId(ctx.id, {id: this.new.id});
-                this.t.openPath(this.i);
-                this.t.deselect(this.i);
+
+                // if label is different then we need to
+                // refresh parent so that node get properly
+                // placed in tree
+                if(this.d.label != this.new.label) {
+                  var p = this.t.parent(this.i);
+                  pgAdmin.Browser.onRefreshTreeNode(p);
+                }
+
+                self.t.openPath(self.i);
+                self.t.deselect(self.i);
+
                 // select tree item after few milliseconds
                 setTimeout(function() {
                   self.t.select(self.i);
@@ -1271,7 +1281,11 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                         while (e >= s) {
                           i = items.eq(s);
                           d = ctx.t.itemData(i);
-                          if (d.label > _new.label)
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label
+                            ) == 1
+                          )
                             return true;
                           s++;
                         }
@@ -1283,25 +1297,31 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                         return false;
                       },
                       binarySearch = function() {
-                        var d, m;
-                        // Binary search only outperforms Linear search for n > 44.
-                        // Reference:
-                        // https://en.wikipedia.org/wiki/Binary_search_algorithm#cite_note-30
-                        //
-                        // We will try until it's half.
                         while (e - s > 22) {
                           i = items.eq(s);
                           d = ctx.t.itemData(i);
-                          if (d.label > _new.label)
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label
+                            ) != -1
+                          )
                             return true;
                           i = items.eq(e);
                           d = ctx.t.itemData(i);
-                          if (d.label < _new.label)
+                          if (
+                            pgAdmin.natural_sort(
+                              d._label, _data._label
+                            ) != 1
+                          )
                             return true;
-                          m = Math.round((e - s) / 2);
-                          i = items.eq(e);
+                          m = s + Math.round((e - s) / 2);
+                          i = items.eq(m);
                           d = ctx.t.itemData(i);
-                          if (d.label < _new.label) {
+                          var res = pgAdmin.natural_sort(d._label, _data._label);
+                          if (res == 0)
+                            return true;
+
+                          if (res == -1) {
                             s = m + 1;
                             e--;
                           } else {
@@ -1392,7 +1412,6 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
       ctx.pI.push(_old);
       _new._label = _new.label;
       _new.label = _.escape(_new.label);
-
       if (_old._pid != _new._pid) {
         ctx.op = 'RECREATE';
         traversePath();
