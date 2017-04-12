@@ -1492,6 +1492,7 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
                 ctx.t.setLabel(ctx.i, {label: _d.label});
                 ctx.t.addIcon(ctx.i, {icon: _d.icon});
                 ctx.t.setId(ctx.i, {id: _d.id});
+                ctx.t.setInode(ctx.i, {inode: data.inode});
 
                 if (
                   _n.can_expand && typeof(_n.can_expand) == 'function'
