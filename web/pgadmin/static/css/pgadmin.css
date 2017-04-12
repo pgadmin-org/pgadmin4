@@ -743,6 +743,7 @@ lgg-el-container[el=md] .pg-el-lg-8,
 }
 .pgadmin-controls > div.checkbox {
   height: 28px;
+  line-height: 28px;
 }
 .pgadmin-controls > .uneditable-input,
 .pgadmin-controls > .pgadmin-node-select,
