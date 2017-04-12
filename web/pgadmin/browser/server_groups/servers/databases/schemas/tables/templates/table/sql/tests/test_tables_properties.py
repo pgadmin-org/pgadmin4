@@ -22,6 +22,11 @@ if sys.version_info[0] >= 3:
 
 
 class TestTablesProperties(BaseTestGenerator):
+    scenarios = [
+        ("This scenario tests that all applicable sql template versions can "
+         "fetch some ddl", dict())
+    ]
+
     def runTest(self):
         """ This tests that all applicable sql template versions can fetch some ddl """
         with test_utils.Database(self.server) as (connection, database_name):

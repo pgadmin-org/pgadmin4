@@ -19,7 +19,13 @@ from regression.python_test_utils import test_utils
 if sys.version_info[0] >= 3:
     long = int
 
+
 class TestTablesNode(BaseTestGenerator):
+    scenarios = [
+        ("This scenario tests that all applicable sql template versions can "
+         "fetch table names", dict())
+    ]
+
     def runTest(self):
         """ This tests that all applicable sql template versions can fetch table names """
         with test_utils.Database(self.server) as (connection, database_name):

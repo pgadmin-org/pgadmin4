@@ -18,6 +18,10 @@ from pgadmin.utils.route import BaseTestGenerator
 
 
 class TestVersionedTemplateLoader(BaseTestGenerator):
+    scenarios = [
+        ("Test versioned template loader", dict())
+    ]
+
     def setUp(self):
         self.loader = VersionedTemplateLoader(FakeApp())
 

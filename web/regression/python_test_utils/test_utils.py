@@ -139,6 +139,16 @@ def create_database(server, db_name):
 
 
 def create_table(server, db_name, table_name):
+    """
+    This function create the table in given database name
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param table_name: table name
+    :type table_name: str
+    :return: None
+    """
     try:
         connection = get_db_connection(db_name,
                                        server['username'],
@@ -149,7 +159,8 @@ def create_table(server, db_name, table_name):
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' % table_name)
+            '''CREATE TABLE "%s" (some_column VARCHAR, value NUMERIC)''' %
+            table_name)
         pg_cursor.execute(
             '''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
         connection.set_isolation_level(old_isolation_level)
@@ -311,12 +322,14 @@ def delete_server_with_api(tester, sid):
 
 
 def add_db_to_parent_node_dict(srv_id, db_id, test_db_name):
+    """ This function stores the database details into parent dict """
     regression.parent_node_dict["database"].append({"server_id": srv_id,
                                                     "db_id": db_id,
                                                     "db_name": test_db_name})
 
 
 def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
+    """ This function stores the schema details into parent dict """
     regression.parent_node_dict["schema"].append({"server_id": srv_id,
                                                   "db_id": db_id,
                                                   "schema_id": schema_id,
@@ -350,6 +363,7 @@ def create_parent_server_node(server_info):
 
 
 def delete_test_server(tester):
+    """ This function use to delete test server """
     try:
         parent_node_dict = regression.parent_node_dict
         test_servers = parent_node_dict["server"]
@@ -394,6 +408,7 @@ def delete_test_server(tester):
 
 
 def get_db_password(config_servers, name, host, db_port):
+    """ This function return the password of particular server """
     db_password = ''
     for srv in config_servers:
         if (srv['name'], srv['host'], srv['db_port']) == (name, host, db_port):
@@ -402,6 +417,12 @@ def get_db_password(config_servers, name, host, db_port):
 
 
 def get_db_server(sid):
+    """
+    This function returns the SQLite database connection
+    :param sid: server id
+    :type sid: int
+    :return: db connection
+    """
     connection = ''
     conn = sqlite3.connect(config.TEST_SQLITE_PATH)
     cur = conn.cursor()
@@ -505,6 +526,24 @@ def apply_scenario(scenario, test):
     return newtest
 
 
+# This method is overridden to catch passed test cases
+def add_success(self, test):
+    """
+    This function add the passed test cases in list i.e. TextTestResult.passed
+    :param self:TextTestResult class
+    :type self: TextTestResult object
+    :param test: test case
+    :type test: test case object
+    :return: None
+    """
+    if self.showAll:
+        self.passed.append((test, "Passed"))
+        self.stream.writeln("ok")
+    elif self.dots:
+        self.stream.write('.')
+        self.stream.flush()
+
+
 def get_scenario_name(cases):
     """
     This function filters the test cases from list of test cases and returns
@@ -527,7 +566,7 @@ def get_scenario_name(cases):
                 result[class_name].append(case_name_dict)
         test_cases_dict_json.update(result)
         test_cases_list = list(dict((case, "") for test_case in test_case_list
-                               for case in test_case))
+                                    for case in test_case))
         test_cases_dict.update({class_name: test_cases_list})
     return test_cases_dict, test_cases_dict_json
 
