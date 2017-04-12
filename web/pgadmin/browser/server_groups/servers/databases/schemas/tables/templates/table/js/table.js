@@ -734,10 +734,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               schema = this.get('schema'),
               relowner = this.get('relowner');
 
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/master
           // If nothing to validate or VacuumSetting keys then
           // return from here
           if ( keys && (keys.length == 0
@@ -746,11 +742,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return null;
           }
 
-<<<<<<< HEAD
-          // Have to clear  existing validation before initate current state validation only
-=======
           // Have to clear existing validation before initiating current state validation only
->>>>>>> upstream/master
+
           this.errorModel.clear();
 
           if (_.isUndefined(name) || _.isNull(name) ||
