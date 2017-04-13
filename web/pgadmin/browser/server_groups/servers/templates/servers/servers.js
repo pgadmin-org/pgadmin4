@@ -106,13 +106,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.messages['NO_PRIV_SELECTED'] =
           '{{ _('At least one privilege should be selected.') }}';
 
-        pgBrowser.Events.on(
-          'pgadmin:server:disconnect', this.callbacks.disconnect_server
-        );
-        pgBrowser.Events.on(
-          'pgadmin:server:connect', this.callbacks.connect_server
-        );
-
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(
           'pgadmin:server:connection:lost', this.connection_lost
@@ -206,7 +199,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     delete pgBrowser.serverInfo[d._id]
                   }
                   pgBrowser.enable_disable_menus(i);
-                  obj.trigger('server-disconnected', obj, i, d);
+                  // Trigger server disconnect event
+                  pgBrowser.Events.trigger(
+                    'pgadmin:server:disconnect',
+                    {item: i, data: d}, false
+                  );
                 }
                 else {
                   try {

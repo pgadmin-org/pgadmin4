@@ -23,9 +23,9 @@ import json
 from selenium import webdriver
 
 if sys.version_info < (2, 7):
-    import unittest2 as unittest
+    import unittest2 as unit_test
 else:
-    import unittest
+    import unittest as unit_test
 
 logger = logging.getLogger(__name__)
 file_name = os.path.basename(__file__)
@@ -98,6 +98,10 @@ driver = None
 app_starter = None
 handle_cleanup = None
 
+setattr(unit_test.result.TestResult, "passed", [])
+
+unit_test.runner.TextTestResult.addSuccess = test_utils.add_success
+
 # Override apply_scenario method as we need custom test description/name
 scenarios.apply_scenario = test_utils.apply_scenario
 
@@ -116,7 +120,7 @@ def get_suite(module_list, test_server, test_app_client):
     :rtype: TestSuite
     """
     modules = []
-    pgadmin_suite = unittest.TestSuite()
+    pgadmin_suite = unit_test.TestSuite()
 
     # Get the each test module and add into list
     for key, klass in module_list:
@@ -207,49 +211,50 @@ def sig_handler(signo, frame):
         handle_cleanup()
 
 
+def update_test_result(test_cases, test_result_dict):
+    """
+    This function update the test result in appropriate test behaviours i.e
+    passed/failed/skipped.
+    :param test_cases: test cases
+    :type test_cases: dict
+    :param test_result_dict: test result to be stored
+    :type test_result_dict: dict
+    :return: None
+    """
+    for test_case in test_cases:
+        test_class_name = test_case[0].__class__.__name__
+        if test_class_name in test_result_dict:
+            test_result_dict[test_class_name].append(
+                {test_case[0].scenario_name: test_case[1]})
+        else:
+            test_result_dict[test_class_name] = \
+                [{test_case[0].scenario_name: test_case[
+                    1]}]
+
+
 def get_tests_result(test_suite):
     """This function returns the total ran and total failed test cases count"""
     try:
         total_ran = test_suite.testsRun
+        passed_cases_result = {}
         failed_cases_result = {}
         skipped_cases_result = {}
         if total_ran:
-            if test_suite.failures:
-                for failed_case in test_suite.failures:
-                    if hasattr(failed_case[0], "scenario_name"):
-                        class_name = str(
-                            failed_case[0]).split('.')[-1].split()[0].strip(
-                            ')')
-                        if class_name in failed_cases_result:
-                            failed_cases_result[class_name].append(
-                                {failed_case[0].scenario_name: failed_case[1]})
-                        else:
-                            failed_cases_result[class_name] = \
-                                [{failed_case[0].scenario_name: failed_case[
-                                    1]}]
-            if test_suite.errors:
-                for error_case in test_suite.errors:
-                    if hasattr(error_case[0], "scenario_name"):
-                        class_name = str(
-                            error_case[0]).split('.')[-1].split()[0].strip(')')
-                        if class_name in failed_cases_result:
-                            failed_cases_result[class_name].append(
-                                {error_case[0].scenario_name: error_case[1]})
-                        else:
-                            failed_cases_result[class_name] = \
-                                [{error_case[0].scenario_name: error_case[1]}]
-            if test_suite.skipped:
-                for skip_test in test_suite.skipped:
-                    # if hasattr(skip_test[0], "scenario_name"):
-                    class_name = str(
-                        skip_test[0]).split('.')[-1].split()[0].strip(')')
-                    if class_name in skipped_cases_result:
-                        skipped_cases_result[class_name].append(
-                            {skip_test[0].scenario_name: skip_test[1]})
-                    else:
-                        skipped_cases_result[class_name] = \
-                            [{skip_test[0].scenario_name: skip_test[1]}]
-        return total_ran, failed_cases_result, skipped_cases_result
+            passed = test_suite.passed
+            failures = test_suite.failures
+            errors = test_suite.errors
+            skipped = test_suite.skipped
+            if passed:
+                update_test_result(passed, passed_cases_result)
+            if failures:
+                update_test_result(failures, failed_cases_result)
+            if errors:
+                update_test_result(errors, failed_cases_result)
+            if skipped:
+                update_test_result(skipped, skipped_cases_result)
+
+        return total_ran, failed_cases_result, skipped_cases_result, \
+            passed_cases_result
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
@@ -321,14 +326,18 @@ if __name__ == '__main__':
             test_utils.create_parent_server_node(server)
 
             suite = get_suite(test_module_list, server, test_client)
-            tests = unittest.TextTestRunner(stream=sys.stderr,
+            tests = unit_test.TextTestRunner(stream=sys.stderr,
                                             descriptions=True,
                                             verbosity=2).run(suite)
 
-            ran_tests, failed_cases, skipped_cases = \
+            ran_tests, failed_cases, skipped_cases, passed_cases = \
                 get_tests_result(tests)
             test_result[server['name']] = [ran_tests, failed_cases,
-                                           skipped_cases]
+                                           skipped_cases, passed_cases]
+
+            # Set empty list for 'passed' parameter for each testRun.
+            # So that it will not append same test case name
+            unit_test.result.TestResult.passed = []
 
             if len(failed_cases) > 0:
                 failure = True
@@ -350,6 +359,7 @@ if __name__ == '__main__':
     for server_res in test_result:
         failed_cases = test_result[server_res][1]
         skipped_cases = test_result[server_res][2]
+        passed_cases = test_result[server_res][3]
         skipped_cases, skipped_cases_json = test_utils.get_scenario_name(
             skipped_cases)
         failed_cases, failed_cases_json = test_utils.get_scenario_name(
@@ -378,7 +388,7 @@ if __name__ == '__main__':
             file=sys.stderr)
 
         temp_dict_for_server = {
-            server_res: {"tests_passed": total_passed_cases,
+            server_res: {"tests_passed": [total_passed_cases, passed_cases],
                          "tests_failed": [total_failed, failed_cases_json],
                          "tests_skipped": [total_skipped, skipped_cases_json]
                          }

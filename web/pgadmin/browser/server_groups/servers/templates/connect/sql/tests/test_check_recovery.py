@@ -8,6 +8,10 @@ class TestCheckRecovery(BaseTestGenerator):
 
     versions_to_test = ["default", "9.0_plus"]
 
+    scenarios = [
+        ("Test for check recovery", dict())
+    ]
+
     def runTest(self):
 
         cursor = test_utils.get_db_connection(self.server['db'],

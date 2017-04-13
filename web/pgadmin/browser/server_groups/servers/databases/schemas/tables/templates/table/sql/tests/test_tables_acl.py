@@ -22,6 +22,11 @@ if sys.version_info[0] >= 3:
 
 
 class TestTablesAcl(BaseTestGenerator):
+    scenarios = [
+        ("Test query returns the permissions when there are permissions set up"
+         " on the table", dict())
+    ]
+
     def runTest(self):
         """ This tests that when there are permissions set up on the table, acl query returns the permissions"""
         with test_utils.Database(self.server) as (connection, database_name):

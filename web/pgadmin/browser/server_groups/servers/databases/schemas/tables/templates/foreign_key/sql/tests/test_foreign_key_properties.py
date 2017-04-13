@@ -22,6 +22,11 @@ if sys.version_info[0] >= 3:
 
 
 class TestColumnForeignKeyGetConstraintCols(BaseTestGenerator):
+    scenarios = [
+        ("Test foreign key get constraint with no foreign key properties on"
+         " the column", dict())
+    ]
+
     def runTest(self):
         """ When there are no foreign key properties on the column, it returns an empty result """
         with test_utils.Database(self.server) as (connection, database_name):
