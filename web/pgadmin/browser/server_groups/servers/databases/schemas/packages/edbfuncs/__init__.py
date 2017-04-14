@@ -105,7 +105,7 @@ class EdbFuncModule(CollectionNodeModule):
         )
         self.pref_show_node = self.browser_preference.register(
             'node', 'show_node_' + self.node_type,
-            gettext('Package {0}').format(self.label), 'boolean',
+            gettext('Package {0}').format(self.label), 'node',
             self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
         )
 
@@ -684,7 +684,7 @@ class EdbProcModule(CollectionNodeModule):
         )
         self.pref_show_node = self.browser_preference.register(
             'node', 'show_node_' + self.node_type,
-            gettext('Package {0}').format(self.label), 'boolean',
+            gettext('Package {0}').format(self.label), 'node',
             self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
         )
 
