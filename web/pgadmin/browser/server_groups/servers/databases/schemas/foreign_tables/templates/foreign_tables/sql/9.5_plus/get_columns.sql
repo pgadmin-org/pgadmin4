@@ -40,4 +40,4 @@ LEFT OUTER JOIN
 WHERE
     att.attrelid={{foid}}::oid
     AND att.attnum>0
-    ORDER BY att.attname;
+    ORDER BY att.attnum;
