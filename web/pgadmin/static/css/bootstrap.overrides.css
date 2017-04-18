@@ -142,6 +142,10 @@ iframe {
     color: #009DCF;
 }
 
+.navbar-inverse .navbar-brand:focus {
+    color: #009DCF;
+}
+
 .dropdown-menu > hr {
     margin-top: 0;
     margin-bottom: 0;
