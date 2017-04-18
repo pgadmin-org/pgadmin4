@@ -163,6 +163,9 @@ def create_table(server, db_name, table_name):
             table_name)
         pg_cursor.execute(
             '''INSERT INTO "%s" VALUES ('Some-Name', 6)''' % table_name)
+        pg_cursor.execute(
+            '''INSERT INTO "%s" VALUES ('Some-Other-Name', 22)''' % table_name)
+
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 

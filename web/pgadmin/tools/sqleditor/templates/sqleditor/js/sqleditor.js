@@ -2,7 +2,8 @@ define(
   [
     'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
     'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
-    'sources/selection/clipboard',
+    'sources/selection/grid_selector', 'sources/selection/clipboard',
+    'sources/selection/copy_data',
 
     'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
     'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
@@ -21,13 +22,12 @@ define(
     'slickgrid/plugins/slick.cellrangedecorator',
     'slickgrid/plugins/slick.cellrangeselector',
     'slickgrid/plugins/slick.cellselectionmodel',
-    'slickgrid/plugins/slick.checkboxselectcolumn',
     'slickgrid/plugins/slick.cellcopymanager',
     'slickgrid/plugins/slick.rowselectionmodel',
     'slickgrid/slick.grid'
   ],
   function(
-    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, clipboard
+    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, GridSelector, clipboard, copyData
   ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -549,14 +549,7 @@ define(
           collection = [];
         }
 
-        var grid_columns = new Array(),
-          checkboxSelector;
-
-          checkboxSelector = new Slick.CheckboxSelectColumn({
-            cssClass: "sc-cb"
-          });
-
-          grid_columns.push(checkboxSelector.getColumnDefinition());
+        var grid_columns = [];
 
         var grid_width = $($('#editor-panel').find('.wcFrame')[1]).width()
         _.each(columns, function(c) {
@@ -591,6 +584,9 @@ define(
 
            grid_columns.push(options)
         });
+
+        var gridSelector = new GridSelector();
+        grid_columns = gridSelector.getColumnDefinitionsWithCheckboxes(grid_columns);
 
         var grid_options = {
           editable: true,
@@ -635,7 +631,7 @@ define(
         var grid = new Slick.Grid($data_grid, collection, grid_columns, grid_options);
         grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: false }) );
         grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
-        grid.registerPlugin(checkboxSelector);
+        grid.registerPlugin(gridSelector);
 
         var editor_data = {
           keys: self.handler.primary_keys,
@@ -2947,46 +2943,7 @@ define(
         },
 
         // This function will copy the selected row.
-        _copy_row: function() {
-          var self = this, grid, data, rows, copied_text = '';
-
-          self.copied_rows = [];
-
-          // Disable copy button
-          $("#btn-copy-row").prop('disabled', true);
-          // Enable paste button
-          if(self.can_edit) {
-            $("#btn-paste-row").prop('disabled', false);
-          }
-
-          grid = self.slickgrid;
-          data = grid.getData();
-          rows = grid.getSelectedRows();
-          // Iterate over all the selected rows & fetch data
-          for (var i = 0; i < rows.length; i += 1) {
-            var idx = rows[i],
-              _rowData = data[idx],
-              _values = [];
-            self.copied_rows.push(_rowData);
-            // Convert it as CSV for clipboard
-            for (var j = 0; j < self.columns.length; j += 1) {
-               var val = _rowData[self.columns[j].pos];
-               if(val && _.isObject(val))
-                 val = "'" + JSON.stringify(val) + "'";
-               else if(val && typeof val != "number" && typeof true != "boolean")
-                 val = "'" + val.toString() + "'";
-               else if (_.isNull(val) || _.isUndefined(val))
-                 val = '';
-                _values.push(val);
-            }
-            // Append to main text string
-            if(_values.length > 0)
-              copied_text += _values.toString() + "\n";
-          }
-          // If there is something to set into clipboard
-          if(copied_text)
-            clipboard.copyTextToClipboard(copied_text);
-        },
+        _copy_row: copyData,
 
         // This function will paste the selected row.
         _paste_row: function() {

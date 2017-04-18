@@ -28,6 +28,7 @@ class BaseFeatureTest(BaseTestGenerator):
 
         self.page = PgadminPage(self.driver, app_config)
         try:
+            self.page.driver.switch_to.default_content()
             self.page.wait_for_app()
             self.page.wait_for_spinner_to_disappear()
             self.page.reset_layout()

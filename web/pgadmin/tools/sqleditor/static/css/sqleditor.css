@@ -336,12 +336,6 @@ li {
   background-color: transparent; /* show default selected row background */
 }
 
-.sc-cb {
-  background: #f0f0f0;
-  border-right-color: silver;
-  border-right-style: solid;
-}
-
 #datagrid .slick-header .ui-state-default,
 #datagrid .slick-header .ui-widget-content.ui-state-default,
 #datagrid .slick-header .ui-widget-header .ui-state-default {
@@ -356,6 +350,10 @@ li {
 #datagrid .slick-header .slick-header-column.ui-state-default {
  color: #fff;
  padding: 4px 0 4px 6px;
+}
+
+.column-description {
+  display: table-cell;
 }
 
 .long_text_editor {
@@ -417,6 +415,11 @@ input.editor-checkbox:focus {
 /* To highlight row at fault */
 .grid-canvas .new_row.error, .grid-canvas .updated_row.error {
   background: #e46b6b;
+}
+
+/* color the first column */
+.sr .sc:first-child {
+    background-color: #2c76b4;
 }
 
 #datagrid div.slick-header.ui-state-default {

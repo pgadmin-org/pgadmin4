@@ -58,7 +58,18 @@ class PgadminPage:
 
         self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "']")
 
+    def close_query_tool(self):
+        self.driver.switch_to.default_content()
+        tab = self.find_by_xpath("//*[contains(@class,'wcPanelTab') and contains(.,'" + "Query" + "')]")
+        ActionChains(self.driver).context_click(tab).perform()
+        self.find_by_xpath("//li[contains(@class, 'context-menu-item')]/span[contains(text(), 'Remove Panel')]").click()
+        self.driver.switch_to.frame(self.driver.find_elements_by_tag_name("iframe")[0])
+        time.sleep(.5)
+        self.click_element(self.find_by_xpath('//button[contains(@class, "ajs-button") and contains(.,"Yes")]'))
+        self.driver.switch_to.default_content()
+
     def remove_server(self, server_config):
+        self.driver.switch_to.default_content()
         self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "' and @class='aciTreeItem']").click()
         self.find_by_partial_link_text("Object").click()
         self.find_by_partial_link_text("Delete/Drop").click()
