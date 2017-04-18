@@ -25,6 +25,11 @@ class ServerType(object):
     identification based on the version.
     """
     registry = dict()
+    UTILITY_PATH_LABEL = _("PostgreSQL Binary Path")
+    UTILITY_PATH_HELP = _(
+        "Path to the directory containing the PostgreSQL utility programs"
+        " (pg_dump, pg_restore etc)."
+    )
 
     def __init__(self, server_type, description, priority):
         self.stype = server_type
@@ -53,14 +58,9 @@ class ServerType(object):
 
             st.utility_path = paths.register(
                 'bin_paths', st.stype + '_bin_dir',
-                _("{0} Binary Path").format(st.desc),
+                st.UTILITY_PATH_LABEL,
                 'text', default_path, category_label=_('Binary paths'),
-                help_str=_(
-                    "Path to the directory containing the {0} utility"
-                    " programs (pg_dump, pg_restore etc).".format(
-                        st.desc
-                    )
-                )
+                help_str=st.UTILITY_PATH_HELP
             )
 
     @property

@@ -12,6 +12,12 @@ from pgadmin.browser.server_groups.servers.types import ServerType
 
 
 class PPAS(ServerType):
+    UTILITY_PATH_LABEL = gettext("EDB Advanced Server Binary Path")
+    UTILITY_PATH_HELP = gettext(
+        "Path to the directory containing the EDB Advanced Server utility"
+        " programs (pg_dump, pg_restore etc)."
+    )
+
     def instanceOf(self, ver):
         return ver.startswith("EnterpriseDB")
 
