@@ -45,3 +45,7 @@
 .pgadmin-node-select option {
   padding-left: 20px;
 }
+
+.aciTree .aciTreeLi div.aciTreeLine {
+  display: table !important;
+}
