@@ -1,4 +1,4 @@
-chromedriver_installer==0.0.6 --install-option="--chromedriver-version=2.29"
+chromedriver_installer==0.0.6
 pyperclip~=1.5.27
 selenium==3.3.1
 testscenarios==0.5.0
