@@ -131,6 +131,22 @@ def check_precondition(f):
             PG_DEFAULT_DRIVER).connection_manager(
             kwargs['sid']
         )
+
+        # Below check handle the case where existing server is deleted
+        # by user and python server will raise exception if this check
+        # is not introduce.
+        if g.manager is None:
+            if f.__name__ in ['activity', 'prepared', 'locks', 'config']:
+                return precondition_required(
+                    gettext("Please connect to the selected server"
+                            " to view the table.")
+                )
+            else:
+                return precondition_required(
+                    gettext("Please connect to the selected server"
+                            " to view the graph.")
+                )
+
         g.conn = g.manager.connection()
 
         # If DB not connected then return error to browser

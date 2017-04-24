@@ -11,22 +11,22 @@ ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.seqowner) }};
 
 {% endif %}
-{% if data.current_value %}
+{% if data.current_value is defined %}
 {% set seqname = conn|qtIdent(o_data.schema, data.name) %}
 SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
 
 {% endif %}
 {% set defquery = '' %}
-{% if data.increment %}
+{% if data.increment is defined %}
 {% set defquery = defquery+'\n    INCREMENT '+data.increment|string %}
 {% endif %}
-{% if data.minimum %}
+{% if data.minimum is defined %}
 {% set defquery = defquery+'\n    MINVALUE '+data.minimum|string %}
 {% endif %}
-{% if data.maximum %}
+{% if data.maximum is defined %}
 {% set defquery = defquery+'\n    MAXVALUE '+data.maximum|string %}
 {% endif %}
-{% if data.cache %}
+{% if data.cache is defined %}
 {% set defquery = defquery+'\n    CACHE '+data.cache|string %}
 {% endif %}
 {% if data.cycled == True %}

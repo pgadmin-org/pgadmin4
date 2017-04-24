@@ -16,6 +16,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
         template_path_parts = template.split("#", 2)
 
         server_versions = (
+            {'name': "10.0_plus", 'number': 100000},
             {'name': "9.6_plus", 'number': 90600},
             {'name': "9.5_plus", 'number': 90500},
             {'name': "9.4_plus", 'number': 90400},
