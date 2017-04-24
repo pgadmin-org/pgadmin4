@@ -343,13 +343,16 @@ li {
 }
 
 #datagrid .slick-header .slick-header-columns {
-  background: #2c76b4;
+  background: #ffffff;
   height: 40px;
+  border-bottom: none;
 }
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
- color: #fff;
- padding: 4px 0 4px 6px;
+  color: #ffffff;
+  padding: 4px 0 4px 6px;
+  background-color: #2c76b4;
+  border-bottom: 1px solid black;
 }
 
 .column-description {
@@ -423,7 +426,9 @@ input.editor-checkbox:focus {
 }
 
 #datagrid div.slick-header.ui-state-default {
-  background: #2c76b4;
+  background: #ffffff;
+  border-bottom: none;
+  border-right: none;
 }
 
 /*
@@ -436,4 +441,8 @@ input.editor-checkbox:focus {
   -moz-box-sizing: content-box;
   -webkit-box-sizing: content-box;
   -ms-box-sizing: content-box;
+}
+
+.sr.ui-widget-content {
+  border-top: 1px solid silver;
 }
