@@ -13,6 +13,7 @@ Flask-Gravatar==0.4.2
 Flask-HTMLmin==1.2
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
+Flask-Migrate==2.0.3
 Flask-Principal==0.4.0
 Flask-Security==1.7.5
 Flask-SQLAlchemy==2.1
