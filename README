@@ -69,6 +69,22 @@ You can also use Qt Creator to build, develop and debug the runtime. Simply
 open the $PGADMIN4_SRC/runtime/pgAdmin4.pro project file in Qt Creator and
 configure the project with a supported version of Qt when prompted.
 
+Create Database Migrations
+--------------------------
+
+In order to make changes to the SQLite DB, navigate to the 'web' directory:
+
+(pgadmin4) $ cd $PGADMIN4_SRC/web
+
+Create a migration file with the following command:
+
+(pgadmin4) $ FLASK_APP=pgAdmin4.py flask db revision
+
+This will create a file in: $PGADMIN4_SRC/web/migrations/versions/ .
+Add any changes to the 'upgrade' function.
+
+There is no need to increment the SETTINGS_SCHEMA_VERSION.
+
 Configuring the Python Environment
 ----------------------------------
 

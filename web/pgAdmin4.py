@@ -28,17 +28,6 @@ from pgadmin import create_app
 from pgadmin.model import SCHEMA_VERSION
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
-##########################################################################
-# Sanity checks
-##########################################################################
-
-# Check if the database exists. If it does not, create it.
-if not os.path.isfile(config.SQLITE_PATH):
-    from pgadmin.utils import u, fs_encoding, file_quote
-    setupfile = os.path.join(
-        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))), u'setup.py'
-    )
-    exec(open(file_quote(setupfile), 'r').read())
 
 ##########################################################################
 # Server starup

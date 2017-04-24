@@ -10,7 +10,7 @@
 """The main pgAdmin module. This handles the application initialisation tasks,
 such as setup of logging, dynamic loading of modules etc."""
 import logging
-import os, sys, time
+import os, sys
 from collections import defaultdict
 from importlib import import_module
 
@@ -31,7 +31,7 @@ from werkzeug.utils import find_modules
 
 from pgadmin.utils.preferences import Preferences
 
-from pgadmin.model import db, Role, Server, ServerGroup, User, Version, Keys
+from pgadmin.model import db, Role, Server, ServerGroup, User, Keys
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -180,6 +180,11 @@ def create_app(app_name=None):
     app.logger.info('########################################################')
     app.logger.debug("Python syspath: %s", sys.path)
 
+    from pgadmin.setup import create_app_data_directory, db_upgrade
+
+    # Sanity checks (App data directory exists)
+    create_app_data_directory(config)
+
     ##########################################################################
     # Setup i18n
     ##########################################################################
@@ -233,6 +238,12 @@ def create_app(app_name=None):
 
     # Create database connection object and mailer
     db.init_app(app)
+
+    ##########################################################################
+    # Upgrade the schema (if required)
+    ##########################################################################
+    db_upgrade(app)
+
     Mail(app)
 
     import pgadmin.utils.paths as paths
@@ -241,33 +252,6 @@ def create_app(app_name=None):
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(None, user_datastore)
-
-    # Upgrade the schema (if required)
-    with app.app_context():
-        try:
-            version = Version.query.filter_by(name='ConfigDB').first()
-        except:
-            backup_file = config.SQLITE_PATH + '.' + time.strftime("%Y%m%d%H%M%S")
-            app.logger.error(
-                """The configuration database ({0}) appears to be corrupt.\n\n"""
-                """The database will be moved to {1}.\n"""
-                """Please restart {2} to create a new configuration database.\n""".format(
-                    config.SQLITE_PATH, backup_file, config.APP_NAME
-                )
-            )
-
-            os.rename(config.SQLITE_PATH, backup_file)
-            exit(1)
-
-        # Pre-flight checks
-        if int(version.value) < int(config.SETTINGS_SCHEMA_VERSION):
-            app.logger.info(
-                """Upgrading the database schema from version {0} to {1}.""".format(
-                    version.value, config.SETTINGS_SCHEMA_VERSION
-                )
-            )
-            from setup import do_upgrade
-            do_upgrade(app, user_datastore, version)
 
     ##########################################################################
     # Setup security
