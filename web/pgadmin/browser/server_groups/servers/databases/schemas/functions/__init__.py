@@ -479,6 +479,22 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             'i': 'IN', 'o': 'OUT', 'b': 'INOUT', 'v': 'VARIADIC', 't': 'TABLE'
         }
 
+        # We need to put default parameter at proper location in list
+        # Total number of default parameters
+        total_default_parameters = len(proargdefaultvals)
+
+        # Total number of parameters
+        total_parameters = len(proargtypes)
+
+        # Parameters which do not have default parameters
+        non_default_parameters = total_parameters - total_default_parameters
+
+        # only if we have at least one parameter with default value
+        if total_default_parameters > 0 and non_default_parameters > 0:
+            for idx in range(non_default_parameters):
+                # Set null value for parameter non-default parameter
+                proargdefaultvals.insert(idx, '')
+
         # The proargtypes doesn't give OUT params, so we need to fetch
         # those from database explicitly, below code is written for this
         # purpose.
