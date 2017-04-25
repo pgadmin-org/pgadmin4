@@ -14,7 +14,8 @@
 
 // use alertify and underscore js
 var alertify = require("alertify"),
-    _ = require("underscore");
+    _ = require("underscore"),
+    S = require("underscore.string");
 
 /*---------------------------------------------------------
   Define functions used for various operations
@@ -173,7 +174,7 @@ var setUploader = function(path) {
         $('.storage_dialog #uploader .input-path').val(path);
     }
   } else if (!config.options.platform_type === "win32" &&
-        (path == '' || !path.startsWith('/'))) {
+        (path == '' || !S.startsWith(path, '/'))) {
     path = '/' + path;
     $('.storage_dialog #uploader .input-path').val(path);
   } else {
@@ -1488,7 +1489,7 @@ function InputObject() {
           path = path.replace(/\//g, '\\')
         } else {
           path = path.replace(/\\/g, '/')
-          if (!path.startsWith('/')) {
+          if (!S.startsWith(path, '/')) {
             path = '/' + path;
           }
         }
