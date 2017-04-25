@@ -140,7 +140,15 @@
               selected = {},
               model = cell.model,
               cid = model.cid,
-              curr_user = model.top.node_info.server.user.name;
+              // We need to check node_info values in parent when object is nested.
+              // eg: column level privileges in table dialog
+              // In this case node_info will not be avilable to column node as
+              // it is not loaded yet
+              node_info = (_.has(model.top, 'node_info')
+                            && !_.isUndefined(model.top.node_info)) ?
+                              model.top.node_info :
+                              model.handler.top.node_info,
+              curr_user = node_info.server.user.name;
 
           var idx = 0;
 
