@@ -526,7 +526,9 @@ class TableCommand(GridCommand):
                         for val in query_res:
                             if query_res[val]['status']:
                                 query_res[val]['result'] = 'Transaction ROLLBACK'
-                        _rowid = list_of_rowid[i]
+
+                        # If list is empty set rowid to 1
+                        _rowid = list_of_rowid[i] if list_of_rowid else 1
 
                         return status, res, query_res, _rowid
 
