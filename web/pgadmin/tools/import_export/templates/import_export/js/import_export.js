@@ -374,10 +374,12 @@ define(
                 return {
                   buttons:[{
                     text: "{{ _('OK') }}", key: 27, disable: true,
+                    'data-btn-name': 'ok',
                     className:
                       "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                   }, {
                     text: "{{ _('Cancel') }}", key: 27,
+                    'data-btn-name': 'cancel',
                     className:
                       "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                   }],
@@ -393,7 +395,7 @@ define(
 
               // Callback functions when click on the buttons of the Alertify dialogs
               callback: function(e) {
-                if (e.button.text === "{{ _('OK') }}") {
+                if (e.button['data-btn-name'] === "ok") {
 
                   var n = this.settings['pg_node'],
                     i = this.settings['pg_item'],

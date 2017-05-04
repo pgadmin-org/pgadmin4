@@ -269,9 +269,11 @@ define(
                     attrs:{name:'dialog_help', type:'button', label: '{{ _('Maintenance') }}',
                     url: '{{ url_for('help.static', filename='maintenance_dialog.html') }}'}
                   },{
-                    text: "{{ _('OK') }}", key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+                    text: "{{ _('OK') }}", key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button",
+                    'data-btn-name': 'ok',
                   },{
-                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button",
+                    'data-btn-name': 'cancel',
                   }],
                   options: { modal: 0, pinnable: false}
                 };
@@ -289,7 +291,7 @@ define(
                   return;
                 }
 
-                if (e.button.text === "{{ _('OK') }}") {
+                if (e.button['data-btn-name'] === "ok") {
 
                   var schema = undefined,
                     table = undefined,

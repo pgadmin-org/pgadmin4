@@ -123,10 +123,10 @@ TODO LIST FOR BACKUP:
             width: "100%"
         },
         options: [
-          {label: "Custom", value: "custom"},
-          {label: "Tar", value: "tar"},
-          {label: "Plain", value: "plain"},
-          {label: "Directory", value: "directory"}
+          {label: '{{ _('Custom') }}', value: "custom"},
+          {label: '{{ _('Tar') }}', value: "tar"},
+          {label: '{{ _('Plain') }}', value: "plain"},
+          {label: '{{ _('Directory') }}', value: "directory"}
         ]
       },{
         id: 'ratio', label: '{{ _('Compression ratio') }}',
@@ -447,9 +447,11 @@ TODO LIST FOR BACKUP:
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'
                       }
                     },{
-                    text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                      text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      'data-btn-name': 'backup'
                     },{
-                    text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
+                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                      'data-btn-name': 'cancel'
                   }],
                   // Set options for dialog
                   options: {
@@ -537,7 +539,7 @@ TODO LIST FOR BACKUP:
                   return;
                 }
 
-                if (e.button.text === '{{ _('Backup') }}') {
+                if (e.button['data-btn-name'] === "backup") {
 
                   if (!d)
                     return;
@@ -660,9 +662,11 @@ TODO LIST FOR BACKUP:
                       attrs:{name:'dialog_help', type:'button', label: '{{ _('Backup') }}',
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'}
                     },{
-                    text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                      text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      'data-btn-name': 'backup'
                     },{
-                    text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
+                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                      'data-btn-name': 'cancel'
                   }],
                   // Set options for dialog
                   options: {
@@ -748,7 +752,7 @@ TODO LIST FOR BACKUP:
                   return;
                 }
 
-                if (e.button.text === "Backup") {
+                if (e.button['data-btn-name'] === "backup") {
                   if (!d)
                     return;
 

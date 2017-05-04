@@ -36,7 +36,7 @@ define([
         custom: false,
         file: undefined,
         role: undefined,
-        format: 'Custom or tar',
+        format: 'custom',
         verbose: true,
         blobs: true,
         encoding: undefined,
@@ -81,8 +81,8 @@ define([
             width: "100%"
         },
         options: [
-          {label: "Custom or tar", value: "custom"},
-          {label: "Directory", value: "directory"}
+          {label: '{{ _('Custom or tar') }}', value: "custom"},
+          {label: '{{ _('Directory') }}', value: "directory"}
         ]
       },{
         id: 'file', label: '{{ _('Filename') }}',
@@ -374,10 +374,12 @@ define([
                     url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
                   },{
                     text: '{{ _('Restore') }}', key: 27,
-                    className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true
+                    className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true,
+                    'data-btn-name': 'restore'
                   },{
                     text: '{{ _('Cancel') }}', key: 27,
-                    className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button', restore: false
+                    className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button', restore: false,
+                    'data-btn-name': 'cancel'
                   }],
                   // Set options for dialog
                   options: {
@@ -473,7 +475,7 @@ define([
                   return;
                 }
 
-                if (e.button.restore) {
+                if (e.button['data-btn-name'] === "restore") {
                   if (!d)
                     return;
 
