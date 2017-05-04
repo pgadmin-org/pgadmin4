@@ -283,7 +283,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'tfunction', label:'{{ _('Trigger Function') }}',
           type: 'text', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'], group: '{{ _('Definition') }}',
-          control: 'node-ajax-options', url: 'get_triggerfunctions'
+          control: 'node-ajax-options', url: 'get_triggerfunctions',
+          cache_node: 'trigger_function'
         },{
           id: 'tgargs', label:'{{ _('Arguments') }}', cell: 'string',
           group: '{{ _('Definition') }}',

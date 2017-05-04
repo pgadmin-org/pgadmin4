@@ -67,7 +67,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           source: undefined,
           language: undefined
         },
-        
+
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -79,7 +79,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
         },
-        
+
         // Define the schema for the event trigger node
         schema: [{
           id: 'name', label: '{{ _('Name') }}', cell: 'string',
@@ -105,7 +105,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },{
           id: 'eventfunname', label:'{{ _('Trigger function') }}',
           type: 'text', control: 'node-ajax-options', group: "Definition",
-          url:'fopts'
+          url:'fopts', cache_node: 'trigger_function'
         },{
           id: 'eventname', label:'{{ _('Events') }}',
           type:"radio", group: "Definition", cell: 'string',
