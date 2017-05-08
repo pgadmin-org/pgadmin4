@@ -226,6 +226,7 @@ class Connection(BaseConnection):
         res['conn_id'] = self.conn_id
         res['database'] = self.db
         res['async'] = self.async
+        res['wasConnected'] = self.wasConnected
 
         return res
 
@@ -1565,15 +1566,18 @@ WHERE db.oid = {0}""".format(did))
                 self, conn_info['conn_id'], conn_info['database'],
                 True, conn_info['async']
             )
-
-            try:
-                conn.connect(
-                    password=data['password'],
-                    server_types=ServerType.types()
-                )
-            except Exception as e:
-                current_app.logger.exception(e)
-                self.connections.pop(conn_info['conn_id'])
+            # only try to reconnect if connection was connected previously.
+            if conn_info['wasConnected']:
+                try:
+                    conn.connect(
+                        password=data['password'],
+                        server_types=ServerType.types()
+                    )
+                    # This will also update wasConnected flag in connection so
+                    # no need to update the flag manually.
+                except Exception as e:
+                    current_app.logger.exception(e)
+                    self.connections.pop(conn_info['conn_id'])
 
     def release(self, database=None, conn_id=None, did=None):
         if did is not None:
