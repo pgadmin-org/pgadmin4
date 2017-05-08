@@ -67,10 +67,10 @@ if pgadmin_credentials:
                for item in ['login_username', 'login_password']):
             pgadmin_credentials = pgadmin_credentials[
                 'pgAdmin4_login_credentials']
-            os.environ['PGADMIN_SETUP_EMAIL'] = pgadmin_credentials[
-                'login_username']
-            os.environ['PGADMIN_SETUP_PASSWORD'] = pgadmin_credentials[
-                'login_password']
+            os.environ['PGADMIN_SETUP_EMAIL'] = str(pgadmin_credentials[
+                'login_username'])
+            os.environ['PGADMIN_SETUP_PASSWORD'] = str(pgadmin_credentials[
+                'login_password'])
 
 # Execute the setup file
 exec (open("setup.py").read())
