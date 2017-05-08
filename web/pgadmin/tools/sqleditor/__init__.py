@@ -1337,7 +1337,8 @@ def save_file():
 @login_required
 def start_query_download_tool(trans_id):
     sync_conn = None
-    status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
+    status, error_msg, conn, trans_obj, \
+        session_obj = check_transaction_status(trans_id)
 
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
@@ -1361,11 +1362,15 @@ def start_query_download_tool(trans_id):
                     del conn.manager.connections[sync_conn.conn_id]
 
                 # This returns generator of records.
-                status, gen = sync_conn.execute_on_server_as_csv(sql, records=2000)
+                status, gen = sync_conn.execute_on_server_as_csv(
+                    sql, records=2000
+                )
 
                 if not status:
                     r = Response('"{0}"'.format(gen), mimetype='text/csv')
-                    r.headers["Content-Disposition"] = "attachment;filename=error.csv"
+                    r.headers[
+                        "Content-Disposition"
+                    ] = "attachment;filename=error.csv"
                     r.call_on_close(cleanup)
                     return r
 
@@ -1377,7 +1382,18 @@ def start_query_download_tool(trans_id):
                     import time
                     filename = str(int(time.time())) + ".csv"
 
-                r.headers["Content-Disposition"] = "attachment;filename={0}".format(filename)
+                # We will try to encode report file name with latin-1
+                # If it fails then we will fallback to default ascii file name
+                # werkzeug only supports latin-1 encoding supported values
+                try:
+                    tmp_file_name = filename
+                    tmp_file_name.encode('latin-1', 'strict')
+                except UnicodeEncodeError:
+                    filename = "download.csv"
+
+                r.headers[
+                    "Content-Disposition"
+                ] = "attachment;filename={0}".format(filename)
 
                 r.call_on_close(cleanup)
                 return r
@@ -1388,4 +1404,6 @@ def start_query_download_tool(trans_id):
             r.call_on_close(cleanup)
             return r
     else:
-        return internal_server_error(errormsg=gettext("Transaction status check failed."))
+        return internal_server_error(
+            errormsg=gettext("Transaction status check failed.")
+        )
