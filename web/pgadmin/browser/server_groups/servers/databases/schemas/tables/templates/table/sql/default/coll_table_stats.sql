@@ -14,12 +14,12 @@ SELECT
     autovacuum_count AS {{ conn|qtIdent(_('Autovacuum counter')) }},
     analyze_count AS {{ conn|qtIdent(_('Analyze counter')) }},
     autoanalyze_count AS {{ conn|qtIdent(_('Autoanalyze counter')) }},
-    pg_size_pretty(pg_relation_size(st.relid)
+    pg_relation_size(st.relid)
         + CASE WHEN cl.reltoastrelid = 0 THEN 0 ELSE pg_relation_size(cl.reltoastrelid)
         + COALESCE((SELECT SUM(pg_relation_size(indexrelid))
                         FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0) END
         + COALESCE((SELECT SUM(pg_relation_size(indexrelid))
-                        FROM pg_index WHERE indrelid=st.relid)::int8, 0)) AS {{ conn|qtIdent(_('Size')) }}
+                        FROM pg_index WHERE indrelid=st.relid)::int8, 0) AS {{ conn|qtIdent(_('Size')) }}
 FROM
     pg_stat_all_tables st
 JOIN

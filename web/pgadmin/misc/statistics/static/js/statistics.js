@@ -1,7 +1,7 @@
 define([
   'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
-  'alertify', 'wcdocker', 'pgadmin.backgrid', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
-], function(_, S, $, pgBrowser, Backgrid, Alertify) {
+  'alertify', 'sources/size_prettify'
+], function(_, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
 
   if (pgBrowser.NodeStatistics)
     return pgBrowser.NodeStatistics;
@@ -11,6 +11,25 @@ define([
   if (pgBrowser.NodeStatistics.initialized) {
     return pgBrowser.NodeStatistics;
   }
+
+  var SizeFormatter = Backgrid.SizeFormatter = function () {};
+  _.extend(SizeFormatter.prototype, {
+      /**
+         Takes a raw value from a model and returns the human readable formatted
+         string for display.
+
+         @member Backgrid.SizeFormatter
+         @param {*} rawData
+         @param {Backbone.Model} model Used for more complicated formatting
+         @return {*}
+      */
+      fromRaw: function (rawData, model) {
+        return sizePrettify(rawData);
+      },
+      toRaw: function (formattedData, model) {
+        return formattedData;
+      }
+  });
 
   var PGBooleanCell = Backgrid.Extension.SwitchCell.extend({
       defaults: _.extend({}, Backgrid.Extension.SwitchCell.prototype.defaults)
@@ -200,9 +219,9 @@ define([
               if (res.data) {
                 var data = res.data;
                 if (node.hasCollectiveStatistics || data['rows'].length > 1) {
-                  self.__createMultiLineStatistics.call(self, data);
+                  self.__createMultiLineStatistics.call(self, data, node.statsPrettifyFields);
                 } else {
-                  self.__createSingleLineStatistics.call(self, data);
+                  self.__createSingleLineStatistics.call(self, data, node.statsPrettifyFields);
                 }
 
                 if (self.grid) {
@@ -294,24 +313,29 @@ define([
         }
     },
 
-    __createMultiLineStatistics: function(data) {
+    __createMultiLineStatistics: function(data, prettifyFields) {
       var rows = data['rows'],
           columns = data['columns'];
 
       this.columns = [];
       for (var idx in columns) {
-        var c = columns[idx];
-        this.columns.push({
-          editable: false,
-          name: c['name'],
-          cell: typeCellMapper[c['type_code']] || 'string'
-        });
+        var rawColumn = columns[idx],
+            col = {
+            editable: false,
+            name: rawColumn['name'],
+            cell: typeCellMapper[rawColumn['type_code']] || 'string'
+           };
+           if (_.indexOf(prettifyFields, rawColumn['name']) != -1) {
+            col['formatter'] = SizeFormatter
+           }
+        this.columns.push(col);
+
       }
 
       this.collection.reset(rows);
     },
 
-    __createSingleLineStatistics: function(data) {
+    __createSingleLineStatistics: function(data, prettifyFields) {
       var row = data['rows'][0],
           columns = data['columns']
           res = [];
@@ -322,7 +346,7 @@ define([
         res.push({
           'statistics': name,
           // Check if row is undefined?
-          'value': row && row[name] ? row[name] : null
+          'value': row && row[name] ? ((_.indexOf(prettifyFields, name) != -1) ? sizePrettify(row[name]) : row[name]) : null
         });
       }
 

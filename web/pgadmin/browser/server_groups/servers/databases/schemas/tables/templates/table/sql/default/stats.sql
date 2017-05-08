@@ -25,23 +25,23 @@ SELECT
     autovacuum_count AS {{ conn|qtIdent(_('Autovacuum counter')) }},
     analyze_count AS {{ conn|qtIdent(_('Analyze counter')) }},
     autoanalyze_count AS {{ conn|qtIdent(_('Autoanalyze counter')) }},
-    pg_size_pretty(pg_relation_size(stat.relid)) AS {{ conn|qtIdent(_('Table size')) }},
-    CASE WHEN cl.reltoastrelid = 0 THEN NULL ELSE pg_size_pretty(pg_relation_size(cl.reltoastrelid)
+    pg_relation_size(stat.relid) AS {{ conn|qtIdent(_('Table size')) }},
+    CASE WHEN cl.reltoastrelid = 0 THEN NULL ELSE pg_relation_size(cl.reltoastrelid)
         + COALESCE((SELECT SUM(pg_relation_size(indexrelid))
-                        FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0))
+                        FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0)
         END AS {{ conn|qtIdent(_('Toast table size')) }},
-    pg_size_pretty(COALESCE((SELECT SUM(pg_relation_size(indexrelid))
-                                FROM pg_index WHERE indrelid=stat.relid)::int8, 0))
+    COALESCE((SELECT SUM(pg_relation_size(indexrelid))
+                                FROM pg_index WHERE indrelid=stat.relid)::int8, 0)
         AS {{ conn|qtIdent(_('Indexes size')) }}
 {% if is_pgstattuple %}
 {#== EXTENDED STATS ==#}
     ,tuple_count AS {{ conn|qtIdent(_('Tuple count')) }},
-    pg_size_pretty(tuple_len) AS {{ conn|qtIdent(_('Tuple length')) }},
+    tuple_len AS {{ conn|qtIdent(_('Tuple length')) }},
     tuple_percent AS {{ conn|qtIdent(_('Tuple percent')) }},
     dead_tuple_count AS {{ conn|qtIdent(_('Dead tuple count')) }},
-    pg_size_pretty(dead_tuple_len) AS {{ conn|qtIdent(_('Dead tuple length')) }},
+    dead_tuple_len AS {{ conn|qtIdent(_('Dead tuple length')) }},
     dead_tuple_percent AS {{ conn|qtIdent(_('Dead tuple percent')) }},
-    pg_size_pretty(free_space) AS {{ conn|qtIdent(_('Free space')) }},
+    free_space AS {{ conn|qtIdent(_('Free space')) }},
     free_percent AS {{ conn|qtIdent(_('Free percent')) }}
 FROM
     pgstattuple('{{schema_name}}.{{table_name}}'), pg_stat_all_tables stat

@@ -12,7 +12,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
         columns: ['name', 'description'],
-        hasStatistics: true
+        hasStatistics: true,
+        statsPrettifyFields: ['Size', 'Index size']
       });
   };
 
@@ -215,6 +216,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       hasSQL:  true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Size', 'Index size'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

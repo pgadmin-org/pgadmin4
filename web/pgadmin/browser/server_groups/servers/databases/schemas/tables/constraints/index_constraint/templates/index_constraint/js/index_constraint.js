@@ -19,6 +19,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Index size'],
       parent_type: 'table',
       canDrop: true,
       canDropCascade: true,

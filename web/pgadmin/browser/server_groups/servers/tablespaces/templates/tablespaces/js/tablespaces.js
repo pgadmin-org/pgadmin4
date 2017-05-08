@@ -9,7 +9,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         label: '{{ _('Tablespaces') }}',
         type: 'coll-tablespace',
         columns: ['name', 'spcuser', 'description'],
-        hasStatistics: true
+        hasStatistics: true,
+        statsPrettifyFields: ['Size']
       });
   };
 
@@ -25,6 +26,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       canDrop: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Size'],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

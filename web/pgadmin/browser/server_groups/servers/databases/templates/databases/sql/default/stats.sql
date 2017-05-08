@@ -16,7 +16,7 @@ SELECT
     slave.confl_snapshot AS {{ conn|qtIdent(_('Snapshot conflicts')) }},
     slave.confl_bufferpin AS {{ conn|qtIdent(_('Bufferpin conflicts')) }},
     slave.confl_deadlock AS {{ conn|qtIdent(_('Deadlock conflicts')) }},
-    pg_size_pretty(pg_database_size(db.datid)) AS {{ conn|qtIdent(_('Size')) }}
+    pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
 FROM
     pg_stat_database db
     LEFT JOIN pg_stat_database_conflicts slave ON db.datid=slave.datid

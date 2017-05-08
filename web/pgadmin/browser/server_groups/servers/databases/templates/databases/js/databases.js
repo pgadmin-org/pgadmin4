@@ -12,7 +12,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         label: '{{ _('Databases') }}',
         type: 'coll-database',
         columns: ['name', 'datowner', 'comments'],
-        hasStatistics: true
+        hasStatistics: true,
+        statsPrettifyFields: ['Size', 'Size of temporary files']
       });
   };
 
@@ -26,6 +27,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Size', 'Size of temporary files'],
       canDrop: function(node) {
         return node.canDrop;
       },

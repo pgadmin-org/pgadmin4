@@ -17,11 +17,11 @@ SELECT
     slave.confl_bufferpin AS {{ conn|qtIdent(_('Bufferpin conflicts')) }},
     slave.confl_deadlock AS {{ conn|qtIdent(_('Deadlock conflicts')) }},
     temp_files AS {{ conn|qtIdent(_("Temporary files")) }},
-    pg_size_pretty(temp_bytes) AS {{ conn|qtIdent(_("Size of temporary files")) }},
+    temp_bytes AS {{ conn|qtIdent(_("Size of temporary files")) }},
     deadlocks AS {{ conn|qtIdent(_("Deadlocks")) }},
     blk_read_time AS {{ conn|qtIdent(_("Block read time")) }},
     blk_write_time AS {{ conn|qtIdent(_("Block write time")) }},
-    pg_size_pretty(pg_database_size(db.datid)) AS {{ conn|qtIdent(_('Size')) }}
+    pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
 FROM
     pg_stat_database db
     LEFT JOIN pg_stat_database_conflicts slave ON db.datid=slave.datid

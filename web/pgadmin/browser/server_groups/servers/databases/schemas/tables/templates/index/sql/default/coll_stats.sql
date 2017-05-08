@@ -3,7 +3,7 @@ SELECT
     idx_scan AS {{ conn|qtIdent(_('Index scans')) }},
     idx_tup_read AS {{ conn|qtIdent(_('Index tuples read')) }},
     idx_tup_fetch AS {{ conn|qtIdent(_('Index tuples fetched')) }},
-    pg_size_pretty(pg_relation_size(indexrelid)) AS {{ conn|qtIdent(_('Size')) }}
+    pg_relation_size(indexrelid) AS {{ conn|qtIdent(_('Size')) }}
 FROM
     pg_stat_all_indexes stat
     JOIN pg_class cls ON cls.oid=indexrelid

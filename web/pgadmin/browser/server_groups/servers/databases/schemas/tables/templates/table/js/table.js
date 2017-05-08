@@ -13,7 +13,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         label: '{{ _('Tables') }}',
         type: 'coll-table',
         columns: ['name', 'relowner', 'description'],
-        hasStatistics: true
+        hasStatistics: true,
+        statsPrettifyFields: ['Size', 'Indexes size', 'Table size',
+                              'Toast table size', 'Tuple length',
+                              'Dead tuple length', 'Free space']
       });
   };
 
@@ -25,6 +28,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Size', 'Indexes size', 'Table size',
+                            'Toast table size', 'Tuple length',
+                            'Dead tuple length', 'Free space'],
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
       dialogHelp: '{{ url_for('help.static', filename='table_dialog.html') }}',

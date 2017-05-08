@@ -627,6 +627,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       canDropCascade: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: ['Index size'],
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
