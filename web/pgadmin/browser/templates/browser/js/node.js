@@ -743,7 +743,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           t.setLabel(
             pItem, {
               label: (
-                pData._label + ' <span>(' + pData.collection_count + ')</span>'
+                _.escape(pData._label) + ' <span>(' + pData.collection_count + ')</span>'
               )
             }
           );
@@ -821,7 +821,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           t.setLabel(
             pItem, {
               label: (
-                pData._label + ' <span>(' + pData.collection_count + ')</span>'
+                _.escape(pData._label) + ' <span>(' + pData.collection_count + ')</span>'
               )
             }
           );
@@ -838,7 +838,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         if (self.is_collection && 'collection_count' in data)
         {
           delete data.collection_count;
-          t.setLabel(item, {label: data._label});
+          t.setLabel(item, {label: _.escape(data._label)});
         }
       },
       refresh: function(cmd, i) {
