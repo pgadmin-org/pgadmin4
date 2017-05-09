@@ -17,6 +17,7 @@ import sys
 import time
 from sys import platform as _platform
 import config
+import codecs
 
 import simplejson as json
 from flask import render_template, Response, session, request as req, url_for
@@ -931,6 +932,68 @@ class Filemanager(object):
                 return Filemanager.getNewName(dir, path, newName, count)
             else:
                 return newPath, newName
+
+    @staticmethod
+    def check_file_for_bom_and_binary(filename, enc="utf-8"):
+        """
+        This utility function will check if file is Binary file
+        and/or if it startswith BOM character
+
+        Args:
+            filename: File
+            enc: Encoding for the file
+
+        Returns:
+            Status(Error?), Error message, Binary file flag,
+            BOM character flag and Encoding to open file
+        """
+        status = True
+        err_msg = None
+        is_startswith_bom = False
+
+        # check if file type is text or binary
+        text_chars = bytearray([7, 8, 9, 10, 12, 13, 27]) \
+                    + bytearray(range(0x20, 0x7f)) \
+                    + bytearray(range(0x80, 0x100))
+
+        def is_binary_string(bytes_data):
+            """Checks if string data is binary"""
+            return bool(
+                    bytes_data.translate(None, text_chars)
+                )
+
+        # read the file
+        try:
+
+            with open(filename, 'rb') as f:
+                file_data = f.read(1024)
+
+            # Check for BOM in file data
+            for encoding, boms in \
+                    ('utf-8-sig', (codecs.BOM_UTF8,)), \
+                    ('utf-16', (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)), \
+                    ('utf-32', (codecs.BOM_UTF32_LE, codecs.BOM_UTF32_BE)):
+                if any(file_data.startswith(bom) for bom in boms):
+                    is_startswith_bom = True
+                    enc = encoding
+
+            # Check if string is binary
+            is_binary = is_binary_string(file_data)
+
+        except IOError as ex:
+            status = False
+            # we don't want to expose real path of file
+            # so only show error message.
+            if ex.strerror == 'Permission denied':
+                err_msg = u"Error: {0}".format(ex.strerror)
+            else:
+                err_msg = u"Error: {0}".format(str(ex))
+
+        except Exception as ex:
+            status = False
+            err_msg = u"Error: {0}".format(str(ex))
+
+        return status, err_msg, is_binary, is_startswith_bom, enc
 
     def addfolder(self, path, name):
         """

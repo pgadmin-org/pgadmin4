@@ -12,6 +12,7 @@ import simplejson as json
 import os
 import pickle
 import random
+import codecs
 
 from flask import Response, url_for, render_template, session, request
 from flask_babel import gettext
@@ -1220,7 +1221,10 @@ def load_file():
 
     file_path = unquote(file_data['file_name'])
     if hasattr(str, 'decode'):
-        file_path = unquote(file_data['file_name']).encode('utf-8').decode('utf-8')
+        file_path = unquote(
+            file_data['file_name']
+        ).encode('utf-8').decode('utf-8')
+
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
     if storage_manager_path:
@@ -1230,45 +1234,27 @@ def load_file():
             file_path.lstrip('/').lstrip('\\')
         )
 
-    file_data = None
+    status, err_msg, is_binary, \
+        is_startswith_bom, enc = Filemanager.check_file_for_bom_and_binary(
+            file_path
+        )
 
-    # check if file type is text or binary
-    textchars = bytearray(
-        [7, 8, 9, 10, 12, 13, 27]) + bytearray(
-        range(0x20, 0x7f)) + bytearray(range(0x80, 0x100))
+    if not status:
+        return internal_server_error(
+            errormsg=gettext(err_msg)
+        )
 
-    is_binary_string = lambda bytes: bool(
-        bytes.translate(None, textchars)
-    )
+    if is_binary:
+        return internal_server_error(
+            errormsg=gettext("File type not supported")
+        )
 
-    # read file
-    try:
-        with open(file_path, 'rb') as fileObj:
-            is_binary = is_binary_string(fileObj.read(1024))
-            if not is_binary:
-                fileObj.seek(0)
-                if hasattr(str, 'decode'):
-                    file_data = fileObj.read().decode('utf-8')
-                else:
-                    file_data = fileObj.read()
-            else:
-                return internal_server_error(
-                    errormsg=gettext("File type not supported")
-                )
-    except IOError as e:
-        # we don't want to expose real path of file
-        # so only show error message.
-        if e.strerror == 'Permission denied':
-            err_msg = "Error: {0}".format(e.strerror)
-        else:
-            err_msg = "Error: {0}".format(e.strerror)
-        return internal_server_error(errormsg=err_msg)
-    except Exception as e:
-        err_msg = "Error: {0}".format(e.strerror)
-        return internal_server_error(errormsg=err_msg)
+    with codecs.open(file_path, 'r', encoding=enc) as fileObj:
+        data = fileObj.read()
+
     return make_json_response(
         data={
-            'status': True, 'result': file_data,
+            'status': True, 'result': data,
         }
     )
 
