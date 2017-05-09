@@ -554,16 +554,7 @@ define(
                     var url = "{{ url_for('debugger.index') }}" + "direct/" + res.data.debuggerTransId;
 
                     if (res.data.newBrowserTab) {
-                      var newWin = window.open(url, '_blank');
-
-                      // Listen on the window closed event.
-                      newWin.addEventListener("unload", function(e){
-                        var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
-                        $.ajax({
-                          url: closeUrl,
-                          method: 'GET'
-                        });
-                      }, false);
+                      window.open(url, '_blank');
                     } else {
                       pgBrowser.Events.once(
                         'pgadmin-browser:frame:urlloaded:frm_debugger', function(frame) {

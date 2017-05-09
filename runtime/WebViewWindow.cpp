@@ -14,6 +14,11 @@
 // App headers
 #include "WebViewWindow.h"
 
+#ifndef PGADMIN4_USE_WEBENGINE
+#include <QWebPage>
+#include <QNetworkRequest>
+#endif
+
 // Override QWebEnginePage to handle link delegation
 #ifdef PGADMIN4_USE_WEBENGINE
 bool WebEnginePage::acceptNavigationRequest(const QUrl & url, NavigationType type, bool isMainFrame)
@@ -67,3 +72,42 @@ int WebViewWindow::getTabIndex() const
 {
     return m_tabIndex;
 }
+
+#ifndef PGADMIN4_USE_WEBENGINE
+WebViewPage::WebViewPage(QObject *parent)
+    : QWebPage(parent)
+{
+}
+
+bool WebViewPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
+{
+    Q_UNUSED(type);
+    Q_UNUSED(request);
+    Q_UNUSED(frame);
+    return true;
+}
+
+QWebPage *WebViewPage::createWindow(QWebPage::WebWindowType type)
+{
+    if (type == QWebPage::WebBrowserWindow)
+    {
+        QWebPage *_page = NULL;
+        emit createTabWindowKit(_page);
+        return _page;
+    }
+    return NULL;
+}
+
+bool WebViewPage::javaScriptConfirm(QWebFrame * frame, const QString & msg)
+{
+    // If required, override the QDialog to give custom confirmation message to user.
+    Q_UNUSED(frame);
+    Q_UNUSED(msg);
+    return false;
+}
+
+WebViewPage::~WebViewPage()
+{
+}
+
+#endif

@@ -17,19 +17,23 @@
 #include "WebViewWindow.h"
 
 #if QT_VERSION >= 0x050000
-#include <QtWidgets>
-#ifdef PGADMIN4_USE_WEBENGINE
-#include <QtWebEngineWidgets>
+    #include <QtWidgets>
+
+    #ifdef PGADMIN4_USE_WEBENGINE
+        #include <QtWebEngineWidgets>
+    #else
+        #include <QtWebKitWidgets>
+        #include <QNetworkCookieJar>
+        #include <QNetworkAccessManager>
+    #endif
 #else
-#include <QtWebKitWidgets>
-#endif
-#else
-#include <QMainWindow>
-#ifdef PGADMIN4_USE_WEBENGINE
-#include <QtWebEngineView>
-#else
-#include <QWebView>
-#endif
+    #include <QMainWindow>
+
+    #ifdef PGADMIN4_USE_WEBENGINE
+        #include <QtWebEngineView>
+    #else
+        #include <QWebView>
+    #endif
 #endif
 
 QT_BEGIN_NAMESPACE
@@ -43,6 +47,7 @@ class BrowserWindow : public QMainWindow
 
 public:
     BrowserWindow(QString url);
+    ~BrowserWindow();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -83,6 +88,8 @@ public slots:
     void createNewTabWindow(QWebEnginePage * &);
     void downloadEngineFileProgress(qint64 , qint64 );
     void downloadEngineFinished();
+#else
+    void createNewTabWindowKit(QWebPage * &);
 #endif
 
 private:
@@ -118,8 +125,12 @@ private:
     QString m_last_open_folder_path;
     QString m_dir;
     QNetworkReply *m_reply;
+
 #ifdef PGADMIN4_USE_WEBENGINE
     QWebEngineDownloadItem *m_download;
+#else
+    QNetworkCookieJar *m_cookieJar;
+    QNetworkAccessManager *m_netAccessMan;
 #endif
 
     void createActions();

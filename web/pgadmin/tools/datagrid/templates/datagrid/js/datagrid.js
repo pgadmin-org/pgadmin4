@@ -333,14 +333,6 @@ define(
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
 
-              // Listen on the window closed event.
-              newWin.addEventListener("unload", function(e){
-                $.ajax({
-                  url: "{{ url_for('datagrid.index') }}" + "close/" + res.data.gridTransId,
-                  method: 'GET'
-                });
-              }, false);
-
               // add a load listener to the window so that the title gets changed on page load
               newWin.addEventListener("load", function() {
                 newWin.document.title = panel_title;
@@ -381,8 +373,7 @@ define(
           },
           error: function(e) {
             alertify.alert(
-              'SQL Tool Initialize Error',
-              e.responseJSON.errormsg
+              'SQL Tool Initialize Error'
             );
           }
         });
@@ -447,14 +438,6 @@ define(
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
 
-              // Listen on the window closed event.
-              newWin.addEventListener("unload", function(e){
-                $.ajax({
-                  url: "{{ url_for('datagrid.index') }}" + "close/" + res.data.gridTransId,
-                  method: 'GET'
-                });
-              }, false);
-
               // add a load listener to the window so that the title gets changed on page load
               newWin.addEventListener("load", function() {
                 newWin.document.title = panel_title;
@@ -498,8 +481,7 @@ define(
           },
           error: function(e) {
             alertify.alert(
-              "{{ _('Query Tool Initialize Error') }}",
-              e.responseJSON.errormsg
+              "{{ _('Query Tool Initialize Error') }}"
             );
           }
         });

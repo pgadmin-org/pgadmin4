@@ -265,6 +265,13 @@ function($, pgAdmin, R, S) {
     loadingDiv = $('#fetching_data'),
     msgDiv = loadingDiv.find('.sql-editor-busy-text');
 
+    // Register unload event on window close.
+    window.onbeforeunload = function(ev) {
+      $.ajax({
+        url: "{{ url_for('datagrid.index') }}" + "close/" + {{ uniqueId }},
+        method: 'GET'
+      });
+    };
     // Get the controller object from pgAdmin.SqlEditor
     var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
 

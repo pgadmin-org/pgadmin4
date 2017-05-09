@@ -58,4 +58,23 @@ private:
 
 };
 
+#ifndef PGADMIN4_USE_WEBENGINE
+class WebViewPage : public QWebPage
+{
+    Q_OBJECT
+
+public:
+    WebViewPage(QObject *parent = 0);
+    ~WebViewPage();
+
+protected:
+    virtual bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
+    QWebPage *createWindow(QWebPage::WebWindowType type);
+    bool javaScriptConfirm(QWebFrame * frame, const QString & msg);
+
+signals:
+    void createTabWindowKit(QWebPage * &);
+};
+#endif
+
 #endif // WEBVIEWWINDOW_H

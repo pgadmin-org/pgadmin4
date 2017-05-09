@@ -43,7 +43,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Breakpoint set execution error'
+              'Debugger Error',
+              'Error while setting debugging breakpoint.'
             );
           }
         });
@@ -102,13 +103,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Error fetching breakpoint information'
+                'Debugger Error',
+                'Error while fetching breakpoint information.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Error fetching breakpoint information'
+              'Debugger Error',
+              'Error while fetching breakpoint information.'
             );
           }
         });
@@ -132,13 +135,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Start execution error'
+                'Debugger Error',
+                'Error while starting debugging session.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Start execution error'
+              'Debugger Error',
+              'Error while starting debugging session.'
             );
           }
         });
@@ -170,13 +175,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Execution error'
+                'Debugger Error',
+                'Error while executing requested debugging information.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Execution error'
+              'Debugger Error',
+              'Error while executing requested debugging information.'
             );
           }
         });
@@ -207,13 +214,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Error fetching variable information'
+                'Debugger Error',
+                'Error while fetching variable information.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Error fetching variable information'
+              'Debugger Error',
+              'Error while fetching variable information.'
             );
           }
         });
@@ -237,13 +246,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Error fetching stack information'
+                'Debugger Error',
+                'Error while fetching stack information.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Error fetching stack information'
+              'Debugger Error',
+              'Error while fetching stack information.'
             );
           }
         });
@@ -367,13 +378,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger Poll Result Error'
+                'Debugger Error',
+                'Error while polling result.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger Poll Result Error'
+              'Debugger Error',
+              'Error while polling result.'
             );
           }
         });
@@ -559,8 +572,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger poll end execution error',
-              e.responseJSON.errormsg
+              'Debugger Error',
+              'Error while polling result.'
             );
           }
         });
@@ -619,8 +632,8 @@ define(
               },
               error: function(e) {
                 Alertify.alert(
-                  'Debugger listener starting error',
-                  e.responseJSON.errormsg
+                  'Debugger Error',
+                  'Error while polling result.'
                 );
               }
             });
@@ -665,13 +678,15 @@ define(
             }
             else {
               Alertify.alert(
-                'Debugger: Continue execution error'
+                'Debugger Error',
+                'Error while executing continue in debugging session.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Continue execution error'
+              'Debugger Error',
+              'Error while executing continue in debugging session.'
             );
           }
         });
@@ -699,13 +714,15 @@ define(
             }
             else {
               Alertify.alert(
-                'Debugger: Step over execution error'
+                'Debugger Error',
+                'Error while executing step over in debugging session.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Step over execution error'
+              'Debugger Error',
+              'Error while executing step over in debugging session.'
             );
           }
         });
@@ -732,13 +749,15 @@ define(
             }
             else {
               Alertify.alert(
-                'Debugger: Step into execution error'
+                'Debugger Error',
+                'Error while executing step into in debugging session.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Step into execution error'
+              'Debugger Error',
+              'Error while executing step into in debugging session.'
             );
           }
         });
@@ -779,13 +798,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Stop execution error'
+                'Debugger Error',
+                'Error while executing stop in debugging session.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Stop execution error'
+              'Debugger Error',
+              'Error while executing stop in debugging session.'
             );
           }
         });
@@ -841,13 +862,15 @@ define(
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
-                'Debugger: Toggle breakpoint execution error'
+                'Debugger Error',
+                'Error while toggling breakpoint.'
               );
             }
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Toggle breakpoint execution error'
+              'Debugger Error',
+              'Error while toggling breakpoint.'
             );
           }
         });
@@ -904,7 +927,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Clear all breakpoint execution error'
+              'Debugger Error',
+              'Error while clearing all breakpoint.'
             );
           }
         });
@@ -1164,8 +1188,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Deposit value execution error',
-              e.responseJSON.errormsg
+              'Debugger Error',
+              'Error while depositing variable value.'
             );
           }
         });
@@ -1193,8 +1217,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger: Select frame execution error',
-              e.responseJSON.errormsg
+              'Debugger Error',
+              'Error while selecting frame.'
             );
           }
         });
@@ -1364,8 +1388,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger listener starting error',
-              e.responseJSON.errormsg
+              'Debugger Error',
+              'Error while starting debugging listener.'
             );
           }
         });
@@ -1385,8 +1409,8 @@ define(
           },
           error: function(e) {
             Alertify.alert(
-              'Debugger listener starting error',
-              e.responseJSON.errormsg
+              'Debugger Error',
+              'Error while starting debugging listener.'
             );
           }
         });
@@ -1424,7 +1448,8 @@ define(
         },
         error: function(e) {
           Alertify.alert(
-            'Debugger: Error fetching messages information'
+            'Debugger Error',
+            'Error while fetching messages information.'
           );
         }
       });

@@ -510,7 +510,8 @@ def close(trans_id):
         trans_id
         - unique transaction id.
     """
-    # As debugger data is not in session that means we have already deleted and close the target
+    # As debugger data is not in session that means we have already
+    # deleted and close the target
     if 'debuggerData' not in session:
         return make_json_response(data={'status': True})
 
@@ -523,30 +524,17 @@ def close(trans_id):
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(obj['server_id'])
         conn = manager.connection(did=obj['database_id'], conn_id=obj['conn_id'])
-    except Exception as e:
-        return internal_server_error(errormsg=str(e))
-
-    # find the debugger version and execute the query accordingly
-    dbg_version = obj['debugger_version']
-    if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
-    else:
-        template_path = 'debugger/sql/v2'
-
-    # Release the connection
-    if conn.connected():
-        # on successful connection cancel the running transaction
-        status, result = conn.cancel_transaction(obj['conn_id'], obj['database_id'])
-
+        conn.cancel_transaction(obj['conn_id'], obj['database_id'])
+        conn = manager.connection(did=obj['database_id'], conn_id=obj['exe_conn_id'])
+        conn.cancel_transaction(obj['exe_conn_id'], obj['database_id'])
+        manager.release(conn_id=obj['conn_id'])
+        manager.release(conn_id=obj['exe_conn_id'])
         # Delete the existing debugger data in session variable
         del session['debuggerData'][str(trans_id)]
         del session['functionData'][str(trans_id)]
-
-        # Release the connection acquired during the debugging
-        manager.release(did=obj['database_id'], conn_id=obj['conn_id'])
         return make_json_response(data={'status': True})
-    else:
-        return make_json_response(data={'status': False})
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
 
 
 @blueprint.route('/restart/<int:trans_id>', methods=['GET'])

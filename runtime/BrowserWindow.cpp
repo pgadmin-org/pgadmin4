@@ -73,8 +73,18 @@ BrowserWindow::BrowserWindow(QString url)
     m_tabGridLayout = new QGridLayout(m_pgAdminMainTab);
     m_tabGridLayout->setContentsMargins(0, 0, 0, 0);
     m_mainWebView = new WebViewWindow(m_pgAdminMainTab);
+
 #ifdef PGADMIN4_USE_WEBENGINE
     m_mainWebView->setPage(new WebEnginePage());
+    m_mainWebView->page()->setNetworkAccessManager(m_netAccessMan);
+#else
+    m_cookieJar = new QNetworkCookieJar();
+    m_netAccessMan = new QNetworkAccessManager();
+    m_netAccessMan->setCookieJar(m_cookieJar);
+    m_mainWebView->setPage(new WebViewPage());
+    m_mainWebView->page()->setNetworkAccessManager(m_netAccessMan);
+    m_mainWebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+    m_mainWebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
 #endif
 
 #ifdef PGADMIN4_DEBUG
@@ -107,6 +117,8 @@ BrowserWindow::BrowserWindow(QString url)
 #else
     // Register the slot when click on the URL link form main menu bar
     connect(m_mainWebView, SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
+    // Register the slot when click on the URL link for QWebPage
+    connect(m_mainWebView->page(), SIGNAL(createTabWindowKit(QWebPage * &)),SLOT(createNewTabWindowKit(QWebPage * &)));
 #endif
 
     // Register the slot on tab index change
@@ -120,6 +132,7 @@ BrowserWindow::BrowserWindow(QString url)
     m_mainWebView->page()->setForwardUnsupportedContent(true);
     connect(m_mainWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
     connect(m_mainWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
+    m_mainWebView->page()->setForwardUnsupportedContent(true);
     m_mainWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 #endif
 
@@ -148,6 +161,13 @@ BrowserWindow::BrowserWindow(QString url)
 
     // Display the app
     m_mainWebView->setUrl(m_appServerUrl);
+}
+
+// Destructor
+BrowserWindow::~BrowserWindow()
+{
+    if (m_tabWidget)
+        delete m_tabWidget;
 }
 
 // Save the window geometry on close
@@ -787,9 +807,9 @@ void BrowserWindow::closetabs()
 
     // If QTabWidget contains only one tab then hide the TabBar window
     if ((totalTabs - 1) < 2)
-	    m_tabWidget->tabBar()->setVisible(false);
+        m_tabWidget->tabBar()->setVisible(false);
     else
-	    m_tabWidget->tabBar()->setVisible(true);
+        m_tabWidget->tabBar()->setVisible(true);
 
     QObject *senderPtr = QObject::sender();
     if (senderPtr != NULL)
@@ -806,7 +826,24 @@ void BrowserWindow::closetabs()
 
         // free the allocated memory when the tab is closed
         if (tab != NULL)
+        {
+            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+            foreach (QWidget* widgetPtr, widgetList)
+            {
+                if (widgetPtr != NULL)
+                {
+                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+                    if (webviewPtr != NULL)
+                    {
+                        // Trigger the action for tab window close so unload event
+                        // will be called and resources will be freed properly.
+                        webviewPtr->page()->triggerAction(QWebPage::RequestClose);
+                    }
+                }
+            }
+
             delete tab;
+        }
 
         // Adjust the tab index value if the tab is closed in between
         for (loopCount = 1; loopCount < totalTabs; loopCount++)
@@ -905,6 +942,7 @@ void BrowserWindow::tabTitleChanged(const QString &str)
     }
 }
 
+
 void BrowserWindow::current_dir_path(const QString &dir)
 {
     m_dir = dir;
@@ -913,6 +951,72 @@ void BrowserWindow::current_dir_path(const QString &dir)
     QSettings settings;
     settings.setValue("Browser/LastSaveLocation", m_last_open_folder_path);
 }
+
+#ifndef PGADMIN4_USE_WEBENGINE
+void BrowserWindow::createNewTabWindowKit(QWebPage * &p)
+{
+    m_addNewTab = new QWidget(m_tabWidget);
+    m_addNewGridLayout = new QGridLayout(m_addNewTab);
+    m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
+    m_addNewWebView = new WebViewWindow(m_addNewTab);
+    m_addNewWebView->setPage(new WebViewPage());
+    m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
+
+    m_addNewWebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+    m_addNewWebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
+
+    m_widget = new QWidget(m_addNewTab);
+    m_toolBtnBack = new QToolButton(m_widget);
+    m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
+    m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
+    m_toolBtnBack->setIcon(QIcon(":/back.png"));
+    m_toolBtnBack->setToolTip(tr("Go back"));
+    m_toolBtnBack->setDisabled(true);
+
+    m_toolBtnForward = new QToolButton(m_widget);
+    m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
+    m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
+    m_toolBtnForward->setIcon(QIcon(":/forward.png"));
+    m_toolBtnForward->setToolTip(tr("Go forward"));
+    m_toolBtnForward->setDisabled(true);
+
+    QPushButton *m_btnClose = new QPushButton(m_widget);
+    m_btnClose->setFixedHeight(PGA_BTN_SIZE);
+    m_btnClose->setFixedWidth(PGA_BTN_SIZE);
+    m_btnClose->setIcon(QIcon(":/close.png"));
+    m_btnClose->setToolTip(tr("Close tab"));
+
+    m_horizontalLayout = new QHBoxLayout(m_widget);
+    m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    m_horizontalLayout->setSpacing(1);
+    m_horizontalLayout->addWidget(m_toolBtnBack);
+    m_horizontalLayout->addWidget(m_toolBtnForward);
+
+    // Register the slot on titleChange so set the tab text accordingly
+    connect(m_addNewWebView, SIGNAL(titleChanged(const QString &)), SLOT(tabTitleChanged(const QString &)));
+
+    // Register the slot on toolbutton to show the previous history of web
+    connect(m_toolBtnBack, SIGNAL(clicked()), this, SLOT(goBackPage()));
+
+    // Register the slot on toolbutton to show the next history of web
+    connect(m_toolBtnForward, SIGNAL(clicked()), this, SLOT(goForwardPage()));
+
+    // Register the slot on close button , added manually
+    connect(m_btnClose, SIGNAL(clicked()), SLOT(closetabs()));
+    m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
+    m_tabWidget->addTab(m_addNewTab, QString());
+    m_tabWidget->tabBar()->setVisible(true);
+    m_tabWidget->setCurrentIndex((m_tabWidget->count() - 1));
+
+    // Set the back and forward button on tab
+    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::LeftSide, m_widget);
+    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_btnClose);
+
+    m_addNewWebView->setTabIndex((m_tabWidget->count() - 1));
+    m_addNewWebView->page()->setNetworkAccessManager(m_netAccessMan);
+    p = m_addNewWebView->page();
+}
+#endif
 
 #ifdef PGADMIN4_USE_WEBENGINE
 // Below slot will be called when link is required to open in new tab.
