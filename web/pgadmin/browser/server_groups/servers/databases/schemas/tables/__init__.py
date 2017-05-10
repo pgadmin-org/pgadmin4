@@ -1376,6 +1376,28 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         return data
 
+    def check_and_convert_name_to_string(self, data):
+        """
+        This function will check and covert table to string incase
+        it is numeric
+
+        Args:
+            data: data dict
+
+        Returns:
+            Updated data dict
+        """
+        # For Python2, it can be int, long, float
+        if hasattr(str, 'decode'):
+            if isinstance(data['name'], (int, long, float)):
+                data['name'] = str(data['name'])
+        else:
+            # For Python3, it can be int, float
+            if isinstance(data['name'], (int, float)):
+                data['name'] = str(data['name'])
+        return data
+
+
     @check_precondition
     def create(self, gid, sid, did, scid):
         """
@@ -1417,6 +1439,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
         # Parse & format columns
         data = self._parse_format_columns(data)
+        data = self.check_and_convert_name_to_string(data)
 
         # 'coll_inherits' is Array but it comes as string from browser
         # We will convert it again to list
@@ -1447,8 +1470,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
 
             # PostgreSQL truncates the table name to 63 characters.
-            # Have to truncate the name like PostgreSQL to get the proper schema id
+            # Have to truncate the name like PostgreSQL to get the
+            # proper OID
             CONST_MAX_CHAR_COUNT = 63
+
             if len(data['name']) > CONST_MAX_CHAR_COUNT:
                 data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
 
@@ -2129,9 +2154,12 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                             data['relacl'][mode], self.acl
                         )
 
-            # If name if not present
+            # If name is not present in request data
             if 'name' not in data:
                 data['name'] = old_data['name']
+
+            data = self.check_and_convert_name_to_string(data)
+
             # If name if not present
             if 'schema' not in data:
                 data['schema'] = old_data['schema']
@@ -2310,6 +2338,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
 
             # Parse & format columns
             data = self._parse_format_columns(data)
+            data = self.check_and_convert_name_to_string(data)
 
             if 'foreign_key' in data:
                 for c in data['foreign_key']:
