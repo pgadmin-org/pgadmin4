@@ -835,9 +835,16 @@ void BrowserWindow::closetabs()
                     webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
                     if (webviewPtr != NULL)
                     {
-                        // Trigger the action for tab window close so unload event
-                        // will be called and resources will be freed properly.
-                        webviewPtr->page()->triggerAction(QWebPage::RequestClose);
+                        /* Trigger the action for tab window close so unload event will be called and
+                         * resources will be freed properly.
+                         * Trigger 'RequestClose' action from Qt5 onwards. Here we have triggerred the action
+                         * 'ToggleVideoFullscreen + 1' because we do not know from which webkit
+                         * version 'RequestClose' action was added so increment with previous enum value so that
+                         * it will be backward webkit version compatible.
+                         */
+                        #if QT_VERSION >= 0x050000
+                            webviewPtr->page()->triggerAction(static_cast<QWebPage::WebAction>(QWebPage::ToggleVideoFullscreen + 1));
+                        #endif
                     }
                 }
             }

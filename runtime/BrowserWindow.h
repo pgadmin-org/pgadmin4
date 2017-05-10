@@ -33,6 +33,8 @@
         #include <QtWebEngineView>
     #else
         #include <QWebView>
+        #include <QNetworkCookieJar>
+        #include <QNetworkAccessManager>
     #endif
 #endif
 
