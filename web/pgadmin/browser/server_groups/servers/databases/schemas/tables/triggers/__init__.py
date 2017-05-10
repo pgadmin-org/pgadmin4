@@ -753,7 +753,8 @@ class TriggerView(PGChildNodeView):
                     new_trid,
                     tid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon="icon-%s" % self.node_type if self.is_trigger_enabled
+                    else "icon-%s-bad" % self.node_type
                 )
             )
         except Exception as e:
@@ -844,6 +845,7 @@ class TriggerView(PGChildNodeView):
 
             self.trigger_name = data['name']
             self.lanname = old_data['lanname']
+            self.is_trigger_enabled = old_data['is_enable_trigger']
 
             old_data = self.get_trigger_function_schema(old_data)
 
