@@ -1,6 +1,7 @@
 define('pgadmin.browser',
         ['require', 'jquery', 'underscore', 'underscore.string', 'bootstrap',
-        'pgadmin', 'alertify', 'codemirror', 'codemirror/mode/sql/sql', 'wcdocker',
+        'pgadmin', 'alertify', 'codemirror', 'sources/check_node_visibility',
+        'codemirror/mode/sql/sql', 'wcdocker',
         'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
         'pgadmin.alertifyjs', 'pgadmin.browser.messages',
         'pgadmin.browser.menu', 'pgadmin.browser.panel',
@@ -8,7 +9,10 @@ define('pgadmin.browser',
         'pgadmin.browser.node', 'pgadmin.browser.collection'
 
        ],
-function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
+function(
+  require, $, _, S, Bootstrap, pgAdmin, Alertify,
+  CodeMirror, checkNodeVisibility
+) {
 
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
@@ -593,10 +597,16 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
         single: single
       }
     },
+
+    // This will hold preference data (Works as a cache object)
+    // Here node will be a key and it's preference data will be value
+    node_preference_data: {},
+
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
-      var pgMenu = this.menus;
-      var MenuItem = pgAdmin.Browser.MenuItem;
+      var self = this,
+        pgMenu = this.menus,
+        MenuItem = pgAdmin.Browser.MenuItem;
       _.each(menus, function(m) {
         _.each(m.applies, function(a) {
           /* We do support menu type only from this list */
@@ -604,6 +614,19 @@ function(require, $, _, S, Bootstrap, pgAdmin, Alertify, CodeMirror) {
               'context', 'file', 'edit', 'object',
               'management', 'tools', 'help']) >= 0) {
             var menus;
+
+            // If current node is not visible in browser tree
+            // then return from here
+            if(!checkNodeVisibility(self, m.node)) {
+                return;
+            } else if(_.has(m, 'module') && !_.isUndefined(m.module)) {
+              // If module to which this menu applies is not visible in
+              // browser tree then also we do not display menu
+              if(!checkNodeVisibility(self, m.module.type)) {
+                return;
+              }
+            }
+
             pgMenu[a] = pgMenu[a] || {};
             if (_.isString(m.node)) {
               menus = pgMenu[a][m.node] = pgMenu[a][m.node] || {};

@@ -1,0 +1,53 @@
+//////////////////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2017, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////////////////
+
+define(['jquery', 'underscore', 'underscore.string'],
+  function ($, _, S) {
+
+    var check_node_visibility = function (pgBrowser, node_type) {
+      if(_.isUndefined(node_type) || _.isNull(node_type)) {
+        return true;
+      }
+
+      // Target actual node instead of collection.
+      // If node is disabled then there is no meaning of
+      // adding collection node menu
+      if(S.startsWith(node_type, "coll-")) {
+        node_type = node_type.replace("coll-", "")
+      }
+
+      // Exclude non-applicable nodes
+      var nodes_not_supported = [
+        "server-group", "server", "catalog_object_column"
+      ];
+      if(_.indexOf(nodes_not_supported, node_type) >= 0) {
+        return true;
+      }
+
+      // If we have already fetched preference earlier then pick
+      // it from our cache object
+      if (_.has(pgBrowser.node_preference_data, node_type)) {
+        return pgBrowser.node_preference_data[node_type].value
+      }
+
+      var preference = pgBrowser.get_preference(
+        'browser', 'show_node_' + node_type
+      );
+
+      // Save it for future use, kind of caching
+      if(!_.isUndefined(preference) && !_.isNull(preference)) {
+        pgBrowser.node_preference_data[node_type] = preference;
+        return preference.value;
+      } else {
+        return true;
+      }
+    }
+
+  return check_node_visibility;
+});

@@ -32,6 +32,7 @@ require.config({
     'jquery.ui': sourcesDir + 'vendor/jquery-ui/jquery-ui-1.11.3',
     'jquery.event.drag': sourcesDir + 'vendor/jquery-ui/jquery.event.drag-2.2',
     'underscore': sourcesDir + 'vendor/underscore/underscore',
+    'underscore.string': sourcesDir + 'vendor/underscore/underscore.string',
     'slickgrid': sourcesDir + 'vendor/slickgrid/slick.core',
     'slickgrid/slick.grid': sourcesDir + 'vendor/slickgrid/slick.grid',
     'slickgrid/slick.rowselectionmodel': sourcesDir + 'vendor/slickgrid/plugins/slick.rowselectionmodel',
