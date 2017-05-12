@@ -42,9 +42,11 @@ if sys.version_info < (3,):
     from StringIO import StringIO
     psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
     psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+    IS_PY2 = True
 else:
     from io import StringIO
     import csv
+    IS_PY2 = False
 
 _ = gettext
 
@@ -624,7 +626,7 @@ WHERE
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        if sys.version_info < (3,) and type(query) == unicode:
+        if IS_PY2 and type(query) == unicode:
             query = query.encode('utf-8')
 
         current_app.logger.log(
@@ -670,7 +672,7 @@ WHERE
                 results
             """
             # Only if Python2 and there are columns with JSON type
-            if sys.version_info < (3,) and len(json_columns) > 0:
+            if IS_PY2 and len(json_columns) > 0:
                 temp_results = []
                 for row in results:
                     res = dict()
@@ -683,6 +685,26 @@ WHERE
                 results = temp_results
             return results
 
+        def convert_keys_to_unicode(results, conn_encoding):
+            """
+            [ This is only for Python2.x]
+            We need to convert all keys to unicode as psycopg2
+            sends them as string
+
+            Args:
+                res: Query result set from psycopg2
+                conn_encoding: Connection encoding
+
+            Returns:
+                Result set (With all the keys converted to unicode)
+            """
+            new_results = []
+            for row in results:
+                new_results.append(
+                    dict([(k.decode(conn_encoding), v) for k, v in row.items()])
+                )
+            return new_results
+
         def gen():
 
             results = cur.fetchmany(records)
@@ -691,17 +713,25 @@ WHERE
                     cur.close()
                 yield gettext('The query executed did not return any data.')
                 return
+
             header = []
             json_columns = []
+            conn_encoding = cur.connection.encoding
+
             # json, jsonb, json[], jsonb[]
             json_types = (114, 199, 3802, 3807)
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
-                header.append(u"" + c.to_dict()['name'])
+                column_name = c.to_dict()['name']
+                if IS_PY2:
+                    column_name = column_name.decode(conn_encoding)
+                header.append(column_name)
                 if c.to_dict()['type_code'] in json_types:
-                    json_columns.append(
-                        u"" + c.to_dict()['name']
-                    )
+                    json_columns.append(column_name)
+
+            if IS_PY2:
+                results = convert_keys_to_unicode(results, conn_encoding)
+
             res_io = StringIO()
 
             csv_writer = csv.DictWriter(
@@ -728,6 +758,10 @@ WHERE
                     res_io, fieldnames=header, delimiter=u',',
                     quoting=csv.QUOTE_NONNUMERIC
                 )
+
+                if IS_PY2:
+                    results = convert_keys_to_unicode(results, conn_encoding)
+
                 results = handle_json_data(json_columns, results)
                 csv_writer.writerows(results)
                 yield res_io.getvalue()
