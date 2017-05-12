@@ -822,12 +822,36 @@ define(
           $("#btn-save").prop('disabled', false);
         }.bind(editor_data));
 
+
+        // Listener function which will be called after cell is changed
+        grid.onActiveCellChanged.subscribe(function (e, args) {
+          // Access to row/cell value after a cell is changed.
+          // The purpose is to remove row_id from temp_new_row
+          // if new row has primary key instead of [default_value]
+          // so that cell edit is enabled for that row.
+          var grid = args.grid,
+            row_data = grid.getDataItem(args.row),
+            primary_key = row_data && row_data[0];
+
+          if (!_.isUndefined(primary_key)) {
+            var index = self.handler.temp_new_rows.indexOf(args.row);
+            if (index > -1) {
+              self.handler.temp_new_rows.splice(index, 1);
+            }
+          }
+        });
+
         // Listener function which will be called when user adds new rows
         grid.onAddNewRow.subscribe(function (e, args) {
           // self.handler.data_store.added will holds all the newly added rows/data
           var _key = epicRandomString(10),
             column = args.column,
             item = args.item, data_length = this.grid.getDataLength();
+
+          // Add new row in list to keep track of it
+          if (_.isUndefined(item[0])) {
+            self.handler.temp_new_rows.push(data_length);
+          }
 
           if(item) {
             item.__temp_PK = _key;
@@ -1647,6 +1671,8 @@ define(
           self._init_polling_flags();
           // keep track of newly added rows
           self.rows_to_disable = new Array();
+          // Temporarily hold new rows added
+          self.temp_new_rows = new Array();
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -2340,10 +2366,15 @@ define(
                       grid.setSelectedRows([]);
                     }
 
-                    // Add last row(new row) to keep track of it
+                    // whether a cell is editable or not is decided in
+                    // grid.onBeforeEditCell function (on cell click)
+                    // but this function should do its job after save
+                    // operation. So assign list of added rows to original
+                    // rows_to_disable array.
                     if (is_added) {
-                      self.rows_to_disable.push(grid.getDataLength()-1);
+                       self.rows_to_disable = _.clone(self.temp_new_rows);
                     }
+
                     // Reset data store
                     self.data_store = {
                       'added': {},
@@ -2370,6 +2401,12 @@ define(
                       (!_.isUndefined(res.data._rowid)|| !_.isNull(res.data._rowid))) {
                     var _row_index = self._find_rowindex(res.data._rowid);
                     if(_row_index in self.data_store.added_index) {
+                      // Remove new row index from temp_list if save operation
+                      // fails
+                      var index = self.handler.temp_new_rows.indexOf(_rowid);
+                      if (index > -1) {
+                         self.handler.temp_new_rows.splice(index, 1);
+                      }
                      self.data_store.added[self.data_store.added_index[_row_index]].err = true
                     } else if (_row_index in self.data_store.updated_index) {
                      self.data_store.updated[self.data_store.updated_index[_row_index]].err = true
