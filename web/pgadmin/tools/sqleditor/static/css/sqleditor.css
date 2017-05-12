@@ -407,17 +407,17 @@ input.editor-checkbox:focus {
 
 /* To highlight all newly inserted rows */
 .grid-canvas .new_row {
-  background: #f3f2d8;
+  background: #dff0d7;
 }
 
 /* To highlight all the updated rows */
 .grid-canvas .updated_row {
-  background: #c1c1c1;
+  background: #cccccc;
 }
 
 /* To highlight row at fault */
 .grid-canvas .new_row.error, .grid-canvas .updated_row.error {
-  background: #e46b6b;
+  background: #f2dede;
 }
 
 /* Disabled row */
