@@ -442,6 +442,25 @@ class TableCommand(GridCommand):
 
                 # For newly added rows
                 if of_type == 'added':
+
+                    # When new rows are added, only changed columns data is
+                    # sent from client side. But if column is not_null and has
+                    # no_default_value, set column to blank, instead
+                    # of not null which is set by default.
+                    column_data = {}
+                    column_type = {}
+                    pk_names, primary_keys = self.get_primary_keys()
+
+                    for each_col in self.columns_info:
+                        if (
+                            self.columns_info[each_col]['not_null'] and
+                            not self.columns_info[each_col][
+                                'has_default_val']
+                        ):
+                            column_data[each_col] = None
+                            column_type[each_col] =\
+                                self.columns_info[each_col]['type_name']
+
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         # Remove our unique tracking key
@@ -450,12 +469,19 @@ class TableCommand(GridCommand):
                         data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
                         list_of_rowid.append(data.get('__temp_PK'))
 
+                        # Update columns value and data type
+                        # with columns having not_null=False and has
+                        # no default value
+                        column_data.update(data)
+                        column_type.update(data_type)
+
                         sql = render_template("/".join([self.sql_path, 'insert.sql']),
-                                              data_to_be_saved=data,
+                                              data_to_be_saved=column_data,
                                               primary_keys=None,
                                               object_name=self.object_name,
                                               nsp_name=self.nsp_name,
-                                              data_type=data_type)
+                                              data_type=column_type,
+                                              pk_names=pk_names)
                         list_of_sql.append(sql)
 
                 # For updated rows

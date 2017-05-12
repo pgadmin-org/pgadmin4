@@ -557,7 +557,9 @@ define(
               id: c.name,
               pos: c.pos,
               field: c.name,
-              name: c.label
+              name: c.label,
+              not_null: c.not_null,
+              has_default_val: c.has_default_val
             };
 
             // Get the columns width based on data type
@@ -624,6 +626,12 @@ define(
                 cssClass += ' error';
               }
             }
+          }
+          // Disable rows having default values
+          if (!_.isUndefined(self.handler.rows_to_disable) &&
+            _.indexOf(self.handler.rows_to_disable, i) !== -1
+          ) {
+            cssClass += ' disabled_row';
           }
           return {'cssClasses': cssClass};
         }
@@ -702,6 +710,14 @@ define(
         // This will be used to collect primary key for that row
         grid.onBeforeEditCell.subscribe(function (e, args) {
             var before_data = args.item;
+
+            // If newly added row is saved but grid is not refreshed,
+            // then disable cell editing for that row
+            if(self.handler.rows_to_disable &&
+              _.contains(self.handler.rows_to_disable, args.row)) {
+              return false;
+            }
+
             if(self.handler.can_edit && before_data && '__temp_PK' in before_data) {
               var _pk = before_data.__temp_PK,
                 _keys = self.handler.primary_keys,
@@ -1629,6 +1645,8 @@ define(
           self.query_start_time = new Date();
           self.rows_affected = 0;
           self._init_polling_flags();
+          // keep track of newly added rows
+          self.rows_to_disable = new Array();
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
@@ -2077,7 +2095,9 @@ define(
                     'label': column_label,
                     'cell': col_cell,
                     'can_edit': self.can_edit,
-                    'type': type
+                    'type': type,
+                    'not_null': c.not_null,
+                    'has_default_val': c.has_default_val
                   };
                   columns.push(col);
                 });
@@ -2320,6 +2340,10 @@ define(
                       grid.setSelectedRows([]);
                     }
 
+                    // Add last row(new row) to keep track of it
+                    if (is_added) {
+                      self.rows_to_disable.push(grid.getDataLength()-1);
+                    }
                     // Reset data store
                     self.data_store = {
                       'added': {},

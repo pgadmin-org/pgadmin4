@@ -110,7 +110,12 @@
 
     // When text editor opens
     this.loadValue = function (item) {
-      if (item[args.column.pos] === "") {
+      var col = args.column;
+
+      if (_.isUndefined(item[args.column.pos]) && col.has_default_val) {
+        $input.val("");
+      }
+      else if (item[args.column.pos] === "") {
         $input.val("''");
       }
       else {
@@ -145,7 +150,14 @@
     };
 
     this.isValueChanged = function () {
-      return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
+      // Use _.isNull(value) for comparison for null instead of
+      // defaultValue == null, because it returns true for undefined value.
+      if ($input.val() == "" && _.isUndefined(defaultValue)) {
+        return false;
+      } else {
+        return (!($input.val() == "" && _.isNull(defaultValue))) &&
+               ($input.val() != defaultValue);
+      }
     };
 
     this.validate = function () {
@@ -253,7 +265,7 @@
 
     this.loadValue = function (item) {
       var data = defaultValue = item[args.column.pos];
-      if (typeof data === "object" && !Array.isArray(data)) {
+      if (data && typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
       } else if (Array.isArray(data)) {
         var temp = [];
@@ -282,7 +294,11 @@
     };
 
     this.isValueChanged = function () {
-      return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
+      if ($input.val() == "" && _.isUndefined(defaultValue)) {
+        return false;
+      } else {
+        return (!($input.val() == "" && _.isNull(defaultValue))) && ($input.val() != defaultValue);
+      }
     };
 
     this.validate = function () {
@@ -498,6 +514,12 @@
     };
 
     this.validate = function () {
+      if (args.column.validator) {
+        var validationResults = args.column.validator(this.serializeValue());
+        if (!validationResults.valid) {
+          return validationResults;
+        }
+      }
       return {
         valid: true,
         msg: null
@@ -837,7 +859,14 @@
     };
 
     this.isValueChanged = function () {
-      return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
+      if ($input.val() == "" && _.isUndefined(defaultValue)) {
+        return false;
+      } else if ($input.val() == "" && defaultValue == "") {
+        return true;
+      } else {
+        return (!($input.val() == "" && _.isNull(defaultValue ))) &&
+        ($input.val() != defaultValue);
+      }
     };
 
     this.validate = function () {

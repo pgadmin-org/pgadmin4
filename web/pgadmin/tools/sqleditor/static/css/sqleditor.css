@@ -420,6 +420,16 @@ input.editor-checkbox:focus {
   background: #e46b6b;
 }
 
+/* Disabled row */
+.grid-canvas .disabled_row {
+  background: #eeeeee;
+}
+
+/* Disabled cell */
+.grid-canvas .disabled_cell {
+  color: #999999;
+}
+
 /* color the first column */
 .sr .sc:first-child {
     background-color: #2c76b4;

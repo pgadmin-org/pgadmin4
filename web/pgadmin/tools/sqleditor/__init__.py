@@ -441,8 +441,23 @@ def get_columns(trans_id):
     columns = dict()
     columns_info = None
     primary_keys = None
+    rset = None
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None and session_obj is not None:
+
+        ver = conn.manager.version
+        # Get the template path for the column
+        template_path = 'column/sql/#{0}#'.format(ver)
+        command_obj = pickle.loads(session_obj['command_obj'])
+        if hasattr(command_obj, 'obj_id'):
+            SQL = render_template("/".join([template_path,
+                                            'nodes.sql']),
+                                  tid=command_obj.obj_id)
+            # rows with attribute not_null
+            status, rset = conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=rset)
+
         # Check PK column info is available or not
         if 'primary_keys' in session_obj:
             primary_keys = session_obj['primary_keys']
@@ -450,10 +465,17 @@ def get_columns(trans_id):
         # Fetch column information
         columns_info = conn.get_column_info()
         if columns_info is not None:
-            for col in columns_info:
+            for key, col in enumerate(columns_info):
                 col_type = dict()
                 col_type['type_code'] = col['type_code']
                 col_type['type_name'] = None
+                if rset:
+                    col_type['not_null'] = col['not_null'] = \
+                        rset['rows'][key]['not_null']
+
+                    col_type['has_default_val'] = col['has_default_val'] = \
+                        rset['rows'][key]['has_default_val']
+
                 columns[col['name']] = col_type
 
         # As we changed the transaction object we need to
@@ -603,6 +625,7 @@ def save(trans_id):
     status, error_msg, conn, trans_obj, session_obj = check_transaction_status(trans_id)
     if status and conn is not None \
             and trans_obj is not None and session_obj is not None:
+        setattr(trans_obj, 'columns_info', session_obj['columns_info'])
 
         # If there is no primary key found then return from the function.
         if len(session_obj['primary_keys']) <= 0 or len(changed_data) <= 0:
