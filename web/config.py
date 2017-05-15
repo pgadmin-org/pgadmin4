@@ -45,7 +45,7 @@ APP_ICON = 'icon-postgres-alt'
 
 # Application version number components
 APP_RELEASE = 1
-APP_REVISION = 4
+APP_REVISION = 5
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -56,7 +56,7 @@ APP_SUFFIX = ''
 # zero if needed, and Z represents the suffix, with a leading zero if needed
 # Note that we messed this up in v1.x, where the format is [X]XYZZZ. This
 # should be fixed for v2.x!!
-APP_VERSION_INT = 14001
+APP_VERSION_INT = 15001
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
