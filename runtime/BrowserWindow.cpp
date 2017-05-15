@@ -76,7 +76,6 @@ BrowserWindow::BrowserWindow(QString url)
 
 #ifdef PGADMIN4_USE_WEBENGINE
     m_mainWebView->setPage(new WebEnginePage());
-    m_mainWebView->page()->setNetworkAccessManager(m_netAccessMan);
 #else
     m_cookieJar = new QNetworkCookieJar();
     m_netAccessMan = new QNetworkAccessManager();
@@ -843,7 +842,9 @@ void BrowserWindow::closetabs()
                          * it will be backward webkit version compatible.
                          */
                         #if QT_VERSION >= 0x050000
+                          #ifndef PGADMIN4_USE_WEBENGINE
                             webviewPtr->page()->triggerAction(static_cast<QWebPage::WebAction>(QWebPage::ToggleVideoFullscreen + 1));
+                          #endif
                         #endif
                     }
                 }
