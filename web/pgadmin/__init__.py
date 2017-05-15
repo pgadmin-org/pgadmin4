@@ -160,6 +160,10 @@ def create_app(app_name=None):
     logger = logging.getLogger('werkzeug')
     logger.setLevel(logging.INFO)
 
+    # Ensure the various working directories exist
+    from pgadmin.setup import create_app_data_directory, db_upgrade
+    create_app_data_directory(config)
+
     # File logging
     fh = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
     fh.setLevel(config.FILE_LOG_LEVEL)
@@ -179,11 +183,6 @@ def create_app(app_name=None):
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('########################################################')
     app.logger.debug("Python syspath: %s", sys.path)
-
-    from pgadmin.setup import create_app_data_directory, db_upgrade
-
-    # Sanity checks (App data directory exists)
-    create_app_data_directory(config)
 
     ##########################################################################
     # Setup i18n
