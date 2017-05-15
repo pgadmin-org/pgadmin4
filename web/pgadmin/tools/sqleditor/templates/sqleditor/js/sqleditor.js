@@ -540,6 +540,9 @@ define(
         // To store primary keys before they gets changed
         self.handler.primary_keys_data = {};
 
+        // Add getItemMetadata into handler for later use
+        self.handler.data_view = collection;
+
         // Remove any existing grid first
         if (self.handler.slickgrid) {
             self.handler.slickgrid.destroy();
@@ -613,16 +616,20 @@ define(
         // Add-on function which allow us to identify the faulty row after insert/update
         // and apply css accordingly
         collection.getItemMetadata = function(i) {
-          var res = {}, cssClass = '';
+          var res = {},
+            cssClass = '',
+            data_store = self.handler.data_store;
+
           if (_.has(self.handler, 'data_store')) {
-            if (i in self.handler.data_store.added_index) {
+            if (i in data_store.added_index &&
+              data_store.added_index[i] in data_store.added) {
               cssClass = 'new_row';
-              if (self.handler.data_store.added[self.handler.data_store.added_index[i]].err) {
+              if (data_store.added[data_store.added_index[i]].err) {
                 cssClass += ' error';
               }
-            } else if (i in self.handler.data_store.updated_index) {
+            } else if (i in data_store.updated_index && i in data_store.updated) {
               cssClass = 'updated_row';
-              if (self.handler.data_store.updated[self.handler.data_store.updated_index[i]].err) {
+              if (data_store.updated[data_store.updated_index[i]].err) {
                 cssClass += ' error';
               }
             }
@@ -676,28 +683,53 @@ define(
                  });
                  // Now assign mapped temp PK to PK
                  primary_key_list =  _tmp_keys;
+
+                 // Check if selected is new row ?
+                 // Allow to delete if yes
+                 var cell_el = this.grid.getCellNode(selected_rows_list[0], 0),
+                  parent_el = $(cell_el).parent(),
+                  is_new_row = $(parent_el).hasClass('new_row');
+
+                 // Clear selection model if row primary keys is set to default
+                 var row_data = collection[selected_rows_list[0]];
+                 if (primary_key_list.length &&
+                     !_.has(row_data, primary_key_list) && !is_new_row) {
+                   this.selection.setSelectedRows([]);
+                   selected_rows_list = [];
+                 }
                }
+
+              // Clear the object as no rows to delete
+              // and disable delete/copy rows button
+              var clear_staged_rows = function() {
+                rows_for_stage = {};
+                $("#btn-delete-row").prop('disabled', true);
+                $("#btn-copy-row").prop('disabled', true);
+              }
 
               // If any row(s) selected ?
               if(selected_rows_list.length) {
                 if(this.editor.handler.can_edit)
-                  // Enable delete rows button
+                  // Enable delete rows and copy rows button
                   $("#btn-delete-row").prop('disabled', false);
+                  $("#btn-copy-row").prop('disabled', false);
+                  // Collect primary key data from collection as needed for stage row
+                  _.each(selected_rows_list, function(row_index) {
+                    var row_data = collection[row_index],
+                      pkey_data = _.pick(row_data, primary_key_list);
 
-                // Enable copy rows button
-                $("#btn-copy-row").prop('disabled', false);
-                // Collect primary key data from collection as needed for stage row
-                _.each(selected_rows_list, function(row_index) {
-                  var row_data = collection[row_index];
-                  // Store Primary key data for selected rows
-                  rows_for_stage[row_data.__temp_PK] = _.pick(row_data, primary_key_list);
-                });
+                    // Store Primary key data for selected rows
+                    if (!_.isUndefined(row_data) && !_.isUndefined(pkey_data)) {
+                      // check for invalid row
+                      rows_for_stage[row_data.__temp_PK] = _.pick(row_data, primary_key_list);
+                    }
+                  });
               } else {
-                // Clear the object as no rows to delete
-                rows_for_stage = {};
-                // Disable delete/copy rows button
-                $("#btn-delete-row").prop('disabled', true);
-                $("#btn-copy-row").prop('disabled', true);
+                //clear staged rows
+                clear_staged_rows();
+              }
+              if (!Object.keys(rows_for_stage).length) {
+                clear_staged_rows();
               }
 
              // Update main data store
@@ -2213,6 +2245,30 @@ define(
           return (self.get('can_edit'));
         },
 
+        rows_to_delete: function(data) {
+          var self = this;
+          var tmp_keys = [];
+          _.each(self.primary_keys, function(p, idx) {
+            // For each columns search primary key position
+            _.each(self.columns, function(c) {
+               if(c.name == idx) {
+                 tmp_keys.push(c.pos);
+               }
+            });
+          });
+
+          // re-calculate rows with no primary keys
+          self.temp_new_rows = [];
+          data.forEach(function(d, idx) {
+            var p_keys_idx = _.pick(d, tmp_keys);
+            if (Object.keys(p_keys_idx).length == 0) {
+              self.temp_new_rows.push(idx);
+            }
+          });
+          data.getItemMetadata = self.data_view.getItemMetadata;
+          self.rows_to_disable = _.clone(self.temp_new_rows);
+        },
+
         // This function will delete selected row.
         _delete: function() {
           var self = this, deleted_keys = [],
@@ -2242,6 +2298,7 @@ define(
                      return (d && _.indexOf(deleted_keys, d.__temp_PK) > -1)
                    });
                   }
+                  self.rows_to_delete.apply(self, [data]);
                   grid.resetActiveCell();
                   grid.setData(data, true);
                   grid.setSelectedRows([]);
@@ -2362,6 +2419,7 @@ define(
                           data.splice(idx, 1);
                         });
                       }
+                      self.rows_to_delete.apply(self, [data]);
                       grid.setData(data, true);
                       grid.setSelectedRows([]);
                     }
@@ -3025,7 +3083,17 @@ define(
                   var _pk = epicRandomString(8);
                   row.__temp_PK = _pk;
               });
-              data = data.concat(copied_rows);
+
+              var temp_func = self.data_view.getItemMetadata,
+                  count = Object.keys(data).length-1;
+
+              _.each(copied_rows, function(row, idx) {
+                data[count] = row;
+                count++;
+              });
+
+              //update data_view
+              data.getItemMetadata = temp_func;
               grid.setData(data, true);
               grid.updateRowCount();
               grid.setSelectedRows([]);

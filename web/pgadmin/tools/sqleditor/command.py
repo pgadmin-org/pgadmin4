@@ -483,6 +483,8 @@ class TableCommand(GridCommand):
                                               data_type=column_type,
                                               pk_names=pk_names)
                         list_of_sql.append(sql)
+                        # Reset column data
+                        column_data = {}
 
                 # For updated rows
                 elif of_type == 'updated':
@@ -554,7 +556,10 @@ class TableCommand(GridCommand):
                                 query_res[val]['result'] = 'Transaction ROLLBACK'
 
                         # If list is empty set rowid to 1
-                        _rowid = list_of_rowid[i] if list_of_rowid else 1
+                        try:
+                            _rowid = list_of_rowid[i] if list_of_rowid else 1
+                        except Exception:
+                            _rowid = 0
 
                         return status, res, query_res, _rowid
 
