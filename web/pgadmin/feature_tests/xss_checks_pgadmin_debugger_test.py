@@ -16,10 +16,14 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
     """Tests to check if Debugger is vulnerable to XSS."""
 
     scenarios = [
-        ("Test table DDL generation", dict())
+        ("Tests to check if Debugger is vulnerable to XSS", dict())
     ]
 
     def before(self):
+        with test_utils.Database(self.server) as (connection, _):
+            if connection.server_version < 90100:
+                self.skipTest("Functions tree node is not present in pgAdmin below PG v9.1")
+
         # Some test function is needed for debugger
         test_utils.create_debug_function(self.server, "postgres",
                                    "test_function")

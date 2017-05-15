@@ -353,15 +353,15 @@ class PGChildNodeView(NodeView):
         else:
             where_clause = where
 
-        query = render_template("/".join([sql_path, 'dependents.sql']),
-                                fetch_dependencies=True, where_clause=where_clause)
+        query = render_template("/".join([sql_path, 'dependencies.sql']),
+                                where_clause=where_clause)
         # fetch the dependency for the selected object
         dependencies = self.__fetch_dependency(conn, query)
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:
-            sql = render_template("/".join([sql_path, 'dependents.sql']),
-                                  fetch_role_dependencies=True, where_clause=where_clause)
+            sql = render_template("/".join([sql_path, 'role_dependencies.sql']),
+                                  where_clause=where_clause)
 
             status, result = conn.execute_dict(sql)
             if not status:
@@ -402,7 +402,7 @@ class PGChildNodeView(NodeView):
             where_clause = where
 
         query = render_template("/".join([sql_path, 'dependents.sql']),
-                                fetch_dependents=True, where_clause=where_clause)
+                                where_clause=where_clause)
         # fetch the dependency for the selected object
         dependents = self.__fetch_dependency(conn, query)
 

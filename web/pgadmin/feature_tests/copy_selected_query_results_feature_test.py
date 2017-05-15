@@ -1,3 +1,12 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2017, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 import pyperclip
 import time
 
@@ -37,7 +46,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self.page.find_by_partial_link_text("Query Tool").click()
         self.page.click_tab('Query-1')
         time.sleep(5)
-        ActionChains(self.page.driver).send_keys("SELECT * FROM test_table").perform()
+        ActionChains(self.page.driver).send_keys("SELECT * FROM test_table ORDER BY some_column").perform()
         self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
         self.page.find_by_id("btn-flash").click()
 
