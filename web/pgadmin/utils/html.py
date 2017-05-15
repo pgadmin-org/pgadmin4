@@ -15,7 +15,19 @@ from pgadmin.utils import IS_PY2
 
 def safe_str(x):
     try:
-        x = x.encode('ascii', 'xmlcharrefreplace') if hasattr(x, 'encode') else x
+        # For Python2, it can be int, long, float
+        if IS_PY2:
+            if isinstance(x, (int, long, float)):
+                x = str(x)
+        else:
+            # For Python3, it can be int, float
+            if isinstance(x, (int, float)):
+                x = str(x)
+
+        x = x.encode(
+            'ascii', 'xmlcharrefreplace'
+        ) if hasattr(x, 'encode') else x
+
         if not IS_PY2:
             x = x.decode('utf-8')
     except:

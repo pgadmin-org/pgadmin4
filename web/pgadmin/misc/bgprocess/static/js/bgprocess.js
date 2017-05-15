@@ -310,7 +310,7 @@ define([
           panel = this.panel =
               pgBrowser.BackgroundProcessObsorver.create_panel();
 
-          panel.title('Process Watcher - ' + self.desc);
+          panel.title('Process Watcher - ' + _.escape(self.desc));
           panel.focus();
         }
 

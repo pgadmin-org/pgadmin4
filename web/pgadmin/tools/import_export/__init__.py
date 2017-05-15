@@ -94,10 +94,9 @@ class IEMessage(IProcessDesc):
                 arg = cmdArg(arg)
                 if _storage is not None:
                     arg = arg.replace(_storage, '<STORAGE_DIR>')
-                self._cmd += ' "' + arg  + '"'
+                self._cmd += ' "' + arg + '"'
             else:
-                self._cmd+= cmdArg(arg)
-
+                self._cmd += cmdArg(arg)
 
     @property
     def message(self):
@@ -107,7 +106,8 @@ class IEMessage(IProcessDesc):
         ).first()
 
         return _(
-            "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})..."
+            "Copying table data '{0}.{1}' on database '{2}' "
+            "and server ({3}:{4})..."
         ).format(
             self.schema, self.table, self.database, s.host, s.port
         )
@@ -120,16 +120,23 @@ class IEMessage(IProcessDesc):
 
         res = '<div class="h5">'
         res += _(
-            "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'..."
+            "Copying table data '{0}.{1}' on database '{2}' "
+            "for the server '{3}'..."
         ).format(
-            self.schema, self.table, self.database,
-            "{0} ({1}:{2})".format(s.name, s.host, s.port)
+            html.safe_str(self.schema),
+            html.safe_str(self.table),
+            html.safe_str(self.database),
+            "{0} ({1}:{2})".format(
+                html.safe_str(s.name),
+                html.safe_str(s.host),
+                html.safe_str(s.port)
+            )
         )
 
         res += '</div><div class="h5">'
         res += _("Running command:")
         res += '</b><br><span class="pg-bg-cmd enable-selection">'
-        res += self._cmd
+        res += html.safe_str(self._cmd)
         res += '</span></div>'
 
         return res
