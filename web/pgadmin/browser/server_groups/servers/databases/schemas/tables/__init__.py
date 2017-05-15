@@ -1108,6 +1108,10 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+                return gone(gettext("The specified table could not be found."))
+
         data = res['rows'][0]
 
         data['vacuum_settings_str'] = ""
@@ -1690,8 +1694,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
             data = res['rows'][0]
-            # TODO://
-            # Find SQL which can enable all or disable all triggers
+
             SQL = render_template("/".join([self.template_path,
                                             'enable_disable_trigger.sql']),
                                   data=data, is_enable_trigger=is_enable)
@@ -2493,6 +2496,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+                return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
 
