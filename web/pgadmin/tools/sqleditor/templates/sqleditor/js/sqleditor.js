@@ -865,7 +865,10 @@ define(
             row_data = grid.getDataItem(args.row),
             primary_key = row_data && row_data[0];
 
-          if (!_.isUndefined(primary_key)) {
+          // temp_new_rows is available only for view data.
+          if (!_.isUndefined(primary_key) &&
+            self.handler.temp_new_rows
+          ) {
             var index = self.handler.temp_new_rows.indexOf(args.row);
             if (index > -1) {
               self.handler.temp_new_rows.splice(index, 1);
