@@ -7,7 +7,7 @@ SELECT
     WHEN client_hostname IS NOT NULL AND client_hostname != '' THEN
         client_hostname || ':' || client_port
     WHEN client_addr IS NOT NULL AND client_addr::text != '' THEN
-        client_addr || ':' || client_port
+        client_addr::text || ':' || client_port
     WHEN client_port = -1 THEN
         'local pipe'
     ELSE
@@ -32,7 +32,7 @@ SELECT
     WHEN client_hostname IS NOT NULL AND client_hostname != '' THEN
         client_hostname || ':' || client_port
     WHEN client_addr IS NOT NULL AND client_addr::text != '' THEN
-        client_addr || ':' || client_port
+        client_addr::text || ':' || client_port
     WHEN client_port = -1 THEN
         'local pipe'
     ELSE
