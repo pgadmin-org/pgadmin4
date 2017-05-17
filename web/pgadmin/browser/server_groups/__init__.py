@@ -19,9 +19,9 @@ from flask_security import current_user
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
-    make_response as ajax_response
+    make_response as ajax_response, bad_request
 from pgadmin.utils.menu import MenuItem
-
+from sqlalchemy import exc
 from pgadmin.model import db, ServerGroup
 
 
@@ -174,6 +174,10 @@ class ServerGroupView(NodeView):
                 if u'name' in data:
                     servergroup.name = data[u'name']
                 db.session.commit()
+            except exc.IntegrityError:
+                return bad_request(gettext(
+                    "The specified server group already exists."
+                ))
             except Exception as e:
                 return make_json_response(
                     status=410, success=0, errormsg=e.message
@@ -220,18 +224,6 @@ class ServerGroupView(NodeView):
         )
         if data[u'name'] != '':
             try:
-                check_sg = ServerGroup.query.filter_by(
-                    user_id=current_user.id,
-                    name=data[u'name']).first()
-
-                # Throw error if server group already exists...
-                if check_sg is not None:
-                    return make_json_response(
-                        status=409,
-                        success=0,
-                        errormsg=gettext('Server group already exists')
-                    )
-
                 sg = ServerGroup(
                     user_id=current_user.id,
                     name=data[u'name'])
@@ -248,9 +240,15 @@ class ServerGroupView(NodeView):
                         "icon-%s" % self.node_type,
                         True,
                         self.node_type,
-                        can_delete=True  # This is user created hence can deleted
+                        # This is user created hence can deleted
+                        can_delete=True
                     )
                 )
+            except exc.IntegrityError:
+                return bad_request(gettext(
+                    "The specified server group already exists."
+                ))
+
             except Exception as e:
                 return make_json_response(
                     status=410,
