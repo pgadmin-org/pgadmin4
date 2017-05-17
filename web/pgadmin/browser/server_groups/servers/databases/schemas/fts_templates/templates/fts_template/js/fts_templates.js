@@ -168,5 +168,5 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     });
   }
 
-return pgBrowser.Nodes['coll-fts_template'];
+return pgBrowser.Nodes['fts_template'];
 });

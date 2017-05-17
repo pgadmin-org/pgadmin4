@@ -4,6 +4,7 @@ SELECT
     dict.dictname as name,
     pg_get_userbyid(dict.dictowner) as owner,
     t.tmplname as template,
+    (SELECT nspname FROM pg_namespace n WHERE n.oid = t.tmplnamespace) as template_schema,
     dict.dictinitoption as options,
     dict.dictnamespace as schema,
     des.description

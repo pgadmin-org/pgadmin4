@@ -137,7 +137,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           id: 'template', label: '{{ _('Template')}}',type: 'text',
           disabled: function(m) { return !m.isNew(); }, url: 'fetch_templates',
           group: '{{ _('Definition') }}', control: 'node-ajax-options',
-          cache_node: 'database'
+          cache_node: 'fts_template',
         },{
           id: 'options', label: '{{ _('Option') }}', type: 'collection',
           group: '{{ _('Options') }}', control: 'unique-col-collection',
@@ -213,5 +213,5 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     });
   }
 
-return pgBrowser.Nodes['coll-fts_dictionary'];
+return pgBrowser.Nodes['fts_dictionary'];
 });

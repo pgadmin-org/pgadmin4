@@ -221,6 +221,8 @@ class FtsDictionaryView(PGChildNodeView):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            self.qtIdent = driver.qtIdent
             # Set the template path for the SQL scripts
             self.template_path = 'fts_dictionary/sql/#{0}#'.format(self.manager.version)
 
@@ -242,7 +244,8 @@ class FtsDictionaryView(PGChildNodeView):
             options = []
             for fdw_option in option_str:
                 k, v = fdw_option.split('=', 1)
-                options.append({'option': k, 'value': v})
+                options.append({'option': k.strip(),
+                                'value': v.strip().strip("'")})
             return options
 
     @check_precondition
@@ -369,10 +372,22 @@ class FtsDictionaryView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("Could not find the FTS Dictionary node in the database node."))
+            return gone(_(
+                "Could not find the FTS Dictionary node in the database node."
+            ))
+
+        # Handle templates and its schema name properly
+        if res['rows'][0]['template_schema'] is not None:
+            if res['rows'][0]['template_schema'] != "pg_catalog":
+                res['rows'][0]['template'] = self.qtIdent(
+                        self.conn, res['rows'][0]['template_schema'],
+                        res['rows'][0]['template']
+                    )
 
         if res['rows'][0]['options'] is not None:
-            res['rows'][0]['options'] = self.tokenize_options(res['rows'][0]['options'])
+            res['rows'][0]['options'] = self.tokenize_options(
+                res['rows'][0]['options']
+            )
 
         return ajax_response(
             response=res['rows'][0],
@@ -614,6 +629,14 @@ class FtsDictionaryView(PGChildNodeView):
 
             old_data = res['rows'][0]
 
+            # Handle templates and its schema name properly
+            if old_data['template_schema'] is not None:
+                if old_data['template_schema'] != "pg_catalog":
+                    old_data['template'] = self.qtIdent(
+                        self.conn, old_data['template_schema'],
+                        old_data['template']
+                    )
+
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using its oid
             sql = render_template(
@@ -694,8 +717,10 @@ class FtsDictionaryView(PGChildNodeView):
         # at template control while creating a new FTS Dictionary
         res = [{'label': '', 'value': ''}]
         for row in rset['rows']:
-            if row['schemaoid'] > datlastsysoid:
-                row['tmplname'] = row['nspname'] + '.' + row['tmplname']
+            if row['nspname'] != "pg_catalog":
+                row['tmplname'] = self.qtIdent(
+                    self.conn, row['nspname'], row['tmplname']
+                )
 
             res.append({'label': row['tmplname'],
                         'value': row['tmplname']})
@@ -714,33 +739,55 @@ class FtsDictionaryView(PGChildNodeView):
         :param scid: schema id
         :param dcid: FTS Dictionary id
         """
-        try:
-            sql = render_template(
-                "/".join([self.template_path, 'sql.sql']),
-                dcid=dcid,
-                scid=scid,
-                conn=self.conn
+
+        sql = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            scid=scid,
+            dcid=dcid
+        )
+        status, res = self.conn.execute_dict(sql)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(_(
+                "Could not find the FTS Dictionary node in the database node."
+            ))
+
+        # Handle templates and its schema name properly
+        if res['rows'][0]['template_schema'] is not None:
+            if res['rows'][0]['template_schema'] != "pg_catalog":
+                res['rows'][0]['template'] = self.qtIdent(
+                    self.conn, res['rows'][0]['template_schema'],
+                    res['rows'][0]['template']
+                )
+
+        if res['rows'][0]['options'] is not None:
+            res['rows'][0]['options'] = self.tokenize_options(
+                res['rows'][0]['options']
             )
-            status, res = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(
-                    _(
-                        "Could not generate reversed engineered query for the FTS Dictionary.\n{0}").format(
-                        res
-                    )
-                )
+        else:
+            # Make it iterable
+            res['rows'][0]['options'] = []
 
-            if res is None:
-                return gone(
-                    _(
-                        "Could not generate reversed engineered query for FTS Dictionary node.")
-                )
+        # Fetch schema name from schema oid
+        sql = render_template("/".join(
+            [self.template_path, 'schema.sql']), data=res['rows'][0])
 
-            return ajax_response(response=res)
+        status, schema = self.conn.execute_scalar(sql)
 
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+        if not status:
+            return internal_server_error(errormsg=schema)
+
+        # Replace schema oid with schema name
+        res['rows'][0]['schema'] = schema
+
+        sql = render_template("/".join([self.template_path, 'create.sql']),
+                              data=res['rows'][0],
+                              conn=self.conn, is_displaying=True)
+
+        return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, dcid):
