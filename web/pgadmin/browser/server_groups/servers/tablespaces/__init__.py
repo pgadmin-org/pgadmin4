@@ -354,7 +354,7 @@ class TablespaceView(PGChildNodeView):
         try:
             SQL, name = self.get_sql(gid, sid, data, tsid)
             # Most probably this is due to error
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(SQL, (str, unicode)):
                 return SQL
 
             SQL = SQL.strip('\n').strip(' ')
