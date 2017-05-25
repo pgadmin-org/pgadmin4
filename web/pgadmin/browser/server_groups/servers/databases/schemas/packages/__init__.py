@@ -21,11 +21,14 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
-from pgadmin.utils.ajax import precondition_required, gone
+    make_response as ajax_response, internal_server_error, \
+    precondition_required, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class PackageModule(SchemaChildModule):
@@ -244,6 +247,49 @@ class PackageView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition(action='node')
+    def node(self, gid, sid, did, scid, pkgid):
+        """
+        This function will show the selected package node.
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          pkgid: Package ID
+
+        Returns:
+
+        """
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']), 
+            scid=scid, pkgid=pkgid
+        )
+        status, rset = self.conn.execute_dict(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if len(rset['rows']) == 0:
+            return gone(
+                errormsg=_("Could not find the package in the database.")
+            )
+
+        for row in rset['rows']:
+            res.append(
+                self.blueprint.generate_browser_node(
+                    row['oid'],
+                    scid,
+                    row['name'],
+                    icon="icon-%s" % self.node_type
+                ))
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
     @check_precondition(action='properties')
     def properties(self, gid, sid, did, scid, pkgid):
         """
@@ -440,6 +486,10 @@ class PackageView(PGChildNodeView):
         )
 
         SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
+
         SQL = SQL.strip('\n').strip(' ')
         status, res = self.conn.execute_scalar(SQL)
         if not status:
@@ -491,6 +541,10 @@ class PackageView(PGChildNodeView):
                     )
 
         SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
+
         SQL = SQL.strip('\n').strip(' ')
         if SQL == '':
             SQL = "--modified SQL"
@@ -521,6 +575,10 @@ class PackageView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    errormsg=_("Could not find the package in the database.")
+                )
 
             res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
             res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
@@ -586,6 +644,10 @@ class PackageView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    errormsg=_("Could not find the package in the database.")
+                )
 
             res['rows'][0]['pkgheadsrc'] = self.get_inner(res['rows'][0]['pkgheadsrc'])
             res['rows'][0]['pkgbodysrc'] = self.get_inner(res['rows'][0]['pkgbodysrc'])
@@ -604,6 +666,10 @@ class PackageView(PGChildNodeView):
 
             result = res['rows'][0]
             sql, name = self.getSQL(gid, sid, did, result, scid)
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
+
             sql = sql.strip('\n').strip(' ')
 
             sql_header = u"-- Package: {}\n\n-- ".format(

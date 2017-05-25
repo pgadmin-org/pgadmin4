@@ -22,11 +22,13 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class ColumnsModule(CollectionNodeModule):
@@ -688,6 +690,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             data['hasSqrBracket'] = self.hasSqrBracket
 
         SQL, name = self.get_sql(scid, tid, clid, data)
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         SQL = SQL.strip('\n').strip(' ')
         status, res = self.conn.execute_scalar(SQL)
         if not status:
@@ -733,6 +737,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         try:
             SQL, name = self.get_sql(scid, tid, clid, data)
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
 
             SQL = SQL.strip('\n').strip(' ')
             if SQL == '':
@@ -758,7 +764,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
-
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the column on the server.")
+                )
             old_data = dict(res['rows'][0])
             # We will add table & schema as well
             old_data = self._formatter(scid, tid, clid, old_data)
@@ -834,6 +843,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the column on the server.")
+                )
 
             data = dict(res['rows'][0])
             # We do not want to display length as -1 in create query
@@ -851,6 +864,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             data = self._formatter(scid, tid, clid, data)
 
             SQL, name = self.get_sql(scid, tid, None, data)
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
 
             sql_header = u"-- Column: {0}\n\n-- ".format(self.qtIdent(self.conn,
                                                                      data['schema'],
@@ -966,6 +981,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the column on the server.")
+            )
 
         data = dict(res['rows'][0])
         column = data['name']

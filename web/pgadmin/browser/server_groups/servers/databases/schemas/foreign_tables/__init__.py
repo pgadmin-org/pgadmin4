@@ -28,8 +28,11 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class ForeignTableModule(SchemaChildModule):
@@ -449,13 +452,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
             foid: Foreign Table Id
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
-
-        if not data:
-            return gone(gettext("""
-Could not find the foreign table in the database.
-It may have been removed by another user or
-shifted to the another schema.
-"""))
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         return ajax_response(
             response=data,
@@ -662,6 +662,10 @@ shifted to the another schema.
         try:
             # Get SQL to create Foreign Table
             SQL, name = self.get_sql(gid, sid, did, scid, self.request)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
+
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -771,6 +775,10 @@ shifted to the another schema.
 
         try:
             SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
+
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -809,6 +817,10 @@ shifted to the another schema.
             foid: Foreign Table Id
         """
         data = self._fetch_properties(gid, sid, did, scid, foid, inherits=True)
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         col_data = []
         for c in data['columns']:
@@ -850,6 +862,10 @@ shifted to the another schema.
         """
         try:
             SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
+
             if SQL == '':
                 SQL = "--modified SQL"
 
@@ -874,10 +890,10 @@ shifted to the another schema.
         if foid is not None:
             old_data = self._fetch_properties(gid, sid, did, scid, foid,
                                               inherits=True)
-
-            if not old_data:
-                return gone(gettext("Could not find the foreign table in the database." +
-                " It may have been removed by another user or shifted to the another schema."))
+            if old_data == False:
+                return gone(
+                    gettext("Could not find the foreign table on the server.")
+                )
 
             # Prepare dict of columns with key = column's attnum
             # Will use this in the update template when any column is
@@ -1178,6 +1194,10 @@ shifted to the another schema.
             SELECT Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         columns = []
         for c in data['columns']:
@@ -1211,6 +1231,10 @@ shifted to the another schema.
             INSERT Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         columns = []
         values = []
@@ -1249,6 +1273,10 @@ shifted to the another schema.
             UPDATE Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         columns = []
 
@@ -1290,6 +1318,10 @@ shifted to the another schema.
             DELETE Script sql for the object
         """
         data = self._fetch_properties(gid, sid, did, scid, foid)
+        if data == False:
+            return gone(
+                gettext("Could not find the foreign table on the server.")
+            )
 
         sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['basensp'], data['name'])

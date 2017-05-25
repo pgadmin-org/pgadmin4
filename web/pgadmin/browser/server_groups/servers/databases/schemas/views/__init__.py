@@ -19,12 +19,11 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response, bad_request
+    make_response as ajax_response, bad_request, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db,\
     parse_priv_to_db
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
 
 """
     This module is responsible for generating two nodes
@@ -659,7 +658,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return None, internal_server_error(errormsg=res)
-
+            if len(res['rows']) == 0:
+                return None, gone(
+                    gettext("Could not find the view on the server.")
+                )
             old_data = res['rows'][0]
 
             if 'name' not in data:
@@ -975,6 +977,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the view on the server.")
+            )
 
         result = res['rows'][0]
         # sending result to formtter
@@ -1119,6 +1125,10 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the view on the server.")
+            )
         data_view = res['rows'][0]
 
         SQL = render_template(
@@ -1176,6 +1186,11 @@ class ViewNode(PGChildNodeView, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the view on the server.")
+            )
+
         data_view = res['rows'][0]
 
         SQL = render_template(
@@ -1292,6 +1307,11 @@ class MViewNode(ViewNode, VacuumSettings):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return None, internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return None, gone(
+                    gettext("Could not find the materialized view on the server.")
+                )
+
             old_data = res['rows'][0]
 
             if 'name' not in data:
@@ -1480,6 +1500,10 @@ class MViewNode(ViewNode, VacuumSettings):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the materialized view on the server.")
+            )
 
         result = res['rows'][0]
 

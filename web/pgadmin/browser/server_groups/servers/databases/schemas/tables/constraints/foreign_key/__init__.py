@@ -19,11 +19,13 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.
     import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class ForeignKeyConstraintModule(ConstraintTypeModule):
@@ -683,6 +685,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = self.get_sql(data, tid, fkid)
+            if not isinstance(sql, (str, unicode)):
+                return sql
             sql = sql.strip('\n').strip(' ')
 
             status, res = self.conn.execute_scalar(sql)
@@ -805,6 +809,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['table'] = self.table
         try:
             sql, name = self.get_sql(data, tid, fkid)
+            if not isinstance(sql, (str, unicode)):
+                return sql
             sql = sql.strip('\n').strip(' ')
             if sql == '':
                 sql = "--modified SQL"
@@ -833,6 +839,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(_("""Could not find the foreign key."""))
 
             old_data = res['rows'][0]
             required_args = ['name']
@@ -925,6 +933,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(_("""Could not find the foreign key."""))
 
         data = res['rows'][0]
         data['schema'] = self.schema

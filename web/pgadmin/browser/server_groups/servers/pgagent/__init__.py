@@ -441,6 +441,12 @@ SELECT EXISTS(
         if not status:
             return internal_server_error(errormsg=res)
 
+
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the object on the server.")
+            )
+
         row = res['rows'][0]
 
         status, res= self.conn.execute_dict(

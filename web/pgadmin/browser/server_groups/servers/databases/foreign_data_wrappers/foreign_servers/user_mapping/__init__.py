@@ -20,11 +20,13 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class UserMappingModule(CollectionNodeModule):
@@ -452,6 +454,9 @@ class UserMappingView(PGChildNodeView):
         )
         try:
             sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
             sql = sql.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -572,6 +577,9 @@ class UserMappingView(PGChildNodeView):
                 data[k] = v
         try:
             sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
             if sql == '':
                 sql = "--modified SQL"
 
@@ -606,6 +614,10 @@ class UserMappingView(PGChildNodeView):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the user mapping information.")
+                )
 
             if res['rows'][0]['umoptions'] is not None:
                 res['rows'][0]['umoptions'] = tokenize_options(
@@ -683,6 +695,10 @@ class UserMappingView(PGChildNodeView):
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the user mapping information.")
+            )
 
         is_valid_options = False
         if res['rows'][0]['umoptions'] is not None:

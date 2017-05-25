@@ -21,11 +21,13 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class SequenceModule(SchemaChildModule):
@@ -253,7 +255,7 @@ class SequenceView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(_("""Could not find the sequence in the database."""))
+            return gone(_("Could not find the sequence in the database."))
 
         for row in res['rows']:
             SQL = render_template("/".join([self.template_path, 'get_def.sql']), data=row)
@@ -450,6 +452,10 @@ class SequenceView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
         SQL, name = self.getSQL(gid, sid, did, data, scid, seid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
+
         SQL = SQL.strip('\n').strip(' ')
 
         status, res = self.conn.execute_scalar(SQL)
@@ -510,6 +516,10 @@ class SequenceView(PGChildNodeView):
                         )
                     )
         SQL, name = self.getSQL(gid, sid, did, data, scid, seid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
+
         SQL = SQL.strip('\n').strip(' ')
         if SQL == '':
             SQL = "--modified SQL"
@@ -540,6 +550,9 @@ class SequenceView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(_("Could not find the sequence in the database."))
+
             # Making copy of output for further processing
             old_data = dict(res['rows'][0])
             old_data = self._formatter(old_data, scid, seid)
@@ -588,6 +601,8 @@ class SequenceView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(_("Could not find the sequence in the database."))
 
         for row in res['rows']:
             SQL = render_template("/".join([self.template_path, 'get_def.sql']), data=row)
@@ -605,6 +620,9 @@ class SequenceView(PGChildNodeView):
         result = res['rows'][0]
         result = self._formatter(result, scid, seid)
         SQL, name = self.getSQL(gid, sid, did, result, scid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         SQL = SQL.strip('\n').strip(' ')
         return ajax_response(response=SQL)
 

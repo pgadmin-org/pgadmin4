@@ -436,9 +436,14 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         """
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+        # Most probably this is due to error
+        if not isinstance(resp_data, dict):
+            return resp_data
 
         if len(resp_data) == 0:
-            return gone(gettext("""Could not find the function node in the database."""))
+            return gone(
+                gettext("Could not find the function node in the database.")
+            )
 
         return ajax_response(
             response=resp_data,
@@ -871,6 +876,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
                 return internal_server_error(errormsg=res)
 
             resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+            # Most probably this is due to error
+            if not isinstance(resp_data, dict):
+                return resp_data
 
             if self.node_type == 'procedure':
                 obj_name = resp_data['name_with_args']
@@ -916,6 +924,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             fnid: Function Id
         """
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+        # Most probably this is due to error
+        if not isinstance(resp_data, dict):
+            return resp_data
+
         # Fetch the function definition.
         args = u''
         args_without_name = []
@@ -1087,6 +1099,11 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
             # Fetch Old Data from database.
             old_data = self._fetch_properties(gid, sid, did, scid, fnid)
+            # Most probably this is due to error
+            if not isinstance(old_data, dict):
+                return False, gettext(
+                    "Could not find the function in the database."
+                )
 
             # Get Schema Name
             old_data['pronamespace'] = self._get_schema(old_data[
@@ -1250,10 +1267,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""
-Could not find the function in the database.\n
-It may have been removed by another user or moved to another schema.
-"""))
+            return gone(
+                gettext("Could not find the function in the database.")
+            )
 
         resp_data = res['rows'][0]
 
@@ -1393,6 +1409,9 @@ It may have been removed by another user or moved to another schema.
             doid: Function Id
         """
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
+        # Most probably this is due to error
+        if not isinstance(resp_data, dict):
+            return resp_data
 
         # Fetch the schema name from OID
         if 'pronamespace' in resp_data:

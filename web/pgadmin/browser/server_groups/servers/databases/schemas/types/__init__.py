@@ -21,11 +21,13 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class TypeModule(SchemaChildModule):
@@ -294,7 +296,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the type in the table."""))
+            return gone(gettext("""Could not find the type in the database."""))
 
         res = self.blueprint.generate_browser_node(
                 rset['rows'][0]['oid'],
@@ -537,7 +539,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the type in the table."""))
+            return gone(gettext("""Could not find the type in the database."""))
 
         # Making copy of output for future use
         copy_dict = dict(res['rows'][0])
@@ -1000,6 +1002,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
         )
         try:
             SQL, name = self.get_sql(gid, sid, data, scid, tid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -1112,6 +1117,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         try:
             sql, name = self.get_sql(gid, sid, data, scid, tid)
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
             sql = sql.strip('\n').strip(' ')
 
             if sql == '':
@@ -1185,6 +1193,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the type in the database.")
+                )
 
             # Making copy of output for future use
             old_data = dict(res['rows'][0])
@@ -1263,7 +1275,10 @@ class TypeView(PGChildNodeView, DataTypeReader):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
-
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the type in the database.")
+            )
         # Making copy of output for future use
         data = dict(res['rows'][0])
 
@@ -1298,7 +1313,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 data[k] = None
 
         SQL, name = self.get_sql(gid, sid, data, scid, tid=None)
-
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         # We are appending headers here for sql panel
         sql_header = u"-- Type: {0}\n\n-- ".format(data['name'])
 

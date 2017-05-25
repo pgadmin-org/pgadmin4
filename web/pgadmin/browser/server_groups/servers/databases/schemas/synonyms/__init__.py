@@ -19,11 +19,14 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
+    make_response as ajax_response, internal_server_error, gone
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class SynonymModule(SchemaChildModule):
@@ -527,6 +530,9 @@ class SynonymView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
         SQL = self.get_sql(gid, sid, data, scid, syid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         try:
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 status, res = self.conn.execute_scalar(SQL)
@@ -566,6 +572,9 @@ class SynonymView(PGChildNodeView):
 
         try:
             SQL = self.get_sql(gid, sid, data, scid, syid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
                     data=SQL,
@@ -585,6 +594,10 @@ class SynonymView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the synonym on the server.")
+                )
             old_data = res['rows'][0]
             # If target schema/object is not present then take it from
             # old data, it means it does not changed

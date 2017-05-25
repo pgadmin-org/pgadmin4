@@ -18,10 +18,8 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
+    make_response as ajax_response, internal_server_error, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
 
 # As unicode type is not available in python3
@@ -214,7 +212,7 @@ class ExtensionView(PGChildNodeView):
                 status=200
             )
 
-        return gone(gettext("Could not find the specified event trigger."))
+        return gone(gettext("Could not find the specified extension."))
 
     @check_precondition
     def properties(self, gid, sid, did, eid):
@@ -301,6 +299,9 @@ class ExtensionView(PGChildNodeView):
 
         try:
             SQL, name = self.getSQL(gid, sid, data, did, eid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -372,6 +373,9 @@ class ExtensionView(PGChildNodeView):
         data = request.args.copy()
         try:
             SQL, name = self.getSQL(gid, sid, data, did, eid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             SQL = SQL.strip('\n').strip(' ')
             if SQL == '':
                 SQL = "--modified SQL"
@@ -469,6 +473,10 @@ class ExtensionView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the extension on the server.")
+            )
 
         result = res['rows'][0]
 

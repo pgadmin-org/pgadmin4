@@ -283,9 +283,8 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return ajax_response(
-                response=resp_data,
-                status=200
+            return gone(
+                errormsg=gettext("Could not find the variables")
             )
 
         resp_data = res['rows'][0]
@@ -315,6 +314,11 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                errormsg=gettext("Could not find the variables")
+            )
+
         var = res['rows'][0]
 
         sql = u"-- Package Variable: {}".format(var['name'])

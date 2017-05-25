@@ -307,7 +307,9 @@ class ServerGroupView(NodeView):
             group = ServerGroup.query.filter_by(user_id=current_user.id,
                                                  id=gid).first()
             if not group:
-                return gone(errormsg="Could not find the server group.")
+                return gone(
+                    errormsg=gettext("Could not find the server group.")
+                )
 
             nodes = self.blueprint.generate_browser_node(
                 "%d" % (group.id), None,

@@ -18,11 +18,13 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class TriggerModule(CollectionNodeModule):
@@ -734,6 +736,8 @@ class TriggerView(PGChildNodeView):
             data['table'] = self.table
 
             SQL, name = self.get_sql(scid, tid, trid, data)
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -786,7 +790,8 @@ class TriggerView(PGChildNodeView):
 
         try:
             sql, name = self.get_sql(scid, tid, trid, data)
-
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             sql = sql.strip('\n').strip(' ')
 
             if sql == '':
@@ -835,6 +840,10 @@ class TriggerView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("""Could not find the trigger in the table.""")
+                )
 
             old_data = dict(res['rows'][0])
 
@@ -900,6 +909,8 @@ class TriggerView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the trigger in the table."""))
 
         data = dict(res['rows'][0])
         # Adding parent into data dict, will be using it while creating sql
@@ -968,6 +979,10 @@ class TriggerView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("""Could not find the trigger in the table.""")
+                )
 
             o_data = dict(res['rows'][0])
 

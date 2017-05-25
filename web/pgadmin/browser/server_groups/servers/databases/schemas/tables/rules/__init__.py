@@ -20,11 +20,13 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     parse_rule_definition
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class RuleModule(CollectionNodeModule):
@@ -354,6 +356,8 @@ class RuleView(PGChildNodeView):
         )
         try:
             SQL, name = self.getSQL(gid, sid, data, tid, rid)
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -430,6 +434,8 @@ class RuleView(PGChildNodeView):
         """
         data = request.args
         sql, name = self.getSQL(gid, sid, data, tid, rid)
+        if not isinstance(sql, (str, unicode)):
+            return sql
         sql = sql.strip('\n').strip(' ')
 
         if sql == '':
@@ -449,6 +455,9 @@ class RuleView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(gettext("""Could not find the rule in the table."""))
+
         res_data = parse_rule_definition(res)
         SQL = render_template("/".join(
             [self.template_path, 'create.sql']),
@@ -465,9 +474,12 @@ class RuleView(PGChildNodeView):
             SQL = render_template("/".join(
                 [self.template_path, 'properties.sql']), rid=rid)
             status, res = self.conn.execute_dict(SQL)
-            res_data = parse_rule_definition(res)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(gettext("""Could not find the rule in the table."""))
+            res_data = parse_rule_definition(res)
+
             old_data = res_data
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),

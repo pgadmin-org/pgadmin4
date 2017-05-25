@@ -20,11 +20,13 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db, validate_options, tokenize_options
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class ForeignDataWrapperModule(CollectionNodeModule):
@@ -441,7 +443,9 @@ class ForeignDataWrapperView(PGChildNodeView):
 
         try:
             sql, name = self.get_sql(gid, sid, data, did, fid)
-
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -535,7 +539,9 @@ class ForeignDataWrapperView(PGChildNodeView):
                 data[k] = v
         try:
             sql, name = self.get_sql(gid, sid, data, did, fid)
-
+            # Most probably this is due to error
+            if not isinstance(sql, (str, unicode)):
+                return sql
             if sql == '':
                 sql = "--modified SQL"
 
@@ -649,6 +655,10 @@ class ForeignDataWrapperView(PGChildNodeView):
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the foreign data wrapper on the server.")
+            )
 
         is_valid_options = False
         if res['rows'][0]['fdwoptions'] is not None:

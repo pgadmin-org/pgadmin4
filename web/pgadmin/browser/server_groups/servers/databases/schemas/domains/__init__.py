@@ -23,8 +23,11 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class DomainModule(SchemaChildModule):
@@ -528,6 +531,9 @@ AND relkind != 'c'))"""
 
         data = self.request
         SQL, name = self.get_sql(gid, sid, data, scid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
 
         status, res = self.conn.execute_scalar(SQL)
         if not status:
@@ -635,28 +641,30 @@ AND relkind != 'c'))"""
         """
 
         SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
 
-        if SQL:
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            # Get Schema Id
-            SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']),
-                                  doid=doid)
-            status, scid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # Get Schema Id
+        SQL = render_template("/".join([self.template_path,
+                                        'get_oid.sql']),
+                                doid=doid)
+        status, scid = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
 
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    doid,
-                    scid,
-                    name,
-                    icon="icon-%s" % self.node_type
-                )
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                doid,
+                scid,
+                name,
+                icon="icon-%s" % self.node_type
             )
+        )
 
     @check_precondition
     def sql(self, gid, sid, did, scid, doid=None):
@@ -676,7 +684,12 @@ AND relkind != 'c'))"""
                               scid=scid, doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
-            return False, internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the specified domain.")
+                )
+
         data = res['rows'][0]
 
         # Get Type Length and Precision
@@ -733,6 +746,9 @@ AND relkind != 'c'))"""
 
         try:
             SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             if SQL == '':
                 SQL = "--modified SQL"
 
@@ -763,6 +779,10 @@ AND relkind != 'c'))"""
 
             if not status:
                 return False, internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                    return gone(
+                        gettext("Could not find the specified domain.")
+                    )
 
             old_data = res['rows'][0]
 

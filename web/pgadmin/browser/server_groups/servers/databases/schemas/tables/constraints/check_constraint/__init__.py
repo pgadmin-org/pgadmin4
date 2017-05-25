@@ -20,10 +20,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.constraints.
     import ConstraintRegistry
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
 
 
@@ -450,6 +448,10 @@ class CheckConstraintView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the object on the server.")
+            )
 
         data = res['rows'][0]
         return ajax_response(
@@ -646,6 +648,8 @@ class CheckConstraintView(PGChildNodeView):
             data['table'] = self.table
 
             SQL, name = self.get_sql(gid, sid, data, scid, tid, cid)
+            if not SQL:
+                return name
             SQL = SQL.strip('\n').strip(' ')
 
             status, res = self.conn.execute_scalar(SQL)
@@ -697,6 +701,10 @@ class CheckConstraintView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the object on the server.")
+            )
 
         data = res['rows'][0]
         data['schema'] = self.schema
@@ -744,6 +752,8 @@ class CheckConstraintView(PGChildNodeView):
         data['table'] = self.table
         try:
             sql, name = self.get_sql(gid, sid, data, scid, tid, cid)
+            if not sql:
+                return name
             sql = sql.strip('\n').strip(' ')
             if sql == '':
                 sql = "--modified SQL"
@@ -775,6 +785,10 @@ class CheckConstraintView(PGChildNodeView):
 
             if not status:
                 return False, internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return False, gone(
+                    _("Could not find the object on the server.")
+                )
 
             old_data = res['rows'][0]
             required_args = ['name']

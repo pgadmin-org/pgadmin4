@@ -19,11 +19,13 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class CollationModule(SchemaChildModule):
@@ -315,7 +317,9 @@ class CollationView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the collation object in the database. It may have been removed by another user."""))
+            return gone(
+                gettext("Could not find the collation object in the database.")
+            )
 
         return ajax_response(
             response=res['rows'][0],
@@ -535,6 +539,9 @@ class CollationView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
         SQL, name = self.get_sql(gid, sid, data, scid, coid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         SQL = SQL.strip('\n').strip(' ')
         status, res = self.conn.execute_scalar(SQL)
 
@@ -581,6 +588,9 @@ class CollationView(PGChildNodeView):
 
         try:
             SQL, name = self.get_sql(gid, sid, data, scid, coid)
+            # Most probably this is due to error
+            if not isinstance(SQL, (str, unicode)):
+                return SQL
             if SQL == '':
                 SQL = "--modified SQL"
 
@@ -602,6 +612,11 @@ class CollationView(PGChildNodeView):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("Could not find the collation object in the database.")
+                )
+
             old_data = res['rows'][0]
             SQL = render_template(
                 "/".join([self.template_path, 'update.sql']),
@@ -643,6 +658,10 @@ class CollationView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the collation object in the database.")
+            )
 
         data = res['rows'][0]
 

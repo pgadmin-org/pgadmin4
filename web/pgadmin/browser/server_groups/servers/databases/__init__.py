@@ -283,13 +283,13 @@ class DatabaseView(PGChildNodeView):
         )
         status, res = conn.execute_dict(SQL)
 
+        if not status:
+            return internal_server_error(errormsg=res)
+
         if len(res['rows']) == 0:
             return gone(
                 _("Could not find the database on the server.")
             )
-
-        if not status:
-            return internal_server_error(errormsg=res)
 
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
@@ -859,8 +859,14 @@ class DatabaseView(PGChildNodeView):
             did=did, conn=conn, last_system_oid=0
         )
         status, res = conn.execute_dict(SQL)
+
         if not status:
             return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                _("Could not find the database on the server.")
+            )
 
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),

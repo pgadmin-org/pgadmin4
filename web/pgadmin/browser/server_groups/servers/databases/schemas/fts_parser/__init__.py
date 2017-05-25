@@ -20,8 +20,11 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class FtsParserModule(SchemaChildModule):
@@ -401,6 +404,10 @@ class FtsParserView(PGChildNodeView):
         )
         # Fetch sql query to update fts parser
         sql, name = self.get_sql(gid, sid, did, scid, data, pid)
+        # Most probably this is due to error
+        if not isinstance(sql, (str, unicode)):
+            return sql
+
         sql = sql.strip('\n').strip(' ')
         status, res = self.conn.execute_scalar(sql)
         if not status:
@@ -514,6 +521,9 @@ class FtsParserView(PGChildNodeView):
 
         # Fetch sql query for modified data
         SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
+        # Most probably this is due to error
+        if not isinstance(SQL, (str, unicode)):
+            return SQL
         if SQL == '':
             SQL = "--modified SQL"
 

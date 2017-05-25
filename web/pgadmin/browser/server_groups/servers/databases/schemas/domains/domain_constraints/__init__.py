@@ -19,10 +19,8 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.ajax import gone
-
 from config import PG_DEFAULT_DRIVER
 
 
@@ -366,7 +364,9 @@ class DomainConstraintView(PGChildNodeView):
                 status=200
             )
 
-        return gone(gettext("Could not find the specified domain constraint."))
+        return gone(
+            gettext("Could not find the specified domain constraint.")
+        )
 
     @check_precondition
     def properties(self, gid, sid, did, scid, doid, coid):
@@ -421,7 +421,7 @@ class DomainConstraintView(PGChildNodeView):
         try:
             status, SQL = self.get_sql(gid, sid, data, scid, doid)
             if not status:
-                return internal_server_error(errormsg=SQL)
+                return SQL
 
             status, res = self.conn.execute_scalar(SQL)
 
@@ -527,6 +527,8 @@ class DomainConstraintView(PGChildNodeView):
         """
         data = self.request
         status, SQL = self.get_sql(gid, sid, data, scid, doid, coid)
+        if not status:
+            return SQL
 
         try:
             if SQL and status:
@@ -594,6 +596,11 @@ class DomainConstraintView(PGChildNodeView):
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(gettext(
+                "Could not find the specified domain constraint."
+                )
+            )
 
         data = res['rows'][0]
 
@@ -661,6 +668,11 @@ class DomainConstraintView(PGChildNodeView):
 
                 if not status:
                     return False, internal_server_error(errormsg=res)
+                if len(res['rows']) == 0:
+                    return False, gone(gettext(
+                        "Could not find the specified domain constraint."
+                        )
+                    )
 
                 old_data = res['rows'][0]
 

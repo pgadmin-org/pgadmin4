@@ -18,12 +18,14 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, \
-    make_response as ajax_response, internal_server_error
+    make_response as ajax_response, internal_server_error, gone
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
-
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.ajax import gone
+from pgadmin.utils import IS_PY2
+# If we are in Python3
+if not IS_PY2:
+    unicode = str
 
 
 class ResourceGroupModule(CollectionNodeModule):
@@ -518,6 +520,10 @@ class ResourceGroupView(NodeView):
                 data[k] = v
 
         sql, name = self.get_sql(data, rg_id)
+        # Most probably this is due to error
+        if not isinstance(sql, (str, unicode)):
+            return sql
+
         sql = sql.strip('\n').strip(' ')
 
         if sql == '':
@@ -543,6 +549,11 @@ class ResourceGroupView(NodeView):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(
+                    _("The specified resource group could not be found.")
+                )
             old_data = res['rows'][0]
             for arg in required_args:
                 if arg not in data:
@@ -582,6 +593,10 @@ class ResourceGroupView(NodeView):
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                _("The specified resource group could not be found.")
+            )
 
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
