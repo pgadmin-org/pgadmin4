@@ -28,6 +28,17 @@ might run::
 
 to create a patch between your development branch and the public master branch.
 
+You can also create patches directly from the development tree, for example::
+
+    $ git diff > my_cool_feature.diff
+
+If you are adding new files, you may need to stage them for commit, and then
+create your patch against the staging area. If any of the files are binary,
+for example, images, you will need to use the *--binary* option::
+
+    $ git add file1.py file2.py images/image1.png [...]
+    $ git diff --cached --binary > my_cool_feature.diff
+
 Once you have your patch, check it thoroughly to ensure it meets the pgAdmin
 :doc:`coding_standards`, and review it against the :doc:`code_review` to minimise
 the chances of it being rejected. Once you're happy with your work, mail it
