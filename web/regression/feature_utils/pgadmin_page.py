@@ -8,6 +8,7 @@
 ##########################################################################
 
 import time
+import math
 
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver import ActionChains
@@ -113,9 +114,17 @@ class PgadminPage:
         self.wait_for_input_field_content(field_name, field_content)
 
     def fill_codemirror_area_with(self, field_content):
+        # For long text, if we try to execute send_keys and perform back to back, then the actions are
+        # not executed properly as the driver can send only 50 to 60 characters. To avoid this, sleep
+        # on the basis of content length.
         self.find_by_xpath(
             "//pre[contains(@class,'CodeMirror-line')]/../../../*[contains(@class,'CodeMirror-code')]").click()
-        ActionChains(self.driver).send_keys(field_content).perform()
+        action = ActionChains(self.driver)
+        action.send_keys(field_content)
+        sleep_time = math.ceil(len(field_content) / 50)
+        time.sleep(sleep_time)
+        action.perform()
+        time.sleep(1)
 
     def click_tab(self, tab_name):
         self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
