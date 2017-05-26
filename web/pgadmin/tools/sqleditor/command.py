@@ -10,7 +10,10 @@
 """ Implemented classes for the different object type used by data grid """
 
 from abc import ABCMeta, abstractmethod
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 import six
 from flask import render_template
 from flask_babel import gettext
