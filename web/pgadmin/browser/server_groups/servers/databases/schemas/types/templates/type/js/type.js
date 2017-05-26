@@ -241,18 +241,6 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       }
     }],
     validate: function() {
-      var err = {},
-          errmsg = null;
-
-      if (_.isUndefined(this.get('label') ||
-        _.isNull(this.get('label')) ||
-        String(this.get('label')).replace(/^\s+|\s+$/g, '') == '')) {
-          errmsg = '{{ _('Please specify the value for label.') }}';
-          this.errorModel.set('label', errmsg)
-          return errmsg;
-      } else {
-        this.errorModel.unset('label');
-      }
       return null;
     }
   });

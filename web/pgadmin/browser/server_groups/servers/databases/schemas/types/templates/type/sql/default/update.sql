@@ -87,7 +87,7 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% if c_idx == 1 %}
 {# if first new element then add it after old data enum list#}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    ADD VALUE {{r.label|qtLiteral}} AFTER {{o_data.enum[o_enum_len].label|qtLiteral }};
+    ADD VALUE {{r.label|qtLiteral}} {% if o_enum_len > 0 %}AFTER {{o_data.enum[o_enum_len].label|qtLiteral }}{% endif %};
 {% else %}
 {# if first new element then add it after new data enum list#}
 {% set p_idx = loop.index - 2 %}

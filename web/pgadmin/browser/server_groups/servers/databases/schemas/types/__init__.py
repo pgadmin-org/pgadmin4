@@ -905,16 +905,6 @@ class TypeView(PGChildNodeView, DataTypeReader):
                             'Composite types require at least two members.'
                         )
                     )
-            # If type is enum then check if it has minimum one label
-            if data and data[arg] == 'e':
-                if len(data['enum']) < 1:
-                    return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=gettext(
-                            'Enumeration types require at least one label.'
-                        )
-                    )
             # If type is range then check if subtype is defined or not
             if data and data[arg] == 'r':
                 if data['typname'] is None:
