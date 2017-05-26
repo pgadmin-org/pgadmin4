@@ -1119,7 +1119,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             "/".join([
                 self.template_path, 'sql/properties.sql'
             ]),
-            scid=scid, vid=vid,
+            scid=scid, vid=vid, did=did,
             datlastsysoid=self.datlastsysoid
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1180,7 +1180,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             "/".join([
                 self.template_path, 'sql/properties.sql'
             ]),
-            scid=scid, vid=vid,
+            scid=scid, vid=vid, did=did,
             datlastsysoid=self.datlastsysoid
         )
         status, res = self.conn.execute_dict(SQL)
