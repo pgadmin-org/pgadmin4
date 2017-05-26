@@ -2870,9 +2870,9 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         if len(columns) > 0:
             if len(columns) == 1:
                 columns = columns[0]
-                columns += "=?"
             else:
                 columns = "=?, ".join(columns)
+            columns += "=?"
 
             sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
