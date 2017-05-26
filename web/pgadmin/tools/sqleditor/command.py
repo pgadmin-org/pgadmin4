@@ -10,7 +10,7 @@
 """ Implemented classes for the different object type used by data grid """
 
 from abc import ABCMeta, abstractmethod
-
+from collections import OrderedDict
 import six
 from flask import render_template
 from flask_babel import gettext
@@ -368,7 +368,7 @@ class TableCommand(GridCommand):
         conn = manager.connection(did=self.did, conn_id=self.conn_id)
 
         pk_names = ''
-        primary_keys = dict()
+        primary_keys = OrderedDict()
 
         if conn.connected():
 
