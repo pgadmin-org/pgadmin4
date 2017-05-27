@@ -463,11 +463,16 @@ class TableCommand(GridCommand):
                             column_data[each_col] = None
                             column_type[each_col] =\
                                 self.columns_info[each_col]['type_name']
+                        else:
+                            column_type[each_col] = \
+                                self.columns_info[each_col]['type_name']
+
 
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         # Remove our unique tracking key
                         data.pop('__temp_PK', None)
+                        data.pop('is_row_copied', None)
                         data = set_column_names(data)
                         data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
                         list_of_rowid.append(data.get('__temp_PK'))

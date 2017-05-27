@@ -11,16 +11,60 @@
       "Editors": {
         "pgText": pgTextEditor,
         "JsonText": JsonTextEditor,
+        "CustomNumber": CustomNumberEditor,
         // Below editor will read only editors, Just to display data
         "ReadOnlyText": ReadOnlyTextEditor,
         "ReadOnlyCheckbox": ReadOnlyCheckboxEditor,
         "Checkbox": CheckboxEditor, // Override editor to implement checkbox with three states
         "ReadOnlypgText": ReadOnlypgTextEditor,
-        "ReadOnlyJsonText": ReadOnlyJsonTextEditor,
-        "CustomNumber": CustomNumberEditor
+        "ReadOnlyJsonText": ReadOnlyJsonTextEditor
       }
     }
   });
+
+  /*
+   * This function handles the [default] and [null] values for cells
+   * if row is copied, otherwise returns the editor value.
+   * @param {args} editor object
+   * @param {item} row cell values
+   * @param {state} entered value
+   * @param {column_type} type of column
+   */
+  function setValue(args, item, state, column_type) {
+    // declare a 2-d array which tracks the status of each updated cell
+    // If a cell is edited for the 1st time and state is null,
+    // set cell value to [default] and update its status [row][cell] to 1.
+    // If same cell is edited again, and kept blank, set cell value to [null]
+
+    // If a row is copied
+    var grid = args.grid;
+    if (item.is_row_copied) {
+      if (!grid.copied_rows) {
+        grid.copied_rows = [[]];
+      }
+
+      var active_cell = grid.getActiveCell(),
+          row = active_cell['row'],
+          cell = active_cell['cell'],
+          last_value = item[args.column.pos],
+          last_value = (column_type === 'number') ?
+                        (_.isEmpty(last_value) || last_value) : last_value;
+
+      item[args.column.pos] = state;
+      if (last_value && _.isNull(state) &&
+          (_.isUndefined(grid.copied_rows[row]) ||
+          _.isUndefined(grid.copied_rows[row][cell]))
+      ) {
+        item[args.column.pos] = undefined;
+        if (grid.copied_rows[row] == undefined) grid.copied_rows[row] = [];
+        grid.copied_rows[row][cell] = 1;
+      }
+    }
+    else {
+      item[args.column.pos] = state;
+    }
+  }
+
 
   // Text data type editor
   function pgTextEditor(args) {
@@ -113,10 +157,10 @@
       var col = args.column;
 
       if (_.isUndefined(item[args.column.pos]) && col.has_default_val) {
-        $input.val("");
+        $input.val(defaultValue = "");
       }
       else if (item[args.column.pos] === "") {
-        $input.val("''");
+        $input.val(defaultValue = "''");
       }
       else {
         $input.val(defaultValue = item[args.column.pos]);
@@ -146,7 +190,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      setValue(args, item, state, 'text');
     };
 
     this.isValueChanged = function () {
@@ -290,7 +334,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      setValue(args, item, state, 'text');
     };
 
     this.isValueChanged = function () {
@@ -855,7 +899,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      setValue(args, item, state, 'number');
     };
 
     this.isValueChanged = function () {

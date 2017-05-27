@@ -39,10 +39,27 @@ define(
         pgBrowser = pgAdmin.Browser,
         Slick = window.Slick;
 
-    /* Get the function definition from
-     * http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript/35302975#35302975
+    /* Reference link
+     * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+     * Modified as per requirement.
      */
-    function epicRandomString(b){for(var a=(Math.random()*eval("1e"+~~(50*Math.random()+50))).toString(36).split(""),c=3;c<a.length;c++)c==~~(Math.random()*c)+1&&a[c].match(/[a-z]/)&&(a[c]=a[c].toUpperCase());a=a.join("");a=a.substr(~~(Math.random()*~~(a.length/3)),~~(Math.random()*(a.length-~~(a.length/3*2)+1))+~~(a.length/3*2));if(24>b)return b?a.substr(a,b):a;a=a.substr(a,b);if(a.length==b)return a;for(;a.length<b;)a+=epicRandomString();return a.substr(0,b)};
+    function epicRandomString(b) {
+      var s = [];
+      var hexDigits = "0123456789abcdef";
+      for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(
+                  Math.floor(Math.random() * 0x10), 1
+                );
+      }
+      // bits 12-15 of the time_hi_and_version field to 0010
+      s[14] = "4";
+      // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+      s[8] = s[13] = s[18] = s[23] = "-";
+
+      var uuid = s.join("");
+      return uuid.replace(/-/g, '').substr(0, b);
+    };
 
     // Define key codes for shortcut keys
     var F5_KEY = 116,
@@ -526,6 +543,21 @@ define(
       render_grid: function(collection, columns, is_editable) {
         var self = this;
 
+        // returns primary keys
+        self.handler.get_row_primary_key = function() {
+          var self = this,
+            tmp_keys = [];
+          _.each(self.primary_keys, function(p, idx) {
+            // For each columns search primary key position
+            _.each(self.columns, function(c) {
+               if(c.name == idx) {
+                 tmp_keys.push(c.pos);
+               }
+            });
+          });
+          return tmp_keys;
+        };
+
         // This will work as data store and holds all the
         // inserted/updated/deleted data from grid
         self.handler.data_store = {
@@ -666,7 +698,8 @@ define(
                primary_key_list = _.keys(this.keys),
                _tmp_keys = [],
                _columns = this.columns,
-               rows_for_stage = {}, selected_rows_list = [];
+               rows_for_stage = {},
+               selected_rows_list = [];
 
                // Only if entire row(s) are selected via check box
                if(_.has(this.selection, 'getSelectedRows')) {
@@ -686,14 +719,19 @@ define(
 
                  // Check if selected is new row ?
                  // Allow to delete if yes
-                 var cell_el = this.grid.getCellNode(selected_rows_list[0], 0),
+                 var count = selected_rows_list.length-1,
+                  cell_el = this.grid.getCellNode(selected_rows_list[count],0),
                   parent_el = $(cell_el).parent(),
                   is_new_row = $(parent_el).hasClass('new_row');
 
                  // Clear selection model if row primary keys is set to default
-                 var row_data = collection[selected_rows_list[0]];
+                 var row_data = _.clone(collection[selected_rows_list[count]]),
+                   is_primary_key = _.has(row_data, primary_key_list) &&
+                                      row_data[0] != undefined ? true : false;
+
                  if (primary_key_list.length &&
-                     !_.has(row_data, primary_key_list) && !is_new_row) {
+                     !is_primary_key && !is_new_row
+                 ) {
                    this.selection.setSelectedRows([]);
                    selected_rows_list = [];
                  }
@@ -716,22 +754,20 @@ define(
                   // Collect primary key data from collection as needed for stage row
                   _.each(selected_rows_list, function(row_index) {
                     var row_data = collection[row_index],
-                      pkey_data = _.pick(row_data, primary_key_list);
+                      p_keys_list = _.pick(row_data, primary_key_list),
+                      is_primary_key = Object.keys(p_keys_list).length ?
+                                       p_keys_list[0] : undefined;
 
                     // Store Primary key data for selected rows
-                    if (!_.isUndefined(row_data) && !_.isUndefined(pkey_data)) {
+                    if (!_.isUndefined(row_data) && !_.isUndefined(p_keys_list)) {
                       // check for invalid row
-                      rows_for_stage[row_data.__temp_PK] = _.pick(row_data, primary_key_list);
+                      rows_for_stage[row_data.__temp_PK] = p_keys_list;
                     }
                   });
               } else {
                 //clear staged rows
                 clear_staged_rows();
               }
-              if (!Object.keys(rows_for_stage).length) {
-                clear_staged_rows();
-              }
-
              // Update main data store
              this.editor.handler.data_store.staged_rows = rows_for_stage;
            }.bind(editor_data));
@@ -816,7 +852,27 @@ define(
             column_data = {},
             _type;
 
-           column_data[changed_column] = updated_data;
+          // Access to row/cell value after a cell is changed.
+          // The purpose is to remove row_id from temp_new_row
+          // if new row has primary key instead of [default_value]
+          // so that cell edit is enabled for that row.
+          var grid = args.grid,
+            row_data = grid.getDataItem(args.row),
+            p_keys_list = _.pick(
+              row_data, self.handler.get_row_primary_key()
+            ),
+            is_primary_key = Object.keys(p_keys_list).length ?
+                             p_keys_list[0] : undefined;
+
+          // temp_new_rows is available only for view data.
+          if (is_primary_key && self.handler.temp_new_rows) {
+            var index = self.handler.temp_new_rows.indexOf(args.row);
+            if (index > -1) {
+              self.handler.temp_new_rows.splice(index, 1);
+            }
+          }
+
+          column_data[changed_column] = updated_data;
 
           if(_pk) {
             // Check if it is in newly added row by user?
@@ -854,53 +910,42 @@ define(
           $("#btn-save").prop('disabled', false);
         }.bind(editor_data));
 
-
-        // Listener function which will be called after cell is changed
-        grid.onActiveCellChanged.subscribe(function (e, args) {
-          // Access to row/cell value after a cell is changed.
-          // The purpose is to remove row_id from temp_new_row
-          // if new row has primary key instead of [default_value]
-          // so that cell edit is enabled for that row.
-          var grid = args.grid,
-            row_data = grid.getDataItem(args.row),
-            primary_key = row_data && row_data[0];
-
-          // temp_new_rows is available only for view data.
-          if (!_.isUndefined(primary_key) &&
-            self.handler.temp_new_rows
-          ) {
-            var index = self.handler.temp_new_rows.indexOf(args.row);
-            if (index > -1) {
-              self.handler.temp_new_rows.splice(index, 1);
-            }
-          }
-        });
-
         // Listener function which will be called when user adds new rows
         grid.onAddNewRow.subscribe(function (e, args) {
           // self.handler.data_store.added will holds all the newly added rows/data
           var _key = epicRandomString(10),
             column = args.column,
-            item = args.item, data_length = this.grid.getDataLength();
+            item = args.item,
+            data_length = this.grid.getDataLength(),
+            new_collection = args.grid.getData();
 
           // Add new row in list to keep track of it
           if (_.isUndefined(item[0])) {
             self.handler.temp_new_rows.push(data_length);
           }
 
+          // If copied item has already primary key, use it.
           if(item) {
             item.__temp_PK = _key;
           }
-          collection.push(item);
+          new_collection.push(item);
+
           self.handler.data_store.added[_key] = {'err': false, 'data': item};
           self.handler.data_store.added_index[data_length] = _key;
           // Fetch data type & add it for the column
           var temp = {};
           temp[column.pos] = _.where(this.columns, {pos: column.pos})[0]['type'];
           self.handler.data_store.added[_key]['data_type'] =  temp;
-          grid.invalidateRows([collection.length - 1]);
+          grid.invalidateRows([new_collection.length - 1]);
           grid.updateRowCount();
           grid.render();
+
+          // Add a blank row after add row
+          grid.setData(new_collection, true);
+          grid.updateRowCount();
+          grid.invalidateAllRows();
+          grid.render();
+
           // Enable save button
           $("#btn-save").prop('disabled', false);
         }.bind(editor_data));
@@ -2249,22 +2294,17 @@ define(
         },
 
         rows_to_delete: function(data) {
-          var self = this;
-          var tmp_keys = [];
-          _.each(self.primary_keys, function(p, idx) {
-            // For each columns search primary key position
-            _.each(self.columns, function(c) {
-               if(c.name == idx) {
-                 tmp_keys.push(c.pos);
-               }
-            });
-          });
+          var self = this,
+            tmp_keys = self.get_row_primary_key.call(self);
 
           // re-calculate rows with no primary keys
           self.temp_new_rows = [];
           data.forEach(function(d, idx) {
-            var p_keys_idx = _.pick(d, tmp_keys);
-            if (Object.keys(p_keys_idx).length == 0) {
+            var p_keys_list = _.pick(d, tmp_keys),
+              is_primary_key = Object.keys(p_keys_list).length ?
+                               p_keys_list[0] : undefined;
+
+            if (!is_primary_key) {
               self.temp_new_rows.push(idx);
             }
           });
@@ -2381,7 +2421,7 @@ define(
             is_primary_error = false;
 
           if( !is_added && !is_updated && !is_deleted ) {
-                return;  // Nothing to save here
+            return;  // Nothing to save here
           }
 
           if (save_data) {
@@ -2405,6 +2445,18 @@ define(
                 var grid = self.slickgrid,
                   data = grid.getData();
                 if (res.data.status) {
+                    // Remove flag is_row_copied from copied rows
+                    _.each(data, function(row, idx) {
+                      if (row.is_row_copied) {
+                        delete row.is_row_copied;
+                      }
+                    });
+
+                    // Remove 2d copied_rows array
+                    if (grid.copied_rows) {
+                      delete grid.copied_rows;
+                    }
+
                     // Remove deleted rows from client as well
                     if(is_deleted) {
                       var rows = grid.getSelectedRows();
@@ -3071,67 +3123,59 @@ define(
         _paste_row: function() {
           var self = this, col_info = {},
             grid = self.slickgrid,
-            data = grid.getData();
-            // Deep copy
-            var copied_rows = $.extend(true, [], self.copied_rows),
-            _tmp_copied_row = {};
+            data = grid.getData(),
+            count = Object.keys(data).length-1;
+
+          var rows = grid.getSelectedRows().sort(
+              function (a, b) { return a - b; }
+            ),
+            rows = rows.length == 0 ? self.last_copied_rows : rows,
+            copied_rows = rows.map(function (rowIndex) {
+              return data[rowIndex];
+            });
+            self.last_copied_rows = rows;
 
             // If there are rows to paste?
             if(copied_rows.length > 0) {
               // Enable save button so that user can
               // save newly pasted rows on server
               $("#btn-save").prop('disabled', false);
-              // Generate Unique key for each pasted row(s)
-              _.each(copied_rows, function(row) {
-                  var _pk = epicRandomString(8);
-                  row.__temp_PK = _pk;
-              });
 
-              var temp_func = self.data_view.getItemMetadata,
-                  count = Object.keys(data).length-1;
+              var arr_to_object = function (arr) {
+                var obj = {},
+                  count = typeof(arr) == 'object' ?
+                            Object.keys(arr).length: arr.length
 
-              _.each(copied_rows, function(row, idx) {
-                data[count] = row;
-                count++;
-              });
-
-              //update data_view
-              data.getItemMetadata = temp_func;
-              grid.setData(data, true);
-              grid.updateRowCount();
-              grid.setSelectedRows([]);
-              grid.invalidateAllRows();
-              grid.render();
-
-              // Fetch column name & its data type
-              _.each(self.columns, function(c) {
-                col_info[String(c.pos)] = c.type;
-              });
-
-              // insert these data in data_store as well to save them on server
-              for (var j = 0; j < copied_rows.length; j += 1) {
-                self.data_store.added[copied_rows[j].__temp_PK] = {
-                  'data_type': {},
-                  'data': {}
-                };
-                self.data_store.added[copied_rows[j].__temp_PK]['data_type'] = col_info;
-                // We need to convert it from array to dict so that server can
-                // understand the data properly
-                _.each(copied_rows[j], function(val, key) {
-                  // If value is array then convert it to string
-                  if(_.isArray(val)) {
-                    _tmp_copied_row[String(key)] = val.toString();
-                  // If value is object then stringify it
-                  } else if(_.isObject(val)) {
-                    _tmp_copied_row[j][String(key)] = JSON.stringify(val);
-                  } else {
-                    _tmp_copied_row[String(key)] = val;
+                _.each(arr, function(val, i){
+                  if (arr[i] !== undefined) {
+                    if(_.isObject(arr[i])) {
+                      obj[String(i)] = JSON.stringify(arr[i]);
+                    } else {
+                      obj[String(i)] = arr[i];
+                    }
                   }
                 });
-                self.data_store.added[copied_rows[j].__temp_PK]['data'] = _tmp_copied_row;
-                // reset the variable
-                _tmp_copied_row = {};
-              }
+                return obj;
+              };
+
+              // Generate Unique key for each pasted row(s)
+              // Convert array values to object to send to server
+              // Add flag is_row_copied to handle [default] and [null]
+              // for copied rows.
+              // Add index of copied row into temp_new_rows
+              // Trigger grid.onAddNewRow when a row is copied
+              // Reset selection
+              _.each(copied_rows, function(row) {
+                  var new_row = arr_to_object(row);
+                  new_row.is_row_copied = true;
+                  row = new_row;
+                  self.temp_new_rows.push(count);
+                  grid.onAddNewRow.notify(
+                    {item: new_row, column: self.columns[0] , grid:grid}
+                  )
+                  grid.setSelectedRows([]);
+                  count++;
+              });
             }
         },
 
