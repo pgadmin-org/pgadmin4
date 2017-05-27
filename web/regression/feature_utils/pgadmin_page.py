@@ -26,7 +26,8 @@ class PgadminPage:
     def __init__(self, driver, app_config):
         self.driver = driver
         self.app_config = app_config
-        self.timeout = 10
+        self.timeout = 30
+        self.app_start_timeout = 60
 
     def reset_layout(self):
         self.click_element(self.find_by_partial_link_text("File"))
@@ -178,8 +179,10 @@ class PgadminPage:
                 driver.refresh()
                 return False
 
-        self._wait_for("app to start", page_shows_app)
+        self._wait_for("app to start", page_shows_app, self.app_start_timeout)
 
-    def _wait_for(self, waiting_for_message, condition_met_function):
-        return WebDriverWait(self.driver, self.timeout, 0.01).until(condition_met_function,
+    def _wait_for(self, waiting_for_message, condition_met_function, timeout = None):
+        if timeout is None:
+            timeout = self.timeout
+        return WebDriverWait(self.driver, timeout, 0.01).until(condition_met_function,
                                                                     "Timed out waiting for " + waiting_for_message)
