@@ -183,6 +183,43 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME.toLower().replace(" ", ""));
 
+    /* In windows and linux, it is required to set application level proxy
+     * becuase socket bind logic to find free port gives socket creation error
+     * when system proxy is configured. We are also setting
+     * "setUseSystemConfiguration"=true to use the system proxy which will
+     * override this application level proxy. As this bug is fixed in Qt 5.9 so
+     * need to set application proxy for Qt version < 5.9.
+     */
+#ifndef PGADMIN4_USE_WEBENGINE
+  #if defined (Q_OS_WIN) && QT_VERSION <= 0x050800
+    // Give dummy URL required to find proxy server configured in windows.
+    QNetworkProxyQuery proxyQuery(QUrl("https://www.pgadmin.org"));
+    QNetworkProxy l_proxy;
+    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(proxyQuery);
+
+    if (listOfProxies.size())
+    {
+        l_proxy = listOfProxies[0];
+
+        // If host name is not empty means proxy server is configured.
+        if (!l_proxy.hostName().isEmpty()) {
+            QNetworkProxy::setApplicationProxy(QNetworkProxy());
+        }
+    }
+  #endif
+#endif
+
+#ifndef PGADMIN4_USE_WEBENGINE
+  #if defined (Q_OS_LINUX) && QT_VERSION <= 0x050800
+    QByteArray proxy_env;
+    proxy_env = qgetenv("http_proxy");
+    // If http_proxy environment is defined in linux then proxy server is configured.
+    if (!proxy_env.isEmpty()) {
+        QNetworkProxy::setApplicationProxy(QNetworkProxy());
+    }
+  #endif
+#endif
+
     // Display the spash screen
     QSplashScreen *splash = new QSplashScreen();
     splash->setPixmap(QPixmap(":/splash.png"));
