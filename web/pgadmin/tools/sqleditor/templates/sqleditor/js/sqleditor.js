@@ -910,6 +910,14 @@ define(
           $("#btn-save").prop('disabled', false);
         }.bind(editor_data));
 
+        grid.addBlankRow = function() {
+          // Add a blank row in the end of grid
+          this.setData(this.getData(), true);
+          this.updateRowCount();
+          this.invalidateAllRows();
+          this.render();
+        };
+
         // Listener function which will be called when user adds new rows
         grid.onAddNewRow.subscribe(function (e, args) {
           // self.handler.data_store.added will holds all the newly added rows/data
@@ -941,10 +949,9 @@ define(
           grid.render();
 
           // Add a blank row after add row
-          grid.setData(new_collection, true);
-          grid.updateRowCount();
-          grid.invalidateAllRows();
-          grid.render();
+          if (!args.is_copy_row) {
+            grid.addBlankRow();
+          }
 
           // Enable save button
           $("#btn-save").prop('disabled', false);
@@ -3171,11 +3178,17 @@ define(
                   row = new_row;
                   self.temp_new_rows.push(count);
                   grid.onAddNewRow.notify(
-                    {item: new_row, column: self.columns[0] , grid:grid}
+                    { item: new_row,
+                      column: self.columns[0],
+                      grid: grid,
+                      is_copy_row: true
+                    }
                   )
-                  grid.setSelectedRows([]);
                   count++;
               });
+              // Add a blank row after copy/paste row
+              grid.addBlankRow();
+              grid.setSelectedRows([]);
             }
         },
 
