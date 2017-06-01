@@ -30,7 +30,7 @@ Bug fixes
 | `Bug #1364 <https://redmine.postgresql.org/issues/1364>`_ - Ensure dialogue control buttons are consistent
 | `Bug #1394 <https://redmine.postgresql.org/issues/1394>`_ - Fix Table dialogue column specification issues
 | `Bug #1432 <https://redmine.postgresql.org/issues/1432>`_ - Enhanced OSX File Browser
-| `Bug #1585 <https://redmine.postgresql.org/issues/1585>`_ - IS THIS FIXED OR JUST CLOSED?
+| `Bug #1585 <https://redmine.postgresql.org/issues/1585>`_ - Cannot save scripts to the network
 | `Bug #1599 <https://redmine.postgresql.org/issues/1599>`_ - Ensure the grant wizard works with objects with special characters in the name
 | `Bug #1603 <https://redmine.postgresql.org/issues/1603>`_ - Fix quoting of objects names for external utilities.
 | `Bug #1679 <https://redmine.postgresql.org/issues/1679>`_ - Re-engineer the background process executor to avoid using sqlite as some builds of components it relies on do not support working in forked children

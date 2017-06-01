@@ -20,7 +20,7 @@ Bug fixes
 
 | `Bug #1796 <https://redmine.postgresql.org/issues/1796>`_ - Add missing "Run Now" option for pgAdmin jobs
 | `Bug #1797 <https://redmine.postgresql.org/issues/1797>`_ - Resolve encoding issues with DATA_DIR
-| `Bug #1914 <https://redmine.postgresql.org/issues/1914>`_ - Resolved error utf8' codec can't decode byte..
+| `Bug #1914 <https://redmine.postgresql.org/issues/1914>`_ - Resolved error utf8' codec can't decode byte
 | `Bug #1983 <https://redmine.postgresql.org/issues/1983>`_ - Fix bug in Sql query contains Arabic Charaters
 | `Bug #2089 <https://redmine.postgresql.org/issues/2089>`_ - Add PARALLEL SAFE|UNSAFE|RESTRICTED support
 | `Bug #2115 <https://redmine.postgresql.org/issues/2115>`_ - Fix exclusion constraint reverse engineered SQL
