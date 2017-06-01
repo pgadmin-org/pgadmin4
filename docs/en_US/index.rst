@@ -24,6 +24,7 @@ Contents:
    contributions
    pgagent
    licence
+   release_notes
 
   
    
