@@ -11,10 +11,9 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
 {% if not loop.last %}, {% endif %}
 {% endfor -%}
 ){% endif %}
-{% endif %}
-{% if query_type != 'create' %}
 
-    {{ data.provolatile }}{% if data.proleakproof %} LEAKPROOF {% endif %}
+{% endif %}
+    {{ data.provolatile }} {% if data.proleakproof %}LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}{% if data.procost %}
 
@@ -23,7 +22,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
-{% endif %}{% endif %}
+{% endif %}
 
 AS
 {{ data.prosrc }};

@@ -933,6 +933,7 @@ class FunctionView(PGChildNodeView, DataTypeReader):
         args_without_name = []
         cnt = 1
         args_list = []
+        vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
 
         if 'arguments' in resp_data and len(resp_data['arguments']) > 0:
             args_list = resp_data['arguments']
@@ -961,6 +962,10 @@ class FunctionView(PGChildNodeView, DataTypeReader):
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
+            if 'provolatile' in resp_data:
+                resp_data['provolatile'] = vol_dict.get(
+                    resp_data['provolatile'], ''
+                )
 
             # Get Schema Name from its OID.
             if 'pronamespace' in resp_data:
