@@ -466,7 +466,7 @@ class TriggerView(PGChildNodeView):
         columns = []
 
         for row in rset['rows']:
-            columns.append({'column': row['name']})
+            columns.append(row['name'])
 
         return columns
 
@@ -572,7 +572,7 @@ class TriggerView(PGChildNodeView):
             # and convert it to string
             data['tgargs'] = self._format_args(data['custom_tgargs'])
 
-        if len(data['tgattr']) > 1:
+        if len(data['tgattr']) >= 1:
             columns = ', '.join(data['tgattr'].split(' '))
             data['columns'] = self._column_details(tid, columns)
 
@@ -751,14 +751,32 @@ class TriggerView(PGChildNodeView):
             status, new_trid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=new_trid)
+            # Fetch updated properties
+            SQL = render_template("/".join([self.template_path,
+                                            'properties.sql']),
+                                  tid=tid, trid=new_trid,
+                                  datlastsysoid=self.datlastsysoid)
+
+            status, res = self.conn.execute_dict(SQL)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("""Could not find the trigger in the table."""))
+
+            # Making copy of output for future use
+            data = dict(res['rows'][0])
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     new_trid,
                     tid,
                     name,
-                    icon="icon-%s" % self.node_type if self.is_trigger_enabled
-                    else "icon-%s-bad" % self.node_type
+                    icon="icon-%s" % self.node_type if
+                    data['is_enable_trigger'] else
+                    "icon-%s-bad" % self.node_type
                 )
             )
         except Exception as e:
@@ -790,8 +808,8 @@ class TriggerView(PGChildNodeView):
 
         try:
             sql, name = self.get_sql(scid, tid, trid, data)
-            if not isinstance(SQL, (str, unicode)):
-                return SQL
+            if not isinstance(sql, (str, unicode)):
+                return sql
             sql = sql.strip('\n').strip(' ')
 
             if sql == '':

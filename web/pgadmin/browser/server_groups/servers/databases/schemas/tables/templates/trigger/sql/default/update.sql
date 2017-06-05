@@ -14,9 +14,9 @@ CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}
 {% endif %}{% else %} {% if data.evnt_truncate %}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %} {%endif %} {% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
-{% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c.column) }}{% endfor %}{% endif %}
+{% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}
 {% endif %}{% else %} {% if data.evnt_update %}
-{% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c.column) }}{% endfor %}{% endif %}{% endif %}
+{% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}{% endif %}
 {% endif %}
 
     ON {{ conn|qtIdent(data.schema, data.table) }}
@@ -43,4 +43,8 @@ COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspna
 {% if data.description is defined  and o_data.description != data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
     IS {{data.description|qtLiteral}};
+{% endif %}
+{% if data.is_enable_trigger is defined  and o_data.is_enable_trigger != data.is_enable_trigger %}
+ALTER TABLE {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
+    {% if data.is_enable_trigger == True %}ENABLE{% else %}DISABLE{% endif %} TRIGGER {{ conn|qtIdent(data.name) }};
 {% endif %}

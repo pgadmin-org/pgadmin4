@@ -11,7 +11,7 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
 {% endif %}{% if data.evnt_truncate %}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}
 {% endif %}{% if data.evnt_update %}
-{% if or_flag %} OR {% endif %}UPDATE {% if data.columns|length > 0 %}OF {% for c in data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c.column) }}{% endfor %}{% endif %}
+{% if or_flag %} OR {% endif %}UPDATE {% if data.columns|length > 0 %}OF {% for c in data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}
 {% endif %}
 
     ON {{ conn|qtIdent(data.schema, data.table) }}

@@ -194,8 +194,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           id: 'oid', label:'{{ _('OID') }}', cell: 'string',
           type: 'int', disabled: true, mode: ['properties']
         },{
-          id: 'is_enable_trigger', label:'{{ _('Enable trigger?') }}',
-          type: 'switch', disabled: 'inSchema', mode: ['properties'],
+          id: 'is_enable_trigger', label:'{{ _('Trigger enabled?') }}',
+          type: 'switch', disabled: 'inSchema', mode: ['edit', 'properties'],
           group: '{{ _('Definition') }}'
         },{
           id: 'is_row_trigger', label:'{{ _('Row trigger?') }}',
@@ -419,11 +419,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             control: 'sql-field', visible: true, group: '{{ _('Events') }}'
         },{
             id: 'columns', label: '{{ _('Columns') }}', url: 'nodes',
-            type: 'collection', control: 'multi-select-ajax',
+            control: 'node-list-by-name', cache_node: 'column', type: 'array',
+            select2: {'multiple': true},
             deps: ['evnt_update'], node: 'column', group: '{{ _('Events') }}',
-            model: pgBrowser.Node.Model.extend({
-                keys: ['column'], defaults: { column: undefined }
-            }),
             disabled: function(m) {
                 if(this.node_info &&  'catalog' in this.node_info) {
                     return true;
