@@ -187,11 +187,15 @@ define([
 
           // Avoid unnecessary reloads
           var treeHierarchy = node.getTreeNodeHierarchy(item);
-          if (_.isEqual($(panel[0]).data('node-prop'), treeHierarchy)) {
+          var cache_flag = {
+            node_type: node_type,
+            url: url
+          };
+          if (_.isEqual($(panel[0]).data('node-prop'), cache_flag)) {
             return;
           }
           // Cache the current IDs for next time
-          $(panel[0]).data('node-prop', treeHierarchy);
+          $(panel[0]).data('node-prop', cache_flag);
 
         if (node.hasStatistics) {
           msg = '';
