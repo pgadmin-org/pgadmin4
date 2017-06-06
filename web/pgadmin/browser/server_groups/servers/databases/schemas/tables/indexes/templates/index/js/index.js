@@ -11,6 +11,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         type: 'coll-index',
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
+        dialogHelp: '{{ url_for('help.static', filename='index_dialog.html') }}',
         columns: ['name', 'description'],
         hasStatistics: true,
         statsPrettifyFields: ['Size', 'Index size']
@@ -84,7 +85,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             editable: function(m) {
                 // Header cell then skip
                 if (m instanceof Backbone.Collection) {
-                    return false;
+                  return false;
+                } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+                  return false;
                 }
                 return !(m.checkAccessMethod.apply(this, arguments));
             },
@@ -114,12 +117,12 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               // Header cell then skip
               if (m instanceof Backbone.Collection) {
                   return false;
-              }
-              else {
-                if (m.top.get('amname') === 'btree') {
-                  m.set('is_sort_nulls_applicable', true);
-                  return true;
-                }
+              } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+                  return false;
+              } else if (m.top.get('amname') === 'btree') {
+                m.set('is_sort_nulls_applicable', true);
+                return true;
+              } else {
                 m.set('is_sort_nulls_applicable', false);
                 return false;
               }
@@ -136,14 +139,15 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             editable: function(m) {
               // Header cell then skip
               if (m instanceof Backbone.Collection) {
-                  return true;
-              } else {
-                  if (m.top.get('amname') === 'btree') {
-                    m.set('is_sort_nulls_applicable', true);
-                    return true;
-                  }
-                  m.set('is_sort_nulls_applicable', false);
                   return false;
+              } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+                  return false;
+              } else if (m.top.get('amname') === 'btree') {
+                m.set('is_sort_nulls_applicable', true);
+                return true;
+              } else {
+                m.set('is_sort_nulls_applicable', false);
+                return false;
               }
             },
             deps: ['amname', 'sort_order'],
@@ -187,11 +191,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         checkAccessMethod: function(m) {
         //Access method is empty or btree then do not disable field
           var parent_model = m.top;
-          if(!m.inSchemaWithModelCheck.apply(this, [m]) &&
-              (_.isUndefined(parent_model.get('amname')) ||
+          if(_.isUndefined(parent_model.get('amname')) ||
                _.isNull(parent_model.get('amname')) ||
                String(parent_model.get('amname')).replace(/^\s+|\s+$/g, '') == '' ||
-               parent_model.get('amname') === 'btree')) {
+               parent_model.get('amname') === 'btree') {
             // We need to set nulls to true if sort_order is set to desc
             // nulls first is default for desc
             if(m.get('sort_order') == true && m.previous('sort_order') ==  false) {
@@ -202,7 +205,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             m.set('is_sort_nulls_applicable', false);
           }
           return false;
-        },
+        }
     });
 
   if (!pgBrowser.Nodes['index']) {

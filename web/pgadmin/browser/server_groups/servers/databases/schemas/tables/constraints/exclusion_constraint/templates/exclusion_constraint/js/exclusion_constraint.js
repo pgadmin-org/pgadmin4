@@ -24,7 +24,22 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       },{
         id: 'oper_class', label:'{{ _('Operator class') }}', type:'text',
         node: 'table', url: 'get_oper_class', first_empty: true,
-        editable: true,
+        editable: function(m) {
+          if (m instanceof Backbone.Collection) {
+            return true;
+          } else if ((_.has(m.collection, 'handler') &&
+                !_.isUndefined(m.collection.handler) &&
+                !_.isUndefined(m.collection.handler.get('oid')))) {
+            return false;
+          } else if (_.has(m.collection, 'handler') &&
+                !_.isUndefined(m.collection.handler) &&
+                !_.isUndefined(m.collection.handler.get('amname')) &&
+                m.collection.handler.get('amname') != 'btree') {
+            // Disable if access method is not btree
+            return false;
+          }
+          return true;
+        },
         select2: {
           allowClear: true, width: 'style', tags: true,
           placeholder: '{{ _("Select the operator class") }}'
@@ -65,24 +80,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                   url: full_url,
                   success: function(res) {
                     data = res.data;
+                    self.column.set('options', data);
                   },
                   error: function() {
                     eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
                   }
                 });
                 eventHandler.trigger('pgadmin:view:fetched', m, self.column);
-              }
-              /*
-               * Transform the data
-               */
-              transform = self.column.get('transform') || self.defaults.transform;
-              if (transform && _.isFunction(transform)) {
-                // We will transform the data later, when rendering.
-                // It will allow us to generate different data based on the
-                // dependencies.
-                self.column.set('options', transform.bind(self, data));
-              } else {
-                self.column.set('options', data);
               }
             } else {
               self.column.set('options', []);
@@ -94,49 +98,42 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         options: {
           onText: 'ASC',
           offText: 'DESC',
-        },editable: function(m) {
+        },
+        editable: function(m) {
           if (m instanceof Backbone.Collection) {
             return true;
-          }
-          else {
-            if (m.top.get('amname') === 'btree') {
-              m.set('is_sort_nulls_applicable', true);
-              return true;
-            }
-            m.set('is_sort_nulls_applicable', false);
-            return false;
-          }
-          if ((_.has(m.collection, 'handler') &&
+          } else if ((_.has(m.collection, 'handler') &&
                 !_.isUndefined(m.collection.handler) &&
                 !_.isUndefined(m.collection.handler.get('oid')))) {
             return false;
+          } else if (m.top.get('amname') === 'btree') {
+            m.set('is_sort_nulls_applicable', true);
+            return true;
+          } else {
+            m.set('is_sort_nulls_applicable', false);
+            return false;
           }
-          return true;
         }
       },{
         id: 'nulls_order', label:'{{ _('NULLs order') }}', type:"switch",
         options: {
           onText: 'FIRST',
           offText: 'LAST',
-        },editable: function(m) {
+        },
+        editable: function(m) {
           if (m instanceof Backbone.Collection) {
             return true;
-          }
-          else {
-            if (m.top.get('amname') === 'btree') {
-              m.set('is_sort_nulls_applicable', true);
-              return true;
-            }
-            m.set('is_sort_nulls_applicable', false);
-            return false;
-          }
-
-          if ((_.has(m.collection, 'handler') &&
+          } else if ((_.has(m.collection, 'handler') &&
                 !_.isUndefined(m.collection.handler) &&
                 !_.isUndefined(m.collection.handler.get('oid')))) {
             return false;
+          } else if (m.top.get('amname') === 'btree') {
+              m.set('is_sort_nulls_applicable', true);
+              return true;
+          } else {
+            m.set('is_sort_nulls_applicable', false);
+            return false;
           }
-          return true;
         }
       },{
         id: 'operator', label:'{{ _('Operator') }}', type: 'text',
@@ -184,24 +181,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                   url: full_url,
                   success: function(res) {
                     data = res.data;
+                    self.column.set('options', data);
                   },
                   error: function() {
                     eventHandler.trigger('pgadmin:view:fetch:error', m, self.column);
                   }
                 });
                 eventHandler.trigger('pgadmin:view:fetched', m, self.column);
-              }
-              /*
-               * Transform the data
-               */
-              transform = self.column.get('transform') || self.defaults.transform;
-              if (transform && _.isFunction(transform)) {
-                // We will transform the data later, when rendering.
-                // It will allow us to generate different data based on the
-                // dependencies.
-                self.column.set('options', transform.bind(self, data));
-              } else {
-                self.column.set('options', data);
               }
             }
           }
