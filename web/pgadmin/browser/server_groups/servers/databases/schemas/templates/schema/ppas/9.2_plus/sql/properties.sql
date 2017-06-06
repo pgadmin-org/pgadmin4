@@ -35,7 +35,8 @@ SELECT
         SELECT array_to_string(defaclacl::text[], ', ')
             FROM pg_default_acl
         WHERE defaclobjtype = 'T' AND defaclnamespace = nsp.oid
-    ), ', ')) AS typeacl
+    ), ', ')) AS typeacl,
+    (SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
 FROM
     pg_namespace nsp
     LEFT OUTER JOIN pg_description des ON
