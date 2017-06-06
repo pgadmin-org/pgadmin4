@@ -548,6 +548,7 @@ class EventTriggerView(PGChildNodeView):
             if not isinstance(sql, (str, unicode)):
                 return sql
             sql = sql.strip('\n').strip(' ')
+            sql = re.sub('\n{2,}', '\n\n', sql)
             if sql == '':
                 sql = "--modified SQL"
             return make_json_response(
@@ -661,6 +662,7 @@ class EventTriggerView(PGChildNodeView):
         sql_header += "\n"
 
         sql = sql_header + sql
+        sql = re.sub('\n{2,}', '\n\n', sql)
 
         return ajax_response(response=sql)
 
