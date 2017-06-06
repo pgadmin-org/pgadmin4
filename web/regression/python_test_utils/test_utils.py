@@ -172,6 +172,35 @@ def create_table(server, db_name, table_name):
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
+
+def create_table_with_query(server, db_name, query):
+    """
+    This function create the table in given database name
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param query: create table query
+    :type query: str
+    :return: None
+    """
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(query)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def create_constraint(
         server, db_name, table_name,
         constraint_type="unique", constraint_name="test_unique"):
@@ -273,7 +302,6 @@ def drop_database(connection, database_name):
             connection.set_isolation_level(old_isolation_level)
             connection.commit()
             connection.close()
-
 
 def drop_tablespace(connection):
     """This function used to drop the tablespace"""

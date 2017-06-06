@@ -1,0 +1,18 @@
+{
+  "table_insert_update_cases": {
+    "add_update": {
+      "1": [1, "1", "int", "Value at 0 index is actual value(to be inserted), Value at index 1 is expected value, int is column type"],
+      "2": ["", "1", "int"],
+      "3": ["", "[null]", "int"],
+      "4": ["", "Hello World", "text"],
+      "5": ["\"\"", "", "text", "Two double quotes"],
+      "6": ["\\\"\\\"", "\"\"", "text", "double backslash followed by a double quote"],
+      "7": ["\\\\\"\\\\\"", "\\\"\\\"", "text", "double backslash followed by a double quote"],
+      "8": ["", "[null]", "text"],
+      "9": ["", "[51,52]", "json"],
+      "10": ["[61,62]", "[61,62]", "json"],
+      "11": ["", "true", "bool"],
+      "12": ["", "[null]", "bool"]
+    }
+  }
+}

@@ -10,7 +10,8 @@
 import time
 import math
 
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException, \
+    WebDriverException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -70,6 +71,11 @@ class PgadminPage:
         self.click_element(self.find_by_xpath('//button[contains(@class, "ajs-button") and contains(.,"Yes")]'))
         self.driver.switch_to.default_content()
 
+    def close_data_grid(self):
+        self.driver.switch_to_default_content()
+        xpath = "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]"
+        self.click_element(self.find_by_xpath(xpath))
+
     def remove_server(self, server_config):
         self.driver.switch_to.default_content()
         self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "' and @class='aciTreeItem']").click()
@@ -88,6 +94,9 @@ class PgadminPage:
 
     def find_by_id(self, element_id):
         return self.wait_for_element(lambda driver: driver.find_element_by_id(element_id))
+
+    def find_by_css_selector(self, css_selector):
+        return self.wait_for_element(lambda driver: driver.find_element_by_css_selector(css_selector))
 
     def find_by_partial_link_text(self, link_text):
         return self._wait_for(
@@ -186,3 +195,19 @@ class PgadminPage:
             timeout = self.timeout
         return WebDriverWait(self.driver, timeout, 0.01).until(condition_met_function,
                                                                     "Timed out waiting for " + waiting_for_message)
+
+    def wait_for_element_to_stale(self, xpath):
+        # Reference: http://www.obeythetestinggoat.com/
+        # how-to-get-selenium-to-wait-for-page-load-after-a-click.html
+        el = self.driver.find_element_by_xpath(xpath)
+
+        def element_has_gone_stale(driver):
+            try:
+                # poll an arbitrary element
+                el.find_elements_by_id('element-dont-exist')
+                return False
+            except StaleElementReferenceException:
+                return True
+
+        self._wait_for("element to attach to the page document",
+                       element_has_gone_stale)
