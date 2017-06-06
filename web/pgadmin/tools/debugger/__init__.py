@@ -197,6 +197,15 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         elif ppas_server and r_set['rows'][0]['prosrc'].lstrip().startswith('$__EDBwrapped__$'):
             ret_status = False
             msg = gettext("EDB Advanced Server wrapped functions cannot be debugged.")
+        # We cannot debug if PPAS and argument mode is VARIADIC
+        elif ppas_server and r_set['rows'][0]['lanname'] == 'edbspl' and \
+                r_set['rows'][0]['proargmodes'] is not None and \
+                'v' in r_set['rows'][0]['proargmodes']:
+            ret_status = False
+            msg = gettext(
+                "An 'edbspl' target with a variadic argument is not supported"
+                " and cannot be debugged."
+            )
         else:
             # If user is super user then we should check debugger library is loaded or not
             if user['is_superuser']:
