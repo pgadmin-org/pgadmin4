@@ -907,7 +907,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                     )
             # If type is range then check if subtype is defined or not
             if data and data[arg] == 'r':
-                if data['typname'] is None:
+                if 'typname' not in data or data['typname'] is None:
                     return make_json_response(
                         status=410,
                         success=0,
@@ -918,7 +918,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
             # If type is external then check if input/output
             # conversion function is defined
             if data and data[arg] == 'b':
-                if data['typinput'] is None or \
+                if 'typinput' not in data or \
+                                'typoutput' not in data or \
+                                data['typinput'] is None or \
                                 data['typoutput'] is None:
                     return make_json_response(
                         status=410,
@@ -1224,7 +1226,27 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             for arg in required_args:
                 if arg not in data:
-                    return " --definition incomplete"
+                    return "-- definition incomplete"
+
+            # Additional checks go here
+            # If type is composite then check if it has two members
+            if data and data[arg] == 'c':
+                if len(data['composite']) < 2:
+                    return "-- definition incomplete"
+
+            # If type is range then check if subtype is defined or not
+            if data and data[arg] == 'r':
+                if 'typname' not in data or data['typname'] is None:
+                    return "-- definition incomplete"
+
+            # If type is external then check if input/output
+            # conversion function is defined
+            if data and data[arg] == 'b':
+                if 'typinput' not in data or \
+                                'typoutput' not in data or \
+                                data['typinput'] is None or \
+                                data['typoutput'] is None:
+                    return "-- definition incomplete"
 
             # Privileges
             if 'typacl' in data and data['typacl'] is not None:

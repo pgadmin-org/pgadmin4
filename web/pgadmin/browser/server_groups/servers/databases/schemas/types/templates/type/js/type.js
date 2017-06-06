@@ -789,42 +789,72 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
           this.errorModel.clear();
 
-          if (_.has(changedAttrs, 'name') &&
-                (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
+          if (
+            _.isUndefined(this.get('name')) ||
+            _.isNull(this.get('name')) ||
+            String(this.get('name')).replace(/^\s+|\s+$/g, '') == ''
+          ) {
             msg = '{{ _('Name cannot be empty.') }}';
             this.errorModel.set('name', msg);
-          } else if (_.has(changedAttrs, 'schema') &&
-                (_.isUndefined(this.get('schema'))
-              || String(this.get('schema')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Schema cannot be empty.') }}';
-            this.errorModel.set('schema', msg);
-          } else if (_.has(changedAttrs, 'typtype') &&
-                (_.isUndefined(this.get('typtype'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Type cannot be empty.') }}';
-            this.errorModel.set('typtype', msg);
-          } else if (this.get('typtype') == 'r' &&
-                _.has(changedAttrs, 'typname')
-              && (_.isUndefined(this.get('typname'))
-              || String(this.get('typname')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Subtype name cannot be empty.') }}';
-            this.errorModel.set('typname', msg);
-          } else if (this.get('typtype') == 'x' &&
-                _.has(changedAttrs, 'typinput')
-              && (_.isUndefined(this.get('typinput'))
-              || String(this.get('typinput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Input function cannot be empty.') }}';
-            this.errorModel.set('typinput', msg);
-          } else if (this.get('typtype') == 'x' &&
-                _.has(changedAttrs, 'typoutput')
-              && (_.isUndefined(this.get('typoutput'))
-              || String(this.get('typoutput')).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = '{{ _('Output function cannot be empty.') }}';
-            this.errorModel.set('typoutput', msg);
+            return msg;
           }
 
-          return msg ? msg : null;
+          if (
+            _.isUndefined(this.get('schema')) ||
+            _.isNull(this.get('schema')) ||
+            String(this.get('schema')).replace(/^\s+|\s+$/g, '') == ''
+          ) {
+            msg = '{{ _('Schema cannot be empty.') }}';
+            this.errorModel.set('schema', msg);
+            return msg;
+          }
+
+          if (
+            _.isUndefined(this.get('typtype')) ||
+            _.isNull(this.get('typtype')) ||
+            String(this.get('typtype')).replace(/^\s+|\s+$/g, '') == ''
+          ) {
+            msg = '{{ _('Type cannot be empty.') }}';
+            this.errorModel.set('typtype', msg);
+            return msg;
+          }
+
+          // For Range
+          if(this.get('typtype') == 'r') {
+              if (
+                _.isUndefined(this.get('typname')) ||
+                _.isNull(this.get('typname')) ||
+                String(this.get('typname')).replace(/^\s+|\s+$/g, '') == ''
+              ) {
+                msg = '{{ _('Subtype name cannot be empty.') }}';
+                this.errorModel.set('typname', msg);
+                return msg;
+              }
+          }
+
+          // For External
+          if(this.get('typtype') == 'b') {
+              if (
+                _.isUndefined(this.get('typinput')) ||
+                _.isNull(this.get('typinput')) ||
+                String(this.get('typinput')).replace(/^\s+|\s+$/g, '') == ''
+              ) {
+                msg = '{{ _('Input function cannot be empty.') }}';
+                this.errorModel.set('typinput', msg);
+                return msg;
+              }
+              if (
+                _.isUndefined(this.get('typoutput')) ||
+                _.isNull(this.get('typoutput')) ||
+                String(this.get('typoutput')).replace(/^\s+|\s+$/g, '') == ''
+              ) {
+                msg = '{{ _('Output function cannot be empty.') }}';
+                this.errorModel.set('typoutput', msg);
+                return msg;
+              }
+          }
+
+          return null;
         },
         // We will disable everything if we are under catalog node
         inSchema: function() {
