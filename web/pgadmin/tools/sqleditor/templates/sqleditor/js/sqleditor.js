@@ -726,14 +726,18 @@ define(
 
                  // Clear selection model if row primary keys is set to default
                  var row_data = _.clone(collection[selected_rows_list[count]]),
-                   is_primary_key = _.has(row_data, primary_key_list) &&
-                                      row_data[0] != undefined ? true : false;
+                   is_primary_key = true;
 
-                 if (primary_key_list.length &&
-                     !is_primary_key && !is_new_row
-                 ) {
-                   this.selection.setSelectedRows([]);
-                   selected_rows_list = [];
+                 // Primary key validation
+                 _.each(primary_key_list, function(pk) {
+                   if (!(_.has(row_data, pk)) || row_data[pk] == undefined) {
+                     is_primary_key = false;
+                   }
+                 })
+
+                 if (primary_key_list.length && !is_primary_key && !is_new_row) {
+                     this.selection.setSelectedRows([]);
+                     selected_rows_list = [];
                  }
                }
 
