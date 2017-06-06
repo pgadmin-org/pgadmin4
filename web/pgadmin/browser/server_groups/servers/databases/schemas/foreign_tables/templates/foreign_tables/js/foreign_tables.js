@@ -450,6 +450,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'foreign-table',
       sqlAlterHelp: 'sql-alterforeigntable.html',
       sqlCreateHelp: 'sql-createforeigntable.html',
+      dialogHelp: '{{ url_for('help.static', filename='foreign_table_dialog.html') }}',
       label: '{{ _('Foreign Table') }}',
       collection_type: 'coll-foreign-table',
       hasSQL: true,

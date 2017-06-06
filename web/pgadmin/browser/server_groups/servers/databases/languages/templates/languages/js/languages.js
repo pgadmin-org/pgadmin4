@@ -21,6 +21,7 @@ define(
       type: 'language',
       sqlAlterHelp: 'sql-alterlanguage.html',
       sqlCreateHelp: 'sql-createlanguage.html',
+      dialogHelp: '{{ url_for('help.static', filename='language_dialog.html') }}',
       label: '{{ _('Language') }}',
       hasSQL:  true,
       canDrop: true,
