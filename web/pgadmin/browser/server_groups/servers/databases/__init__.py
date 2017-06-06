@@ -605,17 +605,44 @@ class DatabaseView(PGChildNodeView):
         # used for offline updates
         self.manager.release(conn_id="db_offline_update")
 
+        # Fetch the new data again after update for proper node
+        # generation
+        status, rset = self.conn.execute_dict(
+            render_template(
+                "/".join([self.template_path, 'nodes.sql']),
+                did=did, conn=self.conn, last_system_oid=0
+            )
+        )
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if len(rset['rows']) == 0:
+            return gone(
+                _("Could not find the database on the server.")
+            )
+
+        res = rset['rows'][0]
+
+        canDrop = canDisConn = True
+        if self.manager.db == res['name']:
+            canDrop = canDisConn = False
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 did,
                 sid,
-                data['name'],
-                "pg-icon-{0}".format(self.node_type) if
-                self._db['datallowconn'] else
+                res['name'],
+                icon="pg-icon-{0}".format(self.node_type) if
+                self._db['datallowconn'] and self.conn.connected() else
                 "icon-database-not-connected",
                 connected=self.conn.connected() if
                 self._db['datallowconn'] else False,
-                allowConn=self._db['datallowconn']
+                tablespace=res['spcname'],
+                allowConn=res['datallowconn'],
+                canCreate=res['cancreate'],
+                canDisconn=canDisConn,
+                canDrop=canDrop,
+                inode=True if res['datallowconn'] else False
             )
         )
 

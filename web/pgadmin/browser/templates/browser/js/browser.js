@@ -1107,7 +1107,8 @@ function(
             }
           }.bind(ctx),
           deleteNode = function() {
-            var pI = this.pI,
+            var self = this,
+                pI = this.pI,
                 findParent = function() {
                   if (pI.length) {
                     pI.pop();
@@ -1128,35 +1129,134 @@ function(
                   }
                 }.bind(this);
 
+            var _item_parent = (this.i
+                                    && this.t.hasParent(this.i)
+                                    && this.t.parent(this.i)) || null,
+                _item_grand_parent = _item_parent ?
+                                        (this.t.hasParent(_item_parent)
+                                          && this.t.parent(_item_parent))
+                                        : null;
+
             // Remove the current node first.
             if (
               this.i && this.d && this.old._id == this.d._id &&
               this.old._type == this.d._type
             ) {
-              this.t.remove(this.i);
+              var _parent = this.t.parent(this.i) || null;
 
-              // Find the parent
-              findParent();
-              var _parentData = this.d;
-              // Find the grand-parent, or the collection node of parent.
-              findParent();
+              // If there is no parent then just update the node
+              if(_parent.length == 0 && ctx.op == 'UPDATE') {
+                updateNode();
+              } else {
+                var postRemove = function() {
+                  // If item has parent but no grand parent
+                  if (_item_parent && !_item_grand_parent) {
+                    var parent = null;
+                    // We need to search in all parent siblings (eg: server groups)
+                    parents = this.t.siblings(this.i) || [];
+                    parents.push(this.i[0])
+                    _.each(parents, function (p) {
+                      var d = self.t.itemData($(p));
+                      // If new server group found then assign it parent
+                      if(d._id == self.new._pid) {
+                        parent = p;
+                        self.pI.push({coll: true, item: parent, d: d});
+                      }
+                    });
 
-              if (this.i) {
-                this.load = true;
+                    if (parent) {
+                      this.load = true;
 
-                this.success = function() {
-                  addItemNode();
+                      this.success = function() {
+                        addItemNode();
+                      }.bind(this);
+                      // We can refresh the collection node, but - let's not bother about
+                      // it right now.
+                      this.notFound = errorOut;
+
+                      var _d = {_id: this.new._pid, _type: self.d._type}
+                        parent = $(parent),
+                        loaded = this.t.wasLoad(parent),
+                        onLoad = function() {
+                          self.i = parent;
+                          self.d = self.d;
+                          self.pI.push({coll: false, item: parent, d: self.d});
+                          self.success();
+                          return;
+                        };
+
+                      if (!loaded && self.load) {
+                        self.t.open(parent, {
+                          success: onLoad,
+                            unanimated: true,
+                            fail: function() {
+                              var fail = self && self.o && self.o.fail;
+
+                              if (
+                                fail && typeof(fail) == 'function'
+                              ) {
+                                fail.apply(self.t, []);
+                              }
+                            }
+                          });
+                        } else {
+                          onLoad();
+                        }
+                      }
+                    return;
+                  } else {
+                    // This is for rest of the nodes
+                    var _parentData = this.d;
+                    // Find the grand-parent, or the collection node of parent.
+                    findParent();
+
+                    if (this.i) {
+                      this.load = true;
+
+                      this.success = function() {
+                        addItemNode();
+                      }.bind(this);
+                      // We can refresh the collection node, but - let's not bother about
+                      // it right now.
+                      this.notFound = errorOut;
+
+                      // Find the new parent
+                      this.b._findTreeChildNode(
+                        this.i, {_id: this.new._pid, _type: _parentData._type}, this
+                      );
+                    } else {
+                      addItemNode();
+                    }
+                    return;
+                  }
                 }.bind(this);
-                // We can refresh the collection node, but - let's not bother about
-                // it right now.
-                this.notFound = errorOut;
 
-                // Find the new parent
-                this.b._findTreeChildNode(
-                  this.i, {_id: this.new._pid, _type: _parentData._type}, this
-                );
-              }
-              return;
+                // If there is a parent then we can remove the node
+                this.t.remove(this.i, {
+                  success: function() {
+                    // Find the parent
+                    findParent();
+                    // If server group have no children then close it and set inode
+                    // and unload it so it can fetch new data on next expand
+                    if (_item_parent && !_item_grand_parent && _parent
+                          && self.t.children(_parent).length == 0) {
+                          self.t.setInode(_parent, {
+                            success: function() {
+                              self.t.unload(_parent, {success: function() {
+                                setTimeout(postRemove);
+                              }}
+                              );
+                            }
+                          });
+                    } else {
+                      setTimeout(postRemove);
+                    }
+                    return true;
+                  }
+                }
+              );
+            }
+
             }
             errorOut();
 
@@ -1221,22 +1321,17 @@ function(
                 node_data._id = _id = this.new._id;
               }
               if (this.new._id == _id) {
-                // Found the currect
-                _.extend(this.d, this.new._id);
+                // Found the current
+                _.extend(this.d, {
+                  '_id': this.new._id,
+                  '_label': this.new._label,
+                  'label': this.new.label
+                });
                 this.t.setLabel(ctx.i, {label: this.new.label});
                 this.t.addIcon(ctx.i, {icon: this.new.icon});
-                this.t.setId(ctx.id, {id: this.new.id});
-
-                // if label is different then we need to
-                // refresh parent so that node get properly
-                // placed in tree
-                if(this.d.label != this.new.label) {
-                  var p = this.t.parent(this.i);
-                  pgAdmin.Browser.onRefreshTreeNode(p);
-                }
-
-                self.t.openPath(self.i);
-                self.t.deselect(self.i);
+                this.t.setId(ctx.i, {id: this.new.id});
+                this.t.openPath(this.i);
+                this.t.deselect(this.i);
 
                 // select tree item after few milliseconds
                 setTimeout(function() {
@@ -1306,7 +1401,7 @@ function(
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label
+                              d._label, _new._label
                             ) == 1
                           )
                             return true;
@@ -1325,7 +1420,7 @@ function(
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label
+                              d._label, _new._label
                             ) != -1
                           )
                             return true;
@@ -1333,14 +1428,14 @@ function(
                           d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
-                              d._label, _data._label
+                              d._label, _new._label
                             ) != 1
                           )
                             return true;
                           m = s + Math.round((e - s) / 2);
                           i = items.eq(m);
                           d = ctx.t.itemData(i);
-                          var res = pgAdmin.natural_sort(d._label, _data._label);
+                          var res = pgAdmin.natural_sort(d._label, _new._label);
                           if (res == 0)
                             return true;
 
@@ -1359,6 +1454,9 @@ function(
                     ctx.t.before(i, {
                       itemData: _new,
                       success: function() {
+                        var new_item = $(arguments[1].items[0]);
+                        ctx.t.openPath(new_item);
+                        ctx.t.select(new_item);
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -1378,6 +1476,9 @@ function(
                     ctx.t.append(ctx.i, {
                       itemData: _new,
                       success: function() {
+                        var new_item = $(arguments[1].items[0]);
+                        ctx.t.openPath(new_item);
+                        ctx.t.select(new_item);
                         if (
                           ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
                         ) {
@@ -1435,7 +1536,17 @@ function(
       ctx.pI.push(_old);
       _new._label = _new.label;
       _new.label = _.escape(_new.label);
-      if (_old._pid != _new._pid) {
+
+      // We need to check if this is collection node and have
+      // children count, if yes then add count with label too
+      if(ctx.b.Nodes[_new._type].is_collection) {
+          if ('collection_count' in _old && _old['collection_count'] > 0) {
+            _new.label = _.escape(_new._label) +
+                ' <span>(' + _old['collection_count'] + ')</span>'
+          }
+      }
+
+      if (_old._pid != _new._pid || _old._label != _new._label) {
         ctx.op = 'RECREATE';
         traversePath();
       } else {
