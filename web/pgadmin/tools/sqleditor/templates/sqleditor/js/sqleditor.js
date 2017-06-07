@@ -3,6 +3,7 @@ define([
   'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
   'sources/selection/grid_selector', 'sources/selection/clipboard',
   'sources/selection/copy_data',
+  'sources/selection/set_staged_rows',
   'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
   'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
   'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
@@ -25,7 +26,7 @@ define([
   'slickgrid/slick.grid'
 ], function(
   gettext, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
-  pgExplain, GridSelector, clipboard, copyData
+  pgExplain, GridSelector, clipboard, copyData, setStagedRows
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -691,88 +692,8 @@ define([
 
         // Listener function to watch selected rows from grid
         if (editor_data.selection) {
-           editor_data.selection.onSelectedRangesChanged.subscribe(function(e, args) {
-             var collection = this.grid.getData(),
-               primary_key_list = _.keys(this.keys),
-               _tmp_keys = [],
-               _columns = this.columns,
-               rows_for_stage = {},
-               selected_rows_list = [];
-
-               // Only if entire row(s) are selected via check box
-               if(_.has(this.selection, 'getSelectedRows')) {
-                 selected_rows_list = this.selection.getSelectedRows();
-                 // We will map selected row primary key name with position
-                 // For each Primary key
-                 _.each(primary_key_list, function(p) {
-                   // For each columns search primary key position
-                   _.each(_columns, function(c) {
-                      if(c.name == p) {
-                        _tmp_keys.push(c.pos);
-                      }
-                   });
-                 });
-                 // Now assign mapped temp PK to PK
-                 primary_key_list =  _tmp_keys;
-
-                 // Check if selected is new row ?
-                 // Allow to delete if yes
-                 var count = selected_rows_list.length-1,
-                  cell_el = this.grid.getCellNode(selected_rows_list[count],0),
-                  parent_el = $(cell_el).parent(),
-                  is_new_row = $(parent_el).hasClass('new_row');
-
-                 // Clear selection model if row primary keys is set to default
-                 var row_data = _.clone(collection[selected_rows_list[count]]),
-                   is_primary_key = true;
-
-                 // Primary key validation
-                 _.each(primary_key_list, function(pk) {
-                   if (!(_.has(row_data, pk)) || row_data[pk] == undefined) {
-                     is_primary_key = false;
-                   }
-                 })
-
-                 if (primary_key_list.length && !is_primary_key && !is_new_row) {
-                     this.selection.setSelectedRows([]);
-                     selected_rows_list = [];
-                 }
-               }
-
-              // Clear the object as no rows to delete
-              // and disable delete/copy rows button
-              var clear_staged_rows = function() {
-                rows_for_stage = {};
-                $("#btn-delete-row").prop('disabled', true);
-                $("#btn-copy-row").prop('disabled', true);
-              }
-
-              // If any row(s) selected ?
-              if(selected_rows_list.length) {
-                if(this.editor.handler.can_edit)
-                  // Enable delete rows and copy rows button
-                  $("#btn-delete-row").prop('disabled', false);
-                  $("#btn-copy-row").prop('disabled', false);
-                  // Collect primary key data from collection as needed for stage row
-                  _.each(selected_rows_list, function(row_index) {
-                    var row_data = collection[row_index],
-                      p_keys_list = _.pick(row_data, primary_key_list),
-                      is_primary_key = Object.keys(p_keys_list).length ?
-                                       p_keys_list[0] : undefined;
-
-                    // Store Primary key data for selected rows
-                    if (!_.isUndefined(row_data) && !_.isUndefined(p_keys_list)) {
-                      // check for invalid row
-                      rows_for_stage[row_data.__temp_PK] = p_keys_list;
-                    }
-                  });
-              } else {
-                //clear staged rows
-                clear_staged_rows();
-              }
-             // Update main data store
-             this.editor.handler.data_store.staged_rows = rows_for_stage;
-           }.bind(editor_data));
+            editor_data.selection.onSelectedRangesChanged.subscribe(
+                setStagedRows.bind(editor_data));
         }
 
 
