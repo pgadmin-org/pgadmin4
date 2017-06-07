@@ -20,6 +20,12 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET DEFAULT {{data.defval}};
 
 {% endif %}
+{###  Drop column default value ###}
+{% if data.defval is defined and data.defval == '' and data.defval != o_data.defval %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} DROP DEFAULT;
+
+{% endif %}
 {###  Alter column not null value ###}
 {% if 'attnotnull' in data and data.attnotnull != o_data.attnotnull %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
