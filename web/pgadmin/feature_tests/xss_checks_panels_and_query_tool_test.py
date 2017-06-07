@@ -149,8 +149,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     def _check_xss_in_query_tool(self):
         self.page.driver.find_element_by_link_text("Tools").click()
         self.page.find_by_partial_link_text("Query Tool").click()
-        time.sleep(3)
-        self.page.driver.switch_to.frame(self.page.driver.find_element_by_tag_name('iframe'))
         self.page.fill_codemirror_area_with("select '<img src=\"x\" onerror=\"console.log(1)\">'")
         time.sleep(1)
         self.page.find_by_id("btn-flash").click()

@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -90,30 +89,28 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         self.page.driver.find_element_by_link_text("Tools").click()
         self.page.find_by_partial_link_text("Query Tool").click()
+
+        self.page.fill_codemirror_area_with(query)
+        self.page.find_by_id("btn-flash").click()
         wait = WebDriverWait(self.page.driver, 5)
-        element = wait.until(EC.frame_to_be_available_and_switch_to_it((By.TAG_NAME, 'iframe')))
+        wait.until(EC.presence_of_element_located(
+            (By.XPATH, "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[2]/span")))
 
-        if element:
-            self.page.fill_codemirror_area_with(query)
-            self.page.find_by_id("btn-flash").click()
-            wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[2]/span")))
+        # For every sample data-type value, check the expected output.
+        cnt = 2
+        for val in expected_output:
+            try:
+                source_code = self.page.find_by_xpath(
+                    "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[" + str(cnt) + "]/span"
+                ).get_attribute('innerHTML')
 
-            # For every sample data-type value, check the expected output.
-            cnt = 2
-            for val in expected_output:
-                try:
-                    source_code = self.page.find_by_xpath(
-                        "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[" + str(cnt) + "]/span"
-                    ).get_attribute('innerHTML')
-
-                    PGDataypeFeatureTest.check_result(
-                        source_code,
-                        expected_output[cnt - 2]
-                    )
-                    cnt += 1
-                except TimeoutException:
-                    assert False, "{0} does not match with {1}".format(val, expected_output[cnt])
+                PGDataypeFeatureTest.check_result(
+                    source_code,
+                    expected_output[cnt - 2]
+                )
+                cnt += 1
+            except TimeoutException:
+                assert False, "{0} does not match with {1}".format(val, expected_output[cnt])
 
     @staticmethod
     def check_result(source_code, string_to_find):

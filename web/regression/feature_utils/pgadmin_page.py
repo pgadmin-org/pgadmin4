@@ -27,7 +27,7 @@ class PgadminPage:
     def __init__(self, driver, app_config):
         self.driver = driver
         self.app_config = app_config
-        self.timeout = 30
+        self.timeout = 20
         self.app_start_timeout = 60
 
     def reset_layout(self):
@@ -127,14 +127,27 @@ class PgadminPage:
         # For long text, if we try to execute send_keys and perform back to back, then the actions are
         # not executed properly as the driver can send only 50 to 60 characters. To avoid this, sleep
         # on the basis of content length.
-        self.find_by_xpath(
-            "//pre[contains(@class,'CodeMirror-line')]/../../../*[contains(@class,'CodeMirror-code')]").click()
+        def find_codemirror(driver):
+            try:
+                driver.switch_to.default_content()
+                driver.switch_to_frame(driver.find_element_by_tag_name("iframe"))
+                element = driver.find_element_by_xpath(
+                    "//pre[contains(@class,'CodeMirror-line')]/../../../*[contains(@class,'CodeMirror-code')]")
+                if element.is_displayed() and element.is_enabled():
+                    return element
+            except (NoSuchElementException, WebDriverException):
+                return False
+
+        WebDriverWait(self.driver, timeout=self.timeout, poll_frequency=0.01).\
+            until(find_codemirror, "Timed out waiting for codemirror to appear").\
+            click()
+        time.sleep(1)
+
         action = ActionChains(self.driver)
         action.send_keys(field_content)
+        action.perform()
         sleep_time = math.ceil(len(field_content) / 50)
         time.sleep(sleep_time)
-        action.perform()
-        time.sleep(1)
 
     def click_tab(self, tab_name):
         self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
