@@ -1003,7 +1003,7 @@ define([
               }
             });
 
-            createButtons(buttons, 'header', 'pg-prop-btn-group-above');
+            createButtons(buttons, 'header', 'pg-prop-btn-group-above bg-gray-2 border-gray-3');
           }
           j.append(content);
         }.bind(panel),
@@ -1243,7 +1243,7 @@ define([
                   setTimeout(function() { editFunc.call(); }, 0);
                 });
               }
-            }],'footer' ,'pg-prop-btn-group-below');
+            }],'footer' ,'pg-prop-btn-group-below bg-gray-2 border-gray-3');
           };
 
           // Create status bar.
