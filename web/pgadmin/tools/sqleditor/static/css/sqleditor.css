@@ -349,9 +349,9 @@ li {
 }
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
-  color: #ffffff;
+  color: #222222;
   padding: 4px 0 4px 6px;
-  background-color: #2c76b4;
+  background-color: #e8e8e8;
   border-bottom: 1px solid black;
 }
 
@@ -432,7 +432,7 @@ input.editor-checkbox:focus {
 
 /* color the first column */
 .sr .sc:first-child {
-    background-color: #2c76b4;
+    background-color: #e8e8e8;
 }
 
 #datagrid div.slick-header.ui-state-default {

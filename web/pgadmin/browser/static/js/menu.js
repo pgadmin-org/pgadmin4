@@ -57,15 +57,51 @@ function(_, S, pgAdmin, $) {
           data: this.data
         }).addClass('menu-link');
 
+      this.is_disabled = this.disabled(node, item);
       if (this.icon) {
         url.append($('<i></i>', {'class': this.icon}));
       }
-      url.append($('<span></span>').text('  ' + this.label));
 
-      this.is_disabled = this.disabled(node, item);
+      var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
+
+      url.append(textSpan);
+
       this.$el = $('<li/>')
         .addClass('menu-item' + (this.is_disabled ? ' disabled' : ''))
         .append(url);
+
+      this.applyStyle();
+    },
+
+    applyDisabledStyle: function () {
+      var span = this.$el.find('span');
+      var icon = this.$el.find('i');
+
+      span.addClass('font-gray-4');
+      span.removeClass('font-white');
+      icon.addClass('font-gray-4');
+      icon.removeClass('font-white');
+    },
+
+    applyEnabledStyle: function () {
+      var element = this.$el;
+      var span = this.$el.find('span');
+
+      span.addClass('font-white');
+      span.removeClass('font-gray-4');
+      element.find('i').addClass('font-white');
+      element.find('i').removeClass('font-gray-4');
+
+      span.mouseover(function () { element.addClass('bg-gray-5'); });
+      span.mouseout(function () { element.removeClass('bg-gray-5'); });
+    },
+
+    applyStyle: function () {
+      if (this.is_disabled) {
+        this.applyDisabledStyle();
+      } else {
+        this.applyEnabledStyle();
+      }
     },
 
     /*
@@ -83,6 +119,8 @@ function(_, S, pgAdmin, $) {
       if (this.$el && !this.is_disabled) {
         this.$el.removeClass('disabled');
       }
+
+      this.applyStyle();
 
       this.context = {
         name: this.label,

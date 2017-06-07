@@ -18,13 +18,13 @@ module.exports = function(config) {
       'regression/javascript/test-main.js',
       {pattern: 'regression/javascript/**/*.js', included: false},
       {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
-      {pattern: 'pgadmin/static/js/**/*.js', included: false}
+      {pattern: 'pgadmin/static/js/**/*.js', included: false},
+      {pattern: 'pgadmin/browser/static/js/**/*.js', included: false}
     ],
 
 
     // list of files to exclude
     exclude: [
-      'pgadmin/static/js/pgadmin.js',
       'pgadmin/static/vendor/**/*[Tt]est.js',
       'pgadmin/static/vendor/**/*[Ss]pec.js'
     ],

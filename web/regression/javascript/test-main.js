@@ -27,6 +27,7 @@ require.config({
   baseUrl: '/base',
 
   paths: {
+    'pgadmin': sourcesDir + 'js/pgadmin',
     'alertify': sourcesDir + 'vendor/alertifyjs/alertify',
     'jquery': sourcesDir + 'vendor/jquery/jquery-1.11.2',
     'jquery.ui': sourcesDir + 'vendor/jquery-ui/jquery-ui-1.11.3',
@@ -37,7 +38,8 @@ require.config({
     'slickgrid/slick.grid': sourcesDir + 'vendor/slickgrid/slick.grid',
     'slickgrid/slick.rowselectionmodel': sourcesDir + 'vendor/slickgrid/plugins/slick.rowselectionmodel',
     'translations': '/base/regression/javascript/fake_translations',
-    'sources': sourcesDir + 'js'
+    'sources': sourcesDir + 'js',
+    'browser': '/base/pgadmin/browser/static/js'
   },
 
   shim: {

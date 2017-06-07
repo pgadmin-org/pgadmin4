@@ -1718,7 +1718,7 @@ define([
             self.gridView.query_tool_obj.setOption("readOnly", 'nocursor');
             var cm = self.gridView.query_tool_obj.getWrapperElement();
             if (cm) {
-              cm.className += ' cm_disabled';
+              cm.className += ' bg-gray-1 opacity-5';
             }
             self.disable_tool_buttons(true);
             self._execute_data_query();

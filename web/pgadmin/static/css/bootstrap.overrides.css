@@ -131,7 +131,7 @@ iframe {
 
 .navbar-inverse > li > a,
 .navbar-inverse .navbar-nav > li > a {
-    color: #CACACA;
+    color: #FFF;
 }
 
 .navbar-inverse .navbar-brand {
@@ -144,6 +144,13 @@ iframe {
 
 .navbar-inverse .navbar-brand:focus {
     color: #009DCF;
+}
+
+.navbar-inverse .navbar-nav > .open > a,
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-inverse .navbar-nav > .open > a:focus {
+    background: #555 none;
 }
 
 .dropdown-menu > hr {
@@ -163,6 +170,12 @@ iframe {
 
 .dropdown-menu > li > a > .has-icon {
     padding-left: 0px;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+    color: #FFFFFF;
+    background: #555 none;
 }
 
 .form-group fieldset {
@@ -377,8 +390,6 @@ button.btn:disabled {
 }
 
 .pg-prop-btn-group {
-  background-color: #D2D2D2;
-  border: 2px solid #A9A9A9;
   left: 0px;
   right: 0px;
   padding: 2px;
