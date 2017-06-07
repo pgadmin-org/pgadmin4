@@ -896,15 +896,26 @@ class ViewNode(PGChildNodeView, VacuumSettings):
                     trigger['oid'], columns)
             res_rows = trigger_definition(res_rows)
 
-            res_rows['schema'] = res_rows['nspname']
-
             # It should be relname and not table, but in create.sql
             # (which is referred from many places) we have used
             # data.table and not data.relname so compatibility add new key as
             # table in res_rows.
             res_rows['table'] = res_rows['relname']
 
-            res_rows['tfunction'] = self.qtIdent(self.conn, res_rows['schema'], res_rows['tfunction'])
+            # Get trigger function with its schema name
+            SQL = render_template("/".join([self.trigger_temp_path,
+                                            'sql/#{0}#/get_triggerfunctions.sql'.format(self.manager.version)]),
+                                  tgfoid=res_rows['tgfoid'],
+                                  show_system_objects=self.blueprint.show_system_objects)
+
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=result)
+
+            # Update the trigger function which we have fetched with schema name
+            if 'rows' in result and len(result['rows']) > 0 and \
+                            'tfunctions' in result['rows'][0]:
+                res_rows['tfunction'] = result['rows'][0]['tfunctions']
 
             # Format arguments
             if len(res_rows['custom_tgargs']) > 1:
