@@ -15,7 +15,8 @@
 // use alertify and underscore js
 var alertify = require("alertify"),
     _ = require("underscore"),
-    S = require("underscore.string");
+    S = require("underscore.string")
+    gettext = require("sources/gettext");
 
 /*---------------------------------------------------------
   Define functions used for various operations
@@ -632,7 +633,7 @@ var checkPermission = function(path) {
     },
     error: function() {
       $('.file_manager_ok').addClass('disabled');
-      alertify.error('{{ _('Error occurred while checking access permission.') }}');
+      alertify.error( gettext('Error occurred while checking access permission.'));
     }
   });
   return permission;
@@ -1276,16 +1277,16 @@ if (
         have_all_types = (have_all_types || (t == '*'));
       } else {
         select_box += '<option value="' + t +'">' +
-          (t == '*' ? '{{ _("All Files") }}' : t) + "</option>";
+          (t == '*' ? gettext('All Files') : t) + "</option>";
         have_all_types = (have_all_types || (t == '*'));
       }
       i++;
     }
 
     if (!have_all_types) {
-      select_box += '<option value="*">{{ _("All Files") }}</option>';
+      select_box += '<option value="*">' + gettext('All Files') + '</option>';
     }
-    select_box += "</select><label>{{ _('Format') }}: </label></div>";
+    select_box += "</select><label>' + gettext('Format') + ': </label></div>";
   }
 
   $(".allowed_file_types").html(select_box);

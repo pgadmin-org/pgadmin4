@@ -1,8 +1,7 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-    'pgadmin.browser', 'codemirror'],
-
-function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'codemirror'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
 
   /**
     Create and add a rule collection into nodes
@@ -15,7 +14,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
     var rules = pgAdmin.Browser.Nodes['coll-rule'] =
       pgAdmin.Browser.Collection.extend({
         node: 'rule',
-        label: '{{ _("Rules") }}',
+        label: gettext('Rules'),
         type: 'coll-rule',
         columns: ["name", "owner", "comment"]
       });
@@ -40,7 +39,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       sqlAlterHelp: 'sql-alterrule.html',
       sqlCreateHelp: 'sql-createrule.html',
       dialogHelp: '{{ url_for('help.static', filename='rule_dialog.html') }}',
-      label: '{{ _("rule") }}',
+      label: gettext('rule'),
       collection_type: 'coll-table',
       hasSQL:  true,
       hasDepends: true,
@@ -78,25 +77,25 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
         pgBrowser.add_menus([{
           name: 'create_rule_on_coll', node: 'coll-rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("Rule...") }}',
+          category: 'create', priority: 1, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_rule_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 5, label: '{{ _("Rule...") }}',
+          category: 'create', priority: 5, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("Rule...") }}',
+          category: 'create', priority: 1, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_rule', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _("Rule...") }}',
+          category: 'create', priority: 4, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate'
         }
@@ -109,7 +108,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
        */
       model: pgAdmin.Browser.Node.Model.extend({
         schema: [{
-          id: 'name', label: '{{ _("Name") }}',
+          id: 'name', label: gettext('Name'),
           type: 'text', disabled: function(m) {
             // disable name field it it is system rule
             if (m && m.get('name') == "_RETURN") {
@@ -124,7 +123,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           }
         },
         {
-          id: 'oid', label:'{{ _("OID") }}',
+          id: 'oid', label: gettext('OID'),
           type: 'text', disabled: true, mode: ['properties']
         },
         {
@@ -143,8 +142,8 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           }
         },
         {
-          id: 'event', label:'{{ _("Event") }}', control: 'select2',
-          group: '{{ _("Definition") }}', type: 'text',
+          id: 'event', label: gettext('Event'), control: 'select2',
+          group: gettext('Definition'), type: 'text',
           select2: {
             width: '100%',
             allowClear: false
@@ -157,29 +156,29 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           ]
         },
         {
-          id: 'do_instead', label:'{{ _("Do Instead") }}', group: '{{ _("Definition") }}',
+          id: 'do_instead', label: gettext('Do Instead'), group: gettext('Definition'),
           type: 'switch'
         },
         {
-          id: 'condition', label:'{{ _("Condition") }}',
-          type: 'text', group: '{{ _("Definition") }}',
+          id: 'condition', label: gettext('Condition'),
+          type: 'text', group: gettext('Definition'),
           control: Backform.SqlFieldControl
         },
         {
-          id: 'statements', label:'{{ _("Commands") }}',
-          type: 'text', group: '{{ _("Definition") }}',
+          id: 'statements', label: gettext('Commands'),
+          type: 'text', group: gettext('Definition'),
           control: Backform.SqlFieldControl
         },
         {
-          id: 'system_rule', label:'{{ _("System rule?") }}',
+          id: 'system_rule', label: gettext('System rule?'),
           type: 'switch', mode: ['properties']
         },
         {
-          id: 'enabled', label:'{{ _("Enabled?") }}',
+          id: 'enabled', label: gettext('Enabled?'),
           type: 'switch', mode: ['properties']
         },
         {
-          id: 'comment', label:'{{ _("Comment") }}', cell: 'string', type: 'multiline'
+          id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline'
         }
         ],
         validate: function() {
@@ -191,7 +190,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           if (_.isUndefined(field_name) || _.isNull(field_name) ||
             String(field_name).replace(/^\s+|\s+$/g, '') === '')
           {
-            err['name'] = '{{ _("Please specify name.") }}';
+            err['name'] = gettext('Please specify name.');
             errmsg = errmsg || err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;

@@ -1,11 +1,11 @@
 (function(root, factory) {
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify', 'pgadmin.browser.node'],
-     function(_, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
+    define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify', 'pgadmin.browser.node'],
+     function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Backgrid, Alertify, pgNode);
+      return factory(root, gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -16,14 +16,15 @@
       Backform = require('backform') || root.Backform;
       Backgrid = require('backgrid') || root.Backgrid;
       Alertify = require('alertify') || root.Alertify;
-      pgAdmin = require('pgadmin.browser.node') || root.pgAdmin.Browser.Node;
-    factory(root, _, $, Backbone, Backform, Alertify, pgNode);
+      pgAdmin = require('pgadmin.browser.node') || root.pgAdmin.Browser.Node,
+      gettext = require('sources/gettext') || root.gettext;
+    factory(root, gettext, _, $, Backbone, Backform, Alertify, pgNode);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.alertify, root.pgAdmin.Browser.Node);
+    factory(root, root.gettext, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.alertify, root.pgAdmin.Browser.Node);
   }
-} (this, function(root, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
+} (this, function(root, gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
 
   /**
    * Each Privilege, supporeted by an database object, will be represented
@@ -285,7 +286,7 @@
         msg = undefined;
 
       if (_.isUndefined(this.get('grantee'))) {
-        msg = window.pgAdmin.Browser.messages.PRIV_GRANTEE_NOT_SPECIFIED;
+        msg = gettext('A grantee must be selected.');
         this.errorModel.set('grantee', msg);
         errmsg = msg;
       } else {
@@ -304,7 +305,7 @@
             });
 
           if (!anyPrivSelected) {
-            msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
+            msg = gettext('At least one privilege should be selected.');
             this.errorModel.set('privileges', msg);
             errmsg = errmsg || msg;
           } else {
@@ -584,9 +585,9 @@
           }
         } else {
           this.model.errorModel.set(
-            'privileges', window.pgAdmin.Browser.messages.NO_PRIV_SELECTED
+            'privileges', gettext('At least one privilege should be selected.')
             );
-          msg = window.pgAdmin.Browser.messages.NO_PRIV_SELECTED;
+          msg = gettext('At least one privilege should be selected.');
         }
         if (msg) {
           this.model.collection.trigger(

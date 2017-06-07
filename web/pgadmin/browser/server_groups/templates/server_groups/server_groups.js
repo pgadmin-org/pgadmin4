@@ -1,13 +1,14 @@
-define(
-    ['jquery', 'underscore', 'pgadmin', 'backbone', 'pgadmin.browser', 'pgadmin.browser.node'],
-function($, _, pgAdmin, Backbone) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'pgadmin', 'backbone',
+  'pgadmin.browser', 'pgadmin.browser.node'
+], function(gettext, $, _, pgAdmin, Backbone) {
 
   if (!pgAdmin.Browser.Nodes['server-group']) {
     pgAdmin.Browser.Nodes['server-group'] = pgAdmin.Browser.Node.extend({
       parent_type: null,
       type: 'server-group',
       dialogHelp: '{{ url_for('help.static', filename='server_group_dialog.html') }}',
-      label: '{{ _('Server Group') }}',
+      label: gettext('Server Group'),
       width: '350px',
       height: '250px',
       is_collection: true,
@@ -21,7 +22,7 @@ function($, _, pgAdmin, Backbone) {
         pgAdmin.Browser.add_menus([{
           name: 'create_server_group', node: 'server-group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _('Server Group...') }}',
+          category: 'create', priority: 1, label: gettext('Server Group...'),
           data: {'action': 'create'}, icon: 'wcTabIcon icon-server-group'
         }]);
       },
@@ -32,10 +33,10 @@ function($, _, pgAdmin, Backbone) {
         },
         schema: [
           {
-            id: 'id', label: '{{ _('ID') }}', type: 'int', group: null,
+            id: 'id', label: gettext('ID'), type: 'int', group: null,
             mode: ['properties']
           },{
-            id: 'name', label:'{{ _('Name') }}', type: 'text', group: null,
+            id: 'name', label: gettext('Name'), type: 'text', group: null,
             mode: ['properties', 'edit', 'create']
           }
         ],
@@ -45,14 +46,14 @@ function($, _, pgAdmin, Backbone) {
           this.errorModel.clear();
 
           if (!this.isNew() && 'id' in this.changed) {
-            errmsg = '{{ _('The ID cannot be changed.') }}';
+            errmsg = gettext('The ID cannot be changed.');
             this.errorModel.set('id', errmsg);
             return errmsg;
           }
           if (_.isUndefined(this.get('name')) ||
             _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = '{{ _('Name cannot be empty.') }}';
+            errmsg = gettext('Name cannot be empty.');
             this.errorModel.set('name', errmsg);
             return errmsg;
           }

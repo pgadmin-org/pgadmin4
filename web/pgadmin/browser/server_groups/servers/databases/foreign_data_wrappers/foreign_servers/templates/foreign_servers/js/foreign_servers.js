@@ -1,7 +1,8 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-        'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node model class to create a Options model
   var OptionsModel = pgAdmin.Browser.Node.Model.extend({
@@ -41,7 +42,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     var foreign_data_wrappers = pgAdmin.Browser.Nodes['coll-foreign_server'] =
       pgAdmin.Browser.Collection.extend({
         node: 'foreign_server',
-        label: '{{ _('Foreign Servers') }}',
+        label: gettext('Foreign Servers'),
         type: 'coll-foreign_server',
         columns: ['name','fsrvowner','description']
       });
@@ -54,7 +55,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       type: 'foreign_server',
       sqlAlterHelp: 'sql-alterforeignserver.html',
       sqlCreateHelp: 'sql-createforeignserver.html',
-      label: '{{ _('Foreign Server') }}',
+      label: gettext('Foreign Server'),
       hasSQL:  true,
       hasDepends: true,
       canDrop: true,
@@ -73,17 +74,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_foreign_server_on_coll', node: 'coll-foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Server...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Server...'),
           icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
         },{
           name: 'create_foreign_server', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Server...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Server...'),
           icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
         },{
           name: 'create_foreign_server', node: 'foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Server...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Server...'),
           icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'}
         }
         ]);
@@ -116,7 +117,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         // Defining schema for the foreign server node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: function(m) {
             if (this.mode == 'edit' && this.node_info.server.version < 90200) {
               return true;
@@ -125,25 +126,25 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
           }
         },{
-          id: 'fsrvid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'fsrvid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'fsrvowner', label:'{{ _('Owner') }}', type: 'text',
+          id: 'fsrvowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false }
         },{
-          id: 'fsrvtype', label:'{{ _('Type') }}', cell: 'string',
-          group: '{{ _('Definition') }}', type: 'text', mode: ['edit','create','properties'], disabled: function(m) {
+          id: 'fsrvtype', label: gettext('Type'), cell: 'string',
+          group: gettext('Definition'), type: 'text', mode: ['edit','create','properties'], disabled: function(m) {
             return !m.isNew();
           }
         },{
-          id: 'fsrvversion', label:'{{ _('Version') }}', cell: 'string',
-          group: '{{ _('Definition') }}', type: 'text'
+          id: 'fsrvversion', label: gettext('Version'), cell: 'string',
+          group: gettext('Definition'), type: 'text'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'fsrvoptions', label: 'Options', type: 'collection', group: "Options",
+          id: 'fsrvoptions', label: 'Options', type: 'collection', group: gettext("Options"),
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fsrvoption'],
           columns: ['fsrvoption','fsrvvalue']
@@ -152,8 +153,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
             mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
          }
         ],
 
@@ -166,7 +167,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
+            var msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {

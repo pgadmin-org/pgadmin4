@@ -1,13 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for sequence collection
   if (!pgBrowser.Nodes['coll-sequence']) {
     var databases = pgBrowser.Nodes['coll-sequence'] =
       pgBrowser.Collection.extend({
         node: 'sequence',
-        label: '{{ _('Sequences') }}',
+        label: gettext('Sequences'),
         type: 'coll-sequence',
         columns: ['name', 'seqowner', 'comment'],
         hasStatistics: true
@@ -21,7 +22,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-altersequence.html',
       sqlCreateHelp: 'sql-createsequence.html',
       dialogHelp: '{{ url_for('help.static', filename='sequence_dialog.html') }}',
-      label: '{{ _('Sequence') }}',
+      label: gettext('Sequence'),
       collection_type: 'coll-sequence',
       hasSQL: true,
       hasDepends: true,
@@ -37,19 +38,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_sequence_on_coll', node: 'coll-sequence', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Sequence...') }}',
+          category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_sequence', node: 'sequence', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Sequence...') }}',
+          category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_sequence', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Sequence...') }}',
+          category: 'create', priority: 4, label: gettext('Sequence...'),
           icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -121,17 +122,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         // Define the schema for sequence node.
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit']
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', mode: ['properties']
         },{
-          id: 'seqowner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'seqowner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
           control: Backform.NodeListByNameControl
         },{
-          id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           control: 'node-list-by-name', node: 'schema',
           type: 'text', mode: ['create', 'edit'], filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
@@ -142,48 +143,48 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return true;
           }, cache_node: 'database', cache_level: 'database'
         },{
-          id: 'comment', label:'{{ _('Comment') }}', type: 'multiline',
+          id: 'comment', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit']
         },{
-          id: 'current_value', label: '{{ _('Current value') }}', type: 'int',
-          mode: ['properties', 'edit'], group: '{{ _('Definition') }}'
+          id: 'current_value', label: gettext('Current value'), type: 'int',
+          mode: ['properties', 'edit'], group: gettext('Definition')
         },{
-          id: 'increment', label: '{{ _('Increment') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          id: 'increment', label: gettext('Increment'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           min: 1
         },{
-          id: 'start', label: '{{ _('Start') }}', type: 'int',
-          mode: ['properties', 'create'], group: '{{ _('Definition') }}'
+          id: 'start', label: gettext('Start'), type: 'int',
+          mode: ['properties', 'create'], group: gettext('Definition')
         },{
-          id: 'minimum', label: '{{ _('Minimum') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
+          id: 'minimum', label: gettext('Minimum'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition')
         },{
-          id: 'maximum', label: '{{ _('Maximum') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}'
+          id: 'maximum', label: gettext('Maximum'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition')
         },{
-          id: 'cache', label: '{{ _('Cache') }}', type: 'int',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          id: 'cache', label: gettext('Cache'), type: 'int',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           min: 1
         },{
-          id: 'cycled', label: '{{ _('Cycled') }}', type: 'switch',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          id: 'cycled', label: gettext('Cycled'), type: 'switch',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           options: {
             'onText': 'Yes', 'offText': 'No',
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
         }, pgBrowser.SecurityGroupUnderSchema,{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _("Security") }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'relacl', label: '{{ _('Privileges') }}', group: 'security',
+          id: 'relacl', label: gettext('Privileges'), group: 'security',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['r', 'w', 'U']
           }), uniqueCol : ['grantee', 'grantor'], mode: ['edit', 'create'],
           editable: false, type: 'collection', canAdd: true, canDelete: true,
           control: 'unique-col-collection',
         },{
-          id: 'securities', label: '{{ _('Securitiy Labels') }}', canAdd: true,
+          id: 'securities', label: gettext('Securitiy Labels'), canAdd: true,
           model: pgBrowser.SecLabelModel, editable: false,
           type: 'collection', canEdit: false, group: 'security',
           mode: ['edit', 'create'], canDelete: true,
@@ -204,28 +205,28 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('seqowner'))
               || String(this.get('seqowner')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Owner cannot be empty.') }}';
+            msg = gettext('Owner cannot be empty.');
             this.errorModel.set('seqowner', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('schema'))
               || String(this.get('schema')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Schema cannot be empty.') }}';
+            msg = gettext('Schema cannot be empty.');
             this.errorModel.set('schema', msg);
             return msg;
           }
 
-          var min_lt = '{{ _('Minimum value must be less than maximum value.') }}',
-              start_lt = '{{ _('Start value cannot be less than minimum value.') }}',
-              start_gt = '{{ _('Start value cannot be greater than maximum value.') }}';
+          var min_lt = gettext('Minimum value must be less than maximum value.'),
+              start_lt = gettext('Start value cannot be less than minimum value.'),
+              start_gt = gettext('Start value cannot be greater than maximum value.');
           if ((minimum == 0 && maximum == 0) ||
               (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
             msg = min_lt

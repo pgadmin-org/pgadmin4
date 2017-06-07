@@ -1,7 +1,7 @@
 define([
-  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
-], function(_, S, $, pgBrowser, Alertify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
+  'alertify', 'pgadmin.alertifyjs'
+], function(gettext, _, S, $, pgBrowser, Alertify) {
 
   pgBrowser.ShowNodeSQL = pgBrowser.ShowNodeSQL || {};
 
@@ -68,7 +68,7 @@ define([
         function() {
           var sql = '';
           if (node) {
-            sql = '-- ' + pgBrowser.messages.NODE_HAS_NO_SQL;
+            sql = '-- ' + gettext("No SQL could be generated for the selected object.");
             var self = this,
                 n_type = data._type,
                 n_value = -1,
@@ -95,7 +95,9 @@ define([
                   timer = setTimeout(function(){
                   // notify user if request is taking longer than 1 second
 
-                    pgAdmin.Browser.editor.setValue(pgBrowser.messages['LOADING_MESSAGE']);
+                  pgAdmin.Browser.editor.setValue(
+                    gettext("Retrieving data from the server...")
+                  );
                   }, 1000);
                 },
                 success: function(res) {
@@ -116,9 +118,9 @@ define([
                   ) {
                     Alertify.pgNotifier(
                       error, xhr,
-                      S(
-                        pgBrowser.messages['ERR_RETRIEVAL_INFO']
-                      ).sprintf(message || _label).value(),
+                      S(gettext("Error retrieving the information - %s")).sprintf(
+                        message || _label
+                      ).value(),
                       function() {
                         console.log(arguments);
                       }

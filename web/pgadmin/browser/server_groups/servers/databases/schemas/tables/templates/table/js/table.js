@@ -1,16 +1,14 @@
-define(
-    [
-    'jquery', 'underscore', 'underscore.string', 'pgadmin',
-    'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-    'pgadmin.node.column', 'pgadmin.node.constraints'
-    ],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.node.column', 'pgadmin.node.constraints'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-table']) {
     var databases = pgBrowser.Nodes['coll-table'] =
       pgBrowser.Collection.extend({
         node: 'table',
-        label: '{{ _('Tables') }}',
+        label: gettext('Tables'),
         type: 'coll-table',
         columns: ['name', 'relowner', 'description'],
         hasStatistics: true,
@@ -23,7 +21,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
   if (!pgBrowser.Nodes['table']) {
     pgBrowser.Nodes['table'] = pgBrowser.Node.extend({
       type: 'table',
-      label: '{{ _('Table') }}',
+      label: gettext('Table'),
       collection_type: 'coll-table',
       hasSQL: true,
       hasDepends: true,
@@ -48,46 +46,46 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_table_on_coll', node: 'coll-table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _('Table...') }}',
+          category: 'create', priority: 1, label: gettext('Table...'),
           icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_table', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _('Table...') }}',
+          category: 'create', priority: 1, label: gettext('Table...'),
           icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_table__on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Table...') }}',
+          category: 'create', priority: 4, label: gettext('Table...'),
           icon: 'wcTabIcon icon-table', data: {action: 'create', check: false},
           enable: 'canCreate'
         },{
           name: 'truncate_table', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
-          category: 'Truncate', priority: 3, label: '{{ _('Truncate') }}',
+          category: 'Truncate', priority: 3, label: gettext('Truncate'),
           icon: 'fa fa-eraser', enable : 'canCreate'
         },{
           name: 'truncate_table_cascade', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'truncate_table_cascade',
-          category: 'Truncate', priority: 3, label: '{{ _('Truncate Cascade') }}',
+          category: 'Truncate', priority: 3, label: gettext('Truncate Cascade'),
           icon: 'fa fa-eraser', enable : 'canCreate'
         },{
           // To enable/disable all triggers for the table
           name: 'enable_all_triggers', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
-          category: 'Trigger(s)', priority: 4, label: '{{ _('Enable All') }}',
+          category: 'Trigger(s)', priority: 4, label: gettext('Enable All'),
           icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable'
         },{
           name: 'disable_all_triggers', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
-          category: 'Trigger(s)', priority: 4, label: '{{ _('Disable All') }}',
+          category: 'Trigger(s)', priority: 4, label: gettext('Disable All'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable'
         },{
           name: 'reset_table_stats', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
-          category: 'Reset', priority: 4, label: '{{ _('Reset Statistics') }}',
+          category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
           icon: 'fa fa-bar-chart', enable : 'canCreate'
         }
         ]);
@@ -123,7 +121,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                alertify.success("{{ _('" + res.info + "') }}");
+                alertify.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -136,8 +134,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  msg = S('{{ _(' + err.errormsg + ')}}').value();
-                  alertify.error("{{ _('" + err.errormsg + "') }}");
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -165,7 +162,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            S('{{ _('Are you sure you want to truncate table %s?') }}').sprintf(d.label).value(),
+            S(gettext('Are you sure you want to truncate table %s?')).sprintf(d.label).value(),
             function (e) {
             if (e) {
               var data = d;
@@ -176,7 +173,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 dataType: "json",
                 success: function(res) {
                   if (res.success == 1) {
-                    alertify.success("{{ _('" + res.info + "') }}");
+                    alertify.success(res.info);
                     t.removeIcon(i);
                     data.icon = 'icon-table';
                     t.addIcon(i, {icon: data.icon});
@@ -193,8 +190,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      msg = S('{{ _(' + err.errormsg + ')}}').value();
-                      alertify.error("{{ _('" + err.errormsg + "') }}");
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -214,8 +210,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            '{{ _('Reset statistics') }}',
-            S('{{ _('Are you sure you want to reset the statistics for table %s?') }}').sprintf(d._label).value(),
+            gettext('Reset statistics'),
+            S(gettext('Are you sure you want to reset the statistics for table %s?')).sprintf(d._label).value(),
             function (e) {
               if (e) {
                 var data = d;
@@ -224,7 +220,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   type:'DELETE',
                   success: function(res) {
                     if (res.success == 1) {
-                      alertify.success("{{ _('" + res.info + "') }}");
+                      alertify.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-table';
                       t.addIcon(i, {icon: data.icon});
@@ -241,8 +237,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        msg = S('{{ _(' + err.errormsg + ')}}').value();
-                        alertify.error("{{ _('" + err.errormsg + "') }}");
+                        alertify.error(err.errormsg);
                       }
                     } catch (e) {}
                     t.unload(i);
@@ -299,16 +294,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', type: 'text',
+          id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema'
         },{
-          id: 'oid', label:'{{ _('OID') }}', type: 'text', mode: ['properties']
+          id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties']
         },{
-          id: 'relowner', label:'{{ _('Owner') }}', type: 'text', node: 'role',
+          id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
           mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
           disabled: 'inSchema', control: 'node-list-by-name'
         },{
-          id: 'schema', label:'{{_('Schema')}}', type: 'text', node: 'schema',
+          id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
           control: 'node-list-by-name', mode: ['create', 'edit'],
           disabled: 'inSchema', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
@@ -319,7 +314,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return true;
           }, cache_node: 'database', cache_level: 'database'
         },{
-          id: 'spcname', label:'{{ _('Tablespace') }}', node: 'tablespace',
+          id: 'spcname', label: gettext('Tablespace'), node: 'tablespace',
           type: 'text', control: 'node-list-by-name', disabled: 'inSchema',
           mode: ['properties', 'create', 'edit'],
           filter: function(d) {
@@ -327,15 +322,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return (!(d && d.label.match(/pg_global/)))
           }
         },{
-          id: 'description', label:'{{ _('Comment') }}', type: 'multiline',
+          id: 'description', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema'
         },{
-          id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
-          url: 'get_inherits', type: 'array', group: '{{ _('Columns') }}',
+          id: 'coll_inherits', label: gettext('Inherited from table(s)'),
+          url: 'get_inherits', type: 'array', group: gettext('Columns'),
           disabled: 'checkInheritance', deps: ['typname'],
           mode: ['create', 'edit'],
           select2: { multiple: true, allowClear: true,
-          placeholder: '{{ _('Select to inherit from...') }}'},
+          placeholder: gettext('Select to inherit from...')},
           transform: function(data, cell) {
             var control = cell || this,
               m = control.model;
@@ -416,16 +411,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             }
           })
         },{
-          id: 'coll_inherits', label: '{{ _('Inherited from table(s)') }}',
-          type: 'text', group: '{{ _('Advanced') }}', mode: ['properties']
+          id: 'coll_inherits', label: gettext('Inherited from table(s)'),
+          type: 'text', group: gettext('Advanced'), mode: ['properties']
         },{
-          id: 'inherited_tables_cnt', label:'{{ _('Inherited tables count') }}',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          id: 'inherited_tables_cnt', label: gettext('Inherited tables count'),
+          type: 'text', mode: ['properties'], group: gettext('Advanced'),
           disabled: 'inSchema'
         },{
           // Tab control for columns
-          id: 'columns', label:'{{ _('Columns') }}', type: 'collection',
-          group: '{{ _('Columns') }}',
+          id: 'columns', label: gettext('Columns'), type: 'collection',
+          group: gettext('Columns'),
           model: pgBrowser.Nodes['column'].model,
           subnode: pgBrowser.Nodes['column'].model,
           mode: ['create', 'edit'],
@@ -524,14 +519,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           allowMultipleEmptyRow: false
         },{
           // Here we will create tab control for constraints
-          type: 'nested', control: 'tab', group: '{{ _('Constraints') }}',
+          type: 'nested', control: 'tab', group: gettext('Constraints'),
           mode: ['edit', 'create'],
           schema: [{
-              id: 'primary_key', label: '{{ _('Primary key') }}',
+              id: 'primary_key', label: gettext('Primary key'),
               model: pgBrowser.Nodes['primary_key'].model,
               subnode: pgBrowser.Nodes['primary_key'].model,
               editable: false, type: 'collection',
-              group: '{{ _('Primary Key') }}', mode: ['edit', 'create'],
+              group: gettext('Primary Key'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true,
               control: 'unique-col-collection',
               columns : ['name', 'columns'],
@@ -545,11 +540,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                         _.some(columns.pluck('name')));
               }
             },{
-              id: 'foreign_key', label: '{{ _('Foreign key') }}',
+              id: 'foreign_key', label: gettext('Foreign key'),
               model: pgBrowser.Nodes['foreign_key'].model,
               subnode: pgBrowser.Nodes['foreign_key'].model,
               editable: false, type: 'collection',
-              group: '{{ _('Foreign Key') }}', mode: ['edit', 'create'],
+              group: gettext('Foreign Key'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true,
               control: 'unique-col-collection',
               canAdd: true,
@@ -560,21 +555,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                return _.some(columns.pluck('name'));
               }
             },{
-              id: 'check_constraint', label: '{{ _('Check constraint') }}',
+              id: 'check_constraint', label: gettext('Check constraint'),
               model: pgBrowser.Nodes['check_constraints'].model,
               subnode: pgBrowser.Nodes['check_constraints'].model,
               editable: false, type: 'collection',
-              group: '{{ _('Check') }}', mode: ['edit', 'create'],
+              group: gettext('Check'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true,
               control: 'unique-col-collection',
               canAdd: true,
               columns : ['name', 'consrc']
             },{
-              id: 'unique_constraint', label: '{{ _('Unique Constraint') }}',
+              id: 'unique_constraint', label: gettext('Unique Constraint'),
               model: pgBrowser.Nodes['unique_constraint'].model,
               subnode: pgBrowser.Nodes['unique_constraint'].model,
               editable: false, type: 'collection',
-              group: '{{ _('Unique') }}', mode: ['edit', 'create'],
+              group: gettext('Unique'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true,
               control: 'unique-col-collection',
               columns : ['name', 'columns'],
@@ -585,11 +580,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                return _.some(columns.pluck('name'));
               }
             },{
-              id: 'exclude_constraint', label: '{{ _('Exclude constraint') }}',
+              id: 'exclude_constraint', label: gettext('Exclude constraint'),
               model: pgBrowser.Nodes['exclusion_constraint'].model,
               subnode: pgBrowser.Nodes['exclusion_constraint'].model,
               editable: false, type: 'collection',
-              group: '{{ _('Exclude') }}', mode: ['edit', 'create'],
+              group: gettext('Exclude'), mode: ['edit', 'create'],
               canEdit: true, canDelete: true,
               control: 'unique-col-collection',
               columns : ['name', 'columns', 'constraint'],
@@ -601,9 +596,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               }
           }]
         },{
-          id: 'typname', label:'{{ _('Of type') }}', type: 'text',
+          id: 'typname', label: gettext('Of type'), type: 'text',
           control: 'node-ajax-options', mode: ['properties', 'create', 'edit'],
-          disabled: 'checkOfType', url: 'get_oftype', group: '{{ _('Advanced') }}',
+          disabled: 'checkOfType', url: 'get_oftype', group: gettext('Advanced'),
           deps: ['coll_inherits'], transform: function(data, cell) {
             var control = cell || this,
               m = control.model;
@@ -623,7 +618,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
                 if (!_.isUndefined(tbl_name) &&
                     tbl_name !== '' && column_collection.length !== 0) {
-                  var msg = '{{ _('Changing of type table will clear columns collection') }}';
+                  var msg = gettext('Changing of type table will clear columns collection');
                   alertify.confirm(msg, function (e) {
                     if (e) {
                       // User clicks Ok, lets clear columns collection
@@ -646,91 +641,91 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               }
             })
         },{
-          id: 'fillfactor', label:'{{ _('Fill factor') }}', type: 'int',
+          id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
-          disabled: 'inSchema',group: '{{ _('Advanced') }}'
+          disabled: 'inSchema',group: gettext('Advanced')
         },{
-          id: 'relhasoids', label:'{{ _('Has OIDs?') }}', cell: 'switch',
+          id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', group: '{{ _('Advanced') }}'
+          disabled: 'inSchema', group: gettext('Advanced')
         },{
-          id: 'relpersistence', label:'{{ _('Unlogged?') }}', cell: 'switch',
+          id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchemaWithModelCheck',
-          group: '{{ _('Advanced') }}'
+          group: gettext('Advanced')
         },{
-          id: 'conname', label:'{{ _('Primary key') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          id: 'conname', label: gettext('Primary key'), cell: 'string',
+          type: 'text', mode: ['properties'], group: gettext('Advanced'),
           disabled: 'inSchema'
         },{
-          id: 'reltuples', label:'{{ _('Rows (estimated)') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          id: 'reltuples', label: gettext('Rows (estimated)'), cell: 'string',
+          type: 'text', mode: ['properties'], group: gettext('Advanced'),
           disabled: 'inSchema'
         },{
-          id: 'rows_cnt', label:'{{ _('Rows (counted)') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Advanced') }}',
+          id: 'rows_cnt', label: gettext('Rows (counted)'), cell: 'string',
+          type: 'text', mode: ['properties'], group: gettext('Advanced'),
           disabled: 'inSchema'
         },{
-          id: 'relhassubclass', label:'{{ _('Inherits tables?') }}', cell: 'switch',
-          type: 'switch', mode: ['properties'], group: '{{ _('Advanced') }}',
+          id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
+          type: 'switch', mode: ['properties'], group: gettext('Advanced'),
           disabled: 'inSchema'
         },{
-          id: 'is_sys_table', label:'{{ _('System table?') }}', cell: 'switch',
+          id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
           type: 'switch', mode: ['properties'],
           disabled: 'inSchema'
         },{
-          type: 'nested', control: 'fieldset', label: '{{ _('Like') }}',
-          group: '{{ _('Advanced') }}',
+          type: 'nested', control: 'fieldset', label: gettext('Like'),
+          group: gettext('Advanced'),
           schema:[{
-            id: 'like_relation', label:'{{ _('Relation') }}',
+            id: 'like_relation', label: gettext('Relation'),
             type: 'text', mode: ['create', 'edit'], deps: ['typname'],
             control: 'node-ajax-options', url: 'get_relations',
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           },{
-            id: 'like_default_value', label:'{{ _('With default values?') }}',
+            id: 'like_default_value', label: gettext('With default values?'),
             type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           },{
-            id: 'like_constraints', label:'{{ _('With constraints?') }}',
+            id: 'like_constraints', label: gettext('With constraints?'),
             type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           },{
-            id: 'like_indexes', label:'{{ _('With indexes?') }}',
+            id: 'like_indexes', label: gettext('With indexes?'),
             type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           },{
-            id: 'like_storage', label:'{{ _('With storage?') }}',
+            id: 'like_storage', label: gettext('With storage?'),
             type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           },{
-            id: 'like_comments', label:'{{ _('With comments?') }}',
+            id: 'like_comments', label: gettext('With comments?'),
             type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: '{{ _('Like') }}'
+            disabled: 'isLikeDisable', group: gettext('Like')
           }]
         },{
           // Here - we will create tab control for storage parameters
           // (auto vacuum).
-          type: 'nested', control: 'tab', group: '{{ _('Parameter') }}',
+          type: 'nested', control: 'tab', group: gettext('Parameter'),
           mode: ['edit', 'create'],
           schema: Backform.VacuumSettingsSchema
         },{
-          id: 'relacl_str', label:'{{ _('Privileges') }}', disabled: 'inSchema',
-          type: 'text', mode: ['properties'], group: '{{ _('Security') }}'
+          id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
+          type: 'text', mode: ['properties'], group: gettext('Security')
         }, pgBrowser.SecurityGroupUnderSchema,{
-          id: 'relacl', label: '{{ _('Privileges') }}', type: 'collection',
+          id: 'relacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
           privileges: ['a','r','w','d','D','x','t']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
         },{
-          id: 'seclabels', label: '{{ _('Security labels') }}', canEdit: false,
+          id: 'seclabels', label: gettext('Security labels'), canEdit: false,
           model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
           type: 'collection', min_version: 90100, mode: ['edit', 'create'],
           group: 'security', canDelete: true, control: 'unique-col-collection'
         },{
-          id: 'vacuum_settings_str', label: '{{ _('Storage settings') }}',
-          type: 'multiline', group: '{{ _('Advanced') }}', mode: ['properties']
+          id: 'vacuum_settings_str', label: gettext('Storage settings'),
+          type: 'multiline', group: gettext('Advanced'), mode: ['properties']
         }],
         validate: function(keys) {
           var err = {},
@@ -753,17 +748,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table name cannot be empty.') }}';
+            msg = gettext('Table name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else if (_.isUndefined(schema) || _.isNull(schema) ||
             String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table schema cannot be empty.') }}';
+            msg = gettext('Table schema cannot be empty.');
             this.errorModel.set('schema', msg);
             return msg;
           } else if (_.isUndefined(relowner) || _.isNull(relowner) ||
             String(relowner).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Table owner cannot be empty.') }}';
+            msg = gettext('Table owner cannot be empty.');
             this.errorModel.set('relowner', msg);
             return msg;
           }

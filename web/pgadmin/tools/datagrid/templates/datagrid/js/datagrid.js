@@ -1,7 +1,7 @@
-define(
-  ['jquery','alertify', 'pgadmin','codemirror', 'codemirror/mode/sql/sql',
-   'pgadmin.browser', 'wcdocker'],
-  function($, alertify, pgAdmin, CodeMirror) {
+define([
+  'sources/gettext', 'jquery','alertify', 'pgadmin','codemirror',
+  'codemirror/mode/sql/sql', 'pgadmin.browser', 'wcdocker'
+], function(gettext, $, alertify, pgAdmin, CodeMirror) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
@@ -75,7 +75,7 @@ define(
         var menus = [{
           name: 'query_tool', module: this, applies: ['tools'],
           callback: 'show_query_tool', enable: query_tool_menu_enabled,
-          priority: 1, label: '{{ _('Query Tool') }}',
+          priority: 1, label: gettext('Query Tool'),
           icon: 'fa fa-bolt'
         }];
 
@@ -85,26 +85,26 @@ define(
             name: 'view_all_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 3},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 101, label: '{{ _('View All Rows') }}'
+            category: 'view_data', priority: 101, label: gettext('View All Rows')
           },{
             name: 'view_first_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 1},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 102, label: '{{ _('View First 100 Rows') }}'
+            category: 'view_data', priority: 102, label: gettext('View First 100 Rows')
           },{
             name: 'view_last_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 2},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 103, label: '{{ _('View Last 100 Rows') }}'
+            category: 'view_data', priority: 103, label: gettext('View Last 100 Rows')
           },{
             name: 'view_filtered_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 4},
             applies: ['context', 'object'], callback: 'show_filtered_row', enable: view_menu_enabled,
-            category: 'view_data', priority: 104, label: '{{ _('View Filtered Rows...') }}'
+            category: 'view_data', priority: 104, label: gettext('View Filtered Rows...')
          });
         }
 
-        pgAdmin.Browser.add_menu_category('view_data', '{{ _('View Data') }}', 100, 'fa fa-th');
+        pgAdmin.Browser.add_menu_category('view_data', gettext('View Data'), 100, 'fa fa-th');
         pgAdmin.Browser.add_menus(menus);
 
         // Creating a new pgAdmin.Browser frame to show the data.
@@ -262,7 +262,7 @@ define(
 
               callback: function(closeEvent) {
 
-                if (closeEvent.button.text == "{{ _('OK') }}") {
+                if (closeEvent.button.text == gettext("OK")) {
                   var sql = this.filter_obj.getValue();
                   var that = this;
 
@@ -421,7 +421,7 @@ define(
           panel_title += self.title_index;
           self.title_index += 1;
         } else {
-          panel_title += "{{ _(' untitled') }}";
+          panel_title += gettext(" untitled");
         }
 
         $.ajax({
@@ -481,7 +481,7 @@ define(
           },
           error: function(e) {
             alertify.alert(
-              "{{ _('Query Tool Initialize Error') }}"
+              gettext("Query Tool Initialize Error")
             );
           }
         });

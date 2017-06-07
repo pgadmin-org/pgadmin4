@@ -1,12 +1,13 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-collation']) {
     var databases = pgAdmin.Browser.Nodes['coll-collation'] =
       pgAdmin.Browser.Collection.extend({
         node: 'collation',
-        label: '{{ _('Collations') }}',
+        label: gettext('Collations'),
         type: 'coll-collation',
         columns: ['name', 'owner', 'description']
       });
@@ -18,7 +19,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-altercollation.html',
       sqlCreateHelp: 'sql-createcollation.html',
       dialogHelp: '{{ url_for('help.static', filename='collation_dialog.html') }}',
-      label: '{{ _('Collation') }}',
+      label: gettext('Collation'),
       collection_type: 'coll-collation',
       hasSQL: true,
       hasDepends: true,
@@ -33,19 +34,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_collation_on_coll', node: 'coll-collation', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Collation...') }}',
+          category: 'create', priority: 4, label: gettext('Collation...'),
           icon: 'wcTabIcon icon-collation', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_collation', node: 'collation', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Collation...') }}',
+          category: 'create', priority: 4, label: gettext('Collation...'),
           icon: 'wcTabIcon icon-collation', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_collation', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Collation...') }}',
+          category: 'create', priority: 4, label: gettext('Collation...'),
           icon: 'wcTabIcon icon-collation', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -79,19 +80,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
 
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema', control: 'node-list-by-name',
           node: 'role'
         },{
-          id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], node: 'schema',
           disabled: 'inSchema', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
@@ -103,27 +104,27 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }, control: 'node-list-by-name',
           cache_node: 'database', cached_level: 'database'
         },{
-          id: 'copy_collation', label:'{{ _('Copy collation') }}', cell: 'string',
+          id: 'copy_collation', label: gettext('Copy collation'), cell: 'string',
           control: 'node-ajax-options',
-          type: 'text', mode: ['create', 'edit'], group: 'Definition',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           url: 'get_collations', disabled: 'inSchemaWithModelCheck',
           deps: ['locale', 'lc_collate', 'lc_type']
         },{
-          id: 'locale', label:'{{ _('Locale') }}', cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: 'Definition',
+          id: 'locale', label: gettext('Locale'), cell: 'string',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           disabled: 'inSchemaWithModelCheck',
           deps: ['lc_collate', 'lc_type', 'copy_collation']
         },{
-          id: 'lc_collate', label:'{{ _('LC_COLLATE') }}', cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: 'Definition',
+          id: 'lc_collate', label: gettext('LC_COLLATE'), cell: 'string',
+          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           deps: ['locale', 'copy_collation'], disabled: 'inSchemaWithModelCheck'
         },{
-          id: 'lc_type', label:'{{ _('LC_TYPE') }}', cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: 'Definition',
+          id: 'lc_type', label: gettext('LC_TYPE'), cell: 'string',
+          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           disabled: 'inSchemaWithModelCheck',
           deps: ['locale', 'copy_collation']
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
         }
@@ -143,7 +144,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.has(changedAttrs,data.name) && _.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
           }
           if (_.has(changedAttrs,data.locale) && (_.isUndefined(this.get('locale'))
@@ -163,7 +164,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             copy_coll_flag = true;
           }
           if (locale_flag && (lc_coll_flag || lc_coll_flag) && copy_coll_flag) {
-            msg = '{{ _('Definition incomplete, Please provide Locale OR Copy collation OR LC_TYPE/LC_COLLATE!') }}';
+            msg = gettext('Definition incomplete, Please provide Locale OR Copy collation OR LC_TYPE/LC_COLLATE!');
             err['locale'] = msg
           }
           return null;

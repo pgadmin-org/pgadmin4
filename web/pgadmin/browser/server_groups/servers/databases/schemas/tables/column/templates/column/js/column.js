@@ -1,13 +1,13 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-        'backform', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   if (!pgBrowser.Nodes['coll-column']) {
     var databases = pgBrowser.Nodes['coll-column'] =
       pgBrowser.Collection.extend({
         node: 'column',
-        label: '{{ _('Columns') }}',
+        label: gettext('Columns'),
         type: 'coll-column',
         columns: ['name', 'atttypid', 'description']
       });
@@ -20,14 +20,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       value: null
     },
     schema: [{
-      id: 'name', label: '{{ _('Name') }}', cell: 'select2',
+      id: 'name', label: gettext('Name'), cell: 'select2',
       type: 'text', disabled: false, node: 'column',
       options: [['n_distinct', 'n_distinct'],
       ['n_distinct_inherited','n_distinct_inherited']],
       select2: {placeholder: "Select variable"},
       cellHeaderClasses:'width_percent_50'
     },{
-      id: 'value', label: '{{ _('Value') }}',
+      id: 'value', label: gettext('Value'),
       type: 'text', disabled: false,
       cellHeaderClasses:'width_percent_50'
     }],
@@ -38,7 +38,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       if (_.isUndefined(this.get('value')) ||
         _.isNull(this.get('value')) ||
         String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg =  '{{ _('Please provide input for variable.')}}';
+            errmsg = gettext('Please provide input for variable.');
             this.errorModel.set('value', errmsg);
             return errmsg;
           } else {
@@ -88,7 +88,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       parent_type: ['table', 'view', 'mview'],
       collection_type: ['coll-table', 'coll-view', 'coll-mview'],
       type: 'column',
-      label: '{{ _('Column') }}',
+      label: gettext('Column'),
       hasSQL:  true,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
@@ -127,25 +127,25 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         pgBrowser.add_menus([{
           name: 'create_column_on_coll', node: 'coll-column', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Column...') }}',
+          category: 'create', priority: 4, label: gettext('Column...'),
           icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_column', node: 'column', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Column...') }}',
+          category: 'create', priority: 4, label: gettext('Column...'),
           icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_column_onTable', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Column...') }}',
+          category: 'create', priority: 4, label: gettext('Column...'),
           icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_column_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Column...') }}',
+          category: 'create', priority: 4, label: gettext('Column...'),
           icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
           enable: 'canCreate'
         }
@@ -175,18 +175,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           attprecision: null
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck',
           cellHeaderClasses:'width_percent_30',
           editable: 'editable_check_for_table'
         },{
           // Need to show this field only when creating new table
           // [in SubNode control]
-          id: 'is_primary_key', label: '{{ _('Primary key?') }}',
+          id: 'is_primary_key', label: gettext('Primary key?'),
           cell: Backgrid.Extension.TableChildSwitchCell, type: 'switch',
           deps:['name'], cellHeaderClasses:'width_percent_5',
           options: {
-            onText: '{{ _("Yes") }}', offText: '{{ _("No") }}',
+            onText: gettext('Yes'), offText: gettext('No'),
             onColor: 'success', offColor: 'primary'
           },
           visible: function(m) {
@@ -236,10 +236,10 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             m.set('is_primary_key', false);
           }
         },{
-          id: 'attnum', label:'{{ _('Position') }}', cell: 'string',
+          id: 'attnum', label: gettext('Position'), cell: 'string',
           type: 'text', disabled: 'notInSchema', mode: ['properties']
         },{
-          id: 'cltype', label:'{{ _('Data type') }}',
+          id: 'cltype', label: gettext('Data type'),
           cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
             exitEditMode: function(e) {
                 var self = this;
@@ -276,7 +276,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           type: 'text', disabled: 'inSchemaWithColumnCheck',
           control: 'node-ajax-options', url: 'get_types', node: 'table',
           cellHeaderClasses:'width_percent_30', first_empty: true,
-          select2: { allowClear: false }, group: '{{ _('Definition') }}',
+          select2: { allowClear: false }, group: gettext('Definition'),
           transform: function(data, cell) {
             /* 'transform' function will be called by control, and cell both.
              * The way, we use the transform in cell, and control is different.
@@ -325,15 +325,15 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           editable: 'editable_check_for_table'
         },{
           // Need to show this field only when creating new table [in SubNode control]
-          id: 'inheritedfrom', label: '{{ _('Inherited from table') }}',
+          id: 'inheritedfrom', label: gettext('Inherited from table'),
           type: 'text', disabled: true, editable: false,
           cellHeaderClasses:'width_percent_10',
           visible: function(m) {
             return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
           }
         },{
-          id: 'attlen', label:'{{ _('Length') }}', cell: IntegerDepCell,
-           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}', cellHeaderClasses:'width_percent_20',
+          id: 'attlen', label: gettext('Length'), cell: IntegerDepCell,
+           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
            disabled: function(m) {
              var of_type = m.get('cltype'),
                flag = true;
@@ -388,8 +388,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               return flag;
            }
         },{
-          id: 'attprecision', label:'{{ _('Precision') }}', cell: IntegerDepCell,
-           deps: ['cltype'], type: 'int', group: '{{ _('Definition') }}', cellHeaderClasses:'width_percent_20',
+          id: 'attprecision', label: gettext('Precision'), cell: IntegerDepCell,
+           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
            disabled: function(m) {
              var of_type = m.get('cltype'),
                flag = true;
@@ -442,9 +442,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               return flag;
            }
          },{
-          id: 'collspcname', label:'{{ _('Collation') }}', cell: 'string',
+          id: 'collspcname', label: gettext('Collation'), cell: 'string',
           type: 'text', control: 'node-ajax-options', url: 'get_collations',
-          group: '{{ _('Definition') }}', node: 'collation',
+          group: gettext('Definition'), node: 'collation',
           deps: ['cltype'], disabled: function(m) {
              var of_type = m.get('cltype'),
                flag = true;
@@ -466,8 +466,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              return flag;
           }
         },{
-          id: 'defval', label:'{{ _('Default Value') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', deps: ['cltype'],
+          id: 'defval', label: gettext('Default Value'), cell: 'string',
+          type: 'text', group: gettext('Definition'), deps: ['cltype'],
           disabled: function(m) {
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
               var type = m.get('cltype');
@@ -476,16 +476,16 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-          id: 'attnotnull', label:'{{ _('Not NULL?') }}', cell: 'switch',
+          id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
           type: 'switch', disabled: 'inSchemaWithColumnCheck', cellHeaderClasses:'width_percent_20',
-          group: '{{ _('Definition') }}', editable: 'editable_check_for_table',
+          group: gettext('Definition'), editable: 'editable_check_for_table',
           options: { onText: 'Yes', offText: 'No', onColor: 'success', offColor: 'primary' }
         },{
-          id: 'attstattarget', label:'{{ _('Statistics') }}', cell: 'string',
+          id: 'attstattarget', label: gettext('Statistics'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'attstorage', label:'{{ _('Storage') }}', group: '{{ _('Definition') }}',
+          id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
           type: 'text', mode: ['properties', 'edit'],
           cell: 'string', disabled: 'inSchemaWithColumnCheck', first_empty: true,
           control: 'select2', select2: { placeholder: "Select storage",
@@ -499,21 +499,21 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             {label: "EXTENDED", value: "x"},
            ]
         },{
-          id: 'is_pk', label:'{{ _('Primary key?') }}',
+          id: 'is_pk', label: gettext('Primary key?'),
           type: 'switch', disabled: true, mode: ['properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'is_fk', label:'{{ _('Foreign key?') }}',
+          id: 'is_fk', label: gettext('Foreign key?'),
           type: 'switch', disabled: true, mode: ['properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'is_inherited', label:'{{ _('Inherited?') }}',
+          id: 'is_inherited', label: gettext('Inherited?'),
           type: 'switch', disabled: true, mode: ['properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'tbls_inherited', label:'{{ _('Inherited from table(s)') }}',
+          id: 'tbls_inherited', label: gettext('Inherited from table(s)'),
           type: 'text', disabled: true, mode: ['properties'], deps: ['is_inherited'],
-          group: '{{ _('Definition') }}',
+          group: gettext('Definition'),
           visible: function(m) {
               if (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited')) {
                 return true;
@@ -522,15 +522,15 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               }
           }
         },{
-          id: 'is_sys_column', label:'{{ _('System column?') }}', cell: 'string',
+          id: 'is_sys_column', label: gettext('System column?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties']
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'notInSchema'
         },{
           id: 'attoptions', label: 'Variables', type: 'collection',
-          group: '{{ _('Variables') }}', control: 'unique-col-collection',
+          group: gettext('Variables'), control: 'unique-col-collection',
           model: VariablesModel, uniqueCol : ['name'],
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
@@ -542,7 +542,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           mode: ['edit'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee']
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}', canAdd: true,
+          id: 'seclabels', label: gettext('Security Labels'), canAdd: true,
           model: pgBrowser.SecLabelModel, group: 'security',
           mode: ['edit', 'create'], editable: false, type: 'collection',
           min_version: 90100, canEdit: false, canDelete: true,
@@ -563,14 +563,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Column name cannot be empty.') }}';
+            msg = gettext('Column name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('cltype'))
               || String(this.get('cltype')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Column type cannot be empty.') }}';
+            msg = gettext('Column type cannot be empty.');
             this.errorModel.set('cltype', msg);
             return msg;
           }
@@ -581,9 +581,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 && this.get('attlen') !== '') {
             // Validation for Length field
             if (this.get('attlen') < this.get('min_val'))
-              msg = '{{ _('Length should not be less than: ') }}' + this.get('min_val');
+              msg = gettext('Length should not be less than: ') + this.get('min_val');
             if (this.get('attlen') > this.get('max_val'))
-              msg = '{{ _('Length should not be greater than: ') }}' + this.get('max_val');
+              msg = gettext('Length should not be greater than: ') + this.get('max_val');
             // If we have any error set then throw it to user
             if(msg) {
               this.errorModel.set('attlen', msg)
@@ -597,9 +597,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 && this.get('attprecision') !== '') {
             // Validation for precision field
             if (this.get('attprecision') < this.get('min_val'))
-              msg = '{{ _('Precision should not be less than: ') }}' + this.get('min_val');
+              msg = gettext('Precision should not be less than: ') + this.get('min_val');
             if (this.get('attprecision') > this.get('max_val'))
-              msg = '{{ _('Precision should not be greater than: ') }}' + this.get('max_val');
+              msg = gettext('Precision should not be greater than: ') + this.get('max_val');
             // If we have any error set then throw it to user
             if(msg) {
               this.errorModel.set('attprecision', msg)

@@ -1,10 +1,9 @@
-define(
-    [
-    'jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-    'alertify', 'pgadmin.backform', 'select2', 'pgadmin.browser.collection',
-    'pgadmin.browser.node.ui', 'pgadmin.browser.server.variable'
-    ],
-function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.backform', 'select2',
+  'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+  'pgadmin.browser.server.variable'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-role']) {
     var role = pgAdmin.Browser.Nodes['coll-role'] =
@@ -26,11 +25,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       label: null
     },
     schema: [{
-      id: 'provider', label: '{{ _('Provider') }}',
+      id: 'provider', label: gettext('Provider'),
       type: 'text', disabled: false,
       cellHeaderClasses:'width_percent_50'
     },{
-      id: 'label', label: '{{ _('Security Label') }}',
+      id: 'label', label: gettext('Security Label'),
       type: 'text', disabled: false,
       cellHeaderClasses:'width_percent_50'
     }],
@@ -42,7 +41,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       if (_.isUndefined(data.provider) ||
         _.isNull(data.provider) ||
         String(data.provider).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = '{{ _('Please specify the value for all the security providers.') }}';
+        var msg = gettext('Please specify the value for all the security providers.');
 
         this.errorModel.set('provider', msg);
         return msg;
@@ -53,7 +52,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       if (_.isUndefined(data.label) ||
         _.isNull(data.label) ||
         String(data.label).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = '{{ _('Please specify the value for all the security providers.') }}' ;
+        var msg = gettext('Please specify the value for all the security providers.') ;
 
         this.errorModel.set('label', msg);
         return msg;
@@ -252,7 +251,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         multiple: true,
         tags: true,
         allowClear: data.disabled ? false : true,
-        placeholder: data.disabled ? "" : "{{ _('Select members') }}",
+        placeholder: data.disabled ? "" : gettext("Select members"),
         width: 'style'
       }).on("change", function(e) {
         $(e.target).find(':selected').each(function() {
@@ -313,7 +312,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
       sqlAlterHelp: 'sql-alterrole.html',
       sqlCreateHelp: 'sql-createrole.html',
       dialogHelp: '{{ url_for('help.static', filename='role_dialog.html') }}',
-      label: '{{ _('Login/Group Role') }}',
+      label: gettext('Login/Group Role'),
       hasSQL: true,
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
@@ -345,9 +344,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           return this.label;
         }
         if (d.can_login) {
-          return '{{ _('Login Role') }}' + ' - ' + d.label;
+          return gettext('Login Role') + ' - ' + d.label;
         }
-        return '{{ _('Group Role') }}' + ' - ' + d.label;
+        return gettext('Group Role') + ' - ' + d.label;
       },
       Init: function() {
         /* Avoid mulitple registration of menus */
@@ -359,19 +358,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
         pgBrowser.add_menus([{
           name: 'create_role_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Login/Group Role...') }}',
+          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
           enable: 'can_create_role'
         },{
           name: 'create_role_on_roles', node: 'coll-role', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Login/Group Role...') }}',
+          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
           enable: 'can_create_role'
         },{
           name: 'create_role', node: 'role', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Login/Group Role...') }}',
+          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
           icon: 'wcTabIcon icon-role', data: {action: 'create'},
           enable: 'can_create_role'
         }]);
@@ -402,14 +401,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           variables: []
         },
         schema: [{
-          id: 'rolname', label: '{{ _('Name') }}', type: 'text',
+          id: 'rolname', label: gettext('Name'), type: 'text',
           disabled: 'readonly'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
+          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           editable: false, type: 'text', visible: true, disabled: true
         },{
-          id: 'rolpassword', label: '{{ _('Password') }}', type: 'password',
-          group: '{{ _('Definition') }}', mode: ['edit', 'create'],
+          id: 'rolpassword', label: gettext('Password'), type: 'password',
+          group: gettext('Definition'), mode: ['edit', 'create'],
           control: 'input', deps: ['rolcanlogin'], retype: true,
           cell: 'string', disabled: function(m) {
             if (!m.isNew()) {
@@ -422,20 +421,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }
         },{
           id: 'rolvaliduntil', disabled: 'readonly', type: 'text',
-          group: '{{ _('Definition') }}', label: '{{ _('Account expires') }}',
+          group: gettext('Definition'), label: gettext('Account expires'),
           mode: ['properties', 'edit', 'create'], control: 'datetimepicker',
           deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'}
         },{
-          id: 'rolconnlimit',  type: 'int', group: '{{ _('Definition') }}',
-          label: '{{ _('Connection limit') }}', cell: 'number',
+          id: 'rolconnlimit',  type: 'int', group: gettext('Definition'),
+          label: gettext('Connection limit'), cell: 'number',
           mode: ['properties', 'edit', 'create'], disabled: 'readonly'
         },{
-          id: 'rolcanlogin', label:'{{ _('Can login?') }}', type: 'switch',
-          group: '{{ _('Privileges') }}', options: switchOptions,
+          id: 'rolcanlogin', label: gettext('Can login?'), type: 'switch',
+          group: gettext('Privileges'), options: switchOptions,
           disabled: 'readonly', control: RoleCustomSwitchControl
         },{
-          id: 'rolsuper', label:'{{ _('Superuser') }}', type: 'switch',
-          group: '{{ _('Privileges') }}', options: switchOptions,
+          id: 'rolsuper', label: gettext('Superuser'), type: 'switch',
+          group: gettext('Privileges'), options: switchOptions,
           control: RoleCustomSwitchControl.extend({
             onChange: function() {
               Backform.SwitchControl.prototype.onChange.apply(this, arguments);
@@ -447,39 +446,39 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           }),
           disabled: 'readonly'
         },{
-          id: 'rolcreaterole', label:'{{ _('Create roles?') }}',
-          group: '{{ _('Privileges') }}', type: 'switch',
+          id: 'rolcreaterole', label: gettext('Create roles?'),
+          group: gettext('Privileges'), type: 'switch',
           options: switchOptions, disabled: 'readonly',
           control: RoleCustomSwitchControl
         },{
-          id: 'description', label:'{{ _('Comments') }}', type: 'multiline',
+          id: 'description', label: gettext('Comments'), type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
           options: switchOptions, disabled: 'readonly'
         },{
-          id: 'rolcreatedb', label:'{{ _('Create databases?') }}',
-          group: '{{ _('Privileges') }}', type: 'switch',
+          id: 'rolcreatedb', label: gettext('Create databases?'),
+          group: gettext('Privileges'), type: 'switch',
           options: switchOptions, disabled: 'readonly',
           control: RoleCustomSwitchControl
         },{
-          id: 'rolcatupdate', label:'{{ _('Update catalog?') }}',
+          id: 'rolcatupdate', label: gettext('Update catalog?'),
           type: 'switch', max_version: 90400, options: switchOptions,
           control: RoleCustomSwitchControl,
-          group: '{{ _('Privileges') }}', disabled: function(m) {
+          group: gettext('Privileges'), disabled: function(m) {
             return (m.get('read_only') || (!m.get('rolsuper')));
           }
         },{
-          id: 'rolinherit', group: '{{ _('Privileges') }}',
-          label:'{{ _('Inherit rights from the parent roles?') }}',
+          id: 'rolinherit', group: gettext('Privileges'),
+          label: gettext('Inherit rights from the parent roles?'),
           type: 'switch', options: switchOptions, disabled: 'readonly',
           control: RoleCustomSwitchControl
         },{
-          id: 'rolreplication', group: '{{ _('Privileges') }}',
-          label:'{{ _('Can initiate streaming replication and backups?') }}',
+          id: 'rolreplication', group: gettext('Privileges'),
+          label: gettext('Can initiate streaming replication and backups?'),
           type: 'switch', min_version: 90100, options: switchOptions,
           disabled: 'readonly', control: RoleCustomSwitchControl
         },{
-          id: 'rolmembership', label: '{{ _('Roles') }}',
-          group: '{{ _('Membership') }}', type: 'collection',
+          id: 'rolmembership', label: gettext('Roles'),
+          group: gettext('Membership'), type: 'collection',
           cell: 'string', disabled: 'readonly',
           mode: ['properties', 'edit', 'create'],
           control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
@@ -497,22 +496,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
           },
           helpMessage: function(m) {
             if (m.has('read_only') && m.get('read_only') == false) {
-              return '{{ _('Select the checkbox for roles to include WITH ADMIN OPTION.') }}';
+              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
             } else {
-              return '{{ _('Roles shown with a check mark have the WITH ADMIN OPTION set.') }}';
+              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
             }
           }
         },{
-          id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
-          group: '{{ _('Parameters') }}', hasDatabase: true, url: 'variables',
+          id: 'variables', label: gettext('Parameters'), type: 'collection',
+          group: gettext('Parameters'), hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),
           control: 'variable-collection',
           mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
           url: "variables", disabled: 'readonly'
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: SecurityModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, disabled: 'readonly', canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
         }],
@@ -532,7 +531,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backform) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('rolname')) || String(this.get('rolname')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name cannot be empty.') }}';
+            err['name'] = gettext('Name cannot be empty.');
             errmsg = errmsg || err['name'];
           }
 

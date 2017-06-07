@@ -1,12 +1,13 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-catalog_object']) {
     var databases = pgAdmin.Browser.Nodes['coll-catalog_object'] =
       pgAdmin.Browser.Collection.extend({
         node: 'catalog_object',
-        label: '{{ _('Catalog Objects') }}',
+        label: gettext('Catalog Objects'),
         type: 'coll-catalog_object',
         columns: ['name', 'owner', 'description']
       });
@@ -16,7 +17,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['catalog_object'] = pgAdmin.Browser.Node.extend({
       parent_type: 'catalog',
       type: 'catalog_object',
-      label: '{{ _('Catalog Object') }}',
+      label: gettext('Catalog Object'),
       hasSQL:  false,
       hasScriptTypes: [],
       hasDepends: true,
@@ -36,16 +37,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           description: undefined,
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline' ,  disabled: true
         }
         ]

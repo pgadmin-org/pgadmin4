@@ -1,15 +1,14 @@
 define([
-        'jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-        'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
-        ],
-function($, _, S, pgAdmin, pgBrowser, Alertify) {
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     var databases = pgBrowser.Nodes['coll-database'] =
       pgBrowser.Collection.extend({
         node: 'database',
-        label: '{{ _('Databases') }}',
+        label: gettext('Databases'),
         type: 'coll-database',
         columns: ['name', 'datowner', 'comments'],
         hasStatistics: true,
@@ -31,7 +30,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       canDrop: function(node) {
         return node.canDrop;
       },
-      label: '{{ _('Database') }}',
+      label: gettext('Database'),
       node_image: function() {
         return 'pg-icon-database';
       },
@@ -45,30 +44,30 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         pgBrowser.add_menus([{
           name: 'create_database_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Database...') }}',
+          category: 'create', priority: 4, label: gettext('Database...'),
           icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: 'can_create_database'
         },{
           name: 'create_database_on_coll', node: 'coll-database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Database...') }}',
+          category: 'create', priority: 4, label: gettext('Database...'),
           icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: 'can_create_database'
         },{
           name: 'create_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Database...') }}',
+          category: 'create', priority: 4, label: gettext('Database...'),
           icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: 'can_create_database'
         },{
           name: 'connect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'connect_database',
-          category: 'connect', priority: 4, label: '{{ _('Connect Database...') }}',
+          category: 'connect', priority: 4, label: gettext('Connect Database...'),
           icon: 'fa fa-link', enable : 'is_not_connected'
         },{
           name: 'disconnect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'disconnect_database',
-          category: 'drop', priority: 5, label: '{{ _('Disconnect Database...') }}',
+          category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
           icon: 'fa fa-chain-broken', enable : 'is_connected'
         }]);
 
@@ -136,8 +135,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                 return;
               }
               Alertify.confirm(
-                '{{ _('Connection lost') }}',
-                '{{ _('Would you like to reconnect to the database?') }}',
+                gettext('Connection lost'),
+                gettext('Would you like to reconnect to the database?'),
                 function() {
                   connect(self, d, t, i, true);
                 },
@@ -181,8 +180,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return false;
 
           Alertify.confirm(
-            '{{ _('Disconnect the database') }}',
-            S('{{ _('Are you sure you want to disconnect the database - %s?') }}').sprintf(d.label).value(),
+            gettext('Disconnect the database'),
+            S(gettext('Are you sure you want to disconnect the database - %s?')).sprintf(d.label).value(),
             function(evt) {
               var data = d;
               $.ajax({
@@ -191,7 +190,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
                 success: function(res) {
                   if (res.success == 1) {
                     var prv_i = t.parent(i);
-                    Alertify.success("{{ _('" + res.info + "') }}");
+                    Alertify.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
                     data.icon = 'icon-database-not-connected';
@@ -301,41 +300,41 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },
 
         schema: [{
-          id: 'name', label: '{{ _('Database') }}', cell: 'string',
+          id: 'name', label: gettext('Database'), cell: 'string',
           editable: false, type: 'text'
         },{
-          id: 'did', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
+          id: 'did', label: gettext('OID'), cell: 'string', mode: ['properties'],
           editable: false, type: 'text'
         },{
-          id: 'datowner', label:'{{ _('Owner') }}',
+          id: 'datowner', label: gettext('Owner'),
           editable: false, type: 'text', node: 'role',
           control: Backform.NodeListByNameControl, select2: { allowClear: false }
         },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'tblacl', label: '{{ _('Default TABLE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'seqacl', label: '{{ _('Default SEQUENCE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'funcacl', label: '{{ _('Default FUNCTION privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'funcacl', label: gettext('Default FUNCTION privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'typeacl', label: '{{ _('Default TYPE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true, min_version: 90200
+          id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true, min_version: 90200
         },{
-          id: 'comments', label:'{{ _('Comment') }}',
+          id: 'comments', label: gettext('Comment'),
           editable: false, type: 'multiline'
         },{
-          id: 'encoding', label: '{{ _('Encoding') }}',
-          editable: false, type: 'text', group: 'Definition',
+          id: 'encoding', label: gettext('Encoding'),
+          editable: false, type: 'text', group: gettext('Definition'),
           disabled: function(m) { return !m.isNew(); }, url: 'get_encodings',
           control: 'node-ajax-options', cache_level: 'server'
         },{
-          id: 'template', label: '{{ _('Template') }}',
-          editable: false, type: 'text', group: 'Definition',
+          id: 'template', label: gettext('Template'),
+          editable: false, type: 'text', group: gettext('Definition'),
           disabled: function(m) { return !m.isNew(); },
           control: 'node-list-by-name', url: 'get_databases', cache_level: 'server',
           select2: { allowClear: false }, mode: ['create'],
@@ -358,8 +357,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return res;
           }
         },{
-          id: 'spcname', label: '{{ _('Tablespace') }}',
-          editable: false, type: 'text', group: 'Definition',
+          id: 'spcname', label: gettext('Tablespace'),
+          editable: false, type: 'text', group: gettext('Definition'),
           control: 'node-list-by-name', node: 'tablespace',
           select2: { allowClear: false },
           filter: function(m) {
@@ -367,30 +366,30 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             else return true;
           }
         },{
-          id: 'datcollate', label: '{{ _('Collation') }}',
-          editable: false, type: 'text', group: 'Definition',
+          id: 'datcollate', label: gettext('Collation'),
+          editable: false, type: 'text', group: gettext('Definition'),
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
           control: 'node-ajax-options', cache_level: 'server'
         },{
-          id: 'datctype', label: '{{ _('Character type') }}',
-          editable: false, type: 'text', group: 'Definition',
+          id: 'datctype', label: gettext('Character type'),
+          editable: false, type: 'text', group: gettext('Definition'),
           disabled: function(m) { return !m.isNew(); }, url: 'get_ctypes',
           control: 'node-ajax-options', cache_level: 'server'
         },{
-          id: 'datconnlimit', label: '{{ _('Connection limit') }}',
-          editable: false, type: 'int', group: 'Definition', min: -1
+          id: 'datconnlimit', label: gettext('Connection limit'),
+          editable: false, type: 'int', group: gettext('Definition'), min: -1
         },{
-          id: 'is_template', label: '{{ _('Template?') }}',
-          editable: false, type: 'switch', group: 'Definition',
+          id: 'is_template', label: gettext('Template?'),
+          editable: false, type: 'switch', group: gettext('Definition'),
           disabled: true,  mode: ['properties', 'edit'],
           options: {
-            'onText': 'Yes', 'offText': 'No',
+            'onText': gettext('Yes'), 'offText': gettext('No'),
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
         },{
-          id: 'datallowconn', label: '{{ _('Allow connections?') }}',
-          editable: false, type: 'switch', group: 'Definition',
+          id: 'datallowconn', label: gettext('Allow connections?'),
+          editable: false, type: 'switch', group: gettext('Definition'),
           mode: ['properties'], disabled: true,
           options: {
             'onText': 'Yes', 'offText': 'No',
@@ -398,56 +397,56 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             'size': 'small'
           }
         },{
-          id: 'datacl', label: '{{ _('Privileges') }}', type: 'collection',
+          id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['C', 'T', 'c']
           }), uniqueCol : ['grantee', 'grantor'], editable: false,
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
-          id: 'variables', label: '{{ _('Parameters') }}', type: 'collection',
+          id: 'variables', label: gettext('Parameters'), type: 'collection',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'role']}), editable: false,
-          group: '{{ _('Parameters') }}', mode: ['edit', 'create'],
+          group: gettext('Parameters'), mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: true, hasRole: true,
           control: Backform.VariableCollectionControl, node: 'role'
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel,
           editable: false, type: 'collection', canEdit: false,
-          group: '{{ _('Security') }}', canDelete: true,
+          group: gettext('Security'), canDelete: true,
           mode: ['edit', 'create'], canAdd: true,
           control: 'unique-col-collection', uniqueCol : ['provider'],
           min_version: 90200
         },{
-          type: 'nested', control: 'tab', group: '{{ _('Default Privileges') }}',
+          type: 'nested', control: 'tab', group: gettext('Default Privileges'),
           mode: ['edit'],
           schema:[{
               id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '{{ _('Default Privileges: Tables') }}',
-              editable: false, type: 'collection', group: '{{ _('Tables') }}',
+              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: gettext('Default Privileges: Tables'),
+              editable: false, type: 'collection', group: gettext('Tables'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['r', 'w', 'U']}), label: '{{ _('Default Privileges: Sequences') }}',
-              editable: false, type: 'collection', group: '{{ _('Sequences') }}',
+              {privileges: ['r', 'w', 'U']}), label: gettext('Default Privileges: Sequences'),
+              editable: false, type: 'collection', group: gettext('Sequences'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['X']}), label: '{{ _('Default Privileges: Functions') }}',
-              editable: false, type: 'collection', group: '{{ _('Functions') }}',
+              {privileges: ['X']}), label: gettext('Default Privileges: Functions'),
+              editable: false, type: 'collection', group: gettext('Functions'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['U']}),  label: '{{ _('Default Privileges: Types') }}',
+              {privileges: ['U']}),  label: gettext('Default Privileges: Types'),
               editable: false, type: 'collection', group: 'deftypesacl_group',
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
               min_version: 90200
             },{
-              id: 'deftypesacl_group', type: 'group', label: '{{ _('Types') }}',
+              id: 'deftypesacl_group', type: 'group', label: gettext('Types'),
               mode: ['edit', 'create'], min_version: 90200
             }
           ]
@@ -457,7 +456,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           var name = this.get('name');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
+            var msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {
@@ -485,7 +484,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             Alertify.pgNotifier('error', xhr, error, function(msg) {
               setTimeout(function() {
                 Alertify.dlgServerPass(
-                  '{{ _('Connect to database') }}',
+                  gettext('Connect to database'),
                   msg, _model, _data, _tree, _item, _status,
                   onSuccess, onFailure, onCancel
                 ).resizeTo();

@@ -1,15 +1,15 @@
 /* Create and Register Function Collection and Node. */
-define(
-        ['jquery', 'underscore', 'underscore.string',
-         'pgadmin', 'pgadmin.browser', 'alertify',
-          'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-edbfunc']) {
     pgBrowser.Nodes['coll-edbfunc'] =
       pgBrowser.Collection.extend({
         node: 'edbfunc',
-        label: '{{ _('Functions') }}',
+        label: gettext('Functions'),
         type: 'coll-edbfunc',
         columns: ['name', 'funcowner', 'description']
       });
@@ -19,7 +19,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgBrowser.Nodes['edbfunc'] = pgBrowser.Node.extend({
       type: 'edbfunc',
       dialogHelp: '{{ url_for('help.static', filename='edbfunc_dialog.html') }}',
-      label: '{{ _('Function') }}',
+      label: gettext('Function'),
       collection_type: 'coll-edbfunc',
       hasDepends: true,
       canEdit: false,
@@ -51,41 +51,41 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           visibility: 'Unknown'
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties'],
           disabled: true
         },{
-          id: 'oid', label: '{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'funcowner', label: '{{ _('Owner') }}', cell: 'string',
+          id: 'funcowner', label: gettext('Owner'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'pronargs', label: '{{ _('Argument count') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', mode: ['properties']
+          id: 'pronargs', label: gettext('Argument count'), cell: 'string',
+          type: 'text', group: gettext('Definition'), mode: ['properties']
         },{
-          id: 'proargs', label: '{{ _('Arguments') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', mode: ['properties'],
+          id: 'proargs', label: gettext('Arguments'), cell: 'string',
+          type: 'text', group: gettext('Definition'), mode: ['properties'],
           disabled: true
         },{
-          id: 'proargtypenames', label: '{{ _('Signature arguments') }}', cell:
-          'string', type: 'text', group: '{{ _('Definition') }}', mode: ['properties'],
+          id: 'proargtypenames', label: gettext('Signature arguments'), cell:
+          'string', type: 'text', group: gettext('Definition'), mode: ['properties'],
           disabled: true
         },{
-          id: 'prorettypename', label: '{{ _('Return type') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', disabled: true,
+          id: 'prorettypename', label: gettext('Return type'), cell: 'string',
+          type: 'text', group: gettext('Definition'), disabled: true,
           mode: ['properties'], visible: 'isVisible'
         },{
-          id: 'visibility', label: '{{ _('Visibility') }}', cell: 'string',
+          id: 'visibility', label: gettext('Visibility'), cell: 'string',
           type: 'text', mode: ['properties'],
           disabled: true
         },{
-          id: 'lanname', label: '{{ _('Language') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', disabled: true
+          id: 'lanname', label: gettext('Language'), cell: 'string',
+          type: 'text', group: gettext('Definition'), disabled: true
         },{
-          id: 'prosrc', label: '{{ _('Code') }}', cell: 'string',
+          id: 'prosrc', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['properties'],
-          group: '{{ _('Definition') }}',
+          group: gettext('Definition'),
           control: Backform.SqlFieldControl,
           extraClasses:['custom_height_css_class'],
           visible: function(m) {

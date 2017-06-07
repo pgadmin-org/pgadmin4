@@ -1,10 +1,8 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'backform', 'alertify',
-        'pgadmin.browser.collection',
-        'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
-
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   // VacuumSettings Collection to display all settings parameters as Grid
   var VacuumCollectionControl = Backform.VacuumCollectionControl =
@@ -109,7 +107,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
   };
 
   pgBrowser.SecurityGroupUnderSchema = {
-    id: 'security', label: '{{ _("Security")  }}', type: 'group',
+    id: 'security', label: gettext('Security'), type: 'group',
     // Show/Hide security group for nodes under the catalog
     visible: function(args) {
       if (args && 'node_info' in args) {
@@ -143,8 +141,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
    // Extend the browser's collection class for VacuumSettingsModel
   var VacuumSettingsSchema = Backform.VacuumSettingsSchema = [{
-    id: 'autovacuum_custom', label: '{{ _("Custom auto-vacuum?") }}',
-    group: '{{ _("Table") }}', mode: ['edit', 'create'],
+    id: 'autovacuum_custom', label: gettext('Custom auto-vacuum?'),
+    group: gettext('Table'), mode: ['edit', 'create'],
     type: 'switch',
     disabled: function(m) {
       if(!m.top.inSchema.apply(this, [m])) {
@@ -153,8 +151,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       return true;
     }
   },{
-    id: 'autovacuum_enabled', label: '{{ _("Enabled?") }}',
-    group: '{{ _("Table") }}', mode: ['edit', 'create'],
+    id: 'autovacuum_enabled', label: gettext('Enabled?'),
+    group: gettext('Table'), mode: ['edit', 'create'],
     type: 'switch',
     deps: ['autovacuum_custom'],
     disabled: function(m) {
@@ -170,26 +168,26 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       return true;
     }
   },{
-    id: 'vacuum_table', label: '{{ _("Vacuum Table") }}',
+    id: 'vacuum_table', label: gettext('Vacuum Table'),
     model: Backform.VacuumTableModel, editable: false, type: 'collection',
-    canEdit: true, group: '{{ _("Table") }}',
+    canEdit: true, group: gettext('Table'),
     mode: ['edit', 'create'], url: 'get_table_vacuum',
     control: Backform.VacuumCollectionControl.extend({
       grid_columns :[
         {
-          name: 'label', label: '{{ _("Label") }}',
+          name: 'label', label: gettext('Label'),
           headerCell: Backgrid.Extension.CustomHeaderCell,
           cell: 'string', editable: false, cellHeaderClasses:'width_percent_40'
         },
         {
-          name: 'value', label: '{{ _("Value") }}',
+          name: 'value', label: gettext('Value'),
           cellHeaderClasses:'width_percent_30',
           cellFunction: Backform.cellFunction, editable: function(m) {
             return m.handler.get('autovacuum_enabled');
           }, headerCell: Backgrid.Extension.CustomHeaderCell
         },
         {
-          name: 'setting', label: '{{ _("Default value") }}',
+          name: 'setting', label: gettext('Default value'),
           cellHeaderClasses:'width_percent_30',
           headerCell: Backgrid.Extension.CustomHeaderCell,
           cellFunction: Backform.cellFunction, editable: false
@@ -198,8 +196,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     }),
     deps: ['autovacuum_enabled']
   },{
-    id: 'toast_autovacuum', label: '{{ _("Custom auto-vacuum?") }}',
-    group: '{{ _("Toast Table") }}', mode: ['edit', 'create'],
+    id: 'toast_autovacuum', label: gettext('Custom auto-vacuum?'),
+    group: gettext('Toast Table'), mode: ['edit', 'create'],
     type: 'switch',
     disabled: function(m) {
       // We need to check additional condition to toggle enable/disable
@@ -214,8 +212,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       return true;
     }
   },{
-    id: 'toast_autovacuum_enabled', label: '{{ _("Enabled?") }}',
-    group: '{{ _("Toast Table") }}', mode: ['edit', 'create'],
+    id: 'toast_autovacuum_enabled', label: gettext('Enabled?'),
+    group: gettext('Toast Table'), mode: ['edit', 'create'],
     type: 'switch',
     deps:['toast_autovacuum'],
     disabled: function(m) {
@@ -234,21 +232,21 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     return true;
     }
   },{
-    id: 'vacuum_toast', label: '{{ _("Vacuum Toast Table") }}',
+    id: 'vacuum_toast', label: gettext('Vacuum Toast Table'),
     model: Backform.VacuumTableModel, type: 'collection', editable: function(m) {
       return m.isNew();
     },
-    canEdit: true, group: '{{ _("Toast Table") }}',
+    canEdit: true, group: gettext('Toast Table'),
     mode: ['properties', 'edit', 'create'], url: 'get_toast_table_vacuum',
     control: Backform.VacuumCollectionControl.extend({
       grid_columns :[
         {
-          name: 'label', label: '{{ _("Label") }}',
+          name: 'label', label: gettext('Label'),
           headerCell: Backgrid.Extension.CustomHeaderCell,
           cell: 'string', editable: false, cellHeaderClasses:'width_percent_40'
         },
         {
-          name: 'value', label: '{{ _("Value") }}',
+          name: 'value', label: gettext('Value'),
           cellHeaderClasses:'width_percent_30',
           headerCell: Backgrid.Extension.CustomHeaderCell,
           cellFunction: Backform.cellFunction, editable: function(m) {
@@ -256,7 +254,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           }
         },
         {
-          name: 'setting', label: '{{ _("Default value") }}',
+          name: 'setting', label: gettext('Default value'),
           cellHeaderClasses:'width_percent_30',
           headerCell: Backgrid.Extension.CustomHeaderCell,
           cellFunction: Backform.cellFunction, editable: false
@@ -271,7 +269,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     var databases = pgBrowser.Nodes['coll-schema'] =
       pgBrowser.Collection.extend({
         node: 'schema',
-        label: '{{ _('Schemas') }}',
+        label: gettext('Schemas'),
         type: 'coll-schema',
         columns: ['name', 'namespaceowner', 'description']
       });
@@ -284,7 +282,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       sqlAlterHelp: 'sql-alterschema.html',
       sqlCreateHelp: 'sql-createschema.html',
       dialogHelp: '{{ url_for('help.static', filename='schema_dialog.html') }}',
-      label: '{{ _('Schema') }}',
+      label: gettext('Schema'),
       hasSQL:  true,
       canDrop: true,
       canDropCascade: true,
@@ -299,17 +297,17 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         pgBrowser.add_menus([{
           name: 'create_schema_on_coll', node: 'coll-schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Schema...') }}',
+          category: 'create', priority: 4, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'}
         },{
           name: 'create_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Schema...') }}',
+          category: 'create', priority: 4, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'}
         },{
           name: 'create_schema', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Schema...') }}',
+          category: 'create', priority: 4, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'},
           enable: 'can_create_schema'
         }
@@ -336,81 +334,81 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'namespaceowner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'namespaceowner', label: gettext('Owner'), cell: 'string',
           type: 'text', control: 'node-list-by-name', node: 'role',
           select2: { allowClear: false }
         },{
-          id: 'is_sys_object', label:'{{ _('System schema?') }}',
+          id: 'is_sys_object', label: gettext('System schema?'),
           cell: 'switch', type: 'switch', mode: ['properties'], disabled: true
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'tblacl', label: '{{ _('Default TABLE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'seqacl', label: '{{ _('Default SEQUENCE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'funcacl', label: '{{ _('Default FUNCTION privileges') }}',
-          group: '{{ _('Security') }}', type: 'text', mode: ['properties'], disabled: true
+          id: 'funcacl', label: gettext('Default FUNCTION privileges'),
+          group: gettext('Security'), type: 'text', mode: ['properties'], disabled: true
         },{
-          id: 'typeacl', label: '{{ _('Default TYPE privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true, min_version: 90200,
+          id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true, min_version: 90200,
           visible: function() {
             return this.version_compatible;
           }
         },{
-          id: 'nspacl', label: '{{ _('Privileges') }}',
+          id: 'nspacl', label: gettext('Privileges'),
           model: pgBrowser.Node.PrivilegeRoleModel.extend(
           {privileges: ['C', 'U']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: '{{ _('Security') }}',
+          editable: false, type: 'collection', group: gettext('Security'),
           mode: ['edit', 'create'],
           canAdd: true, canDelete: true, control: 'unique-col-collection',
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
         },{
-          type: 'nested', control: 'tab', group: '{{ _('Default Privileges') }}',
+          type: 'nested', control: 'tab', group: gettext('Default Privileges'),
           mode: ['create','edit'],
           schema:[{
               id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}),
-              label: '{{ _('Default Privileges: Tables') }}',
-              editable: false, type: 'collection', group: '{{ _('Tables') }}',
+              label: gettext('Default Privileges: Tables'),
+              editable: false, type: 'collection', group: gettext('Tables'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['r', 'w', 'U']}),
-              label: '{{ _('Default Privileges: Sequences') }}',
-              editable: false, type: 'collection', group: '{{ _('Sequences') }}',
+              label: gettext('Default Privileges: Sequences'),
+              editable: false, type: 'collection', group: gettext('Sequences'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['X']}),
-              label: '{{ _('Default Privileges: Functions') }}',
-              editable: false, type: 'collection', group: '{{ _('Functions') }}',
+              label: gettext('Default Privileges: Functions'),
+              editable: false, type: 'collection', group: gettext('Functions'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor']
             },{
               id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
               {privileges: ['U']}),
-              label: '{{ _('Default Privileges: Types') }}',
-              editable: false, type: 'collection', group: '{{ _('Types') }}',
+              label: gettext('Default Privileges: Types'),
+              editable: false, type: 'collection', group: gettext('Types'),
               mode: ['edit', 'create'], control: 'unique-col-collection',
               canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
               min_version: 90200
@@ -425,13 +423,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           if (_.isUndefined(this.get('name')) ||
             _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-                errmsg = '{{ _('Name cannot be empty.')}}';
+                errmsg = gettext('Name cannot be empty.');
                 this.errorModel.set('name', errmsg);
                 return errmsg;
           } else if (_.isUndefined(this.get('namespaceowner')) ||
             _.isNull(this.get('namespaceowner')) ||
             String(this.get('namespaceowner')).replace(/^\s+|\s+$/g, '') == '') {
-                errmsg = '{{ _('Owner cannot be empty.')}}';
+                errmsg = gettext('Owner cannot be empty.');
                 this.errorModel.set('namespaceowner', errmsg);
                 return errmsg;
           }

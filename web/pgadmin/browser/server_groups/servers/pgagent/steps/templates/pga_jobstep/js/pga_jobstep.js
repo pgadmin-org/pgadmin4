@@ -1,14 +1,13 @@
 define([
-        'jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'alertify', 'backform', 'pgadmin.backform'
-        ],
-function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'backform', 'pgadmin.backform'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
       pgBrowser.Collection.extend({
         node: 'pga_jobstep',
-        label: '{{ _('Steps') }}',
+        label: gettext('Steps'),
         type: 'coll-pga_jobstep',
         columns: [
           'jstid', 'jstname', 'jstenabled', 'jstkind', 'jstconntype',
@@ -32,9 +31,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
       canDrop: function(node) {
         return true;
       },
-      label: '{{ _('Steps') }}',
+      label: gettext('Steps'),
       node_image: function() {
-        console.log(arguments);
         return 'icon-pga_jobstep';
       },
       Init: function() {
@@ -47,17 +45,17 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
         pgBrowser.add_menus([{
           name: 'create_pga_jobstep_on_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Job Step...') }}',
+          category: 'create', priority: 4, label: gettext('Job Step...'),
           data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
         },{
           name: 'create_pga_jobstep_on_coll', node: 'coll-pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Job Step...') }}',
+          category: 'create', priority: 4, label: gettext('Job Step...'),
           data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
         },{
           name: 'create_pga_jobstep', node: 'pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Job Step...') }}',
+          category: 'create', priority: 4, label: gettext('Job Step...'),
           data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep'
         }]);
       },
@@ -91,81 +89,81 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
         },
         idAttribute: 'jstid',
         schema: [{
-          id: 'jstid', label: '{{ _('ID') }}', type: 'integer',
+          id: 'jstid', label: gettext('ID'), type: 'integer',
           cellHeaderClasses: 'width_percent_5', mode: ['properties']
         },{
-          id: 'jstname', label: '{{ _('Name') }}', type: 'text',
+          id: 'jstname', label: gettext('Name'), type: 'text',
           disabled: function(m) { return false; },
           cellHeaderClasses: 'width_percent_60'
         },{
-          id: 'jstenabled', label: '{{ _('Enabled?') }}', type: 'switch',
+          id: 'jstenabled', label: gettext('Enabled?'), type: 'switch',
           disabled: function(m) { return false; }
         },{
-          id: 'jstkind', label: '{{ _('Kind') }}', type: 'switch',
+          id: 'jstkind', label: gettext('Kind'), type: 'switch',
           options: {
-            'onText': '{{ _('SQL') }}', 'offText': '{{ _('Batch') }}',
+            'onText': gettext('SQL'), 'offText': gettext('Batch'),
             'onColor': 'primary', 'offColor': 'primary'
           }, control: Backform.SwitchControl,
           disabled: function(m) { return false; }
         },{
-          id: 'jstconntype', label: '{{ _('Connection type') }}',
+          id: 'jstconntype', label: gettext('Connection type'),
           type: 'switch', deps: ['jstkind'], mode: ['properties'],
           disabled: function(m) { return !m.get('jstkind'); },
           options: {
-            'onText': '{{ _('Local') }}', 'offText': '{{ _('Remote') }}',
+            'onText': gettext('Local'), 'offText': gettext('Remote'),
             'onColor': 'primary', 'offColor': 'primary'
           }
         },{
-          id: 'jstconntype', label: '{{ _('Connection type') }}',
+          id: 'jstconntype', label: gettext('Connection type'),
           type: 'switch', deps: ['jstkind'], mode: ['create', 'edit'],
           disabled: function(m) { return !m.get('jstkind'); },
           options: {
-            'onText': '{{ _('Local') }}', 'offText': '{{ _('Remote') }}',
+            'onText': gettext('Local'), 'offText': gettext('Remote'),
             'onColor': 'primary', 'offColor': 'primary'
-          }, helpMessage: '{{ _('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.') }}'
+          }, helpMessage: gettext('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.')
         },{
-          id: 'jstdbname', label: '{{ _('Database') }}', type: 'text',
+          id: 'jstdbname', label: gettext('Database'), type: 'text',
           mode: ['properties'], disabled: function(m) { return false; }
         },{
           id: 'jstconnstr', type: 'text', mode: ['properties'],
-          label: '{{ _('Connection string') }}'
+          label: gettext('Connection string')
         },{
-          id: 'jstdbname', label: '{{ _('Database') }}', type: 'text',
+          id: 'jstdbname', label: gettext('Database'), type: 'text',
           control: 'node-list-by-name', node: 'database',
           cache_node: 'database', select2: {allowClear: true, placeholder: ''},
           disabled: function(m) {
             return !m.get('jstkind') || !m.get('jstconntype');
           }, deps: ['jstkind', 'jstconntype'], mode: ['create', 'edit'],
-          helpMessage: '{{ _('Please select the database on which the job step will run.') }}'
+          helpMessage: gettext('Please select the database on which the job step will run.')
         },{
-          id: 'jstconnstr', label: '{{ _('Connection string') }}', type: 'text',
+          id: 'jstconnstr', label: gettext('Connection string'), type: 'text',
           deps: ['jstkind', 'jstconntype'], disabled: function(m) {
             return !m.get('jstkind') || m.get('jstconntype');
           }, helpMessage: S(
-            '{{ _("Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \\'a value\\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \\\' and \\\\.<br>For more information, please see the documentation on %s") }}'
+            gettext("Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = 'a value'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on %s")
           ).sprintf(
             '<a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>'
           ).value(), mode: ['create', 'edit']
         },{
-          id: 'jstonerror', label: '{{ _('On error') }}', cell: 'select2',
+          id: 'jstonerror', label: gettext('On error'), cell: 'select2',
           control: 'select2', options: [
-            {'label': '{{ _("Fail") }}', 'value': "f"},
-            {'label': '{{ _("Success") }}', 'value': "s"},
-            {'label': '{{ _("Ignore") }}', 'value': "i"}
+            {'label': gettext('Fail'), 'value': "f"},
+            {'label': gettext('Success'), 'value': "s"},
+            {'label': gettext('Ignore'), 'value': "i"}
           ], select2: {allowClear: false}, disabled: function(m) {
             return false;
           }
         },{
-          id: 'jstdesc', label: '{{ _('Comment') }}', type: 'multiline'
+          id: 'jstdesc', label: gettext('Comment'), type: 'multiline'
         },{
           id: 'jstcode', label: '', cell: 'string', deps: ['jstkind'],
-          type: 'text', control: 'sql-field', group: '{{ _('Code') }}',
+          type: 'text', control: 'sql-field', group: gettext('Code'),
           control: Backform.SqlFieldControl.extend({
             render: function() {
               if (this.model.get('jstkind')) {
-                this.field.set('label', '{{ _('SQL query') }}');
+                this.field.set('label', gettext('SQL query'));
               } else {
-                this.field.set('label', '{{ _('Script') }}');
+                this.field.set('label', gettext('Script'));
               }
               return Backform.SqlFieldControl.prototype.render.apply(
                 this, arguments
@@ -181,7 +179,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
             _.isUndefined(val) || _.isNull(val) ||
             String(val).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            errMsg = '{{ _('Name cannot be empty.') }}';
+            errMsg = gettext('Name cannot be empty.');
             this.errorModel.set('jstname', errMsg);
           } else {
             this.errorModel.unset('jstname');
@@ -194,7 +192,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
                 _.isUndefined(val) || _.isNull(val) ||
                   String(val).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                var msg = '{{ _('Please select a database.') }}';
+                var msg = gettext('Please select a database.');
                 errMsg = errMsg || msg;
                 this.errorModel.set('jstdbname', msg);
               } else {
@@ -209,9 +207,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
                 _.isUndefined(val) || _.isNull(val) ||
                   String(val).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                msg =  '{{ _("Please enter a connection string.") }}';
+                msg = gettext('Please enter a connection string.');
               } else if (String(val).replace(r, '') != '') {
-                msg = '{{ _("Please enter a valid connection string.") }}';
+                msg = gettext('Please enter a valid connection string.');
               } else {
                 var m,
                     params = {
@@ -231,12 +229,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
                   if (params[m[1]]) {
                     if (m[2])
                       continue;
-                    msg = '{{ _("Please enter a valid connection string.") }}';
+                    msg = gettext('Please enter a valid connection string.');
                     break;
                   }
 
                   msg = S(
-                    '{{ _("Invalid parameter in the connection string - %s.") }}'
+                    gettext('Invalid parameter in the connection string - %s.')
                   ).sprintf(m[1]).value();
                   break;
                 }
@@ -259,7 +257,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
             _.isUndefined(val) || _.isNull(val) ||
             String(val).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            var msg = '{{ _('Please specify code to execute.') }}';
+            var msg = gettext('Please specify code to execute.');
             errMsg = errMsg || msg;
             this.errorModel.set('jstcode', msg);
           } else {

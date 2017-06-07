@@ -1,8 +1,8 @@
 define([
-  'jquery', 'underscore', 'pgadmin', 'backbone', 'backform', 'alertify',
-  'pgadmin.browser.node', 'pgadmin.browser.messages'
+  'sources/gettext', 'jquery', 'underscore', 'pgadmin', 'backbone', 'backform', 'alertify',
+  'pgadmin.browser.node'
 ],
-function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
+function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Node) {
 
   var pgBrowser = pgAdmin.Browser;
 
@@ -27,14 +27,14 @@ function($, _, pgAdmin, Backbone, Backform, Alertify, Node) {
           ' style="width: 49%;margin: 0 0.5%;">',
           '<i class="fa fa-check-square-o"></i>',
           '<span style="padding: 0px 5px;">',
-          pgAdmin.Browser.messages['SELECT_ALL'],
+          gettext("Select All"),
           '</span></button>'
         ].join('')),
         $unselectAll = $([
           '<button class="btn btn-xs btn-default" type="button"',
           ' style="width: 49%;margin: 0 0.5%;">',
           '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;">',
-          pgAdmin.Browser.messages['UNSELECT_ALL'],
+          gettext("Unselect All"),
           '</span></button>'
         ].join('')),
         $btnContainer = $(

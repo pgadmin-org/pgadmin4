@@ -1,6 +1,7 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
     var OptionsModel = pgAdmin.Browser.Node.Model.extend({
@@ -11,10 +12,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
 
         // Defining schema for the Options model
-        schema: [
-          {id: 'umoption', label:'Options', type:'text', cellHeaderClasses:'width_percent_50', group: null, editable: true},
-          {id: 'umvalue', label:'Value', type: 'text', cellHeaderClasses:'width_percent_50', group:null, editable: true},
-        ],
+        schema: [{
+          id: 'umoption', label: gettext('Options'), type:'text',
+          cellHeaderClasses:'width_percent_50', group: null, editable: true
+        }, {
+          id: 'umvalue', label: gettext('Value'), type: 'text',
+          cellHeaderClasses:'width_percent_50', group:null, editable: true
+        }],
 
         /* validate function is used to validate the input given by
          * the user. In case of error, message will be displayed on
@@ -40,7 +44,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     var foreign_data_wrappers = pgAdmin.Browser.Nodes['coll-user_mapping'] =
       pgAdmin.Browser.Collection.extend({
         node: 'user_mapping',
-        label: '{{ _('User Mappings') }}',
+        label: gettext('User Mappings'),
         type: 'coll-user_mapping',
         columns: ['name']
       });
@@ -54,7 +58,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-alterusermapping.html',
       sqlCreateHelp: 'sql-createusermapping.html',
       dialogHelp: '{{ url_for('help.static', filename='user_mapping_dialog.html') }}',
-      label: '{{ _('User Mapping') }}',
+      label: gettext('User Mapping'),
       hasSQL:  true,
       hasDepends: true,
       canDrop: true,
@@ -73,17 +77,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_user_mapping_on_coll', node: 'coll-user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('User Mapping...') }}',
+          category: 'create', priority: 4, label: gettext('User Mapping...'),
           icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
         },{
           name: 'create_user_mapping', node: 'user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('User Mapping...') }}',
+          category: 'create', priority: 4, label: gettext('User Mapping...'),
           icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
         },{
           name: 'create_user_mapping', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('User Mapping...') }}',
+          category: 'create', priority: 4, label: gettext('User Mapping...'),
           icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'}
         }
         ]);
@@ -110,7 +114,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         // Defining schema for the user mapping node
         schema: [{
-          id: 'name', label:'{{ _('User') }}', type: 'text',
+          id: 'name', label: gettext('User'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
           disabled: function(m) { return !m.isNew(); },
@@ -126,10 +130,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return res;
          }
         },{
-          id: 'um_oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'um_oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties'],
         },{
-          id: 'umoptions', label: 'Options', type: 'collection', group: "Options",
+          id: 'umoptions', label: 'Options', type: 'collection', group: gettext("Options"),
           model: OptionsModel, control: 'unique-col-collection', mode: ['create', 'edit'],
           canAdd: true, canDelete: true, uniqueCol : ['umoption']
         }
@@ -144,7 +148,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
+            var msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {

@@ -1,17 +1,16 @@
-define('pgadmin.browser',
-        ['require', 'jquery', 'underscore', 'underscore.string', 'bootstrap',
-        'pgadmin', 'alertify', 'codemirror', 'sources/check_node_visibility',
-        'codemirror/mode/sql/sql', 'wcdocker',
-        'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
-        'pgadmin.alertifyjs', 'pgadmin.browser.messages',
-        'pgadmin.browser.menu', 'pgadmin.browser.panel',
-        'pgadmin.browser.error', 'pgadmin.browser.frame',
-        'pgadmin.browser.node', 'pgadmin.browser.collection'
-
-       ],
-function(
-  require, $, _, S, Bootstrap, pgAdmin, Alertify,
-  CodeMirror, checkNodeVisibility
+define(
+  'pgadmin.browser', [
+    'sources/gettext', 'require', 'jquery', 'underscore', 'underscore.string',
+    'bootstrap', 'pgadmin', 'alertify', 'codemirror',
+    'sources/check_node_visibility', 'codemirror/mode/sql/sql', 'wcdocker',
+    'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
+    'pgadmin.alertifyjs', 'pgadmin.browser.messages',
+    'pgadmin.browser.menu', 'pgadmin.browser.panel',
+    'pgadmin.browser.error', 'pgadmin.browser.frame',
+    'pgadmin.browser.node', 'pgadmin.browser.collection'
+  ], function(
+    gettext, require, $, _, S, Bootstrap, pgAdmin, Alertify,
+    CodeMirror, checkNodeVisibility
 ) {
 
   // Some scripts do export their object in the window only.
@@ -105,7 +104,7 @@ function(
       // Panel to keep the left hand browser tree
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
-        title: '{{ _('Browser') }}',
+        title: gettext('Browser'),
         showTitle: true,
         isCloseable: false,
         isPrivate: true,
@@ -115,7 +114,7 @@ function(
       // Properties of the object node
       'properties': new pgAdmin.Browser.Panel({
         name: 'properties',
-        title: '{{ _('Properties') }}',
+        title: gettext('Properties'),
         icon: 'fa fa-cogs',
         width: 500,
         isCloseable: false,
@@ -130,7 +129,7 @@ function(
       // Statistics of the object
       'statistics': new pgAdmin.Browser.Panel({
         name: 'statistics',
-        title: '{{ _('Statistics') }}',
+        title: gettext('Statistics'),
         icon: 'fa fa-line-chart',
         width: 500,
         isCloseable: false,
@@ -141,7 +140,7 @@ function(
       // Reversed engineered SQL for the object
       'sql': new pgAdmin.Browser.Panel({
         name: 'sql',
-        title: '{{ _('SQL') }}',
+        title: gettext('SQL'),
         icon: 'fa fa-file-text-o',
         width: 500,
         isCloseable: false,
@@ -151,7 +150,7 @@ function(
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
         name: 'dependencies',
-        title: '{{ _('Dependencies') }}',
+        title: gettext('Dependencies'),
         icon: 'fa fa-hand-o-up',
         width: 500,
         isCloseable: false,
@@ -162,7 +161,7 @@ function(
       // Dependents of the object
       'dependents': new pgAdmin.Browser.Panel({
         name: 'dependents',
-        title: '{{ _('Dependents') }}',
+        title: gettext('Dependents'),
         icon: 'fa fa-hand-o-down',
         width: 500,
         isCloseable: false,
@@ -454,14 +453,14 @@ function(
                             console.log(err);
 
                             obj.report_error(
-                              '{{ _('Error initializing script - ') }}' + s.path, err);
-                          }
+                              gettext('Error initializing script - ') + s.path, err);
+                            }
                         }
                       }, function() {
                         console.log("Error loading script - " + s.path);
                         console.log(arguments);
                         obj.report_error(
-                          '{{ _('Error loading script - ') }}' + s.path);
+                          gettext('Error loading script - ') + s.path);
                       }).bind(s);
                     }
                   });
@@ -573,16 +572,14 @@ function(
         } catch (e) {
           // Log this exception on console to understand the issue properly.
           console.log(e);
-          obj.report_error(
-            '{{ _('Error loading script - ') }}' + path);
+          obj.report_error(gettext('Error loading script - ') + path);
         }
         if (c)
         c.loaded += 1;
       }, function() {
         // Log the arguments on console to understand the issue properly.
         console.log(arguments);
-        obj.report_error(
-          '{{ _('Error loading script - ') }}' + path);
+        obj.report_error(gettext('Error loading script - ') + path);
       });
     },
     add_menu_category: function(
@@ -1675,7 +1672,7 @@ function(
                   }
 
                   Alertify.pgNotifier(
-                    error, xhr, "{{ _("Error retrieving details for the node.") }}",
+                    error, xhr, gettext("Error retrieving details for the node."),
                     function() {
                        console.log(arguments);
                     }

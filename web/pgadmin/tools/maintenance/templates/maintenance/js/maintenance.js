@@ -1,8 +1,10 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'],
-  function($, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
+  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
+], function(
+  gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
+) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
@@ -49,8 +51,8 @@ define(
     },
     schema: [
       {
-        id: 'op', label:'{{ _('Maintenance operation') }}', cell: 'string',
-        type: 'text', group: '{{ _('Options') }}',
+        id: 'op', label: gettext('Maintenance operation'), cell: 'string',
+        type: 'text', group: gettext('Options'),
         options:[
           {'label': "VACUUM", 'value': "VACUUM"},
           {'label': "ANALYZE", 'value': "ANALYZE"},
@@ -73,25 +75,25 @@ define(
         select2: {
           allowClear: false,
           width: "100%",
-          placeholder: '{{ _('Select from list...') }}'
+          placeholder: gettext('Select from list...')
         },
       },
       {
-        type: 'nested', control: 'fieldset', label:'{{ _('Vacuum') }}', group: '{{ _('Options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Vacuum'), group: gettext('Options'),
         schema:[{
-          id: 'vacuum_full', disabled: false, group: '{{ _('Vacuum') }}', disabled: 'isDisabled',
-          control: Backform.CustomSwitchControl, label: '{{ _('FULL') }}', deps: ['op']
+          id: 'vacuum_full', disabled: false, group: gettext('Vacuum'), disabled: 'isDisabled',
+          control: Backform.CustomSwitchControl, label: gettext('FULL'), deps: ['op']
         },{
           id: 'vacuum_freeze', disabled: false, deps: ['op'], disabled: 'isDisabled',
-          control: Backform.CustomSwitchControl, label: '{{ _('FREEZE') }}', group: '{{ _('Vacuum') }}'
+          control: Backform.CustomSwitchControl, label: gettext('FREEZE'), group: gettext('Vacuum')
         },{
           id: 'vacuum_analyze', disabled: false, deps: ['op'], disabled: 'isDisabled',
-          control: Backform.CustomSwitchControl, label: '{{ _('ANALYZE') }}', group: '{{ _('Vacuum') }}'
+          control: Backform.CustomSwitchControl, label: gettext('ANALYZE'), group: gettext('Vacuum')
         }]
       },
       {
-        id: 'verbose', disabled: false, group: '{{ _('Options') }}', deps: ['op'],
-        control: Backform.CustomSwitchControl, label: '{{ _('Verbose Messages') }}', disabled: 'isDisabled'
+        id: 'verbose', disabled: false, group: gettext('Options'), deps: ['op'],
+        control: Backform.CustomSwitchControl, label: gettext('Verbose Messages'), disabled: 'isDisabled'
       }
     ],
 
@@ -174,7 +176,7 @@ define(
         var menus = [{
           name: 'maintenance', module: this,
           applies: ['tools'], callback: 'callback_maintenace',
-          priority: 10, label: '{{ _('Maintenance...') }}',
+          priority: 10, label: gettext('Maintenance...'),
           icon: 'fa fa-wrench', enable: menu_enabled
         }];
 
@@ -184,7 +186,7 @@ define(
             name: 'maintenance_context_' + maintenance_supported_nodes[idx],
             node: maintenance_supported_nodes[idx], module: this,
             applies: ['context'], callback: 'callback_maintenace',
-            priority: 10, label: '{{_("Maintenance...") }}',
+            priority: 10, label: gettext('Maintenance...'),
             icon: 'fa fa-wrench', enable: menu_enabled
           });
         }
@@ -208,7 +210,7 @@ define(
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            Alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            Alertify.alert(gettext("Please select server or child node from tree."));
             break;
           }
         }
@@ -219,23 +221,23 @@ define(
 
         var module = 'paths',
           preference_name = 'pg_bin_dir',
-          msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
 
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);
 
         if(preference) {
           if (!preference.value) {
-            Alertify.alert('{{ _("Configuration required") }}', msg);
+            Alertify.alert(gettext('Configuration required'), msg);
             return;
           }
         } else {
-          Alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          Alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
           return;
         }
 
@@ -263,16 +265,16 @@ define(
                 return {
                   buttons:[{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
-                    attrs:{name:'object_help', type:'button', url: 'maintenance.html', label: '{{ _('Maintenance') }}'}
+                    attrs:{name:'object_help', type:'button', url: 'maintenance.html', label: gettext('Maintenance')}
                   },{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Maintenance') }}',
+                    attrs:{name:'dialog_help', type:'button', label: gettext('Maintenance'),
                     url: '{{ url_for('help.static', filename='maintenance_dialog.html') }}'}
                   },{
-                    text: "{{ _('OK') }}", key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button",
+                    text: gettext("OK"), key: 27, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button",
                     'data-btn-name': 'ok',
                   },{
-                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button",
+                    text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button",
                     'data-btn-name': 'cancel',
                   }],
                   options: { modal: 0, pinnable: false}
@@ -346,7 +348,7 @@ define(
                     },
                     error: function(e) {
                       Alertify.alert(
-                        "{{ _('Maintenance job creation failed.') }}"
+                        gettext("Maintenance job creation failed.")
                       );
                     }
                   });

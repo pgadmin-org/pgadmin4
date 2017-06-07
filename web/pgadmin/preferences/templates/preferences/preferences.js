@@ -1,9 +1,8 @@
-define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'pgadmin.browser',
-   'sources/gettext', 'pgadmin.backform'],
-
+define([
+  'jquery', 'alertify', 'pgadmin', 'underscore', 'backform',
+  'pgadmin.browser', 'sources/gettext', 'pgadmin.backform'
+], function($, alertify, pgAdmin, _, Backform, pgBrowser, gettext) {
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform, pgBrowser, gettext) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -356,7 +355,7 @@ define(
               return {
                 buttons:[{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Preferences') }}',
+                    attrs:{name:'dialog_help', type:'button', label: gettext('Preferences'),
                     url: '{{ url_for('help.static', filename='preferences.html') }}'}
                   },{
                     text: gettext('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"

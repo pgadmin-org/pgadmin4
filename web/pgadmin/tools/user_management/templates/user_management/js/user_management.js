@@ -1,11 +1,11 @@
+// Backup dialog
 define([
-      'jquery', 'underscore', 'underscore.string', 'alertify',
-      'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
-      'backgrid.select.all', 'backgrid.filter'
-      ],
-
-  // This defines Backup dialog
-  function($, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
+  'backgrid.select.all', 'backgrid.filter'
+], function(
+  gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
+) {
 
     // if module is already initialized, refer to that.
     if (pgBrowser.UserManagement) {
@@ -83,7 +83,7 @@ define([
             },
             schema: [
             {
-              id: 'email', label: '{{ _('Email') }}', type: 'text',
+              id: 'email', label: gettext('Email'), type: 'text',
               cell:StringDepCell, cellHeaderClasses:'width_percent_30',
               deps: ['id'],
               editable: function(m) {
@@ -97,7 +97,7 @@ define([
                 return false;
               }
             },{
-              id: 'role', label: '{{ _('Role') }}',
+              id: 'role', label: gettext('Role'),
               type: 'text', control: "Select2", cellHeaderClasses:'width_percent_20',
               cell: 'select2', select2: {allowClear: false, openOnEnter: false},
               options: function (controlOrCell) {
@@ -131,7 +131,7 @@ define([
                 }
               }
             },{
-              id: 'active', label: '{{ _('Active') }}',
+              id: 'active', label: gettext('Active'),
               type: 'switch', cell: 'switch', cellHeaderClasses:'width_percent_10',
               options: { 'onText': 'Yes', 'offText': 'No'},
               editable: function(m) {
@@ -145,11 +145,11 @@ define([
                 }
               }
             },{
-              id: 'newPassword', label: '{{ _('New password') }}',
+              id: 'newPassword', label: gettext('New password'),
               type: 'password', disabled: false, control: 'input',
               cell: 'password', cellHeaderClasses:'width_percent_20'
             },{
-              id: 'confirmPassword', label: '{{ _('Confirm password') }}',
+              id: 'confirmPassword', label: gettext('Confirm password'),
               type: 'password', disabled: false, control: 'input',
               cell: 'password', cellHeaderClasses:'width_percent_20'
             }],
@@ -162,19 +162,19 @@ define([
               if (('email' in changedAttrs || !this.isNew()) && (_.isUndefined(this.get('email')) ||
                     _.isNull(this.get('email')) ||
                     String(this.get('email')).replace(/^\s+|\s+$/g, '') == '')) {
-                errmsg =  '{{ _('Email address cannot be empty.')}}';
+                errmsg = gettext('Email address cannot be empty.');
                 this.errorModel.set('email', errmsg);
                 return errmsg;
               } else if (!!this.get('email') && !email_filter.test(this.get('email'))) {
 
-                errmsg =  S("{{ _("Invalid email address: %s.")}}").sprintf(
+                errmsg =  S(gettext("Invalid email address: %s.")).sprintf(
                             this.get('email')
                           ).value();
                 this.errorModel.set('email', errmsg);
                 return errmsg;
               } else if (!!this.get('email') && this.collection.where({"email":this.get('email')}).length > 1) {
 
-                errmsg =  S("{{ _("The email address %s already exists.")}}").sprintf(
+                errmsg =  S(gettext("The email address %s already exists.")).sprintf(
                             this.get('email')
                           ).value();
 
@@ -188,7 +188,7 @@ define([
                     _.isNull(this.get('role')) ||
                     String(this.get('role')).replace(/^\s+|\s+$/g, '') == '')) {
 
-                errmsg =  S("{{ _("Role cannot be empty for user %s.")}}").sprintf(
+                errmsg =  S(gettext("Role cannot be empty for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -204,7 +204,7 @@ define([
                       _.isNull(this.get('newPassword')) ||
                       this.get('newPassword') == '')) {
 
-                  errmsg =  S("{{ _("Password cannot be empty for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Password cannot be empty for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -214,7 +214,7 @@ define([
                   !_.isNull(this.get('newPassword')) &&
                   this.get('newPassword').length < 6) {
 
-                  errmsg =  S("{{ _("Password must be at least 6 characters for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Password must be at least 6 characters for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -228,7 +228,7 @@ define([
                       _.isNull(this.get('confirmPassword')) ||
                       this.get('confirmPassword') == '')) {
 
-                  errmsg =  S("{{ _("Confirm Password cannot be empty for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Confirm Password cannot be empty for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -241,7 +241,7 @@ define([
                 if(!!this.get('newPassword') && !!this.get('confirmPassword') &&
                     this.get('newPassword') != this.get('confirmPassword')) {
 
-                  errmsg =  S("{{ _("Passwords do not match for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Passwords do not match for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -271,7 +271,7 @@ define([
                     !this.get('newPassword') == '' &&
                     this.get('newPassword').length < 6) {
 
-                  errmsg =  S("{{ _("Password must be at least 6 characters for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Password must be at least 6 characters for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -281,7 +281,7 @@ define([
                       _.isNull(this.get('confirmPassword')) ||
                       this.get('confirmPassword') == '') {
 
-                  errmsg =  S("{{ _("Confirm Password cannot be empty for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Confirm Password cannot be empty for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -290,7 +290,7 @@ define([
                 } else if (!!this.get('newPassword') && !!this.get('confirmPassword') &&
                           this.get('newPassword') != this.get('confirmPassword')) {
 
-                  errmsg =  S("{{ _("Passwords do not match for user %s.")}}").sprintf(
+                  errmsg =  S(gettext("Passwords do not match for user %s.")).sprintf(
                             (this.get('email') || '')
                           ).value();
 
@@ -313,8 +313,8 @@ define([
 
               if (self.model.get("id") == {{user_id}}) {
                 alertify.alert(
-                  '{{_('Cannot delete user.') }}',
-                  '{{_('Cannot delete currently logged in user.') }}',
+                  gettext('Cannot delete user.'),
+                  gettext('Cannot delete currently logged in user.'),
                   function(){
                     return true;
                   }
@@ -338,10 +338,10 @@ define([
                       self.model.destroy({
                         wait: true,
                         success: function(res) {
-                          alertify.success('{{_('User deleted.') }}');
+                          alertify.success(gettext('User deleted.'));
                         },
                         error: function(m, jqxhr) {
-                          alertify.error('{{_('Error during deleting user.') }}');
+                          alertify.error(gettext('Error during deleting user.'));
                         }
                       });
                     },
@@ -381,15 +381,15 @@ define([
                 return {
                   buttons: [{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
+                    attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
                     url: '{{ url_for('help.static', filename='pgadmin_user.html') }}'}
                   },{
-                    text: '{{ _('Close') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
+                    text: gettext('Close'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
                     attrs:{name:'close', type:'button'}
                   }],
                   // Set options for dialog
                   options: {
-                    title: '{{ _('User Management') }}',
+                    title: gettext('User Management'),
                     //disable both padding and overflow control.
                     padding : !1,
                     overflow: !1,
@@ -513,14 +513,14 @@ define([
                                    'confirmPassword':undefined});
 
                             m.startNewSession();
-                            alertify.success(S("{{_("User '%s' saved.")|safe }}").sprintf(
+                            alertify.success(S(gettext("User '%s' saved.")).sprintf(
                               m.get('email')
                             ).value());
                           },
                           error: function(res, jqxhr) {
                             m.startNewSession();
                             alertify.error(
-                              S("{{_("Error saving user: '%s'")|safe }}").sprintf(
+                              S(gettext("Error saving user: '%s'")).sprintf(
                                 jqxhr.responseJSON.errormsg
                               ).value()
                             );
@@ -538,7 +538,7 @@ define([
                   headerTpl = _.template(header),
                   data = {
                     canAdd: true,
-                    add_title: '{{ _("Add new user") }}'
+                    add_title: gettext('Add new user')
                   },
                   $gridBody = $("<div></div>", {
                     class: "user_container"
@@ -553,9 +553,7 @@ define([
                   },
                   error: function(e) {
                     setTimeout(function() {
-                      alertify.alert(
-                        '{{ _('Cannot load user roles.') }}'
-                      );
+                      alertify.alert(gettext('Cannot load user roles.'));
                     },100);
                   }
                 });
@@ -638,8 +636,8 @@ define([
                   if (!_.all(this.userCollection.pluck('id')) || !_.isEmpty(this.userCollection.invalidUsers)) {
                     e.cancel = true;
                     alertify.confirm(
-                      '{{ _('Discard unsaved changes?') }}',
-                      '{{ _('Are you sure you want to close the dialog? Any unsaved changes will be lost.') }}',
+                      gettext('Discard unsaved changes?'),
+                      gettext('Are you sure you want to close the dialog? Any unsaved changes will be lost.'),
                       function(e) {
                         self.close();
                         return true;

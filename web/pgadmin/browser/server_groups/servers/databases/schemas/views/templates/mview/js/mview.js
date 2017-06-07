@@ -1,8 +1,8 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'alertify',
-    'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege'],
-
-function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'alertify', 'pgadmin.browser', 'codemirror',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 
   /**
     Create and add a view collection into nodes
@@ -15,7 +15,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
     var mviews= pgBrowser.Nodes['coll-mview'] =
       pgBrowser.Collection.extend({
         node: 'mview',
-        label: '{{ _("Materialized Views") }}',
+        label: gettext('Materialized Views'),
         type: 'coll-mview',
         columns: ['name', 'owner']
       });
@@ -39,7 +39,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
       sqlAlterHelp: 'sql-altermaterializedview.html',
       sqlCreateHelp: 'sql-creatematerializedview.html',
       dialogHelp: '{{ url_for('help.static', filename='materialized_view_dialog.html') }}',
-      label: '{{ _("Materialized View") }}',
+      label: gettext('Materialized View'),
       hasSQL:  true,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
@@ -62,35 +62,35 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           system view nodes.
          */
         pgAdmin.Browser.add_menu_category(
-          'refresh_mview', '{{ _('Refresh View') }}', 18, 'fa fa-recycle');
+          'refresh_mview', gettext('Refresh View'), 18, 'fa fa-recycle');
         pgBrowser.add_menus([{
           name: 'create_mview_on_coll', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
           data: {action: 'create', check: true}, enable: 'canCreate',
-          label: '{{ _("Materialized View...") }}'
+          label: gettext('Materialized View...')
         },{
           name: 'create_mview', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
           data: {action: 'create', check: true}, enable: 'canCreate',
-          label: '{{ _("Materialized View...") }}',
+          label: gettext('Materialized View...'),
         },{
           name: 'create_mview', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
           data: {action: 'create', check: false}, enable: 'canCreate',
-          label: '{{ _("Materialized View...") }}'
+          label: gettext('Materialized View...')
         },{
           name: 'refresh_mview_data', node: 'mview', module: this,
           priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
-          applies: ['object', 'context'], label: '{{ _("With data") }}',
+          applies: ['object', 'context'], label: gettext('With data'),
           data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle'
         },{
           name: 'refresh_mview_nodata', node: 'mview',
           callback: 'refresh_mview', priority: 2, module: this,
           category: 'refresh_mview', applies: ['object', 'context'],
-          label: '{{ _("With no data") }}', data: {
+          label: gettext('With no data'), data: {
             concurrent: false, with_data: false
           }, icon: 'fa fa-refresh'
         },{
@@ -98,13 +98,13 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           category: 'refresh_mview', enable: 'is_version_supported',
           data: {concurrent: true, with_data: true}, priority: 3,
           applies: ['object', 'context'], callback: 'refresh_mview',
-          label: '{{ _("With data (concurrently)") }}', icon: 'fa fa-recycle'
+          label: gettext('With data (concurrently)'), icon: 'fa fa-recycle'
         },{
           name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
           category: 'refresh_mview', enable: 'is_version_supported',
           data: {concurrent: true, with_data: false}, priority: 4,
           applies: ['object', 'context'], callback: 'refresh_mview',
-          label: '{{ _("With no data (concurrently)") }}',
+          label: gettext('With no data (concurrently)'),
           icon: 'fa fa-refresh'
         }]);
       },
@@ -131,57 +131,57 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           autovacuum_enabled: false
         },
         schema: [{
-          id: 'name', label: '{{ _("Name") }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema'
         },{
-          id: 'oid', label:'{{ _("OID") }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'owner', label:'{{ _("Owner") }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           control: 'node-list-by-name', select2: { allowClear: false },
           node: 'role', disabled: 'inSchema'
         },{
-          id: 'schema', label:'{{ _("Schema") }}', cell: 'string', first_empty: false,
+          id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', mode: ['create', 'edit'], cache_node: 'database',
           disabled: 'inSchema', select2: { allowClear: false }
         },{
-          id: 'system_view', label:'{{ _("System view?") }}', cell: 'string',
+          id: 'system_view', label: gettext('System view?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
         }, pgBrowser.SecurityGroupUnderSchema, {
-          id: 'acl', label: '{{ _("Privileges") }}',
-          mode: ['properties'], type: 'text', group: '{{ _("Security") }}'
+          id: 'acl', label: gettext('Privileges'),
+          mode: ['properties'], type: 'text', group: gettext('Security')
         },{
-          id: 'comment', label:'{{ _("Comment") }}', cell: 'string',
+          id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
           id: 'definition', label:'', cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: 'Definition',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           control: Backform.SqlFieldControl, extraClasses:['sql_field_width_full']
         },{
-          id: 'with_data', label: '{{ _("With Data") }}',
-          group: '{{ _("Storage") }}', mode: ['edit', 'create'],
+          id: 'with_data', label: gettext('With Data'),
+          group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'switch',
         },{
-          id: 'spcname', label: '{{ _("Tablespace") }}', cell: 'string',
-          type: 'text', group: '{{ _("Storage") }}', first_empty: false,
+          id: 'spcname', label: gettext('Tablespace'), cell: 'string',
+          type: 'text', group: gettext('Storage'), first_empty: false,
           control: 'node-list-by-name', node: 'tablespace', select2: { allowClear: false },
           filter: function(m) {
             if (m.label == "pg_global") return false;
             else return true;
           }
         },{
-          id: 'fillfactor', label: '{{ _("Fill Factor") }}',
-          group: '{{ _("Storage") }}', mode: ['edit', 'create'],
+          id: 'fillfactor', label: gettext('Fill Factor'),
+          group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'integer'
         },{
           type: 'nested', control: 'tab', id: 'materialization',
-          label: '{{ _("Parameter") }}', mode: ['edit', 'create'],
-          group: '{{ _("Parameter") }}',
+          label: gettext('Parameter'), mode: ['edit', 'create'],
+          group: gettext('Parameter'),
           schema: Backform.VacuumSettingsSchema
         },{
           // Add Privilege Control
-          id: 'datacl', label: '{{ _("Privileges") }}', type: 'collection',
+          id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']
           }), uniqueCol : ['grantee'], editable: false,
@@ -189,7 +189,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           mode: ['edit', 'create'], control: 'unique-col-collection'
         },{
         // Add Security Labels Control
-          id: 'seclabels', label: '{{ _("Security Labels") }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           canEdit: false, group: "security", canDelete: true,
           mode: ['edit', 'create'], canAdd: true,
@@ -208,7 +208,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 
           if (_.isUndefined(field_name) || _.isNull(field_name) ||
             String(field_name).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _("Please specify name.") }}';
+            err['name'] = gettext('Please specify name.');
             errmsg = errmsg || err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;
@@ -217,7 +217,7 @@ function($, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
           }
           if (_.isUndefined(field_def) || _.isNull(field_def) ||
             String(field_def).replace(/^\s+|\s+$/g, '') == '') {
-            err['definition'] = '{{ _("Please enter view definition.") }}';
+            err['definition'] = gettext('Please enter view definition.');
             errmsg = errmsg || err['definition'];
             this.errorModel.set('definition', errmsg);
             return errmsg;

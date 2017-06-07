@@ -1,6 +1,6 @@
 require(
-    ['alertify', 'underscore.string'],
-function(alertify, S) {
+    ['sources/gettext', 'alertify', 'underscore.string'],
+function(gettext, alertify, S) {
   alertify.defaults.transition = "zoom";
   alertify.defaults.theme.ok = "btn btn-primary";
   alertify.defaults.theme.cancel = "btn btn-danger";
@@ -90,7 +90,7 @@ function(alertify, S) {
           contentType = xhr.getResponseHeader('Content-Type');
 
       if (xhr.status == 0) {
-        msg = window.pgAdmin.Browser.messages.SERVER_LOST;
+        msg = gettext('Connection to the server has been lost.');
       }
 
       if (contentType) {
@@ -108,7 +108,7 @@ function(alertify, S) {
             alertify.notify(
               S(
                 '%s<br><br>' +
-                  window.pgAdmin.Browser.messages.CLICK_FOR_DETAILED_MSG
+                  gettext('Click here for details.')
               ).sprintf(promptmsg).value(), type, 0, function() {
                 alertify.pgIframeDialog().show().set({frameless: false}).set(
                   'pg_msg', msg
@@ -210,7 +210,7 @@ function(alertify, S) {
         ) : (
         xhr.status == 428 &&
           jsonResp.errormsg &&
-            jsonResp.errormsg == pgBrowser.messages.CONNECTION_LOST
+            jsonResp.errormsg == gettext("Connection to the server has been lost.")
         )
       )
     ) {

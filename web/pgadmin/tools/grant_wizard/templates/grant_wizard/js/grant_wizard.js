@@ -1,12 +1,10 @@
+// Grant Wizard
 define([
-      'jquery', 'underscore', 'underscore.string', 'alertify',
-      'pgadmin.browser', 'backbone', 'backgrid', 'pgadmin.browser.node',
-      'backgrid.select.all', 'backgrid.filter', 'pgadmin.browser.server.privilege',
-      'pgadmin.browser.wizard',
-      ],
-
-  // This defines Grant Wizard dialog
-  function($, _, S, alertify, pgBrowser, Backbone, Backgrid, pgNode) {
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin.browser', 'backbone', 'backgrid', 'pgadmin.browser.node',
+  'backgrid.select.all', 'backgrid.filter', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.wizard',
+], function(gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, pgNode) {
 
     // if module is already initialized, refer to that.
     if (pgBrowser.GrantWizard) {
@@ -63,7 +61,7 @@ define([
           errmsg,
           node = this.get('objects').toJSON();
         if (_.isEmpty(node)) {
-          err['selected'] = '{{ _("Please select any database object type.") }}';
+          err['selected'] = gettext('Please select any database object type.');
           errmsg = errmsg || err['selected'];
           this.errorModel.set('selected', errmsg);
           return errmsg;
@@ -176,7 +174,7 @@ define([
         var menus = [{
           name: 'grant_wizard_schema', module: this,
           applies: ['tools'], callback: 'start_grant_wizard',
-          priority: 14, label: '{{_("Grant Wizard...") }}',
+          priority: 14, label: gettext('Grant Wizard...'),
           icon: 'fa fa-unlock-alt', enable: menu_enabled
         }];
 
@@ -186,7 +184,7 @@ define([
             name: 'grant_wizard_schema_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this,
             applies: ['context'], callback: 'start_grant_wizard',
-            priority: 14, label: '{{_("Grant Wizard...") }}',
+            priority: 14, label: gettext('Grant Wizard...'),
             icon: 'fa fa-unlock-alt', enable: menu_enabled
             });
         }
@@ -583,11 +581,11 @@ define([
                   },
                   schema: [
                     {
-                      id: 'objects', label: '{{ _("Objects") }}', model: DatabaseObjectModel,
-                      type: 'collection', group: 'Objects'
+                      id: 'objects', label: gettext('Objects'), model: DatabaseObjectModel,
+                      type: 'collection', group: gettext('Objects')
                     },
                     {
-                      id: 'acl', label: '{{ _("Privileges") }}',
+                      id: 'acl', label: gettext('Privileges'),
                       model: pgAdmin.Browser.Node.PrivilegeRoleModel,
                       type: 'collection', canAdd: true,
                       canDelete: true, control: 'unique-col-collection'
@@ -773,7 +771,7 @@ define([
                             },
                             schema: [
                               {
-                                id: 'acl', label: '{{ _("Privileges") }}',
+                                id: 'acl', label: gettext('Privileges'),
                                 model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({
 
                                   // privileges are selected based on node clicked
@@ -1089,7 +1087,7 @@ define([
                           alertify.pgNotifier(
                             "error", jqxhr,
                             S(
-                              "{{ _('Error saving properties: %s') }}"
+                              gettext("Error saving properties: %s")
                               ).sprintf(jqxhr.statusText).value()
                             );
 

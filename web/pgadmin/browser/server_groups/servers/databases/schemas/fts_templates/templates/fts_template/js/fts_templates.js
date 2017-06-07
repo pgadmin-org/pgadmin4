@@ -1,13 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {
     var fts_templates = pgAdmin.Browser.Nodes['coll-fts_template'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_template',
-        label: '{{ _('FTS Templates') }}',
+        label: gettext('FTS Templates'),
         type: 'coll-fts_template',
         columns: ['name', 'description']
       });
@@ -23,7 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='fts_template_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS Template') }}',
+      label: gettext('FTS Template'),
       hasSQL: true,
       hasDepends: true,
       Init: function() {
@@ -38,19 +39,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_fts_template_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
           enable: 'canCreate'
           },{
           name: 'create_fts_template_on_coll', node: 'coll-fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
           enable: 'canCreate'
           },{
           name: 'create_fts_template', node: 'fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Template...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Template...'),
           icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
           enable: 'canCreate'
           }]);
@@ -75,27 +76,27 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Defining schema for fts template
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', disabled: true, mode:['properties']
         },{
-          id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'tmplinit', label: '{{ _('Init function')}}',
-          group: '{{ _('Definition') }}', type: 'text', disabled: function(m) {
+          id: 'tmplinit', label: gettext('Init function'),
+          group: gettext('Definition'), type: 'text', disabled: function(m) {
             return !m.isNew();
           }, control: 'node-ajax-options', url: 'get_init',
           cache_level: 'database', cache_node: 'schema'
         },{
-          id: 'tmpllexize', label: '{{ _('Lexize function')}}', group: '{{ _('Definition') }}',
+          id: 'tmpllexize', label: gettext('Lexize function'), group: gettext('Definition'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'get_lexize', cache_level: 'database',
           cache_node: 'schema'
@@ -113,21 +114,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // Validate fts template name
           if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name must be specified.') }}';
+            var msg = gettext('Name must be specified.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           // Validate lexize function control
           else if (_.isUndefined(lexize) || _.isNull(lexize) || String(lexize).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Lexize function must be selected.') }}';
+            var msg = gettext('Lexize function must be selected.');
             this.errorModel.set('tmpllexize', msg);
             return msg;
           }
 
           // Validate schema for fts template
           else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Schema must be selected.') }}';
+            var msg = gettext('Schema must be selected.');
             this.errorModel.set('schema', msg);
             return msg;
           }

@@ -3,14 +3,14 @@
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
     define([
-      'underscore', 'underscore.string', 'jquery', 'backbone', 'backform',
-      'backgrid', 'codemirror', 'pgadmin.backgrid', 'codemirror/mode/sql/sql',
-      'select2', 'pgadmin.browser.messages'
+      'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+      'backbone', 'backform', 'backgrid', 'codemirror', 'pgadmin.backgrid',
+      'codemirror/mode/sql/sql', 'select2'
       ],
-     function(_, S, $, Backbone, Backform, Backgrid, CodeMirror) {
+     function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
+      return factory(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -22,14 +22,15 @@
       Backgrid = require('backgrid') || root.Backgrid;
       CodeMirror = require('codemirror') || root.CodeMirror;
       pgAdminBackgrid = require('pgadmin.backgrid');
-      S = require('underscore.string');
-    factory(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
+      S = require('underscore.string'),
+      gettext = require('sources/gettext');
+    factory(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, root.s, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
+    factory(root, root.gettext, root._, root.s, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
   }
-}(this, function(root, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
+}(this, function(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
 
@@ -1453,11 +1454,11 @@
             });
           } else {
             this.sqlCtrl.clearHistory();
-            this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_INCOMPLETE);
+            this.sqlCtrl.setValue('-- ' + gettext('Definition incomplete'));
           }
         } else {
           this.sqlCtrl.clearHistory();
-          this.sqlCtrl.setValue('-- ' + window.pgAdmin.Browser.messages.SQL_NO_CHANGE);
+          this.sqlCtrl.setValue('-- ' + gettext('Nothing changed'));
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }
@@ -1536,7 +1537,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_BE_INT).sprintf(
+            S(gettext("'%s' must be an integer.")).sprintf(
               field.label
               ).value()
             );
@@ -1548,7 +1549,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(
+            S(gettext("%s' must be greater than or equal to %d.")).sprintf(
               field.label,
               min_value
               ).value()
@@ -1560,7 +1561,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(
+            S(gettext("'%s' must be less than or equal to %d.")).sprintf(
               field.label,
               max_value
               ).value()
@@ -1639,7 +1640,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_BE_NUM).sprintf(
+            S(gettext("'%s' must be a numeric.")).sprintf(
               field.label
               ).value()
             );
@@ -1651,7 +1652,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(
+            S(gettext("%s' must be greater than or equal to %d.")).sprintf(
               field.label,
               min_value
               ).value()
@@ -1663,7 +1664,7 @@
         this.model.errorModel.unset(name);
         this.model.errorModel.set(
             name,
-            S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(
+            S(gettext("'%s' must be less than or equal to %d.")).sprintf(
               field.label,
               max_value
               ).value()
@@ -1753,7 +1754,7 @@
           _.indexOf(s.mode, mode) != -1)) {
           // Each field is kept in specified group, or in
           // 'General' category.
-          var group = s.group || pgBrowser.messages.GENERAL_CATEGORY,
+          var group = s.group || gettext('General'),
               control = s.control || Backform.getMappedControl(s.type, mode),
               cell =  s.cell || Backform.getMappedControl(s.type, 'cell');
 
@@ -1826,7 +1827,7 @@
       }
 
       if (!noSQL && node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
-        groups[pgBrowser.messages.SQL_TAB] = [{
+        groups[gettext('SQL')] = [{
             name: 'sql',
             visible: true,
             disabled: false,
@@ -2269,7 +2270,7 @@
   // We will use this control just as a annotate in Backform
   var NoteControl = Backform.NoteControl = Backform.Control.extend({
     defaults: {
-      label: window.pgAdmin.Browser.messages.NOTE_CTRL_LABEL,
+      label: gettext("Note"),
       text: '',
       extraClasses: [],
       noteClass: 'backform_control_notes'

@@ -1,16 +1,14 @@
-define(
-  [
-    'jquery', 'underscore', 'underscore.string', 'pgadmin',
-    'pgadmin.browser', 'alertify', 'pgadmin.node.pga_jobstep',
-    'pgadmin.node.pga_schedule'
-  ],
-function($, _, S, pgAdmin, pgBrowser, Alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.node.pga_jobstep',
+  'pgadmin.node.pga_schedule'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     var pga_jobs = pgBrowser.Nodes['coll-pga_job'] =
       pgBrowser.Collection.extend({
         node: 'pga_job',
-        label: '{{ _('pga_jobs') }}',
+        label: gettext('pga_jobs'),
         type: 'coll-pga_job',
         columns: ['jobid', 'jobname', 'jobenabled', 'jlgstatus', 'jobnextrun', 'joblastrun', 'jobdesc'],
         hasStatistics: false
@@ -31,7 +29,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       canDrop: function(node) {
         return true;
       },
-      label: '{{ _('pgAgent Job') }}',
+      label: gettext('pgAgent Job'),
       node_image: function() {
         return 'icon-pga_job';
       },
@@ -45,17 +43,17 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         pgBrowser.add_menus([{
           name: 'create_pga_job_on_coll', node: 'coll-pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('pgAgent Job...') }}',
+          category: 'create', priority: 4, label: gettext('pgAgent Job...'),
           icon: 'wcTabIcon icon-pga_job', data: {action: 'create'}
         },{
           name: 'create_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('pgAgent Job...') }}',
+          category: 'create', priority: 4, label: gettext('pgAgent Job...'),
           icon: 'wcTabIcon icon-pga_job', data: {action: 'create'}
         }, {
           name: 'run_now_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'run_pga_job_now',
-          priority: 4, label: '{{ _('Run now') }}', data: {action: 'create'},
+          priority: 4, label: gettext('Run now'), data: {action: 'create'},
           icon: 'fa fa-play-circle'
         }]);
       },
@@ -81,59 +79,59 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           var d = pgBrowser.Node.Model.prototype.parse.apply(this, arguments);
 
           if (d) {
-            d.jobrunningat = d.jaghostagent || "{{ _('Not running currently.') }}";
-            d.jlgstatus = d.jlgstatus || "{{ _('Unknown') }}";
+            d.jobrunningat = d.jaghostagent || gettext("Not running currently.");
+            d.jlgstatus = d.jlgstatus || gettext("Unknown");
           }
           return d;
         },
         schema: [{
-          id: 'jobname', label: '{{ _('Name') }}', type: 'text',
+          id: 'jobname', label: gettext('Name'), type: 'text',
           cellHeaderClasses: 'width_percent_30'
         },{
-          id: 'jobid', label:'{{ _('ID') }}', mode: ['properties'],
+          id: 'jobid', label: gettext('ID'), mode: ['properties'],
           type: 'int'
         },{
-          id: 'jobenabled', label:'{{ _('Enabled?') }}', type: 'switch',
+          id: 'jobenabled', label: gettext('Enabled?'), type: 'switch',
           cellHeaderClasses: 'width_percent_5'
         },{
-          id: 'jobclass', label: '{{ _('Job class') }}', type: 'text',
+          id: 'jobclass', label: gettext('Job class'), type: 'text',
           mode: ['properties']
         },{
-          id: 'jobjclid', label: '{{ _('Job class') }}', type: 'integer',
+          id: 'jobjclid', label: gettext('Job class'), type: 'integer',
           control: 'node-ajax-options', url: 'classes', url_with_id: false,
           cache_node: 'server', mode: ['create', 'edit'],
           select2: {allowClear: false},
-          helpMessage: '{{ _('Please select a class to categorize the job. This option will not affect the way the job runs.') }}'
+          helpMessage: gettext('Please select a class to categorize the job. This option will not affect the way the job runs.')
         },{
-          id: 'jobhostagent', label: '{{ _('Host agent') }}', type: 'text',
+          id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
           mode: ['edit', 'create'],
-          helpMessage: '{{ _('Enter the hostname of a machine running pgAgent if you wish to ensure only that machine will run this job. Leave blank if any host may run the job.') }}'
+          helpMessage: gettext('Enter the hostname of a machine running pgAgent if you wish to ensure only that machine will run this job. Leave blank if any host may run the job.')
         },{
-          id: 'jobhostagent', label: '{{ _('Host agent') }}', type: 'text',
+          id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
           mode: ['properties']
         },{
           id: 'jobcreated', type: 'text', mode: ['properties'],
-          label: '{{ _('Created') }}'
+          label: gettext('Created')
         },{
           id: 'jobchanged', type: 'text', mode: ['properties'],
-          label: '{{ _('Changed') }}'
+          label: gettext('Changed')
         },{
           id: 'jobnextrun', type: 'text', mode: ['properties'],
-          label: '{{ _('Next run') }}', cellHeaderClasses: 'width_percent_20'
+          label: gettext('Next run'), cellHeaderClasses: 'width_percent_20'
         },{
           id: 'joblastrun', type: 'text', mode: ['properties'],
-          label: '{{ _('Last run') }}', cellHeaderClasses: 'width_percent_20'
+          label: gettext('Last run'), cellHeaderClasses: 'width_percent_20'
         },{
-          id: 'jlgstatus', type: 'text', label: '{{ _('Last result') }}',
+          id: 'jlgstatus', type: 'text', label: gettext('Last result'),
           cellHeaderClasses: 'width_percent_5', mode: ['properties']
         },{
           id: 'jobrunningat', type: 'text', mode: ['properties'],
-          label: '{{ _('Running at') }}'
+          label: gettext('Running at')
         },{
-          id: 'jobdesc', label:'{{ _('Comment') }}', type: 'multiline',
+          id: 'jobdesc', label: gettext('Comment'), type: 'multiline',
           cellHeaderClasses: 'width_percent_15'
         },{
-          id: 'jsteps', label: '', group: '{{ _("Steps") }}',
+          id: 'jsteps', label: '', group: gettext('Steps'),
           type: 'collection', mode: ['edit', 'create'],
           model: pgBrowser.Nodes['pga_jobstep'].model, canEdit: true,
           control: 'sub-node-collection', canAdd: true, canDelete: true,
@@ -141,7 +139,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             'jstname', 'jstenabled', 'jstkind', 'jstconntype', 'jstonerror'
           ]
         },{
-          id: 'jschedules', label: '', group: '{{ _("Schedules") }}',
+          id: 'jschedules', label: '', group: gettext('Schedules'),
           type: 'collection', mode: ['edit', 'create'],
           control: 'sub-node-collection', canAdd: true, canDelete: true,
           canEdit: true, model: pgBrowser.Nodes['pga_schedule'].model,
@@ -151,7 +149,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           var name = this.get('jobname');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
+            var msg = gettext('Name cannot be empty.');
             this.errorModel.set('jobname', msg);
             return msg;
           } else {
@@ -182,16 +180,16 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           error: function(xhr, status, error) {
 	    var error_msg = "Unable to run pgagent job.";
             if (xhr.readyState == 0) {
-              alertify.error('{{ _('Not connected to the server or the connection to the server has been closed.') }}');
+              alertify.error(gettext('Not connected to the server or the connection to the server has been closed.'));
             }
             else {
               if (_.isUndefined(xhr.responseText)) {
-                alertify.error("{{ _('" + error_msg + "') }}");
+                alertify.error(error_msg);
               }
               else {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  alertify.error("{{ _('" + err.errormsg + "') }}");
+                  alertify.error(err.errormsg);
                 }
               }
             }

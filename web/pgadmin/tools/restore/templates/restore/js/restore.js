@@ -1,11 +1,11 @@
+// Restore dialog
 define([
-      'jquery', 'underscore', 'underscore.string', 'alertify',
-      'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-      'pgadmin.browser.node'
-      ],
-
-  // This defines Restore dialog
-  function($, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin.browser', 'backbone', 'backgrid', 'backform',
+  'pgadmin.browser.node'
+], function(
+  gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
+) {
 
     // if module is already initialized, refer to that.
     if (pgBrowser.Restore) {
@@ -74,33 +74,33 @@ define([
         Backbone.Model.prototype.initialize.apply(this, arguments);
       },
       schema: [{
-        id: 'format', label: '{{ _('Format') }}',
+        id: 'format', label: gettext('Format'),
         type: 'text', disabled: false,
         control: 'select2', select2: {
             allowClear: false,
             width: "100%"
         },
         options: [
-          {label: '{{ _('Custom or tar') }}', value: "custom"},
-          {label: '{{ _('Directory') }}', value: "directory"}
+          {label: gettext('Custom or tar'), value: "custom"},
+          {label: gettext('Directory'), value: "directory"}
         ]
       },{
-        id: 'file', label: '{{ _('Filename') }}',
+        id: 'file', label: gettext('Filename'),
         type: 'text', disabled: false, control: Backform.FileControl,
         dialog_type: 'select_file', supp_types: ['*', 'backup','sql', 'patch']
       },{
-        id: 'no_of_jobs', label: '{{ _('Number of jobs') }}',
+        id: 'no_of_jobs', label: gettext('Number of jobs'),
         type: 'int'
       },{
-        id: 'role', label: '{{ _('Role name') }}',
+        id: 'role', label: gettext('Role name'),
         control: 'node-list-by-name', node: 'role',
         select2: { allowClear: false }
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Sections') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Sections'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'pre_data', label: '{{ _('Pre-data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'pre_data', label: gettext('Pre-data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return this.node.type !== 'function' && this.node.type !== 'table'
                    && this.node.type !== 'trigger'
@@ -108,8 +108,8 @@ define([
                    && (m.get('only_data') || m.get('only_schema'));
           }
         },{
-          id: 'data', label: '{{ _('Data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'data', label: gettext('Data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return this.node.type !== 'function' && this.node.type !== 'table'
                    && this.node.type !== 'trigger'
@@ -117,8 +117,8 @@ define([
                    && (m.get('only_data') || m.get('only_schema'));
           }
         },{
-          id: 'post_data', label: '{{ _('Post-data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'post_data', label: gettext('Post-data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return this.node.type !== 'function' && this.node.type !== 'table'
                    && this.node.type !== 'trigger'
@@ -127,11 +127,11 @@ define([
           }
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Type of objects') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Type of objects'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'only_data', label: '{{ _('Only data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Type of objects') }}',
+          id: 'only_data', label: gettext('Only data'),
+          control: Backform.CustomSwitchControl, group: gettext('Type of objects'),
           deps: ['pre_data', 'data', 'post_data','only_schema'], disabled: function(m) {
             return (this.node.type !== 'database' && this.node.type !== 'schema')
                    || ( m.get('pre_data')
@@ -141,8 +141,8 @@ define([
                       );
           }
         },{
-          id: 'only_schema', label: '{{ _('Only schema') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Type of objects') }}',
+          id: 'only_schema', label: gettext('Only schema'),
+          control: Backform.CustomSwitchControl, group: gettext('Type of objects'),
           deps: ['pre_data', 'data', 'post_data', 'only_data'], disabled: function(m) {
             return (this.node.type !== 'database' && this.node.type !== 'schema')
                    || ( m.get('pre_data')
@@ -153,60 +153,60 @@ define([
           }
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Do not save') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Do not save'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'dns_owner', label: '{{ _('Owner') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_owner', label: gettext('Owner'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         },{
-          id: 'dns_privilege', label: '{{ _('Privilege') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_privilege', label: gettext('Privilege'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         },{
-          id: 'dns_tablespace', label: '{{ _('Tablespace') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_tablespace', label: gettext('Tablespace'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Queries') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Queries'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'include_create_database', label: '{{ _('Include CREATE DATABASE statement') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'include_create_database', label: gettext('Include CREATE DATABASE statement'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         },{
-          id: 'clean', label: '{{ _('Clean before restore') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Queries') }}',
+          id: 'clean', label: gettext('Clean before restore'),
+          control: Backform.CustomSwitchControl, group: gettext('Queries'),
           disabled: function(m) {
             return this.node.type === 'function' ||
                      this.node.type === 'trigger_function';
           }
         },{
-          id: 'single_transaction', label: '{{ _('Single transaction') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'single_transaction', label: gettext('Single transaction'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Disable') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Disable'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'disable_trigger', label: '{{ _('Trigger') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Disable') }}'
+          id: 'disable_trigger', label: gettext('Trigger'),
+          control: Backform.CustomSwitchControl, group: gettext('Disable')
         },{
-          id: 'no_data_fail_table', label: '{{ _('No data for Failed Tables') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Disable') }}'
+          id: 'no_data_fail_table', label: gettext('No data for Failed Tables'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Disable')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Miscellaneous / Behavior') }}',
-        group: '{{ _('Restore options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Miscellaneous / Behavior'),
+        group: gettext('Restore options'),
         schema:[{
-          id: 'verbose', label: '{{ _('Verbose messages') }}',
+          id: 'verbose', label: gettext('Verbose messages'),
           control: Backform.CustomSwitchControl, disabled: false,
-          group: '{{ _('Miscellaneous / Behavior') }}'
+          group: gettext('Miscellaneous / Behavior')
         },{
-          id: 'use_set_session_auth', label: '{{ _('Use SET SESSION AUTHORIZATION') }}',
+          id: 'use_set_session_auth', label: gettext('Use SET SESSION AUTHORIZATION'),
           control: Backform.CustomSwitchControl, disabled: false,
-          group: '{{ _('Miscellaneous / Behavior') }}'
+          group: gettext('Miscellaneous / Behavior')
         },{
-          id: 'exit_on_error', label: '{{ _('Exit on error') }}',
+          id: 'exit_on_error', label: gettext('Exit on error'),
           control: Backform.CustomSwitchControl, disabled: false,
-          group: '{{ _('Miscellaneous / Behavior') }}'
+          group: gettext('Miscellaneous / Behavior')
         }]
       }],
       validate: function() {
@@ -275,7 +275,7 @@ define([
         var menus = [{
           name: 'restore_object', module: this,
           applies: ['tools'], callback: 'restore_objects',
-          priority: 13, label: '{{_("Restore...") }}',
+          priority: 13, label: gettext('Restore...'),
           icon: 'fa fa-upload', enable: menu_enabled
         }];
 
@@ -284,7 +284,7 @@ define([
             name: 'restore_' + restore_supported_nodes[idx],
             node: restore_supported_nodes[idx], module: this,
             applies: ['context'], callback: 'restore_objects',
-            priority: 13, label: '{{_("Restore...") }}',
+            priority: 13, label: gettext('Restore...'),
             icon: 'fa fa-upload', enable: menu_enabled
             });
         }
@@ -308,7 +308,7 @@ define([
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            alertify.alert(gettext("Please select server or child node from tree."));
             break;
           }
         }
@@ -319,23 +319,23 @@ define([
 
         var module = 'paths',
           preference_name = 'pg_bin_dir',
-          msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
 
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);
 
         if(preference) {
           if (!preference.value) {
-            alertify.alert('{{ _("Configuration required") }}', msg);
+            alertify.alert(gettext('Configuration required'), msg);
             return;
           }
         } else {
-          alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
           return;
         }
 
@@ -367,17 +367,17 @@ define([
                 return {
                   buttons: [{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
-                    attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Restore') }}'}
+                    attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Restore')}
                   },{
                     text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: '{{ _('Restore') }}',
+                    attrs:{name:'dialog_help', type:'button', label: gettext('Restore'),
                     url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
                   },{
-                    text: '{{ _('Restore') }}', key: 27,
+                    text: gettext('Restore'), key: 27,
                     className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true,
                     'data-btn-name': 'restore'
                   },{
-                    text: '{{ _('Cancel') }}', key: 27,
+                    text: gettext('Cancel'), key: 27,
                     className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button', restore: false,
                     'data-btn-name': 'cancel'
                   }],
@@ -451,7 +451,7 @@ define([
                       self.__internal.buttons[2].element.disabled = false;
                     } else {
                       self.__internal.buttons[2].element.disabled = true;
-                      this.errorModel.set('file', '{{ _('Please provide filename') }}')
+                      this.errorModel.set('file', gettext('Please provide filename'))
                     }
                 });
 
@@ -528,7 +528,7 @@ define([
                     success: function(res) {
                       if (res.success) {
                         alertify.notify(
-                          '{{ _('Restore job created.') }}', 'success', 5
+                          gettext('Restore job created.'), 'success', 5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       } else {
@@ -539,7 +539,7 @@ define([
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Restore failed.') }}',
+                          gettext('Restore failed.'),
                           err.errormsg
                         );
                       } catch (e) {}

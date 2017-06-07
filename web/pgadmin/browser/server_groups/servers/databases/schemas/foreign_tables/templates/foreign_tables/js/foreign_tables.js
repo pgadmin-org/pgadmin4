@@ -1,13 +1,14 @@
 /* Create and Register Foreign Table Collection and Node. */
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-foreign-table']) {
     var foreigntable = pgBrowser.Nodes['coll-foreign-table'] =
       pgBrowser.Collection.extend({
         node: 'foreign-table',
-        label: '{{ _('Foreign Tables') }}',
+        label: gettext('Foreign Tables'),
         type: 'coll-foreign-table',
         columns: ['name', 'owner', 'description']
       });
@@ -85,20 +86,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     },
     type_options: undefined,
     schema: [{
-        id: 'attname', label:'{{ _('Name') }}', cell: 'string', type: 'text',
+        id: 'attname', label: gettext('Name'), cell: 'string', type: 'text',
         editable: 'is_editable_column', cellHeaderClasses: 'width_percent_40'
       },{
-        id: 'datatype', label:'{{ _('Data Type') }}', cell: 'node-ajax-options',
+        id: 'datatype', label: gettext('Data Type'), cell: 'node-ajax-options',
         control: 'node-ajax-options', type: 'text', url: 'get_types',
         editable: 'is_editable_column', cellHeaderClasses: 'width_percent_0',
-        group: '{{ _('Definition') }}',
+        group: gettext('Definition'),
         transform: function(d, self){
             self.model.type_options = d;
             return d;
           }
       },{
-        id: 'typlen', label:'{{ _('Length') }}',
-        cell: 'string', group: '{{ _('Definition') }}',
+        id: 'typlen', label: gettext('Length'),
+        cell: 'string', group: gettext('Definition'),
         type: 'int', deps: ['datatype'],
         disabled: function(m) {
         // We will store type from selected from combobox
@@ -132,9 +133,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         cellHeaderClasses: 'width_percent_10'
       },{
-        id: 'precision', label:'{{ _('Precision') }}',
+        id: 'precision', label: gettext('Precision'),
         type: 'int', deps: ['datatype'],
-        cell: 'string', group: '{{ _('Definition') }}',
+        cell: 'string', group: gettext('Definition'),
         disabled: function(m) {
           if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
@@ -164,8 +165,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         return true;
         }, cellHeaderClasses: 'width_percent_10'
       },{
-        id: 'typdefault', label:'{{ _('Default') }}', type: 'text',
-        cell: 'string', min_version: 90300, group: '{{ _('Definition') }}',
+        id: 'typdefault', label: gettext('Default'), type: 'text',
+        cell: 'string', min_version: 90300, group: gettext('Definition'),
         placeholder: "Enter an expression or a value.",
         cellHeaderClasses: 'width_percent_10',
         editable: function(m) {
@@ -179,12 +180,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           return true;
         }
       },{
-        id: 'attnotnull', label:'{{ _('Not Null') }}',
+        id: 'attnotnull', label: gettext('Not Null'),
         cell: 'boolean',type: 'switch', editable: 'is_editable_column',
-        cellHeaderClasses: 'width_percent_10', group: '{{ _('Definition') }}'
+        cellHeaderClasses: 'width_percent_10', group: gettext('Definition')
       },{
-        id: 'attstattarget', label:'{{ _('Statistics') }}', min_version: 90200,
-        cell: 'integer', type: 'int', group: '{{ _('Definition') }}',
+        id: 'attstattarget', label: gettext('Statistics'), min_version: 90200,
+        cell: 'integer', type: 'int', group: gettext('Definition'),
         editable: function(m) {
          if (_.isUndefined(m.isNew) || m.isNew()) { return false; }
          if (this.get('node_info').server.version < 90200){
@@ -194,23 +195,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
         }, cellHeaderClasses: 'width_percent_10'
       },{
-        id: 'collname', label:'{{ _('Collation') }}', cell: 'node-ajax-options',
+        id: 'collname', label: gettext('Collation'), cell: 'node-ajax-options',
         control: 'node-ajax-options', type: 'text', url: 'get_collations',
         min_version: 90300, editable: function(m) {
           if (!(_.isUndefined(m.isNew)) && !m.isNew()) { return false; }
           return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
            || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false
         },
-        cellHeaderClasses: 'width_percent_20', group: '{{ _('Definition') }}'
+        cellHeaderClasses: 'width_percent_20', group: gettext('Definition')
       },{
         id: 'attnum', cell: 'string',type: 'text', visible: false
       },{
-        id: 'inheritedfrom', label:'{{ _('Inherited From') }}', cell: 'string',
+        id: 'inheritedfrom', label: gettext('Inherited From'), cell: 'string',
         type: 'text', visible: false, mode: ['properties', 'edit'],
         cellHeaderClasses: 'width_percent_10'
       },{
-          id: 'coloptions', label:'{{ _('Options') }}', cell: 'string',
-          type: 'collection', group: 'Options', mode: ['edit', 'create'],
+          id: 'coloptions', label: gettext('Options'), cell: 'string',
+          type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
           model: ColumnOptionsModel, canAdd: true, canDelete: true, canEdit: false,
           control: Backform.UniqueColCollectionControl, uniqueCol : ['option'],
           min_version: 90200
@@ -220,13 +221,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       errmsg;
 
       if (_.isUndefined(this.get('attname')) || String(this.get('attname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['name'] = '{{ _('Column Name cannot be empty!') }}';
+        err['name'] = gettext('Column Name cannot be empty!');
         errmsg = errmsg || err['attname'];
       }
 
       if (_.isUndefined(this.get('datatype')) || String(this.get('datatype'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['basensp'] = '{{ _('Column Datatype cannot be empty!') }}';
+        err['basensp'] = gettext('Column Datatype cannot be empty!');
         errmsg = errmsg || err['datatype'];
       }
 
@@ -372,18 +373,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     schema: [{
       id: 'conoid', type: 'text', cell: 'string', visible: false
     },{
-      id: 'conname', label:'{{ _('Name') }}', type: 'text', cell: 'string',
+      id: 'conname', label: gettext('Name'), type: 'text', cell: 'string',
       editable: 'is_editable', cellHeaderClasses: 'width_percent_30'
     },{
-      id: 'consrc', label:'{{ _('Check') }}', type: 'multiline',
+      id: 'consrc', label: gettext('Check'), type: 'multiline',
       editable: 'is_editable', cell: Backgrid.Extension.TextareaCell,
       cellHeaderClasses: 'width_percent_30'
     },{
-      id: 'connoinherit', label:'{{ _('No Inherit') }}', type: 'switch',
+      id: 'connoinherit', label: gettext('No Inherit'), type: 'switch',
       cell: 'boolean', editable: 'is_editable',
       cellHeaderClasses: 'width_percent_20'
     },{
-      id: 'convalidated', label:'{{ _('Validate?') }}', type: 'switch',
+      id: 'convalidated', label: gettext('Validate?'), type: 'switch',
       cell: 'boolean', cellHeaderClasses: 'width_percent_20',
       editable: function(m) {
         var server = this.get('node_info').server;
@@ -403,13 +404,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       errmsg;
 
       if (_.isUndefined(this.get('conname')) || String(this.get('conname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['conname'] = '{{ _('Constraint Name cannot be empty!') }}';
+        err['conname'] = gettext('Constraint Name cannot be empty!');
         errmsg = errmsg || err['conname'];
       }
 
       if (_.isUndefined(this.get('consrc')) || String(this.get('consrc'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['consrc'] = '{{ _('Constraint Check cannot be empty!') }}';
+        err['consrc'] = gettext('Constraint Check cannot be empty!');
         errmsg = errmsg || err['consrc'];
       }
 
@@ -431,10 +432,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       value: undefined
     },
     schema: [{
-      id: 'option', label:'{{ _('Option') }}', cell: 'string', type: 'text',
+      id: 'option', label: gettext('Option'), cell: 'string', type: 'text',
       editable: true, cellHeaderClasses:'width_percent_50'
     },{
-      id: 'value', label:'{{ _('Value') }}', cell: 'string',type: 'text',
+      id: 'value', label: gettext('Value'), cell: 'string',type: 'text',
       editable: true, cellHeaderClasses:'width_percent_50'
     }
     ],
@@ -451,7 +452,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-alterforeigntable.html',
       sqlCreateHelp: 'sql-createforeigntable.html',
       dialogHelp: '{{ url_for('help.static', filename='foreign_table_dialog.html') }}',
-      label: '{{ _('Foreign Table') }}',
+      label: gettext('Foreign Table'),
       collection_type: 'coll-foreign-table',
       hasSQL: true,
       hasDepends: true,
@@ -467,19 +468,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_foreign-table_on_coll', node: 'coll-foreign-table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Table...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign-table', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_foreign-table', node: 'foreign-table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Table...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign-table', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_foreign-table', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Table...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Table...'),
           icon: 'wcTabIcon icon-foreign-table', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -519,27 +520,27 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           seclabels: []
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit']
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           control: Backform.NodeListByNameControl,
           node: 'role',  type: 'text', select2: { allowClear: false }
         },{
-          id: 'basensp', label:'{{ _('Schema') }}', cell: 'node-list-by-name',
+          id: 'basensp', label: gettext('Schema'), cell: 'node-list-by-name',
            control: 'node-list-by-name', cache_level: 'database', type: 'text',
            node: 'schema', mode:['create', 'edit']
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'ftsrvname', label:'{{ _('Foreign server') }}', cell: 'string', control: 'node-ajax-options',
-          type: 'text', group: 'Definition', url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); }
+          id: 'ftsrvname', label: gettext('Foreign server'), cell: 'string', control: 'node-ajax-options',
+          type: 'text', group: gettext('Definition'), url: 'get_foreign_servers', disabled: function(m) { return !m.isNew(); }
         },{
-          id: 'inherits', label:'{{ _('Inherits') }}', group: 'Definition',
+          id: 'inherits', label: gettext('Inherits'), group: gettext('Definition'),
           type: 'array', min_version: 90500, control: NodeAjaxOptionsMultipleControl,
           url: 'get_tables', select2: {multiple: true},
           'cache_level': 'database',
@@ -554,8 +555,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return d;
           }
         },{
-          id: 'columns', label:'{{ _('Columns') }}', cell: 'string',
-          type: 'collection', group: 'Columns', visible: false, mode: ['edit', 'create'],
+          id: 'columns', label: gettext('Columns'), cell: 'string',
+          type: 'collection', group: gettext('Columns'), visible: false, mode: ['edit', 'create'],
           model: ColumnsModel, canAdd: true, canDelete: true, canEdit: true,
           columns: ['attname', 'datatype', 'inheritedfrom'],
           canDeleteRow: function(m) {
@@ -568,8 +569,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
         },
         {
-          id: 'constraints', label:'{{ _('Constraints') }}', cell: 'string',
-          type: 'collection', group: 'Constraints', visible: false, mode: ['edit', 'create'],
+          id: 'constraints', label: gettext('Constraints'), cell: 'string',
+          type: 'collection', group: gettext('Constraints'), visible: false, mode: ['edit', 'create'],
           model: ConstraintModel, canAdd: true, canDelete: true, columns: ['conname','consrc', 'connoinherit', 'convalidated'],
           canEdit: function(o) {
             if (o instanceof Backbone.Model) {
@@ -582,19 +583,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return (m.get('conislocal') == true || _.isUndefined(m.get('conislocal'))) ? true : false
           }
         },{
-          id: 'strftoptions', label:'{{ _('Options') }}', cell: 'string',
-          type: 'text', group: 'Definition', mode: ['properties']
+          id: 'strftoptions', label: gettext('Options'), cell: 'string',
+          type: 'text', group: gettext('Definition'), mode: ['properties']
         },{
-          id: 'ftoptions', label:'{{ _('Options') }}', cell: 'string',
-          type: 'collection', group: 'Options', mode: ['edit', 'create'],
+          id: 'ftoptions', label: gettext('Options'), cell: 'string',
+          type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
           model: OptionsModel, canAdd: true, canDelete: true, canEdit: false,
           control: 'unique-col-collection', uniqueCol : ['option']
         },{
-          id: 'relacl', label: '{{ _('Privileges') }}', cell: 'string',
-          type: 'text', group: '{{ _('Security') }}',
+          id: 'relacl', label: gettext('Privileges'), cell: 'string',
+          type: 'text', group: gettext('Security'),
           mode: ['properties'], min_version: 90200
         }, pgBrowser.SecurityGroupUnderSchema, {
-          id: 'acl', label: '{{ _('Privileges') }}', model: pgAdmin
+          id: 'acl', label: gettext('Privileges'), model: pgAdmin
           .Browser.Node.PrivilegeRoleModel.extend(
           {privileges: ['a','r','w','x']}), uniqueCol : ['grantee', 'grantor'],
           editable: false, type: 'collection', group: 'security',
@@ -602,7 +603,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           canAdd: true, canDelete: true, control: 'unique-col-collection',
           min_version: 90200
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
@@ -617,18 +618,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name cannot be empty.') }}';
+            err['name'] = gettext('Name cannot be empty.');
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('basensp')) || String(this.get('basensp'))
           .replace(/^\s+|\s+$/g, '') == '') {
-            err['basensp'] = '{{ _('Schema cannot be empty.') }}';
+            err['basensp'] = gettext('Schema cannot be empty.');
             errmsg = errmsg || err['basensp'];
           }
 
           if (_.isUndefined(this.get('ftsrvname')) || String(this.get('ftsrvname')).replace(/^\s+|\s+$/g, '') == '') {
-            err['ftsrvname'] = '{{ _('Foreign server cannot be empty.') }}';
+            err['ftsrvname'] = gettext('Foreign server cannot be empty.');
             errmsg = errmsg || err['ftsrvname'];
           }
 

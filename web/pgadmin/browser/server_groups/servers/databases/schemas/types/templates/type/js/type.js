@@ -1,14 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-         'pgadmin.browser', 'alertify', 'backgrid', 'pgadmin.backgrid',
-          'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'backgrid', 'pgadmin.backgrid',
+  'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-type']) {
     var databases = pgBrowser.Nodes['coll-type'] =
       pgBrowser.Collection.extend({
         node: 'type',
-        label: '{{ _('Types') }}',
+        label: gettext('Types'),
         type: 'coll-type',
         columns: ['name', 'typeowner', 'description']
       });
@@ -81,10 +81,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
     type_options: undefined,
     subtypes: undefined,
     schema: [{
-      id: 'member_name', label: '{{ _('Member Name') }}',
+      id: 'member_name', label: gettext('Member Name'),
       type: 'text',  disabled: false, editable: true
     },{
-      id: 'type', label: '{{ _('Type') }}', control: 'node-ajax-options',
+      id: 'type', label: gettext('Type'), control: 'node-ajax-options',
       type: 'text', url: 'get_types', disabled: false, node: 'type',
       cell: 'node-ajax-options', select2: {allowClear: false},
       editable: true,
@@ -96,7 +96,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
       // closely as possible, therefore we use Length/Precision and Scale
-      id: 'tlength', label: '{{ _('Length/precision') }}', deps: ['type'], type: 'text',
+      id: 'tlength', label: gettext('Length/precision'), deps: ['type'], type: 'text',
       disabled: false, cell: IntegerDepCell,
       editable: function(m) {
         // We will store type from selected from combobox
@@ -126,7 +126,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
       // closely as possible, therefore we use Length/Precision and Scale
-      id: 'precision', label: '{{ _('Scale') }}', deps: ['type'],
+      id: 'precision', label: gettext('Scale'), deps: ['type'],
       type: 'text', disabled: false, cell: IntegerDepCell,
       editable: function(m) {
         // We will store type from selected from combobox
@@ -153,7 +153,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         return m.get('is_precision');
       }
     },{
-      id: 'collation', label: '{{ _('Collation') }}',
+      id: 'collation', label: gettext('Collation'),
       cell: NodeAjaxOptionsDepsCell, deps: ['type'],
       select2: {allowClear: false},
       control: 'node-ajax-options', editable: function(m) {
@@ -189,14 +189,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       if ( _.isUndefined(this.get('member_name')) ||
         _.isNull(this.get('member_name')) ||
         String(this.get('member_name')).replace(/^\s+|\s+$/g, '') == '') {
-          errmsg = '{{ _('Please specify the value for member name.') }}';
+          errmsg = gettext('Please specify the value for member name.');
           this.errorModel.set('member_name', errmsg)
           return errmsg;
       }
       else if ( _.isUndefined(this.get('type')) ||
         _.isNull(this.get('type')) ||
         String(this.get('type')).replace(/^\s+|\s+$/g, '') == '') {
-          errmsg = '{{ _('Please specify the type.') }}';
+          errmsg = gettext('Please specify the type.');
           this.errorModel.set('type', errmsg)
           return errmsg;
       }
@@ -204,9 +204,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       else if (this.get('is_tlength')
         && !_.isUndefined(this.get('tlength'))) {
         if (this.get('tlength') < this.get('min_val'))
-          errmsg = '{{ _('Length/precision should not be less than ') }}'  + this.get('min_val');
+          errmsg = gettext('Length/precision should not be less than %(value)s', {value: this.get('min_val')});
         if (this.get('tlength') > this.get('max_val') )
-          errmsg = '{{ _('Length/precision should not be greater than ') }}' + this.get('max_val');
+          errmsg = gettext('Length/precision should not be greater than %(value)s', {value: this.get('max_val')});
         // If we have any error set then throw it to user
         if(errmsg) {
           this.errorModel.set('tlength', errmsg)
@@ -217,9 +217,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       else if (this.get('is_precision')
         && !_.isUndefined(this.get('precision'))) {
         if (this.get('precision') < this.get('min_val'))
-          errmsg = '{{ _('Scale should not be less than ') }}' + this.get('min_val');
+          errmsg = gettext('Scale should not be less than  %(value)s', {value: this.get('min_val')});
         if (this.get('precision') > this.get('max_val'))
-          errmsg = '{{ _('Scale should not be greater than ') }}' + this.get('max_val');
+          errmsg = gettext('Scale should not be greater than  %(value)s', {value: this.get('max_val')});
         // If we have any error set then throw it to user
         if(errmsg) {
           this.errorModel.set('precision', errmsg)
@@ -235,7 +235,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       label: undefined,
     },
     schema: [{
-      id: 'label', label: '{{ _('Label') }}',type: 'text', disabled: false,
+      id: 'label', label: gettext('Label'),type: 'text', disabled: false,
       cellHeaderClasses: 'width_percent_99', editable: function(m) {
         return _.isUndefined(m.get('label'));
       }
@@ -251,7 +251,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
       sqlAlterHelp: 'sql-altertype.html',
       sqlCreateHelp: 'sql-createtype.html',
       dialogHelp: '{{ url_for('help.static', filename='type_dialog.html') }}',
-      label: '{{ _('Type') }}',
+      label: gettext('Type'),
       collection_type: 'coll-type',
       hasSQL: true,
       hasDepends: true,
@@ -266,19 +266,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         pgBrowser.add_menus([{
           name: 'create_type_on_coll', node: 'coll-type', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Type...') }}',
+          category: 'create', priority: 4, label: gettext('Type...'),
           icon: 'wcTabIcon icon-type', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_type', node: 'type', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Type...') }}',
+          category: 'create', priority: 4, label: gettext('Type...'),
           icon: 'wcTabIcon icon-type', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_type', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Type...') }}',
+          category: 'create', priority: 4, label: gettext('Type...'),
           icon: 'wcTabIcon icon-type', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -310,19 +310,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
         },
 
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'schemaCheck'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'], disabled: true
         },{
-          id: 'typeowner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'typeowner', label: gettext('Owner'), cell: 'string',
           control: 'node-list-by-name',
           type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
           disabled: 'inSchema', select2: {allowClear: false}
         },{
-          id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], node: 'schema',
           disabled: 'schemaCheck', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
@@ -334,9 +334,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           }, cache_node: 'database', cache_level: 'database',
           control: 'node-list-by-name', select2: {allowClear: false}
         },{
-          id: 'typtype', label:'{{ _('Type') }}',
+          id: 'typtype', label: gettext('Type'),
           mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
-          group: '{{ _('Definition') }}',
+          group: gettext('Definition'),
           mode: ['edit', 'create'],
           select2: { width: "50%", allowClear: false },
           options: function(obj) {
@@ -361,9 +361,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
           })
         },{
-          id: 'composite', label: '{{ _('Composite Type') }}',
+          id: 'composite', label: gettext('Composite Type'),
           model: CompositeModel, editable: true, type: 'collection',
-          group: '{{ _('Definition') }}', mode: ['edit', 'create'],
+          group: gettext('Definition'), mode: ['edit', 'create'],
           control: 'unique-col-collection', uniqueCol : ['member_name'],
           canAdd: true, canEdit: false, canDelete: true, disabled: 'inSchema',
           deps: ['typtype'],
@@ -371,9 +371,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
            return m.get('typtype') === 'c';
           }
         },{
-          id: 'enum', label: '{{ _('Enumeration Type') }}',
+          id: 'enum', label: gettext('Enumeration Type'),
           model: EnumModel, editable: true, type: 'collection',
-          group: '{{ _('Definition') }}', mode: ['edit', 'create'],
+          group: gettext('Definition'), mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: function(m) {
               // We will disable it if it's in 'edit' mode
               if (m.isNew()) {
@@ -389,24 +389,24 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
           }
         },{
           // We will disable range type control in edit mode
-          type: 'nested', control: 'plain-fieldset', group: '{{ _('Definition') }}',
+          type: 'nested', control: 'plain-fieldset', group: gettext('Definition'),
           mode: ['edit', 'create'],
           visible: function(m) {
             return m.get('typtype') === 'r';
           }, deps: ['typtype'], label: '',
           schema:[{
-            id: 'typname', label:'{{ _('Subtype') }}', cell: 'string',
+            id: 'typname', label: gettext('Subtype'), cell: 'string',
             control: 'node-ajax-options',
             select2: { allowClear: true, placeholder: "", width: "100%" },
             url: 'get_stypes', type: 'text', mode: ['properties', 'create', 'edit'],
-            group: '{{ _('Range Type') }}', disabled: 'inSchemaWithModelCheck',
+            group: gettext('Range Type'), disabled: 'inSchemaWithModelCheck',
             transform: function(d, self){
               self.model.subtypes =  d;
               return d;
             }
           },{
-              id: 'opcname', label:'{{ _('Subtype operator class') }}', cell: 'string',
-              mode: ['properties', 'create', 'edit'], group: '{{ _('Range Type') }}',
+              id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
+              mode: ['properties', 'create', 'edit'], group: gettext('Range Type'),
               disabled: 'inSchemaWithModelCheck', deps: ['typname'],
               control: 'select', options: function() {
                 var l_typname = this.model.get('typname'),
@@ -437,9 +437,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 return result;
               }
             },{
-              id: 'collname', label:'{{ _('Collation') }}', cell: 'string',
+              id: 'collname', label: gettext('Collation'), cell: 'string',
               type: 'text', mode: ['properties', 'create', 'edit'],
-              group: '{{ _('Range Type') }}',
+              group: gettext('Range Type'),
               deps: ['typname'], control: 'node-ajax-options', url: 'get_collations',
               select2: { allowClear: true, placeholder: "", width: "100%" },
               disabled: function(m) {
@@ -471,9 +471,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 return is_collate ? false : true;
               }
             },{
-              id: 'rngcanonical', label:'{{ _('Canonical function') }}', cell: 'string',
+              id: 'rngcanonical', label: gettext('Canonical function'), cell: 'string',
               type: 'text', mode: ['properties', 'create', 'edit'],
-              group: '{{ _('Range Type') }}',
+              group: gettext('Range Type'),
               disabled: 'inSchemaWithModelCheck', deps: ['name', 'typname'],
               control: 'select', options: function() {
                 var name = this.model.get('name'),
@@ -505,9 +505,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
               return result;
             }
             },{
-              id: 'rngsubdiff', label:'{{ _('Subtype diff function') }}', cell: 'string',
+              id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
               type: 'text', mode: ['properties', 'create', 'edit'],
-              group: '{{ _('Range Type') }}',
+              group: gettext('Range Type'),
               disabled: 'inSchemaWithModelCheck', deps: ['opcname'],
               control: 'select', options: function() {
                 var l_typname = this.model.get('typname'),
@@ -542,49 +542,49 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             }
           }]
         },{
-          type: 'nested', control: 'tab', group: '{{ _('Definition') }}',
-          label: '{{ _('External Type') }}', deps: ['typtype'],
+          type: 'nested', control: 'tab', group: gettext('Definition'),
+          label: gettext('External Type'), deps: ['typtype'],
           mode: ['create', 'edit'],
           visible: function(m) {
             return m.get('typtype') === 'b';
           },
           schema:[{
-            id: 'typinput', label:'{{ _('Input function') }}',
+            id: 'typinput', label: gettext('Input function'),
             cell: 'string',type: 'text',
-            mode: ['properties', 'create', 'edit'], group: 'Required',
+            mode: ['properties', 'create', 'edit'], group: gettext('Required'),
             disabled: 'inSchemaWithModelCheck',
             control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: "", width: "100%" }
           },{
-            id: 'typoutput', label:'{{ _('Output function') }}',
+            id: 'typoutput', label: gettext('Output function'),
             cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
-            group: 'Required',
+            group: gettext('Required'),
             disabled: 'inSchemaWithModelCheck'
             ,control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: "", width: "100%" }
           },{
-            id: 'typreceive', label:'{{ _('Receive function') }}',
-            cell: 'string', type: 'text', group: 'Optional-1',
+            id: 'typreceive', label: gettext('Receive function'),
+            cell: 'string', type: 'text', group: gettext('Optional-1'),
             mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck'
             ,control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: "", width: "100%" }
           },{
-            id: 'typsend', label:'{{ _('Send function') }}',
-            cell: 'string', group: 'Optional-1',
+            id: 'typsend', label: gettext('Send function'),
+            cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck'
             ,control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: "", width: "100%" }
           },{
-            id: 'typmodin', label:'{{ _('Typmod in function') }}',
+            id: 'typmodin', label: gettext('Typmod in function'),
             cell: 'string', type: 'text',
-            mode: ['properties', 'create', 'edit'], group: 'Optional-1',
+            mode: ['properties', 'create', 'edit'], group: gettext('Optional-1'),
             disabled: 'inSchemaWithModelCheck',
             control: 'node-ajax-options', url: 'get_external_functions',
             select2: { allowClear: true, placeholder: "", width: "100%" },
@@ -599,8 +599,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
              return result;
             }
           },{
-            id: 'typmodout', label:'{{ _('Typmod out function') }}',
-            cell: 'string', group: 'Optional-1',
+            id: 'typmodout', label: gettext('Typmod out function'),
+            cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck',
             control: 'node-ajax-options', url: 'get_external_functions',
@@ -616,31 +616,31 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
              return result;
             }
           },{
-            id: 'typlen', label:'{{ _('Internal length') }}',
-            cell: 'integer', group: 'Optional-1',
+            id: 'typlen', label: gettext('Internal length'),
+            cell: 'integer', group: gettext('Optional-1'),
             type: 'int', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck'
           },{
-            id: 'variable', label:'{{ _('Variable?') }}', cell: 'switch',
-            group: 'Optional-1', type: 'switch',
+            id: 'variable', label: gettext('Variable?'), cell: 'switch',
+            group: gettext('Optional-1'), type: 'switch',
             mode: ['create','edit'],
             disabled: 'inSchemaWithModelCheck'
           },{
-            id: 'typdefault', label:'{{ _('Default?') }}',
-            cell: 'string', group: 'Optional-1',
+            id: 'typdefault', label: gettext('Default?'),
+            cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
             disabled: 'inSchemaWithModelCheck'
           },{
-            id: 'typanalyze', label:'{{ _('Analyze function') }}',
-            cell: 'string', group: 'Optional-1',
+            id: 'typanalyze', label: gettext('Analyze function'),
+            cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
             disabled: 'inSchemaWithModelCheck'
             ,control: 'node-ajax-options', url: 'get_external_functions',
             transform: 'external_func_combo',
             select2: { allowClear: true, placeholder: "", width: "100%" }
           },{
-            id: 'typcategory', label:'{{ _('Category type') }}',
-            cell: 'string', group: 'Optional-1',
+            id: 'typcategory', label: gettext('Category type'),
+            cell: 'string', group: gettext('Optional-1'),
             type: 'text', mode: ['properties', 'create','edit'],
             disabled: 'inSchemaWithModelCheck', control: 'select2',
             select2: { allowClear: true, placeholder: "", width: "100%" },
@@ -662,22 +662,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
               {label :"unknown type", value : "X"}
             ]
           },{
-            id: 'typispreferred', label:'{{ _('Preferred?') }}', cell: 'switch',
+            id: 'typispreferred', label: gettext('Preferred?'), cell: 'switch',
             type: 'switch', mode: ['properties', 'create','edit'],
             disabled: 'inSchemaWithModelCheck',
-            group: 'Optional-1'
+            group: gettext('Optional-1')
           },{
-            id: 'element', label:'{{ _('Element type') }}', cell: 'string',
-            control: 'node-ajax-options', group: 'Optional-2',
+            id: 'element', label: gettext('Element type'), cell: 'string',
+            control: 'node-ajax-options', group: gettext('Optional-2'),
             type: 'text', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck', url: 'get_types'
           },{
-            id: 'typdelim', label:'{{ _('Delimiter') }}', cell: 'string',
+            id: 'typdelim', label: gettext('Delimiter'), cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
-            group: 'Optional-2', disabled: 'inSchemaWithModelCheck'
+            group: gettext('Optional-2'), disabled: 'inSchemaWithModelCheck'
           },{
-            id: 'typalign', label:'{{ _('Alignment type') }}',
-            cell: 'string', group: 'Optional-2',
+            id: 'typalign', label: gettext('Alignment type'),
+            cell: 'string', group: gettext('Optional-2'),
             type: 'text', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck', control: 'select2',
             select2: { allowClear: true, placeholder: "", width: "100%" },
@@ -689,9 +689,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
               {label: "double", value: "d"},
             ]
           },{
-            id: 'typstorage', label:'{{ _('Storage type') }}',
+            id: 'typstorage', label: gettext('Storage type'),
             type: 'text', mode: ['properties', 'create', 'edit'],
-            group: 'Optional-2', cell: 'string',
+            group: gettext('Optional-2'), cell: 'string',
             disabled: 'inSchemaWithModelCheck', control: 'select2',
             select2: { allowClear: true, placeholder: "", width: "100%" },
             options: [
@@ -702,28 +702,28 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
               {label: "EXTENDED", value: "x"},
              ]
           },{
-            id: 'typbyval', label:'{{ _('Passed by value?') }}',
+            id: 'typbyval', label: gettext('Passed by value?'),
             cell: 'switch',
             type: 'switch', mode: ['properties', 'create', 'edit'],
-            disabled: 'inSchemaWithModelCheck', group: 'Optional-2',
+            disabled: 'inSchemaWithModelCheck', group: gettext('Optional-2'),
           },{
-            id: 'is_collatable', label:'{{ _('Collatable?') }}',
-            cell: 'switch',  min_version: 90100, group: 'Optional-2',
+            id: 'is_collatable', label: gettext('Collatable?'),
+            cell: 'switch',  min_version: 90100, group: gettext('Optional-2'),
             type: 'switch', mode: ['properties', 'create', 'edit'],
             disabled: 'inSchemaWithModelCheck'
           // End of extension tab
         }]
         },{
-          id: 'alias', label:'{{ _('Alias') }}', cell: 'string',
+          id: 'alias', label: gettext('Alias'), cell: 'string',
           type: 'text', mode: ['properties'],
           disabled: 'inSchema'
         }, pgBrowser.SecurityGroupUnderSchema,{
-          id: 'type_acl', label:'{{ _('Privileges') }}', cell: 'string',
+          id: 'type_acl', label: gettext('Privileges'), cell: 'string',
           type: 'text', mode: ['properties'], group: 'security',
           disabled: 'inSchema'
         },{
-          id: 'member_list', label:'{{ _('Members') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Definition') }}',
+          id: 'member_list', label: gettext('Members'), cell: 'string',
+          type: 'text', mode: ['properties'], group: gettext('Definition'),
           disabled: 'inSchema', visible: function(m) {
             if(m.get('typtype') === 'c') {
               return true;
@@ -731,8 +731,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             return false;
           }
         },{
-          id: 'enum_list', label:'{{ _('Labels') }}', cell: 'string',
-          type: 'text', mode: ['properties'], group: '{{ _('Definition') }}',
+          id: 'enum_list', label: gettext('Labels'), cell: 'string',
+          type: 'text', mode: ['properties'], group: gettext('Definition'),
           disabled: 'inSchema', visible: function(m) {
             if(m.get('typtype') === 'e') {
               return true;
@@ -740,15 +740,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             return false;
           }
         },{
-          id: 'is_sys_type', label:'{{ _('System type?') }}', cell: 'switch',
+          id: 'is_sys_type', label: gettext('System type?'), cell: 'switch',
           type: 'switch', mode: ['properties'],
           disabled: 'inSchema'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
         },{
-          id: 'typacl', label:'{{ _('Privileges') }}', type: 'collection',
+          id: 'typacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['U']
@@ -766,7 +766,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             return !(m.get('typtype') === 'p');
           }
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canEdit: false, canDelete: true,
@@ -794,7 +794,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           }
@@ -804,7 +804,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             _.isNull(this.get('schema')) ||
             String(this.get('schema')).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            msg = '{{ _('Schema cannot be empty.') }}';
+            msg = gettext('Schema cannot be empty.');
             this.errorModel.set('schema', msg);
             return msg;
           }
@@ -814,7 +814,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
             _.isNull(this.get('typtype')) ||
             String(this.get('typtype')).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            msg = '{{ _('Type cannot be empty.') }}';
+            msg = gettext('Type cannot be empty.');
             this.errorModel.set('typtype', msg);
             return msg;
           }
@@ -826,7 +826,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 _.isNull(this.get('typname')) ||
                 String(this.get('typname')).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                msg = '{{ _('Subtype name cannot be empty.') }}';
+                msg = gettext('Subtype name cannot be empty.');
                 this.errorModel.set('typname', msg);
                 return msg;
               }
@@ -839,7 +839,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 _.isNull(this.get('typinput')) ||
                 String(this.get('typinput')).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                msg = '{{ _('Input function cannot be empty.') }}';
+                msg = gettext('Input function cannot be empty.');
                 this.errorModel.set('typinput', msg);
                 return msg;
               }
@@ -848,7 +848,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
                 _.isNull(this.get('typoutput')) ||
                 String(this.get('typoutput')).replace(/^\s+|\s+$/g, '') == ''
               ) {
-                msg = '{{ _('Output function cannot be empty.') }}';
+                msg = gettext('Output function cannot be empty.');
                 this.errorModel.set('typoutput', msg);
                 return msg;
               }

@@ -1,7 +1,7 @@
 define([
-  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
   'alertify', 'sources/size_prettify'
-], function(_, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
+], function(gettext, _, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
 
   if (pgBrowser.NodeStatistics)
     return pgBrowser.NodeStatistics;
@@ -78,8 +78,8 @@ define([
 
   _.extend(
     PGBooleanCell.prototype.defaults.options, {
-      onText: pgBrowser.messages.TRUE,
-      offText: pgBrowser.messages.FALSE,
+      onText: gettext('True'),
+      offText: gettext('False'),
       onColor: 'success',
       offColor: 'primary',
       size: 'mini'
@@ -104,14 +104,14 @@ define([
           statistic_columns: [{
             editable: false,
             name: 'statistics',
-            label: pgBrowser.messages.STATISTICS_LABEL,
+            label: gettext("Statistics"),
             cell: 'string',
             headerCell: Backgrid.Extension.CustomHeaderCell,
             cellHeaderClasses: 'width_percent_25'
           },{
             editable: false,
             name: 'value',
-            label: pgBrowser.messages.STATISTICS_VALUE_LABEL,
+            label: gettext("Value"),
             cell: 'string'
           }],
           panel: pgBrowser.docker.findPanels('statistics'),
@@ -180,7 +180,7 @@ define([
           n_type = node_type;
 
       if (node) {
-        msg = pgBrowser.messages.NODE_HAS_NO_STATISTICS;
+        msg = gettext("No statistics are available for the selected object.");
         /* We fetch the statistics only for those node who set the parameter
          * showStatistics function.
          */
@@ -209,7 +209,7 @@ define([
               timer = setTimeout(function(){
                 // notify user if request is taking longer than 1 second
 
-                $msgContainer.text(pgBrowser.messages['LOADING_MESSAGE']);
+                $msgContainer.text(gettext("Retrieving data from the server..."));
                 $msgContainer.removeClass('hidden');
                 if (self.grid) {
                   self.grid.remove();
@@ -267,16 +267,16 @@ define([
               ) {
                 Alertify.pgNotifier(
                   error, xhr,
-                  S(
-                    pgBrowser.messages['ERR_RETRIEVAL_INFO']
-                  ).sprintf(message || _label).value(),
+                  S(gettext("Error retrieving the information - %s")).sprintf(
+                    message || _label
+                  ).value(),
                   function() {
                     console.log(arguments);
                   }
                 );
               }
               // show failed message.
-              $msgContainer.text(pgBrowser.messages['LOADING_FAILED']);
+              $msgContainer.text(gettext("Failed to retrieve data from the server."));
             }
           });
         }

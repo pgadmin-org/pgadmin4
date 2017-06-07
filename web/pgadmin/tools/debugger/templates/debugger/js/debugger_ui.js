@@ -1,9 +1,9 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
-   'pgadmin.browser', 'backbone', 'backgrid', 'codemirror', 'backform',
-   'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
-   'pgadmin.browser.panel'],
-  function($, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform ) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
+  'backform', 'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.panel'
+], function(gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform ) {
 
   /*
    * Function used to return the respective Backgrid control based on the data type
@@ -86,7 +86,7 @@ define(
       if (_.isUndefined(this.get('value')) ||
           _.isNull(this.get('value')) ||
           String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = '{{ _('Please enter a value for the parameter.') }}';
+        var msg = gettext('Please enter a value for the parameter.');
         this.errorModel.set('value', msg);
         return msg;
       } else {

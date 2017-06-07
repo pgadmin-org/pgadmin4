@@ -1,7 +1,7 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-         'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node model class to create a option/value pair
   var OptionLabelModel = pgAdmin.Browser.Node.Model.extend({
@@ -12,11 +12,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         // Define the schema for the Options
         schema: [
           {
-            id: 'option', label:'Option', type:'text', group: null,
-            cellHeaderClasses:'width_percent_50', editable: true
+            id: 'option', label: gettext('Option'), type:'text', group: null,
+            cellHeaderClasses: 'width_percent_50', editable: true
           },{
-            id: 'value', label:'Value', type: 'text', group:null,
-            cellHeaderClasses:'width_percent_50', editable: true
+            id: 'value', label: gettext('Value'), type: 'text', group:null,
+            cellHeaderClasses: 'width_percent_50', editable: true
             },
         ],
         validate: function() {
@@ -25,13 +25,13 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
             if (_.isUndefined(this.get('option')) ||
                 String(this.get('option')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Option cannot be empty!') }}';
+                var msg = gettext('Option cannot be empty!');
                 this.errorModel.set('option',msg);
                 return msg;
             }
             if (_.isUndefined(this.get('value')) ||
                 String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-                var msg = '{{ _('Value cannot be empty!') }}';
+                var msg = gettext('Value cannot be empty!');
                 this.errorModel.set('value',msg);
                 return msg;
             }
@@ -44,7 +44,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     var fts_dictionaries = pgAdmin.Browser.Nodes['coll-fts_dictionary'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_dictionary',
-        label: '{{ _('FTS Dictionaries') }}',
+        label: gettext('FTS Dictionaries'),
         type: 'coll-fts_dictionary',
         columns: ['name', 'description']
       });
@@ -60,7 +60,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='fts_dictionary_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS Dictionary') }}',
+      label: gettext('FTS Dictionary'),
       hasSQL: true,
       hasDepends: true,
       Init: function() {
@@ -75,19 +75,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_fts_dictionary_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{_('FTS Dictionary...')}}',
+          category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
           icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
           enable: 'canCreate'
           },{
           name: 'create_fts_dictionary_on_coll', node: 'coll-fts_dictionary',
           module: this, applies: ['object', 'context'],  priority: 4,
           callback: 'show_obj_properties', category: 'create',
-          label: '{{ _('FTS Dictionary...') }}', data: {action: 'create'},
+          label: gettext('FTS Dictionary...'), data: {action: 'create'},
           icon: 'wcTabIcon icon-fts_dictionary', enable: 'canCreate'
           },{
           name: 'create_fts_dictionary', node: 'fts_dictionary', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{_('FTS Dictionary...')}}',
+          category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
           icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
           enable: 'canCreate'
           }]);
@@ -117,30 +117,30 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Defining schema for fts dictionary
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', disabled: true, mode:['properties']
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
           control: Backform.NodeListByNameControl
         },{
-          id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           cache_node: 'database', control: 'node-list-by-id'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'template', label: '{{ _('Template')}}',type: 'text',
+          id: 'template', label: gettext('Template'),type: 'text',
           disabled: function(m) { return !m.isNew(); }, url: 'fetch_templates',
-          group: '{{ _('Definition') }}', control: 'node-ajax-options',
+          group: gettext('Definition'), control: 'node-ajax-options',
           cache_node: 'fts_template',
         },{
-          id: 'options', label: '{{ _('Option') }}', type: 'collection',
-          group: '{{ _('Options') }}', control: 'unique-col-collection',
+          id: 'options', label: gettext('Option'), type: 'collection',
+          group: gettext('Options'), control: 'unique-col-collection',
           model: OptionLabelModel, columns: ['option', 'value'],
           uniqueCol : ['option'], mode: ['edit', 'create'],
           canAdd: true, canEdit: false,canDelete: true
@@ -158,21 +158,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // Validate FTS Dictionary name
           if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name must be specified!') }}';
+            var msg = gettext('Name must be specified!');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           // Validate template name
           else if (_.isUndefined(template) || _.isNull(template) || String(template).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Template must be selected!') }}';
+            var msg = gettext('Template must be selected!');
             this.errorModel.set('template', msg);
             return msg;
           }
 
           // Validate schema
           else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Schema must be selected!') }}';
+            var msg = gettext('Schema must be selected!');
             this.errorModel.set('schema', msg);
             return msg;
           }

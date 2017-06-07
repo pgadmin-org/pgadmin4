@@ -1,15 +1,13 @@
+// Backup dialog
 define([
-      'jquery', 'underscore', 'underscore.string', 'alertify',
-      'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node'
-      ],
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node'
+], function(gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
 
-  // This defines Backup dialog
-  function($, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
-
-    // if module is already initialized, refer to that.
-    if (pgBrowser.Backup) {
-      return pgBrowser.Backup;
-    }
+  // if module is already initialized, refer to that.
+  if (pgBrowser.Backup) {
+    return pgBrowser.Backup;
+  }
 
 /*
 =====================
@@ -59,33 +57,33 @@ TODO LIST FOR BACKUP:
         type: undefined /* global, server */
       },
       schema: [{
-        id: 'file', label: '{{ _('Filename') }}',
+        id: 'file', label: gettext('Filename'),
         type: 'text', disabled: false, control: Backform.FileControl,
         dialog_type: 'create_file', supp_types: ['*', 'sql', 'backup']
       },{
-        id: 'role', label: '{{ _('Role name') }}',
+        id: 'role', label: gettext('Role name'),
         control: 'node-list-by-name', node: 'role',
         select2: { allowClear: false }
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Miscellaneous') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Miscellaneous'),
         schema:[{
-          id: 'verbose', label: '{{ _('Verbose messages') }}',
+          id: 'verbose', label: gettext('Verbose messages'),
           control: Backform.CustomSwitchControl, disabled: false,
-          group: '{{ _('Miscellaneous') }}'
+          group: gettext('Miscellaneous')
         },{
-          id: 'dqoute', label: '{{ _('Force double quote on identifiers') }}',
+          id: 'dqoute', label: gettext('Force double quote on identifiers'),
           control: Backform.CustomSwitchControl, disabled: false,
-          group: '{{ _('Miscellaneous') }}'
+          group: gettext('Miscellaneous')
         }]
       },{
-        id: 'server_note', label: '{{ _('Note') }}',
-        text: '{{ _('The backup format will be PLAIN') }}',
+        id: 'server_note', label: gettext('Note'),
+        text: gettext('The backup format will be PLAIN'),
         type: 'note', visible: function(m){
           return m.get('type') === 'server';
         }
       },{
-        id: 'globals_note', label: '{{ _('Note') }}',
-        text: '{{ _('Only objects global to the entire database will be backed up in PLAIN format') }}',
+        id: 'globals_note', label: gettext('Note'),
+        text: gettext('Only objects global to the entire database will be backed up in PLAIN format'),
         type: 'note', visible: function(m){
           return m.get('type') === 'globals';
         }
@@ -112,69 +110,69 @@ TODO LIST FOR BACKUP:
         database: undefined
       },
       schema: [{
-        id: 'file', label: '{{ _('Filename') }}',
+        id: 'file', label: gettext('Filename'),
         type: 'text', disabled: false, control: Backform.FileControl,
         dialog_type: 'create_file', supp_types: ['*', 'sql', 'backup']
       },{
-        id: 'format', label: '{{ _('Format') }}',
+        id: 'format', label: gettext('Format'),
         type: 'text', disabled: false,
         control: 'select2', select2: {
             allowClear: false,
             width: "100%"
         },
         options: [
-          {label: '{{ _('Custom') }}', value: "custom"},
-          {label: '{{ _('Tar') }}', value: "tar"},
-          {label: '{{ _('Plain') }}', value: "plain"},
-          {label: '{{ _('Directory') }}', value: "directory"}
+          {label: gettext('Custom'), value: "custom"},
+          {label: gettext('Tar'), value: "tar"},
+          {label: gettext('Plain'), value: "plain"},
+          {label: gettext('Directory'), value: "directory"}
         ]
       },{
-        id: 'ratio', label: '{{ _('Compression ratio') }}',
+        id: 'ratio', label: gettext('Compression ratio'),
         type: 'int', min: 0, max:9, disabled: false
       },{
-        id: 'encoding', label: '{{ _('Encoding') }}',
+        id: 'encoding', label: gettext('Encoding'),
         type: 'text', disabled: false,  node: 'database',
         control: 'node-ajax-options', url: 'get_encodings'
       },{
-        id: 'no_of_jobs', label: '{{ _('Number of jobs') }}',
+        id: 'no_of_jobs', label: gettext('Number of jobs'),
         type: 'int', deps: ['format'], disabled: function(m) {
           return !(m.get('format') === "Directory");
         }
       },{
-        id: 'role', label: '{{ _('Role name') }}',
+        id: 'role', label: gettext('Role name'),
         control: 'node-list-by-name', node: 'role',
         select2: { allowClear: false }
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Sections') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Sections'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'pre_data', label: '{{ _('Pre-data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'pre_data', label: gettext('Pre-data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return m.get('only_data')
                    || m.get('only_schema');
           }
         },{
-          id: 'data', label: '{{ _('Data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'data', label: gettext('Data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return m.get('only_data')
                    || m.get('only_schema');
           }
         },{
-          id: 'post_data', label: '{{ _('Post-data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Sections') }}',
+          id: 'post_data', label: gettext('Post-data'),
+          control: Backform.CustomSwitchControl, group: gettext('Sections'),
           deps: ['only_data', 'only_schema'], disabled: function(m) {
             return m.get('only_data')
                    || m.get('only_schema');
           }
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Type of objects') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Type of objects'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'only_data', label: '{{ _('Only data') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Type of objects') }}',
+          id: 'only_data', label: gettext('Only data'),
+          control: Backform.CustomSwitchControl, group: gettext('Type of objects'),
           deps: ['pre_data', 'data', 'post_data','only_schema'], disabled: function(m) {
             return m.get('pre_data')
                    || m.get('data')
@@ -182,8 +180,8 @@ TODO LIST FOR BACKUP:
                    || m.get('only_schema');
           }
         },{
-          id: 'only_schema', label: '{{ _('Only schema') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Type of objects') }}',
+          id: 'only_schema', label: gettext('Only schema'),
+          control: Backform.CustomSwitchControl, group: gettext('Type of objects'),
           deps: ['pre_data', 'data', 'post_data', 'only_data'], disabled: function(m) {
             return m.get('pre_data')
                    || m.get('data')
@@ -191,69 +189,69 @@ TODO LIST FOR BACKUP:
                    || m.get('only_data');
           }
         },{
-          id: 'blobs', label: '{{ _('Blobs') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Type of objects') }}'
+          id: 'blobs', label: gettext('Blobs'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Type of objects')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Do not save') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Do not save'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'dns_owner', label: '{{ _('Owner') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_owner', label: gettext('Owner'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         },{
-          id: 'dns_privilege', label: '{{ _('Privilege') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_privilege', label: gettext('Privilege'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         },{
-          id: 'dns_tablespace', label: '{{ _('Tablespace') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_tablespace', label: gettext('Tablespace'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         },{
-          id: 'dns_unlogged_tbl_data', label: '{{ _('Unlogged table data') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Do not save') }}'
+          id: 'dns_unlogged_tbl_data', label: gettext('Unlogged table data'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Do not save')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Queries') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Queries'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'use_column_inserts', label: '{{ _('Use Column Inserts') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'use_column_inserts', label: gettext('Use Column Inserts'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         },{
-          id: 'use_insert_commands', label: '{{ _('Use Insert Commands') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'use_insert_commands', label: gettext('Use Insert Commands'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         },{
-          id: 'include_create_database', label: '{{ _('Include CREATE DATABASE statement') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'include_create_database', label: gettext('Include CREATE DATABASE statement'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         },{
-          id: 'include_drop_database', label: '{{ _('Include DROP DATABASE statement') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Queries') }}'
+          id: 'include_drop_database', label: gettext('Include DROP DATABASE statement'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Queries')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Disable') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Disable'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'disable_trigger', label: '{{ _('Trigger') }}',
-          control: Backform.CustomSwitchControl, group: '{{ _('Disable') }}',
+          id: 'disable_trigger', label: gettext('Trigger'),
+          control: Backform.CustomSwitchControl, group: gettext('Disable'),
           deps: ['only_data'], disabled: function(m) {
             return !(m.get('only_data'));
           }
         },{
-          id: 'disable_quoting', label: '{{ _('$ quoting') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Disable') }}'
+          id: 'disable_quoting', label: gettext('$ quoting'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Disable')
         }]
       },{
-        type: 'nested', control: 'fieldset', label: '{{ _('Miscellaneous') }}',
-        group: '{{ _('Dump options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Miscellaneous'),
+        group: gettext('Dump options'),
         schema:[{
-          id: 'with_oids', label: '{{ _('With OID(s)') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Miscellaneous') }}'
+          id: 'with_oids', label: gettext('With OID(s)'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Miscellaneous')
         },{
-          id: 'verbose', label: '{{ _('Verbose messages') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Miscellaneous') }}'
+          id: 'verbose', label: gettext('Verbose messages'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Miscellaneous')
         },{
-          id: 'dqoute', label: '{{ _('Force double quote on identifiers') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Miscellaneous') }}'
+          id: 'dqoute', label: gettext('Force double quote on identifiers'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Miscellaneous')
         },{
-          id: 'use_set_session_auth', label: '{{ _('Use SET SESSION AUTHORIZATION') }}',
-          control: Backform.CustomSwitchControl, disabled: false, group: '{{ _('Miscellaneous') }}'
+          id: 'use_set_session_auth', label: gettext('Use SET SESSION AUTHORIZATION'),
+          control: Backform.CustomSwitchControl, disabled: false, group: gettext('Miscellaneous')
         }]
       }],
       validate: function() {
@@ -317,27 +315,27 @@ TODO LIST FOR BACKUP:
         var menus = [{
           name: 'backup_global', module: this,
           applies: ['tools'], callback: 'start_backup_global',
-          priority: 12, label: '{{_("Backup Globals...") }}',
+          priority: 12, label: gettext('Backup Globals...'),
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_server', module: this,
           applies: ['tools'], callback: 'start_backup_server',
-          priority: 12, label: '{{_("Backup Server...") }}',
+          priority: 12, label: gettext('Backup Server...'),
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_global_ctx', module: this, node: 'server',
           applies: ['context'], callback: 'start_backup_global',
-          priority: 12, label: '{{_("Backup Globals...") }}',
+          priority: 12, label: gettext('Backup Globals...'),
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_server_ctx', module: this, node: 'server',
           applies: ['context'], callback: 'start_backup_server',
-          priority: 12, label: '{{_("Backup Server...") }}',
+          priority: 12, label: gettext('Backup Server...'),
           icon: 'fa fa-floppy-o', enable: menu_enabled_server
         },{
           name: 'backup_object', module: this,
           applies: ['tools'], callback: 'backup_objects',
-          priority: 11, label: '{{_("Backup...") }}',
+          priority: 11, label: gettext('Backup...'),
           icon: 'fa fa-floppy-o', enable: menu_enabled
         }];
 
@@ -346,7 +344,7 @@ TODO LIST FOR BACKUP:
             name: 'backup_' + backup_supported_nodes[idx],
             node: backup_supported_nodes[idx], module: this,
             applies: ['context'], callback: 'backup_objects',
-            priority: 11, label: '{{_("Backup...") }}',
+            priority: 11, label: gettext('Backup...'),
             icon: 'fa fa-floppy-o', enable: menu_enabled
             });
         }
@@ -382,7 +380,7 @@ TODO LIST FOR BACKUP:
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            alertify.alert(gettext("Please select server or child node from the browser tree."));
             break;
           }
         }
@@ -393,23 +391,23 @@ TODO LIST FOR BACKUP:
 
         var module = 'paths',
           preference_name = 'pg_bin_dir',
-          msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
 
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);
 
         if(preference) {
           if (!preference.value) {
-            alertify.alert('{{ _("Configuration required") }}', msg);
+            alertify.alert(gettext('Configuration required'), msg);
             return;
           }
         } else {
-          alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
           return;
         }
 
@@ -424,8 +422,8 @@ TODO LIST FOR BACKUP:
 
         var DialogName = 'BackupDialog_' + of_type,
             DialogTitle = ((of_type == 'globals') ?
-              '{{ _('Backup Globals...') }}' :
-              '{{ _('Backup Server...') }}');
+              gettext('Backup Globals...') :
+                gettext('Backup Server...'));
 
         if(!alertify[DialogName]) {
           alertify.dialog(DialogName ,function factory() {
@@ -440,17 +438,17 @@ TODO LIST FOR BACKUP:
                 return {
                   buttons: [{
                       text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
-                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Backup') }}'}
+                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
                       text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                      attrs:{name:'dialog_help', type:'button', label: '{{ _('Backup') }}',
+                      attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'
                       }
                     },{
-                      text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      text: gettext('Backup'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
                       'data-btn-name': 'backup'
                     },{
-                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
                       'data-btn-name': 'cancel'
                   }],
                   // Set options for dialog
@@ -520,7 +518,7 @@ TODO LIST FOR BACKUP:
                       self.__internal.buttons[2].element.disabled = false;
                     } else {
                       self.__internal.buttons[2].element.disabled = true;
-                      this.errorModel.set('file', '{{ _('Please provide a filename') }}')
+                      this.errorModel.set('file', gettext('Please provide a filename'))
                     }
                 });
               },
@@ -558,7 +556,7 @@ TODO LIST FOR BACKUP:
                     success: function(res) {
                       if (res.success) {
                         alertify.notify(
-                          '{{ _('Backup job created.') }}', 'success',
+                          gettext('Backup job created.'), 'success',
                           5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
@@ -570,7 +568,7 @@ TODO LIST FOR BACKUP:
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Backup job failed.') }}',
+                          gettext('Backup job failed.'),
                           err.errormsg
                         );
                       } catch (e) {}
@@ -600,7 +598,7 @@ TODO LIST FOR BACKUP:
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            alertify.alert(gettext("Please select server or child node from tree."));
             break;
           }
         }
@@ -611,12 +609,12 @@ TODO LIST FOR BACKUP:
 
         var module = 'paths',
           preference_name = 'pg_bin_dir',
-          msg = '{{ _('Please set binary path for PostgreSQL Server from preferences.') }}';
+          msg = gettext('Please set binary path for PostgreSQL Server from preferences.');
 
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please set binary path for EDB Postgres Advanced Server from preferences.') }}';
+          msg = gettext('Please set binary path for EDB Postgres Advanced Server from preferences.');
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);
@@ -627,7 +625,7 @@ TODO LIST FOR BACKUP:
             return;
           }
         } else {
-          alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
           return;
         }
 
@@ -656,16 +654,16 @@ TODO LIST FOR BACKUP:
                 return {
                   buttons: [{
                       text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
-                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: '{{ _('Backup') }}'}
+                      attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
                       text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                      attrs:{name:'dialog_help', type:'button', label: '{{ _('Backup') }}',
+                      attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'}
                     },{
-                      text: '{{ _('Backup') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      text: gettext('Backup'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
                       'data-btn-name': 'backup'
                     },{
-                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
+                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
                       'data-btn-name': 'cancel'
                   }],
                   // Set options for dialog
@@ -732,7 +730,7 @@ TODO LIST FOR BACKUP:
                       self.__internal.buttons[2].element.disabled = false;
                     } else {
                       self.__internal.buttons[2].element.disabled = true;
-                      this.errorModel.set('file', '{{ _('Please provide filename') }}')
+                      this.errorModel.set('file', gettext('Please provide filename'))
                     }
                 });
 
@@ -787,7 +785,7 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.notify('{{ _('Backup job created.') }}', 'success', 5);
+                        alertify.notify(gettext('Backup job created.'), 'success', 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },
@@ -795,7 +793,7 @@ TODO LIST FOR BACKUP:
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         alertify.alert(
-                          '{{ _('Backup job failed.') }}',
+                          gettext('Backup job failed.'),
                           err.errormsg
                         );
                       } catch (e) {}

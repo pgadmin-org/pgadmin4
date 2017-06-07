@@ -1,12 +1,13 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {
     var databases = pgAdmin.Browser.Nodes['coll-synonym'] =
       pgAdmin.Browser.Collection.extend({
         node: 'synonym',
-        label: '{{ _('Synonyms') }}',
+        label: gettext('Synonyms'),
         type: 'coll-synonym',
         columns: ['name', 'owner','is_public_synonym']
       });
@@ -16,7 +17,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     pgAdmin.Browser.Nodes['synonym'] = pgBrowser.Node.extend({
       type: 'synonym',
       dialogHelp: '{{ url_for('help.static', filename='synonym_dialog.html') }}',
-      label: '{{ _('Synonym') }}',
+      label: gettext('Synonym'),
       collection_type: 'coll-synonym',
       hasSQL: true,
       hasDepends: true,
@@ -31,19 +32,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_synonym_on_coll', node: 'coll-synonym', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Synonym...') }}',
+          category: 'create', priority: 4, label: gettext('Synonym...'),
           icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_synonym', node: 'synonym', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Synonym...') }}',
+          category: 'create', priority: 4, label: gettext('Synonym...'),
           icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_synonym', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Synonym...') }}',
+          category: 'create', priority: 4, label: gettext('Synonym...'),
           icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true},
           enable: 'canCreate'
         }
@@ -76,40 +77,40 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchemaWithModelCheck'
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: true , control: 'node-list-by-name',
           node: 'role', visible: false
         },{
-          id: 'schema', label:'{{ _('Schema') }}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: function(m) { return !m.isNew(); }, node: 'schema',
           control: 'node-list-by-name', cache_node: 'database',
           cache_level: 'database'
         },{
-          id: 'targettype', label:'{{ _('Target type') }}', cell: 'string',
-          disabled: 'inSchema', group: '{{ _('Definition') }}',
+          id: 'targettype', label: gettext('Target type'), cell: 'string',
+          disabled: 'inSchema', group: gettext('Definition'),
           select2: { width: "50%", allowClear: false },
           options: function(obj) {
               return [
-                {label: "{{ _('Function') }}", value: "f"},
-                {label: "{{ _('Package') }}", value: "P"},
-                {label: "{{ _('Procedure') }}", value: "p"},
-                {label: "{{ _('Public Synonym') }}", value: "s"},
-                {label: "{{ _('Sequence') }}", value: "S"},
-                {label: "{{ _('Table') }}", value: "r"},
-                {label: "{{ _('View') }}", value: "v"}
+                {label: gettext("Function"), value: "f"},
+                {label: gettext("Package"), value: "P"},
+                {label: gettext("Procedure"), value: "p"},
+                {label: gettext("Public Synonym"), value: "s"},
+                {label: gettext("Sequence"), value: "S"},
+                {label: gettext("Table"), value: "r"},
+                {label: gettext("View"), value: "v"}
               ]
            },
           control: 'select2'
         },{
-          id: 'synobjschema', label:'{{ _('Target schema') }}', cell: 'string',
+          id: 'synobjschema', label: gettext('Target schema'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
-          group: '{{ _('Definition') }}', deps: ['targettype'],
+          group: gettext('Definition'), deps: ['targettype'],
           select2: { allowClear: false }, control: 'node-list-by-name',
           node: 'schema', filter: function(d) {
             // Exclude PPAS catalogs
@@ -132,8 +133,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return true;
           }
         },{
-          id: 'synobjname', label:'{{ _('Target object') }}', cell: 'string',
-          type: 'text', disabled: 'inSchema', group: '{{ _('Definition') }}',
+          id: 'synobjname', label: gettext('Target object'), cell: 'string',
+          type: 'text', disabled: 'inSchema', group: gettext('Definition'),
           deps: ['targettype', 'synobjschema'],
             control: 'node-ajax-options',
             options: function(control) {
@@ -173,7 +174,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return res;
           }
         },{
-          id: 'is_public_synonym', label:'{{ _('Public synonym?') }}',
+          id: 'is_public_synonym', label: gettext('Public synonym?'),
           disabled: true, type: 'switch', mode: ['properties'], cell: 'switch',
           options: { onText: 'Yes', offText: 'No', onColor: 'success',
                     offColor: 'primary', size: 'mini'}
@@ -186,15 +187,15 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
           } else if (_.isUndefined(this.get('synobjschema'))
               || String(this.get('synobjschema')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Target schema cannot be empty.') }}';
+            msg = gettext('Target schema cannot be empty.');
             this.errorModel.set('synobjschema', msg);
           } else if (_.isUndefined(this.get('synobjname'))
               || String(this.get('synobjname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Target object cannot be empty.') }}';
+            msg = gettext('Target object cannot be empty.');
             this.errorModel.set('synobjname', msg);
           }
           return null;

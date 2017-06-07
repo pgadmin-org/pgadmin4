@@ -1,9 +1,14 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin','pgadmin.browser',
-   'backbone', 'backgrid', 'codemirror', 'backform','pgadmin.tools.debugger.ui',
-  'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid', 'codemirror/addon/selection/active-line',
-  'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode', 'pgadmin-sqlfoldcode'],
-  function($, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform, debug_function_again) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'codemirror', 'backform',
+  'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
+  'pgadmin.backgrid', 'codemirror/addon/selection/active-line',
+  'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
+  'pgadmin-sqlfoldcode'
+], function(
+  gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  CodeMirror, Backform, debug_function_again
+) {
 
   if (pgAdmin.Browser.tree != null) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -360,7 +365,7 @@ define(
               pgTools.DirectDebug.polling_timeout_idle = true;
               // If status is Busy then poll the result by recursive call to the poll function
               if (!pgTools.DirectDebug.debug_type) {
-                pgTools.DirectDebug.docker.startLoading('{{ _('Waiting for another session to invoke the target...') }}');
+                pgTools.DirectDebug.docker.startLoading(gettext('Waiting for another session to invoke the target...'));
 
                 // As we are waiting for another session to invoke the target,disable all the buttons
                 self.enable('stop', false);
@@ -1507,7 +1512,7 @@ define(
             // Create the parameters panel to display the arguments of the functions
             var parameters = new pgAdmin.Browser.Panel({
               name: 'parameters',
-              title: '{{ _('Parameters') }}',
+              title: gettext('Parameters'),
               width: '100%',
               height:'100%',
               isCloseable: false,
@@ -1518,7 +1523,7 @@ define(
             // Create the Local variables panel to display the local variables of the function.
             var local_variables = new pgAdmin.Browser.Panel({
               name: 'local_variables',
-              title: '{{ _('Local variables') }}',
+              title: gettext('Local variables'),
               width: '100%',
               height:'100%',
               isCloseable: false,
@@ -1529,7 +1534,7 @@ define(
             // Create the messages panel to display the message returned from the database server
             var messages = new pgAdmin.Browser.Panel({
               name: 'messages',
-              title: '{{ _('Messages') }}',
+              title: gettext('Messages'),
               width: '100%',
               height:'100%',
               isCloseable: false,
@@ -1540,7 +1545,7 @@ define(
             // Create the result panel to display the result after debugging the function
             var results = new pgAdmin.Browser.Panel({
               name: 'results',
-              title: '{{ _('Results') }}',
+              title: gettext('Results'),
               width: '100%',
               height:'100%',
               isCloseable: false,
@@ -1551,7 +1556,7 @@ define(
             // Create the stack pane panel to display the debugging stack information.
             var stack_pane = new pgAdmin.Browser.Panel({
               name: 'stack_pane',
-              title: '{{ _('Stack') }}',
+              title: gettext('Stack'),
               width: '100%',
               height:'100%',
               isCloseable: false,
@@ -1611,7 +1616,7 @@ define(
           self.editor.on("gutterClick", self.onBreakPoint.bind(self), self);
         };
 
-        self.docker.startLoading('{{ _('Loading...') }}');
+        self.docker.startLoading(gettext('Loading...'));
         self.docker.on(wcDocker.EVENT.LOADED, onLoad);
 
         // Create the toolbar view for debugging the function

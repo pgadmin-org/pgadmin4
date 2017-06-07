@@ -1,14 +1,14 @@
- define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   // Extend the browser's collection class for catalog collection
   if (!pgBrowser.Nodes['coll-catalog']) {
     var databases = pgBrowser.Nodes['coll-catalog'] =
       pgBrowser.Collection.extend({
         node: 'catalog',
-        label: '{{ _('Catalogs') }}',
+        label: gettext('Catalogs'),
         type: 'coll-catalog',
         columns: ['name', 'namespaceowner', 'description']
       });
@@ -18,7 +18,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     pgBrowser.Nodes['catalog'] = pgBrowser.Node.extend({
       parent_type: 'database',
       type: 'catalog',
-      label: '{{ _('Catalog') }}',
+      label: gettext('Catalog'),
       hasSQL:  true,
       hasDepends: true,
       Init: function() {
@@ -48,24 +48,24 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
+          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           type: 'text', disabled: true
         },{
-          id: 'namespaceowner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'namespaceowner', label: gettext('Owner'), cell: 'string',
           type: 'text', disabled: true
         },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
        },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
          }

@@ -1,8 +1,8 @@
-define(
-    ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser.menu',
-     'backbone', 'alertify', 'pgadmin.browser.datamodel', 'backform',
-     'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'],
-function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser.menu', 'backbone', 'alertify', 'pgadmin.browser.datamodel',
+  'backform', 'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'
+], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
   var wcDocker = window.wcDocker;
 
@@ -83,7 +83,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
       pgAdmin.Browser.add_menus([{
         name: 'refresh', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'refresh',
-        priority: 1, label: '{{ _("Refresh...") }}',
+        priority: 1, label: gettext('Refresh...'),
         icon: 'fa fa-refresh'
       }]);
 
@@ -91,7 +91,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         pgAdmin.Browser.add_menus([{
         name: 'show_obj_properties', node: self.type, module: self,
         applies: ['object', 'context'], callback: 'show_obj_properties',
-        priority: 999, label: '{{ _("Properties...") }}',
+        priority: 999, label: gettext('Properties...'),
         data: {'action': 'edit'}, icon: 'fa fa-pencil-square-o'
       }]);
       }
@@ -100,7 +100,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         pgAdmin.Browser.add_menus([{
           name: 'delete_object', node: self.type, module: self,
           applies: ['object', 'context'], callback: 'delete_obj',
-          priority: 2, label: '{{ _("Delete/Drop") }}',
+          priority: 2, label: gettext('Delete/Drop'),
           data: {'url': 'drop'}, icon: 'fa fa-trash',
           enable: _.isFunction(self.canDrop) ?
             function() {
@@ -111,7 +111,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           pgAdmin.Browser.add_menus([{
             name: 'delete_object_cascade', node: self.type, module: self,
             applies: ['object', 'context'], callback: 'delete_obj',
-            priority: 3, label: '{{ _("Drop Cascade") }}',
+            priority: 3, label: gettext('Drop Cascade'),
             data: {'url': 'delete'}, icon: 'fa fa-trash',
             enable: _.isFunction(self.canDropCascade) ?
               function() { return self.canDropCascade.apply(self, arguments); } : (!!self.canDropCascade)
@@ -125,7 +125,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           pgAdmin.Browser.add_menus([{
             name: 'show_query_tool', node: self.type, module: self,
             applies: ['context'], callback: 'show_query_tool',
-            priority: 998, label: '{{ _("Query Tool...") }}',
+            priority: 998, label: gettext('Query Tool...'),
             icon: 'fa fa-bolt',
             enable: function(itemData, item, data) {
               if (itemData._type == 'database' && itemData.allowConn)
@@ -297,7 +297,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!newModel.isNew()) {
             // This is definetely not in create mode
             var msgDiv = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">'+
-                pgBrowser.messages['LOADING_MESSAGE']+'</div>',
+                gettext("Retrieving data from the server...") + '</div>',
                 $msgDiv = $(msgDiv);
             var timer = setTimeout(function(ctx) {
               // notify user if request is taking longer than 1 second
@@ -337,7 +337,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 Alertify.pgNotifier(
                   error, xhr,
                   S(
-                    "{{ _("Error retrieving properties - %s") }}"
+                    gettext("Error retrieving properties - %s")
                   ).sprintf(message || _label).value(),
                   function() {
                     console.log(arguments);
@@ -527,7 +527,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
           if (!d)
             return;
 
-          l = S('{{ _("Create - %s") }}').sprintf(
+          l = S( gettext('Create - %s')).sprintf(
               [this.label]).value();
           p = addPanel();
 
@@ -544,13 +544,13 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
              **/
             var mode = p.$container.attr('action-mode');
             if (mode) {
-              var msg = '{{ _('Are you sure want to stop editing the properties of %s "%s"?') }}';
+              var msg = gettext('Are you sure want to stop editing the properties of %s "%s"?');
               if (args.action == 'edit') {
-                msg = '{{ _('Are you sure want to reset the current changes and re-open the panel for %s "%s"?') }}';
+                msg = gettext('Are you sure want to reset the current changes and re-open the panel for %s "%s"?');
               }
 
               Alertify.confirm(
-                '{{ _('Edit in progress?') }}',
+                gettext('Edit in progress?'),
                 S(msg).sprintf(o.label.toLowerCase(), d.label).value(),
                 function() {
                   setTimeout(function() {
@@ -599,9 +599,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
         var msg, title;
         if (input.url == 'delete') {
 
-          msg = S('{{ _('Are you sure you want to drop %s "%s" and all the objects that depend on it?') }}')
+          msg = S( gettext('Are you sure you want to drop %s "%s" and all the objects that depend on it?'))
             .sprintf(obj.label.toLowerCase(), d.label).value();
-          title = S('{{ _('DROP CASCADE %s?') }}').sprintf(obj.label).value();
+          title = S( gettext('DROP CASCADE %s?')).sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
@@ -614,9 +614,9 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             return;
           }
         } else {
-          msg = S('{{ _('Are you sure you want to drop %s "%s"?') }}')
+          msg = S( gettext('Are you sure you want to drop %s "%s"?'))
             .sprintf(obj.label.toLowerCase(), d.label).value();
-          title = S('{{ _('DROP %s?') }}').sprintf(obj.label).value();
+          title = S( gettext('DROP %s?')).sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDrop) ?
                 obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
@@ -662,7 +662,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                   } catch (e) {}
                 }
                 pgBrowser.report_error(
-                    S('{{ _('Error dropping %s: "%s"') }}')
+                    S( gettext('Error dropping %s: "%s"'))
                       .sprintf(obj.label, objName)
                         .value(), msg);
               }
@@ -979,7 +979,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
             buttons.push({
               label: '', type: 'edit',
-              tooltip: '{{ _("Edit") }}',
+              tooltip: gettext('Edit'),
               extraClasses: ['btn-default'],
               icon: 'fa fa-lg fa-pencil-square-o',
               disabled: !that.canEdit,
@@ -992,7 +992,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
             buttons.push({
               label: '', type: 'help',
-              tooltip: '{{ _("SQL help for this object type.") }}',
+              tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-default', 'pull-right'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
@@ -1136,7 +1136,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
             // Create proper buttons
             createButtons([{
               label: '', type: 'help',
-              tooltip: '{{ _("SQL help for this object type.") }}',
+              tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-default', 'pull-left'],
               icon: 'fa fa-lg fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
@@ -1147,7 +1147,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
               }
             },{
               label: '', type: 'help',
-              tooltip: '{{ _("Help for this dialog.") }}',
+              tooltip: gettext('Help for this dialog.'),
               extraClasses: ['btn-default', 'pull-left'],
               icon: 'fa fa-lg fa-question',
               disabled: (that.dialogHelp == '') ? true : false,
@@ -1157,8 +1157,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 });
               }
             },{
-              label: '{{ _("Save") }}', type: 'save',
-              tooltip: '{{ _("Save this object.") }}',
+              label: gettext('Save'), type: 'save',
+              tooltip: gettext('Save this object.'),
               extraClasses: ['btn-primary'],
               icon: 'fa fa-lg fa-save',
               disabled: true,
@@ -1207,7 +1207,7 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                         Alertify.pgNotifier(
                           "error", jqxhr,
                           S(
-                            "{{ _("Error saving properties: %s") }}"
+                            gettext("Error saving properties: %s")
                             ).sprintf(jqxhr.statusText).value()
                           );
 
@@ -1220,8 +1220,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 });
               }
             },{
-              label: '{{ _('Cancel') }}', type: 'cancel',
-              tooltip: '{{ _("Cancel changes to this object.") }}',
+              label: gettext('Cancel'), type: 'cancel',
+              tooltip: gettext('Cancel changes to this object.'),
               extraClasses: ['btn-danger'],
               icon: 'fa fa-lg fa-close',
               disabled: false,
@@ -1233,8 +1233,8 @@ function($, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
                 });
               }
             },{
-              label: '{{ _('Reset') }}', type: 'reset',
-              tooltip: '{{ _("Reset the fields on this dialog.") }}',
+              label: gettext('Reset'), type: 'reset',
+              tooltip: gettext('Reset the fields on this dialog.'),
               extraClasses: ['btn-warning'],
               icon: 'fa fa-lg fa-recycle',
               disabled: true,

@@ -46,16 +46,7 @@ class BGProcessModule(PgAdminModule):
             dict: the i18n messages used by this module
         """
         return {
-            'bgprocess.index': url_for("bgprocess.index"),
-            'seconds': _('seconds'),
-            'started': _('Started'),
-            'START_TIME': _('Start time'),
-            'STATUS': _('Status'),
-            'EXECUTION_TIME': _('Execution time'),
-            'running': _('Running...'),
-            'successfully_finished': _("Successfully completed."),
-            'failed_with_exit_code': _("Failed (exit code: %s)."),
-            'BG_TOO_MANY_LOGS': _("Too many logs generated!")
+            'bgprocess.index': url_for("bgprocess.index")
         }
 
 

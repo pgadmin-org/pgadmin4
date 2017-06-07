@@ -1,10 +1,9 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-         'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
-
-// Model for tokens control
+  // Model for tokens control
   var TokenModel = pgAdmin.Browser.Node.Model.extend({
         defaults: {
           token: undefined,
@@ -32,7 +31,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isNull(token) ||
               _.isUndefined(token) ||
               String(token).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Token cannot be empty!') }}';
+            msg = gettext('Token cannot be empty!');
             this.errorModel.set('token',msg);
             return msg;
           }
@@ -40,7 +39,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isNull(dictionary) ||
               _.isUndefined(dictionary) ||
               String(dictionary).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Dictionary name cannot be empty!') }}';
+            msg = gettext('Dictionary name cannot be empty!');
             this.errorModel.set('dictname',msg);
             return msg;
           }
@@ -147,7 +146,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             // Select2 control for adding new tokens
             select2: {
               allowClear: true, width: 'style',
-              placeholder: '{{ _('Select token') }}'
+              placeholder: gettext('Select token')
             },
             first_empty: true,
             disabled: function(m) {
@@ -208,7 +207,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        token_label: '{{ _('Tokens') }}'
+        token_label: gettext('Tokens')
       });
 
       var self = this,
@@ -403,7 +402,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     var fts_configurations = pgAdmin.Browser.Nodes['coll-fts_configuration'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_configuration',
-        label: '{{ _('FTS Configurations') }}',
+        label: gettext('FTS Configurations'),
         type: 'coll-fts_configuration',
         columns: ['name', 'description']
       });
@@ -419,7 +418,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='fts_configuration_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS Configuration') }}',
+      label: gettext('FTS Configuration'),
       hasSQL: true,
       hasDepends: true,
       Init: function() {
@@ -435,20 +434,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           name: 'create_fts_configuration_on_schema', node: 'schema',
           module: this, category: 'create', priority: 4,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          label: '{{_('FTS Configuration...')}}',
+          label: gettext('FTS Configuration...'),
           icon: 'wcTabIcon icon-fts_configuration', data: {action: 'create'},
           enable: 'canCreate'
           },{
           name: 'create_fts_configuration_on_coll', module: this, priority: 4,
           node: 'coll-fts_configuration', applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create',
-          label: '{{ _('FTS Configuration...') }}', data: {action: 'create'},
+          label: gettext('FTS Configuration...'), data: {action: 'create'},
           icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate'
           },{
           name: 'create_fts_configuration', node: 'fts_configuration',
           module: this, applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create', priority: 4,
-          label: '{{_('FTS Configuration...')}}', data: {action: 'create'},
+          label: gettext('FTS Configuration...'), data: {action: 'create'},
           icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate'
           }]);
       },
@@ -478,27 +477,27 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Defining schema for FTS Configuration
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', disabled: true, mode:['properties']
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
           control: Backform.NodeListByNameControl, select2: { allowClear: false }
         },{
-          id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'prsname', label: '{{ _('Parser')}}',type: 'text',
+          id: 'prsname', label: gettext('Parser'),type: 'text',
           url: 'parsers', first_empty: true,
-          group: '{{ _('Definition') }}', control: 'node-ajax-options',
+          group: gettext('Definition'), control: 'node-ajax-options',
           deps: ['copy_config'],
           //disable parser when user select copy_config manually and vica-versa
           disabled: function(m) {
@@ -509,8 +508,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     copy_config === '') ? false : true;
           }
         },{
-          id: 'copy_config', label: '{{ _('Copy Config')}}',type: 'text',
-          mode: ['create'], group: '{{ _('Definition') }}',
+          id: 'copy_config', label: gettext('Copy Config'),type: 'text',
+          mode: ['create'], group: gettext('Definition'),
           control: 'node-ajax-options', url: 'copyConfig', deps: ['prsname'],
 
           //disable copy_config when user select parser manually and vica-versa
@@ -522,8 +521,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     parser === '') ? false : true;
           }
         },{
-          id: 'tokens', label: '{{ _('Tokens') }}', type: 'collection',
-          group: '{{ _('Tokens') }}', control: TokenControl,
+          id: 'tokens', label: gettext('Tokens'), type: 'collection',
+          group: gettext('Tokens'), control: TokenControl,
           model: TokenModel, columns: ['token', 'dictionary'],
           uniqueCol : ['token'], mode: ['create','edit'],
           canAdd: true, canEdit: false, canDelete: true
@@ -552,7 +551,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isUndefined(name) ||
               _.isNull(name) ||
               String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name must be specified!') }}';
+            msg = gettext('Name must be specified!');
             this.errorModel.set('name', msg);
             return msg;
           }
@@ -561,7 +560,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(copy_config_or_parser) ||
                    _.isNull(copy_config_or_parser) ||
                    String(copy_config_or_parser).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Select parser or configuration to copy!') }}';
+            msg = gettext('Select parser or configuration to copy!');
             this.errorModel.set('parser', msg);
             return msg;
           }
@@ -570,7 +569,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(schema) ||
                    _.isNull(schema) ||
                    String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Schema must be selected!') }}';
+            msg = gettext('Schema must be selected!');
             this.errorModel.set('schema', msg);
             return msg;
           }

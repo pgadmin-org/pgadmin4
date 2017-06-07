@@ -1,7 +1,7 @@
 define([
-  'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs', 'pgadmin.browser.messages',
-], function(_, S, $, pgBrowser, Alertify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
+  'alertify', 'pgadmin.alertifyjs'
+], function(gettext, _, S, $, pgBrowser, Alertify) {
 
   if (pgBrowser.ShowNodeDepends)
     return pgBrowser.ShowNodeDepends;
@@ -241,7 +241,7 @@ define([
           var timer = setTimeout(function(){
             // notify user if request is taking longer than 1 second
 
-            $msgContainer.text(pgBrowser.messages['LOADING_MESSAGE']);
+            $msgContainer.text(gettext("Retrieving data from the server..."));
             $msgContainer.removeClass('hidden');
             if ($gridContainer) {
               $gridContainer.addClass('hidden');
@@ -272,7 +272,7 @@ define([
                 Alertify.pgNotifier(
                   error, xhr,
                   S(
-                    pgBrowser.messages['ERR_RETRIEVAL_INFO']
+                    gettext("Error retrieving the information - %s")
                   ).sprintf(message || _label).value(),
                   function() {
                     console.log(arguments);
@@ -280,7 +280,7 @@ define([
                 );
               }
               // show failed message.
-              $msgContainer.text(pgBrowser.messages['LOADING_FAILED']);
+              $msgContainer.text(gettext("Failed to retrieve data from the server."));
             }
           });
         }

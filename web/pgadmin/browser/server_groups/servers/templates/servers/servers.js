@@ -1,6 +1,7 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['server']) {
 
@@ -10,11 +11,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         label: undefined
       },
       schema: [{
-        id: 'provider', label: '{{ _('Provider') }}',
+        id: 'provider', label: gettext('Provider'),
         type: 'text', editable: true,
         cellHeaderClasses:'width_percent_50'
       },{
-        id: 'label', label: '{{ _('Security Label') }}',
+        id: 'label', label: gettext('Security Label'),
         type: 'text', editable: true,
         cellHeaderClasses:'width_percent_50'
       }],
@@ -26,7 +27,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         if (_.isUndefined(this.get('label')) ||
           _.isNull(this.get('label')) ||
           String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = '{{ _('Label must be specified.') }}';
+            errmsg = gettext('Label must be specified.');
             this.errorModel.set('label', errmsg);
             return errmsg;
         }
@@ -39,7 +40,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       parent_type: 'server-group',
       type: 'server',
       dialogHelp: '{{ url_for('help.static', filename='server_dialog.html') }}',
-      label: '{{ _('Server') }}',
+      label: gettext('Server'),
       canDrop: true,
       hasStatistics: true,
       hasCollectiveStatistics: true,
@@ -57,54 +58,49 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_server_on_sg', node: 'server-group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _('Server...') }}',
+          category: 'create', priority: 1, label: gettext('Server...'),
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
         },{
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 3, label: '{{ _('Server...') }}',
+          category: 'create', priority: 3, label: gettext('Server...'),
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
-          category: 'connect', priority: 4, label: '{{ _('Connect Server') }}',
+          category: 'connect', priority: 4, label: gettext('Connect Server'),
           icon: 'fa fa-link', enable : 'is_not_connected'
         },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
-          category: 'drop', priority: 5, label: '{{ _('Disconnect Server') }}',
+          category: 'drop', priority: 5, label: gettext('Disconnect Server'),
           icon: 'fa fa-chain-broken', enable : 'is_connected'
         },{
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
-          category: 'reload', priority: 6, label: '{{ _('Reload Configuration') }}',
+          category: 'reload', priority: 6, label: gettext('Reload Configuration'),
           icon: 'fa fa-repeat', enable : 'enable_reload_config'
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
-          category: 'restore', priority: 9, label: '{{ _('Add Named Restore Point...') }}',
+          category: 'restore', priority: 9, label: gettext('Add Named Restore Point...'),
           icon: 'fa fa-anchor', enable : 'is_applicable'
         },{
           name: 'change_password', node: 'server', module: this,
           applies: ['file'], callback: 'change_password',
-          label: '{{ _('Change Password...') }}',
+          label: gettext('Change Password...'),
           icon: 'fa fa-lock', enable : 'is_connected'
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'pause_wal_replay',
-          category: 'wal_replay_pause', priority: 7, label: '{{ _('Pause Replay of WAL') }}',
+          category: 'wal_replay_pause', priority: 7, label: gettext('Pause Replay of WAL'),
           icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled'
         },{
           name: 'wal_replay_resume', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
-          category: 'wal_replay_resume', priority: 8, label: '{{ _('Resume Replay of WAL') }}',
+          category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled'
          }]);
-
-        pgBrowser.messages['PRIV_GRANTEE_NOT_SPECIFIED'] =
-          '{{ _('A grantee must be selected.') }}';
-        pgBrowser.messages['NO_PRIV_SELECTED'] =
-          '{{ _('At least one privilege should be selected.') }}';
 
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(
@@ -226,16 +222,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (notify) {
             alertify.confirm(
-              '{{ _('Disconnect server') }}',
-              S('{{ _('Are you sure you want to disconnect the server %s?') }}').sprintf(
-                d.label
-              ).value(),
-              function(evt) {
-                disconnect();
-              },
-              function(evt) {
-                return true;
-              });
+              gettext('Disconnect server'),
+              gettext(
+                'Are you sure you want to disconnect the server %(server)s?',
+                {server: d.label}
+              ),
+              function(evt) { disconnect(); },
+              function(evt) { return true;}
+            );
           } else {
             disconnect();
           }
@@ -278,8 +272,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return false;
 
           alertify.confirm(
-            '{{ _('Reload server configuration') }}',
-            S('{{ _('Are you sure you want to reload the server configuration on %s?') }}').sprintf(d.label).value(),
+            gettext('Reload server configuration'),
+            S( gettext('Are you sure you want to reload the server configuration on %s?')).sprintf(d.label).value(),
             function(evt) {
               $.ajax({
                 url: obj.generate_url(i, 'reload', d, true),
@@ -320,7 +314,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (!d)
             return false;
 
-          alertify.prompt('{{ _('Enter the name of the restore point to add') }}', '',
+          alertify.prompt( gettext('Enter the name of the restore point to add'), '',
            // We will execute this function when user clicks on the OK button
            function(evt, value) {
              // If user has provided a value, send it to the server
@@ -345,7 +339,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               });
              } else {
                 evt.cancel = true;
-                alertify.error('{{ _('Please enter a valid name.') }}', 10);
+                alertify.error( gettext('Please enter a valid name.'), 10);
              }
            },
            // We will execute this function when user clicks on the Cancel button
@@ -382,18 +376,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 }
               }),
               passwordChangeFields = [{
-                  name: 'user_name', label: '{{ _('User') }}',
+                  name: 'user_name', label: gettext('User'),
                   type: 'text', disabled: true, control: 'input'
                 },{
-                  name: 'password', label: '{{ _('Current Password') }}',
+                  name: 'password', label: gettext('Current Password'),
                   type: 'password', disabled: false, control: 'input',
                   required: true
                 },{
-                  name: 'newPassword', label: '{{ _('New Password') }}',
+                  name: 'newPassword', label: gettext('New Password'),
                   type: 'password', disabled: false, control: 'input',
                   required: true
                 },{
-                  name: 'confirmPassword', label: '{{ _('Confirm Password') }}',
+                  name: 'confirmPassword', label: gettext('Confirm Password'),
                   type: 'password', disabled: false, control: 'input',
                   required: true
                 }];
@@ -402,16 +396,16 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             alertify.dialog('changeServerPassword' ,function factory() {
               return {
                  main: function(params) {
-                  var title = '{{ _('Change Password') }} ';
+                  var title = gettext('Change Password ');
                   this.set('title', title);
                   this.user_name = params.user.name;
                  },
                  setup:function() {
                   return {
                     buttons: [{
-                      text: '{{ _('Ok') }}', key: 27, className: 'btn btn-primary', attrs:{name:'submit'}
+                      text: gettext('Ok'), key: 27, className: 'btn btn-primary', attrs:{name:'submit'}
                       },{
-                      text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger', attrs:{name:'cancel'}
+                      text: gettext('Cancel'), key: 27, className: 'btn btn-danger', attrs:{name:'cancel'}
                     }],
                     // Set options for dialog
                     options: {
@@ -465,7 +459,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
                       this.errorTimeout && clearTimeout(this.errorTimeout);
                       this.errorTimeout = setTimeout(function() {
-                        that.errorModel.set('confirmPassword', '{{ _('Passwords do not match.') }}');
+                        that.errorModel.set('confirmPassword', gettext('Passwords do not match.'));
                         } ,400);
                     }else {
                       that.errorModel.clear();
@@ -621,57 +615,57 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
-          id: 'id', label: '{{ _('ID') }}', type: 'int', mode: ['properties']
+          id: 'id', label: gettext('ID'), type: 'int', mode: ['properties']
         },{
-          id: 'name', label:'{{ _('Name') }}', type: 'text',
+          id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'gid', label: '{{ _('Server group') }}', type: 'int',
+          id: 'gid', label: gettext('Server group'), type: 'int',
           control: 'node-list-by-id', node: 'server-group',
           mode: ['create', 'edit'], select2: {allowClear: false}
         },{
-          id: 'server_type', label: '{{ _('Server type') }}', type: 'options',
+          id: 'server_type', label: gettext('Server type'), type: 'options',
           mode: ['properties'], visible: 'isConnected',
           'options': [{% for st in server_types %}
             {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
-            {label: '{{ _('Unknown') }}', value: ''}
+            {label: gettext('Unknown'), value: ''}
           ]
         },{
-          id: 'connected', label:'{{ _('Connected?') }}', type: 'switch',
-          mode: ['properties'], group: "{{ 'Connection' }}", 'options': {
+          id: 'connected', label: gettext('Connected?'), type: 'switch',
+          mode: ['properties'], group: gettext('Connection'), 'options': {
             'onText':   'True', 'offText':  'False', 'onColor':  'success',
             'offColor': 'danger', 'size': 'small'
           }
         },{
-          id: 'version', label:'{{ _('Version') }}', type: 'text', group: null,
+          id: 'version', label: gettext('Version'), type: 'text', group: null,
           mode: ['properties'], visible: 'isConnected'
         },{
-          id: 'connect_now', controlLabel:'{{ _('Connect now?') }}', type: 'checkbox',
+          id: 'connect_now', controlLabel: gettext('Connect now?'), type: 'checkbox',
           group: null, mode: ['create']
         },{
-          id: 'comment', label:'{{ _('Comments') }}', type: 'multiline', group: null,
+          id: 'comment', label: gettext('Comments'), type: 'multiline', group: null,
           mode: ['properties', 'edit', 'create']
         },{
-          id: 'host', label:'{{ _('Host name/address') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'port', label:'{{ _('Port') }}', type: 'int', group: "{{ 'Connection' }}",
+          id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535
         },{
-          id: 'db', label:'{{ _('Maintenance database') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'username', label:'{{ _('Username') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'password', label:'{{ _('Password') }}', type: 'password',
-          group: "{{ 'Connection' }}", control: 'input', mode: ['create'], deps: ['connect_now'],
+          id: 'password', label: gettext('Password'), type: 'password',
+          group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
           visible: function(m) {
             return m.get('connect_now') && m.isNew();
           }
         },{
-          id: 'save_password', controlLabel:'{{ _('Save password?') }}', type: 'checkbox',
-          group: "{{ 'Connection' }}", mode: ['create'], deps: ['connect_now'],
+          id: 'save_password', controlLabel: gettext('Save password?'), type: 'checkbox',
+          group: gettext('Connection'), mode: ['create'], deps: ['connect_now'],
           visible: function(m) {
             return m.get('connect_now') && m.isNew();
           },
@@ -679,10 +673,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return {% if config.ALLOW_SAVE_PASSWORD %}false{% else %}true{% endif %};
           }
         },{
-          id: 'role', label:'{{ _('Role') }}', type: 'text', group: "{{ 'Connection' }}",
+          id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
-          id: 'sslmode', label:'{{ _('SSL mode') }}', type: 'options', group: "{{ 'Connection' }}",
+          id: 'sslmode', label: gettext('SSL mode'), type: 'options', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
           'options': [
             {label: 'Allow', value: 'allow'},
@@ -711,21 +705,21 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           }
 
           if (!self.isNew() && 'id' in self.sessAttrs) {
-            err['id'] = '{{ _('The ID cannot be changed.') }}';;
+            err['id'] = gettext('The ID cannot be changed.');;
             errmsg = err['id'];
           } else {
             self.errorModel.unset('id');
           }
-          check_for_empty('name', '{{ _('Name must be specified.') }}');
+          check_for_empty('name', gettext('Name must be specified.'));
 
           check_for_empty(
-            'host', '{{ _('Hostname or address must be specified.') }}'
+            'host', gettext('Hostname or address must be specified.')
           );
           check_for_empty(
-            'db', '{{ _('Maintenance database must be specified.') }}'
+            'db', gettext('Maintenance database must be specified.')
           );
           check_for_empty(
-            'username', '{{ _('Username must be specified.') }}'
+            'username', gettext('Username must be specified.')
           );
           this.errorModel.set(err);
 
@@ -783,8 +777,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 'pgadmin:server:connect:cancelled', disconnect
               );
               alertify.confirm(
-                '{{ _('Connection lost') }}',
-                '{{ _('Would you like to reconnect to the database?') }}',
+                gettext('Connection lost'),
+                gettext('Would you like to reconnect to the database?'),
                 function() {
                   connect_to_server(self, d, t, i, true);
                 },
@@ -820,7 +814,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             alertify.pgNotifier('error', xhr, error, function(msg) {
               setTimeout(function() {
                 alertify.dlgServerPass(
-                  '{{ _('Connect to Server') }}',
+                  gettext('Connect to Server'),
                   msg, _node, _data, _tree, _item, _wasConnected
                 ).resizeTo();
               }, 100);
@@ -894,10 +888,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return {
                 buttons:[
                   {
-                    text: "{{ _('OK') }}", key: 13, className: "btn btn-primary"
+                    text: gettext("OK"), key: 13, className: "btn btn-primary"
                   },
                   {
-                    text: "{{ _('Cancel') }}", className: "btn btn-danger"
+                    text: gettext("Cancel"), className: "btn btn-danger"
                   }
                 ],
                 focus: { element: '#password', select: true },
@@ -920,7 +914,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   _onFailure = this.onFailure,
                   _onCancel = this.onCancel;
 
-              if (closeEvent.button.text == "{{ _('OK') }}") {
+              if (closeEvent.button.text == gettext("OK")) {
 
                 var _url = _node.generate_url(_item, 'connect', _data, true);
 

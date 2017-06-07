@@ -1,15 +1,15 @@
 // Domain Module: Collection and Node.
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-         'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Define Domain Collection Node
   if (!pgBrowser.Nodes['coll-domain']) {
     var domains = pgBrowser.Nodes['coll-domain'] =
       pgBrowser.Collection.extend({
         node: 'domain',
-        label: '{{ _('Domains') }}',
+        label: gettext('Domains'),
         type: 'coll-domain',
         columns: ['name', 'owner', 'description']
       });
@@ -42,7 +42,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     schema: [{
       id: 'conoid', type: 'text', cell: 'string', visible: false
     },{
-      id: 'conname', label: '{{ _('Name') }}', type: 'text', cell: 'string',
+      id: 'conname', label: gettext('Name'), type: 'text', cell: 'string',
       cellHeaderClasses: 'width_percent_40',
       editable: function(m) {
         if (_.isUndefined(m.isNew)) { return true; }
@@ -54,14 +54,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         return true;
       }
     },{
-      id: 'consrc', label: '{{ _('Check') }}', type: 'multiline',
-      cell: Backgrid.Extension.TextareaCell, group: '{{ _('Definition') }}',
+      id: 'consrc', label: gettext('Check'), type: 'multiline',
+      cell: Backgrid.Extension.TextareaCell, group: gettext('Definition'),
       cellHeaderClasses: 'width_percent_60', editable: function(m) {
         return _.isUndefined(m.isNew) ? true : m.isNew();
       }
     },{
-      id: 'convalidated', label: '{{ _('Validate?') }}', type: 'switch', cell:
-      'boolean', group: '{{ _('Definition') }}',
+      id: 'convalidated', label: gettext('Validate?'), type: 'switch', cell:
+      'boolean', group: gettext('Definition'),
       editable: function(m) {
         var server = this.get('node_info').server;
         if (server.version < 90200) { return false;
@@ -89,7 +89,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-createdomain.html',
       dialogHelp: '{{ url_for('help.static', filename='domain_dialog.html') }}',
-      label: '{{ _('Domain') }}',
+      label: gettext('Domain'),
       collection_type: 'coll-domain',
       hasSQL: true,
       hasDepends: true,
@@ -104,19 +104,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_domain_on_coll', node: 'coll-domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Domain...') }}',
+          category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_domain', node: 'domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Domain...') }}',
+          category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_domain', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Domain...') }}',
+          category: 'create', priority: 4, label: gettext('Domain...'),
           icon: 'wcTabIcon icon-domain', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -159,20 +159,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         type_options: undefined,
         // Domain Schema
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit']
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'owner', label:'{{ _('Owner') }}', cell: 'string', control: Backform.NodeListByNameControl,
+          id: 'owner', label: gettext('Owner'), cell: 'string', control: Backform.NodeListByNameControl,
           node: 'role',  type: 'text', mode: ['edit', 'create', 'properties']
         },{
-          id: 'basensp', label:'{{ _('Schema') }}', cell: 'node-list-by-name',
+          id: 'basensp', label: gettext('Schema'), cell: 'node-list-by-name',
            control: 'node-list-by-name', cache_level: 'database', type: 'text',
            node: 'schema', mode: ['create', 'edit']
         },{
-          id: 'sysdomain', label:'{{ _('System domain?') }}', cell: 'boolean',
+          id: 'sysdomain', label: gettext('System domain?'), cell: 'boolean',
           type: 'switch', mode: ['properties'],
           options: {
             'onText': 'Yes', 'offText': 'No',
@@ -180,12 +180,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             'size': 'small'
           }
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'basetype', label:'{{ _('Base type') }}', cell: 'string',
+          id: 'basetype', label: gettext('Base type'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_types',
-          mode:['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          mode:['properties', 'create', 'edit'], group: gettext('Definition'),
           cache_level: 'database', cache_node: 'schema', disabled: function(m) {
             return !m.isNew();
           }, first_empty: true, transform: function(d) {
@@ -193,8 +193,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return d;
           }
         },{
-          id: 'typlen', label:'{{ _('Length') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', deps: ['basetype'],
+          id: 'typlen', label: gettext('Length'), cell: 'string',
+          type: 'text', group: gettext('Definition'), deps: ['basetype'],
           disabled: function(m) {
             // We will store type from selected from combobox
             if (!m.isNew()) {
@@ -220,8 +220,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return !m.get('is_tlength');
           }
         },{
-          id: 'precision', label:'{{ _('Precision') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}', deps: ['basetype'],
+          id: 'precision', label: gettext('Precision'), cell: 'string',
+          type: 'text', group: gettext('Definition'), deps: ['basetype'],
           disabled: function(m) {
             // We will store type from selected from combobox
             if (!m.isNew()) {
@@ -247,33 +247,33 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             return !m.get('is_precision');
           }
         },{
-          id: 'typdefault', label:'{{ _('Default') }}', cell: 'string',
-          type: 'text', group: '{{ _('Definition') }}',
+          id: 'typdefault', label: gettext('Default'), cell: 'string',
+          type: 'text', group: gettext('Definition'),
           placeholder: "Enter an expression or a value."
         },{
-          id: 'typnotnull', label:'{{ _('Not Null?') }}', cell: 'boolean',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'typnotnull', label: gettext('Not Null?'), cell: 'boolean',
+          type: 'switch', group: gettext('Definition'),
           options: {
             'onText': 'Yes', 'offText': 'No',
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
         },{
-          id: 'collname', label:'{{ _('Collation') }}', cell: 'string',
+          id: 'collname', label: gettext('Collation'), cell: 'string',
           control: 'node-ajax-options', type: 'text', url: 'get_collations',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema', disabled: function(m) {
             return !m.isNew();
           }
         },{
-          id: 'constraints', label:'{{ _('Constraints') }}', cell: 'string',
-          type: 'collection', group: '{{ _('Constraints') }}', mode: ['edit', 'create'],
+          id: 'constraints', label: gettext('Constraints'), cell: 'string',
+          type: 'collection', group: gettext('Constraints'), mode: ['edit', 'create'],
           model: ConstraintModel, canAdd: true, canDelete: true,
           canEdit: false, columns: ['conname','consrc', 'convalidated']
         },
         pgBrowser.SecurityGroupUnderSchema,
         {
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',
           group: 'security', mode: ['edit', 'create'],
           min_version: 90100, canAdd: true,
@@ -286,12 +286,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name cannot be empty.') }}';
+            err['name'] = gettext('Name cannot be empty.');
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('basetype')) || String(this.get('basetype')).replace(/^\s+|\s+$/g, '') == '') {
-            err['basetype'] = '{{ _('Base Type cannot be empty.') }}';
+            err['basetype'] = gettext('Base Type cannot be empty.');
             errmsg = errmsg || err['basetype'];
           }
 

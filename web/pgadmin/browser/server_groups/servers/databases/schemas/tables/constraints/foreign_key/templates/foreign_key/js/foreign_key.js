@@ -1,33 +1,34 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, Alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   var formatNode = function(opt) {
-    if (!opt.id) {
-      return opt.text;
-    }
+        if (!opt.id) {
+          return opt.text;
+        }
 
-    var optimage = $(opt.element).data('image');
+        var optimage = $(opt.element).data('image');
 
-    if(!optimage){
-      return opt.text;
-    } else {
-      return $(
-          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
+        if(!optimage) {
+          return opt.text;
+        } else {
+          return $(
+            '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
           );
-    }
-  },
-      headerSelectControlTemplate =  _.template([
-                              '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
-                              '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
-                              '    <%=select2.first_empty ? " <option></option>" : ""%>',
-                              '    <% for (var i=0; i < options.length; i++) { %>',
-                              '    <% var option = options[i]; %>',
-                              '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
-                              '    <% } %>',
-                              '  </select>',
-                              '</div>'].join("\n"));
+        }
+      },
+      headerSelectControlTemplate = _.template([
+        '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
+        '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
+        '    <%=select2.first_empty ? " <option></option>" : ""%>',
+        '    <% for (var i=0; i < options.length; i++) { %>',
+        '    <% var option = options[i]; %>',
+        '    <option <% if (option.image) { %> data-image=<%= option.image %> <% } %> value=<%= formatter.fromRaw(option.value) %> <%=option.value === rawValue ? "selected=\'selected\'" : "" %>><%-option.label%></option>',
+        '    <% } %>',
+        '  </select>',
+        '</div>'].join("\n")
+      );
 
   var ForeignKeyColumnModel = pgBrowser.Node.Model.extend({
     defaults: {
@@ -135,7 +136,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }),
           select2: {
             allowClear: false, width: 'style',
-            placeholder: '{{ _('Select column') }}',
+            placeholder: gettext('Select column'),
             first_empty: !_.isUndefined(self.model.get('oid'))
           },
           version_compatible: self.field.get('version_compatible'),
@@ -240,7 +241,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           select2: {
             allowClear: false,
             width: "style",
-            placeholder: '{{ _('Select column') }}',
+            placeholder: gettext('Select column'),
             templateResult: formatNode,
             templateSelection: formatNode
           },
@@ -323,9 +324,9 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        column_label: '{{ _('Local column') }}',
-        references_label: '{{ _('References') }}',
-        referenced_label: '{{ _('Referencing') }}'
+        column_label: gettext('Local column'),
+        references_label: gettext('References'),
+        referenced_label: gettext('Referencing')
       });
 
       var self = this,
@@ -599,7 +600,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
   if (!pgBrowser.Nodes['foreign_key']) {
     pgAdmin.Browser.Nodes['foreign_key'] = pgBrowser.Node.extend({
       type: 'foreign_key',
-      label: '{{ _('Foreign key') }}',
+      label: gettext('Foreign key'),
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
@@ -620,13 +621,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         pgBrowser.add_menus([{
           name: 'create_foreign_key_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign key...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign key...'),
           icon: 'wcTabIcon icon-foreign_key', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'validate_foreign_key', node: 'foreign_key', module: this,
           applies: ['object', 'context'], callback: 'validate_foreign_key',
-          category: 'validate', priority: 4, label: '{{ _('Validate foreign key') }}',
+          category: 'validate', priority: 4, label: gettext('Validate foreign key'),
           icon: 'fa fa-link', enable : 'is_not_valid'
         }
         ]);
@@ -651,7 +652,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             type:'GET',
             success: function(res) {
               if (res.success == 1) {
-                Alertify.success("{{ _('" + res.info + "') }}");
+                Alertify.success(res.info);
                 t.removeIcon(i);
                 data.valid = true;
                 data.icon = 'icon-foreign_key';
@@ -664,8 +665,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  msg = S('{{ _(' + err.errormsg + ')}}').value();
-                  Alertify.error("{{ _('" + err.errormsg + "') }}");
+                  Alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -701,14 +701,14 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },
         // Define the schema for the foreign key node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', type: 'text',
+          id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable:true,
           headerCell: Backgrid.Extension.CustomHeaderCell, cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'comment', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           deps:['name'], disabled:function(m) {
             var name = m.get('name');
@@ -723,8 +723,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'condeferrable', label: '{{ _('Deferrable?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'condeferrable', label: gettext('Deferrable?'),
+          type: 'switch', group: gettext('Definition'),
           disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
@@ -736,8 +736,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !m.isNew();
           }
         },{
-          id: 'condeferred', label: '{{ _('Deferred?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'condeferred', label: gettext('Deferred?'),
+          type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
           disabled: function(m) {
             // If we are in table edit mode then
@@ -760,8 +760,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'confmatchtype', label: '{{ _('Match type') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'confmatchtype', label: gettext('Match type'),
+          type: 'switch', group: gettext('Definition'),
           options: {
             onText: 'FULL',
             offText: 'SIMPLE',
@@ -776,11 +776,11 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !m.isNew();
           }
         },{
-          id: 'convalidated', label: "{{ _("Validated?") }}",
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'convalidated', label: gettext("Validated?"),
+          type: 'switch', group: gettext('Definition'),
           options: {
-            onText: 'Yes',
-            offText: 'No'
+            onText: gettext('Yes'),
+            offText: gettext('No')
           },disabled: function(m) {
             // If we are in table edit mode then
             if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
@@ -792,12 +792,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !(m.isNew() || m.get("convalidated"));
           }
         },{
-          id: 'autoindex', label: '{{ _('Auto FK index?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'autoindex', label: gettext('Auto FK index?'),
+          type: 'switch', group: gettext('Definition'),
           deps: ['name', 'hasindex'],
           options: {
-            onText: 'Yes',
-            offText: 'No',
+            onText: gettext('Yes'),
+            offText: gettext('No')
           },disabled: function(m) {
             var index = m.get('coveringindex'),
                 autoindex = m.get('autoindex'),
@@ -840,8 +840,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'coveringindex', label: '{{ _('Covering index') }}', type: 'text',
-          mode: ['properties', 'create', 'edit'], group: '{{ _('Definition') }}',
+          id: 'coveringindex', label: gettext('Covering index'), type: 'text',
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
           deps:['autoindex', 'hasindex'],
           disabled: function(m) {
             var index = m.get('coveringindex'),
@@ -886,8 +886,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return setIndexName();
           }
         },{
-          id: 'columns', label: '{{ _('Columns') }}',
-          type: 'collection', group: '{{ _('Columns') }}', disabled: false,
+          id: 'columns', label: gettext('Columns'),
+          type: 'collection', group: gettext('Columns'), disabled: false,
           node: 'foreign_key', editable: false, headerCell: Backgrid.Extension.CustomHeaderCell,
           cellHeaderClasses: 'width_percent_50',
           cell: Backgrid.StringCell.extend({
@@ -994,8 +994,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !m.isNew();
             }
         },{
-          id: 'confupdtype', label:'{{ _('On update') }}',
-          type:"select2", group: '{{ _('Action') }}', mode: ['edit','create'],
+          id: 'confupdtype', label: gettext('On update'),
+          type:"select2", group: gettext('Action'), mode: ['edit','create'],
           select2:{width:"50%", allowClear: false},
           options: [
             {label: "NO ACTION", value: "a"},
@@ -1014,8 +1014,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             return !m.isNew();
           }
         },{
-          id: 'confdeltype', label:'{{ _('On delete') }}',
-          type:"select2", group: '{{ _('Action') }}', mode: ['edit','create'],
+          id: 'confdeltype', label: gettext('On delete'),
+          type:"select2", group: gettext('Action'), mode: ['edit','create'],
           select2:{width:"50%", allowClear: false},
           options: [
             {label: "NO ACTION", value: "a"},
@@ -1040,7 +1040,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
           var columns = this.get('columns');
           if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = '{{ _('Please specify columns for Foreign key.') }}';
+            var msg = gettext('Please specify columns for Foreign key.');
             this.errorModel.set('columns', msg);
             return msg;
           }
@@ -1049,7 +1049,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               autoindex = this.get('autoindex');
           if (autoindex && (_.isUndefined(coveringindex) || _.isNull(coveringindex) ||
             String(coveringindex).replace(/^\s+|\s+$/g, '') == '')) {
-            var msg = '{{ _('Please specify covering index name.') }}';
+            var msg = gettext('Please specify covering index name.');
             this.errorModel.set('coveringindex', msg);
             return msg;
           }

@@ -1,8 +1,8 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-        'alertify', 'pgadmin.browser.collection',
-        'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
     var OptionsModel = pgBrowser.Node.Model.extend({
@@ -13,10 +13,10 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Defining schema for the Options model
         schema: [{
-          id: 'fdwoption', label: '{{ _('Option') }}', type:'text',
+          id: 'fdwoption', label: gettext('Option'), type:'text',
           cellHeaderClasses:'width_percent_50', editable: true
         },{
-          id: 'fdwvalue', label:'{{ _('Value') }}', type: 'text',
+          id: 'fdwvalue', label: gettext('Value'), type: 'text',
           cellHeaderClasses:'width_percent_50', group:null, editable: true
         }],
         /* validate function is used to validate the input given by
@@ -43,7 +43,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
     var foreign_data_wrappers = pgBrowser.Nodes['coll-foreign_data_wrapper'] =
       pgBrowser.Collection.extend({
         node: 'foreign_data_wrapper',
-        label: '{{ _('Foreign Data Wrappers') }}',
+        label: gettext('Foreign Data Wrappers'),
         type: 'coll-foreign_data_wrapper',
         columns: ['name','fdwowner','description']
       });
@@ -57,7 +57,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-alterforeigndatawrapper.html',
       sqlCreateHelp: 'sql-createforeigndatawrapper.html',
       dialogHelp: '{{ url_for('help.static', filename='foreign_data_wrapper_dialog.html') }}',
-      label: '{{ _('Foreign Data Wrapper') }}',
+      label: gettext('Foreign Data Wrapper'),
       hasSQL:  true,
       hasDepends: true,
       canDrop: true,
@@ -76,17 +76,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_foreign_data_wrapper_on_coll', node: 'coll-foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Data Wrapper...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
           icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'}
         },{
           name: 'create_foreign_data_wrapper', node: 'foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Data Wrapper...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
           icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'}
         },{
           name: 'create_foreign_data_wrapper', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Foreign Data Wrapper...') }}',
+          category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
           icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow
         }
@@ -119,7 +119,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         // Defining schema for the foreign data wrapper node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: function(m) {
 
             // name field will be disabled only if edit mode and server version is below 9.2
@@ -130,28 +130,28 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               return false;
           }
         },{
-          id: 'fdwoid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'fdwoid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'fdwowner', label:'{{ _('Owner') }}', type: 'text',
+          id: 'fdwowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false }
         },{
-          id: 'fdwhan', label:'{{ _('Handler') }}', type: 'text', control: 'node-ajax-options',
-          group: '{{ _('Definition') }}', mode: ['edit', 'create', 'properties'], url:'get_handlers'
+          id: 'fdwhan', label: gettext('Handler'), type: 'text', control: 'node-ajax-options',
+          group: gettext('Definition'), mode: ['edit', 'create', 'properties'], url:'get_handlers'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'fdwoptions', label: 'Options', type: 'collection', group: '{{ _('Options') }}',
+          id: 'fdwoptions', label: 'Options', type: 'collection', group: gettext('Options'),
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fdwoption'],
           columns: ['fdwoption','fdwvalue']
         },{
-          id: 'fdwvalue', label:'{{ _('Validator') }}', type: 'text', control: 'node-ajax-options',
-          group: '{{ _('Definition') }}', mode: ['edit', 'create', 'properties'], url:'get_validators'
+          id: 'fdwvalue', label: gettext('Validator'), type: 'text', control: 'node-ajax-options',
+          group: gettext('Definition'), mode: ['edit', 'create', 'properties'], url:'get_validators'
         },{
-          id: 'security', label: '{{ _("Security")  }}', type: 'group'
+          id: 'security', label: gettext('Security'), type: 'group'
         },{
             id: 'fdwacl', label: 'Privileges', type: 'collection',
             group: 'security', mode: ['edit', 'create'], canAdd: true,
@@ -160,8 +160,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
               privileges: ['U']
             }), control: 'unique-col-collection'
          },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
          }],
          /* validate function is used to validate the input given by
           * the user. In case of error, message will be displayed on
@@ -172,7 +172,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
            if (_.isUndefined(name) || _.isNull(name) ||
                String(name).replace(/^\s+|\s+$/g, '') == '') {
-                 var msg = '{{ _('Name cannot be empty.') }}';
+                 var msg = gettext('Name cannot be empty.');
                  this.errorModel.set('name', msg);
                  return msg;
                } else {

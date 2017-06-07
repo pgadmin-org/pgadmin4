@@ -1,7 +1,7 @@
-define(
-      ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser) {
 
   /*
    * Create and Add an Extension Collection into nodes
@@ -14,7 +14,7 @@ function($, _, S, pgAdmin, pgBrowser) {
     var extensions = pgAdmin.Browser.Nodes['coll-extension'] =
       pgAdmin.Browser.Collection.extend({
         node: 'extension',
-        label: '{{ _('Extension') }}',
+        label: gettext('Extension'),
         type: 'coll-extension',
         columns: ['name', 'owner', 'comment']
       });
@@ -45,7 +45,7 @@ function($, _, S, pgAdmin, pgBrowser) {
       hasDepends: true,
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('Extension') }}',
+      label: gettext('Extension'),
 
       Init: function() {
         if(this.initialized)
@@ -61,17 +61,17 @@ function($, _, S, pgAdmin, pgBrowser) {
         pgBrowser.add_menus([{
           name: 'create_extension_on_coll', node: 'coll-extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Extension...') }}',
+          category: 'create', priority: 4, label: gettext('Extension...'),
           icon: 'wcTabIcon icon-extension', data: {action: 'create'}
         },{
           name: 'create_extension', node: 'extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Extension...') }}',
+          category: 'create', priority: 4, label: gettext('Extension...'),
           icon: 'wcTabIcon icon-extension', data: {action: 'create'}
         },{
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Extension...') }}',
+          category: 'create', priority: 4, label: gettext('Extension...'),
           icon: 'wcTabIcon icon-extension', data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow
         }
@@ -85,7 +85,7 @@ function($, _, S, pgAdmin, pgBrowser) {
       model: pgAdmin.Browser.Node.Model.extend({
         schema: [
           {
-            id: 'name', label: '{{ _('Name')}}', first_empty: true,
+            id: 'name', label: gettext('Name'), first_empty: true,
             type: 'text', mode: ['properties', 'create', 'edit'],
             visible: true, url:'avails', disabled: function(m) {
               return !m.isNew();
@@ -168,17 +168,17 @@ function($, _, S, pgAdmin, pgBrowser) {
             })
           },
           {
-            id: 'eid', label: '{{ _('OID')}}', cell: 'string',
+            id: 'eid', label: gettext('OID'), cell: 'string',
             type: 'text', disabled: true, mode: ['properties']
           },
           {
-            id: 'owner', label:'{{ _('Owner') }}', control: 'node-list-by-name',
+            id: 'owner', label: gettext('Owner'), control: 'node-list-by-name',
             mode: ['properties'], node: 'role', cell: 'string',
             cache_level: 'server'
           },
           {
-            id: 'schema', label: '{{ _('Schema')}}', type: 'text',
-            control: 'node-list-by-name', group: '{{ _('Definition')}}',
+            id: 'schema', label: gettext('Schema'), type: 'text',
+            control: 'node-list-by-name', group: gettext('Definition'),
             mode: ['properties', 'create', 'edit'], deps: ['relocatable'],
             node: 'schema', first_empty: true,
             disabled: function(m) {
@@ -190,8 +190,8 @@ function($, _, S, pgAdmin, pgBrowser) {
             }
           },
           {
-            id: 'relocatable', label: '{{ _('Relocatable?')}}', cell: 'switch',
-            group: '{{ _('Definition')}}', type: 'switch', mode: ['properties'],
+            id: 'relocatable', label: gettext('Relocatable?'), cell: 'switch',
+            group: gettext('Definition'), type: 'switch', mode: ['properties'],
             options: {
               'onText': 'Yes', 'offText': 'No',
               'onColor': 'success', 'offColor': 'primary',
@@ -199,8 +199,8 @@ function($, _, S, pgAdmin, pgBrowser) {
             }
           },
           {
-            id: 'version', label: '{{ _('Version')}}', cell: 'string',
-            mode: ['properties', 'create', 'edit'], group: '{{ _('Definition')}}',
+            id: 'version', label: gettext('Version'), cell: 'string',
+            mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
             control: 'node-ajax-options', url:'avails', first_empty: true,
 
             // Transform the data into version for the selected extension.
@@ -222,7 +222,7 @@ function($, _, S, pgAdmin, pgBrowser) {
             }
           },
           {
-            id: 'comment', label: '{{ _('Comment')}}', cell: 'string',
+            id: 'comment', label: gettext('Comment'), cell: 'string',
             type: 'multiline', disabled: true
           }
         ],
@@ -237,7 +237,7 @@ function($, _, S, pgAdmin, pgBrowser) {
             name = this.get('name');
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name cannot be empty.') }}';
+            err['name'] = gettext('Name cannot be empty.');
             errmsg = errmsg || err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;

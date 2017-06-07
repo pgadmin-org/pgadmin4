@@ -1,8 +1,7 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-        'backform', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
-
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   var CustomSwitchControl = Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
@@ -27,7 +26,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
     var triggers = pgAdmin.Browser.Nodes['coll-trigger'] =
       pgAdmin.Browser.Collection.extend({
         node: 'trigger',
-        label: '{{ _('Triggers') }}',
+        label: gettext('Triggers'),
         type: 'coll-trigger',
         columns: ['name', 'description']
       });
@@ -38,7 +37,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
       parent_type: ['table', 'view'],
       collection_type: ['coll-table', 'coll-view'],
       type: 'trigger',
-      label: '{{ _('Trigger') }}',
+      label: gettext('Trigger'),
       hasSQL:  true,
       hasDepends: true,
       width: '650px',
@@ -55,35 +54,35 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         pgBrowser.add_menus([{
           name: 'create_trigger_on_coll', node: 'coll-trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Trigger...'),
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_trigger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Trigger...'),
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_trigger_onTable', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Trigger...'),
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'enable_trigger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'enable_trigger',
-          category: 'connect', priority: 3, label: '{{ _('Enable trigger') }}',
+          category: 'connect', priority: 3, label: gettext('Enable trigger'),
           icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable'
         },{
           name: 'disable_trigger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'disable_trigger',
-          category: 'drop', priority: 3, label: '{{ _('Disable trigger') }}',
+          category: 'drop', priority: 3, label: gettext('Disable trigger'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable'
         },{
           name: 'create_trigger_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Trigger...'),
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           enable: 'canCreate'
         }
@@ -109,7 +108,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                alertify.success("{{ _('" + res.info + "') }}");
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger';
                 t.addIcon(i, {icon: data.icon});
@@ -126,8 +125,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  msg = S('{{ _(' + err.errormsg + ')}}').value();
-                  alertify.error("{{ _('" + err.errormsg + "') }}");
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -153,7 +151,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                alertify.success("{{ _('" + res.info + "') }}");
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger-bad';
                 t.addIcon(i, {icon: data.icon});
@@ -170,8 +168,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  msg = S('{{ _(' + err.errormsg + ')}}').value();
-                  alertify.error("{{ _('" + err.errormsg + "') }}");
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -188,18 +185,18 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
           fires: 'BEFORE'
         },
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'int', disabled: true, mode: ['properties']
         },{
-          id: 'is_enable_trigger', label:'{{ _('Trigger enabled?') }}',
+          id: 'is_enable_trigger', label: gettext('Trigger enabled?'),
           type: 'switch', disabled: 'inSchema', mode: ['edit', 'properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'is_row_trigger', label:'{{ _('Row trigger?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'is_row_trigger', label: gettext('Row trigger?'),
+          type: 'switch', group: gettext('Definition'),
           mode: ['create','edit', 'properties'],
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
@@ -226,13 +223,13 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-          id: 'is_constraint_trigger', label:'{{ _('Constraint trigger?') }}',
+          id: 'is_constraint_trigger', label: gettext('Constraint trigger?'),
           type: 'switch', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'tgdeferrable', label:'{{ _('Deferrable?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'tgdeferrable', label: gettext('Deferrable?'),
+          type: 'switch', group: gettext('Definition'),
           mode: ['create','edit', 'properties'],
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
@@ -255,8 +252,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-          id: 'tginitdeferred', label:'{{ _('Deferred?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'tginitdeferred', label: gettext('Deferred?'),
+          type: 'switch', group: gettext('Definition'),
           mode: ['create','edit', 'properties'],
           deps: ['tgdeferrable', 'is_constraint_trigger'],
           disabled: function(m) {
@@ -280,14 +277,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-          id: 'tfunction', label:'{{ _('Trigger Function') }}',
+          id: 'tfunction', label: gettext('Trigger Function'),
           type: 'text', disabled: 'inSchemaWithModelCheck',
-          mode: ['create','edit', 'properties'], group: '{{ _('Definition') }}',
+          mode: ['create','edit', 'properties'], group: gettext('Definition'),
           control: 'node-ajax-options', url: 'get_triggerfunctions',
           cache_node: 'trigger_function'
         },{
-          id: 'tgargs', label:'{{ _('Arguments') }}', cell: 'string',
-          group: '{{ _('Definition') }}',
+          id: 'tgargs', label: gettext('Arguments'), cell: 'string',
+          group: gettext('Definition'),
           type: 'text',mode: ['create','edit', 'properties'], deps: ['tfunction'],
           disabled: function(m) {
             // We will disable it when EDB PPAS and trigger function is
@@ -310,8 +307,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             }
           }
         },{
-        id: 'fires', label:'{{ _('Fires') }}', deps: ['is_constraint_trigger'],
-        mode: ['create','edit', 'properties'], group: '{{ _('Events') }}',
+        id: 'fires', label: gettext('Fires'), deps: ['is_constraint_trigger'],
+        mode: ['create','edit', 'properties'], group: gettext('Events'),
         options: function(control) {
             var table_options = [
                 {label: "BEFORE", value: "BEFORE"},
@@ -352,11 +349,11 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
        }
       },{
         type: 'nested', control: 'fieldset', mode: ['create','edit', 'properties'],
-        label: '{{ _('Events') }}', group: '{{ _('Events') }}',
+        label: gettext('Events'), group: gettext('Events'),
         schema:[{
-            id: 'evnt_insert', label:'{{ _('INSERT') }}',
+            id: 'evnt_insert', label: gettext('INSERT'),
             type: 'switch', mode: ['create','edit', 'properties'],
-            group: '{{ _('Events') }}',
+            group: gettext('Events'),
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 var evn_insert = m.get('evnt_insert');
@@ -365,9 +362,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
-            id: 'evnt_update', label:'{{ _('UPDATE') }}',
+            id: 'evnt_update', label: gettext('UPDATE'),
             type: 'switch', mode: ['create','edit', 'properties'],
-            group: '{{ _('Events') }}',
+            group: gettext('Events'),
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 var evn_update = m.get('evnt_update');
@@ -376,9 +373,9 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
-            id: 'evnt_delete', label:'{{ _('DELETE') }}',
+            id: 'evnt_delete', label: gettext('DELETE'),
             type: 'switch', mode: ['create','edit', 'properties'],
-            group: '{{ _('Events') }}',
+            group: gettext('Events'),
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
                 var evn_delete = m.get('evnt_delete');
@@ -387,8 +384,8 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                 return m.inSchemaWithModelCheck.apply(this, [m]);
             }
         },{
-            id: 'evnt_truncate', label:'{{ _('TRUNCATE') }}',
-            type: 'switch', group: '{{ _('Events') }}',
+            id: 'evnt_truncate', label: gettext('TRUNCATE'),
+            type: 'switch', group: gettext('Events'),
             control: Backform.CustomSwitchControl,
             disabled: function(m) {
             var is_constraint_trigger = m.get('is_constraint_trigger'),
@@ -413,15 +410,15 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         }
         }]
         },{
-            id: 'whenclause', label:'{{ _('When') }}',
+            id: 'whenclause', label: gettext('When'),
             type: 'text', disabled: 'inSchemaWithModelCheck',
             mode: ['create', 'edit', 'properties'],
-            control: 'sql-field', visible: true, group: '{{ _('Events') }}'
+            control: 'sql-field', visible: true, group: gettext('Events')
         },{
-            id: 'columns', label: '{{ _('Columns') }}', url: 'nodes',
+            id: 'columns', label: gettext('Columns'), url: 'nodes',
             control: 'node-list-by-name', cache_node: 'column', type: 'array',
             select2: {'multiple': true},
-            deps: ['evnt_update'], node: 'column', group: '{{ _('Events') }}',
+            deps: ['evnt_update'], node: 'column', group: gettext('Events'),
             disabled: function(m) {
                 if(this.node_info &&  'catalog' in this.node_info) {
                     return true;
@@ -438,7 +435,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
              return true;
             }
         },{
-            id: 'prosrc', label:'{{ _('Code') }}', group: '{{ _('Code') }}',
+            id: 'prosrc', label: gettext('Code'), group: gettext('Code'),
             type: 'text', mode: ['create', 'edit'], deps: ['tfunction'],
             control: 'sql-field', visible: true,
             disabled: function(m) {
@@ -455,14 +452,14 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
                   return true;
             }
         },{
-          id: 'is_sys_trigger', label:'{{ _('System trigger?') }}', cell: 'string',
+          id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties']
         },{
-          id: 'is_constarint', label:'{{ _('Constraint?') }}', cell: 'string',
+          id: 'is_constarint', label: gettext('Constraint?'), cell: 'string',
           type: 'switch', disabled: 'inSchemaWithModelCheck', mode: ['properties'],
-          group: '{{ _('Definition') }}'
+          group: gettext('Definition')
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema'
     }],
@@ -478,20 +475,20 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
           if(_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
             }
           if(_.isUndefined(this.get('tfunction'))
               || String(this.get('tfunction')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Trigger function cannot be empty.') }}';
+            msg = gettext('Trigger function cannot be empty.');
             this.errorModel.set('tfunction', msg);
             return msg;
           }
 
           if(!this.get('evnt_truncate') && !this.get('evnt_delete') &&
             !this.get('evnt_update') && !this.get('evnt_insert')) {
-            msg = '{{ _('Specify at least one event.') }}';
+            msg = gettext('Specify at least one event.');
             this.errorModel.set('evnt_truncate', " ");
             this.errorModel.set('evnt_delete', " ");
             this.errorModel.set('evnt_update', " ");
@@ -504,7 +501,7 @@ function($, _, S, pgAdmin, pgBrowser, Backform, alertify) {
             (_.isUndefined(this.get('prosrc'))
               || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == ''))
           {
-            msg = '{{ _('Trigger code cannot be empty.') }}';
+            msg = gettext('Trigger code cannot be empty.');
             this.errorModel.set('prosrc', msg);
             return msg;
           }

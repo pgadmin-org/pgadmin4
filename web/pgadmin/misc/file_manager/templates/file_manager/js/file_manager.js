@@ -1,8 +1,7 @@
+// This defines File Manager dialog
 define([
-      'jquery', 'underscore', 'alertify'],
-
-  // This defines File Manager dialog
-  function($, _, alertify) {
+      'sources/gettext', 'jquery', 'underscore', 'alertify'
+], function(gettext, $, _, alertify) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -133,10 +132,10 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Select"), className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
-                    text: "{{ _('Cancel') }}", className: "btn btn-danger fa fa-times pg-alertify-button"
+                    text: gettext("Cancel"), className: "btn btn-danger fa fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
@@ -147,7 +146,7 @@ define([
               };
             },
             callback: function(closeEvent) {
-              if (closeEvent.button.text == "{{ _('Select') }}") {
+              if (closeEvent.button.text == gettext("Select")) {
                 var newFile = $('.storage_dialog #uploader .input-path').val(),
                     file_data = {'path': $('.currentpath').val()};
 
@@ -158,7 +157,7 @@ define([
                 $(innerbody).find('*').off();
                 innerbody.remove();
                 removeTransId(trans_id);
-              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+              } else if (closeEvent.button.text == gettext("Cancel")) {
                 var innerbody = $(this.elements.body).find('.storage_content')
                 $(innerbody).find('*').off();
                 innerbody.remove();
@@ -255,10 +254,10 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Select"), className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
-                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
+                    text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
@@ -271,7 +270,7 @@ define([
               };
             },
             callback: function(closeEvent) {
-              if (closeEvent.button.text == "{{ _('Select') }}") {
+              if (closeEvent.button.text == gettext("Select")) {
                 var newFile = $('.storage_dialog #uploader .input-path').val(),
                     file_data = {'path': $('.currentpath').val()};
 
@@ -283,7 +282,7 @@ define([
                 // Ajax call to store the last directory visited once user press select button
 
                 set_last_traversed_dir(file_data, trans_id);
-              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+              } else if (closeEvent.button.text == gettext("Cancel")) {
                 var innerbody = $(this.elements.body).find('.storage_content')
                 $(innerbody).find('*').off();
                 innerbody.remove();
@@ -380,10 +379,10 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Select') }}", className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Select"), className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
-                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
+                    text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
@@ -396,7 +395,7 @@ define([
               };
             },
             callback: function(closeEvent) {
-              if (closeEvent.button.text == "{{ _('Select') }}") {
+              if (closeEvent.button.text == gettext("Select")) {
                 var newFile = $('.storage_dialog #uploader .input-path').val(),
                     file_data = {'path': $('.currentpath').val()};
                 pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:select_folder', newFile);
@@ -406,7 +405,7 @@ define([
                 removeTransId(trans_id);
                 // Ajax call to store the last directory visited once user press select button
                 set_last_traversed_dir(file_data, trans_id);
-              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+              } else if (closeEvent.button.text == gettext("Cancel")) {
                 var innerbody = $(this.elements.body).find('.storage_content')
                 $(innerbody).find('*').off();
                 innerbody.remove();
@@ -503,10 +502,10 @@ define([
               return {
                 buttons:[
                   {
-                    text: "{{ _('Create') }}", className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Create"), className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
                   },
                   {
-                    text: "{{ _('Cancel') }}", key: 27, className: "btn btn-danger fa fa-times file_manager_create_cancel pg-alertify-button"
+                    text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times file_manager_create_cancel pg-alertify-button"
                   }
                 ],
                 focus: { element: 0 },
@@ -601,13 +600,13 @@ define([
                 },
                 error: function() {
                   $('.file_manager_ok').addClass('disabled');
-                  alertify.error('{{ _('Error occurred while checking access permission.') }}');
+                  alertify.error( gettext('Error occurred while checking access permission.'));
                 }
               });
               return permission;
             },
             callback: function(closeEvent) {
-              if (closeEvent.button.text == "{{ _('Create') }}") {
+              if (closeEvent.button.text == gettext("Create")) {
                 var newFile = $('.storage_dialog #uploader .input-path').val(),
                     file_data = {'path': $('.currentpath').val()};
 
@@ -628,7 +627,7 @@ define([
                 }
 
                 set_last_traversed_dir(file_data, trans_id);
-              } else if (closeEvent.button.text == "{{ _('Cancel') }}") {
+              } else if (closeEvent.button.text == gettext("Cancel")) {
                 var innerbody = $(this.elements.body).find('.storage_content')
                 $(innerbody).find('*').off();
                 innerbody.remove();

@@ -1,12 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui', 'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.node.ui', 'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-tablespace']) {
     var databases = pgBrowser.Nodes['coll-tablespace'] =
       pgBrowser.Collection.extend({
         node: 'tablespace',
-        label: '{{ _('Tablespaces') }}',
+        label: gettext('Tablespaces'),
         type: 'coll-tablespace',
         columns: ['name', 'spcuser', 'description'],
         hasStatistics: true,
@@ -21,7 +23,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-altertablespace.html',
       sqlCreateHelp: 'sql-createtablespace.html',
       dialogHelp: '{{ url_for('help.static', filename='tablespace_dialog.html') }}',
-      label: '{{ _('Tablespace') }}',
+      label: gettext('Tablespace'),
       hasSQL:  true,
       canDrop: true,
       hasDepends: true,
@@ -37,26 +39,26 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_tablespace_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
+          category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon icon-tablespace', data: {action: 'create'},
           enable: 'can_create_tablespace'
         },{
           name: 'create_tablespace_on_coll', node: 'coll-tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
+          category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon pg-icon-tablespace', data: {action: 'create'},
           enable: 'can_create_tablespace'
         },{
           name: 'create_tablespace', node: 'tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Tablespace...') }}',
+          category: 'create', priority: 4, label: gettext('Tablespace...'),
           icon: 'wcTabIcon pg-icon-tablespace', data: {action: 'create'},
           enable: 'can_create_tablespace'
         },{
           name: 'move_tablespace', node: 'tablespace', module: this,
           applies: ['object', 'context'], callback: 'move_objects',
           category: 'move_tablespace', priority: 5,
-          label: '{{ _('Move objects to...') }}',
+          label: gettext('Move objects to...'),
           icon: 'fa fa-exchange', data: {action: 'create'},
           enable: 'can_move_objects'
         }
@@ -100,14 +102,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                 user: undefined
               },
               schema: [{
-                  id: 'tblspc', label: '{{ _('New tablespace') }}',
+                  id: 'tblspc', label: gettext('New tablespace'),
                   type: 'text', disabled: false, control: 'node-list-by-name',
                   node: 'tablespace', select2: {allowClear: false},
                   filter: function(o) {
                     return o && (o.label != d.label);
                   }
               },{
-                  id: 'obj_type', label: '{{ _('Object type') }}',
+                  id: 'obj_type', label: gettext('Object type'),
                   type: 'text', disabled: false, control: 'select2',
                   select2: { allowClear: false, width: "100%" },
                   options: [
@@ -117,11 +119,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                     {label: "Materialized views", value: 'materialized_views'},
                   ]
               },{
-                  id: 'user', label: '{{ _('Object owner') }}',
+                  id: 'user', label: gettext('Object owner'),
                   type: 'text', disabled: false, control: 'node-list-by-name',
                   node: 'role', select2: {allowClear: false}
               },{
-                  id: 'sqltab', label: '{{ _('SQL') }}', group: '{{ _('SQL') }}',
+                  id: 'sqltab', label: gettext('SQL'), group: gettext('SQL'),
                   type: 'text', disabled: false, control: Backform.SqlTabControl.extend({
                     initialize: function() {
                       // Initialize parent class
@@ -165,7 +167,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             alertify.dialog('move_objects_dlg' ,function factory() {
               return {
                 main: function() {
-                 var title = '{{ _('Move objects to another tablespace') }} ';
+                 var title = gettext('Move objects to another tablespace ');
                  this.set('title', title);
                 },
                 build: function() {
@@ -175,12 +177,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                   return {
                      buttons: [{
                        text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                       attrs:{name:'dialog_help', type:'button', label: '{{ _('Users') }}',
+                       attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
                        url: '{{ url_for('help.static', filename='move_objects.html') }}'}
                        },{
-                       text: '{{ _('OK') }}', key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
+                       text: gettext('OK'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
                        },{
-                       text: '{{ _('Cancel') }}', key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
+                       text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button'
                      }],
                      // Set options for dialog
                      options: {
@@ -245,7 +247,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                       self.__internal.buttons[1].element.disabled = false;
                     } else {
                       self.__internal.buttons[1].element.disabled = true;
-                      this.errorModel.set('tblspc', '{{ _('Please select tablespace') }}')
+                      this.errorModel.set('tblspc', gettext('Please select tablespace'))
                     }
                   });
                 },
@@ -257,16 +259,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
                       null, null, e.button.element.getAttribute('label'));
                     return;
                   }
-                  if (e.button.text === '{{ _('OK') }}') {
+                  if (e.button.text === gettext('OK')) {
                     var self = this,
                         args =  this.view.model.toJSON();
                         args.old_tblspc = d.label;
                     e.cancel = true;
-                    alertify.confirm('{{ _('Move objects...') }}',
-                      '{{ _('Are you sure you wish to move objects ') }}'
-                      + '"' + args.old_tblspc + '"'
-                      + '{{ _(' to ') }}'
-                      + '"' + args.tblspc + '"?',
+                    alertify.confirm(
+                      gettext('Move objects...'),
+                      gettext(
+                        'Are you sure you wish to move objects %(old_tablespace)s to %s(new_tablespace)s',
+                        {old_tablespace: args.old_tblspc, new_tablespace: args.tblspc}
+                      ),
                       function() {
                         $.ajax({
                           url: url,
@@ -325,46 +328,46 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
 
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'spclocation', label:'{{ _('Location') }}', cell: 'string',
-          group: '{{ _('Definition') }}', type: 'text', mode: ['properties', 'edit','create'],
+          id: 'spclocation', label: gettext('Location'), cell: 'string',
+          group: gettext('Definition'), type: 'text', mode: ['properties', 'edit','create'],
           disabled: function(m) {
             // To disabled it in edit mode,
             // We'll check if model is new if yes then disabled it
             return !m.isNew();
           }
         },{
-          id: 'spcuser', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'spcuser', label: gettext('Owner'), cell: 'string',
           type: 'text', control: 'node-list-by-name', node: 'role',
           select2: {allowClear: false}
         },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'spcoptions', label: '{{ _('Parameters') }}', type: 'collection',
-          group: "Parameters", control: 'variable-collection',
+          id: 'spcoptions', label: gettext('Parameters'), type: 'collection',
+          group: gettext("Parameters"), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
          },{
-          id: 'spcacl', label: '{{ _('Privileges') }}', type: 'collection',
-          group: '{{ _('Security') }}', control: 'unique-col-collection',
+          id: 'spcacl', label: gettext('Privileges'), type: 'collection',
+          group: gettext('Security'), control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
           mode: ['edit', 'create'], canAdd: true, canDelete: true,
           uniqueCol : ['grantee'],
           columns: ['grantee', 'grantor', 'privileges']
          },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
         }
@@ -376,11 +379,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             msg = undefined;
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Name cannot be empty.') }}';
+            msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
           } else if (_.isUndefined(this.get('spclocation'))
               || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Location cannot be empty.') }}';
+            msg = gettext('Location cannot be empty.');
             this.errorModel.set('spclocation', msg);
           } else {
             this.errorModel.unset('name');

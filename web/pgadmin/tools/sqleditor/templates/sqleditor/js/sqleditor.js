@@ -1,34 +1,32 @@
-define(
-  [
-    'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
-    'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
-    'sources/selection/grid_selector', 'sources/selection/clipboard',
-    'sources/selection/copy_data',
-
-    'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
-    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
-    'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
-    'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
-    'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
-    'pgadmin-sqlfoldcode',
-    'codemirror/addon/scroll/simplescrollbars',
-    'codemirror/addon/dialog/dialog',
-    'codemirror/addon/search/search',
-    'codemirror/addon/search/searchcursor',
-    'codemirror/addon/search/jump-to-line',
-    'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
-    'slick.pgadmin.formatters', 'slickgrid/slick.editors',
-    'slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
-    'slickgrid/plugins/slick.cellrangedecorator',
-    'slickgrid/plugins/slick.cellrangeselector',
-    'slickgrid/plugins/slick.cellselectionmodel',
-    'slickgrid/plugins/slick.cellcopymanager',
-    'slickgrid/plugins/slick.rowselectionmodel',
-    'slickgrid/slick.grid'
-  ],
-  function(
-    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, GridSelector, clipboard, copyData
-  ) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
+  'sources/selection/grid_selector', 'sources/selection/clipboard',
+  'sources/selection/copy_data',
+  'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
+  'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
+  'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
+  'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
+  'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
+  'pgadmin-sqlfoldcode',
+  'codemirror/addon/scroll/simplescrollbars',
+  'codemirror/addon/dialog/dialog',
+  'codemirror/addon/search/search',
+  'codemirror/addon/search/searchcursor',
+  'codemirror/addon/search/jump-to-line',
+  'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
+  'slick.pgadmin.formatters', 'slickgrid/slick.editors',
+  'slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
+  'slickgrid/plugins/slick.cellrangedecorator',
+  'slickgrid/plugins/slick.cellrangeselector',
+  'slickgrid/plugins/slick.cellselectionmodel',
+  'slickgrid/plugins/slick.cellcopymanager',
+  'slickgrid/plugins/slick.rowselectionmodel',
+  'slickgrid/slick.grid'
+], function(
+  gettext, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
+  pgExplain, GridSelector, clipboard, copyData
+) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
       return pgAdmin.SqlEditor;
@@ -193,7 +191,7 @@ define(
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'
         var data_output = new pgAdmin.Browser.Panel({
           name: 'data_output',
-          title: "{{ _('Data Output') }}",
+          title: gettext("Data Output"),
           width: '100%',
           height:'100%',
           isCloseable: false,
@@ -203,7 +201,7 @@ define(
 
         var explain = new pgAdmin.Browser.Panel({
           name: 'explain',
-          title: "{{ _('Explain') }}",
+          title: gettext("Explain"),
           width: '100%',
           height:'100%',
           isCloseable: false,
@@ -213,7 +211,7 @@ define(
 
         var messages = new pgAdmin.Browser.Panel({
           name: 'messages',
-          title: "{{ _('Messages') }}",
+          title: gettext("Messages"),
           width: '100%',
           height:'100%',
           isCloseable: false,
@@ -223,7 +221,7 @@ define(
 
         var history = new pgAdmin.Browser.Panel({
           name: 'history',
-          title: "{{ _('History') }}",
+          title: gettext("History"),
           width: '100%',
           height:'100%',
           isCloseable: false,
@@ -256,11 +254,11 @@ define(
                   var data_store = self.handler.data_store;
                   if(data_store && (_.size(data_store.added) ||
                       _.size(data_store.updated))) {
-                    msg = "{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
+                    msg = gettext("The data has been modified, but not saved. Are you sure you wish to discard the changes?");
                     notify = true;
                   }
                 } else if(self.handler.is_query_tool && self.handler.is_query_changed) {
-                  msg = "{{ _('The query has been modified, but not saved. Are you sure you wish to discard the changes?') }}";
+                  msg = gettext("The query has been modified, but not saved. Are you sure you wish to discard the changes?");
                   notify = true;
                 }
                 if(notify) {return self.user_confirmation(p, msg);}
@@ -410,7 +408,7 @@ define(
       /* To prompt user for unsaved changes */
       user_confirmation: function(panel, msg) {
         // If there is anything to save then prompt user
-        alertify.confirm("{{ _('Unsaved changes') }}", msg,
+        alertify.confirm(gettext("Unsaved changes"), msg,
           function() {
             // Do nothing as user do not want to save, just continue
             window.onbeforeunload = null;
@@ -1422,8 +1420,8 @@ define(
          */
         if (self.handler.is_query_changed) {
           alertify.confirm(
-            "{{ _('Unsaved changes') }}",
-            "{{ _('Are you sure you wish to discard the current changes?') }}",
+            gettext("Unsaved changes"),
+            gettext("Are you sure you wish to discard the current changes?"),
             function() {
               // Do nothing as user do not want to save, just continue
               self.query_tool_obj.setValue('');
@@ -1445,8 +1443,8 @@ define(
         // ask for confirmation only if anything to clear
         if(!self.history_collection.length) { return; }
 
-        alertify.confirm("{{ _('Clear history') }}",
-          "{{ _('Are you sure you wish to clear the history?') }}",
+        alertify.confirm(gettext("Clear history"),
+          gettext("Are you sure you wish to clear the history?"),
           function() {
             // Remove any existing grid first
             if (self.history_grid) {
@@ -1738,8 +1736,8 @@ define(
                 _.size(self.data_store.updated) ||
                 _.size(self.data_store.deleted))
             ) {
-                alertify.confirm("{{ _('Unsaved changes') }}",
-                  "{{ _('The data has been modified, but not saved. Are you sure you wish to discard the changes?') }}",
+                alertify.confirm(gettext("Unsaved changes"),
+                  gettext("The data has been modified, but not saved. Are you sure you wish to discard the changes?"),
                   function(){
                     // Do nothing as user do not want to save, just continue
                     self._run_query();
@@ -1767,14 +1765,14 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Initializing query execution.') }}"
+            gettext("Initializing query execution.")
           );
 
           $("#btn-flash").prop('disabled', true);
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:message',
-              "{{ _('Waiting for the query execution to complete...') }}"
+            gettext("Waiting for the query execution to complete...")
           );
 
           $.ajax({
@@ -1827,7 +1825,7 @@ define(
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
               if (e.readyState == 0) {
                 self.update_msg_history(false,
-                  "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
                 );
                 return;
               }
@@ -1891,7 +1889,7 @@ define(
           else {
             // Show message in message and history tab in case of query tool
             self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-            var msg = S("{{ _('Query returned successfully in %s.') }}").sprintf(self.total_time).value();
+            var msg = S(gettext("Query returned successfully in %s.")).sprintf(self.total_time).value();
             res.result += "\n\n" + msg;
             self.update_msg_history(true, res.result, false);
             // Display the notifier if the timeout is set to >= 0
@@ -1927,7 +1925,7 @@ define(
                   if (res.data.status === 'Success') {
                     self.trigger(
                       'pgadmin-sqleditor:loading-icon:message',
-                      "{{ _('Loading data from the database server and rendering...') }}"
+                      gettext("Loading data from the database server and rendering...")
                     );
                     self.get_columns(res.data);
                   }
@@ -1963,7 +1961,7 @@ define(
 
                   if (e.readyState == 0) {
                     self.update_msg_history(false,
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -2033,15 +2031,15 @@ define(
 
               self.trigger(
                 'pgadmin-sqleditor:loading-icon:message',
-                "{{ _('Loading data from the database server and rendering...') }}",
+                gettext("Loading data from the database server and rendering..."),
                 self
               );
 
               // Show message in message and history tab in case of query tool
               self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
               self.update_msg_history(true, "", false);
-              var msg1 = S("{{ _('Total query runtime: %s.') }}").sprintf(self.total_time).value();
-              var msg2 = S("{{ _('%s rows retrieved.') }}").sprintf(self.rows_affected).value();
+              var msg1 = S(gettext("Total query runtime: %s.")).sprintf(self.total_time).value();
+              var msg2 = S(gettext("%s rows retrieved.")).sprintf(self.rows_affected).value();
 
               // Display the notifier if the timeout is set to >= 0
               if (self.info_notifier_timeout >= 0) {
@@ -2119,7 +2117,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:message',
-            "{{ _('Retrieving information about the columns returned...') }}"
+            gettext("Retrieving information about the columns returned...")
           );
 
           // Make ajax call to fetch the pg types to map numeric data type
@@ -2367,17 +2365,17 @@ define(
                   } else {
                     $("#btn-save").prop('disabled', true);
                   }
-                  alertify.success("{{ _('Row(s) deleted') }}");
+                  alertify.success(gettext("Row(s) deleted"));
               } else {
                 // There are other data to needs to be updated on server
                 if(is_updated) {
-                  alertify.alert("{{ _('Operation failed') }}",
-                    "{{ _('There are unsaved changes in grid, Please save them first to avoid inconsistency in data') }}"
+                  alertify.alert(gettext("Operation failed"),
+                    gettext("There are unsaved changes in grid, Please save them first to avoid inconsistency in data")
                   );
                   return;
                 }
-                alertify.confirm("{{ _('Delete Row(s)') }}",
-                  "{{ _('Are you sure you wish to delete selected row(s)?') }}",
+                alertify.confirm(gettext("Delete Row(s)"),
+                  gettext("Are you sure you wish to delete selected row(s)?"),
                   function() {
                     $("#btn-delete-row").prop('disabled', true);
                     $("#btn-copy-row").prop('disabled', true);
@@ -2439,7 +2437,7 @@ define(
 
             self.trigger(
               'pgadmin-sqleditor:loading-icon:show',
-              "{{ _('Saving the updated data...') }}"
+              gettext("Saving the updated data...")
             );
 
             // Add the columns to the data so the server can remap the data
@@ -2517,7 +2515,7 @@ define(
                   // Something went wrong while saving data on the db server
                   $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
-                  var err_msg = S("{{ _('%s.') }}").sprintf(res.data.result).value();
+                  var err_msg = S(gettext("%s.")).sprintf(res.data.result).value();
                   alertify.notify(err_msg, 'error', 20);
 
                   // To highlight the row at fault
@@ -2554,7 +2552,7 @@ define(
               error: function(e) {
                 if (e.readyState == 0) {
                   self.update_msg_history(false,
-                    "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                    gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
                 }
@@ -2630,8 +2628,8 @@ define(
            * confirm with the user for unsaved changes.
            */
           if (self.is_query_changed) {
-            alertify.confirm("{{ _('Unsaved changes') }}",
-              "{{ _('Are you sure you wish to discard the current changes?') }}",
+            alertify.confirm(gettext("Unsaved changes"),
+              gettext("Are you sure you wish to discard the current changes?"),
               function() {
                 // User do not want to save, just continue
                 self._open_select_file_manager();
@@ -2665,7 +2663,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Loading the file...') }}"
+            gettext("Loading the file...")
           );
           // set cursor to progress before file load
           var $busy_icon_div = $('.sql-editor-busy-fetching');
@@ -2713,7 +2711,7 @@ define(
           }
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Saving the queries in the file...') }}"
+            gettext("Saving the queries in the file...")
           );
 
           // Make ajax call to save the data to file
@@ -2724,7 +2722,7 @@ define(
             data: JSON.stringify(data),
             success: function(res) {
               if (res.data.status) {
-                alertify.success("{{ _('File saved successfully.') }}");
+                alertify.success(gettext("File saved successfully."));
                 self.gridView.current_file = e;
                 self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''));
                 // disable save button on file save
@@ -2835,7 +2833,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Loading the existing filter options...') }}"
+            gettext("Loading the existing filter options...")
           );
           $.ajax({
             url: "{{ url_for('sqleditor.index') }}" + "filter/get/" + self.transId,
@@ -2865,7 +2863,7 @@ define(
               var msg;
               if (e.readyState == 0) {
                 msg =
-                  "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
               } else {
                 msg = e.responseText;
                 if (e.responseJSON != undefined &&
@@ -2905,7 +2903,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Applying the new filter...') }}"
+            gettext("Applying the new filter...")
           );
 
           // Make ajax call to include the filter by selection
@@ -2934,7 +2932,7 @@ define(
                 function() {
                   if (e.readyState == 0) {
                     alertify.alert('Filter By Selection Error',
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -2975,7 +2973,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Applying the new filter...') }}"
+            gettext("Applying the new filter...")
           );
 
           // Make ajax call to exclude the filter by selection.
@@ -3005,7 +3003,7 @@ define(
                 function() {
                   if (e.readyState == 0) {
                     alertify.alert('Filter Exclude Selection Error',
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -3028,7 +3026,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Removing the filter...') }}"
+            gettext("Removing the filter...")
           );
 
           // Make ajax call to exclude the filter by selection.
@@ -3055,7 +3053,7 @@ define(
                 function() {
                   if (e.readyState == 0) {
                     alertify.alert('Remove Filter Error',
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -3079,7 +3077,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Applying the filter...') }}"
+            gettext("Applying the filter...")
           );
 
           // Make ajax call to include the filter by selection
@@ -3110,7 +3108,7 @@ define(
                 function() {
                   if (e.readyState == 0) {
                     alertify.alert('Apply Filter Error',
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -3203,7 +3201,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Setting the limit on the result...') }}"
+            gettext("Setting the limit on the result...")
           );
           // Make ajax call to change the limit
           $.ajax({
@@ -3230,7 +3228,7 @@ define(
                 function() {
                   if (e.readyState == 0) {
                     alertify.alert('Change limit Error',
-                      "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                      gettext("Not connected to the server or the connection to the server has been closed.")
                     );
                     return;
                   }
@@ -3277,7 +3275,7 @@ define(
 
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
-            "{{ _('Initializing the query execution!') }}"
+            gettext("Initializing the query execution!")
           );
 
           $("#btn-flash").prop('disabled', true);
@@ -3313,7 +3311,7 @@ define(
               if (res.data.status) {
                 self.trigger(
                   'pgadmin-sqleditor:loading-icon:message',
-                   "{{ _('Waiting for the query execution to complete...') }}"
+                  gettext("Waiting for the query execution to complete...")
                 );
 
                 self.can_edit = res.data.can_edit;
@@ -3340,7 +3338,7 @@ define(
 
               if (e.readyState == 0) {
                 self.update_msg_history(false,
-                  "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
                 );
                 return;
               }
@@ -3438,7 +3436,7 @@ define(
 
               if (e.readyState == 0) {
                 alertify.alert('Cancel Query Error',
-                  "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
                 );
                 return;
               }
@@ -3483,24 +3481,24 @@ define(
               error: function(e) {
                 if (e.readyState == 0) {
                   alertify.alert('Get Object Name Error',
-                   "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                    gettext("Not connected to the server or the connection to the server has been closed.")
                   );
                   return;
                 }
 
                 var msg = e.responseText;
                 if (e.responseJSON != undefined &&
-                    e.responseJSON.errormsg != undefined)
+                  e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
                 alertify.alert('Get Object Name Error', msg);
               }
             });
-           } else {
+          } else {
             var cur_time = new Date();
             var filename = 'data-' + cur_time.getTime() + '.csv';
             self._trigger_csv_download(sql, filename);
-           }
+          }
         },
         // Trigger query result download to csv.
         _trigger_csv_download: function(query, filename) {
@@ -3536,7 +3534,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Auto Rollback Error',
-                 "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
                 );
                 return;
               }
@@ -3575,7 +3573,7 @@ define(
             error: function(e) {
               if (e.readyState == 0) {
                 alertify.alert('Auto Commit Error',
-                 "{{ _('Not connected to the server or the connection to the server has been closed.') }}"
+                  gettext("Not connected to the server or the connection to the server has been closed.")
                 );
                 return;
               }
@@ -3640,13 +3638,13 @@ define(
             success: function(res) {
               if(res.success == undefined || !res.success) {
                 alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting verbose option in explain') }}"
+                  gettext("Error occurred while setting verbose option in explain")
                 );
               }
             },
             error: function(e) {
               alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting verbose option in explain') }}"
+                gettext("Error occurred while setting verbose option in explain")
               );
               return;
             }
@@ -3678,13 +3676,13 @@ define(
             success: function(res) {
               if(res.success == undefined || !res.success) {
                 alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting costs option in explain') }}"
+                  gettext("Error occurred while setting costs option in explain")
                 );
               }
             },
             error: function(e) {
               alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting costs option in explain') }}"
+                gettext("Error occurred while setting costs option in explain")
               );
             }
           });
@@ -3715,13 +3713,13 @@ define(
             success: function(res) {
               if(res.success == undefined || !res.success) {
                 alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting buffers option in explain') }}"
+                  gettext("Error occurred while setting buffers option in explain")
                 );
               }
             },
             error: function(e) {
               alertify.alert('Explain options error',
-                "{{ _('Error occurred while setting buffers option in explain') }}"
+                gettext("Error occurred while setting buffers option in explain")
               );
             }
           });
@@ -3751,13 +3749,13 @@ define(
             success: function(res) {
               if(res.success == undefined || !res.success) {
                 alertify.alert('Explain options error',
-                  "{{ _('Error occurred while setting timing option in explain') }}"
+                  gettext("Error occurred while setting timing option in explain")
                 );
               }
             },
             error: function(e) {
               alertify.alert('Explain options error',
-                "{{ _('Error occurred while setting timing option in explain') }}"
+                gettext("Error occurred while setting timing option in explain")
               );
             }
           });
@@ -3835,7 +3833,7 @@ define(
             error: function(e) {
               updateUI();
               alertify.alert('Get Preferences error',
-                "{{ _('Error occurred while getting query tool options ') }}"
+                gettext("Error occurred while getting query tool options ")
               );
             }
           });

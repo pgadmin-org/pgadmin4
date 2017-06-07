@@ -1,13 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {
     var databases = pgAdmin.Browser.Nodes['coll-event_trigger'] =
       pgAdmin.Browser.Collection.extend({
         node: 'event_trigger',
-        label: '{{ _('Event Trigger') }}',
+        label: gettext('Event Trigger'),
         type: 'coll-event_trigger',
         columns: ['name', 'eventowner', 'comment']
       });
@@ -21,7 +22,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       sqlAlterHelp: 'sql-altereventtrigger.html',
       sqlCreateHelp: 'sql-createeventtrigger.html',
       dialogHelp: '{{ url_for('help.static', filename='event_trigger_dialog.html') }}',
-      label: '{{ _('Event Trigger') }}',
+      label: gettext('Event Trigger'),
       hasSQL:  true,
       hasDepends: true,
       canDrop: true,
@@ -35,17 +36,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_event_trigger_on_coll', node: 'coll-event_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Event Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Event Trigger...'),
           icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'}
         },{
           name: 'create_event_trigger', node: 'event_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Event Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Event Trigger...'),
           icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'}
         },{
           name: 'create_event_trigger', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Event Trigger...') }}',
+          category: 'create', priority: 4, label: gettext('Event Trigger...'),
           icon: 'wcTabIcon icon-event_trigger', data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow
         }
@@ -82,20 +83,20 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
         // Define the schema for the event trigger node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', mode: ['properties']
         },{
-          id: 'eventowner', label:'{{ _('Owner') }}', cell: 'string',
+          id: 'eventowner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
           control: Backform.NodeListByNameControl
         },{
-          id: 'comment', label:'{{ _('Comment') }}', type: 'multiline'
+          id: 'comment', label: gettext('Comment'), type: 'multiline'
         },{
-          id: 'enabled', label:'{{ _('Enabled status') }}',
-          type:"radio", group: "Definition", mode: ['properties', 'edit','create'],
+          id: 'enabled', label: gettext('Enabled status'),
+          type:"radio", group: gettext("Definition"), mode: ['properties', 'edit','create'],
           options: [
             {label: "Enable", value: "O"},
             {label: "Disable", value: "D"},
@@ -103,23 +104,23 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             {label: "Always", value: "A"}
           ]
         },{
-          id: 'eventfunname', label:'{{ _('Trigger function') }}',
-          type: 'text', control: 'node-ajax-options', group: "Definition",
+          id: 'eventfunname', label: gettext('Trigger function'),
+          type: 'text', control: 'node-ajax-options', group: gettext("Definition"),
           url:'fopts', cache_node: 'trigger_function'
         },{
-          id: 'eventname', label:'{{ _('Events') }}',
-          type:"radio", group: "Definition", cell: 'string',
+          id: 'eventname', label: gettext('Events'),
+          type:"radio", group: gettext("Definition"), cell: 'string',
           options: [
             {label: "DDL COMMAND START", value: "DDL_COMMAND_START"},
             {label: "DDL COMMAND END", value: "DDL_COMMAND_END"},
             {label: "SQL DROP", value: "SQL_DROP"}
           ]
         },{
-          id: 'when', label:'{{ _('When') }}', type: 'multiline', group: "Definition",
+          id: 'when', label: gettext('When'), type: 'multiline', group: gettext("Definition"),
         },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}',
+          id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: '{{ _('Security') }}', mode: ['edit', 'create'],
+          group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection'
          }
@@ -132,33 +133,33 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger name cannot be empty.') }}';
+            msg = gettext('Event trigger name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventowner'))
               || String(this.get('eventowner')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger owner cannot be empty.') }}';
+            msg = gettext('Event trigger owner cannot be empty.');
             this.errorModel.set('eventowner', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('enabled'))) {
-            msg = '{{ _('Event trigger enabled status cannot be empty.') }}';
+            msg = gettext('Event trigger enabled status cannot be empty.');
             this.errorModel.set('enabled', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventfunname'))
               || String(this.get('eventfunname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = '{{ _('Event trigger function cannot be empty.') }}';
+            msg = gettext('Event trigger function cannot be empty.');
             this.errorModel.set('eventfunname', msg);
             return msg;
           }
 
           if (_.isUndefined(this.get('eventname'))) {
-            msg = '{{ _('Event trigger event cannot be empty.') }}';
+            msg = gettext('Event trigger event cannot be empty.');
             this.errorModel.set('eventname', msg);
             return msg;
           }

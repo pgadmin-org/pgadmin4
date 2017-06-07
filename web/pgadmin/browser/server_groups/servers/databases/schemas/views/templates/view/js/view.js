@@ -1,8 +1,8 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-    'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege', 'pgadmin.node.rule'],
-
-function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
+define([
+  'sources/gettext',
+  'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege', 'pgadmin.node.rule'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
 
   /**
     Create and add a view collection into nodes
@@ -15,7 +15,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
     var views= pgBrowser.Nodes['coll-view'] =
       pgBrowser.Collection.extend({
         node: 'view',
-        label: '{{ _("Views") }}',
+        label: gettext('Views'),
         type: 'coll-view',
         columns: ["name", "owner"]
       });
@@ -39,7 +39,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
       sqlAlterHelp: 'sql-alterview.html',
       sqlCreateHelp: 'sql-createview.html',
       dialogHelp: '{{ url_for('help.static', filename='view_dialog.html') }}',
-      label: '{{ _("View") }}',
+      label: gettext('View'),
       hasSQL:  true,
       hasDepends: true,
       hasScriptTypes: ['create', 'select', 'insert'],
@@ -64,19 +64,19 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
         pgBrowser.add_menus([{
           name: 'create_view_on_coll', node: 'coll-view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("View...") }}',
+          category: 'create', priority: 1, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_view', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: '{{ _("View...") }}',
+          category: 'create', priority: 1, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
           enable: 'canCreate'
         },{
           name: 'create_view', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 17, label: '{{ _("View...") }}',
+          category: 'create', priority: 17, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: false},
           enable: 'canCreate'
         }
@@ -100,56 +100,56 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
         schema: [{
-          id: 'name', label: '{{ _("Name") }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'notInSchema'
         },{
-          id: 'oid', label:'{{ _("OID") }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', disabled: true, mode: ['properties']
         },{
-          id: 'owner', label:'{{ _("Owner") }}', cell: 'string', control: 'node-list-by-name',
+          id: 'owner', label: gettext('Owner'), cell: 'string', control: 'node-list-by-name',
           node: 'role', disabled: 'notInSchema', select2: { allowClear: false }
         },{
-          id: 'schema', label:'{{ _("Schema") }}', cell: 'string', first_empty: false,
+          id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'],
           select2: { allowClear: false }, cache_node: 'database',
           cache_level: 'database'
         },{
-          id: 'system_view', label:'{{ _("System view?") }}', cell: 'string',
+          id: 'system_view', label: gettext('System view?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties']
         },{
-          id: 'acl', label: '{{ _("Privileges") }}',
-          mode: ['properties'], type: 'text', group: '{{ _("Security") }}'
+          id: 'acl', label: gettext('Privileges'),
+          mode: ['properties'], type: 'text', group: gettext('Security')
         },{
-          id: 'comment', label:'{{ _("Comment") }}', cell: 'string',
+          id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', disabled: 'notInSchema'
         },{
-          id: 'security_barrier', label:'{{ _("Security barrier") }}',
-          type: 'switch', min_version: '90200', group: 'Definition',
+          id: 'security_barrier', label: gettext('Security barrier'),
+          type: 'switch', min_version: '90200', group: gettext('Definition'),
           disabled: 'notInSchema'
         },{
-          id: 'check_option', label:'{{ _("Check options") }}',
-          control: 'select2', group: 'Definition', type: 'text',
+          id: 'check_option', label: gettext('Check options'),
+          control: 'select2', group: gettext('Definition'), type: 'text',
           min_version: '90400', mode:['properties', 'create', 'edit'],
           select2: {
             // Set select2 option width to 100%
             allowClear: false,
           }, disabled: 'notInSchema',
           options:[{
-            label: "{{ _('No') }}", value: "no"
+            label: gettext("No"), value: "no"
           },{
-            label: "{{ _('Local') }}", value: "local"
+            label: gettext("Local"), value: "local"
           },{
-            label: "{{ _('Cascaded') }}", value: "cascaded"
+            label: gettext("Cascaded"), value: "cascaded"
           }]
         },{
-          id: 'definition', label:'{{ _("Definition") }}', cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: 'Definition',
+          id: 'definition', label: gettext('Definition'), cell: 'string',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           control: Backform.SqlFieldControl,
           disabled: 'notInSchema'
         }, pgBrowser.SecurityGroupUnderSchema, {
           // Add Privilege Control
-          id: 'datacl', label: '{{ _("Privileges") }}', type: 'collection',
+          id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']
           }), uniqueCol : ['grantee'], editable: false, group: 'security',
@@ -157,7 +157,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           control: 'unique-col-collection', disabled: 'notInSchema'
         },{
           // Add Security Labels Control
-          id: 'seclabels', label: '{{ _("Security labels") }}',
+          id: 'seclabels', label: gettext('Security labels'),
           model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
           canEdit: false, group: 'security', canDelete: true,
           mode: ['edit', 'create'], canAdd: true, disabled: 'notInSchema',
@@ -171,7 +171,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
             field_def = this.get('definition');
           if (_.isUndefined(field_name) || _.isNull(field_name) ||
             String(field_name).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _("Please specify name.") }}';
+            err['name'] = gettext('Please specify name.');
             errmsg = errmsg || err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;
@@ -180,7 +180,7 @@ function($, _, S, pgAdmin, pgBrowser, CodeMirror) {
           }
           if (_.isUndefined(field_def) || _.isNull(field_def) ||
             String(field_def).replace(/^\s+|\s+$/g, '') == '') {
-            err['definition'] = '{{ _("Please enter view definition.") }}';
+            err['definition'] = gettext('Please enter view definition.');
             errmsg = errmsg || err['definition'];
             this.errorModel.set('definition', errmsg);
             return errmsg;

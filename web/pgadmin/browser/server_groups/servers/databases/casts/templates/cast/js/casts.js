@@ -1,13 +1,13 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
-
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
     // Extend the collection class for cast
     if (!pgBrowser.Nodes['coll-cast']) {
       var casts = pgAdmin.Browser.Nodes['coll-cast'] =
         pgAdmin.Browser.Collection.extend({
           node: 'cast',
-          label: '{{ _('Casts') }}',
+          label: gettext('Casts'),
           type: 'coll-cast',
           columns: ['name', 'description']
         });
@@ -23,7 +23,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         dialogHelp: '{{ url_for('help.static', filename='cast_dialog.html') }}',
         canDrop: true,
         canDropCascade: true,
-        label: '{{ _('Cast') }}',
+        label: gettext('Cast'),
         hasSQL: true,
         hasDepends: true,
         Init: function() {
@@ -38,18 +38,18 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           pgBrowser.add_menus([{
             name: 'create_cast_on_database', node: 'database', module: this,
             applies: ['object', 'context'], callback: 'show_obj_properties',
-            category: 'create', priority: 4, label: '{{ _('Cast...') }}',
+            category: 'create', priority: 4, label: gettext('Cast...'),
             icon: 'wcTabIcon icon-cast', data: {action: 'create'},
             enable: pgBrowser.Nodes['database'].is_conn_allow
           },{
             name: 'create_cast_on_coll', node: 'coll-cast', module: this,
             applies: ['object', 'context'], callback: 'show_obj_properties',
-            category: 'create', priority: 4, label: '{{ _('Cast...') }}',
+            category: 'create', priority: 4, label: gettext('Cast...'),
             icon: 'wcTabIcon icon-cast', data: {action: 'create'}
           },{
             name: 'create_cast', node: 'cast', module: this,
             applies: ['object', 'context'], callback: 'show_obj_properties',
-            category: 'create', priority: 4, label: '{{ _('Cast...') }}',
+            category: 'create', priority: 4, label: gettext('Cast...'),
             icon: 'wcTabIcon icon-cast', data: {action: 'create'}
           }]);
 
@@ -70,14 +70,14 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // Define the schema for cast
           schema: [{
-            id: 'name', label: '{{ _('Name') }}', cell: 'string',
+            id: 'name', label: gettext('Name'), cell: 'string',
             editable: false, type: 'text', disabled: true, cellHeaderClasses: 'width_percent_50'
           },{
-            id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+            id: 'oid', label: gettext('OID'), cell: 'string',
             editable: false, type: 'text', disabled: true, mode: ['properties'],
           },{
-            id: 'srctyp', label:'{{ _('Source type') }}', url: 'get_type',
-            type: 'text', group: 'Definition', disabled: function(m) {
+            id: 'srctyp', label: gettext('Source type'), url: 'get_type',
+            type: 'text', group: gettext('Definition'), disabled: function(m) {
             return !m.isNew()
             }, mode: ['create'],
 
@@ -120,11 +120,11 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
            * edit mode only
            */
           {
-            id: 'srctyp', label:'{{ _('Source type') }}', type: 'text',
-            group: 'Definition', disabled: true, mode:['properties','edit']
+            id: 'srctyp', label: gettext('Source type'), type: 'text',
+            group: gettext('Definition'), disabled: true, mode:['properties','edit']
           },{
-            id: 'trgtyp', label:'{{ _('Target type') }}', url: 'get_type',
-            type: 'text', group: 'Definition', disabled: function(m) {
+            id: 'trgtyp', label: gettext('Target type'), url: 'get_type',
+            type: 'text', group: gettext('Definition'), disabled: function(m) {
               return !m.isNew()
               }, mode: ['create'],
             transform: function(rows) {
@@ -165,8 +165,8 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
            * edit mode only
            */
           {
-            id: 'trgtyp', label:'{{ _('Target type') }}', type: 'text',
-            group: 'Definition', disabled: true, mode:['properties','edit']
+            id: 'trgtyp', label: gettext('Target type'), type: 'text',
+            group: gettext('Definition'), disabled: true, mode:['properties','edit']
           },
 
           /*
@@ -175,9 +175,9 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
            * associated functions will be fetch using ajax call
            */
           {
-            id: 'proname', label:'{{ _('Function') }}', deps:['srctyp', 'trgtyp'],
+            id: 'proname', label: gettext('Function'), deps:['srctyp', 'trgtyp'],
             type: 'text', disabled: function(m) { return !m.isNew(); },
-            group: 'Definition', mode: ['create'],
+            group: gettext('Definition'), mode: ['create'],
             control: 'node-ajax-options',
             options: function(control) {
               var srcTyp = control.model.get('srctyp');
@@ -226,12 +226,12 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
          * edit mode only
          */
         {
-          id: 'proname', label:'{{ _('Function') }}', type: 'text',
-          group: 'Definition', disabled: true, mode:['properties','edit']
+          id: 'proname', label: gettext('Function'), type: 'text',
+          group: gettext('Definition'), disabled: true, mode:['properties','edit']
         },{
-          id: 'castcontext', label:'{{ _('Context') }}',
+          id: 'castcontext', label: gettext('Context'),
           options:{'onText':'IMPLICIT','offText':'EXPLICIT'},
-          editable: false, type: 'string', group: 'Definition',
+          editable: false, type: 'string', group: gettext('Definition'),
           mode:['create'],
           control: Backform.SwitchControl.extend({
             getValueFromDOM: function() {
@@ -244,17 +244,17 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
          * edit mode
          */
         {
-          id: 'castcontext', label:'{{ _('Context') }}', disabled: true,
+          id: 'castcontext', label: gettext('Context'), disabled: true,
           options:[{
             label: 'IMPLICIT', value: 'IMPLICIT'
           },{
             label: 'EXPLICIT', value: 'EXPLICIT'
           },{
             label: 'ASSIGNMENT', value: 'ASSIGNMENT'
-          }], editable: false, type: 'select2', group: 'Definition',
+          }], editable: false, type: 'select2', group: gettext('Definition'),
           mode:['properties', 'edit']
         },{
-          id: 'syscast', label:'{{ _('System cast?') }}',
+          id: 'syscast', label: gettext('System cast?'),
           cell: 'switch', type: 'switch', mode: ['properties'], disabled: true,
           options: {
             'onText': 'Yes', 'offText': 'No',
@@ -262,7 +262,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
             'size': 'small'
           }
         },{
-          id: 'description', label:'{{ _('Comment') }}',type: 'text',
+          id: 'description', label: gettext('Comment'),type: 'text',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         }
         ],
@@ -279,7 +279,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // validate source type control
           if (_.isUndefined(srctype) || _.isNull(srctype) || String(srctype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Source type must be selected.') }}';
+            var msg = gettext('Source type must be selected.');
             this.errorModel.set('srctyp', msg);
             return msg;
           }
@@ -290,7 +290,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
 
           // validate target type control
           if (_.isUndefined(trgtype) || _.isNull(trgtype) || String(trgtype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Target type must be selected.') }}';
+            var msg = gettext('Target type must be selected.');
             this.errorModel.set('trgtyp', msg);
             return msg;
           }

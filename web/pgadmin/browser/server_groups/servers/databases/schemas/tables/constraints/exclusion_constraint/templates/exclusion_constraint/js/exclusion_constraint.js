@@ -1,7 +1,7 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-        'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, Alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   var ExclusionConstraintColumnModel = pgBrowser.Node.Model.extend({
     defaults: {
@@ -19,10 +19,10 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       return d;
     },
     schema: [{
-        id: 'column', label:'{{ _('Column') }}', type:'text', editable: false,
+        id: 'column', label: gettext('Column'), type:'text', editable: false,
         cell:'string'
       },{
-        id: 'oper_class', label:'{{ _('Operator class') }}', type:'text',
+        id: 'oper_class', label: gettext('Operator class'), type:'text',
         node: 'table', url: 'get_oper_class', first_empty: true,
         editable: function(m) {
           if (m instanceof Backbone.Collection) {
@@ -42,7 +42,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         },
         select2: {
           allowClear: true, width: 'style', tags: true,
-          placeholder: '{{ _("Select the operator class") }}'
+          placeholder: gettext('Select the operator class')
         }, cell: Backgrid.Extension.Select2Cell.extend({
           initialize: function () {
             Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
@@ -94,7 +94,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
         })
       },{
-        id: 'order', label:'{{ _('DESC') }}', type: 'switch',
+        id: 'order', label: gettext('DESC'), type: 'switch',
         options: {
           onText: 'ASC',
           offText: 'DESC',
@@ -115,7 +115,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
         }
       },{
-        id: 'nulls_order', label:'{{ _('NULLs order') }}', type:"switch",
+        id: 'nulls_order', label: gettext('NULLs order'), type:"switch",
         options: {
           onText: 'FIRST',
           offText: 'LAST',
@@ -136,7 +136,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
           }
         }
       },{
-        id: 'operator', label:'{{ _('Operator') }}', type: 'text',
+        id: 'operator', label: gettext('Operator'), type: 'text',
         node: 'table', url: 'get_operator',
         editable: function(m) {
           if (m instanceof Backbone.Collection) {
@@ -199,7 +199,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
       var operator = this.get('operator'),
         column_name = this.get('column');
       if (_.isUndefined(operator) || _.isNull(operator)) {
-        var msg = '{{ _('Please specify operator for column: ') }}' + column_name;
+        var msg = gettext('Please specify operator for column: ') + column_name;
         this.errorModel.set('operator', msg);
         return msg;
       }
@@ -399,7 +399,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         '</div>',].join("\n")
 
       _.extend(data, {
-        column_label: '{{ _('Column') }}'
+        column_label: gettext('Column')
       });
 
       var self = this,
@@ -602,7 +602,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
   if (!pgBrowser.Nodes['exclusion_constraint']) {
     pgAdmin.Browser.Nodes['exclusion_constraint'] = pgBrowser.Node.extend({
       type: 'exclusion_constraint',
-      label: '{{ _('Exclusion constraint') }}',
+      label: gettext('Exclusion constraint'),
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
@@ -624,7 +624,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
         pgBrowser.add_menus([{
           name: 'create_exclusion_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Exclusion constraint...') }}',
+          category: 'create', priority: 4, label: gettext('Exclusion constraint...'),
           icon: 'wcTabIcon icon-exclusion_constraint', data: {action: 'create', check: true},
           enable: 'canCreate'
         }]);
@@ -650,13 +650,13 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
 
         // Define the schema for the exclusion constraint node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', type: 'text',
+          id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable: true,
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties']
         },{
-          id: 'comment', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           deps:['name'], disabled:function(m) {
             var name = m.get('name');
@@ -671,8 +671,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'spcname', label: '{{ _('Tablespace') }}',
-          type: 'text', group: '{{ _('Definition') }}',
+          id: 'spcname', label: gettext('Tablespace'),
+          type: 'text', group: gettext('Definition'),
           control: 'node-list-by-name', node: 'tablespace',
           select2:{allowClear:false},
           filter: function(m) {
@@ -681,8 +681,8 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             else return true;
           }
         },{
-          id: 'amname', label: '{{ _('Access method') }}',
-          type: 'text', group: '{{ _('Definition') }}',
+          id: 'amname', label: gettext('Access method'),
+          type: 'text', group: gettext('Definition'),
           url:"get_access_methods", node: 'table',
           control: Backform.NodeAjaxOptionsControl.extend({
             // When access method changes we need to clear columns collection
@@ -696,7 +696,7 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               column_collection = self.model.get('columns');
 
               if (column_collection.length > 0 && current_am != previous_am) {
-                var msg = '{{ _('Changing access method will clear columns collection') }}';
+                var msg = gettext('Changing access method will clear columns collection');
                 Alertify.confirm(msg, function (e) {
                     // User clicks Ok, lets clear collection.
                     column_collection.each(function(m) {
@@ -726,19 +726,19 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }
         },{
-          id: 'fillfactor', label: '{{ _('Fill factor') }}',
-          type: 'int', group: '{{ _('Definition') }}', allowNull: true
+          id: 'fillfactor', label: gettext('Fill factor'),
+          type: 'int', group: gettext('Definition'), allowNull: true
         },{
-          id: 'condeferrable', label: '{{ _('Deferrable?') }}',
-          type: 'switch', group: '{{ _('Definition') }}', deps: ['index'],
+          id: 'condeferrable', label: gettext('Deferrable?'),
+          type: 'switch', group: gettext('Definition'), deps: ['index'],
           disabled: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }
         },{
-          id: 'condeferred', label: '{{ _('Deferred?') }}',
-          type: 'switch', group: '{{ _('Definition') }}',
+          id: 'condeferred', label: gettext('Deferred?'),
+          type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
           disabled: function(m) {
             if((_.has(m, 'handler') &&
@@ -759,16 +759,16 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
             }
           }
         },{
-          id: 'constraint', label:'{{ _('Constraint') }}', cell: 'string',
+          id: 'constraint', label: gettext('Constraint'), cell: 'string',
           type: 'multiline', mode: ['create', 'edit'], editable: false,
-          group: '{{ _('Definition') }}', disabled: function(m) {
+          group: gettext('Definition'), disabled: function(m) {
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           }
         },{
-          id: 'columns', label: '{{ _('Columns') }}',
-          type: 'collection', group: '{{ _('Columns') }}', disabled: false,
+          id: 'columns', label: gettext('Columns'),
+          type: 'collection', group: gettext('Columns'), disabled: false,
           deps:['amname'], canDelete: true, editable: false,
           canAdd: function(m) {
             // We can't update columns of existing exclusion constraint.
@@ -896,12 +896,12 @@ function($, _, S, pgAdmin, pgBrowser, Alertify) {
               name = this.get('name');
 
           if ((_.isUndefined(name) || _.isNull(name) || name.length < 1)) {
-            var msg = '{{ _('Please specify name for exclusion constraint.') }}';
+            var msg = gettext('Please specify name for exclusion constraint.');
             this.errorModel.set('name', msg);
             return msg;
           }
           else  if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = '{{ _('Please specify columns for exclusion constraint.') }}';
+            var msg = gettext('Please specify columns for exclusion constraint.');
             this.errorModel.set('columns', msg);
             return msg;
           }

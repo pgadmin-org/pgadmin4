@@ -1,9 +1,8 @@
-define(
-    ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-     'backbone', 'alertify', 'backform', 'pgadmin.backform',
-     'pgadmin.backgrid', 'pgadmin.browser.node'
-     ],
-function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'backbone', 'alertify', 'backform', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.node'
+], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -33,7 +32,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
       pgAdmin.Browser.add_menus([{
         name: 'refresh', node: this.type, module: this,
         applies: ['object', 'context'], callback: 'refresh',
-        priority: 1, label: '{{ _("Refresh...") }}',
+        priority: 1, label: gettext('Refresh...'),
         icon: 'fa fa-refresh'
       }]);
 
@@ -43,7 +42,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           pgAdmin.Browser.add_menus([{
             name: 'show_query_tool', node: this.type, module: this,
             applies: ['context'], callback: 'show_query_tool',
-            priority: 998, label: '{{ _("Query Tool...") }}',
+            priority: 998, label: gettext('Query Tool...'),
             icon: 'fa fa-bolt'
           }]);
         }
@@ -125,7 +124,7 @@ function($, _, S, pgAdmin, Backbone, Alertify, Backform) {
           Alertify.pgNotifier(
             error, xhr,
             S(
-              "{{ _("Error retrieving properties - %s.") }}"
+              gettext("Error retrieving properties - %s.")
             ).sprintf(message || that.label).value(),
             function() {
               console.log(arguments);

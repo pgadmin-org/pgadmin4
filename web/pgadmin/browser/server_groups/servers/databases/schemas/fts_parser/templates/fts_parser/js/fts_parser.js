@@ -1,14 +1,14 @@
-define(
-        ['jquery', 'underscore', 'underscore.string', 'pgadmin',
-         'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'],
-function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the collection class for fts parser
   if (!pgBrowser.Nodes['coll-fts_parser']) {
     var fts_parsers = pgAdmin.Browser.Nodes['coll-fts_parser'] =
       pgAdmin.Browser.Collection.extend({
         node: 'fts_parser',
-        label: '{{ _('FTS Parsers') }}',
+        label: gettext('FTS Parsers'),
         type: 'coll-fts_parser',
         columns: ['name', 'description']
       });
@@ -24,7 +24,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
       dialogHelp: '{{ url_for('help.static', filename='fts_parser_dialog.html') }}',
       canDrop: true,
       canDropCascade: true,
-      label: '{{ _('FTS Parser') }}',
+      label: gettext('FTS Parser'),
       hasSQL: true,
       hasDepends: true,
       Init: function() {
@@ -39,19 +39,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         pgBrowser.add_menus([{
           name: 'create_fts_parser_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Parser...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
           enable: 'canCreate'
           },{
           name: 'create_fts_parser_on_coll', node: 'coll-fts_parser',
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Parser...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
           module: this, enable: 'canCreate'
           },{
           name: 'create_fts_parser', node: 'fts_parser', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('FTS Parser...') }}',
+          category: 'create', priority: 4, label: gettext('FTS Parser...'),
           icon: 'wcTabIcon icon-fts_parser', data: {action: 'create'},
           enable: 'canCreate'
           }]);
@@ -81,49 +81,49 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
         },
         // Defining schema for fts parser
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', cell: 'string',
+          id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', disabled: true, mode:['properties']
         },{
-          id: 'schema', label: '{{ _('Schema')}}', cell: 'string',
+          id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database'
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50'
         },{
-          id: 'prsstart', label: '{{ _('Start function')}}',
+          id: 'prsstart', label: gettext('Start function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'start_functions',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema'
         },{
-          id: 'prstoken', label: '{{ _('Get next token function')}}',
+          id: 'prstoken', label: gettext('Get next token function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'token_functions',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema'
         },{
-          id: 'prsend', label: '{{ _('End function')}}',
+          id: 'prsend', label: gettext('End function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'end_functions',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema',
           cache_node: 'schema'
         },{
-          id: 'prslextype', label: '{{ _('Lextypes function')}}',
+          id: 'prslextype', label: gettext('Lextypes function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'lextype_functions',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema'
         },{
-          id: 'prsheadline', label: '{{ _('Headline function')}}',
+          id: 'prsheadline', label: gettext('Headline function'),
           type: 'text', disabled: function(m) { return !m.isNew(); },
           control: 'node-ajax-options', url: 'headline_functions',
-          group: '{{ _('Definition') }}', cache_level: 'database',
+          group: gettext('Definition'), cache_level: 'database',
           cache_node: 'schema'
         }],
 
@@ -144,7 +144,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           if (_.isUndefined(name) ||
                 _.isNull(name) ||
                 String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name must be specified.') }}';
+            var msg = gettext('Name must be specified.');
             this.errorModel.set('name', msg);
             return msg;
           }
@@ -153,7 +153,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(start) ||
                     _.isNull(start) ||
                     String(start).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Start function must be selected.') }}';
+            var msg = gettext('Start function must be selected.');
             this.errorModel.set('prsstart', msg);
             return msg;
           }
@@ -162,7 +162,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(token) ||
                     _.isNull(token) ||
                     String(token).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Get next token function must be selected.') }}';
+            var msg = gettext('Get next token function must be selected.');
             this.errorModel.set('prstoken', msg);
             return msg;
           }
@@ -171,7 +171,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(end) ||
                     _.isNull(end) ||
                     String(end).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('End function must be selected.') }}';
+            var msg = gettext('End function must be selected.');
             this.errorModel.set('prsend', msg);
             return msg;
           }
@@ -180,7 +180,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(lextype) ||
                     _.isNull(lextype) ||
                     String(lextype).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Lextype function must be selected.') }}';
+            var msg = gettext('Lextype function must be selected.');
             this.errorModel.set('prslextype', msg);
             return msg;
           }
@@ -189,7 +189,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify) {
           else if (_.isUndefined(schema) ||
                     _.isNull(schema) ||
                     String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Schema must be selected.') }}';
+            var msg = gettext('Schema must be selected.');
             this.errorModel.set('schema', msg);
             return msg;
           }

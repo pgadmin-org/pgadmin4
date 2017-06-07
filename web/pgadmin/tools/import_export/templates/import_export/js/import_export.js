@@ -1,8 +1,10 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'],
-  function($, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
+  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
+], function(
+  gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
+) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
@@ -32,39 +34,39 @@ define(
       table: undefined
     },
     schema: [{
-      id: 'is_import', label:'{{ _('Import/Export') }}', cell: 'switch',
-      type: 'switch', group: '{{ _('Options')}}',
+      id: 'is_import', label: gettext('Import/Export'), cell: 'switch',
+      type: 'switch', group: gettext('Options'),
       options: {
-         'onText': '{{ _('Import') }}', 'offText': '{{ _('Export') }}',
+         'onText': gettext('Import'), 'offText': gettext('Export'),
          'onColor': 'success', 'offColor': 'primary'
       }
     }, {
-      type: 'nested', control: 'fieldset', label: '{{ _('File Info') }}',
-      group: '{{ _('Options') }}',
+      type: 'nested', control: 'fieldset', label: gettext('File Info'),
+      group: gettext('Options'),
       schema:[{ /* select file control for import */
-      id: 'filename', label: '{{ _('Filename')}}', deps: ['is_import'],
-      type: 'text', control: Backform.FileControl, group: '{{ _('File Info')}}',
+      id: 'filename', label: gettext('Filename'), deps: ['is_import'],
+      type: 'text', control: Backform.FileControl, group: gettext('File Info'),
       dialog_type: 'select_file', supp_types: ['csv', 'txt', '*'],
       visible: 'importing'
     }, { /* create file control for export */
-        id: 'filename', label: '{{ _('Filename')}}', deps: ['is_import'],
-        type: 'text', control: Backform.FileControl, group: '{{ _('File Info')}}',
+        id: 'filename', label: gettext('Filename'), deps: ['is_import'],
+        type: 'text', control: Backform.FileControl, group: gettext('File Info'),
         dialog_type: 'create_file', supp_types: ['csv', 'txt', '*'],
         visible: 'exporting'
       }, {
-        id: 'format', label: '{{ _("Format") }}', cell: 'string',
-        control: 'select2', group: '{{ _('File Info')}}',
+        id: 'format', label: gettext('Format'), cell: 'string',
+        control: 'select2', group: gettext('File Info'),
         options:[
             {'label': 'binary', 'value': 'binary'}, {'label': 'csv', 'value': 'csv'}, {'label': 'text', 'value': 'text'},
           ],
         disabled: 'isDisabled', select2: {allowClear: false, width: "100%" },
       }, {
-        id: 'encoding', label: '{{ _("Encoding") }}', cell: 'string',
+        id: 'encoding', label: gettext('Encoding'), cell: 'string',
         control: 'node-ajax-options', node: 'database', url: 'get_encodings', first_empty: true,
-        group: '{{ _('File Info')}}'
+        group: gettext('File Info')
       }]
     },{
-        id: 'columns', label: '{{ _("Columns to import") }}', cell: 'string',
+        id: 'columns', label: gettext('Columns to import'), cell: 'string',
         deps: ['is_import'], type: 'array', first_empty: false,
         control: Backform.NodeListByNameControl.extend({
           // By default, all the import columns should be selected
@@ -116,22 +118,22 @@ define(
 
           return res;
         },
-        node: 'column', url: 'nodes', group: '{{ _('Columns')}}',
+        node: 'column', url: 'nodes', group: gettext('Columns'),
         select2: {
           multiple: true, allowClear: false,
-          placeholder: '{{ _('Columns for importing...') }}',
+          placeholder: gettext('Columns for importing...'),
           first_empty: false
         }, visible: 'importing',
         helpMessage:
-          '{{ _('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.') }}'
+        gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.')
       }, {
-        id: 'columns', label: '{{ _("Columns to export") }}', cell: 'string',
+        id: 'columns', label: gettext('Columns to export'), cell: 'string',
         deps: ['is_import'], type: 'array',
         control: 'node-list-by-name', first_empty: false,
-        node: 'column', url: 'nodes', group: '{{ _('Columns')}}',
+        node: 'column', url: 'nodes', group: gettext('Columns'),
         select2: {
           multiple: true, allowClear: true,
-          placeholder: '{{ _('Colums for exporting...') }}'
+          placeholder: gettext('Colums for exporting...')
         }, visible: 'exporting',
         transform: function(rows) {
           var self = this,
@@ -157,36 +159,36 @@ define(
           return res;
         },
         helpMessage:
-          '{{ _('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.') }}'
+          gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.')
       }, {
-        id: 'null_string', label: '{{ _("NULL Strings") }}', cell: 'string',
-        type: 'text', group: '{{ _('Columns')}}', disabled: 'isDisabled',
+        id: 'null_string', label: gettext('NULL Strings'), cell: 'string',
+        type: 'text', group: gettext('Columns'), disabled: 'isDisabled',
         deps: ['format'],
         helpMessage:
-          "{{ _("Specifies the string that represents a null value. The default is \\\\N (backslash-N) in text format, and an unquoted empty string in CSV format. You might prefer an empty string even in text format for cases where you don't want to distinguish nulls from empty strings. This option is not allowed when using binary format.") }}"
+          gettext("Specifies the string that represents a null value. The default is \\N (backslash-N) in text format, and an unquoted empty string in CSV format. You might prefer an empty string even in text format for cases where you don't want to distinguish nulls from empty strings. This option is not allowed when using binary format.")
       }, {
-        id: 'icolumns', label: '{{ _("Not null columns") }}', cell: 'string',
+        id: 'icolumns', label: gettext('Not null columns'), cell: 'string',
         control: 'node-list-by-name', node: 'column',
-        group: '{{ _('Columns')}}', deps: ['format', 'is_import'], disabled: 'isDisabled',
+        group: gettext('Columns'), deps: ['format', 'is_import'], disabled: 'isDisabled',
         type: 'array', first_empty: false,
         select2: {
           multiple: true, allowClear: true, first_empty: true,
-          placeholder: '{{ _('Not null columns...') }}'
+          placeholder: gettext('Not null columns...')
         },
         helpMessage:
-          '{{ _('Do not match the specified column values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.') }}'
+          gettext('Do not match the specified column values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.')
       }, {
-        type: 'nested', control: 'fieldset', label: '{{ _('Miscellaneous') }}',
-        group: '{{ _('Options') }}',
+        type: 'nested', control: 'fieldset', label: gettext('Miscellaneous'),
+        group: gettext('Options'),
         schema:[{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string',
-          type: 'switch', group: '{{ _('Miscellaneous') }}'
+          id: 'oid', label: gettext('OID'), cell: 'string',
+          type: 'switch', group: gettext('Miscellaneous')
         },{
-          id: 'header', label:'{{ _('Header') }}', cell: 'string',
-          type: 'switch', group: '{{ _('Miscellaneous') }}', deps: ['format'], disabled: 'isDisabled'
+          id: 'header', label: gettext('Header'), cell: 'string',
+          type: 'switch', group: gettext('Miscellaneous'), deps: ['format'], disabled: 'isDisabled'
         },{
-          id: 'delimiter', label:'{{ _('Delimiter') }}', cell: 'string', first_empty: true,
-          type: 'text', control: 'node-ajax-options', group: '{{ _('Miscellaneous') }}', disabled: 'isDisabled',
+          id: 'delimiter', label: gettext('Delimiter'), cell: 'string', first_empty: true,
+          type: 'text', control: 'node-ajax-options', group: gettext('Miscellaneous'), disabled: 'isDisabled',
           deps: ['format'],
           options:[
             {'label': ';', 'value': ';'},
@@ -198,13 +200,13 @@ define(
             tags: true,
             allowClear: false,
             width: "100%",
-            placeholder: '{{ _('Select from list...') }}'
+            placeholder: gettext('Select from list...')
           }, helpMessage:
-            '{{ _('Specifies the character that separates columns within each row (line) of the file. The default is a tab character in text format, a comma in CSV format. This must be a single one-byte character. This option is not allowed when using binary format.') }}'
+            gettext('Specifies the character that separates columns within each row (line) of the file. The default is a tab character in text format, a comma in CSV format. This must be a single one-byte character. This option is not allowed when using binary format.')
         },
         {
-          id: 'quote', label:'{{ _('Quote') }}', cell: 'string', first_empty: true, deps: ['format'],
-          type: 'text', control: 'node-ajax-options', group: '{{ _('Miscellaneous') }}', disabled: 'isDisabled',
+          id: 'quote', label: gettext('Quote'), cell: 'string', first_empty: true, deps: ['format'],
+          type: 'text', control: 'node-ajax-options', group: gettext('Miscellaneous'), disabled: 'isDisabled',
           options:[
             {'label': '\"', 'value': '\"'},
             {'label': '\'', 'value': '\''},
@@ -213,13 +215,13 @@ define(
             tags: true,
             allowClear: false,
             width: "100%",
-            placeholder: '{{ _('Select from list...') }}'
+            placeholder: gettext('Select from list...')
           }, helpMessage:
-            '{{ _('Specifies the quoting character to be used when a data value is quoted. The default is double-quote. This must be a single one-byte character. This option is allowed only when using CSV format.') }}'
+            gettext('Specifies the quoting character to be used when a data value is quoted. The default is double-quote. This must be a single one-byte character. This option is allowed only when using CSV format.')
         },
         {
-          id: 'escape', label:'{{ _('Escape') }}', cell: 'string', first_empty: true, deps: ['format'],
-          type: 'text', control: 'node-ajax-options', group: '{{ _('Miscellaneous') }}', disabled: 'isDisabled',
+          id: 'escape', label: gettext('Escape'), cell: 'string', first_empty: true, deps: ['format'],
+          type: 'text', control: 'node-ajax-options', group: gettext('Miscellaneous'), disabled: 'isDisabled',
           options:[
             {'label': '\"', 'value': '\"'},
             {'label': '\'', 'value': '\''},
@@ -228,9 +230,9 @@ define(
             tags: true,
             allowClear: false,
             width: "100%",
-            placeholder: '{{ _('Select from list...') }}'
+            placeholder: gettext('Select from list...')
           }, helpMessage:
-            '{{ _('Specifies the character that should appear before a data character that matches the QUOTE value. The default is the same as the QUOTE value (so that the quoting character is doubled if it appears in the data). This must be a single one-byte character. This option is allowed only when using CSV format.') }}'
+            gettext('Specifies the character that should appear before a data character that matches the QUOTE value. The default is the same as the QUOTE value (so that the quoting character is doubled if it appears in the data). This must be a single one-byte character. This option is allowed only when using CSV format.')
         }]
       }
     ],
@@ -289,7 +291,7 @@ define(
         pgBrowser.add_menus([{
           name: 'import', node: 'table', module: this,
           applies: ['tools', 'context'], callback: 'callback_import_export',
-          category: 'import', priority: 10, label: '{{ _('Import/Export...') }}',
+          category: 'import', priority: 10, label: gettext('Import/Export...'),
           icon: 'fa fa-shopping-cart', enable: menu_enabled
         }]);
       },
@@ -311,7 +313,7 @@ define(
           if (pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
-            Alertify.alert("{{ _("Please select server or child node from tree.") }}");
+            Alertify.alert(gettext("Please select server or child node from tree."));
             break;
           }
         }
@@ -322,23 +324,23 @@ define(
 
         var module = 'paths',
           preference_name = 'pg_bin_dir',
-          msg = '{{ _('Please configure the PostgreSQL Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
 
         if ((server_data.type && server_data.type == 'ppas') ||
             server_data.server_type == 'ppas') {
           preference_name = 'ppas_bin_dir';
-          msg = '{{ _('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.') }}';
+          msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
         }
 
         var preference = pgBrowser.get_preference(module, preference_name);
 
         if(preference) {
           if (!preference.value) {
-            Alertify.alert('{{ _("Configuration required") }}', msg);
+            Alertify.alert(gettext('Configuration required'), msg);
             return;
           }
         } else {
-          Alertify.alert(S('{{ _('Failed to load preference %s of module %s') }}').sprintf(preference_name, module).value());
+          Alertify.alert(S(gettext('Failed to load preference %s of module %s')).sprintf(preference_name, module).value());
           return;
         }
 
@@ -373,12 +375,12 @@ define(
               setup: function() {
                 return {
                   buttons:[{
-                    text: "{{ _('OK') }}", key: 27, disable: true,
+                    text: gettext("OK"), key: 27, disable: true,
                     'data-btn-name': 'ok',
                     className:
                       "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                   }, {
-                    text: "{{ _('Cancel') }}", key: 27,
+                    text: gettext("Cancel"), key: 27,
                     'data-btn-name': 'cancel',
                     className:
                       "btn btn-danger fa fa-lg fa-times pg-alertify-button"
@@ -417,7 +419,7 @@ define(
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        Alertify.notify('{{ _('Import/export job created.') }}', 'success', 5);
+                        Alertify.notify(gettext('Import/export job created.'), 'success', 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },
@@ -425,7 +427,7 @@ define(
                       try {
                         var err = $.parseJSON(xhr.responseText);
                         Alertify.alert(
-                          '{{ _('Import/export job failed.') }}',
+ gettext('Import/export job failed.'),
                           err.errormsg
                         );
                       } catch (e) {}
@@ -501,19 +503,19 @@ define(
                             self.__internal.buttons[0].element.disabled = false;
                           } else {
                             self.__internal.buttons[0].element.disabled = true;
-                            this.errorModel.set('escape', '{{ _('Escape should contain only one character') }}')
+                            this.errorModel.set('escape', gettext('Escape should contain only one character'))
                           }
                         } else {
                           self.__internal.buttons[0].element.disabled = true;
-                          this.errorModel.set('quote', '{{ _('Quote should contain only one character') }}')
+                          this.errorModel.set('quote', gettext('Quote should contain only one character'))
                         }
                       } else {
                         self.__internal.buttons[0].element.disabled = true;
-                        this.errorModel.set('delimiter', '{{ _('Delimiter should contain only one character') }}')
+                        this.errorModel.set('delimiter', gettext('Delimiter should contain only one character'))
                       }
                     } else {
                       self.__internal.buttons[0].element.disabled = true;
-                      this.errorModel.set('filename', '{{ _('Please provide filename') }}')
+                      this.errorModel.set('filename', gettext('Please provide filename'))
                     }
                 });
 
@@ -528,7 +530,7 @@ define(
         // Open the Alertify dialog for the import/export module
         Alertify.ImportDialog(
             S(
-              "{{ _("Import/Export data - table '%s'") }}"
+ gettext("Import/Export data - table '%s'")
             ).sprintf(treeInfo.table.label).value(), node, i, d
          ).set('resizable',true).resizeTo('70%','80%');
       }

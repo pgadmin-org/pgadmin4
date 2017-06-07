@@ -1,14 +1,15 @@
-define(
-  ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'pgadmin.browser',
-    'alertify', 'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'],
-  function($, _, S, pgAdmin, pgBrowser, alertify) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {
     var languages = pgBrowser.Nodes['coll-language'] =
       pgBrowser.Collection.extend({
         node: 'language',
-        label: '{{ _('Languages') }}',
+        label: gettext('Languages'),
         type: 'coll-language',
         columns: ['name', 'lanowner', 'description']
       });
@@ -22,7 +23,7 @@ define(
       sqlAlterHelp: 'sql-alterlanguage.html',
       sqlCreateHelp: 'sql-createlanguage.html',
       dialogHelp: '{{ url_for('help.static', filename='language_dialog.html') }}',
-      label: '{{ _('Language') }}',
+      label: gettext('Language'),
       hasSQL:  true,
       canDrop: true,
       canDropCascade: true,
@@ -40,18 +41,18 @@ define(
         pgBrowser.add_menus([{
           name: 'create_language_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Language...') }}',
+          category: 'create', priority: 4, label: gettext('Language...'),
           icon: 'wcTabIcon icon-language', data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow
         },{
           name: 'create_language_on_coll', node: 'coll-language', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Language...') }}',
+          category: 'create', priority: 4, label: gettext('Language...'),
           icon: 'wcTabIcon icon-language', data: {action: 'create'}
         },{
           name: 'create_language', node: 'language', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Language...') }}',
+          category: 'create', priority: 4, label: gettext('Language...'),
           icon: 'wcTabIcon icon-language', data: {action: 'create'}
         }]);
       },
@@ -85,7 +86,7 @@ define(
 
         // Define the schema for the language node
         schema: [{
-          id: 'name', label: '{{ _('Name') }}', type: 'text',
+          id: 'name', label: gettext('Name'), type: 'text',
           control: 'node-ajax-options', mode: ['properties', 'create', 'edit'],
           url:'get_templates', select2: { allowClear: false, tags: true, multiple: false },
           transform: function(data, cell) {
@@ -110,26 +111,26 @@ define(
             return res;
           }
         },{
-          id: 'oid', label:'{{ _('OID') }}', cell: 'string', mode: ['properties'],
+          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           type: 'text', disabled: true
         },{
-          id: 'lanowner', label:'{{ _('Owner') }}', type: 'text',
+          id: 'lanowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'properties', 'create'], select2: { allowClear: false }
         },{
-          id: 'acl', label: '{{ _('Privileges') }}', type: 'text',
-          group: '{{ _('Security') }}', mode: ['properties'], disabled: true
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], disabled: true
         },{
-          id: 'description', label:'{{ _('Comment') }}', cell: 'string',
+          id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline'
         },{
-          id: 'trusted', label:'{{ _('Trusted?') }}', type: 'switch',
+          id: 'trusted', label: gettext('Trusted?'), type: 'switch',
           options: {
             'onText': 'Yes', 'offText': 'No',
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           },
-          group: 'Definition', mode: ['edit', 'properties', 'create'], deps: ['name'],
+          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], deps: ['name'],
           disabled: function(m) {
             if (m.isNew()) {
               if (m.get('template_list').indexOf(m.get('name')) == -1) {
@@ -142,8 +143,8 @@ define(
             return true;
           }
         },{
-          id: 'lanproc', label:'{{ _('Handler Function') }}', type: 'text', control: 'node-ajax-options',
-          group: 'Definition', mode: ['edit', 'properties', 'create'], url:'get_functions',
+          id: 'lanproc', label: gettext('Handler Function'), type: 'text', control: 'node-ajax-options',
+          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'], first_empty: false,
           /* This function is used to populate the handler function
            * for the selected language node. It will check if the property
@@ -167,8 +168,8 @@ define(
             return true;
           }
         },{
-          id: 'laninl', label:'{{ _('Inline Function') }}', type: 'text', control: 'node-ajax-options',
-          group: 'Definition', mode: ['edit', 'properties', 'create'], url:'get_functions',
+          id: 'laninl', label: gettext('Inline Function'), type: 'text', control: 'node-ajax-options',
+          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'], first_empty: false,
           /* This function is used to populate the inline function
            * for the selected language node. It will check if the property
@@ -192,8 +193,8 @@ define(
             return true;
           }
         },{
-          id: 'lanval', label:'{{ _('Validator Function') }}', type: 'text', control: 'node-ajax-options',
-          group: 'Definition', mode: ['edit', 'properties', 'create'], url:'get_functions',
+          id: 'lanval', label: gettext('Validator Function'), type: 'text', control: 'node-ajax-options',
+          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
           deps: ['name'],
           /* This function is used to populate the validator function
            * for the selected language node. It will check if the property
@@ -217,13 +218,13 @@ define(
             return true;
           }
         }, pgBrowser.SecurityGroupUnderSchema, {
-          id: 'lanacl', label: '{{ _('Privileges') }}', type: 'collection',
+          id: 'lanacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection', mode: ['edit', 'create'],
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['U']
           }), canAdd: true, canDelete: true, uniqueCol : ['grantee']
          },{
-          id: 'seclabels', label: '{{ _('Security Labels') }}', mode: ['edit', 'create'],
+          id: 'seclabels', label: gettext('Security Labels'), mode: ['edit', 'create'],
           model: pgBrowser.SecLabelModel, editable: false,
           type: 'collection', group: 'security', min_version: 90200,
           canAdd: true, canEdit: false, canDelete: true,
@@ -239,7 +240,7 @@ define(
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = '{{ _('Name cannot be empty.') }}';
+            var msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
           } else {
@@ -251,7 +252,7 @@ define(
             var handler_func = this.get('lanproc');
             if (_.isUndefined(handler_func) || _.isNull(handler_func) ||
               String(handler_func).replace(/^\s+|\s+$/g, '') == '') {
-              var msg = '{{ _('Handler Function cannot be empty') }}';
+              var msg = gettext('Handler Function cannot be empty');
               this.errorModel.set('lanproc', msg);
               return msg;
             } else {

@@ -1,16 +1,15 @@
 /* Create and Register Procedure Collection and Node. */
-define(
-        ['jquery', 'underscore', 'underscore.string',
-         'pgadmin', 'pgadmin.browser', 'alertify',
-         'pgadmin.node.function', 'pgadmin.browser.collection',
-         'pgadmin.browser.server.privilege'],
-function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
+define([
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'alertify', 'pgadmin.node.function',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Function) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     var procedures = pgAdmin.Browser.Nodes['coll-procedure'] =
       pgAdmin.Browser.Collection.extend({
         node: 'procedure',
-        label: '{{ _('Procedures') }}',
+        label: gettext('Procedures'),
         type: 'coll-procedure',
         columns: ['name', 'funcowner', 'description'],
         hasStatistics: true
@@ -26,7 +25,7 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
       sqlAlterHelp: 'sql-alterprocedure.html',
       sqlCreateHelp: 'sql-createprocedure.html',
       dialogHelp: '{{ url_for('help.static', filename='procedure_dialog.html') }}',
-      label: '{{ _('Procedure') }}',
+      label: gettext('Procedure'),
       collection_type: 'coll-procedure',
       hasSQL: true,
       hasDepends: true,
@@ -44,19 +43,19 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
           name: 'create_procedure_on_coll', node: 'coll-procedure', module:
           this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Procedure...') }}',
+          category: 'create', priority: 4, label: gettext('Procedure...'),
           icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
           false}, enable: 'canCreateProc'
         },{
           name: 'create_procedure', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Procedure...') }}',
+          category: 'create', priority: 4, label: gettext('Procedure...'),
           icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
           true}, enable: 'canCreateProc'
         },{
           name: 'create_procedure', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: '{{ _('Procedure...') }}',
+          category: 'create', priority: 4, label: gettext('Procedure...'),
           icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
           true}, enable: 'canCreateProc'
         }
@@ -144,22 +143,22 @@ function($, _, S, pgAdmin, pgBrowser, alertify, Function) {
               seclabels = this.get('seclabels');
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = '{{ _('Name cannot be empty.') }}';
+            err['name'] = gettext('Name cannot be empty.');
             errmsg = errmsg || err['name'];
           }
 
           if (_.isUndefined(this.get('pronamespace')) || String(this.get('pronamespace')).replace(/^\s+|\s+$/g, '') == '') {
-            err['pronamespace'] = '{{ _('Schema cannot be empty.') }}';
+            err['pronamespace'] = gettext('Schema cannot be empty.');
             errmsg = errmsg || err['pronamespace'];
           }
 
           if (_.isUndefined(this.get('lanname')) || String(this.get('lanname')).replace(/^\s+|\s+$/g, '') == '') {
-            err['lanname'] = '{{ _('Language cannot be empty.') }}';
+            err['lanname'] = gettext('Language cannot be empty.');
             errmsg = errmsg || err['lanname'];
           }
 
           if (_.isUndefined(this.get('prosrc')) || String(this.get('prosrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['prosrc'] = '{{ _('Code cannot be empty.') }}';
+            err['prosrc'] = gettext('Code cannot be empty.');
             errmsg = errmsg || err['prosrc'];
           }
 
