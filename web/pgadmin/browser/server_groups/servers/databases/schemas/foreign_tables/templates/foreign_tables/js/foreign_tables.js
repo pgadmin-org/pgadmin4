@@ -102,34 +102,56 @@ define([
         cell: 'string', group: gettext('Definition'),
         type: 'int', deps: ['datatype'],
         disabled: function(m) {
-        // We will store type from selected from combobox
+          var val = m.get('typlen');
+          // We will store type from selected from combobox
           if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
-            || _.isNull(m.get('inheritedfrom')))) { return true; }
+            || _.isNull(m.get('inheritedfrom')))) {
 
-        var of_type = m.get('datatype');
-        if(m.type_options) {
-          m.set('is_tlength', false, {silent: true});
+            if (!_.isUndefined(val)) {
+              setTimeout(function() {
+                m.set('typlen', undefined);
+              }, 10);
+            }
+            return true;
+          }
 
-          // iterating over all the types
-          _.each(m.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-                 m.set('typlen', undefined);
+          var of_type = m.get('datatype'),
+              has_length = false;
+          if(m.type_options) {
+            m.set('is_tlength', false, {silent: true});
+
+            // iterating over all the types
+            _.each(m.type_options, function(o) {
+              // if type from selected from combobox matches in options
+              if ( of_type == o.value ) {
                 // if length is allowed for selected type
                 if(o.length)
                 {
                   // set the values in model
+                  has_length = true;
                   m.set('is_tlength', true, {silent: true});
                   m.set('min_val', o.min_val, {silent: true});
                   m.set('max_val', o.max_val, {silent: true});
                 }
+              }
+            });
+
+            if (!has_length && !_.isUndefined(val)) {
+              setTimeout(function() {
+                m.set('typlen', undefined);
+              }, 10);
             }
-          });
-          return !(m.get('is_tlength'));
-        }
-        return true;
+
+            return !(m.get('is_tlength'));
+          }
+          if (!has_length && !_.isUndefined(val)) {
+              setTimeout(function() {
+                m.set('typlen', undefined);
+              }, 10);
+            }
+          return true;
         },
         cellHeaderClasses: 'width_percent_10'
       },{
@@ -137,33 +159,54 @@ define([
         type: 'int', deps: ['datatype'],
         cell: 'string', group: gettext('Definition'),
         disabled: function(m) {
+          var val = m.get('precision');
           if(!(_.isUndefined(m.get('inheritedid'))
             || _.isNull(m.get('inheritedid'))
             || _.isUndefined(m.get('inheritedfrom'))
-            || _.isNull(m.get('inheritedfrom')))) { return true; }
+            || _.isNull(m.get('inheritedfrom')))) {
 
-          var of_type = m.get('datatype');
+            if (!_.isUndefined(val)) {
+              setTimeout(function() {
+                m.set('precision', undefined);
+              }, 10);
+            }
+            return true;
+          }
+
+          var of_type = m.get('datatype'),
+              has_precision = false;
+
           if(m.type_options) {
              m.set('is_precision', false, {silent: true});
             // iterating over all the types
             _.each(m.type_options, function(o) {
               // if type from selected from combobox matches in options
               if ( of_type == o.value ) {
-                m.set('precision', undefined);
                 // if precession is allowed for selected type
                 if(o.precision)
                 {
+                  has_precision = true;
                   // set the values in model
                   m.set('is_precision', true, {silent: true});
                   m.set('min_val', o.min_val, {silent: true});
                   m.set('max_val', o.max_val, {silent: true});
                 }
+              }
+            });
+            if (!has_precision && !_.isUndefined(val)) {
+              setTimeout(function() {
+                m.set('precision', undefined);
+              }, 10);
             }
-          });
-          return !(m.get('is_precision'));
-        }
-        return true;
-        }, cellHeaderClasses: 'width_percent_10'
+            return !(m.get('is_precision'));
+          }
+          if (!has_precision && !_.isUndefined(val)) {
+            setTimeout(function() {
+              m.set('precision', undefined);
+            }, 10);
+          }
+          return true;
+      }, cellHeaderClasses: 'width_percent_10'
       },{
         id: 'typdefault', label: gettext('Default'), type: 'text',
         cell: 'string', min_version: 90300, group: gettext('Definition'),
@@ -217,21 +260,22 @@ define([
           min_version: 90200
       }],
     validate: function() {
-      var err = {},
-      errmsg;
+      var errmsg = null;
 
       if (_.isUndefined(this.get('attname')) || String(this.get('attname')).replace(/^\s+|\s+$/g, '') == '') {
-        err['name'] = gettext('Column Name cannot be empty!');
-        errmsg = errmsg || err['attname'];
+        errmsg = gettext('Column Name cannot be empty!');
+        this.errorModel.set('attname', errmsg);
+      } else {
+        this.errorModel.unset('attname');
       }
 
       if (_.isUndefined(this.get('datatype')) || String(this.get('datatype'))
       .replace(/^\s+|\s+$/g, '') == '') {
-        err['basensp'] = gettext('Column Datatype cannot be empty!');
-        errmsg = errmsg || err['datatype'];
+        errmsg = gettext('Column Datatype cannot be empty!');
+        this.errorModel.set('datatype', errmsg);
+      } else {
+        this.errorModel.unset('datatype');
       }
-
-      this.errorModel.clear().set(err);
 
       return errmsg;
     },

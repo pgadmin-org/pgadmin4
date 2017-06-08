@@ -58,7 +58,7 @@
     });
 
   var controlMapper = Backform.controlMapper = {
-    'int': ['uneditable-input', 'integer', 'integer'],
+    'int': ['uneditable-input', 'numeric', 'numeric'],
     'text': ['uneditable-input', 'input', 'string'],
     'numeric': ['uneditable-input', 'numeric', 'numeric'],
     'date': 'datepicker',
@@ -1493,110 +1493,6 @@
       Backform.Control.__super__.remove.apply(this, arguments);
     }
 });
-
-  /*
-   * Integer input Control functionality just like backgrid
-   */
-  var IntegerControl = Backform.IntegerControl = Backform.InputControl.extend({
-    defaults: {
-      type: "number",
-      label: "",
-      min: undefined,
-      max: undefined,
-      maxlength: 255,
-      extraClasses: [],
-      helpMessage: null
-    },
-    template: _.template([
-      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
-      '<div class="<%=Backform.controlsClassName%>">',
-      '  <input type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '  <% if (helpMessage && helpMessage.length) { %>',
-      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
-      '  <% } %>',
-      '</div>'
-    ].join("\n")),
-    events: {
-      "change input": "checkInt",
-      "focus input": "clearInvalid"
-    },
-    checkInt: function(e) {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-          attrArr = this.field.get("name").split('.'),
-          name = attrArr.shift(),
-          value = this.getValueFromDOM(),
-          min_value = field.min,
-          max_value = field.max,
-          isValid = true,
-          intPattern = new RegExp("^-?[0-9]*$"),
-          isMatched = intPattern.test(value);
-
-      // Below logic will validate input
-      if (!isMatched) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("'%s' must be an integer.")).sprintf(
-              field.label
-              ).value()
-            );
-      }
-
-      // Below will check if entered value is in-between min & max range
-      if (isValid && (!_.isUndefined(min_value) && value < min_value)) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("%s' must be greater than or equal to %d.")).sprintf(
-              field.label,
-              min_value
-              ).value()
-            );
-      }
-
-      if (isValid && (!_.isUndefined(max_value) && value > max_value)) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("'%s' must be less than or equal to %d.")).sprintf(
-              field.label,
-              max_value
-              ).value()
-            );
-      }
-
-      // After validation we need to set that value into model (only if all flags are true)
-      if (isValid) {
-        this.stopListening(this.model, "change:" + name, this.render);
-        this.model.errorModel.unset(name);
-        this.model.set(name, value);
-        this.listenTo(this.model, "change:" + name, this.render);
-        if (this.model.collection || this.model.handler) {
-          (this.model.collection || this.model.handler).trigger(
-             'pgadmin-session:model:valid', this.model, (this.model.collection || this.model.handler)
-            );
-        } else {
-          (this.model).trigger(
-             'pgadmin-session:valid', this.model.sessChanged(), this.model
-            );
-        }
-      } else {
-        if (this.model.collection || this.model.handler) {
-          (this.model.collection || this.model.handler).trigger(
-             'pgadmin-session:model:invalid', this.model.errorModel.get(name), this.model
-            );
-        } else {
-          (this.model).trigger(
-             'pgadmin-session:invalid', this.model.errorModel.get(name), this.model
-            );
-        }
-      }
-    }
-  });
-
    /*
    * Numeric input Control functionality just like backgrid
    */
@@ -1618,86 +1514,7 @@
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
       '</div>'
-    ].join("\n")),
-    events: {
-      "change input": "checkNumeric",
-      "focus input": "clearInvalid"
-    },
-    checkNumeric: function(e) {
-      var field = _.defaults(this.field.toJSON(), this.defaults),
-          attrArr = this.field.get("name").split('.'),
-          name = attrArr.shift(),
-          value = this.getValueFromDOM(),
-          min_value = field.min,
-          max_value = field.max,
-          isValid = true,
-          intPattern = new RegExp("^-?[0-9]+(\.?[0-9]*)?$"),
-          isMatched = intPattern.test(value);
-
-      // Below logic will validate input
-      if (!isMatched) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("'%s' must be a numeric.")).sprintf(
-              field.label
-              ).value()
-            );
-      }
-
-      // Below will check if entered value is in-between min & max range
-      if (isValid && (!_.isUndefined(min_value) && value < min_value)) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("%s' must be greater than or equal to %d.")).sprintf(
-              field.label,
-              min_value
-              ).value()
-            );
-      }
-
-      if (isValid && (!_.isUndefined(max_value) && value > max_value)) {
-        isValid = false;
-        this.model.errorModel.unset(name);
-        this.model.errorModel.set(
-            name,
-            S(gettext("'%s' must be less than or equal to %d.")).sprintf(
-              field.label,
-              max_value
-              ).value()
-            );
-      }
-
-      // After validation we need to set that value into model (only if all flags are true)
-      if (isValid) {
-        this.stopListening(this.model, "change:" + name, this.render);
-        this.model.errorModel.unset(name);
-        this.model.set(name, value);
-        this.listenTo(this.model, "change:" + name, this.render);
-        if (this.model.collection || this.model.handler) {
-          (this.model.collection || this.model.handler).trigger(
-             'pgadmin-session:model:valid', this.model, (this.model.collection || this.model.handler)
-            );
-        } else {
-          (this.model).trigger(
-             'pgadmin-session:valid', this.model.sessChanged(), this.model
-            );
-        }
-      } else {
-        if (this.model.collection || this.model.handler) {
-          (this.model.collection || this.model.handler).trigger(
-             'pgadmin-session:model:invalid', this.model.errorModel.get(name), this.model
-            );
-        } else {
-          (this.model).trigger(
-             'pgadmin-session:invalid', this.model.errorModel.get(name), this.model
-            );
-        }
-      }
-    }
+    ].join("\n"))
   });
 
   ///////

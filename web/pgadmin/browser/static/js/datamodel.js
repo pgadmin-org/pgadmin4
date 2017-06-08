@@ -1,6 +1,6 @@
 define(
-   ['underscore', 'pgadmin', 'jquery', 'backbone'],
-function(_, pgAdmin, $, Backbone) {
+   ['underscore', 'underscore.string', 'pgadmin', 'jquery', 'backbone'],
+function(_, S, pgAdmin, $, Backbone) {
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   pgBrowser.DataModel = Backbone.Model.extend({
@@ -136,6 +136,7 @@ function(_, pgAdmin, $, Backbone) {
         }
 
         self.sessAttrs = {};
+        self.fieldData = {};
         self.origSessAttrs = {};
         self.objects = [];
         self.arrays = [];
@@ -151,6 +152,25 @@ function(_, pgAdmin, $, Backbone) {
         var objectOp = function(schema) {
           if (schema && _.isArray(schema)) {
             _.each(schema, function(s) {
+
+              switch(s.type) {
+                case 'int':
+                case 'numeric':
+                  self.fieldData[s.id] = {
+                    id: s.id,
+                    label: s.label,
+                    type: s.type,
+                    min: s.min || undefined,
+                    max: s.max || undefined
+                  }
+                  break;
+                default:
+                  self.fieldData[s.id] = {
+                      id: s.id,
+                      label: s.label,
+                      type: s.type
+                    }
+              }
 
               switch(s.type) {
                 case 'array':
@@ -280,6 +300,12 @@ function(_, pgAdmin, $, Backbone) {
       },
       sessValid: function() {
         var self = this;
+        // Perform default validations.
+        if ('default_validate' in self && typeof(self.default_validate) == 'function' &&
+            _.isString(self.default_validate())) {
+          return false;
+        }
+
         if ('validate' in self && _.isFunction(self.validate) &&
             _.isString(self.validate.apply(self))) {
           return false;
@@ -301,8 +327,9 @@ function(_, pgAdmin, $, Backbone) {
         }
 
         if (key != null && res) {
-          var attrs = {};
-          var self = this;
+          var attrs = {},
+              self = this,
+              msg;
 
           attrChanged = function(v, k) {
             if (k in self.objects) {
@@ -327,9 +354,18 @@ function(_, pgAdmin, $, Backbone) {
           if (!options || !options.silent) {
             self.trigger('change', self, options);
           }
+
+          // Perform default validations.
+
+          if ('default_validate' in self && typeof(self.default_validate) == 'function') {
+            msg = self.default_validate();
+          }
+
           if ('validate' in self && typeof(self['validate']) === 'function') {
 
-            var msg = self.validate(_.keys(attrs));
+            if (!msg) {
+              msg = self.validate(_.keys(attrs));
+            }
 
             /*
              * If any parent present, we will need to inform the parent - that
@@ -562,6 +598,13 @@ function(_, pgAdmin, $, Backbone) {
 
           var msg = null,
               validate = function(m, attrs) {
+                if ('default_validate' in m && typeof(m.default_validate) == 'function') {
+                  msg = m.default_validate();
+                  if (_.isString(msg)) {
+                    return msg;
+                  }
+                }
+
                 if ('validate' in m && typeof(m.validate) == 'function') {
                   msg = m.validate(attrs);
 
@@ -655,6 +698,79 @@ function(_, pgAdmin, $, Backbone) {
         });
 
         self.trigger('pgadmin-session:stop');
+      },
+      default_validate: function() {
+        var msg, field, value, type;
+
+        for (var i = 0, keys = _.keys(this.attributes), l = keys.length;
+                 i<l;
+                 i++) {
+
+          value = this.attributes[keys[i]];
+          field  = this.fieldData[keys[i]]
+          msg = null;
+
+          if (!(_.isUndefined(value) || _.isNull(value) ||
+                String(value).replace(/^\s+|\s+$/g, '') == '')) {
+
+            if (!field) {
+              continue;
+            }
+
+            type = field.type || undefined;
+            if (!type) {
+              continue;
+            }
+
+            switch(type) {
+              case 'int':
+                msg = this.integer_validate(value, field);
+                break;
+              case 'numeric':
+                msg = this.number_validate(value, field);
+                break;
+            }
+
+            if (msg) {
+              this.errorModel.set(field.id, msg);
+              return msg;
+            } else {
+              this.errorModel.unset(field.id);
+            }
+          } else {
+            if (field) {
+              this.errorModel.unset(field.id);
+            }
+          }
+        }
+        return null;
+      },
+
+      check_min_max: function (value, field) {
+        var label = field.label,
+            min_value = field.min,
+            max_value =  field.max;
+
+        if (min_value && value < min_value) {
+          return S(pgAdmin.Browser.messages.MUST_GR_EQ).sprintf(label, min_value).value();
+        } else if (max_value && value > max_value) {
+          return S(pgAdmin.Browser.messages.MUST_LESS_EQ).sprintf(label, max_value).value();
+        }
+        return null;
+      },
+      number_validate: function (value, field) {
+        var pattern = new RegExp("^-?[0-9]+(\.?[0-9]*)?$");
+        if (!pattern.test(value)) {
+          return S(pgAdmin.Browser.messages.MUST_BE_NUM).sprintf(field.label).value()
+        }
+        return this.check_min_max(value, field)
+      },
+      integer_validate: function(value, field) {
+        var pattern = new RegExp("^-?[0-9]*$");
+        if (!pattern.test(value)) {
+          return S(pgAdmin.Browser.messages.MUST_BE_INT).sprintf(field.label).value()
+        }
+        return this.check_min_max(value, field)
       }
     });
 
@@ -696,7 +812,8 @@ function(_, pgAdmin, $, Backbone) {
         return self;
       },
       startNewSession: function() {
-        var self = this;
+        var self = this,
+            msg;
 
         if (self.trackChanges) {
           // We're stopping the existing session.
@@ -718,8 +835,15 @@ function(_, pgAdmin, $, Backbone) {
           if ('startNewSession' in m && _.isFunction(m.startNewSession)) {
             m.startNewSession();
           }
-          if ('validate' in m && typeof(m.validate) === 'function') {
-            var msg = m.validate();
+
+          if ('default_validate' in m && typeof(m.default_validate) == 'function') {
+            msg = m.default_validate();
+          }
+
+          if (_.isString(msg)) {
+            self.sessAttrs['invalid'][m.cid] = msg;
+          } else if ('validate' in m && typeof(m.validate) === 'function') {
+            msg = m.validate();
 
             if (msg) {
               self.sessAttrs['invalid'][m.cid] = msg;
@@ -900,7 +1024,14 @@ function(_, pgAdmin, $, Backbone) {
 
           (self.handler || self).trigger('pgadmin-session:added', self, obj);
 
-          if ('validate' in obj && typeof(obj.validate) === 'function') {
+
+          if ('default_validate' in obj && typeof(obj.default_validate) == 'function') {
+            msg = obj.default_validate();
+          }
+
+          if (_.isString(msg)) {
+            (self.sessAttrs['invalid'])[obj.cid] = msg;
+          } else if ('validate' in obj && typeof(obj.validate) === 'function') {
             msg = obj.validate();
 
             if (msg) {
@@ -908,7 +1039,14 @@ function(_, pgAdmin, $, Backbone) {
             }
           }
         } else {
-          if ('validate' in obj && typeof(obj.validate) === 'function') {
+
+          if ('default_validate' in obj && typeof(obj.default_validate) == 'function') {
+            msg = obj.default_validate();
+          }
+
+          if (_.isString(msg)) {
+            (self.sessAttrs['invalid'])[obj.cid] = msg;
+          } else if ('validate' in obj && typeof(obj.validate) === 'function') {
             msg = obj.validate();
 
             if (msg) {

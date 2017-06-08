@@ -721,6 +721,9 @@ define([
           check_for_empty(
             'username', gettext('Username must be specified.')
           );
+          check_for_empty(
+            'port', '{{ _('Port must be specified.') }}'
+          );
           this.errorModel.set(err);
 
           if (_.size(err)) {

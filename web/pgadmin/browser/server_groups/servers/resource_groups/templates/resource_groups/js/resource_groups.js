@@ -86,53 +86,36 @@ define([
          * the GUI for the respective control.
          */
         validate: function(keys) {
-          var msg, cpu_rate_limit, dirty_rate_limit, name;
-
-          /* Check whether 'name' is present in 'keys', if it is present
-           * it means there is a change in that field from the GUI, so we
-           * need to validate it.
-           */
-          if (_.indexOf(keys, 'name') >= 0) {
-            name = this.get('name');
-            if (_.isUndefined(name) || _.isNull(name) ||
-                String(name).replace(/^\s+|\s+$/g, '') === '') {
-              msg = gettext('Name cannot be empty.');
-              this.errorModel.set('name', msg);
-              return msg;
-            }
+          var msg, cpu_rate_limit, dirty_rate_limit, name,
+              name = this.get('name');
+          if (_.isUndefined(name) || _.isNull(name) ||
+              String(name).replace(/^\s+|\s+$/g, '') == '') {
+            var msg = gettext('Name cannot be empty.');
+            this.errorModel.set('name', msg);
+            return msg;
+          } else {
             this.errorModel.unset('name');
           }
 
-          /* Check whether 'cpu_rate_limit' is present in 'keys', if it is present
-           * it means there is a change in that field from the GUI, so we
-           * need to validate it.
-           */
-          if (_.indexOf(keys, 'cpu_rate_limit') >= 0) {
-            cpu_rate_limit = this.get('cpu_rate_limit');
-            if (_.isUndefined(cpu_rate_limit) || _.isNull(cpu_rate_limit) ||
-                String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') === '') {
-              msg = gettext('CPU rate limit cannot be empty.');
-              this.errorModel.set('cpu_rate_limit', msg);
-              return msg;
-            }
+          var cpu_rate_limit = this.get('cpu_rate_limit');
+          if (_.isUndefined(cpu_rate_limit) || _.isNull(cpu_rate_limit) ||
+              String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
+            var msg = gettext('CPU rate limit cannot be empty.');
+            this.errorModel.set('cpu_rate_limit', msg);
+            return msg;
+          } else {
             this.errorModel.unset('cpu_rate_limit');
           }
 
-          /* Check whether 'dirty_rate_limit' is present in 'keys', if it is present
-           * it means there is a change in that field from the GUI, so we
-           * need to validate it.
-           */
-          if (_.indexOf(keys, 'dirty_rate_limit') >= 0) {
-            dirty_rate_limit = this.get('dirty_rate_limit');
-            if (_.isUndefined(dirty_rate_limit) || _.isNull(dirty_rate_limit) ||
-              String(dirty_rate_limit).replace(/^\s+|\s+$/g, '') === '') {
-              msg = gettext('Dirty rate limit cannot be empty.');
-              this.errorModel.set('dirty_rate_limit', msg);
-              return msg;
-            }
+          var dirty_rate_limit = this.get('dirty_rate_limit');
+          if (_.isUndefined(dirty_rate_limit) || _.isNull(dirty_rate_limit) ||
+            String(dirty_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
+            var msg = gettext('Dirty rate limit cannot be empty.');
+            this.errorModel.set('dirty_rate_limit', msg);
+            return msg;
+          } else {
             this.errorModel.unset('dirty_rate_limit');
           }
-
           return null;
         }
       })

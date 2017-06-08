@@ -154,7 +154,10 @@ define([
           min: 1
         },{
           id: 'start', label: gettext('Start'), type: 'int',
-          mode: ['properties', 'create'], group: gettext('Definition')
+          mode: ['properties', 'create'], group: gettext('Definition'),
+          disabled: function(m) {
+            return !m.isNew();
+          }
         },{
           id: 'minimum', label: gettext('Minimum'), type: 'int',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition')
@@ -200,14 +203,14 @@ define([
               minimum = this.get('minimum'),
               maximum = this.get('maximum');
               start = this.get('start');
-          // Clear any existing error msg.
-          this.errorModel.clear();
 
           if (_.isUndefined(this.get('name'))
               || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
+          } else {
+            this.errorModel.unset('name');
           }
 
           if (_.isUndefined(this.get('seqowner'))
@@ -215,6 +218,8 @@ define([
             msg = gettext('Owner cannot be empty.');
             this.errorModel.set('seqowner', msg);
             return msg;
+          } else {
+            this.errorModel.unset('seqowner');
           }
 
           if (_.isUndefined(this.get('schema'))
@@ -222,26 +227,80 @@ define([
             msg = gettext('Schema cannot be empty.');
             this.errorModel.set('schema', msg);
             return msg;
+          } else {
+            this.errorModel.unset('schema');
           }
 
+          if (!this.isNew()) {
+            if (_.isUndefined(this.get('current_value'))
+              || String(this.get('current_value')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = '{{ _('Current value cannot be empty.') }}';
+              this.errorModel.set('current_value', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('current_value');
+            }
+
+            if (_.isUndefined(this.get('increment'))
+              || String(this.get('increment')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = '{{ _('Increment value cannot be empty.') }}';
+              this.errorModel.set('increment', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('increment');
+            }
+
+            if (_.isUndefined(this.get('minimum'))
+              || String(this.get('minimum')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = '{{ _('Minimum value cannot be empty.') }}';
+              this.errorModel.set('minimum', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('minimum');
+            }
+
+            if (_.isUndefined(this.get('maximum'))
+              || String(this.get('maximum')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = '{{ _('Maximum value cannot be empty.') }}';
+              this.errorModel.set('maximum', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('maximum');
+            }
+
+            if (_.isUndefined(this.get('cache'))
+              || String(this.get('cache')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = '{{ _('Cache value cannot be empty.') }}';
+              this.errorModel.set('cache', msg);
+              return msg;
+            } else {
+              this.errorModel.unset('cache');
+            }
+          }
           var min_lt = gettext('Minimum value must be less than maximum value.'),
               start_lt = gettext('Start value cannot be less than minimum value.'),
               start_gt = gettext('Start value cannot be greater than maximum value.');
+
           if ((minimum == 0 && maximum == 0) ||
               (parseInt(minimum, 10) >= parseInt(maximum, 10))) {
-            msg = min_lt
-            this.errorModel.set('minimum', msg);
-            return msg;
+            this.errorModel.set('minimum', min_lt);
+            return min_lt;
+          } else {
+            this.errorModel.unset('minimum');
           }
-          else if (start < minimum) {
-            msg = start_lt
-            this.errorModel.set('start', msg);
-            return msg;
+
+          if (start && minimum && parseInt(start) < parseInt(minimum)) {
+            this.errorModel.set('start', start_lt);
+            return start_lt;
+          } else {
+            this.errorModel.unset('start');
           }
-          else if (start > maximum) {
-            msg = start_gt
-            this.errorModel.set('start', msg);
-            return msg;
+
+          if (start && maximum && parseInt(start) > parseInt(maximum)) {
+            this.errorModel.set('start', start_gt);
+            return start_gt;
+          } else {
+            this.errorModel.unset('start');
           }
           return null;
         }
