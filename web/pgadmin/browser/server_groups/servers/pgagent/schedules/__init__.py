@@ -12,7 +12,7 @@
 import json
 from functools import wraps
 
-from flask import render_template, make_response, request
+from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -64,7 +64,8 @@ class JobScheduleModule(CollectionNodeModule):
     @property
     def script_load(self):
         """
-        Load the module script for language, when any of the database nodes are initialized.
+        Load the module script for schedule, when any of the pga_job
+        nodes are initialized.
 
         Returns: node type of the server module.
         """
@@ -78,9 +79,9 @@ class JobScheduleView(PGChildNodeView):
     """
     class JobScheduleView(PGChildNodeView)
 
-        A view class for JobSchedule node derived from PGChildNodeView. This class is
-        responsible for all the stuff related to view like updating language
-        node, showing properties, showing sql in sql pane.
+        A view class for JobSchedule node derived from PGChildNodeView.
+        This class is responsible for all the stuff related to view like
+        updating schedule node, showing properties, showing sql in sql pane.
 
     Methods:
     -------
@@ -97,20 +98,28 @@ class JobScheduleView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the language nodes within that collection.
+      - This function is used to list all the schedule nodes within that
+      collection.
 
     * nodes()
-      - This function will used to create all the child node within that collection.
-        Here it will create all the language node.
+      - This function will used to create all the child node within that
+      collection. Here it will create all the schedule node.
 
     * properties(gid, sid, jid, jscid)
-      - This function will show the properties of the selected language node
+      - This function will show the properties of the selected schedule node
 
     * update(gid, sid, jid, jscid)
-      - This function will update the data for the selected language node
+      - This function will update the data for the selected schedule node
 
     * msql(gid, sid, jid, jscid)
-      - This function is used to return modified SQL for the selected language node
+      - This function is used to return modified SQL for the
+      selected schedule node
+
+    * sql(gid, sid, jid, jscid)
+      - Dummy response for sql panel
+
+    * delete(gid, sid, jid, jscid)
+      - Drops job schedule
     """
 
     node_type = blueprint.node_type
@@ -126,18 +135,20 @@ class JobScheduleView(PGChildNodeView):
 
     operations = dict({
         'obj': [
-            {'get': 'properties', 'put': 'update'},
+            {'get': 'properties', 'put': 'update', 'delete': 'delete'},
             {'get': 'list', 'post': 'create'}
         ],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
+        'sql': [{'get': 'sql'}],
         'module.js': [{}, {}, {'get': 'module_js'}]
     })
 
     def _init_(self, **kwargs):
         """
         Method is used to initialize the JobScheduleView and its base view.
-        Initialize all the variables create/used dynamically like conn, template_path.
+        Initialize all the variables create/used dynamically like conn,
+        template_path.
 
         Args:
             **kwargs:
@@ -184,7 +195,8 @@ class JobScheduleView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid, jid):
         """
-        This function is used to list all the language nodes within that collection.
+        This function is used to list all the language nodes within
+        that collection.
 
         Args:
             gid: Server Group ID
@@ -208,8 +220,8 @@ class JobScheduleView(PGChildNodeView):
     @check_precondition
     def nodes(self, gid, sid, jid, jscid=None):
         """
-        This function is used to create all the child nodes within the collection.
-        Here it will create all the language nodes.
+        This function is used to create all the child nodes within
+        the collection. Here it will create all the language nodes.
 
         Args:
             gid: Server Group ID
@@ -230,11 +242,13 @@ class JobScheduleView(PGChildNodeView):
 
         if jscid is not None:
             if len(result['rows']) == 0:
-                return gone(errormsg="Could not find the specified job step.")
+                return gone(
+                    errormsg=gettext("Could not find the specified job step.")
+                )
 
             row = result['rows'][0]
             return make_json_response(
-                self.blueprint.generate_browser_node(
+                data=self.blueprint.generate_browser_node(
                     row['jscid'],
                     row['jscjobid'],
                     row['jscname'],
@@ -280,17 +294,33 @@ class JobScheduleView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(errormsg="Could not find the specified job step.")
+            return gone(
+                errormsg=gettext("Could not find the specified job step.")
+            )
 
         return ajax_response(
             response=res['rows'][0],
             status=200
         )
 
+    @staticmethod
+    def format_list_data(value):
+        """
+        Converts to proper array data for sql
+        Args:
+            value: data to be converted
+
+        Returns:
+            Converted data
+        """
+        if not isinstance(value, list):
+            return value.replace("[", "{").replace("]", "}")
+        return value
+
     @check_precondition
     def create(self, gid, sid, jid):
         """
-        This function will update the data for the selected language node.
+        This function will update the data for the selected schedule node.
 
         Args:
             gid: Server Group ID
@@ -309,11 +339,21 @@ class JobScheduleView(PGChildNodeView):
         else:
             data = json.loads(request.data.decode())
             # convert python list literal to postgres array literal.
-            data['jscminutes'] = data['jscminutes'].replace("[", "{").replace("]", "}")
-            data['jschours'] = data['jschours'].replace("[", "{").replace("]", "}")
-            data['jscweekdays'] = data['jscweekdays'].replace("[", "{").replace("]", "}")
-            data['jscmonthdays'] = data['jscmonthdays'].replace("[", "{").replace("]", "}")
-            data['jscmonths'] = data['jscmonths'].replace("[", "{").replace("]", "}")
+            data['jscminutes'] = JobScheduleView.format_list_data(
+                data['jscminutes']
+            )
+            data['jschours'] = JobScheduleView.format_list_data(
+                data['jschours']
+            )
+            data['jscweekdays'] = JobScheduleView.format_list_data(
+                data['jscweekdays']
+            )
+            data['jscmonthdays'] = JobScheduleView.format_list_data(
+                data['jscmonthdays']
+            )
+            data['jscmonths'] = JobScheduleView.format_list_data(
+                data['jscmonths']
+            )
 
         sql = render_template(
             "/".join([self.template_path, 'create.sql']),
@@ -335,7 +375,7 @@ class JobScheduleView(PGChildNodeView):
 
         self.conn.execute_void('END')
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, 'properties.sql']),
             jscid=res,
             jid=jid
         )
@@ -344,20 +384,27 @@ class JobScheduleView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
+        if len(res['rows']) == 0:
+            return gone(
+                errormsg=gettext("Job schedule creation failed.")
+            )
         row = res['rows'][0]
-        return make_json_response(
-            data=self.blueprint.generate_browser_node(
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
                 row['jscid'],
                 row['jscjobid'],
                 row['jscname'],
-                icon="icon-pga_schedule"
+                icon="icon-pga_schedule",
+                enabled=row['jscenabled']
             )
         )
+
 
     @check_precondition
     def update(self, gid, sid, jid, jscid):
         """
-        This function will update the data for the selected language node.
+        This function will update the data for the selected schedule node.
 
         Args:
             gid: Server Group ID
@@ -377,20 +424,26 @@ class JobScheduleView(PGChildNodeView):
         else:
             data = json.loads(request.data.decode())
             # convert python list literal to postgres array literal.
-            if 'jscminutes' in data:
-                data['jscminutes'] = data['jscminutes'].replace("[", "{").replace("]", "}")
-
-            if 'jschours' in data:
-                data['jschours'] = data['jschours'].replace("[", "{").replace("]", "}")
-
-            if 'jscweekdays' in data:
-                data['jscweekdays'] = data['jscweekdays'].replace("[", "{").replace("]", "}")
-
-            if 'jscmonthdays' in data:
-                data['jscmonthdays'] = data['jscmonthdays'].replace("[", "{").replace("]", "}")
-
-            if 'jscmonths' in data:
-                data['jscmonths'] = data['jscmonths'].replace("[", "{").replace("]", "}")
+            if 'jscminutes' in data and data['jscminutes'] is not None:
+                data['jscminutes'] = JobScheduleView.format_list_data(
+                    data['jscminutes']
+                )
+            if 'jschours' in data and data['jschours'] is not None:
+                data['jschours'] = JobScheduleView.format_list_data(
+                    data['jschours']
+                )
+            if 'jscweekdays' in data and data['jscweekdays'] is not None:
+                data['jscweekdays'] = JobScheduleView.format_list_data(
+                    data['jscweekdays']
+                )
+            if 'jscmonthdays' in data and data['jscmonthdays'] is not None:
+                data['jscmonthdays'] = JobScheduleView.format_list_data(
+                    data['jscmonthdays']
+                )
+            if 'jscmonths' in data and data['jscmonths'] is not None:
+                data['jscmonths'] = JobScheduleView.format_list_data(
+                    data['jscmonths']
+                )
 
         sql = render_template(
             "/".join([self.template_path, 'update.sql']),
@@ -405,7 +458,7 @@ class JobScheduleView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, 'properties.sql']),
             jscid=jscid,
             jid=jid
         )
@@ -415,19 +468,41 @@ class JobScheduleView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         row = res['rows'][0]
-        return make_json_response(
-            self.blueprint.generate_browser_node(
-                row['jscid'],
-                row['jscjobid'],
+        if len(res['rows']) == 0:
+            return gone(
+                errormsg=gettext("Job schedule update failed.")
+            )
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                jscid,
+                jid,
                 row['jscname'],
-                icon="icon-pga_schedule"
+                icon="icon-pga_schedule",
+                enabled=row['jscenabled']
             )
         )
 
     @check_precondition
+    def delete(self, gid, sid, jid, jscid):
+        """Delete the Job Schedule."""
+
+        status, res = self.conn.execute_void(
+            render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                jid=jid, jscid=jscid, conn=self.conn
+            )
+        )
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(success=1)
+
+    @check_precondition
     def msql(self, gid, sid, jid, jscid=None):
         """
-        This function is used to return modified SQL for the selected language node.
+        This function is used to return modified SQL for the
+        selected Schedule node.
 
         Args:
             gid: Server Group ID
@@ -462,6 +537,21 @@ class JobScheduleView(PGChildNodeView):
 
         return make_json_response(
             data=sql,
+            status=200
+        )
+
+    @check_precondition
+    def sql(self, gid, sid, jid, jscid):
+        """
+        Dummy response for sql route.
+        As we need to have msql tab for create and edit mode we can not
+        disable it setting hasSQL=false because we have a single 'hasSQL'
+        flag in JS to display both sql & msql tab
+        """
+        return ajax_response(
+            response=gettext(
+                "-- No SQL could be generated for the selected object."
+            ),
             status=200
         )
 

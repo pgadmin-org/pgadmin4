@@ -31,7 +31,7 @@ define([
       canDrop: function(node) {
         return true;
       },
-      label: gettext('Steps'),
+      label: gettext('Step'),
       node_image: function() {
         return 'icon-pga_jobstep';
       },

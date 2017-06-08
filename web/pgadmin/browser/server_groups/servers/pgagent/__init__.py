@@ -345,7 +345,7 @@ SELECT EXISTS(
         status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'nodes.sql']),
-                jid=res, conn=self.conn
+                jid=jid, conn=self.conn
             )
         )
 
