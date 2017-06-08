@@ -294,6 +294,12 @@ define([
             });
           }
 
+          var setFocusOnEl = function() {
+            setTimeout(function() {
+              $(el).find('.tab-pane.active:first').find('input:first').focus();
+            }, 500);
+          };
+
           if (!newModel.isNew()) {
             // This is definetely not in create mode
             var msgDiv = '<div class="alert alert-info pg-panel-message pg-panel-properties-message">'+
@@ -306,6 +312,7 @@ define([
                 $msgDiv.appendTo(ctx);
               }
             }, 1000, ctx);
+
             newModel.fetch()
             .success(function(res, msg, xhr) {
               // clear timeout and remove message
@@ -315,9 +322,7 @@ define([
               // We got the latest attributes of the
               // object. Render the view now.
               view.render();
-              if (type != 'properties') {
-                $(el).focus();
-              }
+              setFocusOnEl();
               newModel.startNewSession();
             })
             .error(function(xhr, error, message) {
@@ -351,8 +356,9 @@ define([
             });
           } else {
             // Yay - render the view now!
-            $(el).focus();
+            // $(el).focus();
             view.render();
+            setFocusOnEl();
             newModel.startNewSession();
           }
         }
