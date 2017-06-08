@@ -1234,7 +1234,7 @@ Failed to reset the connection to the server due to following error:
         if not cur:
             return False, gettext(
                 "Cursor could not be found for the async connection."
-            ), None
+            )
 
         current_app.logger.log(
             25,
