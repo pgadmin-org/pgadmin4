@@ -201,7 +201,7 @@
   -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
   box-shadow: 2px 3px 5px rgba(0,0,0,.2);
   border-radius: 3px;
-  border: 1px solid silver;
+  border: 1px solid #ccc;
 
   background: white;
   font-size: 90%;
@@ -255,7 +255,6 @@ li {
 #datagrid {
   background: white;
   outline: 0;
-  border: 1px solid gray;
   font-size: 9pt;
 }
 
@@ -324,7 +323,7 @@ li {
 }
 
 .cell-selection {
-  border-right-color: silver;
+  border-right-color: #ccc;
   border-right-style: solid;
   background: #f5f5f5;
   color: gray;
@@ -352,7 +351,8 @@ li {
   color: #222222;
   padding: 4px 0 3px 6px;
   background-color: #E8E8E8;
-  border-bottom: 1px solid silver !important;
+  border-bottom: 1px solid #888 !important;
+  border-right: 1px solid #888 !important;
 }
 
 #datagrid .slick-header .slick-header-column.selected {
@@ -417,8 +417,8 @@ input.editor-checkbox:focus {
 /* Remove active cell border */
 .slick-cell.active {
   border: 1px solid transparent;
-  border-right: 1px dotted silver;
-  border-bottom-color: silver;
+  border-right: 1px solid #ccc;
+  border-bottom-color: #ccc;
 }
 
 /* To highlight all newly inserted rows */
@@ -428,7 +428,7 @@ input.editor-checkbox:focus {
 
 /* To highlight all the updated rows */
 .grid-canvas .updated_row {
-  background: #cccccc;
+  background: #ccc;
 }
 
 /* To highlight row at fault */
@@ -464,6 +464,7 @@ input.editor-checkbox:focus {
   background: #ffffff;
   border-bottom: none;
   border-right: none;
+  border-top: 1px solid #888;
 }
 
 /*
@@ -481,4 +482,9 @@ input.editor-checkbox:focus {
 .select-all-icon {
   margin-left: 9px;
   vertical-align: bottom;
+}
+
+.slick-cell, .slick-headerrow-column {
+  border-right: 1px solid #ccc;
+  z-index: 0;
 }
