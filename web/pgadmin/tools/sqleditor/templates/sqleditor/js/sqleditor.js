@@ -3,7 +3,7 @@ define([
   'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
   'sources/selection/grid_selector', 'sources/selection/clipboard',
   'sources/selection/copy_data',
-  'sources/selection/set_staged_rows',
+  'sources/selection/set_staged_rows', 'sources/sqleditor_utils',
   'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
   'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
   'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
@@ -26,7 +26,7 @@ define([
   'slickgrid/slick.grid'
 ], function(
   gettext, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
-  pgExplain, GridSelector, clipboard, copyData, setStagedRows
+  pgExplain, GridSelector, clipboard, copyData, setStagedRows, SqlEditorUtils
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -37,28 +37,6 @@ define([
     var wcDocker = window.wcDocker,
         pgBrowser = pgAdmin.Browser,
         Slick = window.Slick;
-
-    /* Reference link
-     * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-     * Modified as per requirement.
-     */
-    function epicRandomString(b) {
-      var s = [];
-      var hexDigits = "0123456789abcdef";
-      for (var i = 0; i < 36; i++) {
-          s[i] = hexDigits.substr(
-                  Math.floor(Math.random() * 0x10), 1
-                );
-      }
-      // bits 12-15 of the time_hi_and_version field to 0010
-      s[14] = "4";
-      // bits 6-7 of the clock_seq_hi_and_reserved to 01
-      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
-      s[8] = s[13] = s[18] = s[23] = "-";
-
-      var uuid = s.join("");
-      return uuid.replace(/-/g, '').substr(0, b);
-    };
 
     // Define key codes for shortcut keys
     var F5_KEY = 116,
@@ -72,6 +50,7 @@ define([
       initialize: function(opts) {
         this.$el = opts.el;
         this.handler = opts.handler;
+        this.handler['col_size'] = {};
       },
 
       // Bind all the events
@@ -409,11 +388,16 @@ define([
       /* To prompt user for unsaved changes */
       user_confirmation: function(panel, msg) {
         // If there is anything to save then prompt user
+        var that = this;
         alertify.confirm(gettext("Unsaved changes"), msg,
           function() {
             // Do nothing as user do not want to save, just continue
             window.onbeforeunload = null;
             panel.off(wcDocker.EVENT.CLOSING);
+            // remove col_size object on panel close
+            if (!_.isUndefined(that.handler.col_size)) {
+              delete that.handler.col_size;
+            }
             window.top.pgAdmin.Browser.docker.removePanel(panel);
           },
           function() {
@@ -423,53 +407,6 @@ define([
           }
         ).set('labels', {ok:'Yes', cancel:'No'});
         return false;
-      },
-
-      get_column_width: function (column_type, grid_width) {
-
-        switch(column_type) {
-          case "bigint":
-          case "bigint[]":
-          case "bigserial":
-          case "bit":
-          case "bit[]":
-          case "bit varying":
-          case "bit varying[]":
-          case "\"char\"":
-          case "decimal":
-          case "decimal[]":
-          case "double precision":
-          case "double precision[]":
-          case "int4range":
-          case "int4range[]":
-          case "int8range":
-          case "int8range[]":
-          case "integer":
-          case "integer[]":
-          case "money":
-          case "money[]":
-          case "numeric":
-          case "numeric[]":
-          case "numrange":
-          case "numrange[]":
-          case "oid":
-          case "oid[]":
-          case "real":
-          case "real[]":
-          case "serial":
-          case "smallint":
-          case "smallint[]":
-          case "smallserial":
-            return 80;
-          case "boolean":
-          case "boolean[]":
-            return 60;
-        }
-
-        /* In case of other data types we will calculate
-         * 20% of the total container width and return it.
-         */
-        return Math.round((grid_width * 20)/ 100)
       },
 
       /* Regarding SlickGrid usage in render_grid function.
@@ -584,8 +521,22 @@ define([
         }
 
         var grid_columns = [];
+        var column_size = self.handler['col_size'],
+          query = self.handler.query,
+          // Extract table name from query
+          table_list = query.match(/select.*from\s+(\w+)/i);
 
-        var grid_width = $($('#editor-panel').find('.wcFrame')[1]).width()
+        if (!table_list) {
+          table_name = SqlEditorUtils.getHash(query);
+        }
+        else {
+          table_name = table_list[1];
+        }
+
+        self.handler['table_name'] = table_name;
+        column_size[table_name] = column_size[table_name] || {};
+
+        var grid_width = $($('#editor-panel').find('.wcFrame')[1]).width();
         _.each(columns, function(c) {
             var options = {
               id: c.name,
@@ -596,8 +547,18 @@ define([
               has_default_val: c.has_default_val
             };
 
-            // Get the columns width based on data type
-            options['width'] = self.get_column_width(c.type, grid_width);
+            // Get the columns width based on longer string among data type or
+            // column name.
+            var label = c.label.split('<br>');
+            label = label[0].length > label[1].length ? label[0] : label[1];
+
+            if (_.isUndefined(column_size[table_name][c.name])) {
+                options['width'] = SqlEditorUtils.calculateColumnWidth(label)
+                column_size[table_name][c.name] = SqlEditorUtils.calculateColumnWidth(label);
+            }
+            else {
+                options['width'] = column_size[table_name][c.name];
+            }
 
             // If grid is editable then add editor else make it readonly
             if(c.cell == 'Json') {
@@ -641,7 +602,7 @@ define([
 
         // Add our own custom primary key to keep track of changes
         _.each(collection, function(row){
-          row['__temp_PK'] = epicRandomString(15);
+          row['__temp_PK'] = SqlEditorUtils.epicRandomString(15);
         });
 
         // Add-on function which allow us to identify the faulty row after insert/update
@@ -696,6 +657,13 @@ define([
                 setStagedRows.bind(editor_data));
         }
 
+        grid.onColumnsResized.subscribe(function (e, args) {
+            var columns = this.getColumns();
+            _.each(columns, function(col, key) {
+                var column_size = self.handler['col_size'];
+                column_size[self.handler['table_name']][col['id']] = col['width'];
+            });
+        });
 
         // Listener function which will be called before user updates existing cell
         // This will be used to collect primary key for that row
@@ -844,7 +812,7 @@ define([
         // Listener function which will be called when user adds new rows
         grid.onAddNewRow.subscribe(function (e, args) {
           // self.handler.data_store.added will holds all the newly added rows/data
-          var _key = epicRandomString(10),
+          var _key = SqlEditorUtils.epicRandomString(10),
             column = args.column,
             item = args.item,
             data_length = this.grid.getDataLength(),
