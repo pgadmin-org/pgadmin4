@@ -62,10 +62,16 @@ psycopg2.extensions.register_type(
         (
             # To cast bytea and interval type
             17, 1186,
-            # to cast int4range, int8range, numrange tsrange, tstzrange, daterange
-            3904,3926, 3906, 3908, 3910, 3912, 3913,
+
+            # to cast int4range, int8range, numrange tsrange, tstzrange,
+            # daterange
+            3904, 3926, 3906, 3908, 3910, 3912, 3913,
+
             # date, timestamp, timestamptz, bigint, double precision, bigint[]
-            1700, 1082, 1114, 1184, 20, 701, 1016
+            1700, 1082, 1114, 1184, 20, 701, 1016,
+
+            # double precision[]
+            1022
          ),
         'TYPECAST_TO_STRING', psycopg2.STRING)
 )
