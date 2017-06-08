@@ -81,7 +81,7 @@
     }
 
     function setSelectedRanges(ranges) {
-      // simle check for: empty selection didn't change, prevent firing onSelectedRangesChanged
+      // simple check for: empty selection didn't change, prevent firing onSelectedRangesChanged
       if ((!_ranges || _ranges.length === 0) && (!ranges || ranges.length === 0)) { return; }
       _ranges = ranges;
       _self.onSelectedRangesChanged.notify(_ranges);
@@ -121,8 +121,8 @@
 
         if (active >= 0 && active < _grid.getDataLength()) {
           _grid.scrollRowIntoView(active);
-          _ranges = rowsToRanges(getRowsRange(top, bottom));
-          setSelectedRanges(_ranges);
+          var tempRanges = rowsToRanges(getRowsRange(top, bottom));
+          setSelectedRanges(tempRanges);
         }
 
         e.preventDefault();
@@ -166,8 +166,8 @@
         _grid.setActiveCell(cell.row, cell.cell);
       }
 
-      _ranges = rowsToRanges(selection);
-      setSelectedRanges(_ranges);
+      var tempRanges = rowsToRanges(selection);
+      setSelectedRanges(tempRanges);
       e.stopImmediatePropagation();
 
       return true;

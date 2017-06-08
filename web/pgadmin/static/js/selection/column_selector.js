@@ -1,34 +1,45 @@
-define(['jquery', 'sources/selection/range_selection_helper', 'slickgrid'], function ($, rangeSelectionHelper) {
+define([
+  'jquery',
+  'sources/selection/range_selection_helper',
+  'slickgrid'
+], function ($, RangeSelectionHelper) {
   var ColumnSelector = function () {
+    var Slick = window.Slick;
+    var gridEventBus = new Slick.EventHandler();
+
     var init = function (grid) {
-      grid.onHeaderClick.subscribe(function (event, eventArgument) {
-          var column = eventArgument.column;
-
-          if (column.selectable !== false) {
-
-            if (!clickedCheckbox(event)) {
-              var $checkbox = $("[data-id='checkbox-" + column.id + "']");
-              toggleCheckbox($checkbox);
-            }
-
-            updateRanges(grid, column.id);
-          }
-        }
-      );
+      gridEventBus.subscribe(grid.onHeaderClick, handleHeaderClick.bind(null, grid));
       grid.getSelectionModel().onSelectedRangesChanged
         .subscribe(handleSelectedRangesChanged.bind(null, grid));
     };
 
-    var handleSelectedRangesChanged = function (grid, event, ranges) {
-      $('[data-cell-type="column-header-row"] input:checked')
-        .each(function (index, checkbox) {
-          var $checkbox = $(checkbox);
-          var columnIndex = grid.getColumnIndex($checkbox.data('column-id'));
-          var isStillSelected = rangeSelectionHelper.isRangeSelected(ranges, rangeSelectionHelper.rangeForColumn(grid, columnIndex));
-          if (!isStillSelected) {
-            toggleCheckbox($checkbox);
-          }
-        });
+    var handleHeaderClick = function (grid, event, args) {
+      var columnDefinition = args.column;
+
+      grid.focus();
+
+      if (isColumnSelectable(columnDefinition)) {
+        var $columnHeader = $(event.target);
+        if (hasClickedChildOfColumnHeader(event)) {
+          $columnHeader = $(event.target).parents(".slick-header-column");
+        }
+        $columnHeader.toggleClass('selected');
+
+        updateRanges(grid, columnDefinition.id);
+      }
+    };
+
+    var handleSelectedRangesChanged = function (grid, event, selectedRanges) {
+      $('.slick-header-column').each(function (index, columnHeader) {
+        var $spanHeaderColumn = $(columnHeader).find('[data-cell-type="column-header-row"]');
+        var columnIndex = grid.getColumnIndex($spanHeaderColumn.data('column-id'));
+
+        if (isColumnSelected(grid, selectedRanges, columnIndex)) {
+          $(columnHeader).addClass('selected');
+        } else {
+          $(columnHeader).removeClass('selected');
+        }
+      });
     };
 
     var updateRanges = function (grid, columnId) {
@@ -37,13 +48,13 @@ define(['jquery', 'sources/selection/range_selection_helper', 'slickgrid'], func
 
       var columnIndex = grid.getColumnIndex(columnId);
 
-      var columnRange = rangeSelectionHelper.rangeForColumn(grid, columnIndex);
+      var columnRange = RangeSelectionHelper.rangeForColumn(grid, columnIndex);
       var newRanges;
-      if (rangeSelectionHelper.isRangeSelected(ranges, columnRange)) {
-        newRanges = rangeSelectionHelper.removeRange(ranges, columnRange);
+      if (RangeSelectionHelper.isRangeSelected(ranges, columnRange)) {
+        newRanges = RangeSelectionHelper.removeRange(ranges, columnRange);
       } else {
-        if (rangeSelectionHelper.areAllRangesColumns(ranges, grid)) {
-          newRanges = rangeSelectionHelper.addRange(ranges, columnRange);
+        if (RangeSelectionHelper.areAllRangesSingleColumns(ranges, grid)) {
+          newRanges = RangeSelectionHelper.addRange(ranges, columnRange);
         } else {
           newRanges = [columnRange];
         }
@@ -51,28 +62,38 @@ define(['jquery', 'sources/selection/range_selection_helper', 'slickgrid'], func
       selectionModel.setSelectedRanges(newRanges);
     };
 
-    var clickedCheckbox = function (e) {
-      return e.target.type == "checkbox"
+    var hasClickedChildOfColumnHeader = function (event) {
+      return !$(event.target).hasClass("slick-header-column");
     };
 
-    var toggleCheckbox = function (checkbox) {
-      if (checkbox.prop("checked")) {
-        checkbox.prop("checked", false)
-      } else {
-        checkbox.prop("checked", true)
-      }
+    var isColumnSelectable = function (columnDefinition) {
+      return columnDefinition.selectable !== false;
     };
 
-    var getColumnDefinitionsWithCheckboxes = function (columnDefinitions) {
+    var isColumnSelected = function (grid, selectedRanges, columnIndex) {
+      var allRangesAreRows = RangeSelectionHelper.areAllRangesCompleteRows(grid, selectedRanges);
+      return isAnyCellSelectedInColumn(grid, selectedRanges, columnIndex) && !allRangesAreRows;
+    };
+
+    var isAnyCellSelectedInColumn = function (grid, selectedRanges, columnIndex) {
+      var isStillSelected = RangeSelectionHelper.isRangeEntirelyWithinSelectedRanges(selectedRanges,
+        RangeSelectionHelper.rangeForColumn(grid, columnIndex));
+      var cellSelectedInColumn = RangeSelectionHelper.isAnyCellOfColumnSelected(selectedRanges, columnIndex);
+
+      return isStillSelected || cellSelectedInColumn;
+    };
+
+    var getColumnDefinitions = function (columnDefinitions) {
       return _.map(columnDefinitions, function (columnDefinition) {
-        if (columnDefinition.selectable !== false) {
+        if (isColumnSelectable(columnDefinition)) {
           var name =
             "<span data-cell-type='column-header-row' " +
-            "       data-test='output-column-header'>" +
-            "  <input data-id='checkbox-" + columnDefinition.id + "' " +
-            "         data-column-id='" + columnDefinition.id + "' " +
-            "         type='checkbox'/>" +
-            "  <span class='column-description'>" + columnDefinition.name + "</span>" +
+            "       data-test='output-column-header'" +
+            "       data-column-id='" + columnDefinition.id + "'>" +
+            "  <span class='column-description'>" +
+            "    <span class='column-name'>" + columnDefinition.display_name + "</span>" +
+            "    <span class='column-type'>" + columnDefinition.column_type + "</span>" +
+            "  </span>" +
             "</span>";
           return _.extend(columnDefinition, {
             name: name
@@ -85,7 +106,7 @@ define(['jquery', 'sources/selection/range_selection_helper', 'slickgrid'], func
 
     $.extend(this, {
       "init": init,
-      "getColumnDefinitionsWithCheckboxes": getColumnDefinitionsWithCheckboxes
+      "getColumnDefinitions": getColumnDefinitions
     });
   };
   return ColumnSelector;

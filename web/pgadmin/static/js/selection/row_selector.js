@@ -1,85 +1,99 @@
-define(['jquery', 'sources/selection/range_selection_helper', 'slickgrid'], function ($, rangeSelectionHelper) {
+define([
+  'jquery',
+  'sources/selection/range_selection_helper',
+  'slickgrid'
+], function ($, RangeSelectionHelper) {
   var RowSelector = function () {
     var Slick = window.Slick;
 
     var gridEventBus = new Slick.EventHandler();
 
     var init = function (grid) {
-      grid.getSelectionModel()
-        .onSelectedRangesChanged.subscribe(handleSelectedRangesChanged.bind(null, grid));
+      grid.getSelectionModel().onSelectedRangesChanged
+        .subscribe(handleSelectedRangesChanged.bind(null, grid));
       gridEventBus
-        .subscribe(grid.onClick, handleClick.bind(null, grid))
+        .subscribe(grid.onClick, handleClick.bind(null, grid));
     };
 
     var handleClick = function (grid, event, args) {
       if (grid.getColumns()[args.cell].id === 'row-header-column') {
-        if (event.target.type != "checkbox") {
-          var checkbox = $(event.target).find('input[type="checkbox"]');
-          toggleCheckbox($(checkbox));
+        var $rowHeaderSpan = $(event.target);
+
+        if ($rowHeaderSpan.data('cell-type') != "row-header-selector") {
+          $rowHeaderSpan = $(event.target).find('[data-cell-type="row-header-selector"]');
         }
+
+        $rowHeaderSpan.parent().toggleClass('selected');
         updateRanges(grid, args.row);
       }
-    }
+    };
 
-    var handleSelectedRangesChanged = function (grid, event, ranges) {
-      $('[data-cell-type="row-header-checkbox"]:checked')
-        .each(function (index, checkbox) {
-          var $checkbox = $(checkbox);
-          var row = parseInt($checkbox.data('row'));
-          var isStillSelected = rangeSelectionHelper.isRangeSelected(ranges,
-            rangeSelectionHelper.rangeForRow(grid, row));
-          if (!isStillSelected) {
-            toggleCheckbox($checkbox);
-          }
-        });
-    }
+    var handleSelectedRangesChanged = function (grid, event, selectedRanges) {
+      $('[data-cell-type="row-header-selector"]').each(function (index, rowHeaderSpan) {
+        var $rowHeaderSpan = $(rowHeaderSpan);
+        var row = parseInt($rowHeaderSpan.data('row'));
+
+        if (isRowSelected(grid, selectedRanges, row)) {
+          $rowHeaderSpan.parent().addClass('selected');
+        } else {
+          $rowHeaderSpan.parent().removeClass('selected');
+        }
+      });
+    };
 
     var updateRanges = function (grid, rowId) {
       var selectionModel = grid.getSelectionModel();
       var ranges = selectionModel.getSelectedRanges();
 
-      var rowRange = rangeSelectionHelper.rangeForRow(grid, rowId);
+      var rowRange = RangeSelectionHelper.rangeForRow(grid, rowId);
 
       var newRanges;
-      if (rangeSelectionHelper.isRangeSelected(ranges, rowRange)) {
-        newRanges = rangeSelectionHelper.removeRange(ranges, rowRange);
+      if (RangeSelectionHelper.isRangeSelected(ranges, rowRange)) {
+        newRanges = RangeSelectionHelper.removeRange(ranges, rowRange);
       } else {
-        if (rangeSelectionHelper.areAllRangesRows(ranges, grid)) {
-          newRanges = rangeSelectionHelper.addRange(ranges, rowRange);
+        if (RangeSelectionHelper.areAllRangesSingleRows(ranges, grid)) {
+          newRanges = RangeSelectionHelper.addRange(ranges, rowRange);
         } else {
           newRanges = [rowRange];
         }
       }
       selectionModel.setSelectedRanges(newRanges);
-    }
-
-    var toggleCheckbox = function (checkbox) {
-      if (checkbox.prop("checked")) {
-        checkbox.prop("checked", false)
-      } else {
-        checkbox.prop("checked", true)
-      }
     };
 
-    var getColumnDefinitionsWithCheckboxes = function (columnDefinitions) {
+    var isAnyCellSelectedInRow = function (grid, selectedRanges, row) {
+      var isStillSelected = RangeSelectionHelper.isRangeEntirelyWithinSelectedRanges(selectedRanges,
+        RangeSelectionHelper.rangeForRow(grid, row));
+      var cellSelectedInRow = RangeSelectionHelper.isAnyCellOfRowSelected(selectedRanges, row);
+
+      return isStillSelected || cellSelectedInRow;
+    };
+
+    var isRowSelected = function (grid, selectedRanges, row) {
+      var allRangesAreColumns = RangeSelectionHelper.areAllRangesCompleteColumns(grid, selectedRanges);
+      return isAnyCellSelectedInRow(grid, selectedRanges, row) && !allRangesAreColumns;
+    };
+
+    var getColumnDefinitions = function (columnDefinitions) {
       columnDefinitions.unshift({
         id: 'row-header-column',
         name: '',
         selectable: false,
         focusable: false,
         formatter: function (rowIndex) {
-          return '<input type="checkbox" ' +
+          return '<span ' +
             'data-row="' + rowIndex + '" ' +
-            'data-cell-type="row-header-checkbox"/>'
-        }
+            'data-cell-type="row-header-selector"/>'
+        },
+        width: 30
       });
       return columnDefinitions;
     };
 
     $.extend(this, {
       "init": init,
-      "getColumnDefinitionsWithCheckboxes": getColumnDefinitionsWithCheckboxes
+      "getColumnDefinitions": getColumnDefinitions
     });
   };
+
   return RowSelector;
 });

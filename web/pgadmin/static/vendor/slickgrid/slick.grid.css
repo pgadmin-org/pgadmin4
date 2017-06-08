@@ -5,13 +5,13 @@ No built-in (selected, editable, highlight, flashing, invalid, loading, :focus) 
 classes should alter those!
 */
 
-.slick-header.ui-state-default, .slick-headerrow.ui-state-default {
+.slick-header.ui-state-default, .slick-headerrow.ui-state-default, .slick-footerrow.ui-state-default  {
   width: 100%;
   overflow: hidden;
   border-left: 0px !important;
 }
 
-.slick-header-columns, .slick-headerrow-columns {
+.slick-header-columns, .slick-headerrow-columns, .slick-footerrow-columns {
   position: relative;
   white-space: nowrap;
   cursor: default;
@@ -21,7 +21,7 @@ classes should alter those!
 .slick-header-column.ui-state-default {
   position: relative;
   display: inline-block;
-  /*box-sizing: content-box !important; */
+ /*box-sizing: content-box !important; use this for Firefox! */ 
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -36,7 +36,7 @@ classes should alter those!
   float: left;
 }
 
-.slick-headerrow-column.ui-state-default {
+.slick-headerrow-column.ui-state-default, .slick-footerrow-column.ui-state-default {
   padding: 4px;
 }
 
@@ -51,6 +51,21 @@ classes should alter those!
   margin-left: 4px;
   margin-top: 6px;
   float: left;
+}
+
+.slick-sort-indicator-numbered {
+  display: inline-block;
+  width: 8px;
+  height: 5px;
+  margin-left: 4px;
+  margin-top: 0;
+  padding-left: 1px;
+  line-height: 20px;
+  float: left;
+  font-family: Arial;
+  font-style: normal;
+  font-weight: bold;
+  color: #6190CD;
 }
 
 .slick-sort-indicator-desc {
@@ -81,13 +96,13 @@ classes should alter those!
   outline: 0;
 }
 
-.sr.ui-widget-content, .sr.ui-state-active {
+.slick-row.ui-widget-content, .slick-row.ui-state-active {
   position: absolute;
   border: 0px;
   width: 100%;
 }
 
-.sc, .slick-headerrow-column {
+.slick-cell, .slick-headerrow-column , .slick-footerrow-column{
   position: absolute;
   border: 1px solid transparent;
   border-right: 1px dotted silver;
@@ -102,7 +117,13 @@ classes should alter those!
   white-space: nowrap;
   cursor: default;
 }
-
+.slick-cell, .slick-headerrow-column{
+  border-bottom-color: silver;
+}
+.slick-footerrow-column {
+  border-top-color: silver;
+}
+ 
 .slick-group {
 }
 
@@ -110,7 +131,7 @@ classes should alter those!
   display: inline-block;
 }
 
-.sc.highlighted {
+.slick-cell.highlighted {
   background: lightskyblue;
   background: rgba(0, 0, 255, 0.2);
   -webkit-transition: all 0.5s;
@@ -119,11 +140,11 @@ classes should alter those!
   transition: all 0.5s;
 }
 
-.sc.flashing {
+.slick-cell.flashing {
   border: 1px solid red !important;
 }
 
-.sc.editable {
+.slick-cell.editable {
   z-index: 11;
   overflow: visible;
   background: white;
@@ -131,7 +152,7 @@ classes should alter those!
   border-style: solid;
 }
 
-.sc:focus {
+.slick-cell:focus {
   outline: none;
 }
 

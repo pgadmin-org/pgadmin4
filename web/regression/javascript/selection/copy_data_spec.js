@@ -1,21 +1,38 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2017, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 define(
   ["jquery",
     "slickgrid/slick.grid",
-    "slickgrid/slick.rowselectionmodel",
+    "sources/selection/xcell_selection_model",
     "sources/selection/copy_data",
     "sources/selection/clipboard",
     "sources/selection/range_selection_helper"
   ],
-  function ($, SlickGrid, RowSelectionModel, copyData, clipboard, RangeSelectionHelper) {
+  function ($, SlickGrid, XCellSelectionModel, copyData, clipboard, RangeSelectionHelper) {
     describe('copyData', function () {
-      var grid, sqlEditor;
+      var grid, sqlEditor, gridContainer, buttonPasteRow;
 
       beforeEach(function () {
         var data = [[1, "leopord", "12"],
           [2, "lion", "13"],
           [3, "puma", "9"]];
 
-        var columns = [{
+        var columns = [
+          {
+            id: 'row-header-column',
+            name: 'row header column name',
+            selectable: false,
+            display_name: 'row header column name',
+            column_type: 'text'
+          },
+          {
             name: "id",
             pos: 0,
             label: "id<br> numeric",
@@ -39,17 +56,18 @@ define(
           }
           ]
         ;
-        var gridContainer = $("<div id='grid'></div>");
+        gridContainer = $("<div id='grid'></div>");
         $("body").append(gridContainer);
-        $("body").append("<button id='btn-paste-row' disabled></button>");
+        buttonPasteRow = $("<button id='btn-paste-row' disabled></button>");
+        $("body").append(buttonPasteRow);
         grid = new Slick.Grid("#grid", data, columns, {});
-        grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+        grid.setSelectionModel(new XCellSelectionModel());
         sqlEditor = {slickgrid: grid};
       });
 
       afterEach(function() {
-        $("body").remove('#grid');
-        $("body").remove('#btn-paste-row');
+        gridContainer.remove();
+        buttonPasteRow.remove();
       });
 
       describe("when rows are selected", function () {
@@ -83,8 +101,8 @@ define(
 
       describe("when a column is selected", function () {
         beforeEach(function () {
-          var firstColumn = new Slick.Range(0, 0, 2, 0);
-          grid.getSelectionModel().setSelectedRanges([firstColumn])
+          var firstDataColumn = RangeSelectionHelper.rangeForColumn(grid, 1);
+          grid.getSelectionModel().setSelectedRanges([firstDataColumn])
         });
 
         it("copies text to the clipboard", function () {
@@ -108,9 +126,11 @@ define(
         });
 
         describe("when the user can edit the grid", function () {
-          it("disables the paste row button", function () {
+          beforeEach(function () {
             copyData.apply(_.extend({can_edit: true}, sqlEditor));
+          });
 
+          it("disables the paste row button", function () {
             expect($("#btn-paste-row").prop('disabled')).toBe(true);
           });
         });

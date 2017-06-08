@@ -89,6 +89,31 @@ class PgadminPage:
     def toggle_open_tree_item(self, tree_item_text):
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "']/../*[@class='aciTreeButton']").click()
 
+    def toggle_open_server(self, tree_item_text):
+        def check_for_password_dialog_or_tree_open(driver):
+            try:
+                dialog = driver.find_element_by_id("frmPassword")
+            except WebDriverException:
+                dialog = None
+
+            try:
+                database_node = driver.find_element_by_xpath("//*[@id='tree']//*[.='Databases']/../*[@class='aciTreeButton']")
+            except WebDriverException:
+                database_node = None
+
+            return dialog is not None or database_node is not None
+
+        self.toggle_open_tree_item(tree_item_text)
+        self._wait_for("Waiting for password dialog or tree to open", check_for_password_dialog_or_tree_open)
+
+        try:
+            self.driver.find_element_by_id("frmPassword")
+            # Enter password here if needed
+            self.click_modal_ok()
+        except WebDriverException:
+            return
+
+
     def find_by_xpath(self, xpath):
         return self.wait_for_element(lambda driver: driver.find_element_by_xpath(xpath))
 

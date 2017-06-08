@@ -236,8 +236,6 @@ CREATE TABLE public.defaults
             CheckForViewDataTest._get_cell_xpath("r1", "3")
         ).click()
 
-        # for debugging
-        print(row1_cell2_xpath)
         self._compare_cell_value(row1_cell2_xpath, "[default]")
         # reset cell value to previous one
         self._update_cell(row1_cell2_xpath, ["1", "", "int"])

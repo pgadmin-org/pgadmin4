@@ -36,7 +36,6 @@ require.config({
     'underscore.string': sourcesDir + 'vendor/underscore/underscore.string',
     'slickgrid': sourcesDir + 'vendor/slickgrid/slick.core',
     'slickgrid/slick.grid': sourcesDir + 'vendor/slickgrid/slick.grid',
-    'slickgrid/slick.rowselectionmodel': sourcesDir + 'vendor/slickgrid/plugins/slick.rowselectionmodel',
     'translations': '/base/regression/javascript/fake_translations',
     'sources': sourcesDir + 'js',
     'browser': '/base/pgadmin/browser/static/js'
@@ -58,11 +57,23 @@ require.config({
       ],
       "exports": 'window.Slick.Grid'
     },
-    "slickgrid/slick.rowselectionmodel": {
+    "sources/slickgrid/pgslick.cellrangedecorator": {
       "deps": [
         "jquery"
       ],
-      "exports": 'window.Slick.RowSelectionModel'
+      "exports": 'PGRowRangeDecorator'
+    },
+    "sources/slickgrid/pgslick.cellrangeselector": {
+      "deps": [
+        "jquery", "sources/slickgrid/pgslick.cellrangedecorator"
+      ],
+      "exports": 'PGCellRangeSelector'
+    },
+    "sources/selection/xcell_selection_model": {
+      "deps": [
+        "jquery", "sources/slickgrid/pgslick.cellrangeselector"
+      ],
+      "exports": 'XCellSelectionModel'
     },
     "backbone": {
       "deps": ['underscore', 'jquery'],

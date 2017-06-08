@@ -12,12 +12,12 @@
       grid.onColumnsReordered.subscribe(updateColumnOrder);
       options = $.extend({}, defaults, options);
 
-      $menu = $("<span class='slick-columnpicker' style='display:none;position:absolute;z-index:20;' />").appendTo(document.body);
+      $menu = $("<span class='slick-columnpicker' style='display:none;position:absolute;z-index:20;overflow-y:scroll;' />").appendTo(document.body);
 
-      $menu.bind("mouseleave", function (e) {
+      $menu.on("mouseleave", function (e) {
         $(this).fadeOut(options.fadeSpeed)
       });
-      $menu.bind("click", updateColumn);
+      $menu.on("click", updateColumn);
 
     }
 
@@ -44,7 +44,7 @@
         }
 
         $("<label />")
-            .text(columns[i].name)
+            .html(columns[i].name)
             .prepend($input)
             .appendTo($li);
       }
@@ -73,6 +73,7 @@
       $menu
           .css("top", e.pageY - 10)
           .css("left", e.pageX - 10)
+          .css("max-height", $(window).height() - e.pageY -10)
           .fadeIn(options.fadeSpeed);
     }
 

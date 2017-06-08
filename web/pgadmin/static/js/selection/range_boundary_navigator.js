@@ -1,4 +1,5 @@
-define(['sources/selection/range_selection_helper'], function (RangeSelectionHelper) {
+define(['sources/selection/range_selection_helper'],
+function (RangeSelectionHelper) {
   return {
     getUnion: function (allRanges) {
       if (_.isEmpty(allRanges)) {
@@ -76,6 +77,10 @@ define(['sources/selection/range_selection_helper'], function (RangeSelectionHel
 
     removeFirstColumn: function (colRangeBounds) {
       var unionedColRanges = this.getUnion(colRangeBounds);
+
+      if(unionedColRanges.length == 0) {
+        return [];
+      }
 
       var firstSubrangeStartsAt0 = function () {
         return unionedColRanges[0][0] == 0;

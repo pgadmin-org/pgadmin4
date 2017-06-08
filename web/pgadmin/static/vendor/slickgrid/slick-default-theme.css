@@ -29,23 +29,23 @@ classes should alter those!
   height: 100%;
 }
 
-.sr.ui-state-active {
+.slick-row.ui-state-active {
   background: #F5F7D7;
 }
 
-.sr {
+.slick-row {
   position: absolute;
   background: white;
   border: 0px;
   line-height: 20px;
 }
 
-.sr.selected {
+.slick-row.selected {
   z-index: 10;
   background: #DFE8F6;
 }
 
-.sc {
+.slick-cell {
   padding-left: 4px;
   padding-right: 4px;
 }
@@ -73,11 +73,11 @@ classes should alter those!
   background: white;
 }
 
-.sc.selected {
+.slick-cell.selected {
   background-color: beige;
 }
 
-.sc.active {
+.slick-cell.active {
   border-color: gray;
   border-style: solid;
 }
@@ -86,25 +86,25 @@ classes should alter those!
   background: silver !important;
 }
 
-.sr.odd {
+.slick-row.odd {
   background: #fafafa;
 }
 
-.sr.ui-state-active {
+.slick-row.ui-state-active {
   background: #F5F7D7;
 }
 
-.sr.loading {
+.slick-row.loading {
   opacity: 0.5;
   filter: alpha(opacity = 50);
 }
 
-.sc.invalid {
+.slick-cell.invalid {
   border-color: red;
   -moz-animation-duration: 0.2s;
   -webkit-animation-duration: 0.2s;
   -moz-animation-name: slickgrid-invalid-hilite;
-  -webkit-animation-name: slickgrid-invalid-hilite;
+  -webkit-animation-name: slickgrid-invalid-hilite;  
 }
 
 @-moz-keyframes slickgrid-invalid-hilite {

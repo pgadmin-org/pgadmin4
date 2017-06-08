@@ -1,9 +1,0 @@
-WARNING!!
-
-The following changes have been made to SlickGrid. These must be re-applied if updating the code from upstream!
-
-- The CSS class 'slick-row' has been renamed to 'sr'
-
-- The CSS class 'slick-cell' has been renamed to 'sc'
-
-The intent of these changes is to minimise memory usage by the grid, by saving a few bytes per row/cell.

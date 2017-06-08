@@ -3,8 +3,9 @@ define([
   'underscore',
   'sources/selection/clipboard',
   'sources/selection/range_selection_helper',
-  'sources/selection/range_boundary_navigator'],
-  function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
+  'sources/selection/range_boundary_navigator'
+  ],
+function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
   var copyData = function () {
     var self = this;
 
@@ -14,8 +15,7 @@ define([
     var data = grid.getData();
     var rows = grid.getSelectedRows();
 
-
-    if (allTheRangesAreFullRows(selectedRanges, columnDefinitions)) {
+    if (RangeSelectionHelper.areAllRangesCompleteRows(grid, selectedRanges)) {
       self.copied_rows = rows.map(function (rowIndex) {
         return data[rowIndex];
       });
@@ -24,7 +24,6 @@ define([
       self.copied_rows = [];
       setPasteRowButtonEnablement(self.can_edit, false);
     }
-
     var csvText = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, selectedRanges);
     if (csvText) {
       clipboard.copyTextToClipboard(csvText);
@@ -45,8 +44,8 @@ define([
     if(RangeSelectionHelper.isFirstColumnData(columnDefinitions)) {
       return _.isEqual(_.union.apply(null, colRangeBounds), [0, columnDefinitions.length - 1]);
     }
-    return _.isEqual(_.union.apply(null, colRangeBounds), [1, columnDefinitions.length - 1]);
+    return _.isEqual(_.union.apply(null, colRangeBounds), [0, columnDefinitions.length - 1]);
   };
 
-  return copyData;
+  return copyData
 });

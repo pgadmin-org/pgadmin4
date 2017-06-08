@@ -19,16 +19,27 @@ from pgadmin.utils.route import BaseTestGenerator
 
 class TestVersionedTemplateLoader(BaseTestGenerator):
     scenarios = [
-        ("Test versioned template loader", dict())
+        ("Render a template when called", dict(scenario=1)),
+        ("Render a version 9.1 template when it is present", dict(scenario=2)),
+        ("Render a version 9.2 template when request for a higher version", dict(scenario=3)),
+        ("Render default version when version 9.0 was requested and only 9.1 and 9.2 are present", dict(scenario=4)),
+        ("Raise error when version is smaller than available templates", dict(scenario=5))
     ]
 
     def setUp(self):
         self.loader = VersionedTemplateLoader(FakeApp())
 
     def runTest(self):
-        self.test_get_source_returns_a_template()
-        self.test_get_source_when_the_version_is_9_1_returns_9_1_template()
-        self.test_get_source_when_the_version_is_9_3_and_there_are_templates_for_9_2_and_9_1_returns_9_2_template()
+        if self.scenario == 1:
+            self.test_get_source_returns_a_template()
+        if self.scenario == 2:
+            self.test_get_source_when_the_version_is_9_1_returns_9_1_template()
+        if self.scenario == 3:
+            self.test_get_source_when_the_version_is_9_3_and_there_are_templates_for_9_2_and_9_1_returns_9_2_template()
+        if self.scenario == 4:
+            self.test_get_source_when_version_is_9_0_and_there_are_templates_for_9_1_and_9_2_returns_default_template()
+        if self.scenario == 5:
+            self.test_raise_not_found_exception_when_postgres_version_less_than_all_available_sql_templates()
 
     def test_get_source_returns_a_template(self):
         expected_content = "Some SQL" \
@@ -57,10 +68,12 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
         self.assertEqual("Some 9.2 SQL", str(content).replace("\r",""))
         self.assertIn(sql_path, filename)
 
-    def test_get_source_when_the_version_is_9_0_and_there_are_templates_for_9_1_and_9_2_returns_default_template(self):
+    def test_get_source_when_version_is_9_0_and_there_are_templates_for_9_1_and_9_2_returns_default_template(self):
         # For cross platform we join the SQL path (This solves the slashes issue)
         sql_path = os.path.join("some_feature", "sql", "default", "some_action_with_default.sql")
-        content, filename, up_to_dateness = self.loader.get_source(None, "some_feature/sql/#90000#/some_action_with_default.sql")
+        content, filename, up_to_dateness = self.loader.get_source(
+            None,
+            "some_feature/sql/#90000#/some_action_with_default.sql")
 
         self.assertEqual("Some default SQL", str(content).replace("\r",""))
         self.assertIn(sql_path, filename)

@@ -1,12 +1,12 @@
 define(["jquery",
     "underscore",
     "slickgrid/slick.grid",
-    "slickgrid/slick.rowselectionmodel",
+    "sources/selection/xcell_selection_model",
     "sources/selection/grid_selector"
   ],
-  function ($, _, SlickGrid, RowSelectionModel, GridSelector) {
+  function ($, _, SlickGrid, XCellSelectionModel, GridSelector) {
     describe("GridSelector", function () {
-      var container, data, columns, gridSelector, rowSelectionModel;
+      var container, data, columns, gridSelector, xCellSelectionModel;
 
       beforeEach(function () {
         container = $("<div></div>");
@@ -14,13 +14,15 @@ define(["jquery",
         columns = [{
           id: '1',
           name: 'some-column-name',
+          pos: 0
         }, {
           id: '2',
           name: 'second column',
+          pos: 1
         }];
 
         gridSelector = new GridSelector();
-        columns = gridSelector.getColumnDefinitionsWithCheckboxes(columns);
+        columns = gridSelector.getColumnDefinitions(columns);
 
         data = [];
         for (var i = 0; i < 10; i++) {
@@ -28,8 +30,8 @@ define(["jquery",
         }
         var grid = new SlickGrid(container, data, columns);
 
-        rowSelectionModel = new RowSelectionModel();
-        grid.setSelectionModel(rowSelectionModel);
+        xCellSelectionModel = new XCellSelectionModel();
+        grid.setSelectionModel(xCellSelectionModel);
 
         grid.registerPlugin(gridSelector);
         grid.invalidate();
@@ -48,11 +50,7 @@ define(["jquery",
         expect(leftmostColumn.id).toBe('row-header-column');
       });
 
-      it("renders checkboxes for selecting columns", function () {
-        expect(container.find('[data-test="output-column-header"] input').length).toBe(2)
-      });
-
-      it("renders a checkbox for selecting all the cells", function () {
+      it("renders a button for selecting all the cells", function () {
         expect(container.find("[title='Select/Deselect All']").length).toBe(1);
       });
 
@@ -60,7 +58,7 @@ define(["jquery",
         it("selects the whole grid", function () {
           container.find("[title='Select/Deselect All']").parent().click();
 
-          var selectedRanges = rowSelectionModel.getSelectedRanges();
+          var selectedRanges = xCellSelectionModel.getSelectedRanges();
           expect(selectedRanges.length).toBe(1);
           var selectedRange = selectedRanges[0];
           expect(selectedRange.fromCell).toBe(1);
@@ -69,25 +67,19 @@ define(["jquery",
           expect(selectedRange.toRow).toBe(9);
         });
 
-        it("checks the checkbox", function () {
+        it("adds selected class", function () {
           container.find("[title='Select/Deselect All']").parent().click();
 
-          expect($(container.find("[data-id='checkbox-select-all']")).is(':checked')).toBeTruthy();
-        })
+          expect($(container.find("[data-id='select-all']")).hasClass('selected')).toBeTruthy();
+        });
       });
 
-      describe("when the main checkbox in the corner gets selected", function () {
-        it("unchecks all the columns", function () {
-          container.find("[title='Select/Deselect All']").click();
-
-          expect($(container.find('.slick-header-columns input')[1]).is(':checked')).toBeFalsy();
-          expect($(container.find('.slick-header-columns input')[2]).is(':checked')).toBeFalsy();
-        });
+      describe("when the select all button in the corner gets selected", function () {
 
         it("selects all the cells", function () {
           container.find("[title='Select/Deselect All']").click();
 
-          var selectedRanges = rowSelectionModel.getSelectedRanges();
+          var selectedRanges = xCellSelectionModel.getSelectedRanges();
           expect(selectedRanges.length).toBe(1);
           var selectedRange = selectedRanges[0];
           expect(selectedRange.fromCell).toBe(1);
@@ -96,7 +88,7 @@ define(["jquery",
           expect(selectedRange.toRow).toBe(9);
         });
 
-        describe("when the main checkbox in the corner gets deselected", function () {
+        describe("when the select all button in the corner gets deselected", function () {
           beforeEach(function () {
             container.find("[title='Select/Deselect All']").click();
           });
@@ -104,7 +96,7 @@ define(["jquery",
           it("deselects all the cells", function () {
             container.find("[title='Select/Deselect All']").click();
 
-            var selectedRanges = rowSelectionModel.getSelectedRanges();
+            var selectedRanges = xCellSelectionModel.getSelectedRanges();
             expect(selectedRanges.length).toBe(0);
           });
         });
@@ -114,11 +106,10 @@ define(["jquery",
             container.find("[title='Select/Deselect All']").click();
           });
 
-          it("unchecks the main checkbox", function () {
-            var ranges = [new Slick.Range(0, 0, 0, 1)];
-            rowSelectionModel.setSelectedRanges(ranges);
+          it("removes the selected class", function () {
+            container.find("[title='Select/Deselect All']").parent().click();
 
-            expect($(container.find("[title='Select/Deselect All']")).is(':checked')).toBeFalsy();
+            expect($(container.find("[data-id='select-all']")).hasClass('selected')).toBeFalsy();
           });
         });
       });

@@ -45,7 +45,7 @@ class TestColumnPropertiesSql(SQLTemplateTestBase):
 
         self.assertEqual('some_column', first_row['name'])
         self.assertEqual('character varying', first_row['cltype'])
-        self.assertEqual(2, len(fetch_result))
+        self.assertEqual(3, len(fetch_result))
 
     @staticmethod
     def get_template_file(version, filename):

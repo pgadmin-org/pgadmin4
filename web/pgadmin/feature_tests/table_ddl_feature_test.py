@@ -33,7 +33,7 @@ class TableDdlFeatureTest(BaseFeatureTest):
     def runTest(self):
         test_utils.create_table(self.server, "acceptance_test_db", "test_table")
 
-        self.page.toggle_open_tree_item(self.server['name'])
+        self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
         self.page.toggle_open_tree_item('Schemas')

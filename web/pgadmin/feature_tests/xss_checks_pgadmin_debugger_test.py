@@ -58,7 +58,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath("//button[contains(.,'Save')]").click()
 
     def _function_node_expandable(self):
-        self.page.toggle_open_tree_item(self.server['name'])
+        self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('postgres')
         self.page.toggle_open_tree_item('Schemas')

@@ -61,7 +61,6 @@ define(['sources/selection/range_boundary_navigator'], function (rangeBoundaryNa
     });
   });
 
-
   describe("#mapDimensionBoundaryUnion", function () {
     it("returns a list of the results of the callback", function () {
       var rangeBounds = [[0, 1], [3, 3]];
@@ -132,26 +131,40 @@ define(['sources/selection/range_boundary_navigator'], function (rangeBoundaryNa
     });
 
     it("returns csv for the provided ranges", function () {
-
       var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges);
 
       expect(csvResult).toEqual("1,'leopard','12'\n4,'tiger','10'");
     });
 
+    describe("when no cells are selected", function () {
+      it("should return an empty string", function () {
+        var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, []);
+
+        expect(csvResult).toEqual('');
+      });
+    });
+
     describe("when there is an extra column with checkboxes", function () {
+
       beforeEach(function () {
         columnDefinitions = [{name: 'not-a-data-column'}, {name: 'id', pos: 0}, {name: 'animal', pos: 1}, {
           name: 'size',
           pos: 2
         }];
         ranges = [new Slick.Range(0, 0, 0, 3), new Slick.Range(3, 0, 3, 3)];
-
       });
 
       it("returns csv for the columns with data", function () {
         var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges);
 
         expect(csvResult).toEqual("1,'leopard','12'\n4,'tiger','10'");
+      });
+      describe("when no cells are selected", function () {
+        it("should return an empty string", function () {
+          var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, []);
+
+          expect(csvResult).toEqual('');
+        });
       });
     });
   });

@@ -260,7 +260,7 @@ li {
 }
 
 .slick-header-column.ui-state-default {
-    height: 40px !important;
+    height: 32px !important;
 }
 
 #datagrid .grid-header label {
@@ -279,7 +279,7 @@ li {
   background-color: white;
 }
 
-.sc.cell-move-handle {
+.slick-cell.cell-move-handle {
   font-weight: bold;
   text-align: right;
   border-right: solid gray;
@@ -291,15 +291,15 @@ li {
   background: #b6b9bd;
 }
 
-.sr.selected .cell-move-handle {
+.slick-row.selected .cell-move-handle {
   background: #D5DC8D;
 }
 
-.sr .cell-actions {
+.slick-row .cell-actions {
   text-align: left;
 }
 
-.sr.complete {
+.slick-row.complete {
   background-color: #DFD;
   color: #555;
 }
@@ -332,7 +332,7 @@ li {
   font-size: 10px;
 }
 
-.sr.selected .cell-selection {
+.slick-row.selected .cell-selection {
   background-color: transparent; /* show default selected row background */
 }
 
@@ -350,9 +350,23 @@ li {
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
   color: #222222;
-  padding: 4px 0 4px 6px;
-  background-color: #e8e8e8;
-  border-bottom: 1px solid black;
+  padding: 4px 0 3px 6px;
+  background-color: #E8E8E8;
+  border-bottom: 1px solid silver !important;
+}
+
+#datagrid .slick-header .slick-header-column.selected {
+  background-color: #2C76B4;
+  color: #FFFFFF;
+}
+
+#datagrid .slick-header .slick-header-column .column-name {
+  font-weight: bold;
+  display: block;
+}
+
+.column-description {
+  display: table-cell;
 }
 
 .column-description {
@@ -400,9 +414,11 @@ input.editor-checkbox:focus {
   outline: none;
 }
 
-/* Override selected row color */
-.sc.selected {
-    background-color: #DEE8F1 !important;
+/* Remove active cell border */
+.slick-cell.active {
+  border: 1px solid transparent;
+  border-right: 1px dotted silver;
+  border-bottom-color: silver;
 }
 
 /* To highlight all newly inserted rows */
@@ -430,9 +446,18 @@ input.editor-checkbox:focus {
   color: #999999;
 }
 
+/* Override selected row color */
+#datagrid .slick-row .slick-cell.selected {
+    background-color: #DEE8F1;
+}
+
 /* color the first column */
-.sr .sc:first-child {
-    background-color: #e8e8e8;
+#datagrid .slick-row .slick-cell.l0.r0 {
+  background-color: #e8e8e8;
+}
+
+#datagrid .slick-row .slick-cell.l0.r0.selected {
+  background-color: #2C76B4;
 }
 
 #datagrid div.slick-header.ui-state-default {
@@ -453,6 +478,7 @@ input.editor-checkbox:focus {
   -ms-box-sizing: content-box;
 }
 
-.sr.ui-widget-content {
-  border-top: 1px solid silver;
+.select-all-icon {
+  margin-left: 9px;
+  vertical-align: bottom;
 }

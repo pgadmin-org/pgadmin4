@@ -1,32 +1,40 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
-  'sources/selection/grid_selector', 'sources/selection/clipboard',
-  'sources/selection/copy_data',
-  'sources/selection/set_staged_rows', 'sources/sqleditor_utils',
-  'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
-  'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
-  'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
-  'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
-  'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
-  'pgadmin-sqlfoldcode',
-  'codemirror/addon/scroll/simplescrollbars',
-  'codemirror/addon/dialog/dialog',
-  'codemirror/addon/search/search',
-  'codemirror/addon/search/searchcursor',
-  'codemirror/addon/search/jump-to-line',
-  'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
-  'slick.pgadmin.formatters', 'slickgrid/slick.editors',
-  'slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
-  'slickgrid/plugins/slick.cellrangedecorator',
-  'slickgrid/plugins/slick.cellrangeselector',
-  'slickgrid/plugins/slick.cellselectionmodel',
-  'slickgrid/plugins/slick.cellcopymanager',
-  'slickgrid/plugins/slick.rowselectionmodel',
-  'slickgrid/slick.grid'
+    'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
+    'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
+    'sources/selection/grid_selector',
+    'sources/selection/active_cell_capture',
+    'sources/selection/clipboard',
+    'sources/selection/copy_data',
+    'sources/selection/range_selection_helper',
+    'sources/slickgrid/event_handlers/handle_query_output_keyboard_event',
+    'sources/selection/xcell_selection_model',
+    'sources/selection/set_staged_rows',
+    'sources/gettext', 'sources/sqleditor_utils',
+
+    'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
+    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
+    'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
+    'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
+    'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
+    'pgadmin-sqlfoldcode',
+    'codemirror/addon/scroll/simplescrollbars',
+    'codemirror/addon/dialog/dialog',
+    'codemirror/addon/search/search',
+    'codemirror/addon/search/searchcursor',
+    'codemirror/addon/search/jump-to-line',
+    'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
+    'slick.pgadmin.formatters', 'slickgrid/slick.editors',
+    'slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
+    'slickgrid/plugins/slick.cellrangedecorator',
+    'slickgrid/plugins/slick.cellrangeselector',
+    'slickgrid/plugins/slick.cellselectionmodel',
+    'slickgrid/plugins/slick.cellcopymanager',
+    'slickgrid/plugins/slick.rowselectionmodel',
+    'slickgrid/slick.grid'
 ], function(
-  gettext, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
-  pgExplain, GridSelector, clipboard, copyData, setStagedRows, SqlEditorUtils
+    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, GridSelector,
+    ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
+    XCellSelectionModel, setStagedRows, gettext, SqlEditorUtils
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -543,6 +551,8 @@ define([
               pos: c.pos,
               field: c.name,
               name: c.label,
+              display_name: c.display_name,
+              column_type: c.column_type,
               not_null: c.not_null,
               has_default_val: c.has_default_val
             };
@@ -583,7 +593,7 @@ define([
         });
 
         var gridSelector = new GridSelector();
-        grid_columns = gridSelector.getColumnDefinitionsWithCheckboxes(grid_columns);
+        grid_columns = gridSelector.getColumnDefinitions(grid_columns);
 
         var grid_options = {
           editable: true,
@@ -637,7 +647,8 @@ define([
 
         var grid = new Slick.Grid($data_grid, collection, grid_columns, grid_options);
         grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: false }) );
-        grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+        grid.registerPlugin(new ActiveCellCapture());
+        grid.setSelectionModel(new XCellSelectionModel());
         grid.registerPlugin(gridSelector);
 
         var editor_data = {
@@ -698,41 +709,7 @@ define([
             }
         });
 
-        // Listener function for COPY/PASTE operation on grid
-        grid.onKeyDown.subscribe(function (e, args) {
-          var c = e.keyCode,
-            ctrlDown = e.ctrlKey||e.metaKey; // Mac support
-
-          //    (ctrlDown && c==67) return false // c
-          //    (ctrlDown && c==86) return false // v
-          //    (ctrlDown && c==88) return false // x
-
-
-          if (!ctrlDown && !(c==67 || c==86 || c==88)) {
-            return;  // Not a copy paste opration
-          }
-
-          var grid = args.grid, column_info, column_values, value,
-            cell = args.cell, row = args.row;
-
-          // Copy operation (Only when if there is no row selected)
-          // When user press `Ctrl + c` on selected cell
-          if(ctrlDown && c==67) {
-            // May be single cell is selected
-            column_info = grid.getColumns()[cell]
-            // Fetch current row data from grid
-            column_values = grid.getDataItem(row, cell)
-            //  Get the value from cell
-            value = column_values[column_info.pos] || '';
-            // Copy this value to Clipboard
-            if(value)
-              clipboard.copyTextToClipboard(value);
-            // Go to cell again
-            grid.gotoCell(row, cell, false);
-          }
-
-        });
-
+        grid.onKeyDown.subscribe(handleQueryOutputKeyboardEvent);
 
         // Listener function which will be called when user updates existing rows
         grid.onCellChange.subscribe(function (e, args) {
@@ -2100,6 +2077,8 @@ define([
                     'cell': col_cell,
                     'can_edit': self.can_edit,
                     'type': type,
+                    'display_name': c.display_name,
+                    'column_type': col_type,
                     'not_null': c.not_null,
                     'has_default_val': c.has_default_val
                   };

@@ -10,9 +10,10 @@
 define(
   [
     'jquery',
-    'underscore'
+    'underscore',
+    'sources/selection/range_selection_helper'
   ],
-  function ($, _) {
+  function ($, _, RangeSelectionHelper) {
     function disableButton(selector) {
       $(selector).prop('disabled', true);
     }
@@ -85,21 +86,25 @@ define(
       disableButton('#btn-delete-row');
       disableButton('#btn-copy-row');
 
-      if (!_.has(this.selection, 'getSelectedRows')) {
-        setStagedRows({});
-        return;
+      function areAllSelectionsEntireRows() {
+        return RangeSelectionHelper.areAllRangesCompleteRows(self.grid,
+          self.selection.getSelectedRanges())
       }
 
-      var selectedRows = this.selection.getSelectedRows();
+      var selectedRanges = this.selection.getSelectedRanges();
 
-      if (selectedRows.length > 0) {
+      if (selectedRanges.length > 0) {
+        enableButton('#btn-copy-row');
+      }
+
+      if (areAllSelectionsEntireRows()) {
+        var selectedRows = RangeSelectionHelper.getIndexesOfCompleteRows(this.grid, this.selection.getSelectedRanges())
         var stagedRows = getPrimaryKeysForSelectedRows(self, selectedRows);
         setStagedRows(stagedRows);
         if (_.isEmpty(stagedRows)) {
           this.selection.setSelectedRows([]);
         }
 
-        enableButton('#btn-copy-row');
         if (isEditMode()) {
           enableButton('#btn-delete-row');
         }
@@ -110,5 +115,3 @@ define(
     return setStagedRows;
   }
 );
-
-

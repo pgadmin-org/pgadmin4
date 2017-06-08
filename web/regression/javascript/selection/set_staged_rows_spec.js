@@ -12,131 +12,137 @@ define([
   "underscore",
   "sources/selection/set_staged_rows",
 ], function ($, _, SetStagedRows) {
-  describe('when no full rows are selected', function () {
-    var sqlEditorObj, deleteButton, copyButton;
+  describe('set_staged_rows', function () {
+    var sqlEditorObj, gridSpy, deleteButton, copyButton, selectionSpy;
     beforeEach(function () {
-      var gridSpy = jasmine.createSpyObj('gridSpy', ['getData', 'getCellNode']);
+      gridSpy = jasmine.createSpyObj('gridSpy', ['getData', 'getCellNode', 'getColumns']);
       gridSpy.getData.and.returnValue([
         {0: 'one', 1: 'two', __temp_PK: '123'},
         {0: 'three', 1: 'four', __temp_PK: '456'},
         {0: 'five', 1: 'six', __temp_PK: '789'},
         {0: 'seven', 1: 'eight', __temp_PK: '432'}
       ]);
+      gridSpy.getColumns.and.returnValue([
+        {
+          pos: 0,
+          selectable: true,
+        }, {
+          pos: 1,
+          selectable: true,
+        }
+      ]);
+
+      selectionSpy = jasmine.createSpyObj('selectionSpy', ['setSelectedRows', 'getSelectedRanges']);
+
       deleteButton = $('<button id="btn-delete-row"></button>');
       copyButton = $('<button id="btn-copy-row"></button>');
+
       sqlEditorObj = {
         grid: gridSpy,
         editor: {
           handler: {
             data_store: {
-              staged_rows: {1: [1, 2]}
-            }
+              staged_rows: {'456': {}}
+            },
+            can_edit: false
           }
-        }
+        },
+        keys: null,
+        selection: selectionSpy,
+        columns: [
+          {
+            name: 'a pk column',
+            pos: 0
+          },
+          {
+            name: 'some column',
+            pos: 1
+          }
+        ]
       };
+
       $('body').append(deleteButton);
       $('body').append(copyButton);
-      deleteButton.prop('disabled', false);
-      copyButton.prop('disabled', false);
+
+      deleteButton.prop('disabled', true);
+      copyButton.prop('disabled', true);
+
+      selectionSpy = jasmine.createSpyObj('selectionSpy', [
+        'setSelectedRows',
+        'getSelectedRanges',
+      ]);
     });
 
     afterEach(function () {
       copyButton.remove();
       deleteButton.remove();
     });
+    describe('when no full rows are selected', function () {
+      describe('when nothing is selected', function () {
+        beforeEach(function () {
+          selectionSpy.getSelectedRanges.and.returnValue([]);
+          sqlEditorObj.selection = selectionSpy;
+          SetStagedRows.call(sqlEditorObj, {}, {});
+        });
 
-    describe('when getSelectedRows is not present in the selection model', function () {
-      beforeEach(function () {
-        SetStagedRows.call(sqlEditorObj, {}, {});
-      });
-      it('should disable the delete row button', function () {
-        expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+        it('should disable the delete row button', function () {
+          expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+        });
+
+        it('should disable the copy row button', function () {
+          expect($('#btn-copy-row').prop('disabled')).toBeTruthy();
+        });
+
+        it('should clear staged rows', function () {
+          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+        });
       });
 
-      it('should disable the copy row button', function () {
-        expect($('#btn-copy-row').prop('disabled')).toBeTruthy();
-      });
+      describe('when there is a selection', function () {
+        beforeEach(function () {
+          var range = {
+            fromCell: 0,
+            toCell: 0,
+            fromRow: 1,
+            toRow: 1,
+          };
 
-      it('should clear staged rows', function () {
-        expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+          selectionSpy.getSelectedRanges.and.returnValue([range]);
+          sqlEditorObj.selection = selectionSpy;
+          SetStagedRows.call(sqlEditorObj, {}, {});
+        });
+
+        it('should disable the delete row button', function () {
+          expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+        });
+
+        it('should disable the copy row button', function () {
+          expect($('#btn-copy-row').prop('disabled')).toBeFalsy();
+        });
+
+        it('should clear staged rows', function () {
+          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+        });
       });
     });
 
-    describe('when getSelectedRows is present in the selection model', function () {
+    describe('when 2 full rows are selected', function () {
       beforeEach(function () {
-        var selectionSpy = jasmine.createSpyObj('selectionSpy', ['getSelectedRows', 'setSelectedRows']);
-        selectionSpy.getSelectedRows.and.returnValue([]);
-        sqlEditorObj.selection = selectionSpy;
-        SetStagedRows.call(sqlEditorObj, {}, {});
-      });
-
-      it('should disable the delete row button', function () {
-        expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
-      });
-
-      it('should disable the copy row button', function () {
-        expect($('#btn-copy-row').prop('disabled')).toBeTruthy();
-      });
-
-      it('should clear staged rows', function () {
-        expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
-      });
-    });
-  });
-
-  describe('when 2 full rows are selected', function () {
-    describe('when getSelectedRows is present in the selection model', function () {
-      var sqlEditorObj, gridSpy, deleteButton, copyButton;
-      beforeEach(function () {
-        gridSpy = jasmine.createSpyObj('gridSpy', ['getData', 'getCellNode']);
-        gridSpy.getData.and.returnValue([
-          {0: 'one', 1: 'two', __temp_PK: '123'},
-          {0: 'three', 1: 'four', __temp_PK: '456'},
-          {0: 'five', 1: 'six', __temp_PK: '789'},
-          {0: 'seven', 1: 'eight', __temp_PK: '432'}
-        ]);
-
-        var selectionSpy = jasmine.createSpyObj('selectionSpy', ['getSelectedRows', 'setSelectedRows']);
-        selectionSpy.getSelectedRows.and.returnValue([1, 2]);
-
-        deleteButton = $('<button id="btn-delete-row"></button>');
-        copyButton = $('<button id="btn-copy-row"></button>');
-
-        sqlEditorObj = {
-          grid: gridSpy,
-          editor: {
-            handler: {
-              data_store: {
-                staged_rows: {'456': {}}
-              },
-              can_edit: false
-            }
-          },
-          keys: null,
-          selection: selectionSpy,
-          columns: [
-            {
-              name: 'a pk column',
-              pos: 0
-            },
-            {
-              name: 'some column',
-              pos: 1
-            }
-          ]
+        var range1 = {
+          fromCell: 0,
+          toCell: 1,
+          fromRow: 1,
+          toRow: 1,
+        };
+        var range2 = {
+          fromCell: 0,
+          toCell: 1,
+          fromRow: 2,
+          toRow: 2,
         };
 
-        $('body').append(deleteButton);
-        $('body').append(copyButton);
-
-        deleteButton.prop('disabled', true);
-        copyButton.prop('disabled', true);
-
-      });
-
-      afterEach(function () {
-        copyButton.remove();
-        deleteButton.remove();
+        selectionSpy.getSelectedRanges.and.returnValue([range1, range2]);
+        sqlEditorObj.selection = selectionSpy;
       });
 
       describe('when table does not have primary keys', function () {
@@ -181,7 +187,6 @@ define([
             SetStagedRows.call(sqlEditorObj, {}, {});
             expect(sqlEditorObj.selection.setSelectedRows).not.toHaveBeenCalledWith();
           });
-
         });
 
         describe('selected rows missing primary key', function () {
@@ -203,7 +208,6 @@ define([
             SetStagedRows.call(sqlEditorObj, {}, {});
             expect(sqlEditorObj.selection.setSelectedRows).toHaveBeenCalledWith([]);
           });
-
         });
 
         describe('when the selected row is a new row', function () {
