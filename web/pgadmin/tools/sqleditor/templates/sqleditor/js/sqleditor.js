@@ -559,15 +559,15 @@ define([
 
             // Get the columns width based on longer string among data type or
             // column name.
-            var label = c.label.split('<br>');
-            label = label[0].length > label[1].length ? label[0] : label[1];
+            var column_type = c.column_type.trim();
+            var label = c.name.length > column_type.length ? c.name : column_type;
 
             if (_.isUndefined(column_size[table_name][c.name])) {
-                options['width'] = SqlEditorUtils.calculateColumnWidth(label)
-                column_size[table_name][c.name] = SqlEditorUtils.calculateColumnWidth(label);
+              options['width'] = SqlEditorUtils.calculateColumnWidth(label);
+              column_size[table_name][c.name] = options['width'];
             }
             else {
-                options['width'] = column_size[table_name][c.name];
+              options['width'] = column_size[table_name][c.name];
             }
 
             // If grid is editable then add editor else make it readonly
