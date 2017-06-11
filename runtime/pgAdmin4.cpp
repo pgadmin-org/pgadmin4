@@ -333,7 +333,7 @@ int main(int argc, char * argv[])
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.
     int attempt = 0;
-    while (attempt++ < 30)
+    while (attempt++ < 50)
     {
         bool alive = PingServer(QUrl(appServerUrl));
 
@@ -342,7 +342,7 @@ int main(int argc, char * argv[])
             break;
         }
 
-        if (attempt == 30)
+        if (attempt == 50)
         {
             splash->finish(NULL);
             QString error(QWidget::tr("The application server could not be contacted."));
@@ -350,6 +350,8 @@ int main(int argc, char * argv[])
 
             exit(1);
         }
+
+        delay(100);
     }
 
     // Create & show the main window
