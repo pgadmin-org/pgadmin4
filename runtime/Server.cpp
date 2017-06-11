@@ -63,6 +63,7 @@ Server::Server(quint16 port, QString key)
 
     // Initialise Python
     Py_NoSiteFlag=1;
+    Py_NoUserSiteDirectory=1;
     Py_DontWriteBytecodeFlag=1;
 
     PGA_APP_NAME_UTF8 = PGA_APP_NAME.toUtf8();
