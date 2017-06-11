@@ -285,10 +285,6 @@ int main(int argc, char * argv[])
 
         server->start();
 
-        // This is a hack. Wait a second and then check to see if the server thread
-        // is still running. If it's not, we probably had a startup error
-        delay(1000);
-
         // Any errors?
         if (server->isFinished() || server->getError().length() > 0)
         {
@@ -332,7 +328,7 @@ int main(int argc, char * argv[])
 
 
     // Generate the app server URL
-    QString appServerUrl = QString("http://localhost:%1/?key=%2").arg(port).arg(key);
+    QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
 
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.
@@ -354,8 +350,6 @@ int main(int argc, char * argv[])
 
             exit(1);
         }
-
-        delay(1000);
     }
 
     // Create & show the main window

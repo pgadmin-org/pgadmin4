@@ -156,7 +156,7 @@ DESKTOP_USER = 'pgadmin4@pgadmin.org'
 # NOTE: This is NOT recommended for production use, only for debugging
 # or testing. Production installations should be run as a WSGI application
 # behind Apache HTTPD.
-DEFAULT_SERVER = 'localhost'
+DEFAULT_SERVER = '127.0.0.1'
 
 # The default port on which the app server will listen if not set in the
 # environment by the runtime
