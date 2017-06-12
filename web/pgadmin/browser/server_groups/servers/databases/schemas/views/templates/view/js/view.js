@@ -1,8 +1,9 @@
-define([
+define('pgadmin.node.view', [
   'sources/gettext',
-  'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege', 'pgadmin.node.rule'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+  'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege',
+  'pgadmin.node.rule'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
 
   /**
     Create and add a view collection into nodes
@@ -38,7 +39,7 @@ define([
       type: 'view',
       sqlAlterHelp: 'sql-alterview.html',
       sqlCreateHelp: 'sql-createview.html',
-      dialogHelp: '{{ url_for('help.static', filename='view_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'view_dialog.html'}),
       label: gettext('View'),
       hasSQL:  true,
       hasDepends: true,

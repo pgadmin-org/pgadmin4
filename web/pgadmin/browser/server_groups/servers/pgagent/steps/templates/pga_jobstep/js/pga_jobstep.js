@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'backform', 'pgadmin.backform'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
+define('pgadmin.node.pga_jobstep', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'backform',
+  'pgadmin.backform'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
@@ -21,7 +22,7 @@ define([
     pgBrowser.Nodes['pga_jobstep'] = pgBrowser.Node.extend({
       parent_type: 'pga_job',
       type: 'pga_jobstep',
-      dialogHelp: '{{ url_for('help.static', filename='pgagent_jobs.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'pgagent_jobs.html'}),
       hasSQL: true,
       hasDepends: false,
       hasStatistics: true,

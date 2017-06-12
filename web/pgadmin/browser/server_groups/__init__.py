@@ -13,7 +13,7 @@ import simplejson as json
 from abc import ABCMeta, abstractmethod
 
 import six
-from flask import request, render_template, make_response, jsonify
+from flask import request, render_template, make_response, jsonify, current_app
 from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.browser import BrowserPluginModule

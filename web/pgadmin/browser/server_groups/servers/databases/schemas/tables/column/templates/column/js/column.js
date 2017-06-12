@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define('pgadmin.node.column', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   if (!pgBrowser.Nodes['coll-column']) {
     var databases = pgBrowser.Nodes['coll-column'] =
@@ -92,7 +93,7 @@ define([
       hasSQL:  true,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
-      dialogHelp: '{{ url_for('help.static', filename='column_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
       canDrop: function(itemData, item, data){
         if (pgBrowser.Nodes['schema'].canChildDrop.apply(this, [itemData, item, data])) {
           var t = pgBrowser.tree, i = item, d = itemData, parents = [];

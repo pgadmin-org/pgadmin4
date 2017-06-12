@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.synonym', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {
     var databases = pgAdmin.Browser.Nodes['coll-synonym'] =
@@ -16,7 +17,7 @@ define([
   if (!pgBrowser.Nodes['synonym']) {
     pgAdmin.Browser.Nodes['synonym'] = pgBrowser.Node.extend({
       type: 'synonym',
-      dialogHelp: '{{ url_for('help.static', filename='synonym_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'synonym_dialog.html'}),
       label: gettext('Synonym'),
       collection_type: 'coll-synonym',
       hasSQL: true,

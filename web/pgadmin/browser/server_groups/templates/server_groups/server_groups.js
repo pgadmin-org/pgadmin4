@@ -1,13 +1,13 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'pgadmin', 'backbone',
-  'pgadmin.browser', 'pgadmin.browser.node'
-], function(gettext, $, _, pgAdmin, Backbone) {
+define('pgadmin.node.server-group', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin',
+  'backbone', 'pgadmin.browser', 'pgadmin.browser.node'
+], function(gettext, url_for, $, _, pgAdmin, Backbone) {
 
   if (!pgAdmin.Browser.Nodes['server-group']) {
     pgAdmin.Browser.Nodes['server-group'] = pgAdmin.Browser.Node.extend({
       parent_type: null,
       type: 'server-group',
-      dialogHelp: '{{ url_for('help.static', filename='server_group_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'server_group_dialog.html'}),
       label: gettext('Server Group'),
       width: '350px',
       height: '250px',

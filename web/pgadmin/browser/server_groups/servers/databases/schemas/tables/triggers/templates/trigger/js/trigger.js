@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define('pgadmin.node.trigger', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   var CustomSwitchControl = Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
@@ -43,7 +44,7 @@ define([
       width: '650px',
       sqlAlterHelp: 'sql-altertrigger.html',
       sqlCreateHelp: 'sql-createtrigger.html',
-      dialogHelp: '{{ url_for('help.static', filename='trigger_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'trigger_dialog.html'}),
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

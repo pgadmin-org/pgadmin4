@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.node.pga_jobstep',
-  'pgadmin.node.pga_schedule'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
+define('pgadmin.node.pga_job', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     var pga_jobs = pgBrowser.Nodes['coll-pga_job'] =
@@ -19,7 +19,7 @@ define([
     pgBrowser.Nodes['pga_job'] = pgBrowser.Node.extend({
       parent_type: 'server',
       type: 'pga_job',
-      dialogHelp: '{{ url_for('help.static', filename='pgagent_jobs.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'pgagent_jobs.html'}),
       hasSQL: true,
       hasDepends: false,
       hasStatistics: true,

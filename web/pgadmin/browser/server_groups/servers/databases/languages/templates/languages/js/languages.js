@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.language', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {
@@ -22,7 +22,7 @@ define([
       type: 'language',
       sqlAlterHelp: 'sql-alterlanguage.html',
       sqlCreateHelp: 'sql-createlanguage.html',
-      dialogHelp: '{{ url_for('help.static', filename='language_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'language_dialog.html'}),
       label: gettext('Language'),
       hasSQL:  true,
       canDrop: true,

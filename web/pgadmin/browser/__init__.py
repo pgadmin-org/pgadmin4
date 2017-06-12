@@ -12,7 +12,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 import six
 from flask import current_app, render_template, url_for, make_response, flash,\
-    Response, request
+    Response
 from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
@@ -152,6 +152,7 @@ class BrowserModule(PgAdminModule):
 
         for name, script in [
             ['pgadmin.browser', 'js/browser'],
+            ['pgadmin.browser.endpoints', 'js/endpoints'],
             ['pgadmin.browser.error', 'js/error']]:
             scripts.append({
                 'name': name,
@@ -194,6 +195,13 @@ class BrowserModule(PgAdminModule):
             gettext("Show system objects?"), 'boolean', False,
             category_label=gettext('Display')
         )
+
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return ['browser.index', 'browser.nodes']
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
@@ -538,6 +546,14 @@ def browser_js():
         200, {'Content-Type': 'application/x-javascript'})
 
 
+@blueprint.route("/js/endpoints.js")
+def exposed_urls():
+    return make_response(
+        render_template('browser/js/endpoints.js'),
+        200, {'Content-Type': 'application/x-javascript'}
+    )
+
+
 @blueprint.route("/js/error.js")
 @login_required
 def error_js():
@@ -605,11 +621,12 @@ def browser_css():
         200, {'Content-Type': 'text/css'})
 
 
-@blueprint.route("/nodes/")
+@blueprint.route("/nodes/", endpoint="nodes")
 @login_required
 def get_nodes():
     """Build a list of treeview nodes from the child nodes."""
     nodes = []
     for submodule in current_blueprint.submodules:
         nodes.extend(submodule.get_nodes())
+
     return make_json_response(data=nodes)

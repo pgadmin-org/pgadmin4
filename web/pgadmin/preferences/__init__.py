@@ -15,7 +15,6 @@ side and for getting/setting preferences.
 import simplejson as json
 from flask import render_template, url_for, Response, request, session
 from flask_babel import gettext
-from flask_login import current_user
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
@@ -56,19 +55,15 @@ class PreferencesModule(PgAdminModule):
             ]
         }
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return ['preferences.index', 'preferences.get_by_name']
+
 
 blueprint = PreferencesModule(MODULE_NAME, __name__)
-
-
-@blueprint.route("/")
-@login_required
-def index():
-    """Render the preferences dialog."""
-    return render_template(
-        MODULE_NAME + "/index.html",
-        username=current_user.email,
-        _=gettext
-    )
 
 
 @blueprint.route("/preferences.js")
@@ -80,8 +75,8 @@ def script():
                     mimetype="application/javascript")
 
 
-@blueprint.route("/preferences", methods=["GET"])
-@blueprint.route("/preferences/<module>/<preference>")
+@blueprint.route("/", methods=["GET"], endpoint='index')
+@blueprint.route("/<module>/<preference>", endpoint='get_by_name')
 @login_required
 def preferences(module=None, preference=None):
     """Fetch all/or requested preferences of pgAdmin IV."""
@@ -147,7 +142,7 @@ def preferences(module=None, preference=None):
     )
 
 
-@blueprint.route("/preferences/<int:pid>", methods=["PUT"])
+@blueprint.route("/<int:pid>", methods=["PUT"], endpoint="update")
 @login_required
 def save(pid):
     """

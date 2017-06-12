@@ -1,7 +1,7 @@
 define([
-  'jquery', 'alertify', 'pgadmin', 'underscore', 'backform',
-  'pgadmin.browser', 'sources/gettext', 'pgadmin.backform'
-], function($, alertify, pgAdmin, _, Backform, pgBrowser, gettext) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
+  'pgadmin', 'backform', 'pgadmin.browser', 'pgadmin.backform'
+], function(gettext, url_for, $, _, alertify, pgAdmin, Backform, pgBrowser) {
   // This defines the Preference/Options Dialog for pgAdmin IV.
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
@@ -52,7 +52,7 @@ define([
           var changed = {},
               preferences = this.preferences = new (Backbone.Collection.extend({
                 model: PreferenceModel,
-                url: "{{ url_for('preferences.preferences') }}",
+                url: url_for('preferences.index'),
                 updateAll: function() {
                   // We will send only the modified data to the server.
                   for (var key in changed) {
@@ -207,7 +207,7 @@ define([
                     };
                     return 'switch';
                 case 'integer':
-                  return 'integer';
+                  return 'numeric';
                 case 'numeric':
                   return 'numeric';
                 case 'date':
@@ -345,7 +345,7 @@ define([
                 selectable: true,
                 expand: true,
                 ajax: {
-                  url: "{{ url_for('preferences.preferences') }}"
+                  url: url_for('preferences.index')
                 }
               });
 
@@ -354,15 +354,20 @@ define([
             setup: function() {
               return {
                 buttons:[{
-                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: gettext('Preferences'),
-                    url: '{{ url_for('help.static', filename='preferences.html') }}'}
-                  },{
-                    text: gettext('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
-                  },{
-                    text: gettext('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                  text: '', key: 27,
+                  className: 'btn btn-default pull-left fa fa-lg fa-question',
+                  attrs:{
+                    name:'dialog_help', type:'button',
+                    label: gettext('Preferences'),
+                    url: url_for(
+                      'help.static', {'filename': 'preferences.html'}
+                    )
                   }
-                ],
+                },{
+                  text: gettext('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
+                },{
+                  text: gettext('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                }],
                 focus: { element: 0 },
                 options: {
                   padding: !1,

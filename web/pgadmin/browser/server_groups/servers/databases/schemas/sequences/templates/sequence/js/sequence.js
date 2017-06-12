@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.sequence', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for sequence collection
   if (!pgBrowser.Nodes['coll-sequence']) {
@@ -21,7 +22,7 @@ define([
       type: 'sequence',
       sqlAlterHelp: 'sql-altersequence.html',
       sqlCreateHelp: 'sql-createsequence.html',
-      dialogHelp: '{{ url_for('help.static', filename='sequence_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'sequence_dialog.html'}),
       label: gettext('Sequence'),
       collection_type: 'coll-sequence',
       hasSQL: true,

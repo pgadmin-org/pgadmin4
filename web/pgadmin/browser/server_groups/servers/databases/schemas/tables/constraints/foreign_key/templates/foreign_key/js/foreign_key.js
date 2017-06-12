@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
+define('pgadmin.node.foreign_key', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   var formatNode = function(opt) {
         if (!opt.id) {
@@ -604,7 +605,7 @@ define([
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
-      dialogHelp: '{{ url_for('help.static', filename='foreign_key_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'foreign_key_dialog.html'}),
       hasSQL: true,
       hasDepends: false,
       parent_type: 'table',

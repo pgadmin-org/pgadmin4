@@ -1,7 +1,7 @@
-define([
-  'sources/gettext', 'underscore', 'pgadmin.browser',
+define('pgadmin.node.resource_group', [
+  'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
   'pgadmin.browser.collection'
-], function(gettext, _, pgBrowser) {
+], function(gettext, url_for, _, pgBrowser) {
 
   // Extend the browser's collection class for resource group collection
   if (!pgBrowser.Nodes['coll-resource_group']) {
@@ -19,7 +19,7 @@ define([
     pgBrowser.Nodes['resource_group'] = pgBrowser.Node.extend({
       parent_type: 'server',
       type: 'resource_group',
-      dialogHelp: "{{ url_for('help.static', filename='resource_group_dialog.html') }}",
+      dialogHelp: url_for('help.static', {'ilename': 'resource_group_dialog.html'}),
       label: gettext('Resource Group'),
       hasSQL:  true,
       canDrop: true,

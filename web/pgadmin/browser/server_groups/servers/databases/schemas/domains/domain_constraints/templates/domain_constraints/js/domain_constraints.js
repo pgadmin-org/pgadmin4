@@ -1,8 +1,9 @@
 // Domain Constraint Module: Collection and Node
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.domain_constraints', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Define Domain Constraint Collection Node
   if (!pgBrowser.Nodes['coll-domain_constraints']) {
@@ -21,7 +22,7 @@ define([
       type: 'domain_constraints',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-alterdomain.html',
-      dialogHelp: '{{ url_for('help.static', filename='domain_constraint_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'domain_constraint_dialog.html'}),
       label: gettext('Domain Constraints'),
       collection_type: 'coll-domain_constraints',
       hasSQL: true,

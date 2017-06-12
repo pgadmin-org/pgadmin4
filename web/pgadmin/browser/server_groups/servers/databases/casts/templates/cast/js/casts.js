@@ -1,7 +1,7 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+define('pgadmin.node.cast', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
     // Extend the collection class for cast
     if (!pgBrowser.Nodes['coll-cast']) {
       var casts = pgAdmin.Browser.Nodes['coll-cast'] =
@@ -20,7 +20,7 @@ define([
         type: 'cast',
         sqlAlterHelp: 'sql-altercast.html',
         sqlCreateHelp: 'sql-createcast.html',
-        dialogHelp: '{{ url_for('help.static', filename='cast_dialog.html') }}',
+        dialogHelp: url_for('help.static', {'filename': 'cast_dialog.html'}),
         canDrop: true,
         canDropCascade: true,
         label: gettext('Cast'),

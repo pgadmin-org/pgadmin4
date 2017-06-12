@@ -44,6 +44,13 @@ class SettingsModule(PgAdminModule):
             ]
         }
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return ['settings.store', 'settings.store_bulk']
+
 
 blueprint = SettingsModule(MODULE_NAME, __name__)
 
@@ -82,8 +89,8 @@ def script():
                     mimetype="application/javascript")
 
 
-@blueprint.route("/store", methods=['POST'])
-@blueprint.route("/store/<setting>/<value>", methods=['GET'])
+@blueprint.route("/store", methods=['POST'], endpoint='store_bulk')
+@blueprint.route("/store/<setting>/<value>", methods=['PUT'], endpoint='store')
 @login_required
 def store(setting=None, value=None):
     """Store a configuration setting, or if this is a POST request and a

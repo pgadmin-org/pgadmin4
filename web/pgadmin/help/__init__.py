@@ -101,6 +101,12 @@ class HelpModule(PgAdminModule):
                 'Path to the EDB Advanced Server documentation. $VERSION$ will be replaced with the major.minor version number.')
         )
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns the list of URLs exposed to the client.
+        """
+        return ['help.static']
+
 
 # Initialise the module
 blueprint = HelpModule(MODULE_NAME, __name__, static_url_path='/help',

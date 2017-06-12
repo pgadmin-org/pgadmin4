@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define('pgadmin.node.index', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   if (!pgBrowser.Nodes['coll-index']) {
     var databases = pgAdmin.Browser.Nodes['coll-index'] =
@@ -11,7 +12,7 @@ define([
         type: 'coll-index',
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
-        dialogHelp: '{{ url_for('help.static', filename='index_dialog.html') }}',
+        dialogHelp: url_for('help.static', {'filename': 'index_dialog.html'}),
         columns: ['name', 'description'],
         hasStatistics: true,
         statsPrettifyFields: ['Size', 'Index size']

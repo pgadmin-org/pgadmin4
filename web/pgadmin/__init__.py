@@ -87,6 +87,16 @@ class PgAdmin(Flask):
         return messages
 
     @property
+    def exposed_endpoint_url_map(self):
+        for rule in current_app.url_map.iter_rules('static'):
+            yield rule.endpoint, rule.rule
+
+        for module in self.submodules:
+            for endpoint in module.exposed_endpoints:
+                for rule in current_app.url_map.iter_rules(endpoint):
+                    yield rule.endpoint, rule.rule
+
+    @property
     def javascripts(self):
         scripts = []
         scripts_names = []

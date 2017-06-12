@@ -1,7 +1,8 @@
-define([
-    'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin', 'moment',
-    'pgadmin.browser', 'alertify', 'backform', 'pgadmin.backform'
-], function(gettext, $, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
+define('pgadmin.node.pga_schedule', [
+    'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+    'underscore.string', 'pgadmin', 'moment', 'pgadmin.browser', 'alertify',
+    'backform', 'pgadmin.backform'
+], function(gettext, url_for, $, _, S, pgAdmin, moment, pgBrowser, Alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-pga_schedule']) {
     pgBrowser.Nodes['coll-pga_schedule'] =
@@ -181,7 +182,7 @@ define([
     pgBrowser.Nodes['pga_schedule'] = pgBrowser.Node.extend({
       parent_type: 'pga_job',
       type: 'pga_schedule',
-      dialogHelp: '{{ url_for('help.static', filename='pgagent_jobs.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'pgagent_jobs.html'}),
       hasSQL: true,
       hasDepends: false,
       hasStatistics: false,

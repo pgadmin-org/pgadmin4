@@ -1,9 +1,12 @@
 /* Create and Register Procedure Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.node.edbfunc',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, EdbFunction) {
+define('pgadmin.node.edbproc', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, EdbFunction
+) {
 
   if (!pgBrowser.Nodes['coll-edbproc']) {
     pgAdmin.Browser.Nodes['coll-edbproc'] =
@@ -20,7 +23,7 @@ define([
   if (!pgBrowser.Nodes['edbproc']) {
     pgAdmin.Browser.Nodes['edbproc'] = pgBrowser.Node.extend({
       type: 'edbproc',
-      dialogHelp: '{{ url_for('help.static', filename='edbproc_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'edbproc_dialog.html'}),
       label: gettext('Procedure'),
       collection_type: 'coll-edbproc',
       hasDepends: true,

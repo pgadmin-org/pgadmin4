@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.package', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {
@@ -18,7 +19,7 @@ define([
   if (!pgBrowser.Nodes['package']) {
     pgBrowser.Nodes['package'] = pgBrowser.Node.extend({
       type: 'package',
-      dialogHelp: '{{ url_for('help.static', filename='package_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'package_dialog.html'}),
       label: gettext('Package'),
       collection_type: 'coll-package',
       hasSQL: true,

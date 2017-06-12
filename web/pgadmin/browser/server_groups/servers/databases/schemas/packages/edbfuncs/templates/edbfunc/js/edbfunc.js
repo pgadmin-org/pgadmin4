@@ -1,9 +1,9 @@
 /* Create and Register Function Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.edbfunc', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-edbfunc']) {
     pgBrowser.Nodes['coll-edbfunc'] =
@@ -18,7 +18,7 @@ define([
   if (!pgBrowser.Nodes['edbfunc']) {
     pgBrowser.Nodes['edbfunc'] = pgBrowser.Node.extend({
       type: 'edbfunc',
-      dialogHelp: '{{ url_for('help.static', filename='edbfunc_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'edbfunc_dialog.html'}),
       label: gettext('Function'),
       collection_type: 'coll-edbfunc',
       hasDepends: true,

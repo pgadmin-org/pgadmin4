@@ -1,8 +1,9 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.node.column', 'pgadmin.node.constraints'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.table', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.node.column',
+  'pgadmin.node.constraints'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-table']) {
     var databases = pgBrowser.Nodes['coll-table'] =
@@ -31,7 +32,7 @@ define([
                             'Dead tuple length', 'Free space'],
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
-      dialogHelp: '{{ url_for('help.static', filename='table_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'table_dialog.html'}),
       parent_type: ['schema', 'catalog'],
       hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
       height: '95%',

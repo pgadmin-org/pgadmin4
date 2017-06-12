@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.fts_template', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {
@@ -21,7 +22,7 @@ define([
       type: 'fts_template',
       sqlAlterHelp: 'sql-altertstemplate.html',
       sqlCreateHelp: 'sql-createtstemplate.html',
-      dialogHelp: '{{ url_for('help.static', filename='fts_template_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'fts_template_dialog.html'}),
       canDrop: true,
       canDropCascade: true,
       label: gettext('FTS Template'),

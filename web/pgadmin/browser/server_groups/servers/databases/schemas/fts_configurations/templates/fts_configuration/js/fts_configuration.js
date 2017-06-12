@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.fts_configuration', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Model for tokens control
   var TokenModel = pgAdmin.Browser.Node.Model.extend({
@@ -415,7 +416,7 @@ define([
       type: 'fts_configuration',
       sqlAlterHelp: 'sql-altertsconfig.html',
       sqlCreateHelp: 'sql-createtsconfig.html',
-      dialogHelp: '{{ url_for('help.static', filename='fts_configuration_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'fts_configuration_dialog.html'}),
       canDrop: true,
       canDropCascade: true,
       label: gettext('FTS Configuration'),

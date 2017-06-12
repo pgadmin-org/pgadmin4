@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.collation', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-collation']) {
     var databases = pgAdmin.Browser.Nodes['coll-collation'] =
@@ -18,7 +19,7 @@ define([
       type: 'collation',
       sqlAlterHelp: 'sql-altercollation.html',
       sqlCreateHelp: 'sql-createcollation.html',
-      dialogHelp: '{{ url_for('help.static', filename='collation_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'collation_dialog.html'}),
       label: gettext('Collation'),
       collection_type: 'coll-collation',
       hasSQL: true,

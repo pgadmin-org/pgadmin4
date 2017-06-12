@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser) {
+define('pgadmin.node.extension', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser) {
 
   /*
    * Create and Add an Extension Collection into nodes
@@ -40,7 +41,7 @@ define([
       type: 'extension',
       sqlAlterHelp: 'sql-alterextension.html',
       sqlCreateHelp: 'sql-createextension.html',
-      dialogHelp: '{{ url_for('help.static', filename='extension_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'extension_dialog.html'}),
       hasSQL: true,
       hasDepends: true,
       canDrop: true,

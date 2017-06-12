@@ -1,6 +1,6 @@
 define(
   'pgadmin.browser', [
-    'sources/gettext', 'require', 'jquery', 'underscore', 'underscore.string',
+    'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
     'bootstrap', 'pgadmin', 'alertify', 'codemirror',
     'sources/check_node_visibility', 'codemirror/mode/sql/sql', 'wcdocker',
     'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
@@ -9,7 +9,7 @@ define(
     'pgadmin.browser.error', 'pgadmin.browser.frame',
     'pgadmin.browser.node', 'pgadmin.browser.collection'
   ], function(
-    gettext, require, $, _, S, Bootstrap, pgAdmin, Alertify,
+    gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
     CodeMirror, checkNodeVisibility
 ) {
 
@@ -55,7 +55,7 @@ define(
     function(b) {
       $('#tree').aciTree({
         ajax: {
-          url: '{{ url_for('browser.get_nodes') }}',
+          url: url_for('browser.nodes'),
           converters: {
             'text json': processTreeData,
           }
@@ -86,7 +86,7 @@ define(
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
-    URL: '{{ url_for('browser.index') }}',
+    URL: url_for('browser.index'),
     // We do have docker of type wcDocker to take care of different
     // containers. (i.e. panels, tabs, frames, etc.)
     docker:null,
@@ -313,7 +313,7 @@ define(
         settings = { setting: "Browser/Layout", value: state };
         $.ajax({
           type: 'POST',
-          url: "{{ url_for('settings.store') }}",
+          url: url_for('settings.store_bulk'),
           data: settings
         });
       }
@@ -551,7 +551,7 @@ define(
       // Ping the server every 5 minutes
       setInterval(function() {
         $.ajax({
-          url: '{{ url_for('misc.ping') }}',
+          url: url_for('misc.ping'),
           type:'POST',
           success: function() {},
           error: function() {}
@@ -753,7 +753,11 @@ define(
       var preference = null;
       $.ajax({
         async: false,
-        url: "{{ url_for('preferences.preferences') }}" +"/"+ module +"/"+ preference_name,
+        url: url_for(
+          'preferences.get_by_name', {
+            'module': module,
+            'preference': preference_name
+          }),
         success: function(res) {
           preference = res;
         },

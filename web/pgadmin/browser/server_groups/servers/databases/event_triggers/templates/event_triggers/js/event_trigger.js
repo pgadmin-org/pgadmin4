@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.event_trigger', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {
@@ -21,7 +22,7 @@ define([
       type: 'event_trigger',
       sqlAlterHelp: 'sql-altereventtrigger.html',
       sqlCreateHelp: 'sql-createeventtrigger.html',
-      dialogHelp: '{{ url_for('help.static', filename='event_trigger_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'event_trigger_dialog.html'}),
       label: gettext('Event Trigger'),
       hasSQL:  true,
       hasDepends: true,

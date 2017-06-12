@@ -1,9 +1,9 @@
 /* Create and Register Function Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.edbvar', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-edbvar']) {
     pgBrowser.Nodes['coll-edbvar'] =
@@ -18,7 +18,7 @@ define([
   if (!pgBrowser.Nodes['edbvar']) {
     pgBrowser.Nodes['edbvar'] = pgBrowser.Node.extend({
       type: 'edbvar',
-      dialogHelp: '{{ url_for('help.static', filename='edbvar_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'edbvar_dialog.html'}),
       label: gettext('Function'),
       collection_type: 'coll-edbvar',
       canEdit: false,

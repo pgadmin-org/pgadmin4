@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
+define('pgadmin.node.exclusion_constraint', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   var ExclusionConstraintColumnModel = pgBrowser.Node.Model.extend({
     defaults: {
@@ -606,7 +607,7 @@ define([
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
-      dialogHelp: '{{ url_for('help.static', filename='exclusion_constraint_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'exclusion_constraint_dialog.html'}),
       hasSQL: true,
       parent_type: 'table',
       canDrop: true,

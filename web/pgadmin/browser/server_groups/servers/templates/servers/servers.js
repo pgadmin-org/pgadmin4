@@ -1,7 +1,7 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.server', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['server']) {
 
@@ -39,7 +39,7 @@ define([
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server-group',
       type: 'server',
-      dialogHelp: '{{ url_for('help.static', filename='server_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'server_dialog.html'}),
       label: gettext('Server'),
       canDrop: true,
       hasStatistics: true,

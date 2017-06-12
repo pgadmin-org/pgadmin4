@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'backgrid', 'pgadmin.backgrid',
-  'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
+define('pgadmin.node.type', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'backgrid',
+  'pgadmin.backgrid', 'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-type']) {
     var databases = pgBrowser.Nodes['coll-type'] =
@@ -250,7 +250,7 @@ define([
       type: 'type',
       sqlAlterHelp: 'sql-altertype.html',
       sqlCreateHelp: 'sql-createtype.html',
-      dialogHelp: '{{ url_for('help.static', filename='type_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'type_dialog.html'}),
       label: gettext('Type'),
       collection_type: 'coll-type',
       hasSQL: true,

@@ -1,8 +1,9 @@
 // Check Constraint Module: Node
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
+define('pgadmin.node.check_constraints', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraints']) {
@@ -12,7 +13,7 @@ define([
       collection_type: 'coll-constraints',
       sqlAlterHelp: 'ddl-alter.html',
       sqlCreateHelp: 'ddl-constraints.html',
-      dialogHelp: '{{ url_for('help.static', filename='check_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'check_dialog.html'}),
       hasSQL: true,
       hasDepends: true,
       parent_type: ['table'],

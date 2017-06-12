@@ -1,4 +1,4 @@
-define([
+define('pgadmin.node.catalog_object', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
 ], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {

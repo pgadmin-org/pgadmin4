@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.fts_dictionary', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the browser's node model class to create a option/value pair
   var OptionLabelModel = pgAdmin.Browser.Node.Model.extend({
@@ -57,7 +58,7 @@ define([
       type: 'fts_dictionary',
       sqlAlterHelp: 'sql-altertsdictionary.html',
       sqlCreateHelp: 'sql-createtsdictionary.html',
-      dialogHelp: '{{ url_for('help.static', filename='fts_dictionary_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'fts_dictionary_dialog.html'}),
       canDrop: true,
       canDropCascade: true,
       label: gettext('FTS Dictionary'),

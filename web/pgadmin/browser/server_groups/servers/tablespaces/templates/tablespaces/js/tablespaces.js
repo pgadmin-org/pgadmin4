@@ -1,8 +1,9 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.node.ui', 'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.tablespace', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+  'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-tablespace']) {
     var databases = pgBrowser.Nodes['coll-tablespace'] =
@@ -22,7 +23,7 @@ define([
       type: 'tablespace',
       sqlAlterHelp: 'sql-altertablespace.html',
       sqlCreateHelp: 'sql-createtablespace.html',
-      dialogHelp: '{{ url_for('help.static', filename='tablespace_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'tablespace_dialog.html'}),
       label: gettext('Tablespace'),
       hasSQL:  true,
       canDrop: true,
@@ -178,7 +179,7 @@ define([
                      buttons: [{
                        text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
                        attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
-                       url: '{{ url_for('help.static', filename='move_objects.html') }}'}
+                       url: url_for('help.static', {'filename': 'move_objects.html'})}
                        },{
                        text: gettext('OK'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button'
                        },{

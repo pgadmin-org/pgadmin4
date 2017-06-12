@@ -1,8 +1,8 @@
 // Domain Module: Collection and Node.
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+define('pgadmin.node.domain', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Define Domain Collection Node
   if (!pgBrowser.Nodes['coll-domain']) {
@@ -88,7 +88,7 @@ define([
       type: 'domain',
       sqlAlterHelp: 'sql-alterdomain.html',
       sqlCreateHelp: 'sql-createdomain.html',
-      dialogHelp: '{{ url_for('help.static', filename='domain_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'domain_dialog.html'}),
       label: gettext('Domain'),
       collection_type: 'coll-domain',
       hasSQL: true,

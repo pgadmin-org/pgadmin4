@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'backform', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
+define('pgadmin.node.schema', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   // VacuumSettings Collection to display all settings parameters as Grid
   var VacuumCollectionControl = Backform.VacuumCollectionControl =
@@ -281,7 +281,7 @@ define([
       type: 'schema',
       sqlAlterHelp: 'sql-alterschema.html',
       sqlCreateHelp: 'sql-createschema.html',
-      dialogHelp: '{{ url_for('help.static', filename='schema_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'schema_dialog.html'}),
       label: gettext('Schema'),
       hasSQL:  true,
       canDrop: true,

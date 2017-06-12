@@ -1,9 +1,9 @@
 /* Create and Register Function Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.trigger_function', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-trigger_function']) {
     var trigger_functions = pgBrowser.Nodes['coll-trigger_function'] =
@@ -21,7 +21,7 @@ define([
       type: 'trigger_function',
       sqlAlterHelp: 'plpgsql-trigger.html',
       sqlCreateHelp: 'plpgsql-trigger.html',
-      dialogHelp: '{{ url_for('help.static', filename='trigger_function_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'trigger_function_dialog.html'}),
       label: gettext('Trigger function'),
       collection_type: 'coll-trigger_function',
       hasSQL: true,

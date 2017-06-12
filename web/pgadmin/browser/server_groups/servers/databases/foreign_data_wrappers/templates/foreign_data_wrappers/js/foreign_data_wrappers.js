@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.foreign_data_wrapper', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
     var OptionsModel = pgBrowser.Node.Model.extend({
@@ -56,7 +56,7 @@ define([
       type: 'foreign_data_wrapper',
       sqlAlterHelp: 'sql-alterforeigndatawrapper.html',
       sqlCreateHelp: 'sql-createforeigndatawrapper.html',
-      dialogHelp: '{{ url_for('help.static', filename='foreign_data_wrapper_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'foreign_data_wrapper_dialog.html'}),
       label: gettext('Foreign Data Wrapper'),
       hasSQL:  true,
       hasDepends: true,

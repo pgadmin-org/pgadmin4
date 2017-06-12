@@ -1,4 +1,4 @@
-define([
+define('pgadmin.node.foreign_server', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege'

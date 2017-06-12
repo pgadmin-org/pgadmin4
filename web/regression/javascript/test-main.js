@@ -37,6 +37,7 @@ require.config({
     'slickgrid': sourcesDir + 'vendor/slickgrid/slick.core',
     'slickgrid/slick.grid': sourcesDir + 'vendor/slickgrid/slick.grid',
     'translations': '/base/regression/javascript/fake_translations',
+    'pgadmin.browser.endpoints': '/base/regression/javascript/fake_endpoints',
     'sources': sourcesDir + 'js',
     'browser': '/base/pgadmin/browser/static/js'
   },

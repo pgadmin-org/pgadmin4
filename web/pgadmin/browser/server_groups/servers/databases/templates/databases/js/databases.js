@@ -1,8 +1,9 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
-], function(gettext, $, _, S, pgAdmin, pgBrowser, Alertify) {
+define('pgadmin.node.database', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.server.variable',
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     var databases = pgBrowser.Nodes['coll-database'] =
@@ -22,7 +23,7 @@ define([
       type: 'database',
       sqlAlterHelp: 'sql-alterdatabase.html',
       sqlCreateHelp: 'sql-createdatabase.html',
-      dialogHelp: '{{ url_for('help.static', filename='database_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'database_dialog.html'}),
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,

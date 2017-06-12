@@ -1,7 +1,7 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'codemirror'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+define('pgadmin.node.rule', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'codemirror'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
 
   /**
     Create and add a rule collection into nodes
@@ -38,7 +38,7 @@ define([
       type: 'rule',
       sqlAlterHelp: 'sql-alterrule.html',
       sqlCreateHelp: 'sql-createrule.html',
-      dialogHelp: '{{ url_for('help.static', filename='rule_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'rule_dialog.html'}),
       label: gettext('rule'),
       collection_type: 'coll-table',
       hasSQL:  true,

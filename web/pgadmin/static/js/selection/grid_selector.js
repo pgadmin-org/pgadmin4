@@ -1,8 +1,10 @@
 define(['jquery',
     'sources/selection/column_selector',
     'sources/selection/row_selector',
-    'sources/selection/range_selection_helper'],
-  function ($, ColumnSelector, RowSelector, RangeSelectionHelper) {
+    'sources/selection/range_selection_helper',
+    'sources/url_for'
+  ],
+  function ($, ColumnSelector, RowSelector, RangeSelectionHelper, url_for) {
     var Slick = window.Slick;
 
     var GridSelector = function (columnDefinitions) {
@@ -32,7 +34,7 @@ define(['jquery',
           'title="Select/Deselect All">' +
           '<br>' +
           columnDefinitions[0].name +
-          '<img class="select-all-icon" src="/static/img/select-all-icon.png">' +
+          '<img class="select-all-icon" src="' + url_for('static', {'filename': 'img/select-all-icon.png'}) + '"></img>'
         '</span>';
         return columnDefinitions;
       };

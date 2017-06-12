@@ -1,9 +1,9 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.backform', 'select2',
-  'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
-  'pgadmin.browser.server.variable'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
+define('pgadmin.node.role', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.backform', 'select2', 'pgadmin.browser.collection',
+  'pgadmin.browser.node.ui', 'pgadmin.browser.server.variable'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {
 
   if (!pgBrowser.Nodes['coll-role']) {
     var role = pgAdmin.Browser.Nodes['coll-role'] =
@@ -311,7 +311,7 @@ define([
       type: 'role',
       sqlAlterHelp: 'sql-alterrole.html',
       sqlCreateHelp: 'sql-createrole.html',
-      dialogHelp: '{{ url_for('help.static', filename='role_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'role_dialog.html'}),
       label: gettext('Login/Group Role'),
       hasSQL: true,
       canDrop: function(node, item) {

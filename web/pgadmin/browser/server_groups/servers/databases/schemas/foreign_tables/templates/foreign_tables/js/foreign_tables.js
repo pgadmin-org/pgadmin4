@@ -1,8 +1,9 @@
 /* Create and Register Foreign Table Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.foreign-table', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-foreign-table']) {
     var foreigntable = pgBrowser.Nodes['coll-foreign-table'] =
@@ -495,7 +496,7 @@ define([
       type: 'foreign-table',
       sqlAlterHelp: 'sql-alterforeigntable.html',
       sqlCreateHelp: 'sql-createforeigntable.html',
-      dialogHelp: '{{ url_for('help.static', filename='foreign_table_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'foreign_table_dialog.html'}),
       label: gettext('Foreign Table'),
       collection_type: 'coll-foreign-table',
       hasSQL: true,

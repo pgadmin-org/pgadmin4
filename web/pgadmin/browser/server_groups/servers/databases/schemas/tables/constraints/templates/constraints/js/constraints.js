@@ -1,4 +1,4 @@
-define([
+define('pgadmin.node.constraints', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection'{% for c in constraints %}, 'pgadmin.node.{{ c|safe }}'{%endfor%}
 ], function(gettext, $, _, S, pgAdmin, pgBrowser) {

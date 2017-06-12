@@ -54,12 +54,19 @@ class MiscModule(PgAdminModule):
                                  'value': lang})
 
         # Register options for the User language settings
-        language = self.misc_preference.register(
+        self.misc_preference.register(
             'miscellaneous', 'user_language',
             _("User language"), 'options', 'en',
             category_label=_('User language'),
             options=lang_options
         )
+
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return ['misc.ping']
 
 
 # Initialise the module

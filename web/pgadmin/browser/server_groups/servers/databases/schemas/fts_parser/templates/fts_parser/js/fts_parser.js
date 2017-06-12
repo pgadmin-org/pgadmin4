@@ -1,7 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+define('pgadmin.node.fts_parser', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Extend the collection class for fts parser
   if (!pgBrowser.Nodes['coll-fts_parser']) {
@@ -21,7 +22,7 @@ define([
       type: 'fts_parser',
       sqlAlterHelp: 'sql-altertsparser.html',
       sqlCreateHelp: 'sql-createtsparser.html',
-      dialogHelp: '{{ url_for('help.static', filename='fts_parser_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'fts_parser_dialog.html'}),
       canDrop: true,
       canDropCascade: true,
       label: gettext('FTS Parser'),

@@ -1,8 +1,8 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'alertify', 'pgadmin.browser', 'codemirror',
+define('pgadmin.node.mview', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'alertify', 'pgadmin.browser', 'codemirror',
   'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
+], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 
   /**
     Create and add a view collection into nodes
@@ -38,7 +38,7 @@ define([
       type: 'mview',
       sqlAlterHelp: 'sql-altermaterializedview.html',
       sqlCreateHelp: 'sql-creatematerializedview.html',
-      dialogHelp: '{{ url_for('help.static', filename='materialized_view_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'materialized_view_dialog.html'}),
       label: gettext('Materialized View'),
       hasSQL:  true,
       hasDepends: true,

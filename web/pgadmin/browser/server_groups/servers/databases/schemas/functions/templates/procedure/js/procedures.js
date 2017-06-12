@@ -1,9 +1,10 @@
 /* Create and Register Procedure Collection and Node. */
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.node.function',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify, Function) {
+define('pgadmin.node.procedure', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.node.function', 'pgadmin.browser.collection',
+  'pgadmin.browser.server.privilege'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Function) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     var procedures = pgAdmin.Browser.Nodes['coll-procedure'] =
@@ -24,7 +25,7 @@ define([
       type: 'procedure',
       sqlAlterHelp: 'sql-alterprocedure.html',
       sqlCreateHelp: 'sql-createprocedure.html',
-      dialogHelp: '{{ url_for('help.static', filename='procedure_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'procedure_dialog.html'}),
       label: gettext('Procedure'),
       collection_type: 'coll-procedure',
       hasSQL: true,

@@ -19,7 +19,8 @@ module.exports = function(config) {
       {pattern: 'regression/javascript/**/*.js', included: false},
       {pattern: 'pgadmin/static/vendor/**/*.js', included: false},
       {pattern: 'pgadmin/static/js/**/*.js', included: false},
-      {pattern: 'pgadmin/browser/static/js/**/*.js', included: false}
+      {pattern: 'pgadmin/browser/static/js/**/*.js', included: false},
+      {pattern: 'pgadmin/static/img/*.png', included: false}
     ],
 
 

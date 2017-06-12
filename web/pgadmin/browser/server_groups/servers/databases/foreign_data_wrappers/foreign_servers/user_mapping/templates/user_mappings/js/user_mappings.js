@@ -1,7 +1,7 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+define('pgadmin.node.user_mapping', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
     // Extend the browser's node model class to create a Options model
     var OptionsModel = pgAdmin.Browser.Node.Model.extend({
@@ -57,7 +57,7 @@ define([
       type: 'user_mapping',
       sqlAlterHelp: 'sql-alterusermapping.html',
       sqlCreateHelp: 'sql-createusermapping.html',
-      dialogHelp: '{{ url_for('help.static', filename='user_mapping_dialog.html') }}',
+      dialogHelp: url_for('help.static', {'filename': 'user_mapping_dialog.html'}),
       label: gettext('User Mapping'),
       hasSQL:  true,
       hasDepends: true,
