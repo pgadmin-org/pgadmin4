@@ -483,6 +483,7 @@ define('pgadmin.node.role', [
           mode: ['properties', 'edit', 'create'],
           control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
             keys: ['role'],
+            idAttribute: 'role',
             defaults: {
               role: undefined,
               admin: false
