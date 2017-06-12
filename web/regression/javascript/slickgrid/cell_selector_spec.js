@@ -7,71 +7,69 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(["jquery",
-    "slickgrid/slick.grid",
-    "sources/selection/xcell_selection_model",
-    "sources/slickgrid/cell_selector",
-    "sources/selection/range_selection_helper"
-  ],
-  function ($, SlickGrid, XCellSelectionModel, CellSelector, RangeSelectionHelper) {
-    describe("CellSelector", function () {
-      var container, columns, cellSelector, data, cellSelectionModel, grid;
-      beforeEach(function () {
-        container = $("<div></div>");
-        container.height(9999);
-        container.width(9999);
-        columns = [{
-          name: 'some-column-name',
-        }, {
-          name: 'second column',
-        }];
+import $ from "jquery";
+import SlickGrid from "slickgrid.grid";
+import XCellSelectionModel from "sources/selection/xcell_selection_model";
+import CellSelector from "sources/slickgrid/cell_selector";
+import RangeSelectionHelper from "sources/selection/range_selection_helper";
 
-        cellSelector = new CellSelector();
+describe("CellSelector", function () {
+  var container, columns, cellSelector, data, cellSelectionModel, grid;
+  beforeEach(function () {
+    container = $("<div></div>");
+    container.height(9999);
+    container.width(9999);
+    columns = [{
+      name: 'some-column-name',
+    }, {
+      name: 'second column',
+    }];
 
-        data = [];
-        for (var i = 0; i < 10; i++) {
-          data.push({'some-column-name': 'some-value-' + i, 'second column': 'second value ' + i});
-        }
-        grid = new SlickGrid(container, data, columns);
+    cellSelector = new CellSelector();
 
-        cellSelectionModel = new XCellSelectionModel();
-        grid.setSelectionModel(cellSelectionModel);
+    data = [];
+    for (var i = 0; i < 10; i++) {
+      data.push({'some-column-name': 'some-value-' + i, 'second column': 'second value ' + i});
+    }
+    grid = new Slick.Grid(container, data, columns);
 
-        grid.registerPlugin(cellSelector);
-        grid.invalidate();
+    cellSelectionModel = new XCellSelectionModel();
+    grid.setSelectionModel(cellSelectionModel);
 
-        $("body").append(container);
-      });
+    grid.registerPlugin(cellSelector);
+    grid.invalidate();
 
-      afterEach(function () {
-        $("body").find(container).remove();
-      });
+    $("body").append(container);
+  });
 
-      describe("when the user clicks or tabs to a cell", function () {
-        it("sets the selected range to that cell", function () {
-          var row = 1, column = 0;
-          $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
+  afterEach(function () {
+    $("body").find(container).remove();
+  });
 
-          var selectedRanges = cellSelectionModel.getSelectedRanges();
-          expect(selectedRanges.length).toBe(1);
-          expect(selectedRanges[0].fromCell).toBe(0);
-          expect(selectedRanges[0].toCell).toBe(0);
-          expect(selectedRanges[0].fromRow).toBe(1);
-          expect(selectedRanges[0].toRow).toBe(1);
-        });
+  describe("when the user clicks or tabs to a cell", function () {
+    it("sets the selected range to that cell", function () {
+      var row = 1, column = 0;
+      $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
 
-        it("deselects previously selected ranges", function () {
-          var row2Range = RangeSelectionHelper.rangeForRow(grid, 2);
-          var ranges = RangeSelectionHelper.addRange(cellSelectionModel.getSelectedRanges(),
-            row2Range);
-          cellSelectionModel.setSelectedRanges(ranges);
+      var selectedRanges = cellSelectionModel.getSelectedRanges();
+      expect(selectedRanges.length).toBe(1);
+      expect(selectedRanges[0].fromCell).toBe(0);
+      expect(selectedRanges[0].toCell).toBe(0);
+      expect(selectedRanges[0].fromRow).toBe(1);
+      expect(selectedRanges[0].toRow).toBe(1);
+    });
 
-          var row = 4, column = 1;
-          $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
+    it("deselects previously selected ranges", function () {
+      var row2Range = RangeSelectionHelper.rangeForRow(grid, 2);
+      var ranges = RangeSelectionHelper.addRange(cellSelectionModel.getSelectedRanges(),
+        row2Range);
+      cellSelectionModel.setSelectedRanges(ranges);
 
-          expect(RangeSelectionHelper.isRangeSelected(cellSelectionModel.getSelectedRanges(), row2Range))
-            .toBe(false);
-        });
-      });
+      var row = 4, column = 1;
+      $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
+
+      expect(RangeSelectionHelper.isRangeSelected(cellSelectionModel.getSelectedRanges(), row2Range))
+        .toBe(false);
     });
   });
+});

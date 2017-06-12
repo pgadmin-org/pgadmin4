@@ -22,16 +22,35 @@ if sys.path[0] != root:
 
 import config
 from pgadmin import create_app
+from pgadmin.utils import u, fs_encoding, file_quote
+
+if config.DEBUG:
+    from pgadmin.utils.javascript.javascript_bundler import JavascriptBundler, JsState
 
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
+##########################################################################
+# Sanity checks
+##########################################################################
+
+# Check if the database exists. If it does not, create it.
+if not os.path.isfile(config.SQLITE_PATH):
+    setupfile = os.path.join(
+        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))), u'setup.py'
+    )
+    exec(open(file_quote(setupfile), 'r').read())
 
 ##########################################################################
-# Server starup
+# Server startup
 ##########################################################################
+
+# Build Javascript files
+if config.DEBUG:
+    javascriptBundler = JavascriptBundler()
+    javascriptBundler.bundle()
 
 # Create the app!
 app = create_app()
@@ -40,6 +59,13 @@ if config.DEBUG:
     app.debug = True
 else:
     app.debug = False
+
+# respond to JS
+if config.DEBUG:
+    if javascriptBundler.report() == JsState.NONE:
+        app.logger.error("Unable to generate javascript")
+        app.logger.error("To run the app ensure that yarn install command runs successfully")
+        raise Exception("No generated javascript, aborting")
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the

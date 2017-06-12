@@ -178,6 +178,11 @@ _complete_bundle() {
     # run complete-bundle to copy the dependent libraries and frameworks and fix the rpaths
     ./complete-bundle.sh "$BUILDROOT/$APP_BUNDLE_NAME" || { echo complete-bundle.sh failed; exit 1; }
 
+    pushd $SOURCEDIR/web
+        yarn install
+        yarn run bundle
+    popd
+
     # copy the web directory to the bundle as it is required by runtime
     cp -r $SOURCEDIR/web "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/" || exit 1
     cd "$BUILDROOT/$APP_BUNDLE_NAME/Contents/Resources/web"

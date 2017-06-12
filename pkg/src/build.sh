@@ -69,6 +69,17 @@ do
     tar cf - $FILE | (cd src-build/$TARBALL_NAME; tar xf -)
 done
 
+pushd web
+    yarn install
+    yarn run bundle
+
+    for FILE in `ls -d pgAdmin/static/js/generated/*`
+    do
+        echo Adding $FILE
+        tar cf - $FILE | (cd ../src-build/$TARBALL_NAME/web; tar xf -)
+    done
+popd
+
 # Create the tarball
 echo Creating tarball...
 cd src-build

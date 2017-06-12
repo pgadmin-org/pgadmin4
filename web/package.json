@@ -1,10 +1,43 @@
 {
   "devDependencies": {
-    "jasmine-core": "^2.5.2",
-    "karma": "^1.5.0",
-    "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.2",
-    "karma-requirejs": "^1.1.0",
-    "requirejs": "^2.3.3"
+    "babel-core": "~6.24.0",
+    "babel-loader": "~6.4.1",
+    "babel-preset-es2015": "~6.24.0",
+    "babel-preset-react": "~6.23.0",
+    "enzyme": "~2.8.2",
+    "jasmine-core": "~2.5.2",
+    "karma": "~1.5.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-browserify": "~5.1.1",
+    "karma-jasmine": "~1.1.0",
+    "karma-jasmine-html-reporter": "~0.2.2",
+    "karma-phantomjs-launcher": "~1.0.2",
+    "karma-requirejs": "~1.1.0",
+    "karma-sourcemap-loader": "~0.3.7",
+    "karma-webpack": "~2.0.3",
+    "react-addons-test-utils": "~15.4.2",
+    "webpack": "~2.3.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.1",
+    "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015-without-strict": "~0.0.4",
+    "babelify": "~7.3.0",
+    "browserify": "~14.1.0",
+    "exports-loader": "~0.6.4",
+    "imports-loader": "git+https://github.com/webpack-contrib/imports-loader.git#44d6f48463b256a17c1ba6fd9b5cc1449b4e379d",
+    "react": "~15.4.2",
+    "react-dom": "~15.4.2",
+    "requirejs": "~2.3.3",
+    "underscore": "~1.8.3",
+    "watchify": "~3.9.0"
+  },
+  "scripts": {
+    "bundle": "yarn run webpack -- --optimize-minimize --config webpack.config.js",
+    "test:karma-once": "yarn run karma start -- --single-run",
+    "test:karma": "yarn run karma start",
+    "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
+    "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py"
   }
 }

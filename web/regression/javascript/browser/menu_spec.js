@@ -7,9 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(["browser/menu"
-], function () {
-  describe("MenuItem", function () {
+define([
+  'pgadmin',
+  'browser/menu',
+], function (pgAdmin) {
+  describe('MenuItem', function () {
     var MenuItem = pgAdmin.Browser.MenuItem;
     var menuItem;
 

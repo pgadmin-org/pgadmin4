@@ -238,6 +238,12 @@ REM Main function Ends
     CD "%WD%\web"
 
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    ECHO Install Javascript dependencies
+    yarn install
+    ECHO Bundle all Javascript
+    yarn run bundle
+
     XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 

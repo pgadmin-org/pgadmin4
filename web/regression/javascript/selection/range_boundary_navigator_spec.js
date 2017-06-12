@@ -1,8 +1,20 @@
-define(['sources/selection/range_boundary_navigator'], function (rangeBoundaryNavigator) {
+//////////////////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2017, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////////////////
 
-  describe("#getUnion", function () {
-    describe("when the ranges completely overlap", function () {
-      it("returns a list with that range", function () {
+import rangeBoundaryNavigator from 'sources/selection/range_boundary_navigator';
+import Slick from 'slickgrid';
+
+describe('RangeBoundaryNavigator', function () {
+
+  describe('#getUnion', function () {
+    describe('when the ranges completely overlap', function () {
+      it('returns a list with that range', function () {
         var ranges = [[1, 4], [1, 4], [1, 4]];
 
         var union = rangeBoundaryNavigator.getUnion(ranges);
