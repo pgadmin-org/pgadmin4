@@ -414,12 +414,9 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             for row in rset['rows']:
                 # We will fetch Full type name
-                fulltype = self.get_full_type(
-                    row['collnspname'], row['typname'],
-                    row['isdup'], row['attndims'], row['atttypmod']
-                )
 
-                typelist = ' '.join([row['attname'], fulltype])
+
+                typelist = ' '.join([row['attname'], row['fulltype']])
                 if not row['collname'] or (row['collname'] == 'default'
                                            and row['collnspname'] == 'pg_catalog'):
                     full_collate = ''
@@ -431,25 +428,26 @@ class TypeView(PGChildNodeView, DataTypeReader):
                 typelist += collate
                 properties_list.append(typelist)
 
+                is_tlength = False
+                is_precision = False
+                if 'elemoid' in row:
+                    is_tlength, is_precision, typeval = self.get_length_precision(row['elemoid'])
+
                 # Below logic will allow us to split length, precision from type name for grid
                 import re
                 # If we have length & precision both
-                matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                if matchObj:
+                if is_tlength and is_precision:
+                    matchObj = re.search(r'(\d+),(\d+)', row['fulltype'])
                     t_len = matchObj.group(1)
                     t_prec = matchObj.group(2)
-                else:
+                elif is_tlength:
                     # If we have length only
-                    matchObj = re.search(r'(\d+)', fulltype)
-                    if matchObj:
-                        t_len = matchObj.group(1)
-                        t_prec = None
-                    else:
-                        t_len = None
-                        t_prec = None
-
-                is_tlength = True if t_len else False
-                is_precision = True if t_prec else False
+                    matchObj = re.search(r'(\d+)', row['fulltype'])
+                    t_len = matchObj.group(1)
+                    t_prec = None
+                else:
+                    t_len = None
+                    t_prec = None
 
                 type_name = DataTypeReader.parse_type_name(row['typname'])
 
@@ -461,7 +459,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                     'collation': full_collate, 'cltype': row['type'],
                     'tlength': t_len, 'precision': t_prec,
                     'is_tlength': is_tlength, 'is_precision': is_precision,
-                    'hasSqrBracket': row['hasSqrBracket']})
+                    'hasSqrBracket': row['hasSqrBracket'], 'fulltype': row['fulltype']})
 
             # Adding both results
             res['member_list'] = ', '.join(properties_list)
@@ -1152,7 +1150,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
         return data
 
-    def get_sql(self, gid, sid, data, scid, tid=None):
+    def get_sql(self, gid, sid, data, scid, tid=None, is_sql=False):
         """
         This function will genrate sql from model data
         """
@@ -1262,7 +1260,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
 
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']),
-                                  data=data, conn=self.conn)
+                                  data=data, conn=self.conn, is_sql=is_sql)
 
         return SQL, data['name'] if 'name' in data else old_data['name']
 
@@ -1324,7 +1322,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
             if data[k] == '-':
                 data[k] = None
 
-        SQL, name = self.get_sql(gid, sid, data, scid, tid=None)
+        SQL, name = self.get_sql(gid, sid, data, scid, tid=None, is_sql=True)
         # Most probably this is due to error
         if not isinstance(SQL, (str, unicode)):
             return SQL

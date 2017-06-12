@@ -44,7 +44,7 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {% if c.name and c.cltype %}
 {% if loop.index != 1 %},
 {% endif %}
-    {{conn|qtIdent(c.name)}} {{ GET_TYPE.CREATE_TYPE_SQL(conn, c.cltype, c.attlen, c.attprecision, c.hasSqrBracket) }}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval %} DEFAULT {{c.defval}}{% endif %}
+    {{conn|qtIdent(c.name)}} {% if is_sql %}{{c.displaytypname}}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, c.cltype, c.attlen, c.attprecision, c.hasSqrBracket) }}{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.attnotnull %} NOT NULL{% endif %}{% if c.defval %} DEFAULT {{c.defval}}{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}

@@ -343,21 +343,26 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             data['isdup'], data['attndims'], data['atttypmod']
         )
 
+        length = False
+        precision = False
+        if 'elemoid' in data:
+            length, precision, typeval = self.get_length_precision(data['elemoid'])
+
         import re
         # If we have length & precision both
-        matchObj = re.search(r'(\d+),(\d+)', fulltype)
-        if matchObj:
+
+        if length and precision:
+            matchObj = re.search(r'(\d+),(\d+)', fulltype)
             data['attlen'] = matchObj.group(1)
             data['attprecision'] = matchObj.group(2)
-        else:
+        elif length:
             # If we have length only
             matchObj = re.search(r'(\d+)', fulltype)
-            if matchObj:
-                data['attlen'] = matchObj.group(1)
-                data['attprecision'] = None
-            else:
-                data['attlen'] = None
-                data['attprecision'] = None
+            data['attlen'] = matchObj.group(1)
+            data['attprecision'] = None
+        else:
+            data['attlen'] = None
+            data['attprecision'] = None
 
         # We need to fetch inherited tables for each table
         SQL = render_template("/".join([self.template_path,
@@ -750,7 +755,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, scid, tid, clid, data):
+    def get_sql(self, scid, tid, clid, data, is_sql=False):
         """
         This function will genrate sql from model data
         """
@@ -819,7 +824,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                                                   self.acl)
             # If the request for new object which do not have did
             SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn)
+                                  data=data, conn=self.conn, is_sql=is_sql)
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
@@ -863,7 +868,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             # We will add table & schema as well
             data = self._formatter(scid, tid, clid, data)
 
-            SQL, name = self.get_sql(scid, tid, None, data)
+            SQL, name = self.get_sql(scid, tid, None, data, is_sql=True)
             if not isinstance(SQL, (str, unicode)):
                 return SQL
 

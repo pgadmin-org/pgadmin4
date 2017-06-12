@@ -2,6 +2,7 @@ SELECT att.attname as name, att.*, def.*, pg_catalog.pg_get_expr(def.adbin, def.
         CASE WHEN att.attndims > 0 THEN 1 ELSE 0 END AS isarray,
         format_type(ty.oid,NULL) AS typname,
         format_type(ty.oid,att.atttypmod) AS displaytypname,
+        CASE WHEN ty.typelem > 0 THEN ty.typelem ELSE ty.oid END as elemoid,
         tn.nspname as typnspname, et.typname as elemtypname,
         ty.typstorage AS defaultstorage, cl.relname, na.nspname,
         quote_ident(na.nspname) || '.' || quote_ident(cl.relname) AS parent_tbl,

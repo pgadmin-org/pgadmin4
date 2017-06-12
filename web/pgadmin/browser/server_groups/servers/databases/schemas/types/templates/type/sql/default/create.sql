@@ -8,7 +8,7 @@ CREATE TYPE {{ conn|qtIdent(data.schema, data.name) }};
 {###  Composite Type ###}
 {% if data and data.typtype == 'c' %}
 CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else %}{{ conn|qtIdent(data.name) }}{% endif %} AS
-({{"\n\t"}}{% if data.composite %}{% for d in data.composite %}{% if loop.index != 1 %},{{"\n\t"}}{% endif %}{{ conn|qtIdent(d.member_name) }} {{ GET_TYPE.CREATE_TYPE_SQL(conn, d.cltype, d.tlength, d.precision, d.hasSqrBracket) }}{% if d.collation %} COLLATE {{d.collation}}{% endif %}{% endfor %}{% endif %}{{"\n"}});
+({{"\n\t"}}{% if data.composite %}{% for d in data.composite %}{% if loop.index != 1 %},{{"\n\t"}}{% endif %}{{ conn|qtIdent(d.member_name) }} {% if is_sql %}{{ d.fulltype }}{% else %}{{ GET_TYPE.CREATE_TYPE_SQL(conn, d.cltype, d.tlength, d.precision, d.hasSqrBracket) }}{% endif %}{% if d.collation %} COLLATE {{d.collation}}{% endif %}{% endfor %}{% endif %}{{"\n"}});
 {% endif %}
 {###  Enum Type ###}
 {% if data and data.typtype == 'e' %}

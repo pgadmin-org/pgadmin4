@@ -103,25 +103,11 @@ class DataTypeReader:
                 min_val = 0
                 max_val = 0
 
-                # Check against PGOID for specific type
+                # Check if the type will have length and precision or not
                 if row['elemoid']:
-                    if row['elemoid'] in (1560, 1561, 1562, 1563, 1042, 1043,
-                                          1014, 1015):
-                        typeval = 'L'
-                    elif row['elemoid'] in (1083, 1114, 1115, 1183, 1184, 1185,
-                                            1186, 1187, 1266, 1270):
-                        typeval = 'D'
-                    elif row['elemoid'] in (1231, 1700):
-                        typeval = 'P'
-                    else:
-                        typeval = ' '
+                    length, precision, typeval = self.get_length_precision(row['elemoid'])
 
-                # Set precision & length/min/max values
-                if typeval == 'P':
-                    precision = True
-
-                if precision or typeval in ('L', 'D'):
-                    length = True
+                if length:
                     min_val = 0 if typeval == 'D' else 1
                     if precision:
                         max_val = 1000
@@ -142,6 +128,34 @@ class DataTypeReader:
             return False, str(e)
 
         return True, res
+
+    @staticmethod
+    def get_length_precision(elemoid):
+        precision = False
+        length = False
+        typeval = ''
+
+        # Check against PGOID for specific type
+        if elemoid:
+            if elemoid in (1560, 1561, 1562, 1563, 1042, 1043,
+                                  1014, 1015):
+                typeval = 'L'
+            elif elemoid in (1083, 1114, 1115, 1183, 1184, 1185,
+                                    1186, 1187, 1266, 1270):
+                typeval = 'D'
+            elif elemoid in (1231, 1700):
+                typeval = 'P'
+            else:
+                typeval = ' '
+
+        # Set precision & length/min/max values
+        if typeval == 'P':
+            precision = True
+
+        if precision or typeval in ('L', 'D'):
+            length = True
+
+        return length, precision, typeval
 
     def get_full_type(self, nsp, typname, isDup, numdims, typmod):
         """

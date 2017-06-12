@@ -3,7 +3,7 @@
 CREATE FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}(
 {% if data.columns %}
 {% for c in data.columns %}
-    {{conn|qtIdent(c.attname)}} {{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}} {% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}{% if c.attnotnull %}
+    {{conn|qtIdent(c.attname)}} {% if is_sql %}{{ c.fulltype }}{% else %}{{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}} {% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}{% endif %}{% if c.attnotnull %}
  NOT NULL{% else %} NULL{% endif %}
 {% if not loop.last %},
 {% endif %}{% endfor -%}{% endif %}

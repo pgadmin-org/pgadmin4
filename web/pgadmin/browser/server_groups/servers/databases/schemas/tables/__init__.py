@@ -652,20 +652,24 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                     column['isdup'], column['attndims'], column['atttypmod']
                 )
 
+                length = False
+                precision = False
+                if 'elemoid' in column:
+                    length, precision, typeval = self.get_length_precision(column['elemoid'])
+
                 # If we have length & precision both
-                matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                if matchObj:
+                if length and precision:
+                    matchObj = re.search(r'(\d+),(\d+)', fulltype)
                     column['attlen'] = matchObj.group(1)
                     column['attprecision'] = matchObj.group(2)
-                else:
+                elif length:
                     # If we have length only
                     matchObj = re.search(r'(\d+)', fulltype)
-                    if matchObj:
-                        column['attlen'] = matchObj.group(1)
-                        column['attprecision'] = None
-                    else:
-                        column['attlen'] = None
-                        column['attprecision'] = None
+                    column['attlen'] = matchObj.group(1)
+                    column['attprecision'] = None
+                else:
+                    column['attlen'] = None
+                    column['attprecision'] = None
 
                 SQL = render_template("/".join([self.column_template_path,
                                                 'is_referenced.sql']),
@@ -2540,7 +2544,7 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         # If the request for new object which do not have did
         table_sql = render_template("/".join([self.template_path,
                                               'create.sql']),
-                                    data=data, conn=self.conn)
+                                    data=data, conn=self.conn, is_sql=True)
 
         # Add into main sql
         table_sql = re.sub('\n{2,}', '\n\n', table_sql)

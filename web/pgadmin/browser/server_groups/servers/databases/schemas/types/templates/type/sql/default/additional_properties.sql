@@ -2,7 +2,9 @@
 {% if type == 'c' %}
 SELECT attnum, attname, format_type(t.oid,NULL) AS typname, attndims, atttypmod, nsp.nspname,
     (SELECT COUNT(1) from pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup,
-    collname, nspc.nspname as collnspname, att.attrelid
+    collname, nspc.nspname as collnspname, att.attrelid,
+    format_type(t.oid, att.atttypmod) AS fulltype,
+    CASE WHEN t.typelem > 0 THEN t.typelem ELSE t.oid END as elemoid
 FROM pg_attribute att
     JOIN pg_type t ON t.oid=atttypid
     JOIN pg_namespace nsp ON t.typnamespace=nsp.oid

@@ -830,7 +830,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
         data['columns'] = col_data
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']), data=data)
+                                        'create.sql']), data=data, is_sql=True)
 
         sql_header = u"""-- FOREIGN TABLE: {0}
 
@@ -1093,10 +1093,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                 substr = c['fulltype'][c['fulltype'].find("(") + 1:c['fulltype'].find(")")]
                 typlen = substr.split(",")
                 if len(typlen) > 1:
-                    c['typlen'] = int(typlen[0])
-                    c['precision'] = int(typlen[1])
+                    c['typlen'] = int(typlen[0]) if typlen[0].isdigit() else typlen[0]
+                    c['precision'] = int(typlen[1]) if typlen[1].isdigit() else typlen[1]
                 else:
-                    c['typlen'] = int(typlen[0])
+                    c['typlen'] = int(typlen[0]) if typlen[0].isdigit() else typlen[0]
                     c['precision'] = None
 
             # Get formatted Column Options
