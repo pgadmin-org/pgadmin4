@@ -437,15 +437,15 @@ TODO LIST FOR BACKUP:
                setup:function() {
                 return {
                   buttons: [{
-                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                      text: '', className: 'btn btn-default pull-left fa fa-lg fa-info',
                       attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
-                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                      text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
                       attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'
                       }
                     },{
-                      text: gettext('Backup'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      text: gettext('Backup'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
                       'data-btn-name': 'backup'
                     },{
                       text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',
@@ -653,14 +653,14 @@ TODO LIST FOR BACKUP:
                setup:function() {
                 return {
                   buttons: [{
-                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                      text: '', className: 'btn btn-default pull-left fa fa-lg fa-info',
                       attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
-                      text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                      text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
                       attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
                       url: '{{ url_for('help.static', filename='backup_dialog.html') }}'}
                     },{
-                      text: gettext('Backup'), key: 27, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
+                      text: gettext('Backup'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
                       'data-btn-name': 'backup'
                     },{
                       text: gettext('Cancel'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button',

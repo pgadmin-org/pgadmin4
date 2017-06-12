@@ -375,7 +375,7 @@ define([
               setup: function() {
                 return {
                   buttons:[{
-                    text: gettext("OK"), key: 27, disable: true,
+                    text: gettext("OK"), key: 13, disable: true,
                     'data-btn-name': 'ok',
                     className:
                       "btn btn-primary fa fa-lg fa-save pg-alertify-button"

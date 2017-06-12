@@ -428,7 +428,7 @@ define([
           },
           setup:function() {
             return {
-              buttons:[{ text: "Debug", key: 27, className: "btn btn-primary" },
+              buttons:[{ text: "Debug", key: 13, className: "btn btn-primary" },
                        { text: "Cancel", key: 27, className: "btn btn-primary" }],
               options: { modal: 0, resizable: true }
             };

@@ -403,7 +403,7 @@ define('pgadmin.node.server', [
                  setup:function() {
                   return {
                     buttons: [{
-                      text: gettext('Ok'), key: 27, className: 'btn btn-primary', attrs:{name:'submit'}
+                      text: gettext('Ok'), key: 13, className: 'btn btn-primary', attrs:{name:'submit'}
                       },{
                       text: gettext('Cancel'), key: 27, className: 'btn btn-danger', attrs:{name:'cancel'}
                     }],

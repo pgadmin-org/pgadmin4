@@ -4,7 +4,12 @@ define([
   'backform', 'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'
 ], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
-  var wcDocker = window.wcDocker;
+  var wcDocker = window.wcDocker,
+    keyCode = {
+      ENTER: 13,
+      ESCAPE: 27,
+      F1: 112
+    };
 
   // It has already been defined.
   // Avoid running this script again.
@@ -869,10 +874,41 @@ define([
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
         content = $('<div tabindex="1"></div>')
-          .addClass('pg-prop-content col-xs-12'),
+          .addClass('pg-prop-content col-xs-12');
+
+        // Handle key press events for Cancel, save and help button
+        var handleKeyDown = function(event, context) {
+          // If called on panel other than node_props, return
+          if (panel && panel['_type'] !== 'node_props') return;
+
+          switch (event.which) {
+            case keyCode.ESCAPE:
+              closePanel();
+              break;
+            case keyCode.ENTER:
+              // Return if event is fired from child element
+              if (event.target !== context) return;
+              if (view && view.model && view.model.sessChanged()) {
+                onSave.call(this, view);
+              }
+              break;
+            case keyCode.F1:
+              onDialogHelp();
+              break;
+            default:
+                break;
+          }
+        }.bind(panel);
+
+        setTimeout(function() {
+          // Register key press events with panel element
+          panel.$container.find('.backform-tab').on("keydown", function(event) {
+              handleKeyDown(event, this);
+          });
+        }, 200); // wait for panel tab to render
 
         // Template function to create the status bar
-        createStatusBar = function(location){
+        var createStatusBar = function(location){
             var statusBar = $('<div></div>').addClass(
                       'pg-prop-status-bar'
                       ).appendTo(j);
@@ -1077,6 +1113,61 @@ define([
           iframe.openURL(that.dialogHelp);
         }.bind(panel),
 
+        onSave = function(view) {
+          var m = view.model,
+            d = m.toJSON(true),
+
+            // Generate a timer for the request
+            timer = setTimeout(function(){
+              $('.obj_properties').addClass('show_progress');
+            }, 1000);
+
+          if (d && !_.isEmpty(d)) {
+            m.save({}, {
+              attrs: d,
+              validate: false,
+              cache: false,
+              success: function() {
+                onSaveFunc.call();
+                // Hide progress cursor
+                $('.obj_properties').removeClass('show_progress');
+                clearTimeout(timer);
+
+                // Removing the node-prop property of panel
+                // so that we show updated data on panel
+                var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                  pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                  pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                  pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                  pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+
+                if(pnlProperties)
+                    $(pnlProperties).removeData('node-prop');
+                if(pnlSql)
+                    $(pnlSql).removeData('node-prop');
+                if(pnlStats)
+                    $(pnlStats).removeData('node-prop');
+                if(pnlDependencies)
+                    $(pnlDependencies).removeData('node-prop');
+                if(pnlDependents)
+                    $(pnlDependents).removeData('node-prop');
+              },
+              error: function(m, jqxhr) {
+                Alertify.pgNotifier(
+                  "error", jqxhr,
+                  S(
+                    gettext("Error saving properties: %s")
+                    ).sprintf(jqxhr.statusText).value()
+                  );
+
+                // Hide progress cursor
+                $('.obj_properties').removeClass('show_progress');
+                clearTimeout(timer);
+              }
+            });
+          }
+        }.bind(panel),
+
         editFunc = function() {
           var panel = this;
           if (action && action == 'properties') {
@@ -1171,58 +1262,7 @@ define([
               register: function(btn) {
                 // Save the changes
                 btn.click(function() {
-                  var m = view.model,
-                    d = m.toJSON(true),
-
-                    // Generate a timer for the request
-                    timer = setTimeout(function(){
-                      $('.obj_properties').addClass('show_progress');
-                    }, 1000);
-
-                  if (d && !_.isEmpty(d)) {
-                    m.save({}, {
-                      attrs: d,
-                      validate: false,
-                      cache: false,
-                      success: function() {
-                        onSaveFunc.call();
-                        // Hide progress cursor
-                        $('.obj_properties').removeClass('show_progress');
-                        clearTimeout(timer);
-
-                        // Removing the node-prop property of panel
-                        // so that we show updated data on panel
-                        var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
-                          pnlSql = pgBrowser.docker.findPanels('sql')[0],
-                          pnlStats = pgBrowser.docker.findPanels('statistics')[0],
-                          pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
-                          pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
-
-                        if(pnlProperties)
-                            $(pnlProperties).removeData('node-prop');
-                        if(pnlSql)
-                            $(pnlSql).removeData('node-prop');
-                        if(pnlStats)
-                            $(pnlStats).removeData('node-prop');
-                        if(pnlDependencies)
-                            $(pnlDependencies).removeData('node-prop');
-                        if(pnlDependents)
-                            $(pnlDependents).removeData('node-prop');
-                      },
-                      error: function(m, jqxhr) {
-                        Alertify.pgNotifier(
-                          "error", jqxhr,
-                          S(
-                            gettext("Error saving properties: %s")
-                            ).sprintf(jqxhr.statusText).value()
-                          );
-
-                        // Hide progress cursor
-                        $('.obj_properties').removeClass('show_progress');
-                        clearTimeout(timer);
-                      }
-                    });
-                  }
+                  onSave.call(this, view);
                 });
               }
             },{

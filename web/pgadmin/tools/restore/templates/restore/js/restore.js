@@ -366,14 +366,14 @@ define([
                setup:function() {
                 return {
                   buttons: [{
-                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-info',
+                    text: '', className: 'btn btn-default pull-left fa fa-lg fa-info',
                     attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Restore')}
                   },{
-                    text: '', key: 27, className: 'btn btn-default pull-left fa fa-lg fa-question',
+                    text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
                     attrs:{name:'dialog_help', type:'button', label: gettext('Restore'),
                     url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
                   },{
-                    text: gettext('Restore'), key: 27,
+                    text: gettext('Restore'), key: 13,
                     className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true,
                     'data-btn-name': 'restore'
                   },{

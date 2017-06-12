@@ -254,7 +254,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: gettext("Select"), className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Select"), key: 13, className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
@@ -379,7 +379,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: gettext("Select"), className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Select"), key: 13, className: "btn btn-primary fa fa-file file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times pg-alertify-button"
@@ -502,7 +502,7 @@ define([
               return {
                 buttons:[
                   {
-                    text: gettext("Create"), className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
+                    text: gettext("Create"), key: 13, className: "btn btn-primary fa fa-file file_manager_create file_manager_ok pg-alertify-button disabled"
                   },
                   {
                     text: gettext("Cancel"), key: 27, className: "btn btn-danger fa fa-times file_manager_create_cancel pg-alertify-button"

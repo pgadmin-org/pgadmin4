@@ -354,7 +354,7 @@ define([
             setup: function() {
               return {
                 buttons:[{
-                  text: '', key: 27,
+                  text: '', key: 112,
                   className: 'btn btn-default pull-left fa fa-lg fa-question',
                   attrs:{
                     name:'dialog_help', type:'button',
@@ -366,7 +366,7 @@ define([
                 },{
                   text: gettext('OK'), key: 13, className: "btn btn-primary fa fa-lg fa-save pg-alertify-button"
                 },{
-                  text: gettext('Cancel'), className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
+                  text: gettext('Cancel'), key: 27, className: "btn btn-danger fa fa-lg fa-times pg-alertify-button"
                 }],
                 focus: { element: 0 },
                 options: {
