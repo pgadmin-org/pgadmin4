@@ -1,9 +1,10 @@
 define(['jquery',
+  'sources/gettext',
   'sources/selection/column_selector',
   'sources/selection/row_selector',
   'sources/selection/range_selection_helper',
   'sources/url_for',
-], function ($, ColumnSelector, RowSelector, RangeSelectionHelper, url_for) {
+], function ($, gettext, ColumnSelector, RowSelector, RangeSelectionHelper, url_for) {
   var GridSelector = function (columnDefinitions) {
     var rowSelector = new RowSelector(columnDefinitions);
     var columnSelector = new ColumnSelector(columnDefinitions);
@@ -28,7 +29,7 @@ define(['jquery',
 
       columnDefinitions[0].selectAllOnClick = true;
       columnDefinitions[0].name = '<span data-id="select-all" ' +
-          'title="Select/Deselect All">' +
+          'title="' + gettext('Select/Deselect All') + '">' +
           '<br>' +
           columnDefinitions[0].name +
           '<img class="select-all-icon" src="' + url_for('static', {'filename': 'img/select-all-icon.png'}) + '"></img>';
