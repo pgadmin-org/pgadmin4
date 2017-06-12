@@ -2136,6 +2136,48 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
         else:
             return None
 
+    def get_trigger_function_schema(self, data):
+        """
+        This function will return trigger function with schema name
+        """
+        # If language is 'edbspl' then trigger function should be
+        # 'Inline EDB-SPL' else we will find the trigger function
+        # with schema name.
+        if data['lanname'] == 'edbspl':
+            data['tfunction'] = 'Inline EDB-SPL'
+        else:
+            SQL = render_template(
+                "/".join(
+                    [self.trigger_template_path,'get_triggerfunctions.sql']
+                ),
+                tgfoid=data['tgfoid'],
+                show_system_objects=self.blueprint.show_system_objects
+            )
+
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Update the trigger function which we have fetched with
+            # schema name
+            if 'rows' in result and len(result['rows']) > 0 and \
+                            'tfunctions' in result['rows'][0]:
+                data['tfunction'] = result['rows'][0]['tfunctions']
+        return data
+
+    def _format_args(self, args):
+        """
+        This function will format arguments.
+
+        Args:
+            args: Arguments
+
+        Returns:
+            Formated arguments for function
+        """
+        formatted_args = ["'{0}'".format(arg) for arg in args]
+        return ', '.join(formatted_args)
+
     def get_sql(self, did, scid, tid, data):
         """
         This function will generate create/update sql from model data
@@ -2662,9 +2704,11 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
             data['schema'] = schema
             data['table'] = table
 
-            if data['tgnargs'] > 1:
-                # We know that trigger has more than 1 arguments, let's join them
-                data['tgargs'] = ', '.join(data['tgargs'])
+            data = self.get_trigger_function_schema(data)
+
+            if len(data['custom_tgargs']) > 1:
+                # We know that trigger has more than 1 argument, let's join them
+                data['tgargs'] = self._format_args(data['custom_tgargs'])
 
             if len(data['tgattr']) > 1:
                 columns = ', '.join(data['tgattr'].split(' '))

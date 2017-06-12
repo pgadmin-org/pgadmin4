@@ -528,7 +528,7 @@ class TriggerView(PGChildNodeView):
         Returns:
             Formated arguments for function
         """
-        formatted_args = ["{0}".format(arg) for arg in args]
+        formatted_args = ["'{0}'".format(arg) for arg in args]
         return ', '.join(formatted_args)
 
 
