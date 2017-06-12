@@ -1,7 +1,10 @@
 define([
-  'pgadmin', 'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.browser.messages'
-], function(pgAdmin, gettext, _, S, $, pgBrowser, alertify, pgMessages) {
+  'pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
+  'underscore.string', 'jquery', 'pgadmin.browser', 'alertify',
+  'pgadmin.browser.messages'
+], function(
+  pgAdmin, gettext, url_for, _, S, $, pgBrowser, alertify, pgMessages
+) {
 
   pgBrowser.BackgroundProcessObsorver = pgBrowser.BackgroundProcessObsorver || {};
 
@@ -70,20 +73,24 @@ define([
         );
       },
 
-      url: function(type) {
-        var url = S('%s%s').sprintf(pgMessages['bgprocess.index'], this.id).value();
-
+      bgprocess_url: function(type) {
         switch (type) {
           case 'status':
             if (this.details && this.out != -1 && this.err != -1) {
-              url = S('%s/%s/%s/').sprintf(
-                url, this.out, this.err
-              ).value();
+              return url_for(
+                'bgprocess.detailed_status', {
+                  'pid': this.id,
+                  'out': this.out,
+                  'err': this.err
+                }
+              );
             }
-            break;
+            return url_for('bgprocess.status', {'pid': this.id});
+          case 'acknowledge':
+            return url_for('bgprocess.acknowledge', {'pid': this.id});
+          default:
+            return url_for('bgprocess.list');
         }
-
-        return url;
       },
 
       update: function(data) {
@@ -203,7 +210,7 @@ define([
         $.ajax({
           typs: 'GET',
           timeout: 30000,
-          url: self.url('status'),
+          url: self.bgprocess_url('status'),
           cache: false,
           async: true,
           contentType: "application/json",
@@ -388,7 +395,7 @@ define([
         $.ajax({
           type: 'PUT',
           timeout: 30000,
-          url: self.url('acknowledge'),
+          url: self.bgprocess_url('acknowledge'),
           cache: false,
           async: true,
           contentType: "application/json",
@@ -436,7 +443,7 @@ define([
         $.ajax({
           typs: 'GET',
           timeout: 30000,
-          url: pgMessages['bgprocess.index'],
+          url: url_for('bgprocess.list'),
           cache: false,
           async: true,
           contentType: "application/json",

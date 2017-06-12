@@ -12,7 +12,6 @@ A blueprint module providing utility functions for the notify the user about
 the long running background-processes.
 """
 from flask import url_for
-from flask_babel import gettext as _
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response, gone, success_return
@@ -40,14 +39,15 @@ class BGProcessModule(PgAdminModule):
         ]
         return stylesheets
 
-    def get_own_messages(self):
+    def get_exposed_url_endpoints(self):
         """
         Returns:
-            dict: the i18n messages used by this module
+            list: URL endpoints for bgprocess
         """
-        return {
-            'bgprocess.index': url_for("bgprocess.index")
-        }
+        return [
+            'bgprocess.status', 'bgprocess.detailed_status',
+            'bgprocess.acknowledge', 'bgprocess.list'
+        ]
 
 
 # Initialise the module
@@ -56,14 +56,16 @@ blueprint = BGProcessModule(
 )
 
 
-@blueprint.route('/', methods=['GET'])
+@blueprint.route('/', methods=['GET'], endpoint='list')
 @login_required
 def index():
     return make_response(response=BatchProcess.list())
 
 
-@blueprint.route('/<pid>', methods=['GET'])
-@blueprint.route('/<pid>/<int:out>/<int:err>/', methods=['GET'])
+@blueprint.route('/<pid>', methods=['GET'], endpoint='status')
+@blueprint.route(
+    '/<pid>/<int:out>/<int:err>/', methods=['GET'], endpoint='detailed_status'
+)
 @login_required
 def status(pid, out=-1, err=-1):
     """
@@ -87,7 +89,7 @@ def status(pid, out=-1, err=-1):
         return gone(errormsg=str(lerr))
 
 
-@blueprint.route('/<pid>', methods=['PUT'])
+@blueprint.route('/<pid>', methods=['PUT'], endpoint='acknowledge')
 @login_required
 def acknowledge(pid):
     """
