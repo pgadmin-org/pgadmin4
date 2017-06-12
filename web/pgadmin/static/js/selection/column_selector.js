@@ -1,7 +1,7 @@
 define([
   'jquery',
   'sources/selection/range_selection_helper',
-  'slickgrid'
+  'slickgrid',
 ], function ($, RangeSelectionHelper) {
   var ColumnSelector = function () {
     var Slick = window.Slick;
@@ -21,7 +21,7 @@ define([
       if (isColumnSelectable(columnDefinition)) {
         var $columnHeader = $(event.target);
         if (hasClickedChildOfColumnHeader(event)) {
-          $columnHeader = $(event.target).parents(".slick-header-column");
+          $columnHeader = $(event.target).parents('.slick-header-column');
         }
         $columnHeader.toggleClass('selected');
 
@@ -63,7 +63,7 @@ define([
     };
 
     var hasClickedChildOfColumnHeader = function (event) {
-      return !$(event.target).hasClass("slick-header-column");
+      return !$(event.target).hasClass('slick-header-column');
     };
 
     var isColumnSelectable = function (columnDefinition) {
@@ -87,16 +87,16 @@ define([
       return _.map(columnDefinitions, function (columnDefinition) {
         if (isColumnSelectable(columnDefinition)) {
           var name =
-            "<span data-cell-type='column-header-row' " +
-            "       data-test='output-column-header'" +
-            "       data-column-id='" + columnDefinition.id + "'>" +
-            "  <span class='column-description'>" +
-            "    <span class='column-name'>" + columnDefinition.display_name + "</span>" +
-            "    <span class='column-type'>" + columnDefinition.column_type + "</span>" +
-            "  </span>" +
-            "</span>";
+            '<span data-cell-type=\'column-header-row\' ' +
+            '       data-test=\'output-column-header\'' +
+            '       data-column-id=\'' + columnDefinition.id + '\'>' +
+            '  <span class=\'column-description\'>' +
+            '    <span class=\'column-name\'>' + columnDefinition.display_name + '</span>' +
+            '    <span class=\'column-type\'>' + columnDefinition.column_type + '</span>' +
+            '  </span>' +
+            '</span>';
           return _.extend(columnDefinition, {
-            name: name
+            name: name,
           });
         } else {
           return columnDefinition;
@@ -105,8 +105,8 @@ define([
     };
 
     $.extend(this, {
-      "init": init,
-      "getColumnDefinitions": getColumnDefinitions
+      'init': init,
+      'getColumnDefinitions': getColumnDefinitions,
     });
   };
   return ColumnSelector;

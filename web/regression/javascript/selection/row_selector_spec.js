@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
-import _ from 'underscore';
 
 import Slick from 'slickgrid';
 import 'slickgrid.grid';
@@ -18,10 +17,12 @@ import ActiveCellCapture from 'sources/selection/active_cell_capture';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 
 describe('RowSelector', function () {
-  var KEY_RIGHT = 39;
-  var KEY_LEFT = 37;
-  var KEY_UP = 38;
-  var KEY_DOWN = 40;
+  var KEY = {
+    RIGHT: 39,
+    LEFT: 37,
+    UP: 38,
+    DOWN: 40,
+  };
   var container, data, columnDefinitions, grid, cellSelectionModel;
   var SlickGrid = Slick.Grid;
 
@@ -34,12 +35,12 @@ describe('RowSelector', function () {
       id: '1',
       name: 'some-column-name',
       selectable: true,
-      pos: 0
+      pos: 0,
     }, {
       id: '2',
       name: 'second column',
       selectable: true,
-      pos: 1
+      pos: 1,
     }];
 
     var rowSelector = new RowSelector();
@@ -134,7 +135,7 @@ describe('RowSelector', function () {
 
       describe('and presses shift + down-arrow', function () {
         beforeEach(function () {
-          pressShiftArrow(KEY_DOWN);
+          pressShiftArrow(KEY.DOWN);
         });
 
         it('keeps the last row selected', function () {
@@ -301,7 +302,7 @@ describe('RowSelector', function () {
         var selectedRanges = cellSelectionModel.getSelectedRanges();
 
         expect(selectedRanges.length).toEqual(0);
-      })
+      });
     });
   });
 

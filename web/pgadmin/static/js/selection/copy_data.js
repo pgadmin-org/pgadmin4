@@ -3,8 +3,8 @@ define([
   'underscore',
   'sources/selection/clipboard',
   'sources/selection/range_selection_helper',
-  'sources/selection/range_boundary_navigator'
-  ],
+  'sources/selection/range_boundary_navigator',
+],
 function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
   var copyData = function () {
     var self = this;
@@ -32,20 +32,8 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
 
   var setPasteRowButtonEnablement = function (canEditFlag, isEnabled) {
     if (canEditFlag) {
-      $("#btn-paste-row").prop('disabled', !isEnabled);
+      $('#btn-paste-row').prop('disabled', !isEnabled);
     }
   };
-
-  var allTheRangesAreFullRows = function (ranges, columnDefinitions) {
-    var colRangeBounds = ranges.map(function (range) {
-      return [range.fromCell, range.toCell];
-    });
-
-    if(RangeSelectionHelper.isFirstColumnData(columnDefinitions)) {
-      return _.isEqual(_.union.apply(null, colRangeBounds), [0, columnDefinitions.length - 1]);
-    }
-    return _.isEqual(_.union.apply(null, colRangeBounds), [0, columnDefinitions.length - 1]);
-  };
-
-  return copyData
+  return copyData;
 });

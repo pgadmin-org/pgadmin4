@@ -3,21 +3,21 @@ import Slick from 'slickgrid';
 import 'slickgrid.grid';
 import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 
-describe("RangeSelectionHelper utility functions", function () {
+describe('RangeSelectionHelper utility functions', function () {
   var grid;
   beforeEach(function () {
     var container, data, columns, options;
-    container = $("<div></div>");
+    container = $('<div></div>');
     container.height(9999);
 
     columns = [{
       id: '1',
       name: 'some-column-name',
-      pos: 0
+      pos: 0,
     }, {
       id: 'second-column-id',
       name: 'second column',
-      pos: 1
+      pos: 1,
     }];
 
     data = [];
@@ -29,18 +29,18 @@ describe("RangeSelectionHelper utility functions", function () {
     grid.invalidate();
   });
 
-  describe("#getIndexesOfCompleteRows", function () {
-    describe("when selected ranges are not rows", function () {
-      it("returns an empty array", function () {
+  describe('#getIndexesOfCompleteRows', function () {
+    describe('when selected ranges are not rows', function () {
+      it('returns an empty array', function () {
         var rowlessRanges = [RangeSelectionHelper.rangeForColumn(grid, 1)];
 
         expect(RangeSelectionHelper.getIndexesOfCompleteRows(grid, rowlessRanges))
           .toEqual([]);
       });
     });
-    describe("when selected range", function () {
-      describe("is a single row", function () {
-        it("returns an array with one index", function () {
+    describe('when selected range', function () {
+      describe('is a single row', function () {
+        it('returns an array with one index', function () {
           var singleRowRange = [RangeSelectionHelper.rangeForRow(grid, 1)];
 
           expect(RangeSelectionHelper.getIndexesOfCompleteRows(grid, singleRowRange))
@@ -48,8 +48,8 @@ describe("RangeSelectionHelper utility functions", function () {
         });
       });
 
-      describe("is multiple rows", function () {
-        it("returns an array of each row's index", function () {
+      describe('is multiple rows', function () {
+        it('returns an array of each row\'s index', function () {
           var multipleRowRange = [
             RangeSelectionHelper.rangeForRow(grid, 0),
             RangeSelectionHelper.rangeForRow(grid, 3),
@@ -62,10 +62,10 @@ describe("RangeSelectionHelper utility functions", function () {
         });
       });
 
-      describe("contains a multi row selection", function () {
-        it("returns an array of each individual row's index", function () {
+      describe('contains a multi row selection', function () {
+        it('returns an array of each individual row\'s index', function () {
           var multipleRowRange = [
-            new Slick.Range(3, 0, 5, 1)
+            new Slick.Range(3, 0, 5, 1),
           ];
 
           var indexesOfCompleteRows = RangeSelectionHelper.getIndexesOfCompleteRows(grid, multipleRowRange);
@@ -73,11 +73,11 @@ describe("RangeSelectionHelper utility functions", function () {
           expect(indexesOfCompleteRows).toEqual([3, 4, 5]);
         });
 
-        describe("and also contains a selection that is not a row", function () {
-          it("returns an array of only the complete rows' indexes", function () {
+        describe('and also contains a selection that is not a row', function () {
+          it('returns an array of only the complete rows\' indexes', function () {
             var multipleRowRange = [
               new Slick.Range(8, 1, 9, 1),
-              new Slick.Range(3, 0, 5, 1)
+              new Slick.Range(3, 0, 5, 1),
             ];
 
             var indexesOfCompleteRows = RangeSelectionHelper.getIndexesOfCompleteRows(grid, multipleRowRange);

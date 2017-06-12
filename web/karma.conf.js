@@ -22,7 +22,7 @@ module.exports = function (config) {
     // list of files to exclude
     exclude: [
       'pgadmin/static/vendor/**/*[Tt]est.js',
-      'pgadmin/static/vendor/**/*[Ss]pec.js'
+      'pgadmin/static/vendor/**/*[Ss]pec.js',
     ],
 
     // preprocess matching files before serving them to the browser
@@ -62,6 +62,6 @@ module.exports = function (config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
+    concurrency: Infinity,
   });
 };

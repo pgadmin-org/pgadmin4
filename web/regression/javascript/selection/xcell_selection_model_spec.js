@@ -10,6 +10,7 @@
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 import 'slickgrid.grid';
 import Slick from 'slickgrid';
+import $ from 'jquery';
 
 describe('XCellSelectionModel', function () {
   var KEY_RIGHT = 39;
@@ -31,15 +32,15 @@ describe('XCellSelectionModel', function () {
     }, {
       id: '1',
       name: 'some-column-name',
-      pos: 0
+      pos: 0,
     }, {
       id: 'second-column-id',
       name: 'second column',
-      pos: 1
+      pos: 1,
     }, {
       id: 'third-column-id',
       name: 'third column',
-      pos: 2
+      pos: 2,
     },
     ];
 
@@ -52,13 +53,13 @@ describe('XCellSelectionModel', function () {
         'fourth column': 'fourth value ' + i,
       });
     }
-    container = $("<div></div>");
+    container = $('<div></div>');
     container.height(9999);
     container.width(9999);
 
     grid = new SlickGrid(container, data, columns);
     grid.setSelectionModel(new XCellSelectionModel());
-    $("body").append(container);
+    $('body').append(container);
   });
 
   afterEach(function () {
@@ -397,13 +398,13 @@ describe('XCellSelectionModel', function () {
         target: $cell,
         isPropagationStopped: jasmine.createSpy('isPropagationStopped').and.returnValue(false),
         isImmediatePropagationStopped: jasmine.createSpy('isImmediatePropagationStopped').and.returnValue(false),
-        stopImmediatePropagation: jasmine.createSpy('stopImmediatePropagation')
+        stopImmediatePropagation: jasmine.createSpy('stopImmediatePropagation'),
       };
 
       dd = {
         grid: grid,
         startX: cellLeftPosition(initialPosition.cell),
-        startY: cellTopPosition($cell, initialPosition.row)
+        startY: cellTopPosition($cell, initialPosition.row),
       };
 
       grid.onDragStart.notify(dd, event, grid);
@@ -421,7 +422,7 @@ describe('XCellSelectionModel', function () {
           stopImmediatePropagation: jasmine.createSpy('stopImmediatePropagation'),
 
           pageX: cellLeftPosition(finalPosition.cell),
-          pageY: cellTopPosition($cell, finalPosition.row)
+          pageY: cellTopPosition($cell, finalPosition.row),
         };
 
         grid.onDrag.notify(dd, event, grid);
@@ -448,7 +449,7 @@ describe('XCellSelectionModel', function () {
     });
 
     it('do not notify onDragEnd', function () {
-      expect(grid.onDragEnd.notify).not.toHaveBeenCalled()
+      expect(grid.onDragEnd.notify).not.toHaveBeenCalled();
     });
   });
 
@@ -482,14 +483,14 @@ describe('XCellSelectionModel', function () {
   });
 
   function pressKey(keyCode) {
-    var pressEvent = new $.Event("keydown");
+    var pressEvent = new $.Event('keydown');
     pressEvent.which = keyCode;
 
     $(container.find('.grid-canvas')).trigger(pressEvent);
   }
 
   function pressShiftPlusKey(keyCode) {
-    var pressEvent = new $.Event("keydown");
+    var pressEvent = new $.Event('keydown');
     pressEvent.shiftKey = true;
     pressEvent.which = keyCode;
 

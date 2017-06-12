@@ -19,52 +19,51 @@ import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 
 describe('copyData', function () {
   var grid, sqlEditor, gridContainer, buttonPasteRow;
-  var Slick, SlickGrid;
+  var SlickGrid;
 
   beforeEach(function () {
-    Slick = window.Slick;
     SlickGrid = Slick.Grid;
     var data = [[1, 'leopord', '12'],
       [2, 'lion', '13'],
       [3, 'puma', '9']];
 
     var columns = [
-        {
-          id: 'row-header-column',
-          name: 'row header column name',
-          selectable: false,
-          display_name: 'row header column name',
-          column_type: 'text'
-        },
-        {
-          name: 'id',
-          pos: 0,
-          label: 'id<br> numeric',
-          cell: 'number',
-          can_edit: false,
-          type: 'numeric'
-        }, {
-          name: 'brand',
-          pos: 1,
-          label: 'flavor<br> character varying',
-          cell: 'string',
-          can_edit: false,
-          type: 'character varying'
-        }, {
-          name: 'size',
-          pos: 2,
-          label: 'size<br> numeric',
-          cell: 'number',
-          can_edit: false,
-          type: 'numeric'
-        }
-      ]
+      {
+        id: 'row-header-column',
+        name: 'row header column name',
+        selectable: false,
+        display_name: 'row header column name',
+        column_type: 'text',
+      },
+      {
+        name: 'id',
+        pos: 0,
+        label: 'id<br> numeric',
+        cell: 'number',
+        can_edit: false,
+        type: 'numeric',
+      }, {
+        name: 'brand',
+        pos: 1,
+        label: 'flavor<br> character varying',
+        cell: 'string',
+        can_edit: false,
+        type: 'character varying',
+      }, {
+        name: 'size',
+        pos: 2,
+        label: 'size<br> numeric',
+        cell: 'number',
+        can_edit: false,
+        type: 'numeric',
+      },
+    ]
     ;
     gridContainer = $('<div id=\'grid\'></div>');
     $('body').append(gridContainer);
     buttonPasteRow = $('<button id=\'btn-paste-row\' disabled></button>');
     $('body').append(buttonPasteRow);
-    grid = new Slick.Grid('#grid', data, columns, {});
+    grid = new SlickGrid('#grid', data, columns, {});
     grid.setSelectionModel(new XCellSelectionModel());
     sqlEditor = {slickgrid: grid};
   });

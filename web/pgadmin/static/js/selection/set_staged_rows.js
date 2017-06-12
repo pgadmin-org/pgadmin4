@@ -11,7 +11,7 @@ define(
   [
     'jquery',
     'underscore',
-    'sources/selection/range_selection_helper'
+    'sources/selection/range_selection_helper',
   ],
   function ($, _, RangeSelectionHelper) {
     function disableButton(selector) {
@@ -55,7 +55,7 @@ define(
         _.each(_.keys(gridRow), function (columnPos) {
           if (_.contains(primaryKeyColumnIndices, Number(columnPos)))
             rowToStage[columnPos] = gridRow[columnPos];
-        })
+        });
       }
       return rowToStage;
     }
@@ -72,7 +72,7 @@ define(
       return stagedRows;
     }
 
-    var setStagedRows = function (e, args) {
+    var setStagedRows = function () {
       var self = this;
 
       function setStagedRows(rowsToStage) {
@@ -88,7 +88,7 @@ define(
 
       function areAllSelectionsEntireRows() {
         return RangeSelectionHelper.areAllRangesCompleteRows(self.grid,
-          self.selection.getSelectedRanges())
+          self.selection.getSelectedRanges());
       }
 
       var selectedRanges = this.selection.getSelectedRanges();
@@ -98,7 +98,7 @@ define(
       }
 
       if (areAllSelectionsEntireRows()) {
-        var selectedRows = RangeSelectionHelper.getIndexesOfCompleteRows(this.grid, this.selection.getSelectedRanges())
+        var selectedRows = RangeSelectionHelper.getIndexesOfCompleteRows(this.grid, this.selection.getSelectedRanges());
         var stagedRows = getPrimaryKeysForSelectedRows(self, selectedRows);
         setStagedRows(stagedRows);
         if (_.isEmpty(stagedRows)) {

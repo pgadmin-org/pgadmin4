@@ -1,7 +1,7 @@
 define(['sources/gettext', 'alertify'], function (gettext, alertify) {
   var clipboard = {
     copyTextToClipboard: function (text) {
-      var textArea = document.createElement("textarea");
+      var textArea = document.createElement('textarea');
 
       //
       // *** This styling is an extra step which is likely not required. ***
@@ -55,7 +55,7 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
       }
 
       document.body.removeChild(textArea);
-    }
+    },
   };
   return clipboard;
 });

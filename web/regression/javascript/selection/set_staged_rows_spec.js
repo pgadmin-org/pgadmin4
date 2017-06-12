@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  "jquery",
-  "underscore",
-  "sources/selection/set_staged_rows",
+  'jquery',
+  'underscore',
+  'sources/selection/set_staged_rows',
 ], function ($, _, SetStagedRows) {
   describe('set_staged_rows', function () {
     var sqlEditorObj, gridSpy, deleteButton, copyButton, selectionSpy;
@@ -20,7 +20,7 @@ define([
         {0: 'one', 1: 'two', __temp_PK: '123'},
         {0: 'three', 1: 'four', __temp_PK: '456'},
         {0: 'five', 1: 'six', __temp_PK: '789'},
-        {0: 'seven', 1: 'eight', __temp_PK: '432'}
+        {0: 'seven', 1: 'eight', __temp_PK: '432'},
       ]);
       gridSpy.getColumns.and.returnValue([
         {
@@ -29,7 +29,7 @@ define([
         }, {
           pos: 1,
           selectable: true,
-        }
+        },
       ]);
 
       selectionSpy = jasmine.createSpyObj('selectionSpy', ['setSelectedRows', 'getSelectedRanges']);
@@ -42,23 +42,23 @@ define([
         editor: {
           handler: {
             data_store: {
-              staged_rows: {'456': {}}
+              staged_rows: {'456': {}},
             },
-            can_edit: false
-          }
+            can_edit: false,
+          },
         },
         keys: null,
         selection: selectionSpy,
         columns: [
           {
             name: 'a pk column',
-            pos: 0
+            pos: 0,
           },
           {
             name: 'some column',
-            pos: 1
-          }
-        ]
+            pos: 1,
+          },
+        ],
       };
 
       $('body').append(deleteButton);
@@ -195,7 +195,7 @@ define([
               {0: 'one', 1: 'two', __temp_PK: '123'},
               {1: 'four', __temp_PK: '456'},
               {1: 'six', __temp_PK: '789'},
-              {0: 'seven', 1: 'eight', __temp_PK: '432'}
+              {0: 'seven', 1: 'eight', __temp_PK: '432'},
             ]);
           });
 
@@ -228,7 +228,7 @@ define([
           it('should not clear the staged rows', function () {
             expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({
               '456': {0: 'three'},
-              '789': {0: 'five'}
+              '789': {0: 'five'},
             });
           });
 

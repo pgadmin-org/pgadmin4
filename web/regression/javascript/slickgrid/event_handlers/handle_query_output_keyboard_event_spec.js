@@ -13,10 +13,10 @@ import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 import Slick from 'slickgrid';
 import 'slickgrid.grid';
-
+import $ from 'jquery';
 
 describe('#handleQueryOutputKeyboardEvent', function () {
-  var event, view, grid, slickEvent;
+  var event, grid, slickEvent;
   var SlickGrid = Slick.Grid;
   var handleQueryOutputKeyboardEvent;
 
@@ -27,7 +27,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       metaKey: false,
       which: -1,
       keyCode: -1,
-      preventDefault: jasmine.createSpy('preventDefault')
+      preventDefault: jasmine.createSpy('preventDefault'),
     };
 
     var data = [['', '0,0-cell-content', '0,1-cell-content'],
@@ -35,22 +35,20 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       ['', '2,0-cell-content', '2,1-cell-content']];
     var columnDefinitions = [{name: 'checkboxColumn'}, {pos: 1, name: 'firstColumn'}, {
       pos: 2,
-      name: 'secondColumn'
+      name: 'secondColumn',
     }];
     grid = new SlickGrid($('<div></div>'), data, columnDefinitions);
     grid.setSelectionModel(new XCellSelectionModel());
 
     slickEvent = {
-      grid: grid
+      grid: grid,
     };
 
-    view = {};
     spyOn(clipboard, 'copyTextToClipboard');
     handleQueryOutputKeyboardEvent = HandleQueryOutputKeyboardEvent.bind(window);
-    debugger
   });
 
-  describe("when a range is selected", function () {
+  describe('when a range is selected', function () {
     beforeEach(function () {
       grid.getSelectionModel().setSelectedRanges([
         RangeSelectionHelper.rangeForRow(grid, 0),
@@ -58,39 +56,39 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       ]);
     });
 
-    describe("pressing Command + C", function () {
+    describe('pressing Command + C', function () {
       beforeEach(function () {
         event.metaKey = true;
         event.keyCode = 67;
       });
 
-      it("copies the cell content to the clipboard", function () {
+      it('copies the cell content to the clipboard', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
-        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith("'0,0-cell-content','0,1-cell-content'\n'2,0-cell-content','2,1-cell-content'");
+        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('\'0,0-cell-content\',\'0,1-cell-content\'\n\'2,0-cell-content\',\'2,1-cell-content\'');
       });
     });
 
-    describe("pressing Ctrl + C", function () {
+    describe('pressing Ctrl + C', function () {
       beforeEach(function () {
         event.ctrlKey = true;
         event.keyCode = 67;
       });
 
-      it("copies the cell content to the clipboard", function () {
+      it('copies the cell content to the clipboard', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
-        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith("'0,0-cell-content','0,1-cell-content'\n'2,0-cell-content','2,1-cell-content'");
+        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('\'0,0-cell-content\',\'0,1-cell-content\'\n\'2,0-cell-content\',\'2,1-cell-content\'');
       });
     });
 
-    describe("pressing Command + A", function () {
+    describe('pressing Command + A', function () {
       beforeEach(function () {
         event.metaKey = true;
         event.keyCode = 65;
       });
 
-      it("selects the entire grid to ranges", function () {
+      it('selects the entire grid to ranges', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
@@ -98,13 +96,13 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       });
     });
 
-    describe("pressing Ctrl + A", function () {
+    describe('pressing Ctrl + A', function () {
       beforeEach(function () {
         event.ctrlKey = true;
         event.keyCode = 65;
       });
 
-      it("selects the entire grid to ranges", function () {
+      it('selects the entire grid to ranges', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
@@ -113,14 +111,14 @@ describe('#handleQueryOutputKeyboardEvent', function () {
     });
   });
 
-  describe("when no ranges are selected", function () {
-    describe("pressing Command + A", function () {
+  describe('when no ranges are selected', function () {
+    describe('pressing Command + A', function () {
       beforeEach(function () {
         event.metaKey = true;
         event.keyCode = 65;
       });
 
-      it("selects the entire grid to ranges", function () {
+      it('selects the entire grid to ranges', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
@@ -128,13 +126,13 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       });
     });
 
-    describe("pressing Ctrl + A", function () {
+    describe('pressing Ctrl + A', function () {
       beforeEach(function () {
         event.ctrlKey = true;
         event.keyCode = 65;
       });
 
-      it("selects the entire grid to ranges", function () {
+      it('selects the entire grid to ranges', function () {
         handleQueryOutputKeyboardEvent(event, slickEvent);
 
         expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();

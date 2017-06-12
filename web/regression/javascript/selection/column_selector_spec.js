@@ -22,10 +22,12 @@ import 'sources/slickgrid/pgslick.cellrangeselector';
 describe('ColumnSelector', function () {
   var container, data, columns, options;
   var SlickGrid = Slick.Grid;
-  var KEY_RIGHT = 39;
-  var KEY_LEFT = 37;
-  var KEY_UP = 38;
-  var KEY_DOWN = 40;
+  var KEY = {
+    RIGHT: 39,
+    LEFT: 37,
+    UP: 38,
+    DOWN: 40,
+  };
 
   beforeEach(function () {
     container = $('<div></div>');
@@ -35,11 +37,11 @@ describe('ColumnSelector', function () {
     data = [{
       'some-column-name': 'first value',
       'second column': 'second value',
-      'third column': 'nonselectable value'
+      'third column': 'nonselectable value',
     }, {
       'some-column-name': 'row 1 - first value',
       'second column': 'row 1 - second value',
-      'third column': 'row 1 - nonselectable value'
+      'third column': 'row 1 - nonselectable value',
     }];
 
     columns = [
@@ -48,36 +50,36 @@ describe('ColumnSelector', function () {
         name: 'row header column name',
         selectable: false,
         display_name: 'row header column name',
-        column_type: 'text'
+        column_type: 'text',
       },
       {
         id: '1',
         name: 'some-column-name',
         pos: 0,
         display_name: 'some-column-name',
-        column_type: 'text'
+        column_type: 'text',
       },
       {
         id: '2',
         name: 'second column',
         pos: 1,
         display_name: 'second column',
-        column_type: 'json'
+        column_type: 'json',
       },
       {
         id: 'third-column-id',
         name: 'third column',
         pos: 2,
         display_name: 'third column',
-        column_type: 'text'
+        column_type: 'text',
       },
       {
         name: 'some-non-selectable-column',
         selectable: false,
         pos: 3,
         display_name: 'some-non-selectable-column',
-        column_type: 'numeric'
-      }
+        column_type: 'numeric',
+      },
     ];
   });
 
@@ -170,7 +172,7 @@ describe('ColumnSelector', function () {
 
       describe('and presses shift + right-arrow', function () {
         beforeEach(function () {
-          pressShiftArrow(KEY_RIGHT);
+          pressShiftArrow(KEY.RIGHT);
         });
 
         it('keeps the last column selected', function () {
@@ -202,7 +204,7 @@ describe('ColumnSelector', function () {
 
         describe('and presses shift + right-arrow', function () {
           it('first and second columns are selected', function () {
-            pressShiftArrow(KEY_RIGHT);
+            pressShiftArrow(KEY.RIGHT);
 
             var selectedRanges = cellSelectionModel.getSelectedRanges();
 
@@ -266,7 +268,7 @@ describe('ColumnSelector', function () {
         var selectedRanges = cellSelectionModel.getSelectedRanges();
 
         expect(selectedRanges.length).toEqual(0);
-      })
+      });
     });
 
     describe('when the column is not selectable', function () {

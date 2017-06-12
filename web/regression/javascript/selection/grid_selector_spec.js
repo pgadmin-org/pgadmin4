@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
-import _ from 'underscore';
 
 import Slick from 'slickgrid';
 import 'slickgrid.grid';
@@ -18,21 +17,20 @@ import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 
 describe('GridSelector', function () {
   var container, data, columns, gridSelector, xCellSelectionModel;
-  var Slick, SlickGrid;
+  var SlickGrid;
 
   beforeEach(function () {
-    Slick = window.Slick;
     SlickGrid = Slick.Grid;
     container = $('<div></div>');
     container.height(9999);
     columns = [{
       id: '1',
       name: 'some-column-name',
-      pos: 0
+      pos: 0,
     }, {
       id: '2',
       name: 'second column',
-      pos: 1
+      pos: 1,
     }];
 
     gridSelector = new GridSelector();
@@ -42,7 +40,7 @@ describe('GridSelector', function () {
     for (var i = 0; i < 10; i++) {
       data.push({'some-column-name': 'some-value-' + i, 'second column': 'second value ' + i});
     }
-    var grid = new Slick.Grid(container, data, columns);
+    var grid = new SlickGrid(container, data, columns);
 
     xCellSelectionModel = new XCellSelectionModel();
     grid.setSelectionModel(xCellSelectionModel);

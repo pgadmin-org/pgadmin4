@@ -8,7 +8,6 @@ const regressionDir = path.resolve(__dirname, 'regression');
 module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
-      $: 'jquery',
       jQuery: 'jquery',
       _: 'underscore',
       'underscore.string': 'underscore.string',

@@ -8,19 +8,19 @@ define(['slickgrid'], function () {
 
   var isRangeSelected = function (selectedRanges, range) {
     return _.any(selectedRanges, function (selectedRange) {
-      return isSameRange(selectedRange, range)
+      return isSameRange(selectedRange, range);
     });
   };
 
   var isAnyCellOfColumnSelected = function (selectedRanges, column) {
     return _.any(selectedRanges, function (selectedRange) {
-      return selectedRange.fromCell <= column && selectedRange.toCell >= column
+      return selectedRange.fromCell <= column && selectedRange.toCell >= column;
     });
   };
 
   var isAnyCellOfRowSelected = function (selectedRanges, row) {
     return _.any(selectedRanges, function (selectedRange) {
-      return selectedRange.fromRow <= row && selectedRange.toRow >= row
+      return selectedRange.fromRow <= row && selectedRange.toRow >= row;
     });
   };
 
@@ -33,8 +33,8 @@ define(['slickgrid'], function () {
 
   var removeRange = function (selectedRanges, range) {
     return _.filter(selectedRanges, function (selectedRange) {
-      return !(isSameRange(selectedRange, range))
-    })
+      return !(isSameRange(selectedRange, range));
+    });
   };
 
   var addRange = function (ranges, range) {
@@ -45,11 +45,11 @@ define(['slickgrid'], function () {
   var areAllRangesSingleRows = function (ranges, grid) {
     return _.every(ranges, function (range) {
       return range.fromRow == range.toRow && rangeHasCompleteRows(grid, range);
-    })
+    });
   };
 
   var areAllRangesSingleColumns = function (ranges, grid) {
-    return _.every(ranges, isRangeAColumn.bind(this, grid))
+    return _.every(ranges, isRangeAColumn.bind(this, grid));
   };
 
   var rangeForRow = function (grid, rowId) {
@@ -61,7 +61,7 @@ define(['slickgrid'], function () {
   };
 
   var rangeForColumn = function (grid, columnIndex) {
-    return new Slick.Range(0, columnIndex, grid.getDataLength() - 1, columnIndex)
+    return new Slick.Range(0, columnIndex, grid.getDataLength() - 1, columnIndex);
   };
 
   var getRangeOfWholeGrid = function (grid) {
@@ -81,13 +81,13 @@ define(['slickgrid'], function () {
   var areAllRangesCompleteColumns = function (grid, ranges) {
     return _.every(ranges, function (range) {
       return rangeHasCompleteColumns(grid, range);
-    })
+    });
   };
 
   var areAllRangesCompleteRows = function (grid, ranges) {
     return _.every(ranges, function (range) {
       return rangeHasCompleteRows(grid, range);
-    })
+    });
   };
 
   var getIndexesOfCompleteRows = function (grid, ranges) {
@@ -158,5 +158,5 @@ define(['slickgrid'], function () {
     isAnyCellOfColumnSelected: isAnyCellOfColumnSelected,
     isRangeEntirelyWithinSelectedRanges: isRangeEntirelyWithinSelectedRanges,
     isAnyCellOfRowSelected: isAnyCellOfRowSelected,
-  }
+  };
 });

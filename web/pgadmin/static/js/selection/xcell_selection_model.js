@@ -4,7 +4,7 @@ define([
   'sources/selection/range_selection_helper',
   'sources/slickgrid/pgslick.cellrangeselector',
 
-  'slickgrid'
+  'slickgrid',
 ], function ($, _, RangeSelectionHelper, PGCellRangeSelector) {
   var XCellSelectionModel = function (options) {
 
@@ -13,25 +13,24 @@ define([
     var KEY_ARROW_UP = 38;
     var KEY_ARROW_DOWN = 40;
 
+    var Slick = window.Slick;
     var _grid;
-    var _canvas;
     var _ranges = [];
     var _self = this;
     var _selector = new PGCellRangeSelector({
-      "selectionCss": {
-        "border": "2px solid black"
-      }
+      'selectionCss': {
+        'border': '2px solid black',
+      },
     });
     var _options;
     var _defaults = {
-      selectActiveCell: true
+      selectActiveCell: true,
     };
 
 
     function init(grid) {
       _options = $.extend(true, {}, _defaults, options);
       _grid = grid;
-      _canvas = _grid.getCanvasNode();
       _grid.onActiveCellChanged.subscribe(handleActiveCellChange);
       _grid.onKeyDown.subscribe(handleKeyDown);
       grid.registerPlugin(_selector);
@@ -82,7 +81,7 @@ define([
       }
     }
 
-    function handleBeforeCellRangeSelected(e, args) {
+    function handleBeforeCellRangeSelected(e) {
       if (_grid.getEditorLock().isActive()) {
         e.stopPropagation();
         return false;
@@ -169,18 +168,18 @@ define([
         var mobileCell = getMobileCellFromRange(lastSelectedRange, anchorActiveCell);
 
         switch (getKeycode()) {
-          case KEY_ARROW_LEFT:
-            mobileCell.cell -= 1;
-            break;
-          case KEY_ARROW_RIGHT:
-            mobileCell.cell += 1;
-            break;
-          case KEY_ARROW_UP:
-            mobileCell.row -= 1;
-            break;
-          case KEY_ARROW_DOWN:
-            mobileCell.row += 1;
-            break;
+        case KEY_ARROW_LEFT:
+          mobileCell.cell -= 1;
+          break;
+        case KEY_ARROW_RIGHT:
+          mobileCell.cell += 1;
+          break;
+        case KEY_ARROW_UP:
+          mobileCell.row -= 1;
+          break;
+        case KEY_ARROW_DOWN:
+          mobileCell.row += 1;
+          break;
         }
 
         var newSelectedRange = getNewRange(anchorActiveCell, mobileCell);
@@ -206,7 +205,7 @@ define([
       }
     }
 
-    function handleWindowMouseUp(event) {
+    function handleWindowMouseUp() {
       var selectedRange = _selector.getCurrentRange();
       if (!_.isUndefined(selectedRange)) {
         _grid.onDragEnd.notify({range: selectedRange});
@@ -214,14 +213,14 @@ define([
     }
 
     $.extend(this, {
-      "getSelectedRanges": getSelectedRanges,
-      "setSelectedRanges": setSelectedRanges,
-      "setSelectedRows": setSelectedRows,
+      'getSelectedRanges': getSelectedRanges,
+      'setSelectedRanges': setSelectedRanges,
+      'setSelectedRows': setSelectedRows,
 
-      "init": init,
-      "destroy": destroy,
+      'init': init,
+      'destroy': destroy,
 
-      "onSelectedRangesChanged": new Slick.Event()
+      'onSelectedRangesChanged': new Slick.Event(),
     });
   };
   return XCellSelectionModel;

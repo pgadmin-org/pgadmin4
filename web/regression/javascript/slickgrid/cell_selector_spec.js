@@ -7,16 +7,17 @@
 //
 //////////////////////////////////////////////////////////////
 
-import $ from "jquery";
-import SlickGrid from "slickgrid.grid";
-import XCellSelectionModel from "sources/selection/xcell_selection_model";
-import CellSelector from "sources/slickgrid/cell_selector";
-import RangeSelectionHelper from "sources/selection/range_selection_helper";
+import $ from 'jquery';
+import Slick from 'slickgrid';
+import 'slickgrid.grid';
+import XCellSelectionModel from 'sources/selection/xcell_selection_model';
+import CellSelector from 'sources/slickgrid/cell_selector';
+import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 
-describe("CellSelector", function () {
+describe('CellSelector', function () {
   var container, columns, cellSelector, data, cellSelectionModel, grid;
   beforeEach(function () {
-    container = $("<div></div>");
+    container = $('<div></div>');
     container.height(9999);
     container.width(9999);
     columns = [{
@@ -39,17 +40,17 @@ describe("CellSelector", function () {
     grid.registerPlugin(cellSelector);
     grid.invalidate();
 
-    $("body").append(container);
+    $('body').append(container);
   });
 
   afterEach(function () {
-    $("body").find(container).remove();
+    $('body').find(container).remove();
   });
 
-  describe("when the user clicks or tabs to a cell", function () {
-    it("sets the selected range to that cell", function () {
+  describe('when the user clicks or tabs to a cell', function () {
+    it('sets the selected range to that cell', function () {
       var row = 1, column = 0;
-      $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
+      $(container.find('.slick-row .slick-cell.l' + column)[row]).click();
 
       var selectedRanges = cellSelectionModel.getSelectedRanges();
       expect(selectedRanges.length).toBe(1);
@@ -59,14 +60,14 @@ describe("CellSelector", function () {
       expect(selectedRanges[0].toRow).toBe(1);
     });
 
-    it("deselects previously selected ranges", function () {
+    it('deselects previously selected ranges', function () {
       var row2Range = RangeSelectionHelper.rangeForRow(grid, 2);
       var ranges = RangeSelectionHelper.addRange(cellSelectionModel.getSelectedRanges(),
         row2Range);
       cellSelectionModel.setSelectedRanges(ranges);
 
       var row = 4, column = 1;
-      $(container.find(".slick-row .slick-cell.l" + column)[row]).click();
+      $(container.find('.slick-row .slick-cell.l' + column)[row]).click();
 
       expect(RangeSelectionHelper.isRangeSelected(cellSelectionModel.getSelectedRanges(), row2Range))
         .toBe(false);

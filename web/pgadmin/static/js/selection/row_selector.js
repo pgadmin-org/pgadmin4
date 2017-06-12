@@ -1,7 +1,7 @@
 define([
   'jquery',
   'sources/selection/range_selection_helper',
-  'slickgrid'
+  'slickgrid',
 ], function ($, RangeSelectionHelper) {
   var RowSelector = function () {
     var Slick = window.Slick;
@@ -19,7 +19,7 @@ define([
       if (grid.getColumns()[args.cell].id === 'row-header-column') {
         var $rowHeaderSpan = $(event.target);
 
-        if ($rowHeaderSpan.data('cell-type') != "row-header-selector") {
+        if ($rowHeaderSpan.data('cell-type') != 'row-header-selector') {
           $rowHeaderSpan = $(event.target).find('[data-cell-type="row-header-selector"]');
         }
 
@@ -82,16 +82,16 @@ define([
         formatter: function (rowIndex) {
           return '<span ' +
             'data-row="' + rowIndex + '" ' +
-            'data-cell-type="row-header-selector"/>'
+            'data-cell-type="row-header-selector"/>';
         },
-        width: 30
+        width: 30,
       });
       return columnDefinitions;
     };
 
     $.extend(this, {
-      "init": init,
-      "getColumnDefinitions": getColumnDefinitions
+      'init': init,
+      'getColumnDefinitions': getColumnDefinitions,
     });
   };
 

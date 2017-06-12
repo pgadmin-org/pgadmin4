@@ -1,6 +1,6 @@
 define([
   'jquery',
-  'sources/selection/range_selection_helper'
+  'sources/selection/range_selection_helper',
 ], function ($, RangeSelectionHelper) {
 
   var ActiveCellCapture = function () {
@@ -37,8 +37,8 @@ define([
     };
 
     $.extend(this, {
-      "init": init,
-      "destroy": destroy,
+      'init': init,
+      'destroy': destroy,
     });
 
     function onDragEndHandler(event, dragData) {
@@ -105,7 +105,7 @@ define([
       }
     }
 
-    function onActiveCellChangedHandler(event, args) {
+    function onActiveCellChangedHandler(event) {
       if (bypassDefaultActiveCellRangeChange) {
         bypassDefaultActiveCellRangeChange = false;
         event.stopPropagation();

@@ -18,6 +18,7 @@ define([
     var onColumnsResizedFunction;
     var onHeaderMouseEnterFunction;
     var onHeaderMouseLeaveFunction;
+    var Slick = window.Slick;
 
     beforeEach(function () {
       getSelectedRangesSpy = jasmine.createSpy('getSelectedRangesSpy');
@@ -27,15 +28,15 @@ define([
           return {
             getSelectedRanges: getSelectedRangesSpy,
             setSelectedRanges: setSelectedRangesSpy,
-          }
+          };
         },
 
         getColumns: function () {
           return [
             {id: 'row-header-column'},
             {id: 'column-1'},
-            {id: 'column-2'}
-          ]
+            {id: 'column-2'},
+          ];
         },
 
         onDragEnd: jasmine.createSpyObj('onDragEnd', ['subscribe']),
@@ -47,7 +48,7 @@ define([
         onHeaderMouseEnter: jasmine.createSpyObj('onHeaderMouseEnter', ['subscribe']),
         onHeaderMouseLeave: jasmine.createSpyObj('onHeaderMouseLeave', ['subscribe']),
 
-        getDataLength: function () { return 10 },
+        getDataLength: function () { return 10; },
 
         setActiveCell: jasmine.createSpy('setActiveCell'),
         getActiveCell: jasmine.createSpy('getActiveCell'),
@@ -108,7 +109,7 @@ define([
 
         describe('when a different column is clicked', function () {
           beforeEach(function () {
-            onHeaderClickFunction({}, {column: {pos: 4}})
+            onHeaderClickFunction({}, {column: {pos: 4}});
           });
 
           it('should set the active cell to the newly clicked columns top cell', function () {
@@ -217,7 +218,7 @@ define([
 
         describe('when the third column is clicked (thereby deselecting it)', function () {
           beforeEach(function () {
-            onHeaderClickFunction({}, {column: {pos: 21}})
+            onHeaderClickFunction({}, {column: {pos: 21}});
           });
 
           it('should set the active cell to the second column', function () {
@@ -227,7 +228,7 @@ define([
 
         describe('when the second column is clicked (thereby deselecting it)', function () {
           beforeEach(function () {
-            onHeaderClickFunction({}, {column: {pos: 5}})
+            onHeaderClickFunction({}, {column: {pos: 5}});
           });
 
           it('should not set the active cell', function () {
@@ -268,7 +269,7 @@ define([
           beforeEach(function () {
             grid.getActiveCell.and.returnValue({row: 4, cell: 5});
             getSelectedRangesSpy.and.returnValue([
-              new Slick.Range(4, 5)
+              new Slick.Range(4, 5),
             ]);
           });
 
@@ -283,7 +284,7 @@ define([
           beforeEach(function () {
             grid.getActiveCell.and.returnValue({row: 3, cell: 1});
             getSelectedRangesSpy.and.returnValue([
-              RangeSelectionHelper.rangeForRow(grid, 3)
+              RangeSelectionHelper.rangeForRow(grid, 3),
             ]);
           });
 
@@ -307,7 +308,7 @@ define([
             grid.getActiveCell.and.returnValue({row: 3, cell: 1});
             getSelectedRangesSpy.and.returnValue([
               RangeSelectionHelper.rangeForRow(grid, 5),
-              RangeSelectionHelper.rangeForRow(grid, 3)
+              RangeSelectionHelper.rangeForRow(grid, 3),
             ]);
           });
 
@@ -330,7 +331,7 @@ define([
 
         describe('and the editable new row', function () {
           beforeEach(function () {
-            onClickFunction({}, {row: 10, cell: 0})
+            onClickFunction({}, {row: 10, cell: 0});
           });
           it('does not select the row', function () {
             expect(grid.setActiveCell).not.toHaveBeenCalled();

@@ -15,7 +15,7 @@ define([
     var MenuItem = pgAdmin.Browser.MenuItem;
     var menuItem;
 
-    describe("when we create a menu item", function () {
+    describe('when we create a menu item', function () {
       describe('and it is disabled', function () {
         beforeEach(function () {
           menuItem = new MenuItem({enable: false, icon: 'fa fa-car'});

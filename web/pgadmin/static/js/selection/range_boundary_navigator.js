@@ -104,13 +104,13 @@ function (RangeSelectionHelper) {
       var val = data[rowId][columnDefinitions[colId].pos];
 
       if (val && _.isObject(val)) {
-        val = "'" + JSON.stringify(val) + "'";
-      } else if (val && typeof val != "number" && typeof val != "boolean") {
-        val = "'" + val.toString() + "'";
+        val = '\'' + JSON.stringify(val) + '\'';
+      } else if (val && typeof val != 'number' && typeof val != 'boolean') {
+        val = '\'' + val.toString() + '\'';
       } else if (_.isNull(val) || _.isUndefined(val)) {
         val = '';
       }
       return val;
-    }
+    },
   };
 });
