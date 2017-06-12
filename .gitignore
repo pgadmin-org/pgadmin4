@@ -37,4 +37,3 @@ runtime/ui_BrowserWindow.h
 web/config_local.py
 web/regression/test_config.json
 node_modules/
-yarn.lock
