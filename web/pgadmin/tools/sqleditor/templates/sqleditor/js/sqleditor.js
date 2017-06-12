@@ -176,6 +176,16 @@ define([
             scrollbarStyle: 'simple'
         });
 
+        // Refresh Code mirror on SQL panel resize to
+        // display its value properly
+        sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {
+          setTimeout(function() {
+            if(self && self.query_tool_obj) {
+              self.query_tool_obj.refresh();
+            }
+          }, 200);
+        });
+
         // Create panels for 'Data Output', 'Explain', 'Messages' and 'History'
         var data_output = new pgAdmin.Browser.Panel({
           name: 'data_output',
