@@ -24,6 +24,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
     scenarios = [('scenario name: JavascriptBundlerTestCase', dict())]
 
     def setUp(self):
+        self.skipTest("Test currently disabled for all server versions.")
         self.mockSubprocess = mock.Mock()
         self.mockOs = mock.Mock()
         sys.modules['subprocess'] = self.mockSubprocess
