@@ -1,10 +1,10 @@
 // Grant Wizard
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin.browser', 'backbone', 'backgrid', 'pgadmin.browser.node',
-  'backgrid.select.all', 'backgrid.filter', 'pgadmin.browser.server.privilege',
-  'pgadmin.browser.wizard',
-], function(gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, pgNode) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
+  'pgadmin.browser.node', 'backgrid.select.all', 'backgrid.filter',
+  'pgadmin.browser.server.privilege', 'pgadmin.browser.wizard',
+], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, pgNode) {
 
     // if module is already initialized, refer to that.
     if (pgBrowser.GrantWizard) {
@@ -416,12 +416,12 @@ define([
 
               //Returns list of Acls defined for nodes
               get_json_data: function(gid, sid, did) {
-                var url = "{{ url_for('grant_wizard.index') }}" + "acl/" +
-                    S('%s/%s/%s/').sprintf(
-                        encodeURI(gid), encodeURI(sid), encodeURI(did)).value();
                 return $.ajax({
                   async: false,
-                  url: url,
+                  url: url_for(
+                    'grant_wizard.acl',
+                    {'sid': encodeURI(sid), 'did': encodeURI(did)}
+                  ),
                   dataType: 'jsonp'
                 });
 
@@ -463,23 +463,22 @@ define([
                 var privDict = JSON.parse(json_data.responseText);
 
                 // Collection url to fetch database object types for objects field
-                var baseUrl = "{{ url_for('grant_wizard.index') }}" + "properties/" +
-                    S('%s/%s/%s/%s/%s/').sprintf(
-                        encodeURI(gid), encodeURI(sid), encodeURI(did),
-                        encodeURI(node_id), encodeURI(node_type)).value();
-
+                var baseUrl = url_for(
+                      'grant_wizard.objects', {
+                        'sid': encodeURI(sid), 'did': encodeURI(did),
+                        'node_id': encodeURI(node_id),
+                        'node_type': encodeURI(node_type)
+                      }),
                     // Model's save url
-                    saveUrl = "{{ url_for('grant_wizard.index') }}" + "save/" +
-                        S('%s/%s/%s/').sprintf(
-                            encodeURI(gid), encodeURI(sid),
-                            encodeURI(did)).value(),
-
+                    saveUrl = url_for(
+                      'grant_wizard.apply', {
+                        'sid': encodeURI(sid), 'did': encodeURI(did)
+                      }),
                     // generate encoded url based on wizard type
-                    msql_url = this.msql_url = "/grant_wizard/msql/"+
-                      S('%s/%s/%s/').sprintf(
-                          encodeURI(gid), encodeURI(sid),
-                          encodeURI(did)).value(),
-
+                    msql_url = this.msql_url = url_for(
+                      'grant_wizard.modified_sql', {
+                        'sid': encodeURI(sid), 'did': encodeURI(did)
+                      }),
                     Coll = Backbone.Collection.extend({
                       model: DatabaseObjectModel,
                       url: baseUrl
@@ -487,19 +486,19 @@ define([
 
                     // Create instances of collection and filter
                     coll = this.coll = new Coll(),
+                    self = this;
 
-                    coll.comparator = function(model) {
-                      return model.get('object_type');
-                    }
+                coll.comparator = function(model) {
+                  return model.get('object_type');
+                }
 
-                    coll.sort();
-                    dbObjectFilter = this.dbObjectFilter = this.DbObjectFilter(coll);
+                coll.sort();
+                dbObjectFilter = this.dbObjectFilter = this.DbObjectFilter(coll);
 
                 /**
                   privArray holds objects selected which further helps
                   in creating privileges Model
                 */
-                var self = this;
                 self.privArray = [];
 
                 /**
@@ -1063,7 +1062,9 @@ define([
                     show_header_maximize_btn: true,
                     disable_finish: true,
                     dialog_api: that,
-                    wizard_help: "{{ url_for('help.static', filename='grant_wizard.html') }}"
+                    wizard_help: url_for(
+                      'help.static', {'filename': 'grant_wizard.html'}
+                    )
                   },
 
                   // Callback for finish button

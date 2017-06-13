@@ -90,6 +90,16 @@ class GrantWizardModule(PgAdminModule):
             'show_system_objects'
         )
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for grant-wizard module
+        """
+        return [
+            'grant_wizard.acl', 'grant_wizard.objects', 'grant_wizard.apply',
+            'grant_wizard.modified_sql'
+        ]
+
 
 # Create blueprint for GrantWizardModule class
 blueprint = GrantWizardModule(
@@ -108,7 +118,7 @@ def check_precondition(f):
 
     @wraps(f)
     def wrap(*args, **kwargs):
-        # Here args[0] will hold self & kwargs will hold gid,sid,did
+        # Here args[0] will hold self & kwargs will hold sid,did
 
         server_info.clear()
         server_info['manager'] = get_driver(PG_DEFAULT_DRIVER)\
@@ -152,10 +162,11 @@ def script():
 
 
 @blueprint.route(
-    '/acl/<int:gid>/<int:sid>/<int:did>/', methods=('GET', 'POST'))
+    '/acl/<int:sid>/<int:did>/', methods=['GET'], endpoint='acl'
+)
 @login_required
 @check_precondition
-def acl_list(gid, sid, did):
+def acl_list(sid, did):
     """render list of acls"""
     server_prop = server_info
     return Response(response=render_template(
@@ -165,12 +176,12 @@ def acl_list(gid, sid, did):
 
 
 @blueprint.route(
-    '/properties/<int:gid>/<int:sid>/<int:did>'
-    '/<int:node_id>/<node_type>/',
-    methods=('GET', 'POST'))
+    '/<int:sid>/<int:did>/<int:node_id>/<node_type>/',
+    methods=['GET'], endpoint='objects'
+)
 @login_required
 @check_precondition
-def properties(gid, sid, did, node_id, node_type):
+def properties(sid, did, node_id, node_type):
     """It fetches the properties of object types
        and render into selection page of wizard
     """
@@ -308,11 +319,12 @@ def properties(gid, sid, did, node_id, node_type):
 
 
 @blueprint.route(
-    '/msql/<int:gid>/<int:sid>/<int:did>/',
-    methods=('GET', 'POST'))
+    '/sql/<int:sid>/<int:did>/',
+    methods=['GET'], endpoint='modified_sql'
+)
 @login_required
 @check_precondition
-def msql(gid, sid, did):
+def msql(sid, did):
     """
     This function will return modified SQL
     """
@@ -400,11 +412,11 @@ def msql(gid, sid, did):
 
 
 @blueprint.route(
-    '/save/<int:gid>/<int:sid>/<int:did>/',
-    methods=('GET', 'POST'))
+    '/<int:sid>/<int:did>/', methods=['POST'], endpoint='apply'
+)
 @login_required
 @check_precondition
-def save(gid, sid, did):
+def save(sid, did):
     """
     This function will apply the privileges to the selected
     Database Objects
