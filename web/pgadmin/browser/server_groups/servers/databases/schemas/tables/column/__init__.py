@@ -348,21 +348,24 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if 'elemoid' in data:
             length, precision, typeval = self.get_length_precision(data['elemoid'])
 
-        import re
-        # If we have length & precision both
+        # Set length and precision to None
+        data['attlen'] = None
+        data['attprecision'] = None
 
+        import re
+
+        # If we have length & precision both
         if length and precision:
             matchObj = re.search(r'(\d+),(\d+)', fulltype)
-            data['attlen'] = matchObj.group(1)
-            data['attprecision'] = matchObj.group(2)
+            if matchObj:
+                data['attlen'] = matchObj.group(1)
+                data['attprecision'] = matchObj.group(2)
         elif length:
             # If we have length only
             matchObj = re.search(r'(\d+)', fulltype)
-            data['attlen'] = matchObj.group(1)
-            data['attprecision'] = None
-        else:
-            data['attlen'] = None
-            data['attprecision'] = None
+            if matchObj:
+                data['attlen'] = matchObj.group(1)
+                data['attprecision'] = None
 
         # We need to fetch inherited tables for each table
         SQL = render_template("/".join([self.template_path,

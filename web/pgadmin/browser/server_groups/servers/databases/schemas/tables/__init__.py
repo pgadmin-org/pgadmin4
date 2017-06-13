@@ -657,19 +657,23 @@ class TableView(PGChildNodeView, DataTypeReader, VacuumSettings):
                 if 'elemoid' in column:
                     length, precision, typeval = self.get_length_precision(column['elemoid'])
 
+                # Set length and precision to None
+                column['attlen'] = None
+                column['attprecision'] = None
+
                 # If we have length & precision both
                 if length and precision:
                     matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                    column['attlen'] = matchObj.group(1)
-                    column['attprecision'] = matchObj.group(2)
+                    if matchObj:
+                        column['attlen'] = matchObj.group(1)
+                        column['attprecision'] = matchObj.group(2)
                 elif length:
                     # If we have length only
                     matchObj = re.search(r'(\d+)', fulltype)
-                    column['attlen'] = matchObj.group(1)
-                    column['attprecision'] = None
-                else:
-                    column['attlen'] = None
-                    column['attprecision'] = None
+                    if matchObj:
+                        column['attlen'] = matchObj.group(1)
+                        column['attprecision'] = None
+
 
                 SQL = render_template("/".join([self.column_template_path,
                                                 'is_referenced.sql']),
