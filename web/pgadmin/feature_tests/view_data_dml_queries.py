@@ -71,6 +71,10 @@ CREATE TABLE public.defaults
 """
 
     def before(self):
+        with test_utils.Database(self.server) as (connection, _):
+            if connection.server_version < 90100:
+                self.skipTest("COLLATE is not present in PG versions below v9.1")
+
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],
                                                   self.server['db_password'],
