@@ -70,8 +70,7 @@ private slots:
     void openUrl();
     void preferences();
     void about();
-    void zoomIn();
-    void zoomOut();
+    void setZoomLevel(int zoomFlag);
 #ifdef PGADMIN4_USE_WEBENGINE
     void downloadRequested(QWebEngineDownloadItem *download);
 #endif
@@ -104,6 +103,8 @@ private:
     QShortcut *aboutShortcut;
     QShortcut *zoomInShortcut;
     QShortcut *zoomOutShortcut;
+    QShortcut *zoomResetShortcut;
+    QSignalMapper *signalMapper;
 
     QGridLayout  *m_tabGridLayout;
     QGridLayout  *m_mainGridLayout;

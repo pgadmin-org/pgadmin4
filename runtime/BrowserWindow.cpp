@@ -197,6 +197,8 @@ void BrowserWindow::createActions()
     exitShortcut->setContext(Qt::ApplicationShortcut);
     connect(exitShortcut, SIGNAL(activated()), this, SLOT(close()));
 
+    signalMapper = new QSignalMapper(this);
+
     // About box
     aboutShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_A), this);
     aboutShortcut->setContext(Qt::ApplicationShortcut);
@@ -205,12 +207,23 @@ void BrowserWindow::createActions()
     // Zoom in
     zoomInShortcut = new QShortcut(QKeySequence(QKeySequence::ZoomIn), this);
     zoomInShortcut->setContext(Qt::ApplicationShortcut);
-    connect(zoomInShortcut, SIGNAL(activated()), this, SLOT(zoomIn()));
+    signalMapper->setMapping(zoomInShortcut, 1);
+    connect(zoomInShortcut, SIGNAL(activated()), signalMapper, SLOT(map()));
 
     // Zoom out
     zoomOutShortcut = new QShortcut(QKeySequence(QKeySequence::ZoomOut), this);
     zoomOutShortcut->setContext(Qt::ApplicationShortcut);
-    connect(zoomOutShortcut, SIGNAL(activated()), this, SLOT(zoomOut()));
+    signalMapper->setMapping(zoomOutShortcut, -1);
+    connect(zoomOutShortcut, SIGNAL(activated()), signalMapper,  SLOT(map()));
+
+    // Reset Zoom
+    zoomResetShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_0), this);
+    zoomResetShortcut->setContext(Qt::ApplicationShortcut);
+    signalMapper->setMapping(zoomResetShortcut,  0);
+    connect(zoomResetShortcut, SIGNAL(activated()), signalMapper,  SLOT(map()));
+
+    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(setZoomLevel(int)));
+
 
 #ifdef __APPLE__
   #ifdef PGADMIN4_USE_WEBENGINE
@@ -1186,8 +1199,8 @@ void BrowserWindow::about()
 }
 
 
-// Zoom in
-void BrowserWindow::zoomIn()
+// Set Zoom Level
+void BrowserWindow::setZoomLevel(int zoomFlag)
 {
     int tabCount = 0;
     WebViewWindow *webviewPtr = NULL;
@@ -1209,54 +1222,26 @@ void BrowserWindow::zoomIn()
 
                     if (webviewPtr != NULL)
                     {
-                        webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() + 0.1);
+                        if (zoomFlag == 1) {
+                             webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() + 0.1);
+                        }
+                        else if (zoomFlag == -1) {
+                            webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() - 0.1);
+                        }
+                        else if(zoomFlag == 0) {
+                            webviewPtr->setZoomFactor(1.0);
+                        }
                     }
                 }
             }
         }
     }
 
-    // Save the zoom factor for next time
+    // Set the zoom value for the next time
     QSettings settings;
     settings.setValue("Browser/Zoom", m_mainWebView->zoomFactor());
+
 }
-
-
-// Zoom out
-void BrowserWindow::zoomOut()
-{
-    int tabCount = 0;
-    WebViewWindow *webviewPtr = NULL;
-
-    // Loop through all the tabs
-    for (tabCount = 0; tabCount < m_tabWidget->count(); tabCount++)
-    {
-        QWidget *tab = m_tabWidget->widget(tabCount);
-        if (tab != NULL)
-        {
-            // Find and loop through any child controls
-            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
-            foreach( QWidget* widgetPtr, widgetList )
-            {
-                if (widgetPtr != NULL)
-                {
-                    // If it's a web view control, set the zoom level based on the main view
-                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-
-                    if (webviewPtr != NULL)
-                    {
-                        webviewPtr->setZoomFactor(m_mainWebView->zoomFactor() - 0.1);
-                    }
-                }
-            }
-        }
-    }
-
-    // Save the zoom factor for next time
-    QSettings settings;
-    settings.setValue("Browser/Zoom", m_mainWebView->zoomFactor());
-}
-
 
 // Open an arbitrary URL
 void BrowserWindow::openUrl()

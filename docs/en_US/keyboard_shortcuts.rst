@@ -23,6 +23,8 @@ When running in the Desktop Runtime, the following keyboard shortcuts are availa
 +--------------------------+----------------+---------------------------------------+
 | Ctrl+Minus               | Cmd+Minus      | Zoom out                              |
 +--------------------------+----------------+---------------------------------------+
+| Ctrl+0                   | Cmd+0          | Reset the zoom level                  |
++--------------------------+----------------+---------------------------------------+
 
 **SQL Editors**
 
