@@ -58,5 +58,5 @@ def webdir_path():
 
 def try_building_js():
     with pushd(webdir_path()):
-        if call(['yarn', 'run', 'bundle']) != 0:
+        if call(['yarn', 'run', 'bundle:dev']) != 0:
             raise OSError('Error executing bundling the application')

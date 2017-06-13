@@ -5,7 +5,10 @@ module.exports = {
     'amd': true,
     'jasmine': true,
   },
-  'extends': 'eslint:recommended',
+  'extends': [
+    'eslint:recommended',
+    "plugin:react/recommended",
+  ],
   'parserOptions': {
     'ecmaFeatures': {
       'experimentalObjectRestSpread': true,
@@ -40,6 +43,6 @@ module.exports = {
     'comma-dangle': [
       'error',
       'always-multiline'
-    ]
+    ],
   }
 };

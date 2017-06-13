@@ -9,7 +9,10 @@ define([
     'sources/slickgrid/event_handlers/handle_query_output_keyboard_event',
     'sources/selection/xcell_selection_model',
     'sources/selection/set_staged_rows',
-    'sources/gettext', 'sources/sqleditor_utils',
+    'sources/gettext',
+    'sources/sqleditor_utils',
+    'sources/generated/history',
+    'sources/generated/reactComponents',
 
     'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
     'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
@@ -32,9 +35,9 @@ define([
     'slickgrid/plugins/slick.rowselectionmodel',
     'slickgrid/slick.grid'
 ], function(
-    $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror, pgExplain, GridSelector,
-    ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-    XCellSelectionModel, setStagedRows, gettext, SqlEditorUtils
+  $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
+  pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
+    XCellSelectionModel, setStagedRows, gettext, SqlEditorUtils, HistoryBundle, reactComponents
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -874,147 +877,14 @@ define([
 
         // Remove any existing grid first
         if (self.history_grid) {
-            self.history_grid.remove();
+          self.history_grid.remove();
         }
 
-        var history_model = Backbone.Model.extend({
-          defaults: {
-            status: undefined,
-            start_time: undefined,
-            query: undefined,
-            row_affected: 0,
-            row_retrieved: 0,
-            total_time: undefined,
-            message: ''
-          }
-        });
+        self.history_collection = new HistoryBundle.historyCollection([]);
 
-        var history_collection = self.history_collection = new (Backbone.Collection.extend({
-            model: history_model,
-            // comparator to sort the history in reverse order of the start_time
-            comparator: function(a, b) {
-              return -a.get('start_time').localeCompare(b.get('start_time'));
-            }
-        }));
-        var columns = [{
-            name: "status",
-            label: "",
-            cell: Backgrid.Cell.extend({
-              class: 'sql-status-cell',
-              render: function() {
-                this.$el.empty();
-                var $btn = $('<button></button>', {
-                  class: 'btn btn-circle'
-                }).appendTo(this.$el);
-                var $circleDiv = $('<i></i>', {class: 'fa'}).appendTo($btn);
-                if (this.model.get('status')) {
-                  $btn.addClass('btn-success');
-                  $circleDiv.addClass('fa-check');
-                } else {
-                  $btn.addClass('btn-danger');
-                  $circleDiv.addClass('fa-times');
-                }
-
-                return this;
-              },
-              editable: false
-            }),
-            editable: false
-          }, {
-            name: "start_time",
-            label: "Date",
-            cell: "string",
-            editable: false,
-            resizeable: true
-          }, {
-            name: "query",
-            label: "Query",
-            cell: "string",
-            editable: false,
-            resizeable: true
-          }, {
-            name: "row_affected",
-            label: "Rows affected",
-            cell: "integer",
-            editable: false,
-            resizeable: true
-          }, {
-            name: "total_time",
-            label: "Total Time",
-            cell: "string",
-            editable: false,
-            resizeable: true
-          }, {
-            name: "message",
-            label: "Message",
-            cell: "string",
-            editable: false,
-            resizeable: true
-        }];
-
-
-        // Create Collection of Backgrid columns
-        var columnsColl = new Backgrid.Columns(columns);
-        var $history_grid = self.$el.find('#history_grid');
-
-        var grid = self.history_grid = new Backgrid.Grid({
-            columns: columnsColl,
-            collection: history_collection,
-            className: "backgrid table-bordered presentation table backgrid-striped"
-        });
-
-        // Render the grid
-        $history_grid.append(grid.render().$el);
-
-        var sizeAbleCol = new Backgrid.Extension.SizeAbleColumns({
-          collection: history_collection,
-          columns: columnsColl,
-          grid: self.history_grid
-        });
-
-        $history_grid.find('thead').before(sizeAbleCol.render().el);
-
-        // Add resize handlers
-        var sizeHandler = new Backgrid.Extension.SizeAbleColumnsHandlers({
-          sizeAbleColumns: sizeAbleCol,
-          grid: self.history_grid,
-          saveColumnWidth: true
-        });
-
-        // sizeHandler should render only when table grid loaded completely.
-        setTimeout(function() {
-          $history_grid.find('thead').before(sizeHandler.render().el);
-        }, 1000);
-
-        // re render sizeHandler whenever history panel tab becomes visible
-        self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function(ev) {
-          $history_grid.find('thead').before(sizeHandler.render().el);
-        });
-
-        // Initialized table width 0 still not calculated
-        var table_width = 0;
-        // Listen to resize events
-        columnsColl.on('resize',
-          function(columnModel, newWidth, oldWidth, offset) {
-            var $grid_el = $history_grid.find('table'),
-                tbl_orig_width = $grid_el.width(),
-                offset = oldWidth - newWidth,
-                tbl_new_width = tbl_orig_width - offset;
-
-            if (table_width == 0) {
-              table_width = tbl_orig_width
-            }
-            // Table new width cannot be less than original width
-            if (tbl_new_width >= table_width) {
-              $($grid_el).css('width', tbl_new_width + 'px');
-            }
-            else {
-              // reset if calculated tbl_new_width is less than original
-              // table width
-              tbl_new_width = table_width;
-              $($grid_el).css('width', tbl_new_width + 'px');
-            }
-        });
+        let queryHistoryElement = reactComponents.React.createElement(
+          reactComponents.QueryHistory, {historyCollection: self.history_collection});
+        reactComponents.render(queryHistoryElement, $('#history_grid')[0]);
       },
 
       // Callback function for Add New Row button click.
@@ -1317,7 +1187,7 @@ define([
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
         // ask for confirmation only if anything to clear
-        if(!self.history_collection.length) { return; }
+        if(!self.history_collection.length()) { return; }
 
         alertify.confirm(gettext("Clear history"),
           gettext("Are you sure you wish to clear the history?"),
@@ -2140,11 +2010,13 @@ define([
             $("#btn-flash").prop('disabled', false);
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             self.gridView.history_collection.add({
-              'status' : status, 'start_time': self.query_start_time.toString(),
-              'query': self.query, 'row_affected': self.rows_affected,
-              'total_time': self.total_time, 'message':msg
+              'status' : status,
+              'start_time': self.query_start_time,
+              'query': self.query,
+              'row_affected': self.rows_affected,
+              'total_time': self.total_time,
+              'message':msg,
             });
-            self.gridView.history_collection.sort();
           }
         },
 
@@ -2417,10 +2289,13 @@ define([
 
                 // Update the sql results in history tab
                 _.each(res.data.query_result, function(r) {
-                  self.gridView.history_collection.add(
-                    {'status' : r.status, 'start_time': self.query_start_time.toString(),
-                    'query': r.sql, 'row_affected': r.rows_affected,
-                    'total_time': self.total_time, 'message': r.result
+                  self.gridView.history_collection.add({
+                    'status': r.status,
+                    'start_time': self.query_start_time,
+                    'query': r.sql,
+                    'row_affected': r.rows_affected,
+                    'total_time': self.total_time,
+                    'message': r.result,
                   });
                 });
                 self.trigger('pgadmin-sqleditor:loading-icon:hide');
@@ -3366,7 +3241,7 @@ define([
 
                 var msg = e.responseText;
                 if (e.responseJSON != undefined &&
-                  e.responseJSON.errormsg != undefined)
+                    e.responseJSON.errormsg != undefined)
                   msg = e.responseJSON.errormsg;
 
                 alertify.alert('Get Object Name Error', msg);

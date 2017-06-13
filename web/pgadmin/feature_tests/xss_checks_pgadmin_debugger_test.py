@@ -83,7 +83,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
         # If debugger plugin is not found
         if is_error and is_error == "Debugger Error":
-            self.page.click_modal_ok()
+            self.page.click_modal('OK')
             self.skipTest("Please make sure that debugger plugin is properly configured")
         else:
             time.sleep(2)

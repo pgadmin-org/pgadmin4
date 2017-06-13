@@ -22,7 +22,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015'],
+            presets: ['es2015', 'react'],
           },
         },
       },
@@ -51,6 +51,7 @@ module.exports = {
   },
 
   resolve: {
+    extensions: ['.js', '.jsx'],
     alias: {
       'alertify': sourcesDir + '/vendor/alertifyjs/alertify',
       'jquery': sourcesDir + '/vendor/jquery/jquery-1.11.2',
@@ -66,5 +67,12 @@ module.exports = {
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
     },
+  },
+  externals: {
+    'react/addons': true,
+    'react/lib/ReactContext': true,
+    'react/lib/ExecutionEnvironment': true,
+    'react-dom/test-utils': true,
+    'react-test-renderer/shallow': true,
   },
 };

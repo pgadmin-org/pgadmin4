@@ -1,18 +1,21 @@
 /* eslint-env node */
 
 module.exports = {
-  context: __dirname + '/pgadmin/static/jsx',
-  entry: './components.jsx',
+  context: __dirname + '/pgadmin/static',
+  entry: {
+    reactComponents: './jsx/components.jsx',
+    history: './js/history/index.js',
+  },
   output: {
     libraryTarget: 'amd',
     path: __dirname + '/pgadmin/static/js/generated',
-    filename: 'reactComponents.js',
+    filename: '[name].js',
   },
 
   module: {
     rules: [{
       test: /\.jsx?$/,
-      exclude: /node_modules/,
+      exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
         options: {

@@ -61,7 +61,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
         self.mockOs.listdir.return_value = [u'history.js', u'reactComponents.js']
 
         javascriptBundler.bundle()
-        self.mockSubprocess.call.assert_called_once_with(['yarn', 'run', 'bundle'])
+        self.mockSubprocess.call.assert_called_once_with(['yarn', 'run', 'bundle:dev'])
 
         reportedState = javascriptBundler.report()
         expectedState = self.JsState.NEW
@@ -110,7 +110,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
         self.mockOs.listdir.return_value = [u'history.js', u'reactComponents.js']
 
         javascriptBundler.bundle()
-        self.mockSubprocess.call.assert_called_once_with(['yarn', 'run', 'bundle'])
+        self.mockSubprocess.call.assert_called_once_with(['yarn', 'run', 'bundle:dev'])
 
         reportedState = javascriptBundler.report()
         expectedState = self.JsState.OLD

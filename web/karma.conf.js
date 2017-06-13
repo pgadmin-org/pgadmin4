@@ -29,7 +29,7 @@ module.exports = function (config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'regression/javascript/**/*.js': ['webpack'],
-      // 'regression/javascript/**/*.jsx': ['webpack'],
+      'regression/javascript/**/*.jsx': ['webpack'],
     },
 
     webpack: webpackConfig,

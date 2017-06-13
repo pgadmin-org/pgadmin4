@@ -33,15 +33,16 @@ class PgadminPage:
     def reset_layout(self):
         self.click_element(self.find_by_partial_link_text("File"))
         self.find_by_partial_link_text("Reset Layout").click()
-        self.click_modal_ok()
+        self.click_modal('OK')
         self.wait_for_reloading_indicator_to_disappear()
 
-    def click_modal_ok(self):
+    def click_modal(self, button_text):
         time.sleep(0.5)
         # Find active alertify dialog in case of multiple alertify dialog & click on that dialog
-        self.click_element(
-            self.find_by_xpath("//div[contains(@class, 'alertify') and not(contains(@class, 'ajs-hidden'))]//button[.='OK']")
-        )
+        modal_button = self.find_by_xpath(
+            "//div[contains(@class, 'alertify') and not(contains(@class, 'ajs-hidden'))]//button[.='%s']"
+            % button_text)
+        self.click_element(modal_button)
 
     def add_server(self, server_config):
         self.find_by_xpath("//*[@class='aciTreeText' and contains(.,'Servers')]").click()
@@ -78,10 +79,13 @@ class PgadminPage:
 
     def remove_server(self, server_config):
         self.driver.switch_to.default_content()
-        self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "' and @class='aciTreeItem']").click()
-        self.find_by_partial_link_text("Object").click()
-        self.find_by_partial_link_text("Delete/Drop").click()
-        self.click_modal_ok()
+        server_to_remove = self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "' and @class='aciTreeItem']")
+        self.click_element(server_to_remove)
+        object_menu_item = self.find_by_partial_link_text("Object")
+        self.click_element(object_menu_item)
+        delete_menu_item = self.find_by_partial_link_text("Delete/Drop")
+        self.click_element(delete_menu_item)
+        self.click_modal('OK')
 
     def select_tree_item(self, tree_item_text):
         self.find_by_xpath("//*[@id='tree']//*[.='" + tree_item_text + "' and @class='aciTreeItem']").click()
@@ -130,6 +134,7 @@ class PgadminPage:
         )
 
     def click_element(self, element):
+        # driver must be here to adhere to the method contract in selenium.webdriver.support.wait.WebDriverWait.until()
         def click_succeeded(driver):
             try:
                 element.click()
@@ -175,8 +180,9 @@ class PgadminPage:
         time.sleep(sleep_time)
 
     def click_tab(self, tab_name):
-        self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
-                           "and contains(.,'" + tab_name + "')]").click()
+        tab = self.find_by_xpath("//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') "
+                           "and contains(.,'" + tab_name + "')]")
+        self.click_element(tab)
 
     def wait_for_input_field_content(self, field_name, content):
         def input_field_has_content(driver):

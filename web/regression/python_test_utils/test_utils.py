@@ -227,6 +227,7 @@ def create_constraint(
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
+
 def create_debug_function(server, db_name, function_name="test_func"):
     try:
         connection = get_db_connection(db_name,
@@ -304,6 +305,7 @@ def drop_database(connection, database_name):
             connection.set_isolation_level(old_isolation_level)
             connection.commit()
             connection.close()
+
 
 def drop_tablespace(connection):
     """This function used to drop the tablespace"""
