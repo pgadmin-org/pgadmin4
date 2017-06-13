@@ -15,8 +15,8 @@
 // use alertify and underscore js
 var alertify = require("alertify"),
     _ = require("underscore"),
-    S = require("underscore.string")
-    gettext = require("sources/gettext");
+    S = require("underscore.string"),
+    gettext = require('sources/gettext');
 
 /*---------------------------------------------------------
   Define functions used for various operations
@@ -1286,7 +1286,7 @@ if (
     if (!have_all_types) {
       select_box += '<option value="*">' + gettext('All Files') + '</option>';
     }
-    select_box += "</select><label>' + gettext('Format') + ': </label></div>";
+    select_box += "</select><label>" + gettext('Format') + ": </label></div>";
   }
 
   $(".allowed_file_types").html(select_box);
