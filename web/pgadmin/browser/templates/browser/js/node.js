@@ -730,9 +730,7 @@ define([
           return;
 
         // Here call data grid method to render query tool
-        pgAdmin.DataGrid.show_query_tool.apply(
-          this, [undefined, i]
-        );
+        pgAdmin.DataGrid.show_query_tool('', i);
       },
       added: function(item, data, browser) {
         var b = browser || pgBrowser,

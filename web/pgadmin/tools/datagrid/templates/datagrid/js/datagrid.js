@@ -110,7 +110,6 @@ define([
         // Creating a new pgAdmin.Browser frame to show the data.
         var dataGridFrameType = new pgAdmin.Browser.Frame({
           name: 'frm_datagrid',
-          title: 'Edit Data',
           showTitle: true,
           isCloseable: true,
           isPrivate: true,
@@ -162,7 +161,7 @@ define([
         var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/datagrid/" + data.mnuid + "/" + d._type + "/" +
           parentData.server._id + "/" + parentData.database._id + "/" + d._id;
 
-        var grid_title = parentData.server.label + '-' + parentData.database.label + '-'
+        var grid_title = parentData.server.label + ' - ' + parentData.database.label + ' - '
                         + nsp_name + '.' + d.label;
 
         // Initialize the data grid.
@@ -306,8 +305,32 @@ define([
         );
       },
 
+      get_panel_title: function() {
+        // Get the parent data from the tree node hierarchy.
+         var tree = pgAdmin.Browser.tree,
+            selected_item = tree.selected(),
+            item_data = tree.itemData(selected_item);
+        var self = this;
+
+        var node = pgBrowser.Nodes[item_data._type],
+          parentData = node.getTreeNodeHierarchy(selected_item);
+
+        // If server, database is undefined then return from the function.
+        if (parentData.server === undefined) {
+          return;
+        }
+        // If Database is not available then use default db
+        var db_label = parentData.database ? parentData.database.label
+                                           : parentData.server.db;
+
+        var grid_title = db_label + ' on ' + parentData.server.user.name + '@' +
+                parentData.server.label;
+        return grid_title;
+      },
+
       initialize_data_grid: function(baseUrl, grid_title, sql_filter) {
         var self = this;
+          self.grid_title = grid_title;
 
         /* Ajax call to initialize the edit grid, which creates
          * an asynchronous connection and create appropriate query
@@ -324,23 +347,21 @@ define([
             /* On successfully initialization find the dashboard panel,
              * create new panel and add it to the dashboard panel.
              */
-            var panel_title = ' Query-' + self.title_index;
-            self.title_index += 1;
 
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/false/"
-                                                                    + encodeURIComponent(grid_title);
-
+                                                                    + encodeURIComponent(self.grid_title);
+            var grid_title = gettext('Edit Data - ') + self.grid_title;
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
 
               // add a load listener to the window so that the title gets changed on page load
               newWin.addEventListener("load", function() {
-                newWin.document.title = panel_title;
+                newWin.document.title = grid_title;
               });
             } else {
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
               dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
-              dataGridPanel.title(panel_title);
+              dataGridPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
               dataGridPanel.icon('fa fa-bolt');
               dataGridPanel.focus();
 
@@ -408,21 +429,6 @@ define([
         if (parentData.database) {
           baseUrl += "/" + parentData.database._id;
         }
-        // If Database is not available then use default db
-        var db_label = parentData.database ? parentData.database.label
-                                           : parentData.server.db;
-
-        var grid_title = db_label + ' on ' + parentData.server.user.name + '@' +
-                parentData.server.label ;
-
-        var panel_title = ' Query-';
-
-        if (!_.isUndefined(self.title_index) && !isNaN(self.title_index)) {
-          panel_title += self.title_index;
-          self.title_index += 1;
-        } else {
-          panel_title += gettext(" untitled");
-        }
 
         $.ajax({
           url: baseUrl,
@@ -431,16 +437,18 @@ define([
           contentType: "application/json",
           success: function(res) {
 
+            var grid_title = self.get_panel_title();
             // Open the panel if frame is initialized
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
                         + encodeURIComponent(grid_title) + '?' + "query_url=" + encodeURI(sURL);
 
+            grid_title = gettext('Query - ') + grid_title;
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
 
               // add a load listener to the window so that the title gets changed on page load
               newWin.addEventListener("load", function() {
-                newWin.document.title = panel_title;
+                newWin.document.title = grid_title;
               });
             } else {
               /* On successfully initialization find the dashboard panel,
@@ -448,7 +456,7 @@ define([
                */
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
               queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
-              queryToolPanel.title(panel_title);
+              queryToolPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
               queryToolPanel.icon('fa fa-bolt');
               queryToolPanel.focus();
 

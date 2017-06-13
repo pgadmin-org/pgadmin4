@@ -369,3 +369,16 @@ i.wcTabIcon {
   position: absolute;
   text-align: center;
 }
+
+.wcPanelTab > div {
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 125px;
+}
+
+.wcPanelTabActive > div {
+  width: auto !important;
+  max-width: 100%;
+}

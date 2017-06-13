@@ -110,11 +110,10 @@ define([
 
       // This function is used to render the template.
       render: function() {
-        var self = this;
+        var self = this,
+          filter = self.$el.find('#sql_filter');
 
         $('.editor-title').text(_.unescape(self.editor_title));
-
-        var filter = self.$el.find('#sql_filter');
 
         self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
             lineNumbers: true,
