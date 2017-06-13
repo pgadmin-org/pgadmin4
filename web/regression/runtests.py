@@ -223,13 +223,15 @@ def update_test_result(test_cases, test_result_dict):
     """
     for test_case in test_cases:
         test_class_name = test_case[0].__class__.__name__
+        test_scenario_name = getattr(
+            test_case[0], 'scenario_name', str(test_case[0])
+        )
         if test_class_name in test_result_dict:
             test_result_dict[test_class_name].append(
-                {test_case[0].scenario_name: test_case[1]})
+                {test_scenario_name: test_case[1]})
         else:
             test_result_dict[test_class_name] = \
-                [{test_case[0].scenario_name: test_case[
-                    1]}]
+                [{test_scenario_name: test_case[1]}]
 
 
 def get_tests_result(test_suite):
