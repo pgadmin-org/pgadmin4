@@ -1,8 +1,8 @@
 // Backup dialog
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node'
-], function(gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
+], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
 
   // if module is already initialized, refer to that.
   if (pgBrowser.Backup) {
@@ -441,8 +441,9 @@ TODO LIST FOR BACKUP:
                       attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
                       text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                      attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
-                      url: '{{ url_for('help.static', filename='backup_dialog.html') }}'
+                      attrs:{
+                        name:'dialog_help', type:'button', label: gettext('Backup'),
+                        url: url_for('help.static', {'filename': 'backup_dialog.html'})
                       }
                     },{
                       text: gettext('Backup'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
@@ -545,8 +546,7 @@ TODO LIST FOR BACKUP:
                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
                   var self = this,
-                    baseUrl = "{{ url_for('backup.index') }}" +
-                      "create_job/" + treeInfo.server._id,
+                    baseUrl = url_for('backup.create_server_job', {'sid': treeInfo.server._id}),
                     args =  this.view.model.toJSON();
 
                   $.ajax({
@@ -657,8 +657,10 @@ TODO LIST FOR BACKUP:
                       attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Backup')}
                     },{
                       text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                      attrs:{name:'dialog_help', type:'button', label: gettext('Backup'),
-                      url: '{{ url_for('help.static', filename='backup_dialog.html') }}'}
+                      attrs:{
+                        name:'dialog_help', type:'button', label: gettext('Backup'),
+                        url: url_for('help.static', {'filename': 'backup_dialog.html'})
+                      }
                     },{
                       text: gettext('Backup'), key: 13, className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
                       'data-btn-name': 'backup'
@@ -775,8 +777,7 @@ TODO LIST FOR BACKUP:
                   }
 
                   var self = this,
-                    baseUrl = "{{ url_for('backup.index') }}" +
-                      "create_job/backup_object/" + treeInfo.server._id,
+                    baseUrl = url_for('backup.create_object_job', {'sid': treeInfo.server._id}),
                       args =  this.view.model.toJSON();
 
                   $.ajax({

@@ -58,6 +58,13 @@ class BackupModule(PgAdminModule):
         """
         return self.pref_show_system_objects
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for backup module
+        """
+        return ['backup.create_server_job', 'backup.create_object_job']
+
 
 # Create blueprint for BackupModule class
 blueprint = BackupModule(
@@ -229,7 +236,9 @@ def filename_with_file_manager_path(_file):
     return fs_short_path(_file)
 
 
-@blueprint.route('/create_job/<int:sid>', methods=['POST'])
+@blueprint.route(
+    '/job/<int:sid>', methods=['POST'], endpoint='create_server_job'
+)
 @login_required
 def create_backup_job(sid):
     """
@@ -330,7 +339,9 @@ def create_backup_job(sid):
     )
 
 
-@blueprint.route('/create_job/backup_object/<int:sid>', methods=['POST'])
+@blueprint.route(
+    '/job/<int:sid>/object', methods=['POST'], endpoint='create_object_job'
+)
 @login_required
 def create_backup_objects_job(sid):
     """
