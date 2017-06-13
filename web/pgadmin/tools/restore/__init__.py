@@ -51,6 +51,12 @@ class RestoreModule(PgAdminModule):
             'when': None
         }]
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for backup module
+        """
+        return ['restore.create_job']
 
 # Create blueprint for RestoreModule class
 blueprint = RestoreModule(
@@ -160,7 +166,7 @@ def filename_with_file_manager_path(_file):
     return fs_short_path(_file)
 
 
-@blueprint.route('/create_job/<int:sid>', methods=['POST'])
+@blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
 @login_required
 def create_restore_job(sid):
     """

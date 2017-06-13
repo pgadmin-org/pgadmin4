@@ -1,10 +1,11 @@
 // Restore dialog
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'pgadmin.browser.node'
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
+  'backform', 'pgadmin.browser.node'
 ], function(
-  gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
+  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
+  pgNode
 ) {
 
     // if module is already initialized, refer to that.
@@ -370,8 +371,10 @@ define([
                     attrs:{name:'object_help', type:'button', url: 'backup.html', label: gettext('Restore')}
                   },{
                     text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: gettext('Restore'),
-                    url: '{{ url_for('help.static', filename='restore_dialog.html') }}'}
+                    attrs:{
+                      name:'dialog_help', type:'button', label: gettext('Restore'),
+                      url: url_for('help.static', {'filename': 'restore_dialog.html'})
+                    }
                   },{
                     text: gettext('Restore'), key: 13,
                     className: 'btn btn-primary fa fa-upload pg-alertify-button', restore: true,
@@ -517,8 +520,7 @@ define([
                   }
 
                   var self = this,
-                      baseUrl = "{{ url_for('restore.index') }}create_job/" +
-                        info.server._id,
+                      baseUrl = url_for('restore.create_job', {'sid': info.server._id}),
                       args =  this.view.model.toJSON();
 
                   $.ajax({
