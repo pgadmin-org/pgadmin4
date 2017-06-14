@@ -23,7 +23,16 @@ appbundle-webkit: docs
 	PGADMIN4_USE_WEBKIT=1 ./pkg/mac/build.sh
 
 check:
-	python web/regression/runtests.py
+	cd web && yarn run bundle && yarn run linter && yarn run karma start -- --single-run && python regression/runtests.py
+
+check-python:
+	cd web && yarn run bundle && python regression/runtests.py --exclude feature_tests
+
+check-feature:
+	cd web && yarn run bundle && python regression/runtests.py --pkg feature_tests
+
+check-js:
+	cd web && yarn run linter && yarn run karma start -- --single-run
 
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-dist clean-docs clean-pip clean-src
