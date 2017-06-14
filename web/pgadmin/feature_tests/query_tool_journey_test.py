@@ -90,7 +90,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         time.sleep(5)
         self.page.find_by_partial_link_text("Tools").click()
         self.page.find_by_partial_link_text("Query Tool").click()
-        self.page.click_tab('Query-1')
+        self.page.click_tab('Query -')
         time.sleep(5)
 
     def _execute_query(self, query):

@@ -113,7 +113,7 @@ class PgadminPage:
         try:
             self.driver.find_element_by_id("frmPassword")
             # Enter password here if needed
-            self.click_modal_ok()
+            self.click_modal('OK')
         except WebDriverException:
             return
 
