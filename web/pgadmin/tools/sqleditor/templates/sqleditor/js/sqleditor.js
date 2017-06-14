@@ -196,7 +196,7 @@ define([
           height:'100%',
           isCloseable: false,
           isPrivate: true,
-          content: '<div id ="datagrid" class="sql-editor-grid-container"></div>'
+          content: '<div id ="datagrid" class="sql-editor-grid-container text-12"></div>'
         })
 
         var explain = new pgAdmin.Browser.Panel({
@@ -587,7 +587,9 @@ define([
               options['editor'] = is_editable ? Slick.Editors.JsonText
                                               : Slick.Editors.ReadOnlyJsonText;
               options['formatter'] = Slick.Formatters.JsonString;
-            } else if(c.cell == 'number') {
+            } else if(c.cell == 'number' ||
+              $.inArray(c.type, ['oid', 'xid', 'real']) !== -1
+            ) {
               options['editor'] = is_editable ? Slick.Editors.CustomNumber
                                               : Slick.Editors.ReadOnlyText;
               options['formatter'] = Slick.Formatters.Numbers;
@@ -597,7 +599,7 @@ define([
               options['formatter'] = Slick.Formatters.Checkmark;
             } else {
               options['editor'] = is_editable ? Slick.Editors.pgText
-                                              : Slick.Editors.ReadOnlypgText;
+                                                : Slick.Editors.ReadOnlypgText;
               options['formatter'] = Slick.Formatters.Text;
             }
 

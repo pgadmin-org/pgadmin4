@@ -488,3 +488,24 @@ input.editor-checkbox:focus {
   border-right: 1px solid #ccc;
   z-index: 0;
 }
+
+/* Style for text editor */
+.pg_text_editor {
+  z-index:10000;
+  position:absolute;
+  background: #fff;
+  padding: 7px 5px 5px 1px;
+  border:2px solid #888;
+  -moz-border-radius:10px;
+  border-radius:10px;
+}
+.pg_textarea {
+  backround:#fff;
+  width:250px;
+  height:80px;
+  border:0;
+  outline:0;
+}
+.pg_buttons {
+  text-align:right;
+}

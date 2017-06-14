@@ -22,6 +22,32 @@
     }
   });
 
+  // return wrapper element
+  function getWrapper() {
+    return $("<div class='pg_text_editor' />");
+  }
+
+  // return textarea element
+  function getTextArea() {
+    return $("<textarea class='pg_textarea text-12' hidefocus rows=5'>");
+  }
+
+  // Generate and return editor buttons
+  function getButtons(editable) {
+    var $buttons = $("<div class='pg_buttons' />"),
+      label = editable ? 'Cancel': 'OK';
+      button_type = editable ? 'btn-danger' : 'btn-primary';
+
+    if (editable) {
+      var $save_button = $("<button class='btn btn-primary fa fa-lg fa-save long_text_editor pg-alertify-button'>Save</button>")
+          .appendTo($buttons);
+    }
+
+    $cancel_button = $("<button class='btn " + button_type + " fa fa-lg fa-times long_text_editor pg-alertify-button'>"+ label +"</button>")
+        .appendTo($buttons);
+    return $buttons;
+  }
+
   /*
    * This function handles the [default] and [null] values for cells
    * if row is copied, otherwise returns the editor value.
@@ -65,6 +91,31 @@
     }
   }
 
+  function calculateEditorPosition(position, $wrapper) {
+    var $edit_grid = $wrapper.parent().find('#datagrid');
+    var _elem_height = $edit_grid.height(),
+      is_hidden, _position;
+    // We cannot display editor partially visible so we will lift it above select column
+    if(position.top > _elem_height) {
+      is_hidden = position.bottom - _elem_height;
+    }
+
+    if(is_hidden) {
+      _position = position.top - is_hidden;
+    } else {
+      _position = position.top-7;
+    }
+    position.top = _position;
+
+    var grid_width = $edit_grid.width(),
+      popup_width = $wrapper.width() + 32;
+    popup_width += position.left;
+
+    if(popup_width > grid_width) {
+      position.left -= (popup_width - grid_width);
+    }
+    return position;
+  }
 
   // Text data type editor
   function pgTextEditor(args) {
@@ -75,18 +126,12 @@
     this.init = function () {
       var $container = $("body");
 
-      $wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; -moz-border-radius:10px; border-radius:10px;'/>")
-          .appendTo($container);
+      $wrapper = getWrapper().appendTo($container);
+      $input = getTextArea().appendTo($wrapper);
+      $buttons = getButtons(true).appendTo($wrapper);
 
-      $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0'>")
-          .appendTo($wrapper);
-
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-save long_text_editor pg-alertify-button'>Save</BUTTON>"
-         + "<BUTTON class='btn btn-danger fa fa-lg fa-times long_text_editor pg-alertify-button'>Cancel</BUTTON></DIV>")
-          .appendTo($wrapper);
-
-      $wrapper.find("button:first").bind("click", this.save);
-      $wrapper.find("button:last").bind("click", this.cancel);
+      $buttons.find("button:first").on("click", this.save);
+      $buttons.find("button:last").on("click", this.cancel);
       $input.bind("keydown", this.handleKeyDown);
 
       scope.position(args.position);
@@ -126,23 +171,11 @@
     };
 
     this.position = function (position) {
-      var _elem_height = $wrapper.parent().find('#datagrid').height(),
-      is_hidden, _position;
-      // We cannot display editor partially visible so we will lift it above select column
-      if(position.top > _elem_height) {
-        is_hidden = position.bottom - _elem_height;
-      }
-
-      if(is_hidden) {
-        _position = position.top - is_hidden;
-      } else {
-        _position = position.top - 5;
-      }
-
+      calculateEditorPosition(position, $wrapper);
       $wrapper
-          .css("top", _position)
-          .css("left", position.left - 5)
-    };
+        .css("top", position.top)
+        .css("left", position.left)
+    }
 
     this.destroy = function () {
       $wrapper.remove();
@@ -230,18 +263,12 @@
     this.init = function () {
       var $container = $("body");
 
-      $wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; -moz-border-radius:10px; border-radius:10px;'/>")
-          .appendTo($container);
+      $wrapper = getWrapper().appendTo($container);
+      $input = getTextArea().appendTo($wrapper);
+      $buttons = getButtons(true).appendTo($wrapper);
 
-      $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0'>")
-          .appendTo($wrapper);
-
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-save long_text_editor pg-alertify-button'>Save</BUTTON>"
-         + "<BUTTON class='btn btn-danger fa fa-lg fa-times long_text_editor pg-alertify-button'>Cancel</BUTTON></DIV>")
-          .appendTo($wrapper);
-
-      $wrapper.find("button:first").bind("click", this.save);
-      $wrapper.find("button:last").bind("click", this.cancel);
+      $buttons.find("button:first").on("click", this.save);
+      $buttons.find("button:last").on("click", this.cancel);
       $input.bind("keydown", this.handleKeyDown);
 
       scope.position(args.position);
@@ -281,23 +308,11 @@
     };
 
     this.position = function (position) {
-      var _elem_height = $wrapper.parent().find('#datagrid').height(),
-      is_hidden, _position;
-      // We cannot display editor partially visible so we will lift it above select column
-      if(position.top > _elem_height) {
-        is_hidden = position.bottom - _elem_height;
-      }
-
-      if(is_hidden) {
-        _position = position.top - is_hidden;
-      } else {
-        _position = position.top - 5;
-      }
-
+      calculateEditorPosition(position, $wrapper);
       $wrapper
-          .css("top", position.top - 5)
-          .css("left", position.left - 5)
-    };
+        .css("top", position.top)
+        .css("left", position.left)
+    }
 
     this.destroy = function () {
       $wrapper.remove();
@@ -371,16 +386,11 @@
     this.init = function () {
       var $container = $("body");
 
-      $wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; -moz-border-radius:10px; border-radius:10px;'/>")
-          .appendTo($container);
+      $wrapper = getWrapper().appendTo($container);
+      $input = getTextArea().appendTo($wrapper);
+      $buttons = getButtons(false).appendTo($wrapper);
 
-      $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0' readonly>")
-          .appendTo($wrapper);
-
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-times long_text_editor pg-alertify-button'>Close</BUTTON></DIV>")
-       .appendTo($wrapper);
-
-      $wrapper.find("button:first").bind("click", this.cancel);
+      $buttons.find("button:first").on("click", this.cancel);
       $input.bind("keydown", this.handleKeyDown);
 
       scope.position(args.position);
@@ -418,23 +428,11 @@
     };
 
     this.position = function (position) {
-      var _elem_height = $wrapper.parent().find('#datagrid').height(),
-        is_hidden, _position;
-      // We cannot display editor partially visible so we will lift it above select column
-      if(position.top > _elem_height) {
-        is_hidden = position.bottom - _elem_height;
-      }
-
-      if(is_hidden) {
-        _position = position.top - is_hidden;
-      } else {
-        _position = position.top - 5;
-      }
-
+      calculateEditorPosition(position, $wrapper);
       $wrapper
-          .css("top", _position)
-          .css("left", position.left - 5)
-    };
+        .css("top", position.top)
+        .css("left", position.left)
+    }
 
     this.destroy = function () {
       $wrapper.remove();
@@ -593,16 +591,11 @@
     this.init = function () {
       var $container = $("body");
 
-      $wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; -moz-border-radius:10px; border-radius:10px;'/>")
-          .appendTo($container);
+      $wrapper = getWrapper().appendTo($container);
+      $input = getTextArea().appendTo($wrapper);
+      $buttons = getButtons(false).appendTo($wrapper);
 
-      $input = $("<TEXTAREA hidefocus rows=5 style='backround:white;width:250px;height:80px;border:0;outline:0' readonly>")
-          .appendTo($wrapper);
-
-      $("<DIV style='text-align:right'><BUTTON class='btn btn-primary fa fa-lg fa-times long_text_editor pg-alertify-button'>Close</BUTTON></DIV>")
-       .appendTo($wrapper);
-
-      $wrapper.find("button:first").bind("click", this.cancel);
+      $buttons.find("button:first").on("click", this.cancel);
       $input.bind("keydown", this.handleKeyDown);
 
       scope.position(args.position);
@@ -640,23 +633,11 @@
     };
 
     this.position = function (position) {
-      var _elem_height = $wrapper.parent().find('#datagrid').height(),
-        is_hidden, _position;
-      // We cannot display editor partially visible so we will lift it above select column
-      if(position.top > _elem_height) {
-        is_hidden = position.bottom - _elem_height;
-      }
-
-      if(is_hidden) {
-        _position = position.top - is_hidden;
-      } else {
-        _position = position.top - 5;
-      }
-
+      calculateEditorPosition(position, $wrapper);
       $wrapper
-          .css("top", _position)
-          .css("left", position.left - 5)
-    };
+        .css("top", position.top)
+        .css("left", position.left)
+    }
 
     this.destroy = function () {
       $wrapper.remove();

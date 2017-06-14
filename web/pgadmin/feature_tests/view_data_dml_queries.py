@@ -176,15 +176,13 @@ CREATE TABLE public.defaults
                 ActionChains(self.driver).send_keys(value).perform()
 
         elif cell_type in ['text', 'json']:
-            self.page.find_by_css_selector(
-                "div[style*='z-index: 1000'] textarea"
-            ).click()
+            self.page.find_by_xpath(
+                "//*[contains(@class, 'pg_textarea')]").click()
             ActionChains(self.driver).send_keys(value).perform()
-            save_btn_xpath = "div[style*='z-index: 1000'] " \
-                             "div button:first-child"
-            self.page.find_by_css_selector(
-                save_btn_xpath
-            ).click()  # Click on editor's Save button
+
+            # Click on editor's Save button
+            self.page.find_by_xpath("//*[contains(@class, 'pg_text_editor')]"
+                                    "//button[contains(@class, 'fa-save')]").click()
         else:
             if data[1] == 'true':
                 checkbox_el = cell_el.find_element_by_xpath(".//input")
