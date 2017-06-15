@@ -65,6 +65,13 @@ class MaintenanceModule(PgAdminModule):
         ]
         return stylesheets
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for backup module
+        """
+        return ['maintenance.create_job']
+
 
 blueprint = MaintenanceModule(MODULE_NAME, __name__)
 
@@ -155,7 +162,9 @@ def script():
     )
 
 
-@blueprint.route('/create_job/<int:sid>/<int:did>', methods=['POST'])
+@blueprint.route(
+    '/job/<int:sid>/<int:did>', methods=['POST'], endpoint='create_job'
+)
 @login_required
 def create_maintenance_job(sid, did):
     """
