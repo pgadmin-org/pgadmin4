@@ -714,8 +714,9 @@ define([
           sql_url = 'sql';
         }
         // Open data grid & pass the URL for fetching
-        pgAdmin.DataGrid.show_query_tool.apply(
-          this, [obj.generate_url(i, sql_url, d, true), i]
+        pgAdmin.DataGrid.show_query_tool(
+          obj.generate_url(i, sql_url, d, true),
+          i, scriptType
         );
       },
 

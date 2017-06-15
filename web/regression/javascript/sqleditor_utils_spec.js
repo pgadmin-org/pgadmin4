@@ -23,5 +23,10 @@ function (SqlEditorUtils) {
       });
     });
 
+    describe('Capitalize the first letter of given string', function () {
+      it('returns string with First letter Capital', function () {
+        expect(SqlEditorUtils.capitalizeFirstLetter('create script')).toEqual('Create script');
+      });
+    });
   });
 });

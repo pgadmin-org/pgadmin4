@@ -1,7 +1,8 @@
 define([
   'sources/gettext', 'jquery','alertify', 'pgadmin','codemirror',
+  'sources/sqleditor_utils',
   'codemirror/mode/sql/sql', 'pgadmin.browser', 'wcdocker'
-], function(gettext, $, alertify, pgAdmin, CodeMirror) {
+], function(gettext, $, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
@@ -307,7 +308,7 @@ define([
 
       get_panel_title: function() {
         // Get the parent data from the tree node hierarchy.
-         var tree = pgAdmin.Browser.tree,
+        var tree = pgAdmin.Browser.tree,
             selected_item = tree.selected(),
             item_data = tree.itemData(selected_item);
         var self = this;
@@ -401,9 +402,10 @@ define([
       },
 
       // This is a callback function to show query tool when user click on menu item.
-      show_query_tool: function(url, i) {
+      show_query_tool: function(url, i, panel_title) {
         var self = this,
           sURL = url || '',
+          panel_title = panel_title || '';
           d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(
@@ -436,19 +438,25 @@ define([
           dataType: 'json',
           contentType: "application/json",
           success: function(res) {
-
             var grid_title = self.get_panel_title();
             // Open the panel if frame is initialized
             baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
                         + encodeURIComponent(grid_title) + '?' + "query_url=" + encodeURI(sURL);
+            // Create title for CREATE/DELETE scripts
+            if (panel_title) {
+              panel_title =
+                sqlEditorUtils.capitalizeFirstLetter(panel_title) + ' script';
+            }
+            else {
+              panel_title = gettext('Query - ') + grid_title;
+            }
 
-            grid_title = gettext('Query - ') + grid_title;
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
 
               // add a load listener to the window so that the title gets changed on page load
               newWin.addEventListener("load", function() {
-                newWin.document.title = grid_title;
+                newWin.document.title = panel_title;
               });
             } else {
               /* On successfully initialization find the dashboard panel,
@@ -456,7 +464,7 @@ define([
                */
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
               queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
-              queryToolPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
+              queryToolPanel.title('<span title="'+panel_title+'">'+panel_title+'</span>');
               queryToolPanel.icon('fa fa-bolt');
               queryToolPanel.focus();
 
