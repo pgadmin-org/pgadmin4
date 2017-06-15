@@ -148,7 +148,7 @@ SERVER_MODE = True
 # The default should be fine here, as it's not exposed in the app.
 DESKTOP_USER = 'pgadmin4@pgadmin.org'
 
-# This configuration otion allows the user to host the application on a LAN
+# This option allows the user to host the application on a LAN
 # Default hosting is on localhost (DEFAULT_SERVER='localhost').
 # To host pgAdmin4 over LAN set DEFAULT_SERVER='0.0.0.0' (or a specific
 # adaptor address.
