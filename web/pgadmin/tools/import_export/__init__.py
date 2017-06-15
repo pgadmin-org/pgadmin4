@@ -53,6 +53,13 @@ class ImportExportModule(PgAdminModule):
 
         return scripts
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for backup module
+        """
+        return ['import_export.create_job']
+
 
 blueprint = ImportExportModule(MODULE_NAME, __name__)
 
@@ -186,7 +193,7 @@ def filename_with_file_manager_path(_file, _present=False):
     return fs_short_path(_file)
 
 
-@blueprint.route('/create_job/<int:sid>', methods=['POST'])
+@blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
 @login_required
 def create_import_export_job(sid):
     """

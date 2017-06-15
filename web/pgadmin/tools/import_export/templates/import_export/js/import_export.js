@@ -1,9 +1,9 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
   'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
 ], function(
-  gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -408,15 +408,14 @@ define([
                     'schema': treeInfo.schema._label,
                     'table': treeInfo.table._label
                   });
-                  var self = this,
-                      baseUrl = "{{ url_for('import_export.index') }}" +
-                        "create_job/" + treeInfo.server._id,
-                      args =  this.view.model.toJSON();
+                  var self = this;
 
                   $.ajax({
-                    url: baseUrl,
+                    url: url_for(
+                      'import_export.create_job', {'sid': treeInfo.server._id}
+                    ),
                     method: 'POST',
-                    data:{ 'data': JSON.stringify(args) },
+                    data:{ 'data': JSON.stringify(this.view.model.toJSON()) },
                     success: function(res) {
                       if (res.success) {
                         Alertify.notify(gettext('Import/export job created.'), 'success', 5);
