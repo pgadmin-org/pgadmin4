@@ -1,10 +1,10 @@
 // Backup dialog
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
   'backgrid.select.all', 'backgrid.filter'
 ], function(
-  gettext, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
+  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
 ) {
 
     // if module is already initialized, refer to that.
@@ -12,48 +12,47 @@ define([
       return pgBrowser.UserManagement;
     }
 
-    var BASEURL = '{{ url_for('user_management.index')}}',
-        USERURL = BASEURL + 'user/',
-        ROLEURL = BASEURL + 'role/',
+    var USERURL = url_for('user_management.users'),
+        ROLEURL = url_for('user_management.roles'),
         userFilter = function(collection) {
-      return (new Backgrid.Extension.ClientSideFilter({
-        collection: collection,
-        placeholder: _('Filter by email'),
+          return (new Backgrid.Extension.ClientSideFilter({
+            collection: collection,
+            placeholder: _('Filter by email'),
 
-        // The model fields to search for matches
-        fields: ['email'],
+            // The model fields to search for matches
+            fields: ['email'],
 
-        // How long to wait after typing has stopped before searching can start
-        wait: 150
-      }));
-    },
+            // How long to wait after typing has stopped before searching can start
+            wait: 150
+          }));
+        },
         StringDepCell = Backgrid.StringCell.extend({
-      initialize: function() {
-        Backgrid.StringCell.prototype.initialize.apply(this, arguments);
-        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-      },
-      dependentChanged: function () {
-        this.$el.empty();
+          initialize: function() {
+            Backgrid.StringCell.prototype.initialize.apply(this, arguments);
+            Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+          },
+          dependentChanged: function () {
+            this.$el.empty();
 
-        var self = this,
-            model = this.model,
-            column = this.column,
-            editable = this.column.get("editable");
+            var self = this,
+              model = this.model,
+              column = this.column,
+              editable = this.column.get("editable");
 
-        this.render();
+            this.render();
 
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-        setTimeout(function() {
-          self.$el.removeClass("editor");
-          if (is_editable){ self.$el.addClass("editable"); }
-          else { self.$el.removeClass("editable"); }
-        }, 10);
+            is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+            setTimeout(function() {
+              self.$el.removeClass("editor");
+              if (is_editable){ self.$el.addClass("editable"); }
+              else { self.$el.removeClass("editable"); }
+            }, 10);
 
-        this.delegateEvents();
-        return this;
-      },
-      remove: Backgrid.Extension.DependentCell.prototype.remove
-    });
+            this.delegateEvents();
+            return this;
+          },
+          remove: Backgrid.Extension.DependentCell.prototype.remove
+        });
 
     pgBrowser.UserManagement  = {
       init: function() {
@@ -381,8 +380,13 @@ define([
                 return {
                   buttons: [{
                     text: '', key: 112, className: 'btn btn-default pull-left fa fa-lg fa-question',
-                    attrs:{name:'dialog_help', type:'button', label: gettext('Users'),
-                    url: '{{ url_for('help.static', filename='pgadmin_user.html') }}'}
+                    attrs:{
+                      name:'dialog_help', type:'button', label: gettext('Users'),
+                      url: url_for(
+                        'help.static', {
+                          'filename': 'pgadmin_user.html'
+                        })
+                    }
                   },{
                     text: gettext('Close'), key: 27, className: 'btn btn-danger fa fa-lg fa-times pg-alertify-button user_management_pg-alertify-button',
                     attrs:{name:'close', type:'button'}

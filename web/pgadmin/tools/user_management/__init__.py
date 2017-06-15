@@ -57,6 +57,18 @@ class UserManagementModule(PgAdminModule):
         """
         return self.pref_show_system_objects
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for backup module
+        """
+        return [
+            'user_management.roles', 'user_management.role',
+            'user_management.update_user', 'user_management.delete_user',
+            'user_management.create_user', 'user_management.users',
+            'user_management.user'
+        ]
+
 
 # Create blueprint for BackupModule class
 blueprint = UserManagementModule(
@@ -115,8 +127,10 @@ def script():
     )
 
 
-@blueprint.route('/user/', methods=['GET'], defaults={'uid': None})
-@blueprint.route('/user/<int:uid>', methods=['GET'])
+@blueprint.route(
+    '/user/', methods=['GET'], defaults={'uid': None}, endpoint='users'
+)
+@blueprint.route('/user/<int:uid>', methods=['GET'], endpoint='user')
 @roles_required('Administrator')
 def user(uid):
     """
@@ -155,7 +169,7 @@ def user(uid):
     )
 
 
-@blueprint.route('/user/', methods=['POST'])
+@blueprint.route('/user/', methods=['POST'], endpoint='create_user')
 @roles_required('Administrator')
 def create():
     """
@@ -208,7 +222,7 @@ def create():
     )
 
 
-@blueprint.route('/user/<int:uid>', methods=['DELETE'])
+@blueprint.route('/user/<int:uid>', methods=['DELETE'], endpoint='delete_user')
 @roles_required('Administrator')
 def delete(uid):
     """
@@ -250,7 +264,7 @@ def delete(uid):
         return internal_server_error(errormsg=str(e))
 
 
-@blueprint.route('/user/<int:uid>', methods=['PUT'])
+@blueprint.route('/user/<int:uid>', methods=['PUT'], endpoint='update_user')
 @roles_required('Administrator')
 def update(uid):
     """
@@ -301,8 +315,10 @@ def update(uid):
         return internal_server_error(errormsg=str(e))
 
 
-@blueprint.route('/role/', methods=['GET'], defaults={'rid': None})
-@blueprint.route('/role/<int:rid>', methods=['GET'])
+@blueprint.route(
+    '/role/', methods=['GET'], defaults={'rid': None}, endpoint='roles'
+)
+@blueprint.route('/role/<int:rid>', methods=['GET'], endpoint='role')
 @roles_required('Administrator')
 def role(rid):
     """
