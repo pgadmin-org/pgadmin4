@@ -8,5 +8,5 @@
 //////////////////////////////////////////////////////////////////////////
 
 define(function () {
-  return {'static': '/base/pgadmin/static/<path:filename>'}
+  return {'static': '/base/pgadmin/static/<path:filename>'};
 });
