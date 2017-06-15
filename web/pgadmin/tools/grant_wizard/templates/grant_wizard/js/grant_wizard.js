@@ -976,7 +976,7 @@ define([
                           // Clear html dom elements of CodeMirror sql tab
                           self.sqlControl.unbind(); // Unbind all local event bindings
                           var cmElem = self.sqlControl.sqlCtrl.getWrapperElement();
-                          cmElem.remove();
+                          $(cmElem).remove();
                           self.sqlControl.sqlCtrl = undefined;
                         }
 
