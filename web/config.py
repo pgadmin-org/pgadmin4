@@ -305,8 +305,6 @@ DEFAULT_BINARY_PATHS = {
 ##########################################################################
 # Test settings - used primarily by the regression suite, not for users
 ##########################################################################
-# Set default testing mode
-TESTING_MODE = False
 
 # The default path for SQLite database for testing
 TEST_SQLITE_PATH = os.path.join(DATA_DIR, 'test_pgadmin4.db')

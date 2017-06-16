@@ -50,7 +50,7 @@ from regression.feature_utils.app_starter import AppStarter
 if os.path.isfile(config.TEST_SQLITE_PATH):
     os.remove(config.TEST_SQLITE_PATH)
 
-config.TESTING_MODE = True
+os.environ["PGADMIN_TESTING_MODE"] = "1"
 
 # Disable upgrade checks - no need during testing, and it'll cause an error
 # if there's no network connection when it runs.
@@ -407,6 +407,9 @@ if __name__ == '__main__':
         "===\n", file=sys.stderr)
 
     print("Please check output in file: %s/regression.log\n" % CURRENT_PATH)
+
+    # Unset environment variable
+    del os.environ["PGADMIN_TESTING_MODE"]
 
     if failure:
         sys.exit(1)

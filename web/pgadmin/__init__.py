@@ -170,6 +170,11 @@ def create_app(app_name=None):
     logger = logging.getLogger('werkzeug')
     logger.setLevel(logging.INFO)
 
+    # Set SQLITE_PATH to TEST_SQLITE_PATH while running test cases
+    if "PGADMIN_TESTING_MODE" in os. environ and \
+                    os.environ["PGADMIN_TESTING_MODE"] == "1":
+        config.SQLITE_PATH = config.TEST_SQLITE_PATH
+
     # Ensure the various working directories exist
     from pgadmin.setup import create_app_data_directory, db_upgrade
     create_app_data_directory(config)

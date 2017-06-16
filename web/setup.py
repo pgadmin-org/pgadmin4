@@ -33,7 +33,8 @@ if __name__ == '__main__':
 
     app.config.from_object(config)
 
-    if config.TESTING_MODE:
+    if "PGADMIN_TESTING_MODE" in os. environ and \
+                    os.environ["PGADMIN_TESTING_MODE"] == "1":
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
 
     create_app_data_directory(config)
