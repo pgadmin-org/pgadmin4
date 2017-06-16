@@ -1,8 +1,10 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore', 'backform', 'sources/gettext', 'pgadmin.backform'],
-
+  [
+    'jquery', 'alertify', 'pgadmin', 'underscore', 'backform',
+    'sources/gettext', 'sources/url_for', 'pgadmin.backform'
+  ],
   // This defines the Preference/Options Dialog for pgAdmin IV.
-  function($, alertify, pgAdmin, _, Backform, gettext) {
+  function($, alertify, pgAdmin, _, Backform, gettext, url_for) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -30,7 +32,7 @@ define(
             $('body').append(reloadingIndicator);
             // Delete the record from database as well, then only reload page
             $.ajax({
-              url: "{{ url_for('settings.reset_layout') }}",
+              url: url_for('settings.reset_layout'),
               type: 'DELETE',
               async: false,
               success: function() {
