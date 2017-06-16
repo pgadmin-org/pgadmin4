@@ -51,11 +51,26 @@ public:
    QString getFirstLoadURL() const;
    void setTabIndex(const int &tabIndex);
    int getTabIndex() const;
+   void setBackForwardButtonHidden(const bool hideButton);
+   bool getBackForwardButtonHidden() const;
+
+   // Store main webview window of pgAdmin4 application.
+   static WebViewWindow *mainWebViewWindow;
+   static WebViewWindow* getMainWebViewWindow()
+   {
+       return mainWebViewWindow;
+   }
+
+protected:
+    // re-implemnted drag-drop event for docking of tabs.
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private:
     QString m_url;
     int m_tabIndex;
-
+    bool m_backForwardBtnHide;
 };
 
 #ifndef PGADMIN4_USE_WEBENGINE

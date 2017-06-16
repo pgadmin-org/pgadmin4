@@ -38,6 +38,12 @@
     #endif
 #endif
 
+#ifdef PGADMIN4_USE_WEBENGINE
+  #include <QWebEngineHistory>
+#else
+  #include <QWebHistory>
+#endif
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -56,7 +62,6 @@ protected:
 
 protected slots:
     void urlLinkClicked(const QUrl &);
-    void closetabs();
     void tabTitleChanged(const QString &);
 #ifdef __APPLE__
   #ifdef PGADMIN4_USE_WEBENGINE
@@ -76,9 +81,6 @@ private slots:
 #endif
 
 public slots:
-    void tabIndexChanged(int index);
-    void goBackPage();
-    void goForwardPage();
     void download(const QNetworkRequest &request);
     void unsupportedContent(QNetworkReply * reply);
     void downloadFinished();
@@ -108,16 +110,18 @@ private:
 
     QGridLayout  *m_tabGridLayout;
     QGridLayout  *m_mainGridLayout;
-    TabWindow    *m_tabWidget;
+    DockTabWidget  *m_tabWidget;
     QWidget      *m_pgAdminMainTab;
 
     QWidget           *m_addNewTab;
     QGridLayout       *m_addNewGridLayout;
     WebViewWindow     *m_addNewWebView;
     QHBoxLayout       *m_horizontalLayout;
+
     QWidget           *m_widget;
     QToolButton       *m_toolBtnBack;
     QToolButton       *m_toolBtnForward;
+    QToolButton       *m_toolBtnClose;
 
     QString m_downloadFilename;
     int m_downloadStarted;
@@ -139,6 +143,7 @@ private:
     void createActions();
     void pause(int seconds = 1);
     int  findURLTab(const QUrl &name);
+    void enableDisableToolButtons(WebViewWindow *webViewPtr);
 
 #ifdef __APPLE__
   #ifdef PGADMIN4_USE_WEBENGINE

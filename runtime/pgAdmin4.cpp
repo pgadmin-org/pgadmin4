@@ -183,6 +183,9 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME.toLower().replace(" ", ""));
 
+    // Set high DPI pixmap to display icons clear on Qt widget.
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
     /* In windows and linux, it is required to set application level proxy
      * becuase socket bind logic to find free port gives socket creation error
      * when system proxy is configured. We are also setting
@@ -351,7 +354,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 
-        delay(100);
+        delay(200);
     }
 
     // Create & show the main window
@@ -362,6 +365,16 @@ int main(int argc, char * argv[])
 
     // Go!
     splash->finish(NULL);
+
+    // Set global application stylesheet.
+    QFile file(":/qss/pgadmin4.qss");
+    if(file.open(QFile::ReadOnly))
+    {
+       QString StyleSheet = QLatin1String(file.readAll());
+       qApp->setStyleSheet(StyleSheet);
+       file.close();
+    }
+
     return app.exec();
 }
 

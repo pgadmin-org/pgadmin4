@@ -66,7 +66,9 @@ BrowserWindow::BrowserWindow(QString url)
     // Setup the shortcuts
     createActions();
 
-    m_tabWidget = new TabWindow(this);
+    m_tabWidget = new DockTabWidget(this);
+    m_tabWidget->tabBar()->setVisible(false);
+
     m_mainGridLayout = new QGridLayout(m_tabWidget);
     m_mainGridLayout->setContentsMargins(0, 0, 0, 0);
     m_pgAdminMainTab = new QWidget(m_tabWidget);
@@ -121,7 +123,7 @@ BrowserWindow::BrowserWindow(QString url)
 #endif
 
     // Register the slot on tab index change
-    connect(m_tabWidget,SIGNAL(currentChanged(int )),this,SLOT(tabIndexChanged(int )));
+    connect(m_tabWidget,SIGNAL(currentChanged(int )), m_tabWidget,SLOT(tabIndexChanged(int )));
 
     // Listen for download file request from the web page
 #ifdef PGADMIN4_USE_WEBENGINE
@@ -796,151 +798,14 @@ void BrowserWindow::unsupportedContent(QNetworkReply * reply)
     }
 }
 
-// Slot: When the tab index change, hide/show the toolbutton displayed on tab
-void BrowserWindow::tabIndexChanged(int index)
-{
-    int tabCount = 1;
-    for (tabCount = 1; tabCount < m_tabWidget->count(); tabCount++)
-    {
-        if (tabCount != index)
-            m_tabWidget->showHideToolButton(tabCount, 0);
-        else
-            m_tabWidget->showHideToolButton(tabCount, 1);
-    }
-}
-
-// Close the tab and remove the memory of the given index tab
-void BrowserWindow::closetabs()
-{
-    int loopCount = 0;
-    int index = 0;
-    QPushButton *btn = NULL;
-    int totalTabs = m_tabWidget->count();
-
-    // If QTabWidget contains only one tab then hide the TabBar window
-    if ((totalTabs - 1) < 2)
-        m_tabWidget->tabBar()->setVisible(false);
-    else
-        m_tabWidget->tabBar()->setVisible(true);
-
-    QObject *senderPtr = QObject::sender();
-    if (senderPtr != NULL)
-    {
-        btn = dynamic_cast<QPushButton*>(senderPtr);
-        index = m_tabWidget->getButtonIndex(btn);
-    }
-
-    if (index != 0)
-    {
-        QWidget *tab = m_tabWidget->widget(index);
-        WebViewWindow *webviewPtr = NULL;
-        loopCount = 0;
-
-        // free the allocated memory when the tab is closed
-        if (tab != NULL)
-        {
-            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
-            foreach (QWidget* widgetPtr, widgetList)
-            {
-                if (widgetPtr != NULL)
-                {
-                    webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-                    if (webviewPtr != NULL)
-                    {
-                        /* Trigger the action for tab window close so unload event will be called and
-                         * resources will be freed properly.
-                         * Trigger 'RequestClose' action from Qt5 onwards. Here we have triggerred the action
-                         * 'ToggleVideoFullscreen + 1' because we do not know from which webkit
-                         * version 'RequestClose' action was added so increment with previous enum value so that
-                         * it will be backward webkit version compatible.
-                         */
-                        #if QT_VERSION >= 0x050000
-                          #ifndef PGADMIN4_USE_WEBENGINE
-                            webviewPtr->page()->triggerAction(static_cast<QWebPage::WebAction>(QWebPage::ToggleVideoFullscreen + 1));
-                          #endif
-                        #endif
-                    }
-                }
-            }
-
-            delete tab;
-        }
-
-        // Adjust the tab index value if the tab is closed in between
-        for (loopCount = 1; loopCount < totalTabs; loopCount++)
-        {
-            if (index > loopCount)
-                continue;
-
-            QWidget *tab = m_tabWidget->widget(loopCount);
-            if (tab != NULL)
-            {
-                QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
-                foreach( QWidget* widgetPtr, widgetList )
-                {
-                    if (widgetPtr != NULL)
-                    {
-                        webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-                        if (webviewPtr != NULL)
-                            webviewPtr->setTabIndex((webviewPtr->getTabIndex() - 1));
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Slot: go back to page and enable/disable toolbutton
-void BrowserWindow::goBackPage()
-{
-    WebViewWindow *webviewPtr = NULL;
-
-    QWidget *tab = m_tabWidget->widget(m_tabWidget->currentIndex());
-    if (tab != NULL)
-    {
-        QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
-        foreach( QWidget* widgetPtr, widgetList )
-        {
-            if (widgetPtr != NULL)
-            {
-                webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-                if (webviewPtr != NULL)
-                {
-                    webviewPtr->back();
-                    m_tabWidget->enableDisableToolButton(m_tabWidget->currentIndex());
-                }
-            }
-        }
-    }
-}
-
-// Slot: go forward to page and enable/disable toolbutton
-void BrowserWindow::goForwardPage()
-{
-    WebViewWindow *webviewPtr = NULL;
-
-    QWidget *tab = m_tabWidget->widget(m_tabWidget->currentIndex());
-    if (tab != NULL)
-    {
-        QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
-        foreach( QWidget* widgetPtr, widgetList )
-        {
-            if (widgetPtr != NULL)
-            {
-                webviewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
-                if (webviewPtr != NULL)
-                {
-                    webviewPtr->forward();
-                    m_tabWidget->enableDisableToolButton(m_tabWidget->currentIndex());
-                }
-            }
-        }
-    }
-}
-
 // Slot: set the title of tab when the new tab created or existing tab contents changed
 void BrowserWindow::tabTitleChanged(const QString &str)
 {
+    WebViewWindow *nextWebViewPtr = NULL;
+    bool flagTabText = false;
+    QToolButton *backToolButton = NULL;
+    QToolButton *forwardToolButton = NULL;
+
     if (!str.isEmpty())
     {
         QObject *senderPtr = QObject::sender();
@@ -950,15 +815,91 @@ void BrowserWindow::tabTitleChanged(const QString &str)
             webViewPtr = dynamic_cast<WebViewWindow*>(senderPtr);
             if (webViewPtr != NULL)
             {
-                m_tabWidget->setTabText(webViewPtr->getTabIndex(), str);
-                m_tabWidget->setTabToolTipText(webViewPtr->getTabIndex(), str);
-                m_tabWidget->enableDisableToolButton(webViewPtr->getTabIndex());
+                DockTabWidget *dock_tab_widget = dynamic_cast<DockTabWidget*>(webViewPtr->parent()->parent()->parent());
+                if (dock_tab_widget != NULL)
+                {
+                    for (int loopCount = dock_tab_widget->count();loopCount >= 0;loopCount--)
+                    {
+                        QWidget *tab = dock_tab_widget->widget(loopCount);
+                        if (tab != NULL)
+                        {
+                            QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+                            foreach( QWidget* widgetPtr, widgetList )
+                            {
+                                if (widgetPtr != NULL)
+                                    nextWebViewPtr = dynamic_cast<WebViewWindow*>(widgetPtr);
+
+                                if (nextWebViewPtr != NULL && nextWebViewPtr == webViewPtr)
+                                {
+                                    // If tab title is for Query tool then we should hide tool buttons.
+                                    QWidget *tab = dock_tab_widget->tabBar()->tabButton(loopCount, QTabBar::LeftSide);
+                                    if (tab != NULL)
+                                    {
+                                        QList<QWidget*> widgetList = tab->findChildren<QWidget*>();
+                                        foreach( QWidget* widgetPtr, widgetList )
+                                        {
+                                            if (widgetPtr != NULL)
+                                            {
+                                                QToolButton *toolBtnPtr = dynamic_cast<QToolButton*>(widgetPtr);
+                                                if (toolBtnPtr != NULL)
+                                                {
+                                                    if (!QString::compare(toolBtnPtr->toolTip(), tr("Go back"), Qt::CaseInsensitive))
+                                                        backToolButton = toolBtnPtr;
+                                                    if (!QString::compare(toolBtnPtr->toolTip(), tr("Go forward"), Qt::CaseInsensitive))
+                                                        forwardToolButton = toolBtnPtr;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (backToolButton != NULL && forwardToolButton != NULL)
+                                    {
+                                        if (!str.startsWith("Query -"))
+                                        {
+                                            if (str.startsWith("Debugger"))
+                                            {
+                                                backToolButton->hide();
+                                                forwardToolButton->hide();
+                                                webViewPtr->setBackForwardButtonHidden(true);
+                                            }
+                                            // If user open any file in query tool then "Query -" name will not appear
+                                            // but it is still query tool so hide the tool button.
+                                            else if (!webViewPtr->getBackForwardButtonHidden())
+                                            {
+                                                backToolButton->show();
+                                                forwardToolButton->show();
+                                                webViewPtr->setBackForwardButtonHidden(false);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            backToolButton->hide();
+                                            forwardToolButton->hide();
+                                            webViewPtr->setBackForwardButtonHidden(true);
+                                        }
+                                    }
+
+                                    dock_tab_widget->setTabText(loopCount, str);
+                                    dock_tab_widget->setTabToolTipText(loopCount, str);
+                                    dock_tab_widget->enableDisableToolButton(loopCount);
+                                    flagTabText = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (flagTabText)
+                            break;
+                    }
+
+                    if (!flagTabText)
+                    {
+                        dock_tab_widget->setTabText(dock_tab_widget->currentIndex(), str);
+                        dock_tab_widget->setTabToolTipText(dock_tab_widget->currentIndex(), str);
+                        dock_tab_widget->enableDisableToolButton(dock_tab_widget->currentIndex());
+                    }
+                }
             }
-        }
-        else
-        {
-            m_tabWidget->setTabText(m_tabWidget->currentIndex(), str);
-            m_tabWidget->setTabToolTipText(m_tabWidget->currentIndex(), str);
         }
     }
 }
@@ -977,37 +918,51 @@ void BrowserWindow::current_dir_path(const QString &dir)
 void BrowserWindow::createNewTabWindowKit(QWebPage * &p)
 {
     m_addNewTab = new QWidget(m_tabWidget);
+
     m_addNewGridLayout = new QGridLayout(m_addNewTab);
     m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
+
     m_addNewWebView = new WebViewWindow(m_addNewTab);
     m_addNewWebView->setPage(new WebViewPage());
     m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
+
+    // Register the slot when click on the URL link form main menu bar
+    connect(m_addNewWebView, SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
+    // Register the slot when click on the URL link for QWebPage
+    connect(m_addNewWebView->page(), SIGNAL(createTabWindowKit(QWebPage * &)),SLOT(createNewTabWindowKit(QWebPage * &)));
+
+    m_addNewWebView->page()->setForwardUnsupportedContent(true);
+    connect(m_addNewWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
+    connect(m_addNewWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
+    m_addNewWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
     m_addNewWebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
     m_addNewWebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
 
     m_widget = new QWidget(m_addNewTab);
+
     m_toolBtnBack = new QToolButton(m_widget);
     m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
     m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
     m_toolBtnBack->setIcon(QIcon(":/back.png"));
     m_toolBtnBack->setToolTip(tr("Go back"));
-    m_toolBtnBack->setDisabled(true);
+    m_toolBtnBack->hide();
 
     m_toolBtnForward = new QToolButton(m_widget);
     m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
     m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
     m_toolBtnForward->setIcon(QIcon(":/forward.png"));
     m_toolBtnForward->setToolTip(tr("Go forward"));
-    m_toolBtnForward->setDisabled(true);
+    m_toolBtnForward->hide();
 
-    QPushButton *m_btnClose = new QPushButton(m_widget);
+    QToolButton *m_btnClose = new QToolButton(m_widget);
     m_btnClose->setFixedHeight(PGA_BTN_SIZE);
     m_btnClose->setFixedWidth(PGA_BTN_SIZE);
     m_btnClose->setIcon(QIcon(":/close.png"));
     m_btnClose->setToolTip(tr("Close tab"));
 
     m_horizontalLayout = new QHBoxLayout(m_widget);
+    m_horizontalLayout->setContentsMargins(0,1,0,0);
     m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_horizontalLayout->setSpacing(1);
     m_horizontalLayout->addWidget(m_toolBtnBack);
@@ -1017,13 +972,14 @@ void BrowserWindow::createNewTabWindowKit(QWebPage * &p)
     connect(m_addNewWebView, SIGNAL(titleChanged(const QString &)), SLOT(tabTitleChanged(const QString &)));
 
     // Register the slot on toolbutton to show the previous history of web
-    connect(m_toolBtnBack, SIGNAL(clicked()), this, SLOT(goBackPage()));
+    connect(m_toolBtnBack, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoBackPage()));
 
     // Register the slot on toolbutton to show the next history of web
-    connect(m_toolBtnForward, SIGNAL(clicked()), this, SLOT(goForwardPage()));
+    connect(m_toolBtnForward, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoForwardPage()));
 
     // Register the slot on close button , added manually
-    connect(m_btnClose, SIGNAL(clicked()), SLOT(closetabs()));
+    connect(m_btnClose, SIGNAL(clicked()), m_tabWidget, SLOT(dockClosetabs()));
+
     m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
     m_tabWidget->addTab(m_addNewTab, QString());
     m_tabWidget->tabBar()->setVisible(true);
@@ -1044,34 +1000,38 @@ void BrowserWindow::createNewTabWindowKit(QWebPage * &p)
 void BrowserWindow::createNewTabWindow(QWebEnginePage * &p)
 {
     m_addNewTab = new QWidget(m_tabWidget);
+
     m_addNewGridLayout = new QGridLayout(m_addNewTab);
     m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
-    m_addNewWebView = new WebViewWindow(m_addNewTab);
+
+    m_addNewWebView = new WebViewWindow();
     m_addNewWebView->setPage(new WebEnginePage());
     m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
 
     m_widget = new QWidget(m_addNewTab);
+
     m_toolBtnBack = new QToolButton(m_widget);
     m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
     m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
     m_toolBtnBack->setIcon(QIcon(":/back.png"));
     m_toolBtnBack->setToolTip(tr("Go back"));
-    m_toolBtnBack->setDisabled(true);
+    m_toolBtnBack->hide();
 
     m_toolBtnForward = new QToolButton(m_widget);
     m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
     m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
     m_toolBtnForward->setIcon(QIcon(":/forward.png"));
     m_toolBtnForward->setToolTip(tr("Go forward"));
-    m_toolBtnForward->setDisabled(true);
+    m_toolBtnForward->hide();
 
-    QPushButton *m_btnClose = new QPushButton(m_widget);
-    m_btnClose->setFixedHeight(PGA_BTN_SIZE);
-    m_btnClose->setFixedWidth(PGA_BTN_SIZE);
-    m_btnClose->setIcon(QIcon(":/close.png"));
-    m_btnClose->setToolTip(tr("Close tab"));
+    m_toolBtnClose = new QToolButton(m_widget);
+    m_toolBtnClose->setFixedHeight(PGA_BTN_SIZE);
+    m_toolBtnClose->setFixedWidth(PGA_BTN_SIZE);
+    m_toolBtnClose->setIcon(QIcon(":/close.png"));
+    m_toolBtnClose->setToolTip(tr("Close tab"));
 
     m_horizontalLayout = new QHBoxLayout(m_widget);
+    m_horizontalLayout->setContentsMargins(0,1,0,0);
     m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_horizontalLayout->setSpacing(1);
     m_horizontalLayout->addWidget(m_toolBtnBack);
@@ -1081,13 +1041,13 @@ void BrowserWindow::createNewTabWindow(QWebEnginePage * &p)
     connect(m_addNewWebView, SIGNAL(titleChanged(const QString &)), SLOT(tabTitleChanged(const QString &)));
 
     // Register the slot on toolbutton to show the previous history of web
-    connect(m_toolBtnBack, SIGNAL(clicked()), this, SLOT(goBackPage()));
+    connect(m_toolBtnBack, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoBackPage()));
 
     // Register the slot on toolbutton to show the next history of web
-    connect(m_toolBtnForward, SIGNAL(clicked()), this, SLOT(goForwardPage()));
+    connect(m_toolBtnForward, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoForwardPage()));
 
     // Register the slot on close button , added manually
-    connect(m_btnClose, SIGNAL(clicked()), SLOT(closetabs()));
+    connect(m_toolBtnClose, SIGNAL(clicked()), m_tabWidget, SLOT(dockClosetabs()));
 
     m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
     m_tabWidget->addTab(m_addNewTab, QString());
@@ -1096,7 +1056,7 @@ void BrowserWindow::createNewTabWindow(QWebEnginePage * &p)
 
     // Set the back and forward button on tab
     m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::LeftSide, m_widget);
-    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_btnClose);
+    m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_toolBtnClose);
 
     m_addNewWebView->setTabIndex((m_tabWidget->count() - 1));
     p = m_addNewWebView->page();
@@ -1115,42 +1075,55 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
     if (!tabFound)
     {
         m_addNewTab = new QWidget(m_tabWidget);
+
         m_addNewGridLayout = new QGridLayout(m_addNewTab);
         m_addNewGridLayout->setContentsMargins(0, 0, 0, 0);
-        m_addNewWebView = new WebViewWindow(m_addNewTab);
+
+        m_addNewWebView = new WebViewWindow();
         m_addNewWebView->setZoomFactor(m_mainWebView->zoomFactor());
 
         // Listen for the download request from the web page
 #ifdef PGADMIN4_USE_WEBENGINE
+        m_addNewWebView->setPage(new WebEnginePage());
         connect(m_addNewWebView->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(downloadRequested(QWebEngineDownloadItem*)));
 #else
+        m_addNewWebView->setPage(new WebViewPage());
         m_addNewWebView->page()->setForwardUnsupportedContent(true);
         connect(m_addNewWebView->page(), SIGNAL(downloadRequested(const QNetworkRequest &)), this, SLOT(download(const QNetworkRequest &)));
         connect(m_addNewWebView->page(), SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(unsupportedContent(QNetworkReply*)));
+
+        // Register the slot when click on the URL link form main menu bar
+        connect(m_addNewWebView, SIGNAL(linkClicked(const QUrl &)),SLOT(urlLinkClicked(const QUrl &)));
+        // Register the slot when click on the URL link for QWebPage
+        connect(m_addNewWebView->page(), SIGNAL(createTabWindowKit(QWebPage * &)),SLOT(createNewTabWindowKit(QWebPage * &)));
+
+        m_addNewWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 #endif
 
         m_widget = new QWidget(m_addNewTab);
+
         m_toolBtnBack = new QToolButton(m_widget);
         m_toolBtnBack->setFixedHeight(PGA_BTN_SIZE);
         m_toolBtnBack->setFixedWidth(PGA_BTN_SIZE);
         m_toolBtnBack->setIcon(QIcon(":/back.png"));
         m_toolBtnBack->setToolTip(tr("Go back"));
-        m_toolBtnBack->setDisabled(true);
+        m_toolBtnBack->hide();
 
         m_toolBtnForward = new QToolButton(m_widget);
         m_toolBtnForward->setFixedHeight(PGA_BTN_SIZE);
         m_toolBtnForward->setFixedWidth(PGA_BTN_SIZE);
         m_toolBtnForward->setIcon(QIcon(":/forward.png"));
         m_toolBtnForward->setToolTip(tr("Go forward"));
-        m_toolBtnForward->setDisabled(true);
+        m_toolBtnForward->hide();
 
-        QPushButton *m_btnClose = new QPushButton(m_widget);
-        m_btnClose->setFixedHeight(PGA_BTN_SIZE);
-        m_btnClose->setFixedWidth(PGA_BTN_SIZE);
-        m_btnClose->setIcon(QIcon(":/close.png"));
-        m_btnClose->setToolTip(tr("Close tab"));
+        m_toolBtnClose = new QToolButton(m_widget);
+        m_toolBtnClose->setFixedHeight(PGA_BTN_SIZE);
+        m_toolBtnClose->setFixedWidth(PGA_BTN_SIZE);
+        m_toolBtnClose->setIcon(QIcon(":/close.png"));
+        m_toolBtnClose->setToolTip(tr("Close tab"));
 
         m_horizontalLayout = new QHBoxLayout(m_widget);
+        m_horizontalLayout->setContentsMargins(0,1,0,0);
         m_horizontalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
         m_horizontalLayout->setSpacing(1);
         m_horizontalLayout->addWidget(m_toolBtnBack);
@@ -1160,13 +1133,13 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
         connect(m_addNewWebView, SIGNAL(titleChanged(const QString &)), SLOT(tabTitleChanged(const QString &)));
 
         // Register the slot on toolbutton to show the previous history of web
-        connect(m_toolBtnBack, SIGNAL(clicked()), this, SLOT(goBackPage()));
+        connect(m_toolBtnBack, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoBackPage()));
 
         // Register the slot on toolbutton to show the next history of web
-        connect(m_toolBtnForward, SIGNAL(clicked()), this, SLOT(goForwardPage()));
+        connect(m_toolBtnForward, SIGNAL(clicked()), m_tabWidget, SLOT(dockGoForwardPage()));
 
         // Register the slot on close button , added manually
-        connect(m_btnClose, SIGNAL(clicked()), SLOT(closetabs()));
+        connect(m_toolBtnClose, SIGNAL(clicked()), m_tabWidget, SLOT(dockClosetabs()));
 
         m_addNewGridLayout->addWidget(m_addNewWebView, 0, 0, 1, 1);
         m_tabWidget->addTab(m_addNewTab, QString());
@@ -1175,7 +1148,7 @@ void BrowserWindow::urlLinkClicked(const QUrl &name)
 
         // Set the back and forward button on tab
         m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::LeftSide, m_widget);
-        m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_btnClose);
+        m_tabWidget->tabBar()->setTabButton((m_tabWidget->count() - 1), QTabBar::RightSide, m_toolBtnClose);
 
         m_addNewWebView->setFirstLoadURL(name.host());
         m_addNewWebView->setTabIndex((m_tabWidget->count() - 1));
