@@ -25,6 +25,9 @@ DockTabWidget *DockTabWidget::mainTabWidget = NULL;
 DockTabWidget::DockTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
+    floatingWidget = NULL;
+    floatingEnabled = false;
+
     setParent(parent);
     setTabsClosable(false);
     setElideMode(Qt::ElideRight);
@@ -512,6 +515,7 @@ DockTabBar::DockTabBar(DockTabWidget *tabWidget, QWidget *parent) :
     QTabBar(parent),
     tab_widget(tabWidget)
 {
+    isStartingDrag = false;
     setAcceptDrops(true);
 }
 

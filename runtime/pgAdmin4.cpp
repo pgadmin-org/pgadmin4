@@ -183,8 +183,10 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName(PGA_APP_NAME.toLower().replace(" ", ""));
 
+#if QT_VERSION >= 0x050000
     // Set high DPI pixmap to display icons clear on Qt widget.
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
     /* In windows and linux, it is required to set application level proxy
      * becuase socket bind logic to find free port gives socket creation error

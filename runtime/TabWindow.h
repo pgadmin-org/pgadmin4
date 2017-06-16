@@ -90,8 +90,8 @@ public slots:
     void tabIndexChanged(int index);
 
 private:
-    QWidget *floatingWidget = 0;
-    bool floatingEnabled = false;
+    QWidget *floatingWidget;
+    bool floatingEnabled;
 };
 
 class DockTabBar : public QTabBar
@@ -115,6 +115,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void dragLeaveEvent(QDragLeaveEvent * event);
 
+    // re-implemented paint event to draw the text on tab bar of tab widget control.
     void paintEvent(QPaintEvent *event)
     {
         Q_UNUSED(event);
@@ -144,20 +145,21 @@ protected:
                 QRect rect(option.rect);
 
                 // If toolButton is visible then only draw text after tool button pixel area.
+                // If tool button is not visible - draw the text after margin of 10px.
                 if (isToolBtnVisible)
                 {
                     if ((current_index != -1) && i == current_index)
                     {
                         if (str.startsWith("Query -") || str.startsWith("Debugger"))
-                            rect.setX(option.rect.x() + 5);
+                            rect.setX(option.rect.x() + 10);
                         else
                             rect.setX(option.rect.x() + 45);
                     }
                     else
-                        rect.setX(option.rect.x() + 5);
+                        rect.setX(option.rect.x() + 10);
                 }
                 else
-                    rect.setX(option.rect.x() + 5);
+                    rect.setX(option.rect.x() + 10);
 
                 rect.setY(option.rect.y() + 7);
 
@@ -178,8 +180,8 @@ protected:
 
 private:
     int insertionIndexAt(const QPoint &pos);
-    DockTabWidget *tab_widget = 0;
-    bool isStartingDrag = false;
+    DockTabWidget *tab_widget;
+    bool isStartingDrag;
     QPoint dragStartPos;
 };
 
