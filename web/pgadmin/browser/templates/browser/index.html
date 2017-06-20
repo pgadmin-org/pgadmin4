@@ -88,6 +88,9 @@ require.onResourceLoad = function (context, map, depMaps) {
   text-align: center;
   color: #fff;
 }
+.pgadmin_header_logo {
+  cursor: default;
+}
 </style>
 <div id="pg-spinner">
   <div class="pg-sp-content">
@@ -104,7 +107,7 @@ require.onResourceLoad = function (context, map, depMaps) {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ '#' if config.SERVER_MODE else '?key=' + current_app.PGADMIN_KEY }}">
+            <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}">
                 <i class="app-icon {{ config.APP_ICON }}"></i>
                 <span>&nbsp;{{ config.APP_NAME }}</span>
             </a>
