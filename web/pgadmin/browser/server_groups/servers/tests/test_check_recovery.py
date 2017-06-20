@@ -21,7 +21,7 @@ class TestCheckRecovery(BaseTestGenerator):
         if cursor is not None and cursor.connection is not None:
             server_version = cursor.connection.server_version
             if server_version >= 100000:
-                version = '10.0_plus'
+                version = '10_plus'
             elif server_version >= 90000:
                 version = '9.0_plus'
             else:
