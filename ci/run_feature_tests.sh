@@ -27,6 +27,7 @@ $WORKSPACE/pgadmin-venv/bin/pip install -r requirements.txt || { echo 'ERROR: Fa
 $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { echo 'ERROR: Failed to install the regression test requirements.' ; exit 1; }
 
 cd web
+/usr/bin/yarn install || { echo 'ERROR: Failed to install the required Javascript modules.' ; exit 1; }
 /usr/bin/yarn run bundle || { echo 'ERROR: Failed to bundle the Javascript code.' ; exit 1; }
 cd ../
 
