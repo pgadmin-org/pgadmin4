@@ -1,7 +1,14 @@
 #!/bin/sh
 
-echo "EXECUTING: Python tests"
+echo "EXECUTING: Feature tests"
 echo
+
+echo "Starting virtual frame buffer..."
+echo
+
+Xvfb -ac :99 -screen 0 1280x1024x16 &
+FB_PID=$!
+export DISPLAY=:99
 
 echo "Creating Python ${PYTHON_VERSION} virtual environment..."
 echo
@@ -22,5 +29,9 @@ $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { 
 echo "Running regression tests..."
 echo
 
-$WORKSPACE/pgadmin-venv/bin/python $WORKSPACE/web/regression/runtests.py  --exclude feature_tests || { echo 'ERROR: Error detected when running the Python tests.' ; exit 1; }
+$WORKSPACE/pgadmin-venv/bin/python $WORKSPACE/web/regression/runtests.py  --pkg feature_tests || { echo 'ERROR: Error detected when running the Feature tests.' ; exit 1; }
 
+echo "Cleaning up..."
+echo
+
+kill $FB_PID
