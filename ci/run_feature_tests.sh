@@ -26,6 +26,10 @@ fi
 $WORKSPACE/pgadmin-venv/bin/pip install -r requirements.txt || { echo 'ERROR: Failed to install the application requirements.' ; exit 1; }
 $WORKSPACE/pgadmin-venv/bin/pip install -r web/regression/requirements.txt || { echo 'ERROR: Failed to install the regression test requirements.' ; exit 1; }
 
+cd web
+/usr/bin/yarn run bundle || { echo 'ERROR: Failed to bundle the Javascript code.' ; exit 1; }
+cd ../
+
 echo "Running regression tests..."
 echo
 
