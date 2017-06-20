@@ -80,24 +80,26 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
-        self.page.toggle_open_tree_item('Schemas')
-        self.page.toggle_open_tree_item('public')
 
     def _check_datatype(self):
-        query = "SELECT -32767::smallint, 32767::smallint," \
-                "-2147483647::integer, 2147483647::integer," \
-                "9223372036854775807::bigint, 9223372036854775807::bigint," \
-                "922337203685.4775807::decimal, 92203685.477::decimal," \
-                "922337203685.922337203685::numeric, " \
-                "-92233720368547758.08::numeric," \
-                "ARRAY[1, 2, 3]::float[], ARRAY['nan', 'nan', 'nan']::float[];"
+        query = r"SELECT -32767::smallint, 32767::smallint," \
+                r"-2147483647::integer, 2147483647::integer," \
+                r"9223372036854775807::bigint, 9223372036854775807::bigint," \
+                r"922337203685.4775807::decimal, 92203685.477::decimal," \
+                r"922337203685.922337203685::numeric, " \
+                r"-92233720368547758.08::numeric," \
+                r"ARRAY[1, 2, 3]::float[], ARRAY['nan', 'nan', 'nan']::float[]," \
+                r"'Infinity'::real, '{Infinity}'::real[]," \
+                r"E'\\xDEADBEEF'::bytea, ARRAY[E'\\xDEADBEEF', E'\\xDEADBEEF']::bytea[];"
 
         expected_output = [
             '-32767', '32767', '-2147483647', '2147483647',
             '9223372036854775807', '9223372036854775807',
             '922337203685.4775807', '92203685.477',
             '922337203685.922337203685', '-92233720368547758.08',
-            '{1,2,3}', '{NaN,NaN,NaN}'
+            '{1,2,3}', '{NaN,NaN,NaN}',
+            'Infinity', '{Infinity}',
+            r'\336\255\276\357', r'{"\\336\\255\\276\\357","\\336\\255\\276\\357"}'
         ]
 
         self.page.driver.find_element_by_link_text("Tools").click()
@@ -133,10 +135,17 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         cnt = 12
         for val in expected_output[10:]:
             try:
-                source_code = self.page.find_by_xpath(
-                    "//*[@id='0']//*[@id='datagrid']/div[5]/div/div/div["
-                    + str(cnt)
+                if cnt == 14:
+                    xpath = "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[" \
+                    + str(cnt) \
+                    + "]/span"
+                else:
+                    xpath = "//*[@id='0']//*[@id='datagrid']/div[5]/div/div/div[" \
+                    + str(cnt) \
                     + "]"
+
+                source_code = self.page.find_by_xpath(
+                     xpath
                 ).get_attribute('innerHTML')
 
                 PGDataypeFeatureTest.check_result(
