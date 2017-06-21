@@ -1121,7 +1121,7 @@ define([
         }
 
         // Call Grant Wizard Dialog and set dimensions for wizard
-        alertify.wizardDialog(true).resizeTo('40%', '60%');
+        alertify.wizardDialog(true).resizeTo('55%', '75%');
       }
     };
 
