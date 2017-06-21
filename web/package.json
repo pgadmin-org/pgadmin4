@@ -33,8 +33,8 @@
     "immutability-helper": "^2.2.0",
     "imports-loader": "git+https://github.com/webpack-contrib/imports-loader.git#44d6f48463b256a17c1ba6fd9b5cc1449b4e379d",
     "moment": "^2.18.1",
-    "react": "~15.4.2",
-    "react-dom": "~15.4.2",
+    "react": "file:../web/pgadmin/static/vendor/react",
+    "react-dom": "file:../web/pgadmin/static/vendor/react-dom",
     "requirejs": "~2.3.3",
     "underscore": "~1.8.3",
     "watchify": "~3.9.0"
