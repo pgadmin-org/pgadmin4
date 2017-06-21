@@ -2,3 +2,20 @@
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
 }
+
+/* Hover over an element */
+.aciTree .aciTreeLine.aciTreeHover .aciTreeItem  {
+    background-color: #e7f2ff;
+    border-color: #84acdd;
+}
+
+/* Selected element and in focus*/
+.aciTree.aciTreeFocus .aciTreeFocus > .aciTreeLine .aciTreeItem {
+    background-color: #e7f2ff;
+}
+
+/* Selected element but not in focus */
+.aciTree .aciTreeSelected > .aciTreeLine .aciTreeItem {
+    background-color: #e7f2ff;
+    border-color: #84acdd;
+}

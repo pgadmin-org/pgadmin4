@@ -1,0 +1,4 @@
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #e7f2ff;
+  color: #333333;
+}
