@@ -325,6 +325,9 @@ define(
       }
       obj.initialized = true;
 
+      // Cache preferences
+      obj.cache_preferences();
+
       // Initialize the Docker
       obj.docker = new wcDocker(
         '#dockerContainer', {
@@ -597,7 +600,7 @@ define(
 
     // This will hold preference data (Works as a cache object)
     // Here node will be a key and it's preference data will be value
-    node_preference_data: {},
+    preferences_cache: {},
 
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
@@ -749,24 +752,42 @@ define(
       }
     },
 
-    get_preference: function (module, preference_name) {
-      var preference = null;
+    // Get preference value from cache
+    get_preference: function(module, preference) {
+      var self = this;
+      // If cache is not yet loaded then keep checking
+      if(_.size(self.preferences_cache) == 0) {
+        var preference_data = setInterval(check_preference, 1000);
+
+        function check_preference() {
+          if(_.size(self.preferences_cache) > 0) {
+            clearInterval(preference_data);
+            return _.findWhere(self.preferences_cache, {'module': module, 'name': preference});
+          }
+        }
+      }
+      else {
+        return _.findWhere(self.preferences_cache, {'module': module, 'name': preference});
+      }
+    },
+
+    // Get and cache the preferences
+    cache_preferences: function () {
+      var self = this;
       $.ajax({
-        async: false,
-        url: url_for(
-          'preferences.get_by_name', {
-            'module': module,
-            'preference': preference_name
-          }),
+        url: url_for('preferences.get_all'),
         success: function(res) {
-          preference = res;
+          self.preferences_cache = res;
         },
         error: function(xhr, status, error) {
-
+          try {
+            var err = $.parseJSON(xhr.responseText);
+            Alertify.alert(gettext('Preference loading failed.'),
+              err.errormsg
+            );
+          } catch (e) {}
         }
       });
-
-      return preference;
     },
 
     _findTreeChildNode: function(_i, _d, _o) {

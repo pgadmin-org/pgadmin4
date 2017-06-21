@@ -389,6 +389,8 @@ define([
 
               if (e.button.text == gettext('OK')){
                 preferences.updateAll();
+                // Refresh preferences cache
+                pgBrowser.cache_preferences();
               }
             },
             build: function() {

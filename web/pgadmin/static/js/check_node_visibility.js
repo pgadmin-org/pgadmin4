@@ -30,21 +30,12 @@ define(['jquery', 'underscore', 'underscore.string'],
         return true;
       }
 
-      // If we have already fetched preference earlier then pick
-      // it from our cache object
-      if (_.has(pgBrowser.node_preference_data, node_type)) {
-        return pgBrowser.node_preference_data[node_type].value
+      preference = pgBrowser.get_preference("Browser", 'show_node_'+node_type);
+
+      if (preference) {
+        return preference.value
       }
-
-      var preference = pgBrowser.get_preference(
-        'browser', 'show_node_' + node_type
-      );
-
-      // Save it for future use, kind of caching
-      if(!_.isUndefined(preference) && !_.isNull(preference)) {
-        pgBrowser.node_preference_data[node_type] = preference;
-        return preference.value;
-      } else {
+      else {
         return true;
       }
     }

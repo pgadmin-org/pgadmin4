@@ -60,7 +60,7 @@ class PreferencesModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['preferences.index', 'preferences.get_by_name']
+        return ['preferences.index', 'preferences.get_by_name', 'preferences.get_all']
 
 
 blueprint = PreferencesModule(MODULE_NAME, __name__)
@@ -138,6 +138,27 @@ def preferences(module=None, preference=None):
 
     return ajax_response(
         response=sorted(res, key=label),
+        status=200
+    )
+
+
+@blueprint.route("/get_all", methods=["GET"], endpoint='get_all')
+@login_required
+def preferences_s():
+    """Fetch all preferences for caching."""
+    # Load Preferences
+    pref = Preferences.preferences()
+    res = []
+
+    for m in pref:
+        if len(m['categories']):
+            for c in m['categories']:
+                for p in c['preferences']:
+                    p['module'] = m['label']
+                    res.append(p)
+
+    return ajax_response(
+        response=res,
         status=200
     )
 
