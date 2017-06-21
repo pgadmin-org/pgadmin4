@@ -90,7 +90,7 @@ define('pgadmin.node.pga_jobstep', [
         },
         idAttribute: 'jstid',
         schema: [{
-          id: 'jstid', label: gettext('ID'), type: 'integer',
+          id: 'jstid', label: gettext('ID'), type: 'int',
           cellHeaderClasses: 'width_percent_5', mode: ['properties']
         },{
           id: 'jstname', label: gettext('Name'), type: 'text',

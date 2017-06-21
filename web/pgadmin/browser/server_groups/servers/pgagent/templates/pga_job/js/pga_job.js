@@ -97,7 +97,7 @@ define('pgadmin.node.pga_job', [
           id: 'jobclass', label: gettext('Job class'), type: 'text',
           mode: ['properties']
         },{
-          id: 'jobjclid', label: gettext('Job class'), type: 'integer',
+          id: 'jobjclid', label: gettext('Job class'), type: 'int',
           control: 'node-ajax-options', url: 'classes', url_with_id: false,
           cache_node: 'server', mode: ['create', 'edit'],
           select2: {allowClear: false},

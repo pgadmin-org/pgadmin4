@@ -251,7 +251,7 @@ define('pgadmin.node.pga_schedule', [
           return pgBrowser.Node.Model.prototype.parse.apply(this, arguments);
         },
         schema: [{
-          id: 'jscid', label: gettext('ID'), type: 'integer',
+          id: 'jscid', label: gettext('ID'), type: 'int',
           cellHeaderClasses: 'width_percent_5', mode: ['properties']
         },{
           id: 'jscname', label: gettext('Name'), type: 'text',
