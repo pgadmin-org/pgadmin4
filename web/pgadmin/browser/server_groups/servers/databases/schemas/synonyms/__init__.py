@@ -334,18 +334,28 @@ class SynonymView(PGChildNodeView):
             except ValueError:
                 data[k] = v
 
-        sql = render_template("/".join([self.template_path,
-                                        'get_objects.sql']),
-                              trgTyp=data['trgTyp'],
-                              trgSchema=data['trgSchema'])
-        status, rset = self.conn.execute_dict(sql)
+        is_valid_request = True
+        if 'trgTyp' not in data or data['trgTyp'] is None or \
+            data['trgTyp'].strip() == '':
+            is_valid_request = False
 
-        if not status:
-            return internal_server_error(errormsg=rset)
+        if 'trgSchema' not in data or data['trgSchema'] is None or \
+            data['trgSchema'].strip() == '':
+            is_valid_request = False
 
-        for row in rset['rows']:
-            res.append({'label': row['name'],
-                        'value': row['name']})
+        if is_valid_request:
+            sql = render_template("/".join([self.template_path,
+                                            'get_objects.sql']),
+                                trgTyp=data['trgTyp'],
+                                trgSchema=data['trgSchema'])
+            status, rset = self.conn.execute_dict(sql)
+
+            if not status:
+                return internal_server_error(errormsg=rset)
+
+            for row in rset['rows']:
+                res.append({'label': row['name'],
+                            'value': row['name']})
 
         return make_json_response(
             data=res,
@@ -384,14 +394,8 @@ class SynonymView(PGChildNodeView):
                     status=200
                 )
             else:
-                return make_json_response(
-                    success=410,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified synonym could not be found.\n'
-                    )
+                return gone(
+                    gettext('The specified synonym could not be found.')
                 )
 
         except Exception as e:
@@ -483,14 +487,8 @@ class SynonymView(PGChildNodeView):
             if len(res['rows']) > 0:
                 data = res['rows'][0]
             else:
-                return make_json_response(
-                    success=0,
-                    errormsg=gettext(
-                        'Error: Object not found.'
-                    ),
-                    info=gettext(
-                        'The specified synonym could not be found.\n'
-                    )
+                return gone(
+                    gettext('The specified synonym could not be found.')
                 )
 
             SQL = render_template("/".join([self.template_path,
@@ -646,14 +644,8 @@ class SynonymView(PGChildNodeView):
         if len(res['rows']) > 0:
            data = res['rows'][0]
         else:
-            return make_json_response(
-                success=0,
-                errormsg=gettext(
-                    'Error: Object not found.'
-                ),
-                info=gettext(
-                    'The specified synonym could not be found.\n'
-                )
+            return gone(
+                gettext('The specified synonym could not be found.')
             )
 
         SQL = render_template("/".join([self.template_path,
