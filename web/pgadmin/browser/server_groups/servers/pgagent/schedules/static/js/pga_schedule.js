@@ -337,7 +337,10 @@ define('pgadmin.node.pga_schedule', [
               );
 
               this.$el.prepend(
-                '<div class="' + Backform.helpMessageClassName + ' set-group pg-el-xs-12">{{ _("Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For each selected time or date element, the schedule will execute.<br/>e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the Minutes list box.<br/></li><li>Values from more than one field may be specified in order to further control the schedule.<br/>e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would click minute 05, hours 12 and 14, and weekdays Monday and Thursday.</li><li>For additional flexibility, the Month Days check list includes an extra Last Day option. This matches the last day of the month, whether it happens to be the 28th, 29th, 30th or 31st.</li></ul>") }}</div>'
+                '<div class="set-group pg-el-xs-12 ' +
+                Backform.helpMessageClassName + '">' +
+                gettext('Schedules are specified using a <b>cron-style</b> format.<br/><ul><li>For each selected time or date element, the schedule will execute.<br/>e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the Minutes list box.<br/></li><li>Values from more than one field may be specified in order to further control the schedule.<br/>e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would click minute 05, hours 12 and 14, and weekdays Monday and Thursday.</li><li>For additional flexibility, the Month Days check list includes an extra Last Day option. This matches the last day of the month, whether it happens to be the 28th, 29th, 30th or 31st.</li></ul>') +
+                '</div>'
               );
 
               return res;

@@ -165,7 +165,6 @@
                     'pgadmin.alertifyjs': "{{ url_for('static', filename='js/alertify.pgadmin.defaults') }}",
                     "pgadmin.backgrid": "{{ url_for('static', filename='js/backgrid.pgadmin') }}",
                     'pgadmin.backform': "{{ url_for('static', filename='js/backform.pgadmin') }}",
-
                     modernizr: "{{ url_for('static', filename='vendor/modernizr/modernizr-2.6.2-respond-1.1.0.min') }}",
                     jquery: "{{ url_for('static', filename='vendor/jquery/jquery-1.11.2' + ('' if config.DEBUG else '.min')) }}",
                     select2: "{{ url_for('static', filename='vendor/select2/select2.full'+ ('' if config.DEBUG else '.min')) }}",
@@ -190,10 +189,9 @@
                     "jquery.ui": "{{ url_for('static', filename='vendor/jquery-ui/jquery-ui-1.11.3' + ('' if config.DEBUG else '.min')) }}",
                     "bignumber": "{{ url_for('static', filename='vendor/bignumber/bignumber' if config.DEBUG else 'vendor/bignumber/bignumber.min') }}",
                     bean :"{{ url_for('static', filename='vendor/flotr2/bean' + ('' if config.DEBUG else '-min')) }}",
-                    flotr2 :"{{ url_for('static', filename='vendor/flotr2/flotr2.amd') }}"
-                    {% for script in current_app.javascripts %}
-                        ,'{{ script.name }}': "{{ script.path }}"
-                    {% endfor %}
+                    flotr2 :"{{ url_for('static', filename='vendor/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
+                    '{{ script.name }}': "{{ script.path }}"{% endfor %}
+
                 }
             });
 

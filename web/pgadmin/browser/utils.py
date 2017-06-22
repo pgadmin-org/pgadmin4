@@ -127,8 +127,7 @@ class NodeView(with_metaclass(MethodViewType, View)):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'children': [{'get': 'children'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'children': [{'get': 'children'}]
     })
 
     @classmethod

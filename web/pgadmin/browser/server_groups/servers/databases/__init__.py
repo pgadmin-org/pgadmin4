@@ -14,7 +14,7 @@ import re
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers as servers
-from flask import render_template, make_response, current_app, request, jsonify
+from flask import render_template, current_app, request, jsonify
 from flask_babel import gettext as _
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
@@ -78,6 +78,13 @@ class DatabaseModule(CollectionNodeModule):
 
         return snippets
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
 
 blueprint = DatabaseModule(__name__)
 
@@ -106,7 +113,6 @@ class DatabaseView(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
         }],
@@ -344,19 +350,6 @@ class DatabaseView(PGChildNodeView):
             priv = parse_priv_from_db(row)
             res['rows'][0].setdefault(row['deftype'], []).append(priv)
         return res
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "databases/js/databases.js",
-                _=_
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def connect(self, gid, sid, did):
         """Connect the Database."""

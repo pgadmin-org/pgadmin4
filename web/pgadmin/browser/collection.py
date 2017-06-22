@@ -45,14 +45,34 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         """
         return []
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return True
+
+
     def get_own_javascripts(self):
         scripts = []
 
-        scripts.extend([{
-            'name': 'pgadmin.node.%s' % self.node_type,
-            'path': url_for('browser.index') + '%s/module' % self.node_type,
-            'when': self.script_load
-        }])
+        if self.module_use_template_javascript:
+            scripts.extend([{
+                'name': 'pgadmin.node.%s' % self.node_type,
+                'path': url_for('browser.index') + '%s/module' % self.node_type,
+                'when': self.script_load,
+                'is_template': True
+            }])
+        else:
+            scripts.extend([{
+                'name': 'pgadmin.node.%s' % self.node_type,
+                'path': url_for(
+                    '%s.static'% self.name, filename=('js/%s' % self.node_type)
+                ),
+                'when': self.script_load,
+                'is_template': False
+            }])
 
         for module in self.submodules:
             scripts.extend(module.get_own_javascripts())

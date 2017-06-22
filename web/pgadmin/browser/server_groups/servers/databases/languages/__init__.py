@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -96,6 +96,14 @@ class LanguageModule(CollectionNodeModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = LanguageModule(__name__)
 
@@ -112,10 +120,6 @@ class LanguageView(PGChildNodeView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the LanguageView and it's base view.
-
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -185,7 +189,6 @@ class LanguageView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_functions': [{}, {'get': 'get_functions'}],
         'get_templates': [{}, {'get': 'get_templates'}],
         'delete': [{'delete': 'delete'}]
@@ -204,18 +207,6 @@ class LanguageView(PGChildNodeView):
         self.manager = None
 
         super(LanguageView, self).__init__(**kwargs)
-
-    def module_js(self):
-        """
-        This property defines whether javascript exists for this node.
-        """
-        return make_response(
-            render_template(
-                "languages/js/languages.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def check_precondition(f):
         """

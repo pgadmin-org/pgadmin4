@@ -12,7 +12,7 @@ import re
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -83,6 +83,14 @@ class EventTriggerModule(CollectionNodeModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = EventTriggerModule(__name__)
 
@@ -100,9 +108,6 @@ class EventTriggerView(PGChildNodeView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the EventTriggerView and it's base view.
-
-    * module_js()
-      - Returns the javascript module for event trigger.
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -165,21 +170,8 @@ class EventTriggerView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'fopts': [{'get': 'get_event_funcs'}, {'get': 'get_event_funcs'}]
     })
-
-    def module_js(self):
-        """
-        Returns the javascript module for event trigger.
-        """
-        return make_response(
-            render_template(
-                "event_triggers/js/event_trigger.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def check_precondition(f):
         """

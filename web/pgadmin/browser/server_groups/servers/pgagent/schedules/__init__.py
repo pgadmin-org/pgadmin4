@@ -12,7 +12,7 @@
 import json
 from functools import wraps
 
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -71,6 +71,14 @@ class JobScheduleModule(CollectionNodeModule):
         """
         return 'pga_job'
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = JobScheduleModule(__name__)
 
@@ -87,10 +95,6 @@ class JobScheduleView(PGChildNodeView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the JobScheduleView and it's base view.
-
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -140,8 +144,7 @@ class JobScheduleView(PGChildNodeView):
         ],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'sql': [{'get': 'sql'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'sql': [{'get': 'sql'}]
     })
 
     def _init_(self, **kwargs):
@@ -158,18 +161,6 @@ class JobScheduleView(PGChildNodeView):
         self.manager = None
 
         super(JobScheduleView, self).__init__(**kwargs)
-
-    def module_js(self):
-        """
-        This property defines whether javascript exists for this node.
-        """
-        return make_response(
-            render_template(
-                "pga_schedule/js/pga_schedule.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def check_precondition(f):
         """

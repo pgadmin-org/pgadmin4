@@ -120,7 +120,9 @@ function(_, S, pgAdmin, $) {
         this.$el.removeClass('disabled');
       }
 
-      this.applyStyle();
+      if(this.$el) {
+        this.applyStyle();
+      }
 
       this.context = {
         name: this.label,

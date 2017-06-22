@@ -1,7 +1,12 @@
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'pgadmin.server.supported_servers',
+  'pgadmin.user_management.current_user'
+], function(
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify,
+  supported_servers, current_user
+) {
 
   if (!pgBrowser.Nodes['server']) {
 
@@ -599,7 +604,7 @@ define('pgadmin.node.server', [
           host: '',
           port: 5432,
           db: 'postgres',
-          username: '{{ username }}',
+          username: current_user.name,
           role: null,
           connect_now: true,
           password: undefined,
@@ -626,10 +631,7 @@ define('pgadmin.node.server', [
         },{
           id: 'server_type', label: gettext('Server type'), type: 'options',
           mode: ['properties'], visible: 'isConnected',
-          'options': [{% for st in server_types %}
-            {label: '{{ st.description }}', value: '{{ st.server_type }}'},{% endfor %}
-            {label: gettext('Unknown'), value: ''}
-          ]
+          'options': supported_servers
         },{
           id: 'connected', label: gettext('Connected?'), type: 'switch',
           mode: ['properties'], group: gettext('Connection'), 'options': {
@@ -670,7 +672,7 @@ define('pgadmin.node.server', [
             return m.get('connect_now') && m.isNew();
           },
           disabled: function(m) {
-            return {% if config.ALLOW_SAVE_PASSWORD %}false{% else %}true{% endif %};
+            return current_user.allow_save_password;
           }
         },{
           id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
@@ -721,9 +723,7 @@ define('pgadmin.node.server', [
           check_for_empty(
             'username', gettext('Username must be specified.')
           );
-          check_for_empty(
-            'port', '{{ _('Port must be specified.') }}'
-          );
+          check_for_empty('port', gettext('Port must be specified.'));
           this.errorModel.set(err);
 
           if (_.size(err)) {

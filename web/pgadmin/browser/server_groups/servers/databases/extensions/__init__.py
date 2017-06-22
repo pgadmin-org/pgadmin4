@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -82,6 +82,14 @@ class ExtensionModule(CollectionNodeModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 # Create blueprint of extension module
 blueprint = ExtensionModule(__name__)
@@ -123,7 +131,6 @@ class ExtensionView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'avails': [{}, {'get': 'avails'}],
         'schemas': [{}, {'get': 'schemas'}],
         'children': [{'get': 'children'}]
@@ -448,18 +455,6 @@ class ExtensionView(PGChildNodeView):
         return make_json_response(
             data=rset['rows'],
             status=200
-        )
-
-    def module_js(self):
-        """
-        This property defines whether javascript exists for this node.
-        """
-        return make_response(
-            render_template(
-                "extensions/js/extensions.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
         )
 
     @check_precondition

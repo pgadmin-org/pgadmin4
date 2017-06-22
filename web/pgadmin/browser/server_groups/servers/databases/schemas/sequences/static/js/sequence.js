@@ -235,7 +235,7 @@ define('pgadmin.node.sequence', [
           if (!this.isNew()) {
             if (_.isUndefined(this.get('current_value'))
               || String(this.get('current_value')).replace(/^\s+|\s+$/g, '') == '') {
-              msg = '{{ _('Current value cannot be empty.') }}';
+              msg = gettext('Current value cannot be empty.');
               this.errorModel.set('current_value', msg);
               return msg;
             } else {
@@ -244,7 +244,7 @@ define('pgadmin.node.sequence', [
 
             if (_.isUndefined(this.get('increment'))
               || String(this.get('increment')).replace(/^\s+|\s+$/g, '') == '') {
-              msg = '{{ _('Increment value cannot be empty.') }}';
+              msg = gettext('Increment value cannot be empty.');
               this.errorModel.set('increment', msg);
               return msg;
             } else {
@@ -253,7 +253,7 @@ define('pgadmin.node.sequence', [
 
             if (_.isUndefined(this.get('minimum'))
               || String(this.get('minimum')).replace(/^\s+|\s+$/g, '') == '') {
-              msg = '{{ _('Minimum value cannot be empty.') }}';
+              msg = gettext('Minimum value cannot be empty.');
               this.errorModel.set('minimum', msg);
               return msg;
             } else {
@@ -262,7 +262,7 @@ define('pgadmin.node.sequence', [
 
             if (_.isUndefined(this.get('maximum'))
               || String(this.get('maximum')).replace(/^\s+|\s+$/g, '') == '') {
-              msg = '{{ _('Maximum value cannot be empty.') }}';
+              msg = gettext('Maximum value cannot be empty.');
               this.errorModel.set('maximum', msg);
               return msg;
             } else {
@@ -271,7 +271,7 @@ define('pgadmin.node.sequence', [
 
             if (_.isUndefined(this.get('cache'))
               || String(this.get('cache')).replace(/^\s+|\s+$/g, '') == '') {
-              msg = '{{ _('Cache value cannot be empty.') }}';
+              msg = gettext('Cache value cannot be empty.');
               this.errorModel.set('cache', msg);
               return msg;
             } else {

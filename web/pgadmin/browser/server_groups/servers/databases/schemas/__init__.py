@@ -93,6 +93,14 @@ class SchemaModule(CollectionNodeModule):
         """
         return servers.ServerModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 class CatalogModule(SchemaModule):
     """
@@ -150,10 +158,6 @@ class SchemaView(PGChildNodeView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the SchemaView and it's base view.
-
-    * module_js()
-      - Request handler for module.js routes for the schema node module
-      javascript, which returns javscript for this module.
 
     * list()
       - This function is used to list all the schema nodes within the
@@ -217,7 +221,6 @@ class SchemaView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'delete': [{'delete': 'delete'}]
     })
 
@@ -900,10 +903,6 @@ class CatalogView(SchemaView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the CatalogView and it's base view.
-
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
 
     * create(gid, sid, did, scid)
       - Raise an error - we cannot create a catalog.

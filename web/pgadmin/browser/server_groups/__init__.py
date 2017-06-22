@@ -87,7 +87,7 @@ class ServerGroupPluginModule(BrowserPluginModule):
         pass
 
 
-blueprint = ServerGroupModule(__name__, static_url_path='')
+blueprint = ServerGroupModule(__name__)
 
 
 class ServerGroupView(NodeView):
@@ -275,16 +275,6 @@ class ServerGroupView(NodeView):
 
     def dependents(self, gid):
         return make_json_response(status=422)
-
-    def module_js(self, **kwargs):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template("server_groups/server_groups.js"),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def nodes(self, gid=None):
         """Return a JSON document listing the server groups for the user"""

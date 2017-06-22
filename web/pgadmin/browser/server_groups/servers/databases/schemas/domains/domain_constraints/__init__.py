@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases.schemas.domains \
     as domains
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -86,6 +86,14 @@ class DomainConstraintModule(CollectionNodeModule):
             )
         ]
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = DomainConstraintModule(__name__)
 
@@ -102,9 +110,6 @@ class DomainConstraintView(PGChildNodeView):
 
     Methods:
     -------
-
-    * module_js():
-      - Load JS file (domain_constraints.js) for this module.
 
     * check_precondition(f):
       - Works as a decorator.
@@ -170,8 +175,7 @@ class DomainConstraintView(PGChildNodeView):
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}]
+        'dependent': [{'get': 'dependents'}]
     })
 
     def validate_request(f):
@@ -226,18 +230,6 @@ class DomainConstraintView(PGChildNodeView):
             return f(self, **kwargs)
 
         return wrap
-
-    def module_js(self):
-        """
-        Load JS file (domain_constraints.js) for this module.
-        """
-        return make_response(
-            render_template(
-                "domain_constraints/js/domain_constraints.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def check_precondition(f):
         """
@@ -338,7 +330,6 @@ class DomainConstraintView(PGChildNodeView):
             doid: Domain Id
             coid: Domain Constraint Id
         """
-        res = []
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               coid=coid)

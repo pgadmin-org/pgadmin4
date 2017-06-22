@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as databases
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -85,6 +85,14 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         """
         return databases.DatabaseModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = ForeignDataWrapperModule(__name__)
 
@@ -101,10 +109,6 @@ class ForeignDataWrapperView(PGChildNodeView):
     -------
     * __init__(**kwargs)
       - Method is used to initialize the ForeignDataWrapperView and it's base view.
-
-    * module_js()
-      - This property defines (if javascript) exists for this node.
-        Override this property for your own logic
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -178,23 +182,9 @@ class ForeignDataWrapperView(PGChildNodeView):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
         'get_handlers': [{}, {'get': 'get_handlers'}],
         'get_validators': [{}, {'get': 'get_validators'}]
     })
-
-    def module_js(self):
-        """
-        This property defines (if javascript) exists for this node.
-        Override this property for your own logic.
-        """
-        return make_response(
-            render_template(
-                "foreign_data_wrappers/js/foreign_data_wrappers.js",
-                _=gettext
-            ),
-            200, {'Content-Type': 'application/x-javascript'}
-        )
 
     def check_precondition(f):
         """

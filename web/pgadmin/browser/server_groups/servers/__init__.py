@@ -128,24 +128,23 @@ class ServerModule(sg.ServerGroupPluginModule):
         scripts = []
 
         scripts.extend([{
-            'name': 'pgadmin.node.server',
-            'path': url_for('browser.index') + '%s/module' % self.node_type,
-            'when': self.script_load
-        },
-            {
-                'name': 'pgadmin.browser.server.privilege',
-                'path': url_for('browser.index') + 'server/static/js/privilege',
-                'when': self.node_type,
-                'deps': ['pgadmin.browser.node.ui']
-            },
-            {
-                'name': 'pgadmin.browser.server.variable',
-                'path': url_for('browser.index') + 'server/static/js/variable',
-                'when': self.node_type
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
+            'name': 'pgadmin.browser.server.privilege',
+            'path': url_for('%s.static'% self.name, filename='js/privilege'),
+            'when': self.node_type,
+            'is_template': False,
+            'deps': ['pgadmin.browser.node.ui']
+        }, {
+            'name': 'pgadmin.browser.server.variable',
+            'path': url_for('%s.static'% self.name, filename='js/variable'),
+            'when': self.node_type,
+            'is_template': False
+        },{
+            'name': 'pgadmin.server.supported_servers',
+            'path': url_for('browser.index') + 'server/supported_servers',
+            'is_template': True,
+            'when': self.node_type
+        }])
+        scripts.extend(sg.ServerGroupPluginModule.get_own_javascripts(self))
 
         return scripts
 
@@ -199,7 +198,7 @@ class ServerNode(PGChildNodeView):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
-        'module.js': [{}, {}, {'get': 'module_js'}],
+        'supported_servers.js': [{}, {}, {'get': 'supported_servers'}],
         'reload':
             [{'get': 'reload_configuration'}],
         'restore_point':
@@ -561,7 +560,6 @@ class ServerNode(PGChildNodeView):
             db.session.commit()
 
             connected = False
-            icon = "icon-server-not-connected"
             user = None
             manager = None
 
@@ -663,21 +661,16 @@ class ServerNode(PGChildNodeView):
     def dependents(self, gid, sid):
         return make_json_response(data='')
 
-    def module_js(self, **kwargs):
+    def supported_servers(self, **kwargs):
         """
         This property defines (if javascript) exists for this node.
         Override this property for your own logic.
         """
-        username = 'postgres'
-        if config.SERVER_MODE is True:
-            username = current_user.email.split('@')[0]
 
         return make_response(
             render_template(
-                "servers/servers.js",
-                server_types=ServerType.types(),
-                _=gettext,
-                username=username,
+                "servers/supported_servers.js",
+                server_types=ServerType.types()
             ),
             200, {'Content-Type': 'application/x-javascript'}
         )

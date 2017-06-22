@@ -14,7 +14,6 @@ import json
 from flask import render_template
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
-from config import PG_DEFAULT_DRIVER
 
 class SchemaChildModule(CollectionNodeModule):
     """
@@ -61,6 +60,14 @@ class SchemaChildModule(CollectionNodeModule):
                ) and CollectionNodeModule.BackendSupported(
             self, manager, **kwargs
         )
+
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
 
 
 class DataTypeReader:
@@ -165,7 +172,6 @@ class DataTypeReader:
             conn: Connection Object
             condition: condition to restrict SQL statement
         """
-        needSchema = isDup
         schema = nsp if nsp is not None else ''
         name = ''
         array = ''
