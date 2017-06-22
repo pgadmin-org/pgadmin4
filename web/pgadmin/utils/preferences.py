@@ -303,6 +303,7 @@ class Preferences(object):
         res = {
             'id': self.mid,
             'label': self.label or self.name,
+            'name': self.name,
             'categories': []
         }
         for c in self.categories:

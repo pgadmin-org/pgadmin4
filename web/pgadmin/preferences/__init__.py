@@ -154,7 +154,7 @@ def preferences_s():
         if len(m['categories']):
             for c in m['categories']:
                 for p in c['preferences']:
-                    p['module'] = m['label']
+                    p['module'] = m['name']
                     res.append(p)
 
     return ajax_response(
