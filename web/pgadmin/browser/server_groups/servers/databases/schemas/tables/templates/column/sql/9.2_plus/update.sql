@@ -15,7 +15,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
  COLLATE {{data.collspcname}}{% endif %};
 {% endif %}
 {###  Alter column default value ###}
-{% if data.defval and data.defval != o_data.defval %}
+{% if data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET DEFAULT {{data.defval}};
 

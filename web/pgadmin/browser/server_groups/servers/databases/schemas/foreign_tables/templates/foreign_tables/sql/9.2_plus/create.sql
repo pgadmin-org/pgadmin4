@@ -8,7 +8,7 @@ CREATE FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}(
 {% for o in c.coloptions %}{% if o.option and o.value %}
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}{% if c.attnotnull %}
- NOT NULL{% else %} NULL{% endif %}{% if c.typdefault %}
+ NOT NULL{% else %} NULL{% endif %}{% if c.typdefault is defined and c.typdefault is not none %}
  DEFAULT {{c.typdefault}}{% endif %}{% if c.collname %}
  COLLATE {{c.collname}}{% endif %}
 {% if not loop.last %},

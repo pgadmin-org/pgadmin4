@@ -29,7 +29,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}
 {% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
-{% if c.typdefault %} DEFAULT {{c.typdefault}}{% endif %}
+{% if c.typdefault is defined and c.typdefault is not none %} DEFAULT {{c.typdefault}}{% endif %}
 {% if c.collname %} COLLATE {{c.collname}}{% endif %};
 {% endfor -%}
 {% for c in data.columns.changed %}
@@ -51,10 +51,10 @@ c.precision != o_data['columns'][c.attnum]['precision'] %}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ALTER COLUMN {{conn|qtIdent(col_name)}} TYPE {{ conn|qtTypeIdent(c.datatype) }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %};
 {% endif %}
-{% if c.typdefault != o_data['columns'][c.attnum]['typdefault'] %}
+{% if c.typdefault is defined and c.typdefault != o_data['columns'][c.attnum]['typdefault'] %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}}{% if c.typdefault %} SET DEFAULT {{c.typdefault}}{% else %} DROP DEFAULT{% endif %};
+    ALTER COLUMN {{conn|qtIdent(col_name)}}{% if c.typdefault is defined and c.typdefault != '' %} SET DEFAULT {{c.typdefault}}{% else %} DROP DEFAULT{% endif %};
 {% endif %}
 {% if c.attstattarget != o_data['columns'][c.attnum]['attstattarget'] %}
 
