@@ -23,7 +23,7 @@ define([
       encoding: undefined,
       oid: undefined,
       header: undefined,
-      delimiter: ';',
+      delimiter: '',
       quote: '\"',
       escape: '\'',
       null_string: undefined,
@@ -490,8 +490,8 @@ define([
                 this.view.model.on('change', function() {
                     if (!_.isUndefined(this.get('filename')) && this.get('filename') !== '') {
                       this.errorModel.clear();
-                      if (!_.isUndefined(this.get('delimiter')) && this.get('delimiter') !== '' &&
-                          (this.get('delimiter').length == 1 || this.get('delimiter') == '[tab]')) {
+                      if (!_.isUndefined(this.get('delimiter')) && !_.isNull(this.get('delimiter'))
+                      ) {
                         this.errorModel.clear();
                         if (!_.isUndefined(this.get('quote')) && this.get('quote') !== '' &&
                             this.get('quote').length == 1) {
