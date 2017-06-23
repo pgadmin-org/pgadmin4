@@ -15,9 +15,9 @@ import 'slickgrid.grid';
 import ColumnSelector from 'sources/selection/column_selector';
 import ActiveCellCapture from 'sources/selection/active_cell_capture';
 import 'sources/selection/grid_selector';
+import 'slickgrid.plugins/slick.cellrangeselector';
+
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
-import 'sources/slickgrid/pgslick.cellrangedecorator';
-import 'sources/slickgrid/pgslick.cellrangeselector';
 
 describe('ColumnSelector', function () {
   var container, data, columns, options;

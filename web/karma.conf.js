@@ -17,6 +17,7 @@ module.exports = function (config) {
       {pattern: 'pgadmin/browser/static/js/**/*.js', included: false},
       'regression/javascript/**/*.jsx',
       'regression/javascript/**/*.js',
+      'pgadmin/static/bundle/slickgrid.js',
     ],
 
     // list of files to exclude
@@ -30,6 +31,7 @@ module.exports = function (config) {
     preprocessors: {
       'regression/javascript/**/*.js': ['webpack'],
       'regression/javascript/**/*.jsx': ['webpack'],
+      'pgadmin/static/bundle/slickgrid.js': ['webpack'],
     },
 
     webpack: webpackConfig,

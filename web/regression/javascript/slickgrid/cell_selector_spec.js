@@ -8,14 +8,18 @@
 //////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
-import Slick from 'slickgrid';
+import 'slickgrid';
 import 'slickgrid.grid';
+
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 import CellSelector from 'sources/slickgrid/cell_selector';
 import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 
 describe('CellSelector', function () {
   var container, columns, cellSelector, data, cellSelectionModel, grid;
+
+  var Slick = window.Slick;
+
   beforeEach(function () {
     container = $('<div></div>');
     container.height(9999);

@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+import 'slickgrid.plugins/slick.cellrangeselector';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 import 'slickgrid.grid';
 import Slick from 'slickgrid';

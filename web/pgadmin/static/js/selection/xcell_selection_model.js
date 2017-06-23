@@ -2,10 +2,9 @@ define([
   'jquery',
   'underscore',
   'sources/selection/range_selection_helper',
-  'sources/slickgrid/pgslick.cellrangeselector',
 
   'slickgrid',
-], function ($, _, RangeSelectionHelper, PGCellRangeSelector) {
+], function ($, _, RangeSelectionHelper) {
   var XCellSelectionModel = function (options) {
 
     var KEY_ARROW_RIGHT = 39;
@@ -17,7 +16,7 @@ define([
     var _grid;
     var _ranges = [];
     var _self = this;
-    var _selector = new PGCellRangeSelector({
+    var _selector = new Slick.CellRangeSelector({
       'selectionCss': {
         'border': '2px solid black',
       },

@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const sourcesDir = path.resolve(__dirname, 'pgadmin/static');
+const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 const regressionDir = path.resolve(__dirname, 'regression');
 
 module.exports = {
@@ -25,21 +26,23 @@ module.exports = {
             presets: ['es2015', 'react'],
           },
         },
-      },
-      {
+      }, {
+        test: /\.css$/,
+        use: [ 'style-loader', 'raw-loader' ],
+      }, {
         test: /.*slickgrid\/slick\.(?!core)*/,
         loader: 'imports-loader?' +
         'jquery.ui' +
         ',jquery.event.drag' +
         ',slickgrid',
       }, {
-        test: /.*slickgrid\/plugins\/slick\.rowselectionmodel/,
+        test: /.*slickgrid\.plugins\/slick\.cellrangeselector/,
         loader: 'imports-loader?' +
         'jquery.ui' +
         ',jquery.event.drag' +
         ',slickgrid' +
         '!exports-loader?' +
-        'Slick.RowSelectionModel',
+        'Slick.CellRangeSelector',
       }, {
         test: /.*slickgrid\/slick\.core.*/,
         loader: 'imports-loader?' +
@@ -59,11 +62,12 @@ module.exports = {
       'jquery.event.drag': sourcesDir + '/vendor/jquery-ui/jquery.event.drag-2.2',
       'sources': sourcesDir + '/js',
       'underscore.string': sourcesDir + '/vendor/underscore/underscore.string',
+      'vendor': sourcesDir + '/vendor/',
       'translations': regressionDir + '/javascript/fake_translations',
       'pgadmin.browser.endpoints': regressionDir + '/javascript/fake_endpoints',
-      'slickgrid': sourcesDir + '/vendor/slickgrid/slick.core',
-      'slickgrid.grid': sourcesDir + '/vendor/slickgrid/slick.grid',
-      'slickgrid.rowselectionmodel': sourcesDir + '/vendor/slickgrid/plugins/slick.rowselectionmodel',
+      'slickgrid': nodeModulesDir + '/slickgrid/',
+      'slickgrid.plugins': nodeModulesDir + '/slickgrid/plugins/',
+      'slickgrid.grid': nodeModulesDir + '/slickgrid/slick.grid',
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
     },

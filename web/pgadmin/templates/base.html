@@ -46,12 +46,6 @@
           href="{{ url_for('static', filename='vendor/select2/select2.css' if config.DEBUG else 'vendor/select2/select2.min.css')}}"/>
 
     <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='vendor/slickgrid/slick.grid.css')}}"/>
-    <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='vendor/slickgrid/slick-default-theme.css')}}"/>
-    <link type="text/css" rel="stylesheet"
-          href="{{ url_for('static', filename='vendor/slickgrid/smoothness/jquery-ui-1.11.3.custom.css' if config.DEBUG else 'vendor/slickgrid/smoothness/jquery-ui-1.11.3.custom.min.css')}}"/>
-    <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='vendor/codemirror/addon/scroll/simplescrollbars.css')}}"/>
 
     <!-- View specified stylesheets -->
@@ -77,10 +71,6 @@
                   name: 'codemirror',
                   location: '{{ url_for('static', filename='vendor/codemirror')}}',
                   main: 'lib/codemirror'
-                },{
-                  name: 'slickgrid',
-                  location: '{{ url_for('static', filename='vendor/slickgrid')}}',
-                  main: 'slick.core'
                 }],
                 shim: {
                     "backbone": {
@@ -135,17 +125,13 @@
                         "deps": ['jquery'], "exports": 'jQuery.fn.drag'
                     },
                     "jquery.ui": {"deps": ['jquery']},
+                    "slick.pgadmin.formatters": {"deps": ['slickgrid']},
+                    "slick.pgadmin.editors": {"deps": ['slickgrid']},
                     "slickgrid": {
                         "deps": [
                             'jquery', "jquery.ui", "jquery.event.drag"
                         ],
                         "exports": 'Slick'
-                    },
-                    "slickgrid/slick.grid": {
-                        "deps": [
-                            'jquery', "jquery.ui", "jquery.event.drag", "slickgrid"
-                        ],
-                        "exports": 'Slick.Grid'
                     },
                     "flotr2": {
                         deps: ['bean'],
@@ -189,9 +175,11 @@
                     "jquery.ui": "{{ url_for('static', filename='vendor/jquery-ui/jquery-ui-1.11.3' + ('' if config.DEBUG else '.min')) }}",
                     "bignumber": "{{ url_for('static', filename='vendor/bignumber/bignumber' if config.DEBUG else 'vendor/bignumber/bignumber.min') }}",
                     bean :"{{ url_for('static', filename='vendor/flotr2/bean' + ('' if config.DEBUG else '-min')) }}",
-                    flotr2 :"{{ url_for('static', filename='vendor/flotr2/flotr2.amd') }}"{% for script in current_app.javascripts %},
-                    '{{ script.name }}': "{{ script.path }}"{% endfor %}
-
+                    flotr2 :"{{ url_for('static', filename='vendor/flotr2/flotr2.amd') }}",
+                    slickgrid: "{{ url_for('static', filename='js/generated/slickgrid') }}"
+                    {% for script in current_app.javascripts %}
+                        ,'{{ script.name }}': "{{ script.path }}"
+                    {% endfor %}
                 }
             });
 

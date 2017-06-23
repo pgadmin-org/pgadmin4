@@ -25,15 +25,9 @@ define([
     'codemirror/addon/search/search',
     'codemirror/addon/search/searchcursor',
     'codemirror/addon/search/jump-to-line',
-    'backgrid.sizeable.columns', 'slickgrid/slick.formatters',
-    'slick.pgadmin.formatters', 'slickgrid/slick.editors',
-    'slick.pgadmin.editors', 'slickgrid/plugins/slick.autotooltips',
-    'slickgrid/plugins/slick.cellrangedecorator',
-    'slickgrid/plugins/slick.cellrangeselector',
-    'slickgrid/plugins/slick.cellselectionmodel',
-    'slickgrid/plugins/slick.cellcopymanager',
-    'slickgrid/plugins/slick.rowselectionmodel',
-    'slickgrid/slick.grid'
+    'backgrid.sizeable.columns',
+    'slick.pgadmin.formatters',
+    'slick.pgadmin.editors',
 ], function(
   $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
@@ -880,7 +874,7 @@ define([
         if (self.history_grid) {
           self.history_grid.remove();
         }
-
+        
         self.history_collection = new HistoryBundle.historyCollection([]);
 
         let queryHistoryElement = reactComponents.React.createElement(

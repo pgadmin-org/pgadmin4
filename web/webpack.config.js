@@ -3,8 +3,9 @@
 module.exports = {
   context: __dirname + '/pgadmin/static',
   entry: {
-    reactComponents: './jsx/components.jsx',
+    reactComponents: './bundle/components.js',
     history: './js/history/index.js',
+    slickgrid: './bundle/slickgrid.js',
   },
   output: {
     libraryTarget: 'amd',
@@ -22,8 +23,10 @@ module.exports = {
           presets: ['es2015', 'react'],
         },
       },
-    },
-    ],
+    }, {
+      test: /\.css$/,
+      use: ['style-loader', 'raw-loader'],
+    }],
   },
 
   resolve: {

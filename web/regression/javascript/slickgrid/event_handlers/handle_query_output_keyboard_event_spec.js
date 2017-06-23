@@ -13,6 +13,7 @@ import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
 import Slick from 'slickgrid';
 import 'slickgrid.grid';
+
 import $ from 'jquery';
 
 describe('#handleQueryOutputKeyboardEvent', function () {
