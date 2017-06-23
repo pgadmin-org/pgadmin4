@@ -62,6 +62,33 @@ class PgadminPage:
 
         self.find_by_xpath("//*[@id='tree']//*[.='" + server_config['name'] + "']")
 
+    def open_query_tool(self):
+        self.driver.find_element_by_link_text("Tools").click()
+        tools_menu = self.driver.find_element_by_id('mnu_tools')
+
+        # Query Tool is first li
+        query_tool = tools_menu.find_element_by_tag_name('li')
+
+        self.enable_menu_item(query_tool, 10)
+
+        self.find_by_partial_link_text("Query Tool").click()
+        self.click_tab('Query -')
+
+    def enable_menu_item(self, menu_item, wait_time):
+        start_time = time.time()
+        # wait until menu becomes enabled.
+        while time.time() - start_time < wait_time:  # wait_time seconds
+            # if menu is disabled then it will have
+            # two classes 'menu-item disabled'.
+            # And if menu is enabled the it will have
+            # only one class 'menu-item'.
+
+            if 'menu-item' == str(menu_item.get_attribute('class')):
+                break
+                time.sleep(0.1)
+        else:
+            assert False, "'Tools -> Query Tool' menu did not enable."
+
     def close_query_tool(self):
         self.driver.switch_to.default_content()
         tab = self.find_by_xpath("//*[contains(@class,'wcPanelTab') and contains(.,'" + "Query" + "')]")

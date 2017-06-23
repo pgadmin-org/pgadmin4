@@ -95,7 +95,6 @@ CREATE TABLE public.defaults
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
         self._tables_node_expandable()
-        self.driver.switch_to.default_content()
         self.page.select_tree_item('defaults')
         # Open Object -> View data
         self._view_data_grid()

@@ -102,9 +102,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             r'\336\255\276\357', r'{"\\336\\255\\276\\357","\\336\\255\\276\\357"}'
         ]
 
-        self.page.driver.find_element_by_link_text("Tools").click()
-        self.page.find_by_partial_link_text("Query Tool").click()
-
+        self.page.open_query_tool()
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
         wait = WebDriverWait(self.page.driver, 5)

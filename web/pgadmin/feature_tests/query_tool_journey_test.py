@@ -87,10 +87,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
-        time.sleep(5)
-        self.page.find_by_partial_link_text("Tools").click()
-        self.page.find_by_partial_link_text("Query Tool").click()
-        self.page.click_tab('Query -')
+        self.page.open_query_tool()
         time.sleep(5)
 
     def _execute_query(self, query):
