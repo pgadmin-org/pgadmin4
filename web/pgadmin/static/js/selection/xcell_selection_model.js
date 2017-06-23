@@ -17,8 +17,14 @@ define([
     var _ranges = [];
     var _self = this;
     var _selector = new Slick.CellRangeSelector({
-      'selectionCss': {
-        'border': '2px solid black',
+      selectionCss: {
+        border: '2px solid black',
+      },
+      offset: {
+        top: 0,
+        left: -1,
+        height: 2,
+        width: 1,
       },
     });
     var _options;
