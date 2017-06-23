@@ -1,4 +1,4 @@
-<div class="enable-selection">
+<div class="container-fluid enable-selection">
     <div class="row">
         <div class="col-sm-3"><b>{{ _('Version') }}</b></div>
         <div class="col-sm-9">{{ config.APP_VERSION }}</div>
@@ -23,9 +23,9 @@
         <div class="col-sm-3"><b>{{ _('Current User') }}</b></div>
         <div class="col-sm-9">{{ info.current_user }}</div>
     </div>
-</div>
-<div class="row">
-    <div class="col-sm-3 pull-right"><img
+    <div class="row">
+        <div class="col-xs-12 text-right"><img
             src="{{ url_for('static', filename='img/logo-right-128.png') }}"
             alt="{{ config.APP_NAME }}"></div>
+    </div>
 </div>
