@@ -22,16 +22,19 @@ appbundle: docs
 appbundle-webkit: docs
 	PGADMIN4_USE_WEBKIT=1 ./pkg/mac/build.sh
 
-check:
+install-node:
+	cd web && yarn install
+
+check: install-node
 	cd web && yarn run bundle && yarn run linter && yarn run karma start -- --single-run && python regression/runtests.py
 
-check-python:
+check-python: install-node
 	cd web && yarn run bundle && python regression/runtests.py --exclude feature_tests
 
-check-feature:
+check-feature: install-node
 	cd web && yarn run bundle && python regression/runtests.py --pkg feature_tests
 
-check-js:
+check-js: install-node
 	cd web && yarn run linter && yarn run karma start -- --single-run
 
 # Include all clean sub-targets in clean
