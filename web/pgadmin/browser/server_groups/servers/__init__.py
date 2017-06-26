@@ -746,6 +746,8 @@ class ServerNode(PGChildNodeView):
                         _=gettext
                     )
                 )
+            else:
+                password = conn_passwd or server.password
         else:
             password = data['password'] if 'password' in data else None
             save_password = \
