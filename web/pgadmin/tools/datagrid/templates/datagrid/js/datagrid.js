@@ -1,8 +1,7 @@
 define([
-  'sources/gettext', 'jquery','alertify', 'pgadmin','codemirror',
-  'sources/sqleditor_utils',
-  'codemirror/mode/sql/sql', 'pgadmin.browser', 'wcdocker'
-], function(gettext, $, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {
+  'sources/gettext', 'sources/url_for', 'jquery','alertify', 'pgadmin','codemirror',
+  'sources/sqleditor_utils', 'pgadmin.browser', 'wcdocker'
+], function(gettext, url_for, $, alertify, pgAdmin, codemirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
@@ -158,10 +157,15 @@ define([
         else if (parentData.catalog != undefined) {
             nsp_name = parentData.catalog.label;
         }
+        var url_params = {
+          'cmd_type': data.mnuid,
+          'obj_type': d._type,
+          'sid': parentData.server._id,
+          'did': parentData.database._id,
+          'obj_id': d._id
+        };
 
-        var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/datagrid/" + data.mnuid + "/" + d._type + "/" +
-          parentData.server._id + "/" + parentData.database._id + "/" + d._id;
-
+        var baseUrl = url_for('datagrid.initialize_datagrid', url_params);
         var grid_title = parentData.server.label + ' - ' + parentData.database.label + ' - '
                         + nsp_name + '.' + d.label;
 
@@ -208,14 +212,23 @@ define([
             nsp_name = parentData.catalog.label;
         }
 
-        // Create base url to initialize the edit grid
-        var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/datagrid/" + data.mnuid + "/" + d._type + "/" +
-          parentData.server._id + "/" + parentData.database._id + "/" + d._id;
+        var url_params = {
+          'cmd_type': data.mnuid,
+          'obj_type': d._type,
+          'sid': parentData.server._id,
+          'did': parentData.database._id,
+          'obj_id': d._id
+
+        };
+
+        var baseUrl = url_for('datagrid.initialize_datagrid', url_params);
 
         // Create url to validate the SQL filter
-        var validateUrl = "{{ url_for('datagrid.index') }}" + "filter/validate/" +
-          parentData.server._id + "/" + parentData.database._id + "/" + d._id;
-
+        var validateUrl = url_for('datagrid.filter_validate', {
+                        'sid': url_params['sid'],
+                        'did': url_params['did'],
+                        'obj_id': url_params['obj_id'],
+                      });
         var grid_title = parentData.server.label + '-' + parentData.database.label + '-'
                         + nsp_name + '.' + d.label;
 
@@ -299,7 +312,7 @@ define([
         }
 
         var content = '';
-        $.get("{{ url_for('datagrid.index') }}" + "filter",
+        $.get(url_for('datagrid.filter'),
           function(data) {
             alertify.filterDialog('Data Filter', data, baseUrl, validateUrl).resizeTo(600, 400);
           }
@@ -348,9 +361,13 @@ define([
             /* On successfully initialization find the dashboard panel,
              * create new panel and add it to the dashboard panel.
              */
+            var url_params = {
+              'trans_id': res.data.gridTransId,
+              'is_query_tool': 'false',
+              'editor_title': encodeURIComponent(self.grid_title)
+            };
 
-            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/false/"
-                                                                    + encodeURIComponent(self.grid_title);
+            var baseUrl = url_for('datagrid.panel', url_params);
             var grid_title = gettext('Edit Data - ') + self.grid_title;
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
@@ -361,7 +378,16 @@ define([
               });
             } else {
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
-              dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table">');
+
+              var dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              dataGridPanel.layout().addItem($frameArea);
+              // Initialize empty frame
+              var frame = new wcIFrame($frameArea, dataGridPanel);
+              $(dataGridPanel).data('frameInitialized', false);
+              $(dataGridPanel).data('embeddedFrame', frame);
+
+              // Set panel title and icon
               dataGridPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
               dataGridPanel.icon('fa fa-bolt');
               dataGridPanel.focus();
@@ -369,17 +395,18 @@ define([
               // Listen on the panel closed event.
               dataGridPanel.on(wcDocker.EVENT.CLOSED, function() {
                 $.ajax({
-                  url: "{{ url_for('datagrid.index') }}" + "close/" + res.data.gridTransId,
+                  url: url_for('datagrid.close', {'trans_id': res.data.gridTransId}),
                   method: 'GET'
                 });
               });
 
               var openDataGridURL = function(j) {
-                j.data('embeddedFrame').$container.append(self.spinner_el);
+                // add spinner element
+                $(j).data('embeddedFrame').$container.append(self.spinner_el);
                 setTimeout(function() {
-                  var frameInitialized = j.data('frameInitialized');
-                  if (frameInitialized) {
-                    var frame = j.data('embeddedFrame');
+                  var frameInitialized = $(j).data('frameInitialized');
+                  if (!frameInitialized) {
+                    var frame = $(j).data('embeddedFrame');
                     if (frame) {
                       frame.openURL(baseUrl);
                       frame.$container.find('.wcLoadingContainer').hide(1);
@@ -390,7 +417,7 @@ define([
                 }, 100);
               };
 
-              openDataGridURL($(dataGridPanel));
+              openDataGridURL(dataGridPanel);
             }
           },
           error: function(e) {
@@ -424,13 +451,17 @@ define([
           return;
         }
 
-        var baseUrl = "{{ url_for('datagrid.index') }}" + "initialize/query_tool/" + parentData.server._id;
-
+        var url_params = {
+          'sid': parentData.server._id
+        };
+        var url_endpoint = 'datagrid.initialize_query_tool'
         // If database not present then use Maintenance database
         // We will handle this at server side
         if (parentData.database) {
-          baseUrl += "/" + parentData.database._id;
+          url_params['did'] = parentData.database._id;
+          url_endpoint = 'datagrid.initialize_query_tool_with_did';
         }
+        var baseUrl = url_for(url_endpoint, url_params);
 
         $.ajax({
           url: baseUrl,
@@ -440,8 +471,15 @@ define([
           success: function(res) {
             var grid_title = self.get_panel_title();
             // Open the panel if frame is initialized
-            baseUrl = "{{ url_for('datagrid.index') }}"  + "panel/" + res.data.gridTransId + "/true/"
-                        + encodeURIComponent(grid_title) + '?' + "query_url=" + encodeURI(sURL);
+            var url_params = {
+              'trans_id': res.data.gridTransId,
+              'is_query_tool': 'true',
+              'editor_title': encodeURIComponent(grid_title)
+            }
+
+            var baseUrl = url_for('datagrid.panel', url_params) +
+                '?' + "query_url=" + encodeURI(sURL);
+
             // Create title for CREATE/DELETE scripts
             if (panel_title) {
               panel_title =
@@ -463,7 +501,16 @@ define([
                * create new panel and add it to the dashboard panel.
                */
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
-              queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table">');
+
+              var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              queryToolPanel.layout().addItem($frameArea);
+              // Initialize empty frame
+              var frame = new wcIFrame($frameArea, queryToolPanel);
+              $(queryToolPanel).data('frameInitialized', false);
+              $(queryToolPanel).data('embeddedFrame', frame);
+
+              // Set panel title and icon
               queryToolPanel.title('<span title="'+panel_title+'">'+panel_title+'</span>');
               queryToolPanel.icon('fa fa-bolt');
               queryToolPanel.focus();
@@ -471,17 +518,18 @@ define([
               // Listen on the panel closed event.
               queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
                 $.ajax({
-                  url: "{{ url_for('datagrid.index') }}" + "close/" + res.data.gridTransId,
+                  url: url_for('datagrid.close', {'trans_id': res.data.gridTransId}),
                   method: 'GET'
                 });
               });
 
               var openQueryToolURL = function(j) {
-                j.data('embeddedFrame').$container.append(pgAdmin.DataGrid.spinner_el);
+                // add spinner element
+                $(j).data('embeddedFrame').$container.append(pgAdmin.DataGrid.spinner_el);
                 setTimeout(function() {
-                  var frameInitialized = j.data('frameInitialized');
-                  if (frameInitialized) {
-                    var frame = j.data('embeddedFrame');
+                  var frameInitialized = $(j).data('frameInitialized');
+                  if (!frameInitialized) {
+                    var frame = $(j).data('embeddedFrame');
                     if (frame) {
                       frame.openURL(baseUrl);
                       frame.$container.find('.wcLoadingContainer').delay(1000).hide(1);
@@ -492,7 +540,7 @@ define([
                 }, 100);
               };
 
-              openQueryToolURL($(queryToolPanel));
+              openQueryToolURL(queryToolPanel);
             }
           },
           error: function(e) {

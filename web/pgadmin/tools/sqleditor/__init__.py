@@ -73,6 +73,35 @@ class SqlEditorModule(PgAdminModule):
     def get_panels(self):
         return []
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: URL endpoints for sqleditor module
+        """
+        return [
+            'sqleditor.view_data_start',
+            'sqleditor.query_tool_start',
+            'sqleditor.query_tool_preferences',
+            'sqleditor.get_columns',
+            'sqleditor.poll',
+            'sqleditor.fetch_types',
+            'sqleditor.save',
+            'sqleditor.get_filter',
+            'sqleditor.apply_filter',
+            'sqleditor.inclusive_filter',
+            'sqleditor.exclusive_filter',
+            'sqleditor.remove_filter',
+            'sqleditor.set_limit',
+            'sqleditor.cancel_transaction',
+            'sqleditor.get_object_name',
+            'sqleditor.auto_commit',
+            'sqleditor.auto_rollback',
+            'sqleditor.autocomplete',
+            'sqleditor.load_file',
+            'sqleditor.save_file',
+            'sqleditor.query_tool_download'
+        ]
+
     def register_preferences(self):
         self.info_notifier_timeout = self.preference.register(
             'display', 'info_notifier_timeout',
@@ -216,7 +245,10 @@ def check_transaction_status(trans_id):
                None, trans_obj, session_obj
 
 
-@blueprint.route('/view_data/start/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/view_data/start/<int:trans_id>',
+     methods=["GET"], endpoint='view_data_start'
+)
 @login_required
 def start_view_data(trans_id):
     """
@@ -273,7 +305,10 @@ def start_view_data(trans_id):
     )
 
 
-@blueprint.route('/query_tool/start/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/query_tool/start/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='query_tool_start'
+)
 @login_required
 def start_query_tool(trans_id):
     """
@@ -375,7 +410,10 @@ def start_query_tool(trans_id):
     )
 
 
-@blueprint.route('/query_tool/preferences/<int:trans_id>', methods=["GET", "PUT"])
+@blueprint.route(
+    '/query_tool/preferences/<int:trans_id>',
+    methods=["GET", "PUT"], endpoint='query_tool_preferences'
+)
 @login_required
 def preferences(trans_id):
     """
@@ -429,7 +467,9 @@ def preferences(trans_id):
         return success_return()
 
 
-@blueprint.route('/columns/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/columns/<int:trans_id>', methods=["GET"], endpoint='get_columns'
+)
 @login_required
 def get_columns(trans_id):
     """
@@ -488,7 +528,7 @@ def get_columns(trans_id):
                                     'primary_keys': primary_keys})
 
 
-@blueprint.route('/poll/<int:trans_id>', methods=["GET"])
+@blueprint.route('/poll/<int:trans_id>', methods=["GET"], endpoint='poll')
 @login_required
 def poll(trans_id):
     """
@@ -564,7 +604,9 @@ def poll(trans_id):
     )
 
 
-@blueprint.route('/fetch/types/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/fetch/types/<int:trans_id>', methods=["GET"], endpoint='fetch_types'
+)
 @login_required
 def fetch_pg_types(trans_id):
     """
@@ -606,7 +648,9 @@ def fetch_pg_types(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/save/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/save/<int:trans_id>', methods=["PUT", "POST"], endpoint='save'
+)
 @login_required
 def save(trans_id):
     """
@@ -652,7 +696,10 @@ def save(trans_id):
     )
 
 
-@blueprint.route('/filter/get/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/filter/get/<int:trans_id>',
+    methods=["GET"], endpoint='get_filter'
+)
 @login_required
 def get_filter(trans_id):
     """
@@ -675,7 +722,10 @@ def get_filter(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/filter/apply/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/filter/apply/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='apply_filter'
+)
 @login_required
 def apply_filter(trans_id):
     """
@@ -707,7 +757,10 @@ def apply_filter(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/filter/inclusive/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/filter/inclusive/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='inclusive_filter'
+)
 @login_required
 def append_filter_inclusive(trans_id):
     """
@@ -750,7 +803,10 @@ def append_filter_inclusive(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/filter/exclusive/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/filter/exclusive/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='exclusive_filter'
+)
 @login_required
 def append_filter_exclusive(trans_id):
     """
@@ -794,7 +850,10 @@ def append_filter_exclusive(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/filter/remove/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/filter/remove/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='remove_filter'
+)
 @login_required
 def remove_filter(trans_id):
     """
@@ -825,7 +884,9 @@ def remove_filter(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/limit/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/limit/<int:trans_id>', methods=["PUT", "POST"], endpoint='set_limit'
+)
 @login_required
 def set_limit(trans_id):
     """
@@ -860,7 +921,10 @@ def set_limit(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/cancel/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/cancel/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='cancel_transaction'
+)
 @login_required
 def cancel_transaction(trans_id):
     """
@@ -925,7 +989,10 @@ def cancel_transaction(trans_id):
     )
 
 
-@blueprint.route('/object/get/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/object/get/<int:trans_id>',
+    methods=["GET"], endpoint='get_object_name'
+)
 @login_required
 def get_object_name(trans_id):
     """
@@ -948,7 +1015,10 @@ def get_object_name(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/auto_commit/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/auto_commit/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='auto_commit'
+)
 @login_required
 def set_auto_commit(trans_id):
     """
@@ -986,7 +1056,10 @@ def set_auto_commit(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/auto_rollback/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/auto_rollback/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='auto_rollback'
+)
 @login_required
 def set_auto_rollback(trans_id):
     """
@@ -1024,7 +1097,10 @@ def set_auto_rollback(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route('/autocomplete/<int:trans_id>', methods=["PUT", "POST"])
+@blueprint.route(
+    '/autocomplete/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='autocomplete'
+)
 @login_required
 def auto_complete(trans_id):
     """
@@ -1232,7 +1308,7 @@ def is_begin_required(query):
     return True
 
 
-@blueprint.route('/load_file/', methods=["PUT", "POST"])
+@blueprint.route('/load_file/', methods=["PUT", "POST"], endpoint='load_file')
 @login_required
 def load_file():
     """
@@ -1282,7 +1358,7 @@ def load_file():
     )
 
 
-@blueprint.route('/save_file/', methods=["PUT", "POST"])
+@blueprint.route('/save_file/', methods=["PUT", "POST"], endpoint='save_file')
 @login_required
 def save_file():
     """
@@ -1342,7 +1418,11 @@ def save_file():
     )
 
 
-@blueprint.route('/query_tool/download/<int:trans_id>', methods=["GET"])
+@blueprint.route(
+    '/query_tool/download/<int:trans_id>',
+    methods=["GET"],
+    endpoint='query_tool_download'
+)
 @login_required
 def start_query_download_tool(trans_id):
     sync_conn = None

@@ -1,6 +1,6 @@
 define([
-    'jquery', 'underscore', 'underscore.string', 'alertify', 'pgadmin',
-    'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
+    'sources/gettext','sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
+    'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
     'sources/selection/grid_selector',
     'sources/selection/active_cell_capture',
     'sources/selection/clipboard',
@@ -9,8 +9,8 @@ define([
     'sources/slickgrid/event_handlers/handle_query_output_keyboard_event',
     'sources/selection/xcell_selection_model',
     'sources/selection/set_staged_rows',
-    'sources/gettext',
     'sources/sqleditor_utils',
+
     'sources/generated/history',
     'sources/generated/reactComponents',
 
@@ -25,13 +25,14 @@ define([
     'codemirror/addon/search/search',
     'codemirror/addon/search/searchcursor',
     'codemirror/addon/search/jump-to-line',
+
     'backgrid.sizeable.columns',
     'slick.pgadmin.formatters',
     'slick.pgadmin.editors',
 ], function(
-  $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
+  gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-    XCellSelectionModel, setStagedRows, gettext, SqlEditorUtils, HistoryBundle, reactComponents
+    XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, reactComponents
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -108,7 +109,6 @@ define([
           filter = self.$el.find('#sql_filter');
 
         $('.editor-title').text(_.unescape(self.editor_title));
-
         self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
             lineNumbers: true,
             matchBrackets: true,
@@ -132,7 +132,7 @@ define([
           '#editor-panel', {
           allowContextMenu: false,
           allowCollapse: false,
-          themePath: '{{ url_for("static", filename="css") }}',
+          themePath: url_for('static', {'filename': 'css'}),
           theme: 'webcabin.overrides.css'
         });
 
@@ -288,8 +288,7 @@ define([
               ctx = {
                 editor: editor,
                 // URL for auto-complete
-                url: "{{ url_for('sqleditor.index') }}" + "autocomplete/" +
-                  self.transId,
+                url: url_for('sqleditor.autocomplete', {'trans_id': self.transId}),
                 data: data,
                 // Get the line number in the cursor position
                 current_line: cur.line,
@@ -534,7 +533,8 @@ define([
           collection = [];
         }
 
-        var grid_columns = [];
+        var grid_columns = [],
+          table_name;
         var column_size = self.handler['col_size'],
           query = self.handler.query,
           // Extract table name from query
@@ -874,7 +874,7 @@ define([
         if (self.history_grid) {
           self.history_grid.remove();
         }
-        
+
         self.history_collection = new HistoryBundle.historyCollection([]);
 
         let queryHistoryElement = reactComponents.React.createElement(
@@ -1517,7 +1517,7 @@ define([
           );
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "view_data/start/" + self.transId,
+            url: url_for('sqleditor.view_data_start', {'trans_id': self.transId}),
             method: 'GET',
             success: function(res) {
               if (res.data.status) {
@@ -1588,7 +1588,7 @@ define([
           // or use the columns data stored locally from previous call?
           if (self.FETCH_COLUMNS_FROM_SERVER) {
             $.ajax({
-              url: "{{ url_for('sqleditor.index') }}" + "columns/" + self.transId,
+              url: url_for('sqleditor.get_columns', {'trans_id': self.transId}),
               method: 'GET',
               success: function(res) {
                 poll_result.colinfo = res.data.columns;
@@ -1660,7 +1660,7 @@ define([
           setTimeout(
             function() {
               $.ajax({
-                url: "{{ url_for('sqleditor.index') }}" + "poll/" + self.transId,
+                url: url_for('sqleditor.poll', {'trans_id': self.transId}),
                 method: 'GET',
                 success: function(res) {
                   if (res.data.status === 'Success') {
@@ -1863,7 +1863,7 @@ define([
 
           // Make ajax call to fetch the pg types to map numeric data type
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "fetch/types/" + self.transId,
+            url: url_for('sqleditor.fetch_types', {'trans_id': self.transId}),
             method: 'GET',
             success: function(res) {
               if (res.data.status) {
@@ -1888,7 +1888,9 @@ define([
                   // To show column label and data type in multiline,
                   // The elements should be put inside the div.
                   // Create column label and type.
-                  var col_type = column_label = '';
+                  var col_type = '',
+                    column_label = '',
+                    col_cell;
                   var type = pg_types[c.type_code] ?
                                pg_types[c.type_code][0] :
                                // This is the case where user might
@@ -2020,7 +2022,8 @@ define([
           var self = this;
 
           // Calculate the difference in milliseconds
-          var difference_ms = miliseconds = end_time.getTime() - start_time.getTime();
+          var difference_ms, miliseconds;
+          difference_ms = miliseconds = end_time.getTime() - start_time.getTime();
           //take out milliseconds
           difference_ms = difference_ms/1000;
           var seconds = Math.floor(difference_ms % 60);
@@ -2191,7 +2194,7 @@ define([
 
             // Make ajax call to save the data
             $.ajax({
-              url: "{{ url_for('sqleditor.index') }}" + "save/" + self.transId,
+              url: url_for('sqleditor.save', {'trans_id': self.transId}),
               method: 'POST',
               contentType: "application/json",
               data: JSON.stringify(req_data),
@@ -2419,7 +2422,7 @@ define([
 
           // Make ajax call to load the data from file
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "load_file/",
+            url: url_for('sqleditor.load_file'),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2464,7 +2467,7 @@ define([
 
           // Make ajax call to save the data to file
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "save_file/",
+            url: url_for('sqleditor.save_file'),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2584,7 +2587,7 @@ define([
             gettext("Loading the existing filter options...")
           );
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "filter/get/" + self.transId,
+            url: url_for('sqleditor.get_filter', {'trans_id': self.transId}),
             method: 'GET',
             success: function(res) {
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
@@ -2656,7 +2659,7 @@ define([
 
           // Make ajax call to include the filter by selection
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "filter/inclusive/" + self.transId,
+            url: url_for('sqleditor.inclusive_filter', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2726,7 +2729,7 @@ define([
 
           // Make ajax call to exclude the filter by selection.
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "filter/exclusive/" + self.transId,
+            url: url_for('sqleditor.exclusive_filter', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -2779,7 +2782,7 @@ define([
 
           // Make ajax call to exclude the filter by selection.
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "filter/remove/" + self.transId,
+            url: url_for('sqleditor.remove_filter', {'trans_id': self.transId}),
             method: 'POST',
             success: function(res) {
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
@@ -2830,7 +2833,7 @@ define([
 
           // Make ajax call to include the filter by selection
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "filter/apply/" + self.transId,
+            url: url_for('sqleditor.apply_filter', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(sql),
@@ -2953,7 +2956,7 @@ define([
           );
           // Make ajax call to change the limit
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "limit/" + self.transId,
+            url: url_for('sqleditor.set_limit', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(limit),
@@ -3041,7 +3044,7 @@ define([
           $("#btn-cancel-query").prop('disabled', false);
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/start/" + self.transId,
+            url: url_for('sqleditor.query_tool_start', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(sql),
@@ -3167,7 +3170,7 @@ define([
 
           $("#btn-cancel-query").prop('disabled', true);
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "cancel/" + self.transId,
+            url: url_for('sqleditor.cancel_transaction', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             success: function(res) {
@@ -3218,7 +3221,7 @@ define([
            */
           if (!self.is_query_tool) {
             $.ajax({
-              url: "{{ url_for('sqleditor.index') }}" + "object/get/" + self.transId,
+              url: url_for('sqleditor.get_object_name', {'trans_id': self.transId}),
               method: 'GET',
               success: function(res) {
                 if (res.data.status) {
@@ -3252,7 +3255,7 @@ define([
         _trigger_csv_download: function(query, filename) {
           var self = this,
             link = $(this.container).find("#download-csv"),
-            url = "{{ url_for('sqleditor.index') }}" + "query_tool/download/" + self.transId;
+            url = url_for('sqleditor.query_tool_download', {'trans_id': self.transId});
 
           url +="?" + $.param({query:query, filename:filename});
           link.attr("src", url);
@@ -3271,7 +3274,7 @@ define([
 
           // Make ajax call to change the limit
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "auto_rollback/" + self.transId,
+            url: url_for('sqleditor.auto_rollback', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(auto_rollback),
@@ -3310,7 +3313,7 @@ define([
 
           // Make ajax call to change the limit
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "auto_commit/" + self.transId,
+            url: url_for('sqleditor.auto_commit', {'trans_id': self.transId}),
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(auto_commit),
@@ -3379,7 +3382,7 @@ define([
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            url: url_for('sqleditor.query_tool_preferences', {'trans_id': self.transId}),
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -3417,7 +3420,7 @@ define([
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            url: url_for('sqleditor.query_tool_preferences', {'trans_id': self.transId}),
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -3454,7 +3457,7 @@ define([
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            url: url_for('sqleditor.query_tool_preferences', {'trans_id': self.transId}),
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -3490,7 +3493,7 @@ define([
           };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            url: url_for('sqleditor.query_tool_preferences', {'trans_id': self.transId}),
             method: 'PUT',
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -3564,7 +3567,7 @@ define([
               };
 
           $.ajax({
-            url: "{{ url_for('sqleditor.index') }}" + "query_tool/preferences/" + self.transId ,
+            url: url_for('sqleditor.query_tool_preferences', {'trans_id': self.transId}),
             method: 'GET',
             success: function(res) {
               if (res.data) {
