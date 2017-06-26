@@ -8,7 +8,7 @@
 ##########################################################################
 
 import simplejson as json
-
+import re
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
@@ -211,6 +211,26 @@ class ServerNode(PGChildNodeView):
             'delete': 'pause_wal_replay', 'put': 'resume_wal_replay'
         }]
     })
+    EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."\
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."\
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."\
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s*$"
+    EXP_IP6 = '^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|'\
+           '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|'\
+           '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|'\
+           '(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|'\
+           ':((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|'\
+           '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|'\
+           '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|'\
+           '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|'\
+           '[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|'\
+           '((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|'\
+           '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|'\
+           '1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|'\
+           '((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$'
+    pat4 = re.compile(EXP_IP4)
+    pat6 = re.compile(EXP_IP6)
+
 
     def nodes(self, gid):
         res = []
@@ -353,6 +373,7 @@ class ServerNode(PGChildNodeView):
         config_param_map = {
             'name': 'name',
             'host': 'host',
+            'hostaddr': 'hostaddr',
             'port': 'port',
             'db': 'maintenance_db',
             'username': 'username',
@@ -378,13 +399,24 @@ class ServerNode(PGChildNodeView):
             request.data, encoding='utf-8'
         )
 
+        if 'hostaddr' in data and data['hostaddr'] != '':
+            if not self.pat4.match(data['hostaddr']):
+                if not self.pat6.match(data['hostaddr']):
+                    return make_json_response(
+                    success=0,
+                    status=400,
+                    errormsg=gettext('Host address not valid')
+                    )
+
+
+
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
 
         if connected:
             for arg in (
-                    'host', 'port', 'db', 'username', 'sslmode', 'role'
+                    'host', 'hostaddr', 'port', 'db', 'username', 'sslmode', 'role'
             ):
                 if arg in data:
                     return forbidden(
@@ -501,6 +533,7 @@ class ServerNode(PGChildNodeView):
                 'id': server.id,
                 'name': server.name,
                 'host': server.host,
+                'hostaddr': server.hostaddr,
                 'port': server.port,
                 'db': server.maintenance_db,
                 'username': server.username,
@@ -541,6 +574,15 @@ class ServerNode(PGChildNodeView):
                     )
                 )
 
+        if 'hostaddr' in data and data['hostaddr'] != '':
+            if not self.pat4.match(data['hostaddr']):
+                if not self.pat6.match(data['hostaddr']):
+                    return make_json_response(
+                        success=0,
+                        status=400,
+                        errormsg=gettext('Host address not valid')
+                    )
+
         server = None
 
         try:
@@ -549,6 +591,7 @@ class ServerNode(PGChildNodeView):
                 servergroup_id=data[u'gid'] if u'gid' in data else gid,
                 name=data[u'name'],
                 host=data[u'host'],
+                hostaddr=data[u'hostaddr'] if u'hostaddr' in data else None,
                 port=data[u'port'],
                 maintenance_db=data[u'db'],
                 username=data[u'username'],

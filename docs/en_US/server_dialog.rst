@@ -38,3 +38,10 @@ Use the fields in the *Connection* tab to configure a connection:
 * Click the *Cancel* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
   
+Click the *Advanced* tab to continue.
+
+.. image:: images/server_advanced.png
+
+Use the fields in the *Advanced* tab to configure a connection:
+
+* Specify the IP address of the server host. Using this field to specify the host IP address will avoid a DNS lookup on connection, however it may be useful to specify both a host name and address when using Kerberos, GSSAPI, or SSPI authentication methods, as well as for verify-full SSL certificate verification

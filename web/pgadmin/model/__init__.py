@@ -108,6 +108,7 @@ class Server(db.Model):
     )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=False)
+    hostaddr = db.Column(db.String(128), nullable=True)
     port = db.Column(
         db.Integer(),
         db.CheckConstraint('port >= 1024 AND port <= 65534'),
@@ -127,6 +128,8 @@ class Server(db.Model):
     servers = db.relationship('ServerGroup',
                            backref=db.backref('server', cascade="all, delete-orphan"),
                            lazy='joined')
+
+
 
 class ModulePreference(db.Model):
     """Define a preferences table for any modules."""

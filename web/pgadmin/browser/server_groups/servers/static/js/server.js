@@ -602,6 +602,7 @@ define('pgadmin.node.server', [
           name: '',
           sslmode: 'prefer',
           host: '',
+          hostaddr: '',
           port: 5432,
           db: 'postgres',
           username: current_user.name,
@@ -651,6 +652,9 @@ define('pgadmin.node.server', [
           id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
         },{
+          id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
+        },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535
         },{
@@ -697,26 +701,69 @@ define('pgadmin.node.server', [
           var check_for_empty = function(id, msg) {
             var v = self.get(id);
             if (
-              _.isUndefined(v) || String(v).replace(/^\s+|\s+$/g, '') == ''
+              _.isUndefined(v) || v === null || String(v).replace(/^\s+|\s+$/g, '') == ''
             ) {
               err[id] = msg;
               errmsg = errmsg || msg;
+              return true;
+            } else {
+              self.errorModel.unset(id);
+              return false;
+            }
+          }
+          var check_for_valid_ipv6 = function(val){
+            // Regular expression for validating IPv6 address formats
+            var exps = ['^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|',
+                '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|',
+                '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|',
+                '(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|',
+                ':((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|',
+                '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|',
+                '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|',
+                '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|',
+                '[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|',
+                '((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|',
+                '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|',
+                '1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|',
+                '((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$'];
+
+            var exp = new RegExp(exps.join(''));
+            return exp.test(val.trim());
+          }
+          var check_for_valid_ip = function(id, msg) {
+            var v4exps = "(^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)";
+            var v4exp = new RegExp(v4exps);
+            var v = self.get(id);
+            if (
+              v && !(v4exp.test(v.trim()))
+            ) {
+              if(!check_for_valid_ipv6(v)){
+                err[id] = msg;
+                errmsg = msg;
+              }
             } else {
               self.errorModel.unset(id);
             }
           }
 
           if (!self.isNew() && 'id' in self.sessAttrs) {
-            err['id'] = gettext('The ID cannot be changed.');;
+            err['id'] = gettext('The ID cannot be changed.');
             errmsg = err['id'];
           } else {
             self.errorModel.unset('id');
           }
           check_for_empty('name', gettext('Name must be specified.'));
 
-          check_for_empty(
-            'host', gettext('Hostname or address must be specified.')
-          );
+          if (check_for_empty(
+            'host', gettext('Either Host name or Host address must be specified.')
+          ) && check_for_empty('hostaddr', gettext('Either Host name or Host address must be specified.'))){
+            errmsg = errmsg || gettext('Either Host name or Host address must be specified');
+          } else {
+            errmsg = undefined;
+            delete err['host'];
+            delete err['hostaddr'];
+          }
+
           check_for_empty(
             'db', gettext('Maintenance database must be specified.')
           );
@@ -724,6 +771,9 @@ define('pgadmin.node.server', [
             'username', gettext('Username must be specified.')
           );
           check_for_empty('port', gettext('Port must be specified.'));
+          check_for_valid_ip(
+            'hostaddr', gettext('Host address must be valid IPv4 or IPv6 address.')
+          );
           this.errorModel.set(err);
 
           if (_.size(err)) {
