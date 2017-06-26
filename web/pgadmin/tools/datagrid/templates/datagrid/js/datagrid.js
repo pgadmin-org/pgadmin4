@@ -378,14 +378,7 @@ define([
               });
             } else {
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
-              var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table">');
-
               var dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
-              dataGridPanel.layout().addItem($frameArea);
-              // Initialize empty frame
-              var frame = new wcIFrame($frameArea, dataGridPanel);
-              $(dataGridPanel).data('frameInitialized', false);
-              $(dataGridPanel).data('embeddedFrame', frame);
 
               // Set panel title and icon
               dataGridPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
@@ -405,7 +398,7 @@ define([
                 $(j).data('embeddedFrame').$container.append(self.spinner_el);
                 setTimeout(function() {
                   var frameInitialized = $(j).data('frameInitialized');
-                  if (!frameInitialized) {
+                  if (frameInitialized) {
                     var frame = $(j).data('embeddedFrame');
                     if (frame) {
                       frame.openURL(baseUrl);
@@ -501,14 +494,7 @@ define([
                * create new panel and add it to the dashboard panel.
                */
               var dashboardPanel = pgBrowser.docker.findPanels('dashboard');
-              var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table">');
-
               var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
-              queryToolPanel.layout().addItem($frameArea);
-              // Initialize empty frame
-              var frame = new wcIFrame($frameArea, queryToolPanel);
-              $(queryToolPanel).data('frameInitialized', false);
-              $(queryToolPanel).data('embeddedFrame', frame);
 
               // Set panel title and icon
               queryToolPanel.title('<span title="'+panel_title+'">'+panel_title+'</span>');
@@ -528,7 +514,7 @@ define([
                 $(j).data('embeddedFrame').$container.append(pgAdmin.DataGrid.spinner_el);
                 setTimeout(function() {
                   var frameInitialized = $(j).data('frameInitialized');
-                  if (!frameInitialized) {
+                  if (frameInitialized) {
                     var frame = $(j).data('embeddedFrame');
                     if (frame) {
                       frame.openURL(baseUrl);
