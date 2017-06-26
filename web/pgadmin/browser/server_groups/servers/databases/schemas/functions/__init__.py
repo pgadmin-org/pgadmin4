@@ -988,6 +988,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
+                # Check Revoke all for public
+                resp_data['revoke_all'] = self._set_revoke_all(resp_data['acl'])
+
             # Generate sql for "SQL panel"
             # func_def is procedure signature with default arguments
             # query_for - To distinguish the type of call
@@ -1007,6 +1010,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             # Parse privilege data
             if 'acl' in resp_data:
                 resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
+
+                # Check Revoke all for public
+                resp_data['revoke_all'] = self._set_revoke_all(resp_data['acl'])
 
             SQL = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
@@ -1215,6 +1221,9 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             if 'acl' in data:
                 data['acl'] = parse_priv_to_db(data['acl'], ["X"])
 
+                # Check Revoke all for public
+                data['revoke_all'] = self._set_revoke_all(data['acl'])
+
             args = u''
             args_without_name = []
             cnt = 1
@@ -1324,6 +1333,19 @@ class FunctionView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=schema_name)
 
         return schema_name
+
+    def _set_revoke_all(self, privileges):
+        """
+        Check whether the function requires REVOKE statement
+        for PUBLIC or not.
+        """
+        revoke_all = True if len(privileges) > 0 else False
+        for p in privileges:
+            if p['grantee'] == 'PUBLIC':
+                revoke_all = False
+                break;
+
+        return revoke_all
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, fnid):
