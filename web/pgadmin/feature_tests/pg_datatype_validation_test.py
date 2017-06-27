@@ -6,6 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import time
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -56,6 +57,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.find_by_xpath(
             "//*[@class='aciTreeText' and .='Servers']"
         ).click()
+        time.sleep(2)
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(self.page.driver) \
             .move_to_element(
@@ -106,45 +108,19 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
         wait = WebDriverWait(self.page.driver, 5)
-        wait.until(EC.presence_of_element_located(
-            (By.XPATH, "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/"
-                       "div[2]/span")))
+
+        canvas = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
+        )
 
         # For every sample data-type value, check the expected output.
         cnt = 2
-        for val in expected_output[:10]:
+        cells = canvas.find_elements_by_css_selector('.slick-cell')
+        # remove first element as it is row number.
+        cells.pop(0)
+        for val, cell in zip(expected_output, cells):
             try:
-                source_code = self.page.find_by_xpath(
-                    "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div["
-                    + str(cnt)
-                    + "]/span"
-                ).get_attribute('innerHTML')
-
-                PGDataypeFeatureTest.check_result(
-                    source_code,
-                    expected_output[cnt - 2]
-                )
-                cnt += 1
-            except TimeoutException:
-                assert False, "{0} does not match with {1}".format(
-                    val, expected_output[cnt]
-                )
-
-        cnt = 12
-        for val in expected_output[10:]:
-            try:
-                if cnt == 14:
-                    xpath = "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[" \
-                    + str(cnt) \
-                    + "]/span"
-                else:
-                    xpath = "//*[@id='0']//*[@id='datagrid']/div[5]/div/div/div[" \
-                    + str(cnt) \
-                    + "]"
-
-                source_code = self.page.find_by_xpath(
-                     xpath
-                ).get_attribute('innerHTML')
+                source_code = cell.get_attribute('innerHTML')
 
                 PGDataypeFeatureTest.check_result(
                     source_code,

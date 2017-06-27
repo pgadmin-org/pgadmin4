@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
-
 import $ from 'jquery';
 
 import Slick from 'slickgrid';
@@ -23,7 +22,7 @@ describe('RowSelector', function () {
     UP: 38,
     DOWN: 40,
   };
-  var container, data, columnDefinitions, grid, cellSelectionModel;
+  var container, dataView, columnDefinitions, grid, cellSelectionModel;
   var SlickGrid = Slick.Grid;
 
   beforeEach(function () {
@@ -43,14 +42,15 @@ describe('RowSelector', function () {
       pos: 1,
     }];
 
+    dataView = new Slick.Data.DataView();
     var rowSelector = new RowSelector();
-    data = [];
+    var data = [];
     for (var i = 0; i < 10; i++) {
-      data.push(['some-value-' + i, 'second value ' + i]);
+      data.push({'some-column-name':'some-value-' + i, 'second column':'second value ' + i});
     }
     columnDefinitions = rowSelector.getColumnDefinitions(columnDefinitions);
-    grid = new SlickGrid(container, data, columnDefinitions);
-
+    dataView.setItems(data, 'some-column-name');
+    grid = new SlickGrid(container, dataView, columnDefinitions);
     grid.registerPlugin(new ActiveCellCapture());
     cellSelectionModel = new XCellSelectionModel();
     grid.setSelectionModel(cellSelectionModel);

@@ -4,13 +4,18 @@ define([
   'slickgrid',
 ], function ($, RangeSelectionHelper) {
   var ColumnSelector = function () {
-    var Slick = window.Slick;
-    var gridEventBus = new Slick.EventHandler();
+    var Slick = window.Slick,
+      gridEventBus = new Slick.EventHandler(),
+      onBeforeColumnSelectAll = new Slick.Event(),
+      onColumnSelectAll = new Slick.Event();
 
     var init = function (grid) {
       gridEventBus.subscribe(grid.onHeaderClick, handleHeaderClick.bind(null, grid));
       grid.getSelectionModel().onSelectedRangesChanged
         .subscribe(handleSelectedRangesChanged.bind(null, grid));
+      onColumnSelectAll.subscribe(function(e, args) {
+        updateRanges(args.grid, args.column.id);
+      });
     };
 
     var handleHeaderClick = function (grid, event, args) {
@@ -21,11 +26,20 @@ define([
       if (isColumnSelectable(columnDefinition)) {
         var $columnHeader = $(event.target);
         if (hasClickedChildOfColumnHeader(event)) {
+          if ($(event.target).hasClass('slick-resizable-handle')) {
+            return;
+          }
           $columnHeader = $(event.target).parents('.slick-header-column');
         }
         $columnHeader.toggleClass('selected');
 
-        updateRanges(grid, columnDefinition.id);
+        if ($columnHeader.hasClass('selected')) {
+          onBeforeColumnSelectAll.notify(args, event);
+        }
+
+        if (!(event.isPropagationStopped() || event.isImmediatePropagationStopped())) {
+          updateRanges(grid, columnDefinition.id);
+        }
       }
     };
 
@@ -107,6 +121,8 @@ define([
     $.extend(this, {
       'init': init,
       'getColumnDefinitions': getColumnDefinitions,
+      'onBeforeColumnSelectAll': onBeforeColumnSelectAll,
+      'onColumnSelectAll': onColumnSelectAll,
     });
   };
   return ColumnSelector;

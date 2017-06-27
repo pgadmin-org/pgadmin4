@@ -101,6 +101,12 @@ class BaseConnection(object):
       - Implement this method to execute the given query and returns the result
         as an array of dict (column name -> value) format.
 
+    * def async_fetchmany_2darray(records=-1, formatted_exception_msg=False):
+      - Implement this method to retrieve result of asynchronous connection and
+        polling with no_result flag set to True.
+        This returns the result as a 2 dimensional array.
+        If records is -1 then fetchmany will behave as fetchall.
+
     * connected()
       - Implement this method to get the status of the connection. It should
         return True for connected, otherwise False
@@ -133,7 +139,7 @@ class BaseConnection(object):
       - Implement this method to wait for asynchronous connection with timeout.
         This must be a non blocking call.
 
-    * poll(formatted_exception_msg)
+    * poll(formatted_exception_msg, no_result)
       - Implement this method to poll the data of query running on asynchronous
         connection.
 
@@ -180,6 +186,10 @@ class BaseConnection(object):
         pass
 
     @abstractmethod
+    def async_fetchmany_2darray(self, records=-1, formatted_exception_msg=False):
+        pass
+
+    @abstractmethod
     def connected(self):
         pass
 
@@ -208,7 +218,7 @@ class BaseConnection(object):
         pass
 
     @abstractmethod
-    def poll(self, formatted_exception_msg=True):
+    def poll(self, formatted_exception_msg=True, no_result=False):
         pass
 
     @abstractmethod

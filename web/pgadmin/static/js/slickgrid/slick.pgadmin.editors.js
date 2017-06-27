@@ -76,18 +76,18 @@
           last_value = (column_type === 'number') ?
                         (_.isEmpty(last_value) || last_value) : last_value;
 
-      item[args.column.pos] = state;
+      item[args.column.field] = state;
       if (last_value && _.isNull(state) &&
           (_.isUndefined(grid.copied_rows[row]) ||
           _.isUndefined(grid.copied_rows[row][cell]))
       ) {
-        item[args.column.pos] = undefined;
+        item[args.column.field] = undefined;
         if (grid.copied_rows[row] == undefined) grid.copied_rows[row] = [];
         grid.copied_rows[row][cell] = 1;
       }
     }
     else {
-      item[args.column.pos] = state;
+      item[args.column.field] = state;
     }
   }
 
@@ -189,14 +189,14 @@
     this.loadValue = function (item) {
       var col = args.column;
 
-      if (_.isUndefined(item[args.column.pos]) && col.has_default_val) {
+      if (_.isUndefined(item[args.column.field]) && col.has_default_val) {
         $input.val(defaultValue = "");
       }
-      else if (item[args.column.pos] === "") {
+      else if (item[args.column.field] === "") {
         $input.val(defaultValue = "''");
       }
       else {
-        $input.val(defaultValue = item[args.column.pos]);
+        $input.val(defaultValue = item[args.column.field]);
         $input.select();
       }
     };
@@ -323,7 +323,7 @@
     };
 
     this.loadValue = function (item) {
-      var data = defaultValue = item[args.column.pos];
+      var data = defaultValue = item[args.column.field];
       if (data && typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
       } else if (Array.isArray(data)) {
@@ -443,7 +443,7 @@
     };
 
     this.loadValue = function (item) {
-      $input.val(defaultValue = item[args.column.pos]);
+      $input.val(defaultValue = item[args.column.field]);
       $input.select();
     };
 
@@ -452,7 +452,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      item[args.column.field] = state;
     };
 
     this.isValueChanged = function () {
@@ -531,13 +531,13 @@
     };
 
     this.loadValue = function (item) {
-      defaultValue = item[args.column.pos];
-      if (_.isNull(defaultValue)|| _.isUndefined(defaultValue)) {
+      defaultValue = item[args.column.field];
+      if (_.isNull(defaultValue)||_.isUndefined(defaultValue)) {
         $select.prop('indeterminate', true);
         $select.data('checked', 2);
       }
       else {
-        defaultValue = !!item[args.column.pos];
+        defaultValue = !!item[args.column.field];
         if (defaultValue) {
           $select.prop('checked', true);
           $select.data('checked', 0);
@@ -556,7 +556,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      item[args.column.field] = state;
     };
 
     this.isValueChanged = function () {
@@ -648,7 +648,7 @@
     };
 
     this.loadValue = function (item) {
-      var data = defaultValue = item[args.column.pos];
+      var data = defaultValue = item[args.column.field];
       if (typeof data === "object" && !Array.isArray(data)) {
         data = JSON.stringify(data);
       } else if (Array.isArray(data)) {
@@ -671,7 +671,7 @@
     };
 
     this.applyValue = function (item, state) {
-      item[args.column.pos] = state;
+      item[args.column.field] = state;
     };
 
     this.isValueChanged = function () {
@@ -725,7 +725,7 @@
     };
 
     this.loadValue = function (item) {
-      var value = item[args.column.pos];
+      var value = item[args.column.field];
 
       // Check if value is null or undefined
       if (value === undefined && typeof value === "undefined") {
@@ -858,7 +858,7 @@
     };
 
     this.loadValue = function (item) {
-      defaultValue = item[args.column.pos];
+      defaultValue = item[args.column.field];
       $input.val(defaultValue);
       $input[0].defaultValue = defaultValue;
       $input.select();

@@ -33,14 +33,17 @@ describe('XCellSelectionModel', function () {
     }, {
       id: '1',
       name: 'some-column-name',
+      field: 'some-column-name',
       pos: 0,
     }, {
       id: 'second-column-id',
       name: 'second column',
+      field: 'second column',
       pos: 1,
     }, {
       id: 'third-column-id',
       name: 'third column',
+      field: 'third column',
       pos: 2,
     },
     ];
@@ -52,13 +55,15 @@ describe('XCellSelectionModel', function () {
         'second column': 'second value ' + i,
         'third column': 'third value ' + i,
         'fourth column': 'fourth value ' + i,
+        '__temp_PK': '123' + i,
       });
     }
     container = $('<div></div>');
+    var dataView = new Slick.Data.DataView();
     container.height(9999);
     container.width(9999);
-
-    grid = new SlickGrid(container, data, columns);
+    dataView.setItems(data, '__temp_PK');
+    grid = new SlickGrid(container, dataView, columns);
     grid.setSelectionModel(new XCellSelectionModel());
     $('body').append(container);
   });

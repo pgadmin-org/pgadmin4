@@ -134,17 +134,19 @@ describe('RangeBoundaryNavigator', function () {
   describe('#rangesToCsv', function () {
     var data, columnDefinitions, ranges;
     beforeEach(function () {
-      data = [[1, 'leopard', '12'],
-        [2, 'lion', '13'],
-        [3, 'cougar', '9'],
-        [4, 'tiger', '10']];
-      columnDefinitions = [{name: 'id', pos: 0}, {name: 'animal', pos: 1}, {name: 'size', pos: 2}];
+      data = [{'id':1, 'animal':'leopard', 'size':'12'},
+              {'id':2, 'animal':'lion', 'size':'13'},
+              {'id':3, 'animal':'cougar', 'size':'9'},
+              {'id':4, 'animal':'tiger', 'size':'10'}];
+
+      columnDefinitions = [{name: 'id', field: 'id', pos: 0},
+                            {name: 'animal', field: 'animal', pos: 1},
+                            {name: 'size', field: 'size', pos: 2}];
       ranges = [new Slick.Range(0, 0, 0, 2), new Slick.Range(3, 0, 3, 2)];
     });
 
     it('returns csv for the provided ranges', function () {
       var csvResult = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, ranges);
-
       expect(csvResult).toEqual('1,\'leopard\',\'12\'\n4,\'tiger\',\'10\'');
     });
 
@@ -158,10 +160,10 @@ describe('RangeBoundaryNavigator', function () {
 
     describe('when there is an extra column with checkboxes', function () {
       beforeEach(function () {
-        columnDefinitions = [{name: 'not-a-data-column'}, {name: 'id', pos: 0}, {name: 'animal', pos: 1}, {
-          name: 'size',
-          pos: 2,
-        }];
+        columnDefinitions = [{name: 'not-a-data-column'},
+          {name: 'id', field: 'id', pos: 0},
+          {name: 'animal', field: 'animal', pos: 1},
+          {name: 'size', field: 'size',pos: 2}];
         ranges = [new Slick.Range(0, 0, 0, 3), new Slick.Range(3, 0, 3, 3)];
       });
 

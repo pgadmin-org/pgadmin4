@@ -7,236 +7,247 @@
 //
 //////////////////////////////////////////////////////////////
 
-define([
-  'jquery',
-  'underscore',
-  'sources/selection/set_staged_rows',
-], function ($, _, SetStagedRows) {
-  describe('set_staged_rows', function () {
-    var sqlEditorObj, gridSpy, deleteButton, copyButton, selectionSpy;
-    beforeEach(function () {
-      gridSpy = jasmine.createSpyObj('gridSpy', ['getData', 'getCellNode', 'getColumns']);
-      gridSpy.getData.and.returnValue([
-        {0: 'one', 1: 'two', __temp_PK: '123'},
-        {0: 'three', 1: 'four', __temp_PK: '456'},
-        {0: 'five', 1: 'six', __temp_PK: '789'},
-        {0: 'seven', 1: 'eight', __temp_PK: '432'},
-      ]);
-      gridSpy.getColumns.and.returnValue([
+import $ from 'jquery';
+import 'slickgrid.grid';
+import Slick from 'slickgrid';
+import SetStagedRows from 'sources/selection/set_staged_rows';
+
+describe('set_staged_rows', function () {
+  var sqlEditorObj, gridSpy, deleteButton, copyButton, selectionSpy;
+  beforeEach(function () {
+    var data = [{'a pk column': 'one', 'some column': 'two', '__temp_PK': '123'},
+        {'a pk column': 'three', 'some column': 'four', '__temp_PK': '456'},
+        {'a pk column': 'five', 'some column': 'six', '__temp_PK': '789'},
+        {'a pk column': 'seven', 'some column': 'eight', '__temp_PK': '432'}],
+      dataView = new Slick.Data.DataView();
+
+    dataView.setItems(data, '__temp_PK');
+
+    gridSpy = jasmine.createSpyObj('gridSpy', ['getData', 'getCellNode', 'getColumns']);
+    gridSpy.getData.and.returnValue(dataView);
+    gridSpy.getColumns.and.returnValue([
+      {
+        name: 'a pk column',
+        field: 'a pk column',
+        pos: 0,
+        selectable: true,
+      }, {
+        name: 'some column',
+        field: 'some column',
+        pos: 1,
+        selectable: true,
+      },
+    ]);
+    selectionSpy = jasmine.createSpyObj('selectionSpy', ['setSelectedRows', 'getSelectedRanges']);
+    deleteButton = $('<button id="btn-delete-row"></button>');
+    copyButton = $('<button id="btn-copy-row"></button>');
+
+    sqlEditorObj = {
+      grid: gridSpy,
+      editor: {
+        handler: {
+          data_store: {
+            staged_rows: {'456': {}},
+          },
+          can_edit: false,
+        },
+      },
+      keys: null,
+      selection: selectionSpy,
+      columns: [
         {
+          name: 'a pk column',
+          field: 'a pk column',
           pos: 0,
-          selectable: true,
-        }, {
+        },
+        {
+          name: 'some column',
+          field: 'some column',
           pos: 1,
-          selectable: true,
         },
-      ]);
+      ],
+      client_primary_key: '__temp_PK',
+    };
 
-      selectionSpy = jasmine.createSpyObj('selectionSpy', ['setSelectedRows', 'getSelectedRanges']);
+    $('body').append(deleteButton);
+    $('body').append(copyButton);
 
-      deleteButton = $('<button id="btn-delete-row"></button>');
-      copyButton = $('<button id="btn-copy-row"></button>');
+    deleteButton.prop('disabled', true);
+    copyButton.prop('disabled', true);
 
-      sqlEditorObj = {
-        grid: gridSpy,
-        editor: {
-          handler: {
-            data_store: {
-              staged_rows: {'456': {}},
-            },
-            can_edit: false,
-          },
-        },
-        keys: null,
-        selection: selectionSpy,
-        columns: [
-          {
-            name: 'a pk column',
-            pos: 0,
-          },
-          {
-            name: 'some column',
-            pos: 1,
-          },
-        ],
-      };
+    selectionSpy = jasmine.createSpyObj('selectionSpy', [
+      'setSelectedRows',
+      'getSelectedRanges',
+    ]);
+  });
 
-      $('body').append(deleteButton);
-      $('body').append(copyButton);
-
-      deleteButton.prop('disabled', true);
-      copyButton.prop('disabled', true);
-
-      selectionSpy = jasmine.createSpyObj('selectionSpy', [
-        'setSelectedRows',
-        'getSelectedRanges',
-      ]);
-    });
-
-    afterEach(function () {
-      copyButton.remove();
-      deleteButton.remove();
-    });
-    describe('when no full rows are selected', function () {
-      describe('when nothing is selected', function () {
-        beforeEach(function () {
-          selectionSpy.getSelectedRanges.and.returnValue([]);
-          sqlEditorObj.selection = selectionSpy;
-          SetStagedRows.call(sqlEditorObj, {}, {});
-        });
-
-        it('should disable the delete row button', function () {
-          expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
-        });
-
-        it('should disable the copy row button', function () {
-          expect($('#btn-copy-row').prop('disabled')).toBeTruthy();
-        });
-
-        it('should clear staged rows', function () {
-          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
-        });
-      });
-
-      describe('when there is a selection', function () {
-        beforeEach(function () {
-          var range = {
-            fromCell: 0,
-            toCell: 0,
-            fromRow: 1,
-            toRow: 1,
-          };
-
-          selectionSpy.getSelectedRanges.and.returnValue([range]);
-          sqlEditorObj.selection = selectionSpy;
-          SetStagedRows.call(sqlEditorObj, {}, {});
-        });
-
-        it('should disable the delete row button', function () {
-          expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
-        });
-
-        it('should disable the copy row button', function () {
-          expect($('#btn-copy-row').prop('disabled')).toBeFalsy();
-        });
-
-        it('should clear staged rows', function () {
-          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
-        });
-      });
-    });
-
-    describe('when 2 full rows are selected', function () {
+  afterEach(function () {
+    copyButton.remove();
+    deleteButton.remove();
+  });
+  describe('when no full rows are selected', function () {
+    describe('when nothing is selected', function () {
       beforeEach(function () {
-        var range1 = {
+        selectionSpy.getSelectedRanges.and.returnValue([]);
+        sqlEditorObj.selection = selectionSpy;
+        SetStagedRows.call(sqlEditorObj, {}, {});
+      });
+
+      it('should disable the delete row button', function () {
+        expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+      });
+
+      it('should disable the copy row button', function () {
+        expect($('#btn-copy-row').prop('disabled')).toBeTruthy();
+      });
+
+      it('should clear staged rows', function () {
+        expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+      });
+    });
+
+    describe('when there is a selection', function () {
+      beforeEach(function () {
+        var range = {
           fromCell: 0,
-          toCell: 1,
+          toCell: 0,
           fromRow: 1,
           toRow: 1,
         };
-        var range2 = {
-          fromCell: 0,
-          toCell: 1,
-          fromRow: 2,
-          toRow: 2,
-        };
 
-        selectionSpy.getSelectedRanges.and.returnValue([range1, range2]);
+        selectionSpy.getSelectedRanges.and.returnValue([range]);
         sqlEditorObj.selection = selectionSpy;
+        SetStagedRows.call(sqlEditorObj, {}, {});
       });
 
-      describe('when table does not have primary keys', function () {
-        it('should enable the copy row button', function () {
+      it('should disable the delete row button', function () {
+        expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+      });
+
+      it('should disable the copy row button', function () {
+        expect($('#btn-copy-row').prop('disabled')).toBeFalsy();
+      });
+
+      it('should clear staged rows', function () {
+        expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+      });
+    });
+  });
+
+  describe('when 2 full rows are selected', function () {
+    beforeEach(function () {
+      var range1 = {
+        fromCell: 0,
+        toCell: 1,
+        fromRow: 1,
+        toRow: 1,
+      };
+      var range2 = {
+        fromCell: 0,
+        toCell: 1,
+        fromRow: 2,
+        toRow: 2,
+      };
+
+      selectionSpy.getSelectedRanges.and.returnValue([range1, range2]);
+      sqlEditorObj.selection = selectionSpy;
+    });
+
+    describe('when table does not have primary keys', function () {
+      it('should enable the copy row button', function () {
+        SetStagedRows.call(sqlEditorObj, {}, {});
+        expect($('#btn-copy-row').prop('disabled')).toBeFalsy();
+      });
+
+      it('should not enable the delete row button', function () {
+        SetStagedRows.call(sqlEditorObj, {}, {});
+        expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
+      });
+
+      it('should update staged rows with the __temp_PK value of the new Selected Rows', function () {
+        SetStagedRows.call(sqlEditorObj, {}, {});
+        expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({'456': {}, '789': {}});
+      });
+
+      describe('the user can edit', function () {
+        it('should enable the delete row button', function () {
+          sqlEditorObj.editor.handler.can_edit = true;
           SetStagedRows.call(sqlEditorObj, {}, {});
-          expect($('#btn-copy-row').prop('disabled')).toBeFalsy();
+          expect($('#btn-delete-row').prop('disabled')).toBeFalsy();
+        });
+      });
+    });
+
+    describe('when table has primary keys', function () {
+      beforeEach(function () {
+        sqlEditorObj.keys = {'a pk column': 'varchar'};
+        sqlEditorObj.editor.handler.data_store.staged_rows = {'456': {'a pk column': 'three'}};
+      });
+
+      describe('selected rows have primary key', function () {
+        it('should set the staged rows correctly', function () {
+          SetStagedRows.call(sqlEditorObj, {}, {});
+          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual(
+            {'456': {'a pk column': 'three'}, '789': {'a pk column': 'five'}});
         });
 
-        it('should not enable the delete row button', function () {
+        it('should not clear selected rows in Cell Selection Model', function () {
           SetStagedRows.call(sqlEditorObj, {}, {});
-          expect($('#btn-delete-row').prop('disabled')).toBeTruthy();
-        });
-
-        it('should update staged rows with the __temp_PK value of the new Selected Rows', function () {
-          SetStagedRows.call(sqlEditorObj, {}, {});
-          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({'456': {}, '789': {}});
-        });
-
-        describe('the user can edit', function () {
-          it('should enable the delete row button', function () {
-            sqlEditorObj.editor.handler.can_edit = true;
-            SetStagedRows.call(sqlEditorObj, {}, {});
-            expect($('#btn-delete-row').prop('disabled')).toBeFalsy();
-          });
+          expect(sqlEditorObj.selection.setSelectedRows).not.toHaveBeenCalledWith();
         });
       });
 
-      describe('when table has primary keys', function () {
+      describe('selected rows missing primary key', function () {
         beforeEach(function () {
-          sqlEditorObj.keys = {'a pk column': 'varchar'};
-          sqlEditorObj.editor.handler.data_store.staged_rows = {'456': {0: 'three'}};
+          var data = [{'a pk column': 'one', 'some column': 'two', '__temp_PK': '123'},
+                {'some column': 'four', '__temp_PK': '456'},
+                {'some column': 'six', '__temp_PK': '789'},
+                {'a pk column': 'seven', 'some column': 'eight', '__temp_PK': '432'}],
+            dataView = new Slick.Data.DataView();
+
+          dataView.setItems(data, '__temp_PK');
+
+          gridSpy.getData.and.returnValue(dataView);
         });
 
-        describe('selected rows have primary key', function () {
-          it('should set the staged rows correctly', function () {
-            SetStagedRows.call(sqlEditorObj, {}, {});
-            expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual(
-              {'456': {0: 'three'}, '789': {0: 'five'}});
-          });
+        it('should clear the staged rows', function () {
+          SetStagedRows.call(sqlEditorObj, {}, {});
+          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
+        });
 
-          it('should not clear selected rows in Cell Selection Model', function () {
-            SetStagedRows.call(sqlEditorObj, {}, {});
-            expect(sqlEditorObj.selection.setSelectedRows).not.toHaveBeenCalledWith();
+        it('should clear selected rows in Cell Selection Model', function () {
+          SetStagedRows.call(sqlEditorObj, {}, {});
+          expect(sqlEditorObj.selection.setSelectedRows).toHaveBeenCalledWith([]);
+        });
+      });
+
+      describe('when the selected row is a new row', function () {
+        var parentDiv;
+        beforeEach(function () {
+          var childDiv = $('<div></div>');
+          parentDiv = $('<div class="new_row"></div>');
+          parentDiv.append(childDiv);
+          $('body').append(parentDiv);
+          gridSpy.getCellNode.and.returnValue(childDiv);
+          SetStagedRows.call(sqlEditorObj, {}, {});
+        });
+
+        afterEach(function () {
+          parentDiv.remove();
+        });
+
+        it('should not clear the staged rows', function () {
+          expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({
+            '456': {'a pk column': 'three'},
+            '789': {'a pk column': 'five'},
           });
         });
 
-        describe('selected rows missing primary key', function () {
-          beforeEach(function () {
-            gridSpy.getData.and.returnValue([
-              {0: 'one', 1: 'two', __temp_PK: '123'},
-              {1: 'four', __temp_PK: '456'},
-              {1: 'six', __temp_PK: '789'},
-              {0: 'seven', 1: 'eight', __temp_PK: '432'},
-            ]);
-          });
-
-          it('should clear the staged rows', function () {
-            SetStagedRows.call(sqlEditorObj, {}, {});
-            expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({});
-          });
-
-          it('should clear selected rows in Cell Selection Model', function () {
-            SetStagedRows.call(sqlEditorObj, {}, {});
-            expect(sqlEditorObj.selection.setSelectedRows).toHaveBeenCalledWith([]);
-          });
-        });
-
-        describe('when the selected row is a new row', function () {
-          var parentDiv;
-          beforeEach(function () {
-            var childDiv = $('<div></div>');
-            parentDiv = $('<div class="new_row"></div>');
-            parentDiv.append(childDiv);
-            $('body').append(parentDiv);
-            gridSpy.getCellNode.and.returnValue(childDiv);
-            SetStagedRows.call(sqlEditorObj, {}, {});
-          });
-
-          afterEach(function () {
-            parentDiv.remove();
-          });
-
-          it('should not clear the staged rows', function () {
-            expect(sqlEditorObj.editor.handler.data_store.staged_rows).toEqual({
-              '456': {0: 'three'},
-              '789': {0: 'five'},
-            });
-          });
-
-          it('should not clear selected rows in Cell Selection Model', function () {
-            expect(sqlEditorObj.selection.setSelectedRows).not.toHaveBeenCalled();
-          });
+        it('should not clear selected rows in Cell Selection Model', function () {
+          expect(sqlEditorObj.selection.setSelectedRows).not.toHaveBeenCalled();
         });
       });
     });
   });
 });
+

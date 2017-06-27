@@ -82,7 +82,8 @@ define([
         formatter: function (rowIndex) {
           return '<span ' +
             'data-row="' + rowIndex + '" ' +
-            'data-cell-type="row-header-selector"/>';
+            'data-cell-type="row-header-selector">' +
+            (rowIndex+1) + '</span>';
         },
         width: 30,
       });

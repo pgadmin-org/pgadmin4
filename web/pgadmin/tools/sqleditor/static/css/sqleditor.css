@@ -423,7 +423,7 @@ input.editor-checkbox:focus {
 
 /* To highlight all newly inserted rows */
 .grid-canvas .new_row {
-  background: #dff0d7;
+  background: #dff0d7 !important;
 }
 
 /* To highlight all the updated rows */
@@ -433,7 +433,7 @@ input.editor-checkbox:focus {
 
 /* To highlight row at fault */
 .grid-canvas .new_row.error, .grid-canvas .updated_row.error {
-  background: #f2dede;
+  background: #f2dede !important;
 }
 
 /* Disabled row */
@@ -460,6 +460,11 @@ input.editor-checkbox:focus {
   background-color: #2C76B4;
 }
 
+.slick-cell span[data-cell-type="row-header-selector"] {
+  display: block;
+  text-align: right;
+}
+
 #datagrid div.slick-header.ui-state-default {
   background: #ffffff;
   border-bottom: none;
@@ -481,7 +486,9 @@ input.editor-checkbox:focus {
 
 .select-all-icon {
   margin-left: 9px;
+  margin-right: 9px;
   vertical-align: bottom;
+  float: right;
 }
 
 .slick-cell, .slick-headerrow-column {

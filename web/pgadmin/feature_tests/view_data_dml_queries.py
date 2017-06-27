@@ -9,6 +9,7 @@
 
 import json
 import os
+import time
 from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -205,6 +206,10 @@ CREATE TABLE public.defaults
                 self.page.driver.find_element_by_link_text("View Data")) \
             .perform()
         self.page.find_by_partial_link_text("View All Rows").click()
+
+        # wait until datagrid frame is loaded.
+        self.page.click_tab('Edit Data -')
+
         self.wait.until(
             EC.visibility_of_element_located(
                 (By.CSS_SELECTOR, 'iframe')
@@ -242,6 +247,11 @@ CREATE TABLE public.defaults
         self._update_cell(row1_cell2_xpath, ["1", "", "int"])
 
         self.page.find_by_id("btn-save").click()  # Save data
+        # There should be some delay after save button is clicked, as it
+        # takes some time to complete save ajax call otherwise discard unsaved
+        # changes dialog will appear if we try to execute query before previous
+        # save ajax is completed.
+        time.sleep(2)
 
         # Verify row 1 and row 2 data
         self._verify_row_data(False)
@@ -254,6 +264,11 @@ CREATE TABLE public.defaults
             self._update_cell(cell_xpath, config_data[str(idx)])
 
         self.page.find_by_id("btn-save").click()  # Save data
+        # There should be some delay after save button is clicked, as it
+        # takes some time to complete save ajax call otherwise discard unsaved
+        # changes dialog will appear if we try to execute query before previous
+        # save ajax is completed.
+        time.sleep(2)
 
     def _verify_row_data(self, is_new_row):
         self.page.find_by_id("btn-flash").click()
@@ -264,17 +279,17 @@ CREATE TABLE public.defaults
         xpath = "//*[contains(@class, 'ui-widget-content') and " \
                 "contains(@style, 'top:" + str(row_height) + "px')]"
 
-        # wait for stale element reference exception
-        self.page.wait_for_element_to_stale(xpath)
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
+
         result_row = self.page.find_by_xpath(xpath)
 
         # List of row values in an array
         cells = [el.text for el in result_row.find_elements_by_tag_name('div')]
 
         for idx in range(1, len(config_data.keys())):
-            # # after copy & paste row, the first cell of row 1 and
-            # # row 2(being primary keys) won't match
-            # # see if cell values matched to actual value
+            # after copy & paste row, the first cell of row 1 and
+            # row 2(being primary keys) won't match
+            # see if cell values matched to actual value
             if idx != 1 and not is_new_row:
                 self.assertEquals(cells[idx], config_data[str(idx)][1])
             elif is_new_row:

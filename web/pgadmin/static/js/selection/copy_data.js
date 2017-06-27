@@ -12,19 +12,19 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
     var grid = self.slickgrid;
     var columnDefinitions = grid.getColumns();
     var selectedRanges = grid.getSelectionModel().getSelectedRanges();
-    var data = grid.getData();
+    var dataView = grid.getData();
     var rows = grid.getSelectedRows();
 
     if (RangeSelectionHelper.areAllRangesCompleteRows(grid, selectedRanges)) {
       self.copied_rows = rows.map(function (rowIndex) {
-        return data[rowIndex];
+        return grid.getDataItem(rowIndex);
       });
       setPasteRowButtonEnablement(self.can_edit, true);
     } else {
       self.copied_rows = [];
       setPasteRowButtonEnablement(self.can_edit, false);
     }
-    var csvText = rangeBoundaryNavigator.rangesToCsv(data, columnDefinitions, selectedRanges);
+    var csvText = rangeBoundaryNavigator.rangesToCsv(dataView.getItems(), columnDefinitions, selectedRanges);
     if (csvText) {
       clipboard.copyTextToClipboard(csvText);
     }

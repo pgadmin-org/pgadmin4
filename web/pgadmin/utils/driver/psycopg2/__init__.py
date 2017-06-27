@@ -1079,6 +1079,55 @@ Failed to execute query (execute_void) for the server #{server_id} - {conn_id}
 
         return True, {'columns': columns, 'rows': rows}
 
+    def async_fetchmany_2darray(self, records=2000, formatted_exception_msg=False):
+        """
+        User should poll and check if status is ASYNC_OK before calling this
+        function
+        Args:
+          records: no of records to fetch. use -1 to fetchall.
+          formatted_exception_msg:
+
+        Returns:
+
+        """
+        cur = self.__async_cursor
+        if not cur:
+            return False, gettext(
+                "Cursor could not be found for the async connection."
+            )
+
+        if self.conn.isexecuting():
+            return False, gettext(
+                "Asynchronous query execution/operation underway."
+            )
+
+        if self.row_count > 0:
+            result = []
+            # For DDL operation, we may not have result.
+            #
+            # Because - there is not direct way to differentiate DML and
+            # DDL operations, we need to rely on exception to figure
+            # that out at the moment.
+            try:
+                if records == -1:
+                    res = cur.fetchall()
+                else:
+                    res = cur.fetchmany(records)
+                for row in res:
+                    new_row = []
+                    for col in self.column_info:
+                        new_row.append(row[col['name']])
+                    result.append(new_row)
+            except psycopg2.ProgrammingError as e:
+                result = None
+        else:
+            # User performed operation which dose not produce record/s as
+            # result.
+            # for eg. DDL operations.
+            return True, None
+
+        return True, result
+
     def connected(self):
         if self.conn:
             if not self.conn.closed:
@@ -1226,7 +1275,7 @@ Failed to reset the connection to the server due to following error:
                 "poll() returned %s from _wait_timeout function" % state
             )
 
-    def poll(self, formatted_exception_msg=False):
+    def poll(self, formatted_exception_msg=False, no_result=False):
         """
         This function is a wrapper around connection's poll function.
         It internally uses the _wait_timeout method to poll the
@@ -1236,6 +1285,7 @@ Failed to reset the connection to the server due to following error:
         Args:
             formatted_exception_msg: if True then function return the formatted
                                      exception message, otherwise error string.
+            no_result: If True then only poll status will be returned.
         """
 
         cur = self.__async_cursor
@@ -1291,23 +1341,23 @@ Failed to reset the connection to the server due to following error:
                     pos += 1
 
             self.row_count = cur.rowcount
+            if not no_result:
+                if cur.rowcount > 0:
+                    result = []
+                    # For DDL operation, we may not have result.
+                    #
+                    # Because - there is not direct way to differentiate DML and
+                    # DDL operations, we need to rely on exception to figure
+                    # that out at the moment.
+                    try:
+                        for row in cur:
+                            new_row = []
+                            for col in self.column_info:
+                                new_row.append(row[col['name']])
+                            result.append(new_row)
 
-            if cur.rowcount > 0:
-                result = []
-                # For DDL operation, we may not have result.
-                #
-                # Because - there is not direct way to differentiate DML and
-                # DDL operations, we need to rely on exception to figure that
-                # out at the moment.
-                try:
-                    for row in cur:
-                        new_row = []
-                        for col in self.column_info:
-                            new_row.append(row[col['name']])
-                        result.append(new_row)
-
-                except psycopg2.ProgrammingError:
-                    result = None
+                    except psycopg2.ProgrammingError:
+                        result = None
 
         return status, result
 

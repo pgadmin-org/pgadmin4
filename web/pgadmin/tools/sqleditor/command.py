@@ -258,7 +258,21 @@ class SQLFilter(object):
         return status, result
 
 
-class GridCommand(BaseCommand, SQLFilter):
+class FetchedRowTracker(object):
+    """
+    Keeps track of fetched row count.
+    """
+    def __init__(self, **kwargs):
+        self.fetched_rows = 0
+
+    def get_fetched_row_cnt(self):
+        return self.fetched_rows
+
+    def update_fetched_row_cnt(self, rows_cnt):
+        self.fetched_rows = rows_cnt
+
+
+class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
     """
     class GridCommand(object)
 
@@ -290,6 +304,7 @@ class GridCommand(BaseCommand, SQLFilter):
         """
         BaseCommand.__init__(self, **kwargs)
         SQLFilter.__init__(self, **kwargs)
+        FetchedRowTracker.__init__(self, **kwargs)
 
         # Save the connection id, command type
         self.conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else None
@@ -299,10 +314,10 @@ class GridCommand(BaseCommand, SQLFilter):
         if self.cmd_type == VIEW_FIRST_100_ROWS or self.cmd_type == VIEW_LAST_100_ROWS:
             self.limit = 100
 
-    def get_primary_keys(self):
+    def get_primary_keys(self, *args, **kwargs):
         return None, None
 
-    def save(self, changed_data):
+    def save(self, changed_data, default_conn=None):
         return forbidden(errmsg=gettext("Data cannot be saved for the current object."))
 
     def get_limit(self):
@@ -340,14 +355,14 @@ class TableCommand(GridCommand):
         # call base class init to fetch the table name
         super(TableCommand, self).__init__(**kwargs)
 
-    def get_sql(self):
+    def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
         to fetch the data for the specified table
         """
 
         # Fetch the primary keys for the table
-        pk_names, primary_keys = self.get_primary_keys()
+        pk_names, primary_keys = self.get_primary_keys(default_conn)
 
         sql_filter = self.get_filter()
 
@@ -362,13 +377,16 @@ class TableCommand(GridCommand):
 
         return sql
 
-    def get_primary_keys(self):
+    def get_primary_keys(self, default_conn=None):
         """
         This function is used to fetch the primary key columns.
         """
         driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(self.sid)
-        conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
 
         pk_names = ''
         primary_keys = OrderedDict()
@@ -400,7 +418,11 @@ class TableCommand(GridCommand):
     def can_filter(self):
         return True
 
-    def save(self, changed_data):
+    def save(self,
+             changed_data,
+             columns_info,
+             client_primary_key='__temp_PK',
+             default_conn=None):
         """
         This function is used to save the data into the database.
         Depending on condition it will either update or insert the
@@ -408,10 +430,16 @@ class TableCommand(GridCommand):
 
         Args:
             changed_data: Contains data to be saved
+            columns_info:
+            default_conn:
+            client_primary_key:
         """
-
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
-        conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
 
         status = False
         res = None
@@ -420,14 +448,6 @@ class TableCommand(GridCommand):
         list_of_rowid = []
         list_of_sql = []
         _rowid = None
-
-        # Replace column positions with names
-        def set_column_names(data):
-            new_data = {}
-            for key in data:
-                new_data[changed_data['columns'][int(key)]['name']] = data[key]
-
-            return new_data
 
         if conn.connected():
 
@@ -443,6 +463,20 @@ class TableCommand(GridCommand):
                 if len(changed_data[of_type]) < 1:
                     continue
 
+                column_type = {}
+                for each_col in columns_info:
+                    if (
+                        columns_info[each_col]['not_null'] and
+                        not columns_info[each_col][
+                            'has_default_val']
+                    ):
+                        column_data[each_col] = None
+                        column_type[each_col] =\
+                            columns_info[each_col]['type_name']
+                    else:
+                        column_type[each_col] = \
+                            columns_info[each_col]['type_name']
+
                 # For newly added rows
                 if of_type == 'added':
 
@@ -451,37 +485,18 @@ class TableCommand(GridCommand):
                     # no_default_value, set column to blank, instead
                     # of not null which is set by default.
                     column_data = {}
-                    column_type = {}
                     pk_names, primary_keys = self.get_primary_keys()
-
-                    for each_col in self.columns_info:
-                        if (
-                            self.columns_info[each_col]['not_null'] and
-                            not self.columns_info[each_col][
-                                'has_default_val']
-                        ):
-                            column_data[each_col] = None
-                            column_type[each_col] =\
-                                self.columns_info[each_col]['type_name']
-                        else:
-                            column_type[each_col] = \
-                                self.columns_info[each_col]['type_name']
-
 
                     for each_row in changed_data[of_type]:
                         data = changed_data[of_type][each_row]['data']
                         # Remove our unique tracking key
-                        data.pop('__temp_PK', None)
+                        data.pop(client_primary_key, None)
                         data.pop('is_row_copied', None)
-                        data = set_column_names(data)
-                        data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
-                        list_of_rowid.append(data.get('__temp_PK'))
+                        list_of_rowid.append(data.get(client_primary_key))
 
-                        # Update columns value and data type
-                        # with columns having not_null=False and has
-                        # no default value
+                        # Update columns value with columns having
+                        # not_null=False and has no default value
                         column_data.update(data)
-                        column_type.update(data_type)
 
                         sql = render_template("/".join([self.sql_path, 'insert.sql']),
                                               data_to_be_saved=column_data,
@@ -497,15 +512,14 @@ class TableCommand(GridCommand):
                 # For updated rows
                 elif of_type == 'updated':
                     for each_row in changed_data[of_type]:
-                        data = set_column_names(changed_data[of_type][each_row]['data'])
-                        pk = set_column_names(changed_data[of_type][each_row]['primary_keys'])
-                        data_type = set_column_names(changed_data[of_type][each_row]['data_type'])
+                        data = changed_data[of_type][each_row]['data']
+                        pk = changed_data[of_type][each_row]['primary_keys']
                         sql = render_template("/".join([self.sql_path, 'update.sql']),
                                               data_to_be_saved=data,
                                               primary_keys=pk,
                                               object_name=self.object_name,
                                               nsp_name=self.nsp_name,
-                                              data_type=data_type)
+                                              data_type=column_type)
                         list_of_sql.append(sql)
                         list_of_rowid.append(data)
 
@@ -519,18 +533,19 @@ class TableCommand(GridCommand):
                         rows_to_delete.append(changed_data[of_type][each_row])
                         # Fetch the keys for SQL generation
                         if is_first:
-                            # We need to covert dict_keys to normal list in Python3
-                            # In Python2, it's already a list & We will also fetch column names using index
-                            keys = [
-                                changed_data['columns'][int(k)]['name']
-                                       for k in list(changed_data[of_type][each_row].keys())
-                            ]
+                            # We need to covert dict_keys to normal list in
+                            # Python3
+                            # In Python2, it's already a list & We will also
+                            # fetch column names using index
+                            keys = list(changed_data[of_type][each_row].keys())
+
                             no_of_keys = len(keys)
                             is_first = False
                     # Map index with column name for each row
                     for row in rows_to_delete:
                         for k, v in row.items():
-                            # Set primary key with label & delete index based mapped key
+                            # Set primary key with label & delete index based
+                            # mapped key
                             try:
                                 row[changed_data['columns'][int(k)]['name']] = v
                             except ValueError:
@@ -597,7 +612,7 @@ class ViewCommand(GridCommand):
         # call base class init to fetch the table name
         super(ViewCommand, self).__init__(**kwargs)
 
-    def get_sql(self):
+    def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
         to fetch the data for the specified view
@@ -652,7 +667,7 @@ class ForeignTableCommand(GridCommand):
         # call base class init to fetch the table name
         super(ForeignTableCommand, self).__init__(**kwargs)
 
-    def get_sql(self):
+    def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
         to fetch the data for the specified foreign table
@@ -697,7 +712,7 @@ class CatalogCommand(GridCommand):
         # call base class init to fetch the table name
         super(CatalogCommand, self).__init__(**kwargs)
 
-    def get_sql(self):
+    def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
         to fetch the data for the specified catalog object
@@ -722,7 +737,7 @@ class CatalogCommand(GridCommand):
         return True
 
 
-class QueryToolCommand(BaseCommand):
+class QueryToolCommand(BaseCommand, FetchedRowTracker):
     """
     class QueryToolCommand(BaseCommand)
 
@@ -732,13 +747,15 @@ class QueryToolCommand(BaseCommand):
 
     def __init__(self, **kwargs):
         # call base class init to fetch the table name
-        super(QueryToolCommand, self).__init__(**kwargs)
+
+        BaseCommand.__init__(self, **kwargs)
+        FetchedRowTracker.__init__(self, **kwargs)
 
         self.conn_id = None
         self.auto_rollback = False
         self.auto_commit = True
 
-    def get_sql(self):
+    def get_sql(self, default_conn=None):
         return None
 
     def can_edit(self):

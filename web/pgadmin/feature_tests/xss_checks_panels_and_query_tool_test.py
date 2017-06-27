@@ -10,6 +10,9 @@
 from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import time
 
 class CheckForXssFeatureTest(BaseFeatureTest):
@@ -72,6 +75,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _connects_to_server(self):
         self.page.find_by_xpath("//*[@class='aciTreeText' and .='Servers']").click()
+        time.sleep(2)
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(self.page.driver) \
             .move_to_element(self.page.driver.find_element_by_link_text("Create")) \
@@ -152,11 +156,16 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with("select '<img src=\"x\" onerror=\"console.log(1)\">'")
         time.sleep(1)
         self.page.find_by_id("btn-flash").click()
-        time.sleep(2)
+        wait = WebDriverWait(self.page.driver, 5)
 
-        source_code = self.page.find_by_xpath(
-            "//*[@id='0']//*[@id='datagrid']/div[5]/div/div[1]/div[2]"
-        ).get_attribute('innerHTML')
+        result_row = self.page.find_by_xpath(
+            "//*[contains(@class, 'ui-widget-content') and contains(@style, 'top:0px')]"
+        )
+
+        cells = result_row.find_elements_by_tag_name('div')
+
+        # remove first element as it is row number.
+        source_code = cells[1].get_attribute('innerHTML')
 
         self._check_escaped_characters(
             source_code,

@@ -22,53 +22,44 @@ define(
       $(selector).prop('disabled', false);
     }
 
-    function getRowPrimaryKeyValuesToStage(selectedRows, primaryKeyColumnIndices, gridData) {
+    function getRowPrimaryKeyValuesToStage(selectedRows, primaryKeys, dataView, client_primary_key) {
       return _.reduce(selectedRows, function (primaryKeyValuesToStage, dataGridRowIndex) {
-        var gridRow = gridData[dataGridRowIndex];
-
-        if (isRowMissingPrimaryKeys(gridRow, primaryKeyColumnIndices)) {
+        var gridRow = dataView.getItem(dataGridRowIndex);
+        if (isRowMissingPrimaryKeys(gridRow, primaryKeys)) {
           return primaryKeyValuesToStage;
         }
-
-        var tempPK = gridRow.__temp_PK;
-        primaryKeyValuesToStage[tempPK] = getSingleRowPrimaryKeyValueToStage(primaryKeyColumnIndices, gridRow);
-
+        var tempPK = gridRow[client_primary_key];
+        primaryKeyValuesToStage[tempPK] = getSingleRowPrimaryKeyValueToStage(primaryKeys, gridRow);
         return primaryKeyValuesToStage;
       }, {});
     }
 
-    function isRowMissingPrimaryKeys(gridRow, primaryKeyColumnIndices) {
+    function isRowMissingPrimaryKeys(gridRow, primaryKeys) {
       if (_.isUndefined(gridRow)) {
         return true;
       }
 
       return !_.isUndefined(
-        _.find(primaryKeyColumnIndices, function (pkIndex) {
-          return _.isUndefined(gridRow[pkIndex]);
+        _.find(primaryKeys , function (pk) {
+          return _.isUndefined(gridRow[pk]);
         })
       );
     }
 
-    function getSingleRowPrimaryKeyValueToStage(primaryKeyColumnIndices, gridRow) {
+    function getSingleRowPrimaryKeyValueToStage(primaryKeys, gridRow) {
       var rowToStage = {};
-      if (primaryKeyColumnIndices.length) {
-        _.each(_.keys(gridRow), function (columnPos) {
-          if (_.contains(primaryKeyColumnIndices, Number(columnPos)))
-            rowToStage[columnPos] = gridRow[columnPos];
+      if (primaryKeys && primaryKeys.length) {
+        _.each(_.keys(gridRow), function (columnNames) {
+          if (_.contains(primaryKeys, columnNames))
+            rowToStage[columnNames] = gridRow[columnNames];
         });
       }
       return rowToStage;
     }
 
     function getPrimaryKeysForSelectedRows(self, selectedRows) {
-      var primaryKeyColumnIndices = _.map(_.keys(self.keys), function (columnName) {
-        var columnInfo = _.findWhere(self.columns, {name: columnName});
-        return columnInfo['pos'];
-      });
-
-      var gridData = self.grid.getData();
-      var stagedRows = getRowPrimaryKeyValuesToStage(selectedRows, primaryKeyColumnIndices, gridData);
-
+      var dataView = self.grid.getData();
+      var stagedRows = getRowPrimaryKeyValuesToStage(selectedRows, _.keys(self.keys), dataView, self.client_primary_key);
       return stagedRows;
     }
 

@@ -85,7 +85,7 @@ class PgadminPage:
 
             if 'menu-item' == str(menu_item.get_attribute('class')):
                 break
-                time.sleep(0.1)
+            time.sleep(0.1)
         else:
             assert False, "'Tools -> Query Tool' menu did not enable."
 
@@ -143,7 +143,6 @@ class PgadminPage:
             self.click_modal('OK')
         except WebDriverException:
             return
-
 
     def find_by_xpath(self, xpath):
         return self.wait_for_element(lambda driver: driver.find_element_by_xpath(xpath))
@@ -251,6 +250,20 @@ class PgadminPage:
 
         self._wait_for("spinner to disappear", spinner_has_disappeared)
 
+    def wait_for_query_tool_loading_indicator_to_disappear(self):
+        def spinner_has_disappeared(driver):
+            try:
+                driver.find_element_by_xpath(
+                    "//*[@id='fetching_data' and @class='hide']"
+                )
+                return False
+            except NoSuchElementException:
+                # wait for loading indicator disappear animation to complete.
+                time.sleep(0.5)
+                return True
+
+        self._wait_for("spinner to disappear", spinner_has_disappeared)
+
     def wait_for_app(self):
         def page_shows_app(driver):
             if driver.title == self.app_config.APP_NAME:
@@ -266,19 +279,3 @@ class PgadminPage:
             timeout = self.timeout
         return WebDriverWait(self.driver, timeout, 0.01).until(condition_met_function,
                                                                     "Timed out waiting for " + waiting_for_message)
-
-    def wait_for_element_to_stale(self, xpath):
-        # Reference: http://www.obeythetestinggoat.com/
-        # how-to-get-selenium-to-wait-for-page-load-after-a-click.html
-        el = self.driver.find_element_by_xpath(xpath)
-
-        def element_has_gone_stale(driver):
-            try:
-                # poll an arbitrary element
-                el.find_elements_by_id('element-dont-exist')
-                return False
-            except StaleElementReferenceException:
-                return True
-
-        self._wait_for("element to attach to the page document",
-                       element_has_gone_stale)

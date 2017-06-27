@@ -28,21 +28,22 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       metaKey: false,
       which: -1,
       keyCode: -1,
-      preventDefault: jasmine.createSpy('preventDefault'),
+      preventDefault: jasmine.createSpy('preventDefault')
     };
 
-    var data = [['', '0,0-cell-content', '0,1-cell-content'],
-      ['', '1,0-cell-content', '1,1-cell-content'],
-      ['', '2,0-cell-content', '2,1-cell-content']];
-    var columnDefinitions = [{name: 'checkboxColumn'}, {pos: 1, name: 'firstColumn'}, {
-      pos: 2,
-      name: 'secondColumn',
-    }];
-    grid = new SlickGrid($('<div></div>'), data, columnDefinitions);
-    grid.setSelectionModel(new XCellSelectionModel());
+    var data = [{'checkboxColumn': '', 'firstColumn': '0,0-cell-content', 'secondColumn': '0,1-cell-content', '__temp_PK': '123'},
+        {'checkboxColumn': '', 'firstColumn': '1,0-cell-content', 'secondColumn': '1,1-cell-content', '__temp_PK': '456'},
+        {'checkboxColumn': '', 'firstColumn': '2,0-cell-content', 'secondColumn': '2,1-cell-content', '__temp_PK': '789'}],
+      columnDefinitions = [{name: 'checkboxColumn'},
+        {pos: 1, name: 'firstColumn', field: 'firstColumn'},
+        { pos: 2, name: 'secondColumn', field: 'secondColumn'}],
+      dataView = new Slick.Data.DataView();
 
+    grid = new Slick.Grid($('<div></div>'), dataView, columnDefinitions);
+    grid.setSelectionModel(new XCellSelectionModel());
+    dataView.setItems(data, '__temp_PK');
     slickEvent = {
-      grid: grid,
+      grid: grid
     };
 
     spyOn(clipboard, 'copyTextToClipboard');

@@ -42,6 +42,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def _connects_to_server(self):
         self.page.find_by_xpath("//*[@class='aciTreeText' and .='Servers']").click()
+        time.sleep(2)
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(self.page.driver) \
             .move_to_element(self.page.driver.find_element_by_link_text("Create")) \

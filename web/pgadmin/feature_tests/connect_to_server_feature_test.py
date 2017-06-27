@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import time
 from selenium.webdriver import ActionChains
 
 import config as app_config
@@ -53,6 +54,7 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
 
     def _connects_to_server(self):
         self.page.find_by_xpath("//*[@class='aciTreeText' and .='Servers']").click()
+        time.sleep(2)
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(self.page.driver) \
             .move_to_element(self.page.driver.find_element_by_link_text("Create")) \
@@ -72,6 +74,8 @@ class ConnectsToServerFeatureTest(BaseFeatureTest):
         self.page.toggle_open_server(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
+        # wait until all database dependant modules/js are loaded.
+        time.sleep(5)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Tables')

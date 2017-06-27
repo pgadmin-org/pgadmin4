@@ -6,21 +6,31 @@ define(['jquery',
   'sources/url_for',
 ], function ($, gettext, ColumnSelector, RowSelector, RangeSelectionHelper, url_for) {
   var GridSelector = function (columnDefinitions) {
-    var rowSelector = new RowSelector(columnDefinitions);
-    var columnSelector = new ColumnSelector(columnDefinitions);
+    var Slick = window.Slick,
+      rowSelector = new RowSelector(columnDefinitions),
+      columnSelector = new ColumnSelector(columnDefinitions),
+      onBeforeGridSelectAll = new Slick.Event(),
+      onGridSelectAll = new Slick.Event(),
+      onBeforeGridColumnSelectAll = columnSelector.onBeforeColumnSelectAll,
+      onGridColumnSelectAll = columnSelector.onColumnSelectAll;
 
     var init = function (grid) {
       this.grid = grid;
       grid.onHeaderClick.subscribe(function (event, eventArguments) {
-        if (eventArguments.column.selectAllOnClick) {
-          toggleSelectAll(grid);
+        if (eventArguments.column.selectAllOnClick && !$(event.target).hasClass('slick-resizable-handle')) {
+          toggleSelectAll(grid, event, eventArguments);
         }
       });
 
       grid.getSelectionModel().onSelectedRangesChanged
-          .subscribe(handleSelectedRangesChanged.bind(null, grid));
+        .subscribe(handleSelectedRangesChanged.bind(null, grid));
+
       grid.registerPlugin(rowSelector);
       grid.registerPlugin(columnSelector);
+
+      onGridSelectAll.subscribe(function(e, args) {
+        RangeSelectionHelper.selectAll(args.grid);
+      });
     };
 
     var getColumnDefinitions = function (columnDefinitions) {
@@ -45,11 +55,14 @@ define(['jquery',
       }
     }
 
-    function toggleSelectAll(grid) {
+    function toggleSelectAll(grid, event, eventArguments) {
       if (RangeSelectionHelper.isEntireGridSelected(grid)) {
         selectNone(grid);
       } else {
-        RangeSelectionHelper.selectAll(grid);
+        onBeforeGridSelectAll.notify(eventArguments, event);
+        if (!(event.isPropagationStopped() || event.isImmediatePropagationStopped())) {
+          RangeSelectionHelper.selectAll(grid);
+        }
       }
     }
 
@@ -61,6 +74,10 @@ define(['jquery',
     $.extend(this, {
       'init': init,
       'getColumnDefinitions': getColumnDefinitions,
+      'onBeforeGridSelectAll': onBeforeGridSelectAll,
+      'onGridSelectAll': onGridSelectAll,
+      'onBeforeGridColumnSelectAll': onBeforeGridColumnSelectAll,
+      'onGridColumnSelectAll': onGridColumnSelectAll,
     });
   };
 

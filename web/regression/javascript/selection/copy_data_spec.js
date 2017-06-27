@@ -16,16 +16,16 @@ import clipboard from '../../../pgadmin/static/js/selection/clipboard';
 import copyData from '../../../pgadmin/static/js/selection/copy_data';
 import RangeSelectionHelper from 'sources/selection/range_selection_helper';
 import XCellSelectionModel from 'sources/selection/xcell_selection_model';
-
 describe('copyData', function () {
   var grid, sqlEditor, gridContainer, buttonPasteRow;
   var SlickGrid;
 
   beforeEach(function () {
     SlickGrid = Slick.Grid;
-    var data = [[1, 'leopord', '12'],
-      [2, 'lion', '13'],
-      [3, 'puma', '9']];
+    var data = [{'id': 1, 'brand':'leopord', 'size':'12', '__temp_PK': '123'},
+                {'id': 2, 'brand':'lion', 'size':'13', '__temp_PK': '456'},
+                {'id': 3, 'brand':'puma', 'size':'9', '__temp_PK': '789'}],
+      dataView = new Slick.Data.DataView();
 
     var columns = [
       {
@@ -37,6 +37,7 @@ describe('copyData', function () {
       },
       {
         name: 'id',
+        field: 'id',
         pos: 0,
         label: 'id<br> numeric',
         cell: 'number',
@@ -44,6 +45,7 @@ describe('copyData', function () {
         type: 'numeric',
       }, {
         name: 'brand',
+        field: 'brand',
         pos: 1,
         label: 'flavor<br> character varying',
         cell: 'string',
@@ -51,24 +53,26 @@ describe('copyData', function () {
         type: 'character varying',
       }, {
         name: 'size',
+        field: 'size',
         pos: 2,
         label: 'size<br> numeric',
         cell: 'number',
         can_edit: false,
         type: 'numeric',
       },
-    ]
-    ;
-    gridContainer = $('<div id=\'grid\'></div>');
+    ];
+    gridContainer = $('<div id="grid"></div>');
     $('body').append(gridContainer);
-    buttonPasteRow = $('<button id=\'btn-paste-row\' disabled></button>');
+    buttonPasteRow = $('<button id="btn-paste-row" disabled></button>');
     $('body').append(buttonPasteRow);
-    grid = new SlickGrid('#grid', data, columns, {});
+    grid = new SlickGrid('#grid', dataView, columns, {});
+    dataView.setItems(data, '__temp_PK');
     grid.setSelectionModel(new XCellSelectionModel());
     sqlEditor = {slickgrid: grid};
   });
 
-  afterEach(function () {
+  afterEach(function() {
+    grid.destroy();
     gridContainer.remove();
     buttonPasteRow.remove();
   });
