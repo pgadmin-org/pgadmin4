@@ -1,0 +1,5 @@
+/* To override inbuilt Green color for matchingbracket */
+.cm-s-default .CodeMirror-matchingbracket {
+    color: #333333 !important;
+    background-color: #e8e8e8 !important;
+}
