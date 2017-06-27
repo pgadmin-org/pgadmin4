@@ -32,8 +32,8 @@ define([
           name: 'global_debugger', node: 'function', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           category: gettext('Debugging'), priority: 10, label: gettext('Set breakpoint'),
-          data: {object: 'function'}, icon: 'fa fa-arrow-circle-right',
-          enable: 'can_debug'
+          data: {object: 'function', debug_type: 'indirect'},
+          icon: 'fa fa-arrow-circle-right', enable: 'can_debug'
         },{
           name: 'procedure_direct_debugger', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'get_function_information',
@@ -44,20 +44,20 @@ define([
           name: 'procedure_indirect_debugger', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           category: gettext('Debugging'), priority: 10, label: gettext('Set breakpoint'),
-          data: {object: 'procedure'}, icon: 'fa fa-arrow-circle-right',
-          enable: 'can_debug'
+          data: {object: 'procedure', debug_type: 'indirect'},
+          icon: 'fa fa-arrow-circle-right', enable: 'can_debug'
         }, {
           name: 'trigger_function_indirect_debugger', node: 'trigger_function', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           priority: 10, label: gettext('Set breakpoint'), category: gettext('Debugging'),
-          icon: 'fa fa-arrow-circle-right', data: {object:'trigger_function'},
-          enable: 'can_debug'
+          icon: 'fa fa-arrow-circle-right',
+          data: {object:'trigger_function', debug_type: 'indirect'}, enable: 'can_debug'
         }, {
           name: 'trigger_indirect_debugger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           priority: 10, label: gettext('Set breakpoint'), category: gettext('Debugging'),
-          icon: 'fa fa-arrow-circle-right', data: {object:'trigger'},
-          enable: 'can_debug'
+          icon: 'fa fa-arrow-circle-right',
+          data: {object:'trigger', debug_type: 'indirect'}, enable: 'can_debug'
         }, {
           name: 'package_function_direct_debugger', node: 'edbfunc', module: this,
           applies: ['object', 'context'], callback: 'get_function_information',
@@ -68,8 +68,8 @@ define([
           name: 'package_function_global_debugger', node: 'edbfunc', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           category: gettext('Debugging'), priority: 10, label: gettext('Set breakpoint'),
-          data: {object: 'edbfunc'}, icon: 'fa fa-arrow-circle-right',
-          enable: 'can_debug'
+          data: {object: 'edbfunc', debug_type: 'indirect'},
+          icon: 'fa fa-arrow-circle-right', enable: 'can_debug'
         },{
           name: 'package_procedure_direct_debugger', node: 'edbproc', module: this,
           applies: ['object', 'context'], callback: 'get_function_information',
@@ -80,8 +80,8 @@ define([
           name: 'package_procedure_global_debugger', node: 'edbproc', module: this,
           applies: ['object', 'context'], callback: 'check_func_debuggable',
           category: gettext('Debugging'), priority: 10, label: gettext('Set breakpoint'),
-          data: {object: 'edbproc'}, icon: 'fa fa-arrow-circle-right',
-          enable: 'can_debug'
+          data: {object: 'edbproc', debug_type: 'indirect'},
+          icon: 'fa fa-arrow-circle-right', enable: 'can_debug'
         }]);
 
         // Create and load the new frame required for debugger panel
@@ -120,6 +120,11 @@ define([
           return false;
 
         var treeInfo = node.getTreeNodeHierarchy.apply(node, [info]);
+
+        // For indirect debugging user must be super user
+        if(data && data.debug_type && data.debug_type == 'indirect'
+            && !treeInfo.server.user.is_superuser)
+          return false;
 
         // Must be a super user or object owner to create breakpoints of any kind
         if (!(treeInfo.server.user.is_superuser || treeInfo.function.funcowner == treeInfo.server.user.name))
@@ -269,10 +274,13 @@ define([
               });
             }
           },
-          error: function(e) {
-            Alertify.alert(
-              'Debugger target initialization error'
-            );
+          error: function(xhr, status, error) {
+            try {
+              var err = $.parseJSON(xhr.responseText);
+              if (err.success == 0) {
+                Alertify.alert(err.errormsg);
+              }
+            } catch (e) {}
           }
         });
       },

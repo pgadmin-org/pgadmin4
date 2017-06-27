@@ -207,17 +207,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
                 " and cannot be debugged."
             )
         else:
-            # If user is super user then we should check debugger library is loaded or not
-            if user['is_superuser']:
-                status_in, rid_pre = conn.execute_scalar("SHOW shared_preload_libraries")
-                if not status_in:
-                    return internal_server_error(gettext("Could not fetch debugger plugin information."))
-
-                # Need to check if plugin is really loaded or not with "plugin_debugger" string
-                if "plugin_debugger" not in rid_pre:
-                    ret_status = False
-                    msg = gettext("The debugger plugin is not enabled. Please add the plugin to the shared_preload_libraries setting in the postgresql.conf file and restart the database server.")
-
             status_in, rid_tar = conn.execute_scalar(
                 "SELECT count(*) FROM pg_proc WHERE proname = 'pldbg_get_target_info'")
             if not status_in:
@@ -384,6 +373,35 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     status, msg = conn.connect()
     if not status:
         return internal_server_error(errormsg=str(msg))
+
+    user = manager.user_info
+    if debug_type == 'indirect':
+        # If user is super user then we should check debugger library is
+        # loaded or not
+        if not user['is_superuser']:
+            msg = gettext("You must be a superuser to set a global breakpoint "
+                          "and perform indirect debugging.")
+            return internal_server_error(errormsg=msg)
+        else:
+            status_in, rid_pre = conn.execute_scalar(
+                "SHOW shared_preload_libraries"
+            )
+            if not status_in:
+                return internal_server_error(
+                    gettext("Could not fetch debugger plugin information.")
+                )
+
+            # Need to check if plugin is really loaded or not with
+            # "plugin_debugger" string
+            if "plugin_debugger" not in rid_pre:
+                msg = gettext(
+                    "The debugger plugin is not enabled. "
+                    "Please add the plugin to the shared_preload_libraries "
+                    "setting in the postgresql.conf file and restart the "
+                    "database server for indirect debugging."
+                )
+                current_app.logger.debug(msg)
+                return internal_server_error(msg)
 
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
