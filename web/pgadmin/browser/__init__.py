@@ -549,6 +549,12 @@ def browser_js():
     editor_wrap_code_pref = prefs.preference('wrap_code')
     editor_wrap_code = editor_wrap_code_pref.get()
 
+    brace_matching_pref = prefs.preference('brace_matching')
+    brace_matching = brace_matching_pref.get()
+
+    insert_pair_brackets_perf = prefs.preference('insert_pair_brackets')
+    insert_pair_brackets = insert_pair_brackets_perf.get()
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -561,6 +567,8 @@ def browser_js():
             editor_tab_size=editor_tab_size,
             editor_use_spaces=editor_use_spaces,
             editor_wrap_code=editor_wrap_code,
+            editor_brace_matching=brace_matching,
+            editor_insert_pair_brackets=insert_pair_brackets,
             _=gettext
         ),
         200, {'Content-Type': 'application/x-javascript'})

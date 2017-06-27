@@ -1,6 +1,8 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery','alertify', 'pgadmin','codemirror',
-  'sources/sqleditor_utils', 'pgadmin.browser', 'wcdocker'
+  'sources/sqleditor_utils', 'pgadmin.browser', 'wcdocker',
+  'codemirror/addon/edit/matchbrackets', 'codemirror/addon/edit/closebrackets'
+
 ], function(gettext, url_for, $, alertify, pgAdmin, codemirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
@@ -263,13 +265,13 @@ define([
                 // Apply CodeMirror to filter text area.
                 this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
                   lineNumbers: true,
-                  lineWrapping: true,
-                  matchBrackets: true,
                   indentUnit: 4,
                   mode: "text/x-pgsql",
                   extraKeys: pgBrowser.editor_shortcut_keys,
                   tabSize: pgBrowser.editor_options.tabSize,
-                  lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+                  lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+                  autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+                  matchBrackets: pgAdmin.Browser.editor_options.brace_matching
                 });
               },
 

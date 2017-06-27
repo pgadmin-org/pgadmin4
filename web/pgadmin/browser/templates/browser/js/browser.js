@@ -7,7 +7,8 @@ define(
     'pgadmin.alertifyjs', 'pgadmin.browser.messages',
     'pgadmin.browser.menu', 'pgadmin.browser.panel',
     'pgadmin.browser.error', 'pgadmin.browser.frame',
-    'pgadmin.browser.node', 'pgadmin.browser.collection'
+    'pgadmin.browser.node', 'pgadmin.browser.collection',
+    'codemirror/addon/edit/matchbrackets', 'codemirror/addon/edit/closebrackets'
   ], function(
     gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
     CodeMirror, checkNodeVisibility
@@ -388,7 +389,9 @@ define(
             readOnly: true,
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
-            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
           });
 
       setTimeout(function() {
@@ -1834,7 +1837,9 @@ define(
     },
     editor_options: {
       tabSize: '{{ editor_tab_size }}',
-      wrapCode: '{{ editor_wrap_code }}' == 'True'
+      wrapCode: '{{ editor_wrap_code }}' == 'True',
+      insert_pair_brackets: '{{ editor_insert_pair_brackets }}' == 'True',
+      brace_matching: '{{ editor_brace_matching }}' == 'True'
     }
 
   });

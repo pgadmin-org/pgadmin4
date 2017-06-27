@@ -25,6 +25,8 @@ define([
     'codemirror/addon/search/search',
     'codemirror/addon/search/searchcursor',
     'codemirror/addon/search/jump-to-line',
+    'codemirror/addon/edit/matchbrackets',
+    'codemirror/addon/edit/closebrackets',
 
     'backgrid.sizeable.columns',
     'slick.pgadmin.formatters',
@@ -111,7 +113,6 @@ define([
         $('.editor-title').text(_.unescape(self.editor_title));
         self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
             lineNumbers: true,
-            matchBrackets: true,
             indentUnit: 4,
             mode: "text/x-pgsql",
             foldOptions: {
@@ -124,7 +125,9 @@ define([
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: pgBrowser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
-            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
         });
 
         // Create main wcDocker instance
@@ -154,7 +157,6 @@ define([
 
         self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {
             lineNumbers: true,
-            matchBrackets: true,
             indentUnit: 4,
             styleSelectedText: true,
             mode: "text/x-pgsql",
@@ -169,7 +171,9 @@ define([
             extraKeys: pgBrowser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
             lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
-            scrollbarStyle: 'simple'
+            scrollbarStyle: 'simple',
+            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
         });
 
         // Refresh Code mirror on SQL panel resize to

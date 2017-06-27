@@ -4,7 +4,9 @@ define([
   'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
   'pgadmin.backgrid', 'codemirror/addon/selection/active-line',
   'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
-  'pgadmin-sqlfoldcode'
+  'pgadmin-sqlfoldcode', 'codemirror/addon/edit/matchbrackets',
+  'codemirror/addon/edit/closebrackets',
+
 ], function(
   gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   CodeMirror, Backform, debug_function_again
@@ -1605,7 +1607,9 @@ define([
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
           tabSize: pgAdmin.Browser.editor_options.tabSize,
-          lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+          lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+          autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+          matchBrackets: pgAdmin.Browser.editor_options.brace_matching
         });
 
         // On loading the docker, register the callbacks

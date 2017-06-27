@@ -190,8 +190,23 @@ class SqlEditorModule(PgAdminModule):
             'Options', 'wrap_code',
             gettext("Line wrapping?"), 'boolean', False,
             category_label=gettext('Options'),
-            help_str=gettext('Specifies whether or not to wrap SQL code in editor.')
+            help_str=gettext('Specifies whether or not to wrap SQL code in the editor.')
         )
+
+        self.insert_pair_brackets = self.preference.register(
+            'Options', 'insert_pair_brackets',
+            gettext("Insert bracket pairs?"), 'boolean', True,
+            category_label=gettext('Options'),
+            help_str=gettext('Specifies whether or not to insert paired brackets in the editor.')
+        )
+
+        self.brace_matching = self.preference.register(
+            'Options', 'brace_matching',
+            gettext("Brace matching?"), 'boolean', True,
+            category_label=gettext('Options'),
+            help_str=gettext('Specifies whether or not to highlight matched braces in the editor.')
+        )
+
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')
 

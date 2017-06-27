@@ -5,7 +5,8 @@
     define([
       'sources/gettext', 'underscore', 'underscore.string', 'jquery',
       'backbone', 'backform', 'backgrid', 'codemirror', 'pgadmin.backgrid',
-      'codemirror/mode/sql/sql', 'select2'
+      'codemirror/mode/sql/sql', 'select2', 'codemirror/addon/edit/matchbrackets',
+      'codemirror/addon/edit/closebrackets'
       ],
      function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
@@ -1405,7 +1406,9 @@
         readOnly: true,
         extraKeys: pgAdmin.Browser.editor_shortcut_keys,
         tabSize: pgAdmin.Browser.editor_options.tabSize,
-        lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+        lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+        autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+        matchBrackets: pgAdmin.Browser.editor_options.brace_matching
       });
 
       /*
@@ -2014,10 +2017,12 @@
       self.sqlCtrl = CodeMirror.fromTextArea(
             (self.$el.find("textarea")[0]), {
             lineNumbers: true,
-            mode: "text/x-sql",
+            mode: "text/x-pgsql",
             extraKeys: pgAdmin.Browser.editor_shortcut_keys,
             tabSize: pgAdmin.Browser.editor_options.tabSize,
-            lineWrapping: pgAdmin.Browser.editor_options.wrapCode
+            lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
+            autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
+            matchBrackets: pgAdmin.Browser.editor_options.brace_matching
           });
 
       // Disable editor
