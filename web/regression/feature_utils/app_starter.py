@@ -41,7 +41,6 @@ class AppStarter:
         )
 
         self.driver.set_window_size(1024, 1024)
-        time.sleep(10)
         self.driver.get(
             "http://" + self.app_config.DEFAULT_SERVER + ":" +
             random_server_port)

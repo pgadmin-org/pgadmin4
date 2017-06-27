@@ -55,12 +55,6 @@ iframe {
     border-width: 0;
 }
 
-/* Ensure the codemirror editor displays full height gutters when resized */
-.CodeMirror, .CodeMirror-gutter {
-    height: 100% !important;
-    min-height: 100% !important;
-}
-
 /* Padding for the treeview */
 .browser-browser-pane {
     padding-left: 0;
@@ -926,22 +920,6 @@ td.edit-cell.editable.sortable.renderable.editor {
     padding: 0px;
 }
 
-/*
- * Remove border right from "CodeMirror-gutters"
- * class becuase its height doesn't increase
- * with every new line added, instead add border
- * right to ".CodeMirror-linenumber" class which
- * adds a new div for every new line added
- */
-.sql_field_layout .CodeMirror-gutters {
-    border-right: none;
-}
-
-.sql_field_layout .CodeMirror-linenumber {
-    border-right: 1px solid #ddd;
-    background-color: #f7f7f7;
-}
-
 .tab-pane.SQL {
   padding: 0px 7px 0px 0px;
   height: 100%;
@@ -1420,31 +1398,11 @@ table.backgrid {
   background: none;
 }
 
-/* class to disable Codemirror editor */
-.cm_disabled {
-  background: #EEEEEE;
-}
-
-/* make syntax-highlighting bold */
-.cm-s-default .cm-keyword {
-  font-weight: 600;
-  color: #908;
-}
-
-.cm-s-default .cm-number {
-  font-weight: 600;
-  color: #964;
-}
-
 .pgadmin-controls.sql_field_layout {
   margin: 0;
   padding: 0;
   overflow: hidden;
   z-index: 1;
-}
-
-.pgadmin-controls.sql_field_layout .CodeMirror {
-  line-height: 22px;
 }
 
 .pgadmin-controls.focused {
@@ -1500,22 +1458,6 @@ body {
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
-}
-
-/* Codemirror buttons */
-.CodeMirror-dialog button {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: white;
-    font-size: 70%;
-    background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);
-    background-image: -o-linear-gradient(top, #337ab7 0%, #265a88 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#337ab7), to(#265a88));
-    background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff265a88', GradientType=0);
-    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-    background-repeat: repeat-x;
-    border-color: #245580;
-    border-radius: 4px;
 }
 
 .dashboard-tab-container table,

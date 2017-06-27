@@ -27,7 +27,7 @@ class PgadminPage:
     def __init__(self, driver, app_config):
         self.driver = driver
         self.app_config = app_config
-        self.timeout = 20
+        self.timeout = 30
         self.app_start_timeout = 60
 
     def reset_layout(self):

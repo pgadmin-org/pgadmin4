@@ -973,14 +973,9 @@ define([
       render_history_grid: function() {
         var self = this;
 
-        // Remove any existing grid first
-        if (self.history_grid) {
-          self.history_grid.remove();
-        }
+        self.history_collection = new HistoryBundle.HistoryCollection([]);
 
-        self.history_collection = new HistoryBundle.historyCollection([]);
-
-        let queryHistoryElement = reactComponents.React.createElement(
+        var queryHistoryElement = reactComponents.React.createElement(
           reactComponents.QueryHistory, {historyCollection: self.history_collection});
         reactComponents.render(queryHistoryElement, $('#history_grid')[0]);
       },
@@ -1771,6 +1766,7 @@ define([
                 },
                 error: function(e) {
                   // Enable/Disable query tool button only if is_query_tool is true.
+                  self.resetQueryHistoryObject(self);
                   self.trigger('pgadmin-sqleditor:loading-icon:hide');
                   if (self.is_query_tool) {
                     self.disable_tool_buttons(false);
@@ -1856,7 +1852,6 @@ define([
 
               // Show message in message and history tab in case of query tool
               self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-              self.update_msg_history(true, "", false);
               var msg1 = S(gettext("Total query runtime: %s.")).sprintf(self.total_time).value();
               var msg2 = S(gettext("%s rows affected.")).sprintf(self.rows_affected).value();
 
@@ -1867,6 +1862,7 @@ define([
 
               var _msg = msg1 + '\n' + msg2;
 
+              self.update_msg_history(true, _msg, false);
               // If there is additional messages from server then add it to message
               if(!_.isNull(data.additional_messages) &&
                     !_.isUndefined(data.additional_messages)) {
@@ -2028,6 +2024,10 @@ define([
           if (cb && typeof(cb) == 'function') {
             cb();
           }
+        },
+
+        resetQueryHistoryObject: function (history) {
+          history.total_time = '-';
         },
 
         // This function is used to raise appropriate message.

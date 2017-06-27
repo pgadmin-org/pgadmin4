@@ -781,3 +781,35 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .user-language select{
   height: 25px !important;
 }
+
+.Resizer {
+  background: #dddddd;
+  z-index: 1;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
+}
+
+.Resizer.horizontal {
+  width: 100%;
+  height: 4px;
+  cursor: ew-resize;
+  border-bottom: 1px solid #aaaaaa;
+}
+
+.Resizer.vertical {
+  width: 4px;
+  cursor: ew-resize;
+  border-right: 1px solid #aaaaaa;
+}
+
+.Resizer.disabled {
+  cursor: not-allowed;
+}
+
+.Resizer.disabled:hover {
+  border-color: transparent;
+}

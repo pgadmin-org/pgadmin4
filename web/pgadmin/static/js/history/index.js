@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import historyCollection from './history_collection';
+import HistoryCollection from './history_collection';
 
 export {
-  historyCollection,
+  HistoryCollection,
 };

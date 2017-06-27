@@ -3,3 +3,69 @@
     color: #333333 !important;
     background-color: #e8e8e8 !important;
 }
+
+/* Ensure the codemirror editor displays full height gutters when resized */
+.CodeMirror, .CodeMirror-gutter {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+/*
+ * Remove border right from "CodeMirror-gutters"
+ * class becuase its height doesn't increase
+ * with every new line added, instead add border
+ * right to ".CodeMirror-linenumber" class which
+ * adds a new div for every new line added
+ */
+.sql_field_layout .CodeMirror-gutters {
+    border-right: none;
+}
+
+.sql_field_layout .CodeMirror-linenumber {
+    border-right: 1px solid #ddd;
+    background-color: #f7f7f7;
+}
+
+/* class to disable Codemirror editor */
+.cm_disabled {
+  background: #EEEEEE;
+}
+
+/* make syntax-highlighting bold */
+.cm-s-default .cm-keyword {
+  font-weight: 600;
+  color: #908;
+}
+
+.cm-s-default .cm-number {
+  font-weight: 600;
+  color: #964;
+}
+
+.pgadmin-controls.sql_field_layout .CodeMirror {
+  line-height: 22px;
+}
+
+/* Codemirror buttons */
+.CodeMirror-dialog button {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: white;
+    font-size: 70%;
+    background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);
+    background-image: -o-linear-gradient(top, #337ab7 0%, #265a88 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#337ab7), to(#265a88));
+    background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff265a88', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    background-repeat: repeat-x;
+    border-color: #245580;
+    border-radius: 4px;
+}
+
+#history-detail-query .CodeMirror {
+  border: 1px solid #CCCCCC;
+  background-color: #F7F7F7;
+  width: 100%;
+  padding-left: 5px;
+  position: absolute;
+}

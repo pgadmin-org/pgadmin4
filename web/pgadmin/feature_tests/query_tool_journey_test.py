@@ -75,9 +75,17 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._execute_query("SELECT * FROM shoes")
 
         self.page.click_tab("History")
-        history_element = self.page.find_by_id("history_grid")
+        history_element = self.page.find_by_id("query_list")
         self.assertIn("SELECT * FROM test_table", history_element.text)
         self.assertIn("SELECT * FROM shoes", history_element.text)
+
+        history_detail = self.page.find_by_id("query_detail")
+        self.assertIn("SELECT * FROM shoes", history_detail.text)
+
+        old_history_list_element = self.page.find_by_xpath("//*[@id='query_list']/ul/li[2]")
+        self.page.click_element(old_history_list_element)
+        history_detail = self.page.find_by_id("query_detail")
+        self.assertIn("SELECT * FROM test_table", history_detail.text)
 
     def __clear_query_tool(self):
         self.page.click_element(self.page.find_by_xpath("//*[@id='btn-edit']"))

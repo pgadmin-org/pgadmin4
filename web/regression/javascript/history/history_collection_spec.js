@@ -66,10 +66,6 @@ describe('historyCollection', function () {
     });
   });
 
-  describe('sort', function () {
-    it('doesn\'t sort');
-  });
-
   describe('when instantiated', function () {
     describe('from a history model', function () {
       it('has the historyModel', () => {
