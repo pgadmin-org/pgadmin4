@@ -178,9 +178,7 @@ define(
         showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
         isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
         isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
-        content: '{{ panel_item.content }}',
-        canHide: {% if panel_item.canHide %}true{% else %}false{% endif %}{% if panel_item.limit is not none %},
-        limit: {{ panel_item.limit }}{% endif %}{% if panel_item.events is not none %},
+        content: '{{ panel_item.content }}'{% if panel_item.events is not none %},
         events: {{ panel_item.events }} {% endif %}
       }){% endif %}{% endfor %}
     },
@@ -367,17 +365,15 @@ define(
 
         // Listen to panel attach/detach event so that last layout will be remembered
         _.each(obj.panels, function(panel, name) {
-          if (panel.panel) {
-            panel.panel.on(wcDocker.EVENT.ATTACHED, function() {
-              obj.save_current_layout(obj);
-            });
-            panel.panel.on(wcDocker.EVENT.DETACHED, function() {
-              obj.save_current_layout(obj);
-            });
-            panel.panel.on(wcDocker.EVENT.MOVE_ENDED, function() {
-              obj.save_current_layout(obj);
-            });
-          }
+          panel.panel.on(wcDocker.EVENT.ATTACHED, function() {
+            obj.save_current_layout(obj);
+          });
+          panel.panel.on(wcDocker.EVENT.DETACHED, function() {
+            obj.save_current_layout(obj);
+          });
+          panel.panel.on(wcDocker.EVENT.MOVE_ENDED, function() {
+            obj.save_current_layout(obj);
+          });
         });
       }
 

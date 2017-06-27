@@ -7,8 +7,7 @@ function(_, pgAdmin) {
   pgAdmin.Browser.Panel = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'content', 'icon', 'events', 'onCreate', 'elContainer',
-      'canHide', 'limit'
+      'isPrivate', 'content', 'icon', 'events', 'onCreate', 'elContainer'
     ];
     _.extend(this, _.pick(options, defaults));
   }
@@ -26,14 +25,12 @@ function(_, pgAdmin) {
     panel: null,
     onCreate: null,
     elContainer: false,
-    limit: null,
     load: function(docker, title) {
       var that = this;
       if (!that.panel) {
         docker.registerPanelType(that.name, {
           title: that.title,
           isPrivate: that.isPrivate,
-          limit: that.limit,
           onCreate: function(myPanel) {
             $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
@@ -88,14 +85,6 @@ function(_, pgAdmin) {
               });
               that.resizedContainer.apply(myPanel);
             }
-
-            // Bind events only if they are configurable
-            if (that.canHide) {
-              _.each([wcDocker.EVENT.CLOSED, wcDocker.EVENT.VISIBILITY_CHANGED],
-                function(ev) {
-                  myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
-                });
-            }
           }
         });
       }
@@ -145,32 +134,7 @@ function(_, pgAdmin) {
           100
         );
       }
-    },
-    handleVisibility: function(eventName) {
-      // Currently this function only works with dashboard panel but
-      // as per need it can be extended
-      if (this._type != 'dashboard')
-        return;
-
-      if (eventName == 'panelClosed') {
-        pgBrowser.save_current_layout(pgBrowser);
-        pgAdmin.Dashboard.toggleVisibility(false);
-      }
-      else if (eventName == 'panelVisibilityChanged') {
-        if (pgBrowser.tree) {
-          pgBrowser.save_current_layout(pgBrowser);
-          var selectedNode = pgBrowser.tree.selected();
-          // Discontinue this event after first time visible
-          this.off(wcDocker.EVENT.VISIBILITY_CHANGED);
-          if (!_.isUndefined(pgAdmin.Dashboard))
-            pgAdmin.Dashboard.toggleVisibility(true);
-          // Explicitly trigger tree selected event when we add the tab.
-          pgBrowser.Events.trigger('pgadmin-browser:tree:selected', selectedNode,
-          pgBrowser.tree.itemData(selectedNode), pgBrowser.Node);
-        }
-      }
     }
-
   });
 
   return pgAdmin.Browser.Panel;

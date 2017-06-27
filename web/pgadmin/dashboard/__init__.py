@@ -58,11 +58,9 @@ class DashboardModule(PgAdminModule):
                 title=gettext('Dashboard'),
                 icon='fa fa-tachometer',
                 content='',
-                isCloseable=True,
-                isPrivate=False,
-                limit=1,
-                isIframe=False,
-                canHide=True)
+                isCloseable=False,
+                isPrivate=True,
+                isIframe=False)
         ]
 
     def register_preferences(self):
