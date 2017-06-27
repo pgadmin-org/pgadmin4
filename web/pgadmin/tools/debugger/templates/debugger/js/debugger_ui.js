@@ -562,7 +562,7 @@ define([
                       });
 
                       // Create the debugger panel as per the data received from user input dialog.
-                      var dashboardPanel = pgBrowser.docker.findPanels('dashboard'),
+                      var dashboardPanel = pgBrowser.docker.findPanels('properties'),
                           panel = pgBrowser.docker.addPanel(
                             'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                           );
