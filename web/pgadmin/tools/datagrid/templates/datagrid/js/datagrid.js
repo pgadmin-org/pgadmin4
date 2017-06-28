@@ -87,26 +87,26 @@ define([
             name: 'view_all_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 3},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 101, label: gettext('View All Rows')
+            category: 'view_data', priority: 101, label: gettext('All Rows')
           },{
             name: 'view_first_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 1},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 102, label: gettext('View First 100 Rows')
+            category: 'view_data', priority: 102, label: gettext('First 100 Rows')
           },{
             name: 'view_last_100_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 2},
             applies: ['context', 'object'], callback: 'show_data_grid', enable: view_menu_enabled,
-            category: 'view_data', priority: 103, label: gettext('View Last 100 Rows')
+            category: 'view_data', priority: 103, label: gettext('Last 100 Rows')
           },{
             name: 'view_filtered_rows_context_' + supported_nodes[idx],
             node: supported_nodes[idx], module: this, data: {mnuid: 4},
             applies: ['context', 'object'], callback: 'show_filtered_row', enable: view_menu_enabled,
-            category: 'view_data', priority: 104, label: gettext('View Filtered Rows...')
+            category: 'view_data', priority: 104, label: gettext('Filtered Rows...')
          });
         }
 
-        pgAdmin.Browser.add_menu_category('view_data', gettext('View Data'), 100, 'fa fa-th');
+        pgAdmin.Browser.add_menu_category('view_data', gettext('View/Edit Data'), 100, 'fa fa-th');
         pgAdmin.Browser.add_menus(menus);
 
         // Creating a new pgAdmin.Browser frame to show the data.
@@ -263,7 +263,7 @@ define([
                 this.setContent($content.get(0));
 
                 // Apply CodeMirror to filter text area.
-                this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
+                this.filter_obj = codemirror.fromTextArea($sql_filter.get(0), {
                   lineNumbers: true,
                   indentUnit: 4,
                   mode: "text/x-pgsql",

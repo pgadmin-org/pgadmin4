@@ -3003,7 +3003,8 @@ define([
               });
               dataView.endUpdate();
               grid.updateRowCount();
-              grid.render();
+              // Pasted row/s always append so bring last row in view port.
+              grid.scrollRowIntoView(dataView.getLength());
               grid.setSelectedRows([]);
             }
         },

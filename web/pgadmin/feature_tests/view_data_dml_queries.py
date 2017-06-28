@@ -44,7 +44,7 @@ class CheckForViewDataTest(BaseFeatureTest):
     """
 
     scenarios = [
-        ("Validate Insert, Update operations in View data with given test "
+        ("Validate Insert, Update operations in View/Edit data with given test "
          "data",
          dict())
     ]
@@ -97,7 +97,7 @@ CREATE TABLE public.defaults
         self.page.add_server(self.server)
         self._tables_node_expandable()
         self.page.select_tree_item('defaults')
-        # Open Object -> View data
+        # Open Object -> View/Edit data
         self._view_data_grid()
 
         # Run test to insert a new row in table with default values
@@ -203,9 +203,9 @@ CREATE TABLE public.defaults
         self.page.driver.find_element_by_link_text("Object").click()
         ActionChains(self.page.driver) \
             .move_to_element(
-                self.page.driver.find_element_by_link_text("View Data")) \
+                self.page.driver.find_element_by_link_text("View/Edit Data")) \
             .perform()
-        self.page.find_by_partial_link_text("View All Rows").click()
+        self.page.find_by_partial_link_text("All Rows").click()
 
         # wait until datagrid frame is loaded.
         self.page.click_tab('Edit Data -')
