@@ -71,6 +71,10 @@ def pad(str):
     if str_len == 16 or str_len == 24 or str_len == 32:
         return str
 
+    # Convert bytes to string (python3)
+    if not hasattr(str, 'decode'):
+        padding_string = padding_string.decode()
+
     # Add padding to make key 32 bytes long
     return str + ((32 - len(str) % 32) * padding_string)
 
