@@ -2,13 +2,13 @@
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
     define([
-      'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
+      'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
       'moment', 'bignumber', 'bootstrap.datetimepicker'
     ],
-     function(_, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber) {
+     function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Alertify, moment, BigNumber);
+      return factory(root, gettext, _, $, Backbone, Backform, Alertify, moment, BigNumber);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -19,13 +19,13 @@
       Backform = require('backform') || root.Backform;
       Alertify = require('alertify') || root.Alertify;
       moment = require('moment') || root.moment;
-    factory(root, _, $, Backbone, Backform, Alertify, moment);
+    factory(root, gettext, _, $, Backbone, Backform, Alertify, moment);
 
   // Finally, as a browser global.
   } else {
-    factory(root, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
+    factory(root, root.gettext, root._, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform);
   }
-} (this, function(root, _, $, Backbone, Backform, Alertify, moment, BigNumber) {
+} (this, function(root, gettext, _, $, Backbone, Backform, Alertify, moment, BigNumber) {
   /*
      * Add mechanism in backgrid to render different types of cells in
      * same column;
@@ -380,7 +380,8 @@
 
   var DeleteCell = Backgrid.Extension.DeleteCell = Backgrid.Cell.extend({
       defaults: _.defaults({
-        defaultDeleteMsg: 'Are you sure you wish to delete this row?'
+        defaultDeleteMsg: gettext('Are you sure you wish to delete this row?'),
+        defaultDeleteTitle: gettext('Delete Row')
       }, Backgrid.Cell.prototype.defaults),
 
       /** @property */
@@ -399,8 +400,10 @@
         if (canDeleteRow) {
           var delete_msg = !_.isUndefined(this.column.get('customDeleteMsg')) ?
                            this.column.get('customDeleteMsg'): that.defaults.defaultDeleteMsg;
+          var delete_title = !_.isUndefined(this.column.get('customDeleteTitle')) ?
+                           this.column.get('customDeleteTitle'): that.defaults.defaultDeleteTitle;
           Alertify.confirm(
-            'Delete Row',
+            delete_title,
             delete_msg,
             function(evt) {
               that.model.collection.remove(that.model);
@@ -1377,6 +1380,58 @@
   });
 
   _.extend(MomentCell.prototype, MomentFormatter.prototype.defaults);
+
+
+  Backgrid.Extension.StringDepCell = Backgrid.StringCell.extend({
+      initialize: function() {
+        Backgrid.StringCell.prototype.initialize.apply(this, arguments);
+        Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+      },
+      dependentChanged: function () {
+        this.$el.empty();
+
+        var self = this,
+            model = this.model,
+            column = this.column,
+            editable = this.column.get("editable");
+
+        this.render();
+
+        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        setTimeout(function() {
+          self.$el.removeClass("editor");
+          if (is_editable){ self.$el.addClass("editable"); }
+          else { self.$el.removeClass("editable"); }
+        }, 10);
+
+        this.delegateEvents();
+        return this;
+      },
+      remove: Backgrid.Extension.DependentCell.prototype.remove
+    });
+
+  Backgrid.Extension.Select2DepCell = Backgrid.Extension.Select2Cell.extend({
+    initialize: function() {
+      Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
+      Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+    },
+
+    dependentChanged: function () {
+      var model = this.model;
+      var column = this.column;
+      editable = this.column.get("editable");
+
+      this.render();
+
+      is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+      if (is_editable){ this.$el.addClass("editable"); }
+      else { this.$el.removeClass("editable"); }
+
+      this.delegateEvents();
+      return this;
+    },
+    remove: Backgrid.Extension.DependentCell.prototype.remove
+  });
 
   return Backgrid;
 

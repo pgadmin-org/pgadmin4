@@ -25,34 +25,7 @@ define([
             // How long to wait after typing has stopped before searching can start
             wait: 150
           }));
-        },
-        StringDepCell = Backgrid.StringCell.extend({
-          initialize: function() {
-            Backgrid.StringCell.prototype.initialize.apply(this, arguments);
-            Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
-          },
-          dependentChanged: function () {
-            this.$el.empty();
-
-            var self = this,
-              model = this.model,
-              column = this.column,
-              editable = this.column.get("editable");
-
-            this.render();
-
-            is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-            setTimeout(function() {
-              self.$el.removeClass("editor");
-              if (is_editable){ self.$el.addClass("editable"); }
-              else { self.$el.removeClass("editable"); }
-            }, 10);
-
-            this.delegateEvents();
-            return this;
-          },
-          remove: Backgrid.Extension.DependentCell.prototype.remove
-        });
+        }
 
     pgBrowser.UserManagement  = {
       init: function() {
@@ -83,7 +56,7 @@ define([
             schema: [
             {
               id: 'email', label: gettext('Email'), type: 'text',
-              cell:StringDepCell, cellHeaderClasses:'width_percent_30',
+              cell: Backgrid.Extension.StringDepCell, cellHeaderClasses: 'width_percent_30',
               deps: ['id'],
               editable: function(m) {
                 if(m instanceof Backbone.Collection) {

@@ -1023,16 +1023,16 @@
 
       var collection = this.model.get(data.name);
 
-      var cellEditing = function(args){
-        var self = this,
+      var cellEditing = function(args) {
+        var that = this,
           cell = args[0];
         // Search for any other rows which are open.
         this.each(function(m){
           // Check if row which we are about to close is not current row.
           if (cell.model != m) {
-            var idx = self.indexOf(m);
+            var idx = that.indexOf(m);
             if (idx > -1) {
-              var row = grid.body.rows[idx],
+              var row = self.grid.body.rows[idx],
                   editCell = row.$el.find(".subnode-edit-in-process").parent();
               // Only close row if it's open.
               if (editCell.length > 0){
@@ -1054,7 +1054,7 @@
       });
 
       // Render subNode grid
-      subNodeGrid = grid.render().$el;
+      subNodeGrid = self.grid.render().$el;
 
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
@@ -1072,7 +1072,7 @@
                             data.canAddRow.apply(self, [self.model]) : true;
           if (canAddRow) {
               // Close any existing expanded row before adding new one.
-              _.each(grid.body.rows, function(row){
+              _.each(self.grid.body.rows, function(row){
                 var editCell = row.$el.find(".subnode-edit-in-process").parent();
                 // Only close row if it's open.
                 if (editCell.length > 0){
@@ -1101,7 +1101,7 @@
                 }
               }
 
-              $(grid.body.$el.find($("tr.new"))).removeClass("new")
+              $(self.grid.body.$el.find($("tr.new"))).removeClass("new")
               var m = new (data.model) (null, {
                 silent: true,
                 handler: collection,
@@ -1112,7 +1112,7 @@
               collection.add(m);
 
               var idx = collection.indexOf(m),
-                  newRow = grid.body.rows[idx].$el;
+                  newRow = self.grid.body.rows[idx].$el;
 
               newRow.addClass("new");
               $(newRow).pgMakeVisible('backform-tab');
@@ -1150,6 +1150,7 @@
   });
 
   var SubNodeCollectionControl = Backform.SubNodeCollectionControl = Backform.Control.extend({
+    row: Backgrid.Row,
     render: function() {
       var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
@@ -1179,6 +1180,12 @@
       });
       // Show Backgrid Control
       grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+
+      // Clean up first
+      this.$el.removeClass(Backform.hiddenClassname);
+
+      if (!data.visible)
+        this.$el.addClass(Backform.hiddenClassname);
 
       this.$el.html(grid).addClass(field.name);
       this.updateInvalid();
@@ -1247,7 +1254,9 @@
             name: "pg-backform-delete", label: "",
             cell: Backgrid.Extension.DeleteCell,
             editable: false, cell_priority: -1,
-            canDeleteRow: data.canDeleteRow
+            canDeleteRow: data.canDeleteRow,
+            customDeleteMsg: data.customDeleteMsg,
+            customDeleteTitle: data.customDeleteTitle
           });
       }
 
@@ -1304,6 +1313,7 @@
       var grid = self.grid = new Backgrid.Grid({
           columns: gridSchema.columns,
           collection: collection,
+          row: this.row,
           className: "backgrid table-bordered"
       });
 
