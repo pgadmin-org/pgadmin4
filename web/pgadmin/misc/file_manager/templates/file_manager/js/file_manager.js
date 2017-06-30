@@ -1,7 +1,8 @@
 // This defines File Manager dialog
 define([
-      'sources/gettext', 'jquery', 'underscore', 'alertify'
-], function(gettext, $, _, alertify) {
+  'sources/gettext', 'jquery', 'underscore', 'alertify',
+  'sources/alerts/alertify_wrapper',
+], function(gettext, $, _, alertify, AlertifyWrapper) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -595,12 +596,14 @@ define([
                     permission = true;
                   } else {
                     $('.file_manager_ok').addClass('disabled');
-                    alertify.error(data.Error);
+                    var alertifyWrapper = new AlertifyWrapper();
+                    alertifyWrapper.error(data.Error);
                   }
                 },
                 error: function() {
                   $('.file_manager_ok').addClass('disabled');
-                  alertify.error( gettext('Error occurred while checking access permission.'));
+                  var alertifyWrapper = new AlertifyWrapper();
+                  alertifyWrapper.error( gettext('Error occurred while checking access permission.'));
                 }
               });
               return permission;

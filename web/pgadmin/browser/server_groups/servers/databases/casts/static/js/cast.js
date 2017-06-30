@@ -1,7 +1,10 @@
 define('pgadmin.node.cast', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+  'pgadmin.browser', 'alertify',
+  'sources/alerts/alertify_wrapper',
+
+  'pgadmin.browser.collection'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, AlertifyWrapper) {
     // Extend the collection class for cast
     if (!pgBrowser.Nodes['coll-cast']) {
       var casts = pgAdmin.Browser.Nodes['coll-cast'] =
@@ -212,7 +215,8 @@ define('pgadmin.node.cast', [
                    try {
                      var err = $.parseJSON(xhr.responseText);
                      if (err.success == 0) {
-                       alertify.error(err.errormsg);
+                       var alertifyWrapper = new AlertifyWrapper();
+                       alertifyWrapper.error(err.errormsg);
                      }
                    } catch (e) {}
                  }

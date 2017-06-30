@@ -2,10 +2,11 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
-  'backform', 'pgadmin.browser.node'
+  'backform', 'pgadmin.browser.node',
+  'sources/alerts/alertify_wrapper',
 ], function(
   gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode
+  pgNode, AlertifyWrapper
 ) {
 
     // if module is already initialized, refer to that.
@@ -529,8 +530,9 @@ define([
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.notify(
-                          gettext('Restore job created.'), 'success', 5
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.success(
+                          gettext('Restore job created.'), 5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       } else {

@@ -1,9 +1,11 @@
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/alerts/alertify_wrapper',
+
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
   'pgadmin.browser.server.variable',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, AlertifyWrapper) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     var databases = pgBrowser.Nodes['coll-database'] =
@@ -191,7 +193,8 @@ define('pgadmin.node.database', [
                 success: function(res) {
                   if (res.success == 1) {
                     var prv_i = t.parent(i);
-                    Alertify.success(res.info);
+                    var alertifyWrapper = new AlertifyWrapper();
+                    alertifyWrapper.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
                     data.icon = 'icon-database-not-connected';
@@ -205,7 +208,8 @@ define('pgadmin.node.database', [
                   }
                   else {
                     try {
-                      Alertify.error(res.errormsg);
+                      var alertifyWrapper = new AlertifyWrapper();
+                      alertifyWrapper.error(res.errormsg);
                     } catch (e) {}
                     t.unload(i);
                   }
@@ -214,7 +218,8 @@ define('pgadmin.node.database', [
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      Alertify.error(err.errormsg);
+                      var alertifyWrapper = new AlertifyWrapper();
+                      alertifyWrapper.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -511,7 +516,8 @@ define('pgadmin.node.database', [
                 tree.addIcon(item, {icon: data.icon});
               }
 
-              Alertify.success(res.info);
+              var alertifyWrapper = new AlertifyWrapper();
+              alertifyWrapper.success(res.info);
               obj.trigger('connected', obj, item, data);
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', item, data

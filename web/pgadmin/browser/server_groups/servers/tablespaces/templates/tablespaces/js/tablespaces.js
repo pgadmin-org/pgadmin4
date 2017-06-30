@@ -1,9 +1,11 @@
 define('pgadmin.node.tablespace', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/alerts/alertify_wrapper',
+
   'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
   'pgadmin.browser.server.privilege'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, AlertifyWrapper) {
 
   if (!pgBrowser.Nodes['coll-tablespace']) {
     var databases = pgBrowser.Nodes['coll-tablespace'] =
@@ -278,17 +280,20 @@ define('pgadmin.node.tablespace', [
                           data:{'data': JSON.stringify(args) },
                           success: function(res) {
                             if (res.success) {
-                              alertify.success(res.info);
+                              var alertifyWrapper = new AlertifyWrapper();
+                              alertifyWrapper.success(res.info);
                               self.close();
                             } else {
-                              alertify.error(res.errormsg);
+                              var alertifyWrapper = new AlertifyWrapper();
+                              alertifyWrapper.error(res.errormsg);
                             }
                           },
                           error: function(xhr, status, error) {
                             try {
                               var err = $.parseJSON(xhr.responseText);
                               if (err.success == 0) {
-                                alertify.error(err.errormsg);
+                                var alertifyWrapper = new AlertifyWrapper();
+                                alertifyWrapper.error(err.errormsg);
                               }
                             } catch (e) {}
                           }

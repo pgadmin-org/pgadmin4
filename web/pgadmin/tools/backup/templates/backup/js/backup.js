@@ -1,8 +1,9 @@
 // Backup dialog
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node'
-], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
+  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
+  'sources/alerts/alertify_wrapper',
+], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode, AlertifyWrapper) {
 
   // if module is already initialized, refer to that.
   if (pgBrowser.Backup) {
@@ -555,10 +556,8 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.notify(
-                          gettext('Backup job created.'), 'success',
-                          5
-                        );
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.success(gettext('Backup job created.'), 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       } else {
                         console.log(res);
@@ -786,7 +785,8 @@ TODO LIST FOR BACKUP:
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        alertify.notify(gettext('Backup job created.'), 'success', 5);
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.success(gettext('Backup job created.'), 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },

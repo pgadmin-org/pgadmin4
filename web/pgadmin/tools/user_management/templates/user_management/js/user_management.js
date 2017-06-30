@@ -2,9 +2,10 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
+  'sources/alerts/alertify_wrapper',
   'backgrid.select.all', 'backgrid.filter'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode
+  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode, AlertifyWrapper
 ) {
 
     // if module is already initialized, refer to that.
@@ -310,10 +311,12 @@ define([
                       self.model.destroy({
                         wait: true,
                         success: function(res) {
-                          alertify.success(gettext('User deleted.'));
+                          var alertifyWrapper = new AlertifyWrapper();
+                          alertifyWrapper.success(gettext('User deleted.'));
                         },
                         error: function(m, jqxhr) {
-                          alertify.error(gettext('Error during deleting user.'));
+                          var alertifyWrapper = new AlertifyWrapper();
+                          alertifyWrapper.error(gettext('Error during deleting user.'));
                         }
                       });
                     },
@@ -490,13 +493,15 @@ define([
                                    'confirmPassword':undefined});
 
                             m.startNewSession();
-                            alertify.success(S(gettext("User '%s' saved.")).sprintf(
+                            var alertifyWrapper = new AlertifyWrapper();
+                            alertifyWrapper.success(S(gettext("User '%s' saved.")).sprintf(
                               m.get('email')
                             ).value());
                           },
                           error: function(res, jqxhr) {
                             m.startNewSession();
-                            alertify.error(
+                            var alertifyWrapper = new AlertifyWrapper();
+                            alertifyWrapper.error(
                               S(gettext("Error saving user: '%s'")).sprintf(
                                 jqxhr.responseJSON.errormsg
                               ).value()

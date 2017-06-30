@@ -1,9 +1,10 @@
 define('pgadmin.node.table', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/alerts/alertify_wrapper',
   'pgadmin.browser.collection', 'pgadmin.node.column',
   'pgadmin.node.constraints'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, AlertifyWrapper) {
 
   if (!pgBrowser.Nodes['coll-table']) {
     var databases = pgBrowser.Nodes['coll-table'] =
@@ -122,7 +123,8 @@ define('pgadmin.node.table', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                alertify.success(res.info);
+                var alertifyWrapper = new AlertifyWrapper();
+                alertifyWrapper.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -135,7 +137,8 @@ define('pgadmin.node.table', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  alertify.error(err.errormsg);
+                  var alertifyWrapper = new AlertifyWrapper();
+                  alertifyWrapper.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -174,7 +177,8 @@ define('pgadmin.node.table', [
                 dataType: "json",
                 success: function(res) {
                   if (res.success == 1) {
-                    alertify.success(res.info);
+                    var alertifyWrapper = new AlertifyWrapper();
+                    alertifyWrapper.success(res.info);
                     t.removeIcon(i);
                     data.icon = 'icon-table';
                     t.addIcon(i, {icon: data.icon});
@@ -191,7 +195,8 @@ define('pgadmin.node.table', [
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      alertify.error(err.errormsg);
+                      var alertifyWrapper = new AlertifyWrapper();
+                      alertifyWrapper.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -221,7 +226,8 @@ define('pgadmin.node.table', [
                   type:'DELETE',
                   success: function(res) {
                     if (res.success == 1) {
-                      alertify.success(res.info);
+                      var alertifyWrapper = new AlertifyWrapper();
+                      alertifyWrapper.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-table';
                       t.addIcon(i, {icon: data.icon});
@@ -238,7 +244,8 @@ define('pgadmin.node.table', [
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        alertify.error(err.errormsg);
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.error(err.errormsg);
                       }
                     } catch (e) {}
                     t.unload(i);

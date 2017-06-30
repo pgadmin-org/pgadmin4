@@ -1,11 +1,14 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'alertify', 'pgadmin', 'pgadmin.browser', 'backbone',
-  'backgrid', 'backform', 'pgadmin.backform', 'pgadmin.backgrid',
+  'backgrid', 'backform',
+  'sources/alerts/alertify_wrapper',
+
+  'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node.ui'
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform
+  Backform, AlertifyWrapper
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -347,11 +350,13 @@ define([
                     success: function(res) {
                       if (res.data && res.data.status) {
                         //Do nothing as we are creating the job and exiting from the main dialog
-                        Alertify.success(res.data.info);
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.success(res.data.info);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                       else {
-                        Alertify.error(res.data.errmsg);
+                        var alertifyWrapper = new AlertifyWrapper();
+                        alertifyWrapper.error(res.data.errmsg);
                       }
                     },
                     error: function(e) {

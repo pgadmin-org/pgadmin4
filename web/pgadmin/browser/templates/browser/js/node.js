@@ -1,8 +1,11 @@
 define([
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
   'pgadmin.browser.menu', 'backbone', 'alertify', 'pgadmin.browser.datamodel',
-  'backform', 'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'
-], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
+  'backform',
+  'sources/alerts/alertify_wrapper',
+
+  'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'
+], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, AlertifyWrapper) {
 
   var wcDocker = window.wcDocker,
     keyCode = {
@@ -616,10 +619,10 @@ define([
 
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
-            Alertify.notify(
+                var alertifyWrapper = new AlertifyWrapper();
+                  alertifyWrapper.error(
                 S('The %s "%s" cannot be dropped!')
                 .sprintf(obj.label, d.label).value(),
-                'error',
                 10
                 );
             return;
@@ -630,12 +633,13 @@ define([
           title = S( gettext('DROP %s?')).sprintf(obj.label).value();
 
           if (!(_.isFunction(obj.canDrop) ?
-                obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
-            Alertify.notify(
-                S('The %s "%s" cannot be dropped!')
-                .sprintf(obj.label, d.label).value(),
-                'error', 10
-                );
+              obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.error(
+              S('The %s "%s" cannot be dropped!')
+              .sprintf(obj.label, d.label).value(),
+              10
+            );
             return;
           }
         }

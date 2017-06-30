@@ -1,8 +1,10 @@
 define('pgadmin.node.pga_job', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'sources/alerts/alertify_wrapper',
+
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, AlertifyWrapper) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     var pga_jobs = pgBrowser.Nodes['coll-pga_job'] =
@@ -178,18 +180,19 @@ define('pgadmin.node.pga_job', [
             t.unload(i);
           },
           error: function(xhr, status, error) {
-	    var error_msg = "Unable to run pgagent job.";
+	          var error_msg = "Unable to run pgagent job.";
+            var alertifyWrapper = new AlertifyWrapper();
             if (xhr.readyState == 0) {
-              alertify.error(gettext('Not connected to the server or the connection to the server has been closed.'));
+              alertifyWrapper.error(gettext('Not connected to the server or the connection to the server has been closed.'));
             }
             else {
               if (_.isUndefined(xhr.responseText)) {
-                alertify.error(error_msg);
+                alertifyWrapper.error(error_msg);
               }
               else {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  alertify.error(err.errormsg);
+                  alertifyWrapper.error(err.errormsg);
                 }
               }
             }

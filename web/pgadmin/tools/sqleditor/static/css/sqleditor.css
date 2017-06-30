@@ -348,11 +348,11 @@ li {
 }
 
 #datagrid .slick-header .slick-header-column.ui-state-default {
-  color: #222222;
+  color: #333333;
   padding: 4px 0 3px 6px;
   background-color: #E8E8E8;
-  border-bottom: 1px solid #888 !important;
-  border-right: 1px solid #888 !important;
+  border-bottom: 1px solid #CCCCCC !important;
+  border-right: 1px solid #CCCCCC !important;
 }
 
 #datagrid .slick-header .slick-header-column.selected {

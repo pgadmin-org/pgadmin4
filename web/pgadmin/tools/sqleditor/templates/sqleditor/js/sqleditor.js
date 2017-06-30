@@ -10,6 +10,7 @@ define([
     'sources/selection/xcell_selection_model',
     'sources/selection/set_staged_rows',
     'sources/sqleditor_utils',
+    'sources/alerts/alertify_wrapper',
 
     'sources/generated/history',
     'sources/generated/reactComponents',
@@ -34,7 +35,7 @@ define([
 ], function(
   gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-    XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, reactComponents
+    XCellSelectionModel, setStagedRows,  SqlEditorUtils, AlertifyWrapper, HistoryBundle, reactComponents
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -1706,7 +1707,8 @@ define([
             self.update_msg_history(true, res.result, false);
             // Display the notifier if the timeout is set to >= 0
             if (self.info_notifier_timeout >= 0) {
-              alertify.success(msg, self.info_notifier_timeout);
+              var alertifyWrapper = new AlertifyWrapper();
+              alertifyWrapper.success(msg, self.info_notifier_timeout);
             }
           }
 
@@ -1852,12 +1854,14 @@ define([
 
               // Show message in message and history tab in case of query tool
               self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-              var msg1 = S(gettext("Total query runtime: %s.")).sprintf(self.total_time).value();
+              self.update_msg_history(true, "", false);
+              var msg1 = S(gettext("Successfully run. Total query runtime: %s.")).sprintf(self.total_time).value();
               var msg2 = S(gettext("%s rows affected.")).sprintf(self.rows_affected).value();
 
               // Display the notifier if the timeout is set to >= 0
               if (self.info_notifier_timeout >= 0) {
-                alertify.success(msg1 + '<br />' + msg2, self.info_notifier_timeout);
+                var alertifyWrapper = new AlertifyWrapper();
+                alertifyWrapper.success(msg1 + ' ' + msg2, self.info_notifier_timeout);
               }
 
               var _msg = msg1 + '\n' + msg2;
@@ -2172,7 +2176,8 @@ define([
               } else {
                 $("#btn-save").prop('disabled', true);
               }
-              alertify.success(gettext("Row(s) deleted"));
+              var alertifyWrapper = new AlertifyWrapper();
+              alertifyWrapper.success(gettext("Row(s) deleted"));
           } else {
             // There are other data to needs to be updated on server
             if(is_updated) {
@@ -2323,7 +2328,8 @@ define([
                   $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
                   var err_msg = S(gettext("%s.")).sprintf(res.data.result).value();
-                  alertify.notify(err_msg, 'error', 20);
+                  var alertifyWrapper = new AlertifyWrapper();
+                  alertifyWrapper.error(err_msg, 20);
                   grid.setSelectedRows([]);
                   // To highlight the row at fault
                   if(_.has(res.data, '_rowid') &&
@@ -2511,7 +2517,8 @@ define([
             },
             error: function(e) {
               var errmsg = $.parseJSON(e.responseText).errormsg;
-              alertify.error(errmsg);
+              var alertifyWrapper = new AlertifyWrapper();
+              alertifyWrapper.error(errmsg);
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
               // hide cursor
               $busy_icon_div.removeClass('show_progress');
@@ -2539,7 +2546,8 @@ define([
             data: JSON.stringify(data),
             success: function(res) {
               if (res.data.status) {
-                alertify.success(gettext("File saved successfully."));
+                var alertifyWrapper = new AlertifyWrapper();
+                alertifyWrapper.success(gettext("File saved successfully."));
                 self.gridView.current_file = e;
                 self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''));
                 // disable save button on file save
@@ -2557,7 +2565,8 @@ define([
               var errmsg = $.parseJSON(e.responseText).errormsg;
               setTimeout(
                 function() {
-                  alertify.error(errmsg);
+                  var alertifyWrapper = new AlertifyWrapper();
+                  alertifyWrapper.error(errmsg);
                 }, 10
               );
             },

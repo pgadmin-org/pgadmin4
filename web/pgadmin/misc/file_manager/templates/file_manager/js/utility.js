@@ -13,7 +13,7 @@
 "use strict";
 
 // use alertify and underscore js
-var alertify = require("alertify"),
+var AlertifyWrapper = require('sources/alerts/alertify_wrapper'),
     _ = require("underscore"),
     S = require("underscore.string"),
     gettext = require('sources/gettext');
@@ -296,14 +296,17 @@ var setUploader = function(path) {
         $.getJSON(fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername, function(resp) {
           var result = resp.data.result;
           if (result.Code === 1) {
-            alertify.success(lg.successful_added_folder);
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.success(lg.successful_added_folder);
             getFolderInfo(result.Parent);
           } else {
-            alertify.error(result.Error);
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.error(result.Error);
           }
         });
       } else {
-        alertify.error(lg.no_foldername);
+        var alertifyWrapper = new AlertifyWrapper();
+        alertifyWrapper.error(lg.no_foldername);
       }
     };
 
@@ -466,9 +469,11 @@ var renameItem = function(data) {
             // UnBind toolbar functions.
             $('.fileinfo').find('button.rename, button.delete, button.download').unbind();
 
-            alertify.success(lg.successful_rename);
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.success(lg.successful_rename);
           } else {
-              alertify.error(result.Error);
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.error(result.Error);
           }
 
           finalName = result['New Name'];
@@ -508,14 +513,16 @@ var deleteItem = function(data) {
         if (result.Code === 1) {
           isDeleted = true;
           if (isDeleted) {
-            alertify.success(lg.successful_delete);
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.success(lg.successful_delete);
             var rootpath = result.Path.substring(0, result.Path.length-1); // removing the last slash
                 rootpath = rootpath.substr(0, rootpath.lastIndexOf('/') + 1);
             getFolderInfo(rootpath);
           }
         } else {
           isDeleted = false;
-          alertify.error(result.Error);
+          var alertifyWrapper = new AlertifyWrapper();
+          alertifyWrapper.error(result.Error);
         }
       }
     });
@@ -601,7 +608,8 @@ var getFileInfo = function(file) {
         }
       } else {
         $('.file_manager_ok').addClass('disabled');
-        alertify.error(data.Error);
+        var alertifyWrapper = new AlertifyWrapper();
+        alertifyWrapper.error(data.Error);
       }
     }
   });
@@ -628,12 +636,14 @@ var checkPermission = function(path) {
         permission = true;
       } else {
         $('.file_manager_ok').addClass('disabled');
-        alertify.error(data.Error);
+        var alertifyWrapper = new AlertifyWrapper();
+        alertifyWrapper.error(data.Error);
       }
     },
     error: function() {
       $('.file_manager_ok').addClass('disabled');
-      alertify.error( gettext('Error occurred while checking access permission.'));
+      var alertifyWrapper = new AlertifyWrapper();
+      alertifyWrapper.error( gettext('Error occurred while checking access permission.'));
     }
   });
   return permission;
@@ -703,7 +713,8 @@ var getFolderInfo = function(path, file_type) {
       // hide activity indicator
       $('.fileinfo').find('span.activity').hide();
       if (data.Code === 0) {
-        alertify.error(data.Error);
+        var alertifyWrapper = new AlertifyWrapper();
+        alertifyWrapper.error(data.Error);
         return;
       }
       // generate HTML for files/folder and render into container
@@ -1599,18 +1610,21 @@ if (has_capability(data, 'upload')) {
             $this.find(".dz-upload").addClass("success");
           }, 1000);
           $this.find(".dz-upload").css('width', "100%").html("100%");
-          alertify.success(lg.upload_success);
+          var alertifyWrapper = new AlertifyWrapper();
+          alertifyWrapper.success(lg.upload_success);
         } else {
           $this.find(".dz-upload").addClass("error");
           $this.find(".dz-upload").css('width', "0%").html("0%");
-          alertify.error(data.Error);
+          var alertifyWrapper = new AlertifyWrapper();
+          alertifyWrapper.error(data.Error);
         }
         getFolderInfo(path);
       },
       totaluploadprogress: function(progress) {},
       complete: function(file) {
         if (file.status == "error") {
-          alertify.error(lg.ERROR_UPLOADING_FILE);
+          var alertifyWrapper = new AlertifyWrapper();
+          alertifyWrapper.error(lg.ERROR_UPLOADING_FILE);
         }
         $('.upload_file .dz_cross_btn').removeAttr('disabled');
         getFolderInfo(path);
