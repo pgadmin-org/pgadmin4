@@ -18,7 +18,6 @@ import $ from 'jquery';
 
 describe('#handleQueryOutputKeyboardEvent', function () {
   var event, grid, slickEvent;
-  var SlickGrid = Slick.Grid;
   var handleQueryOutputKeyboardEvent;
 
   beforeEach(function () {
@@ -28,7 +27,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       metaKey: false,
       which: -1,
       keyCode: -1,
-      preventDefault: jasmine.createSpy('preventDefault')
+      preventDefault: jasmine.createSpy('preventDefault'),
     };
 
     var data = [{'checkboxColumn': '', 'firstColumn': '0,0-cell-content', 'secondColumn': '0,1-cell-content', '__temp_PK': '123'},
@@ -43,7 +42,7 @@ describe('#handleQueryOutputKeyboardEvent', function () {
     grid.setSelectionModel(new XCellSelectionModel());
     dataView.setItems(data, '__temp_PK');
     slickEvent = {
-      grid: grid
+      grid: grid,
     };
 
     spyOn(clipboard, 'copyTextToClipboard');
