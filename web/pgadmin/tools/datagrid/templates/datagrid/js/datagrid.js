@@ -379,8 +379,8 @@ define([
                 newWin.document.title = grid_title;
               });
             } else {
-              var dashboardPanel = pgBrowser.docker.findPanels('properites');
-              var dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              var propertiesPanel = pgBrowser.docker.findPanels('properties');
+              var dataGridPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
               // Set panel title and icon
               dataGridPanel.title('<span title="'+grid_title+'">'+grid_title+'</span>');
@@ -495,8 +495,8 @@ define([
               /* On successfully initialization find the dashboard panel,
                * create new panel and add it to the dashboard panel.
                */
-              var dashboardPanel = pgBrowser.docker.findPanels('properties');
-              var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, dashboardPanel[0]);
+              var propertiesPanel = pgBrowser.docker.findPanels('properties');
+              var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
               // Set panel title and icon
               queryToolPanel.title('<span title="'+panel_title+'">'+panel_title+'</span>');
