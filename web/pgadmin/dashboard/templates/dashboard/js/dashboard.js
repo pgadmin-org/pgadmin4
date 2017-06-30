@@ -11,6 +11,8 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
   if (pgAdmin.Dashboard)
     return;
 
+  var dashboardVisible = true;
+
   pgAdmin.Dashboard = {
         init: function() {
             if (this.initialized)
@@ -55,7 +57,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
 
         // Handle treeview clicks
         object_selected: function(item, itemData, node) {
-            if (itemData && itemData._type) {
+            if (itemData && itemData._type && dashboardVisible) {
                 var treeHierarchy = node.getTreeNodeHierarchy(item),
                     url = '{{ url_for('dashboard.index') }}',
                     sid = -1, did = -1, b = pgAdmin.Browser,
@@ -123,6 +125,9 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             //     { data: [[0, y0], [1, y1]...], label: 'Label 2', [options] },
             //     { data: [[0, y0], [1, y1]...], label: 'Label 3', [options] }
             // ]
+
+            if (!dashboardVisible)
+              return;
 
             y = 0;
             if (dataset.length == 0) {
@@ -862,6 +867,9 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                 }
             });
 
+        },
+        toggleVisibility: function(flag) {
+          dashboardVisible = flag;
         }
   };
 
