@@ -94,7 +94,7 @@ define(['slickgrid'], function () {
     var indexArray = [];
     ranges.forEach(function (range) {
       if (rangeHasCompleteRows(grid, range))
-        indexArray = _.union(indexArray, _.range(range.fromRow, range.toRow + 1));
+        indexArray = indexArray.concat(_.range(range.fromRow, range.toRow + 1));
     });
 
     return indexArray;
