@@ -1,0 +1,156 @@
+/*doc
+---
+title: Others
+name: z-othercolors
+category: colors
+---
+These colors should be used to highlight hover options in dropdown menus and catalog browser or to tell the user when something is right or wrong.
+
+
+```html_example
+<div class="row">
+  <div class="row">
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-blue-1">
+        #e7f2ff
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-blue-2">
+        #84acdd
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div class="row">
+  <div class="row">
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-red-1">
+        #f2dede
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-red-2">
+        #de8585
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-red-3">
+        #d0021b
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div class="row">
+  <div class="row">
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-green-1">
+        #dff0d7
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-green-2">
+        #a2c189
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-green-3">
+        #3a773a
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+*/
+
+.color-chip {
+  align-items: center;
+  border-radius: 3px;
+  box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, .15);
+  color: rgba(0, 0, 0, .65);
+  display: flex;
+  font-size: 1.25em;
+  height: 100px;
+  justify-content: center;
+  margin: 0 0 1em;
+  width: 100%;
+}
+
+.bg-blue-1 {
+  background-color: #e7f2ff;
+}
+
+.bg-blue-2 {
+  background-color: #84acdd;
+}
+
+.bg-red-1 {
+  background-color: #f2dede;
+}
+
+.bg-red-2 {
+  background-color: #de8585;
+}
+
+.bg-red-3 {
+  background-color: #d0021b;
+}
+
+.bg-green-1 {
+  background-color: #dff0d7;
+}
+
+.bg-green-2 {
+  background-color: #a2c189;
+}
+
+.bg-green-3 {
+  background-color: #3a773a;
+}
+
+.border-blue-1 {
+  border-color: #e7f2ff;
+}
+
+.border-blue-2 {
+  border-color: #84acdd;
+}
+
+.border-red-1 {
+  border-color: #f2dede;
+}
+
+.border-red-2 {
+  border-color: #de8585;
+}
+
+.border-red-3 {
+  border-color: #d0021b;
+}
+
+.border-green-1 {
+  border-color: #dff0d7;
+}
+
+.border-green-2 {
+  border-color: #a2c189;
+}
+
+.border-green-3 {
+  border-color: #3a773a;
+}
+
+.font-red-3 {
+  color: #d0021b;
+}
+
+.font-green-3 {
+  color: #3a773a;
+}
+
+.font-white {
+  color: #FFFFFF;
+}

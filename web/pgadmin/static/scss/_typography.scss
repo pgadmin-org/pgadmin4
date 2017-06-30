@@ -1,0 +1,68 @@
+/*doc
+---
+title: Typography
+name: typography
+category: typography
+---
+
+Font Typography
+
+```html_example_table
+<div class="text-14">
+  Body 14 px Helvetica Neue
+</div>
+
+<div class="text-14 text-bold">
+  Body 14 px Helvetica Neue bold
+</div>
+
+<div class="text-13">
+  Body 13 px Helvetica Neue
+</div>
+
+<div class="text-13 text-bold">
+  Body 13 px Helvetica Neue bold
+</div>
+
+<div class="text-12">
+  Body 12 px Helvetica Neue
+</div>
+
+<div class="text-12 text-bold">
+  Body 12 px Helvetica Neue bold
+</div>
+
+<div class="text-11">
+  Body 11 px Helvetica Neue
+</div>
+
+<div class="text-11 text-bold">
+  Body 11 px Helvetica Neue bold
+</div>
+```
+
+*/
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-14 {
+  font-family: "Helvetica Neue";
+  font-size: 14px;
+}
+
+.text-13 {
+  font-family: "Helvetica Neue";
+  font-size: 13px;
+}
+
+.text-12 {
+  font-family: "Helvetica Neue";
+  font-size: 12px;
+}
+
+.text-11 {
+  font-family: "Helvetica Neue";
+  font-size: 11px;
+}

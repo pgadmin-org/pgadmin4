@@ -1,0 +1,119 @@
+/*doc
+---
+title: Alerts
+name: alerts
+category: alerts
+---
+
+```html_example
+<div class="alert-row">
+  <div class="alert alert-success text-14 alert-box">
+    <div class="media">
+      <div class="media-body media-middle">
+        <div class="alert-icon">
+          <i class="fa fa-check" aria-hidden="true"></i>
+        </div>
+        <div class="alert-text">
+          Successfully run. Total query runtime: 32 msec. 1 row retrieved
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-row">
+  <div class="alert alert-danger font-red text-14 alert-box">
+    <div class="media">
+      <div class="media-body media-middle">
+        <div class="alert-icon">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+        <div class="alert-text">
+          Error retrieving properties - INTERNAL SERVER ERROR
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-row">
+  <div class="alert alert-info font-blue text-14 alert-box">
+    <div class="media">
+      <div class="media-body media-middle">
+        <div class="alert-text">
+          This is a neutral message
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+```
+*/
+
+
+// from bootstrap scss:
+
+@if $enable-flex {
+  .media {
+    display: flex;
+  }
+  .media-body {
+    flex: 1;
+  }
+  .media-middle {
+    align-self: center;
+  }
+  .media-bottom {
+    align-self: flex-end;
+  }
+} @else {
+  .media,
+  .media-body {
+    overflow: hidden;
+  }
+  .media-body {
+    width: 10000px;
+  }
+  .media-left,
+  .media-right,
+  .media-body {
+    display: inline;
+    vertical-align: top;
+  }
+  .media-middle {
+    vertical-align: middle;
+  }
+  .media-bottom {
+    vertical-align: bottom;
+  }
+}
+
+.alert-row {
+  display: block;
+}
+
+.alert-box {
+  padding: 15px;
+  display: inline-block;
+}
+
+.alert-icon {
+  display: inline-block;
+}
+
+.alert-text {
+  display: inline-block;
+  padding: 0 12px 0 10px;
+}
+
+.alert-info {
+  border-color: #84acdd
+}
+
+.media-body {
+  display: inline;
+  vertical-align: top;
+}
+
+
