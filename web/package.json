@@ -9,6 +9,7 @@
     "enzyme-matchers": "^3.1.0",
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^6.10.3",
+    "extract-text-webpack-plugin": "^2.1.2",
     "jasmine-core": "~2.5.2",
     "jasmine-enzyme": "^3.1.0",
     "karma": "~1.5.0",
@@ -20,8 +21,10 @@
     "karma-requirejs": "~1.1.0",
     "karma-sourcemap-loader": "~0.3.7",
     "karma-webpack": "~2.0.3",
+    "node-sass": "^4.5.3",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "~15.4.2",
+    "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "~2.3.1"
   },

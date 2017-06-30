@@ -1,11 +1,19 @@
 /* eslint-env node */
 
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const extractSass = new ExtractTextPlugin({
+  filename: '[name].css',
+  disable: process.env.NODE_ENV === 'development',
+});
+
 module.exports = {
   context: __dirname + '/pgadmin/static',
   entry: {
     reactComponents: './bundle/components.js',
     history: './js/history/index.js',
     slickgrid: './bundle/slickgrid.js',
+    pgadmincss: './scss/pgadmin.scss',
   },
   output: {
     libraryTarget: 'amd',
@@ -13,6 +21,7 @@ module.exports = {
     filename: '[name].js',
   },
 
+  plugins: [extractSass],
   module: {
     rules: [{
       test: /\.jsx?$/,
@@ -26,6 +35,15 @@ module.exports = {
     }, {
       test: /\.css$/,
       use: ['style-loader', 'raw-loader'],
+    }, {
+      test: /\.scss$/,
+      use: extractSass.extract({
+        use: [{
+          loader: 'css-loader',
+        }, {
+          loader: 'sass-loader', // compiles Sass to CSS
+        }],
+      }),
     }],
   },
 
