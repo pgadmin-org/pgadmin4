@@ -11,7 +11,7 @@ try {
       window.onbeforeunload = function(ev) {
         $.ajax({
           url: "{{ url_for('debugger.index') }}close/{{ uniqueId }}",
-          method: 'GET'
+          method: 'DELETE'
         });
       };
     },

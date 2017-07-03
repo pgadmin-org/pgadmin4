@@ -269,7 +269,7 @@ define([
                 var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
                 $.ajax({
                   url: closeUrl,
-                  method: 'GET'
+                  method: 'DELETE'
                 });
               });
             }
@@ -366,7 +366,7 @@ define([
                       var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
                       $.ajax({
                         url: closeUrl,
-                        method: 'GET'
+                        method: 'DELETE'
                       });
                     });
                   }

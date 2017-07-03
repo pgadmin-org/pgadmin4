@@ -543,7 +543,10 @@ define([
 
               //Set the alertify message to inform the user that execution is completed with error.
               var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.error(res.info, 3);
+
+              if(!pgTools.DirectDebug.is_user_aborted_debugging) {
+                alertifyWrapper.error(res.info, 3);
+              }
 
               // Update the message tab of the debugger
               if (res.data.status_message) {
@@ -555,14 +558,21 @@ define([
               // remove progress cursor
               $('.debugger-container').removeClass('show_progress');
 
-              // Execution completed so disable the buttons other than "Continue/Start" button because user can still
-              // start the same execution again.
+              // Execution completed so disable the buttons other than
+              // "Continue/Start" button because user can still start the
+              // same execution again.
               self.enable('stop', false);
               self.enable('step_over', false);
               self.enable('step_into', false);
               self.enable('toggle_breakpoint', false);
               self.enable('clear_all_breakpoints', false);
-              self.enable('continue', true);
+              // If debugging is stopped by user then do not enable
+              // continue/restart button
+              if(!pgTools.DirectDebug.is_user_aborted_debugging)
+              {
+                self.enable('continue', true);
+                pgTools.DirectDebug.is_user_aborted_debugging = false;
+              }
 
               // Stop further pooling
               pgTools.DirectDebug.is_polling_required = false;
@@ -600,6 +610,7 @@ define([
           var restart_dbg = res.data.restart_debug ? 1 : 0;
 
           // Start pooling again
+          pgTools.DirectDebug.polling_timeout_idle = false;
           pgTools.DirectDebug.is_polling_required = true;
           self.poll_end_execution_result(trans_id);
           self.poll_result(trans_id);
@@ -768,7 +779,7 @@ define([
         self.enable('step_into', false);
         self.enable('toggle_breakpoint', false);
         self.enable('clear_all_breakpoints', false);
-        self.enable('continue', true);
+        self.enable('continue', false);
 
         // Make ajax call to listen the database message
         var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "abort_target";
@@ -781,14 +792,19 @@ define([
               // Call function to create and update local variables ....
               pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
               pgTools.DirectDebug.direct_execution_completed = true;
+              pgTools.DirectDebug.is_user_aborted_debugging = true;
 
-              //Set the alertify message to inform the user that execution is completed.
+              // Stop further pooling
+              pgTools.DirectDebug.is_polling_required = false;
+
+              // Restarting debugging in the same transaction do not work
+              // We will give same behaviour as pgAdmin3 and disable all buttons
+              self.enable('continue', false);
+
+              // Set the alertify message to inform the user that execution
+              // is completed.
               var alertifyWrapper = new AlertifyWrapper();
               alertifyWrapper.success(res.info, 3);
-
-              //Disable the buttons other than continue button. If user wants to again then it should allow to debug again...
-              self.enable('continue', true);
-
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -1353,6 +1369,7 @@ define([
       this.direct_execution_completed = false;
       this.polling_timeout_idle = false;
       this.debug_restarted = false;
+      this.is_user_aborted_debugging = false;
       this.is_polling_required = true; // Flag to stop unwanted ajax calls
 
       var docker = this.docker = new wcDocker(
@@ -1495,7 +1512,7 @@ define([
     intializePanels: function() {
       var self = this;
       this.registerPanel(
-        'code', false, '100%', '100%',
+        'code', false, '100%', '50%',
         function(panel) {
 
             // Create the parameters panel to display the arguments of the functions
