@@ -39,14 +39,31 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
       // Avoid flash of white box if rendered for any reason.
       textArea.style.background = 'transparent';
 
-
-      textArea.value = text;
-
       document.body.appendChild(textArea);
 
       textArea.select();
 
+      document.addEventListener('copy', function(e) {
+        /* Remove oncopy event listener from document as we add listener for
+         * oncopy event on each copy operation.
+         * Also we don't want this listener to be persistent; Otherwise it'll get
+         * called for each copy operation performed on any input/textarea from
+         * this document.
+         */
+        document.removeEventListener('copy', arguments.callee);
+
+        var clipboardData = e.clipboardData || window.clipboardData;
+
+        if (clipboardData) {
+          clipboardData.setData('text', text);
+          // We want our data, not data from any selection, to be written to the clipboard
+          e.preventDefault();
+        }
+      });
+
       try {
+        // just perform copy on empty textarea so that copy event will be
+        // triggered on document and then we can set clipboardData.
         document.execCommand('copy');
       } catch (err) {
         alertify.alert(
