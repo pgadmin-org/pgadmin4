@@ -464,6 +464,7 @@ class TableCommand(GridCommand):
                     continue
 
                 column_type = {}
+                column_data = {}
                 for each_col in columns_info:
                     if (
                         columns_info[each_col]['not_null'] and
