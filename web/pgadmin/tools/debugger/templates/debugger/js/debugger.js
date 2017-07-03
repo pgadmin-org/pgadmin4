@@ -126,8 +126,14 @@ define([
             && !treeInfo.server.user.is_superuser)
           return false;
 
+        // Fetch object owner
+        var obj_owner = treeInfo.function && treeInfo.function.funcowner ||
+            treeInfo.procedure && treeInfo.procedure.funcowner ||
+            treeInfo.edbfunc && treeInfo.edbfunc.funcowner ||
+            treeInfo.edbproc && treeInfo.edbproc.funcowner;
+
         // Must be a super user or object owner to create breakpoints of any kind
-        if (!(treeInfo.server.user.is_superuser || treeInfo.function.funcowner == treeInfo.server.user.name))
+        if (!(treeInfo.server.user.is_superuser || obj_owner == treeInfo.server.user.name))
           return false;
 
         // For trigger node, language will be undefined - we should allow indirect debugging for trigger node

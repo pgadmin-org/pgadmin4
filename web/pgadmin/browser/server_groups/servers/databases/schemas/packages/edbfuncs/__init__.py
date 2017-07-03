@@ -291,7 +291,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     pkgid,
                     row['name'],
-                    icon="icon-" + self.node_type
+                    icon="icon-" + self.node_type,
+                    funcowner=row['funcowner']
                 ),
                 status=200
             )
@@ -302,7 +303,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     pkgid,
                     row['name'],
-                    icon="icon-" + self.node_type
+                    icon="icon-" + self.node_type,
+                    funcowner=row['funcowner']
                 ))
 
         return make_json_response(
