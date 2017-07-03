@@ -26,8 +26,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
 {% endif %}
 
-AS
-{{ data.prosrc }};
+AS {{ data.prosrc }};
 {% if data.acl and not is_sql %}
 {% for p in data.acl %}
 
