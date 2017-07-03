@@ -1854,7 +1854,6 @@ define([
 
               // Show message in message and history tab in case of query tool
               self.total_time = self.get_query_run_time(self.query_start_time, self.query_end_time);
-              self.update_msg_history(true, "", false);
               var msg1 = S(gettext("Successfully run. Total query runtime: %s.")).sprintf(self.total_time).value();
               var msg2 = S(gettext("%s rows affected.")).sprintf(self.rows_affected).value();
 
