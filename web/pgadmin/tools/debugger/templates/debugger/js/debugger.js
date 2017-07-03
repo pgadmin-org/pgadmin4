@@ -234,9 +234,14 @@ define([
           var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.trigger_function._id;
         }
-        else if (d._type == "trigger") {
+        else if (d._type == "trigger" && "table" in treeInfo) {
           var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
                                 "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.table._id +
+                                "/" + treeInfo.trigger._id;
+        }
+        else if (d._type == "trigger" && "view" in treeInfo) {
+          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
+                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.view._id +
                                 "/" + treeInfo.trigger._id;
         }
 
