@@ -891,7 +891,7 @@ define([
         }
         dataView.setItems(collection, self.client_primary_key);
       },
-      fetch_next_all(cb) {
+      fetch_next_all: function(cb) {
         this.fetch_next(true, cb);
       },
       fetch_next: function(fetch_all, cb) {
