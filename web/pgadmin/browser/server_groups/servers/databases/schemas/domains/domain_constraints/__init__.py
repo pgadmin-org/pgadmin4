@@ -410,7 +410,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         data = self.request
         try:
-            status, SQL = self.get_sql(gid, sid, data, scid, doid)
+            status, SQL, name = self.get_sql(gid, sid, data, scid, doid)
             if not status:
                 return SQL
 
@@ -517,7 +517,7 @@ class DomainConstraintView(PGChildNodeView):
             coid: Domain Constraint Id
         """
         data = self.request
-        status, SQL = self.get_sql(gid, sid, data, scid, doid, coid)
+        status, SQL, name = self.get_sql(gid, sid, data, scid, doid, coid)
         if not status:
             return SQL
 
@@ -534,18 +534,13 @@ class DomainConstraintView(PGChildNodeView):
                 else:
                     icon = ''
 
-                return make_json_response(
-                    success=1,
-                    info="Domain Constraint updated",
-                    data={
-                        'id': coid,
-                        'doid': doid,
-                        'scid': scid,
-                        'sid': sid,
-                        'gid': gid,
-                        'did': did,
-                        'icon': icon
-                    }
+                return jsonify(
+                    node=self.blueprint.generate_browser_node(
+                        coid,
+                        doid,
+                        name,
+                        icon=icon
+                    )
                 )
             else:
                 return make_json_response(
@@ -629,7 +624,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         data = self.request
 
-        status, SQL = self.get_sql(gid, sid, data, scid, doid, coid)
+        status, SQL, name = self.get_sql(gid, sid, data, scid, doid, coid)
         if status and SQL:
             return make_json_response(
                 data=SQL,
@@ -677,9 +672,9 @@ class DomainConstraintView(PGChildNodeView):
                 SQL = render_template("/".join([self.template_path,
                                                 'create.sql']),
                                       data=data, domain=domain, schema=schema)
-            return True, SQL.strip('\n')
+            return True, SQL.strip('\n'), data['name'] if 'name' in data else old_data['name']
         except Exception as e:
-            return False, internal_server_error(errormsg=str(e))
+            return False, internal_server_error(errormsg=str(e)), None
 
     def _get_domain(self, doid):
         """
