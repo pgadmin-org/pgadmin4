@@ -7,7 +7,7 @@ define([
       var alertMessage = '\
       <div class="media font-green-3 text-14">\
         <div class="media-body media-middle">\
-          <div class="alert-icon">\
+          <div class="alert-icon success-icon">\
             <i class="fa fa-check" aria-hidden="true"></i>\
           </div>\
             <div class="alert-text">' + message + '</div>\
@@ -21,7 +21,7 @@ define([
       var alertMessage = '\
       <div class="media font-red-3 text-14">\
         <div class="media-body media-middle">\
-          <div class="alert-icon">\
+          <div class="alert-icon error-icon">\
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
           </div>\
             <div class="alert-text">' + message + '</div>\
