@@ -96,7 +96,7 @@ class PgadminPage:
         self.find_by_xpath("//li[contains(@class, 'context-menu-item')]/span[contains(text(), 'Remove Panel')]").click()
         self.driver.switch_to.frame(self.driver.find_elements_by_tag_name("iframe")[0])
         time.sleep(.5)
-        self.click_element(self.find_by_xpath('//button[contains(@class, "ajs-button") and contains(.,"Yes")]'))
+        self.click_element(self.find_by_xpath('//button[contains(@class, "ajs-button") and contains(.,"Don\'t save")]'))
         self.driver.switch_to.default_content()
 
     def close_data_grid(self):

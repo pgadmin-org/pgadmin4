@@ -253,11 +253,11 @@ define([
                   var data_store = self.handler.data_store;
                   if(data_store && (_.size(data_store.added) ||
                       _.size(data_store.updated))) {
-                    msg = gettext("The data has been modified, but not saved. Are you sure you wish to discard the changes?");
+                    msg = gettext("The data has changed. Do you want to save changes?");
                     notify = true;
                   }
                 } else if(self.handler.is_query_tool && self.handler.is_query_changed) {
-                  msg = gettext("The query has been modified, but not saved. Are you sure you wish to discard the changes?");
+                  msg = gettext("The text has changed. Do you want to save changes?");
                   notify = true;
                 }
                 if(notify) {return self.user_confirmation(p, msg);}
@@ -407,23 +407,60 @@ define([
       user_confirmation: function(panel, msg) {
         // If there is anything to save then prompt user
         var that = this;
-        alertify.confirm(gettext("Unsaved changes"), msg,
-          function() {
-            // Do nothing as user do not want to save, just continue
-            window.onbeforeunload = null;
-            panel.off(wcDocker.EVENT.CLOSING);
-            // remove col_size object on panel close
-            if (!_.isUndefined(that.handler.col_size)) {
-              delete that.handler.col_size;
+
+        alertify.confirmSave || alertify.dialog('confirmSave', function() {
+          return {
+            main: function(title, message) {
+                var content = '<div class="ajs-content">'
+                + gettext('The text has changed. Do you want to save changes?')
+                + '</div>';
+              this.setHeader(title);
+              this.setContent(message);
+            },
+            setup: function () {
+              return {
+                buttons: [
+                    {
+                      text: gettext('Save'),
+                      className: 'btn btn-primary',
+                    },{
+                      text: gettext('Don\'t save'),
+                      className: 'btn btn-danger',
+                    },{
+                      text: gettext('Cancel'),
+                      key: 27, // ESC
+                      invokeOnClose: true,
+                      className: 'btn btn-warning',
+                    }
+                ],
+                focus: {
+                      element: 0,
+                      select: false
+                },
+                options: {
+                    maximizable: false,
+                    resizable: false
+                }
+              };
+            },
+            callback: function (closeEvent) {
+              switch (closeEvent.index) {
+                case 0: // Save
+                  that.handler.close_on_save = true;
+                  that.handler._save(that, that.handler);
+                  break;
+                case 1: // Don't Save
+                  that.handler.close_on_save = false;
+                  that.handler.close();
+                  break;
+                case 2: //Cancel
+                  //Do nothing.
+                  break;
+              }
             }
-            window.top.pgAdmin.Browser.docker.removePanel(panel);
-          },
-          function() {
-            // Stop, User wants to save
-            // false value will prevent from panel to close
-            return true;
-          }
-        ).set('labels', {ok:'Yes', cancel:'No'});
+          };
+        });
+        alertify.confirmSave(gettext("Save changes?"), msg);
         return false;
       },
 
@@ -1015,6 +1052,7 @@ define([
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
 
+        self.handler.close_on_save = false;
         // Trigger the save signal to the SqlEditorController class
         self.handler.trigger(
             'pgadmin-sqleditor:button:save',
@@ -1030,6 +1068,7 @@ define([
         this._stopEventPropogation(ev);
         this._closeDropDown(ev);
 
+        self.handler.close_on_save = false;
         // Trigger the save signal to the SqlEditorController class
         self.handler.trigger(
             'pgadmin-sqleditor:button:save',
@@ -1497,6 +1536,7 @@ define([
           self.is_new_browser_tab = is_new_browser_tab;
           self.has_more_rows = false;
           self.fetching_rows = false;
+          self.close_on_save = false;
 
           // We do not allow to call the start multiple times.
           if (self.gridView)
@@ -2363,6 +2403,11 @@ define([
                 self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
                 grid.invalidate();
+                var alertifyWrapper = new AlertifyWrapper();
+                alertifyWrapper.success(gettext("Data saved successfully."));
+                if (self.close_on_save) {
+                  self.close();
+                }
               },
               error: function(e) {
                 if (e.readyState == 0) {
@@ -2557,6 +2602,9 @@ define([
                 self.is_query_changed = false;
               }
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
+              if (self.close_on_save) {
+                self.close()
+              }
             },
             error: function(e) {
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
@@ -3661,6 +3709,20 @@ define([
               alertify.alert('Get Preferences error',
                 gettext("Error occurred while getting query tool options ")
               );
+            }
+          });
+        },
+        close: function() {
+          var self= this;
+          _.each(window.top.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
+            if(panel.isVisible()) {
+              window.onbeforeunload = null;
+              panel.off(wcDocker.EVENT.CLOSING);
+              // remove col_size object on panel close
+              if (!_.isUndefined(self.col_size)) {
+                delete self.col_size;
+              }
+              window.top.pgAdmin.Browser.docker.removePanel(panel);
             }
           });
         }

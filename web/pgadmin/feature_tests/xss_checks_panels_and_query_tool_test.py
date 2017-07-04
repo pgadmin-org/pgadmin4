@@ -61,7 +61,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         # Query tool
         self._check_xss_in_query_tool()
-        self._close_query_tool()
+        self.page.close_query_tool()
 
     def after(self):
         time.sleep(1)
@@ -123,7 +123,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "Properties tab (Backform Control)"
         )
 
-
     def _check_xss_in_sql_tab(self):
         self.page.click_tab("SQL")
         # Fetch the inner html & check for escaped characters
@@ -172,19 +171,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             '&lt;img src="x" onerror="console.log(1)"&gt;',
             "Query tool (SlickGrid)"
         )
-
-    def _close_query_tool(self):
-        self.page.driver.switch_to_default_content()
-        self.page.click_element(
-            self.page.find_by_xpath("//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]")
-        )
-        time.sleep(0.5)
-        self.page.driver.switch_to.frame(self.page.driver.find_element_by_tag_name('iframe'))
-        time.sleep(1)
-        self.page.click_element(self.page.find_by_xpath("//button[contains(.,'Yes')]"))
-        time.sleep(0.5)
-        self.page.driver.switch_to_default_content()
-
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
