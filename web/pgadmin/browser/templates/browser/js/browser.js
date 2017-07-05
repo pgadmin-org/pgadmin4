@@ -1833,7 +1833,10 @@ define(
       "Ctrl-Alt-Left": "goGroupLeft",
       "Cmd-Alt-Left": "goGroupLeft",
       "Ctrl-Alt-Right": "goGroupRight",
-      "Cmd-Alt-Right": "goGroupRight"
+      "Cmd-Alt-Right": "goGroupRight",
+
+      // Allow user to delete Tab(s)
+      "Shift-Tab": "indentLess"
     },
     editor_options: {
       tabSize: '{{ editor_tab_size }}',
