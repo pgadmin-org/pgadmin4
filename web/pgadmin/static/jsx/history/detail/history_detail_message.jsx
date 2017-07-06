@@ -10,44 +10,17 @@
 import React from 'react';
 
 import Shapes from '../../react_shapes';
-import NonSelectableElementStyle from '../../styles/non_selectable';
-import MessageHeaderStyle from '../../styles/header_label';
-
-const containerStyle = {
-  flex: '2 2 0%',
-  flexDirection: 'column',
-  display: 'flex',
-};
-
-const messageContainerStyle = {
-  flex: '0 1 auto',
-  overflow: 'auto',
-  position: 'relative',
-  height: '100%',
-};
-
-const errorMessageStyle = {
-  border: '0',
-  paddingLeft: '0',
-  backgroundColor: '#ffffff',
-  fontSize: '13px',
-  position: 'absolute',
-};
-
-const messageLabelStyle = _.extend({flex: '0 0 auto'},
-  MessageHeaderStyle,
-  NonSelectableElementStyle);
 
 export default class HistoryDetailMessage extends React.Component {
 
   render() {
     return (
-      <div style={containerStyle}>
-        <div style={messageLabelStyle}>
+      <div className='message'>
+        <div className='message-header'>
           Messages
         </div>
-        <div style={messageContainerStyle}>
-          <pre style={errorMessageStyle}>
+        <div className='content'>
+          <pre className='content-value'>
               {this.props.historyEntry.message}
           </pre>
         </div>

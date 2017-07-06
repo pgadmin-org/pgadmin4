@@ -10,18 +10,6 @@
 import React from 'react';
 import moment from 'moment';
 import Shapes from '../../react_shapes';
-import HeaderDescriptionStyle from '../../styles/header_label';
-
-const queryMetaDataStyle = {
-  flex: 1,
-};
-const headerStyle = {
-  display: 'flex',
-};
-const headerValueStyle = {
-  display: 'block',
-  fontSize: '14px',
-};
 
 export default class HistoryDetailMetadata extends React.Component {
 
@@ -30,18 +18,18 @@ export default class HistoryDetailMetadata extends React.Component {
   }
 
   queryMetaData(data, description) {
-    return <div style={queryMetaDataStyle}>
-      <span style={headerValueStyle}>
+    return <div className='item'>
+      <span className='value'>
         {data}
       </span>
-      <span style={HeaderDescriptionStyle}>
+      <span className='description'>
         {description}
       </span>
     </div>;
   }
 
   render() {
-    return <div style={headerStyle}>
+    return <div className='metadata'>
       {this.queryMetaData(this.formatDate(this.props.historyEntry.start_time), 'Date')}
       {this.queryMetaData(this.props.historyEntry.row_affected.toLocaleString(), 'Rows Affected')}
       {this.queryMetaData(this.props.historyEntry.total_time, 'Duration')}

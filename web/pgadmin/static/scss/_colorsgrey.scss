@@ -1,0 +1,126 @@
+/*doc
+---
+title: Grays
+name: Grays
+category: colors
+---
+For text, avoid using black or #000 to lower the contrast between the background and text.
+
+```html_example
+<div class="row">
+  <div class="row">
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-1">
+        #f9f9f9
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-2">
+        #e8e8e8
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-3">
+        #cccccc
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-4">
+        #888888
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-5 font-white">
+        #555555
+      </div>
+    </div>
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-gray-6 font-white">
+        #333333
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+*/
+
+.color-chip {
+  align-items: center;
+  border-radius: 3px;
+  box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, .15);
+  color: rgba(0, 0, 0, .65);
+  display: flex;
+  font-size: 1.25em;
+  height: 100px;
+  justify-content: center;
+  margin: 0 0 1em;
+  width: 100%;
+}
+
+$color-gray-1: #f9f9f9;
+$color-gray-2: #e8e8e8;
+$color-gray-3: #cccccc;
+$color-gray-4: #888888;
+$color-gray-5: #555555;
+$color-gray-6: #333333;
+
+.bg-gray-1 {
+  background-color: $color-gray-1;
+}
+
+.bg-gray-2 {
+  background-color: $color-gray-2;
+}
+
+.bg-gray-3 {
+  background-color: $color-gray-3;
+}
+
+.bg-gray-4 {
+  background-color: $color-gray-4;
+}
+
+.bg-gray-5 {
+  background-color: $color-gray-5;
+}
+
+.bg-gray-6 {
+  background-color: $color-gray-6;
+}
+
+.border-gray-1 {
+  border-color: $color-gray-1;
+}
+
+.border-gray-2 {
+  border-color: $color-gray-2;
+}
+
+.border-gray-3 {
+  border-color: $color-gray-3;
+}
+
+.border-gray-4 {
+  border-color: $color-gray-4;
+}
+
+.border-gray-5 {
+  border-color: $color-gray-5;
+}
+
+.border-gray-6 {
+  border-color: $color-gray-6;
+}
+
+.font-gray-4 {
+  color: $color-gray-4;
+}
+
+.font-gray-6 {
+  color: $color-gray-6;
+}
+
+.font-white {
+  color: #FFFFFF;
+}

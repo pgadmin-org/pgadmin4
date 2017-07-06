@@ -118,6 +118,7 @@
 .sql-editor-history-container {
   height: 100%;
   overflow: auto;
+  border-top: 1px solid #cccccc;
 }
 
 .sql-status-cell {

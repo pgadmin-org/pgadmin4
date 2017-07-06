@@ -9,24 +9,40 @@
 
 import React from 'react';
 import Shapes from '../react_shapes';
-import QueryHistoryErrorEntry from './entry/query_history_error_entry';
-import QueryHistorySelectedErrorEntry from './entry/query_history_selected_error_entry';
-import QueryHistorySelectedEntry from './entry/query_history_selected_entry';
-import QueryHistoryVanillaEntry from './entry/query_history_vanilla_entry';
+import moment from 'moment';
 
 export default class QueryHistoryEntry extends React.Component {
+  formatDate(date) {
+    return (moment(date).format('MMM D YYYY [–] HH:mm:ss'));
+  }
+
+  renderWithClasses(outerDivStyle) {
+    return (
+      <div className={'entry ' + outerDivStyle}>
+        <div className='query'>
+          {this.props.historyEntry.query}
+        </div>
+        <div className='other-info'>
+          <div className='timestamp'>
+            {this.formatDate(this.props.historyEntry.start_time)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     if (this.hasError()) {
       if (this.props.isSelected) {
-        return <QueryHistorySelectedErrorEntry {...this.props}/>;
+        return this.renderWithClasses('error selected');
       } else {
-        return <QueryHistoryErrorEntry {...this.props}/>;
+        return this.renderWithClasses('error');
       }
     } else {
       if (this.props.isSelected) {
-        return <QueryHistorySelectedEntry {...this.props}/>;
+        return this.renderWithClasses('selected');
       } else {
-        return <QueryHistoryVanillaEntry {...this.props}/>;
+        return this.renderWithClasses('');
       }
     }
   }

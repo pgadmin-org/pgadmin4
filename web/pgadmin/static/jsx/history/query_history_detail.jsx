@@ -13,54 +13,22 @@ import HistoryDetailQuery from './detail/history_detail_query';
 import HistoryDetailMessage from './detail/history_detail_message';
 import Shapes from '../react_shapes';
 
-const outerStyle = {
-  width: '100%',
-  paddingTop: '10px',
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const detailVerticalTop = {
-  flex: 1,
-  padding: '0 10px',
-};
-
-const detailVerticalMiddle = {
-  flex: 5,
-  marginLeft: '10px',
-  marginRight: '10px',
-  height: 0,
-  position: 'relative',
-};
-
-const hrStyle = {
-  borderColor: '#cccccc',
-  marginTop: '11px',
-  marginBottom: '8px',
-};
-
-const detailVerticalBottom = {
-  flex: 2,
-  display: 'flex',
-  paddingLeft: '10px',
-};
-
 export default class QueryHistoryDetail extends React.Component {
 
   render() {
     if (!_.isUndefined(this.props.historyEntry)) {
       return (
-        <div id='query_detail' style={outerStyle}>
-          <div style={detailVerticalTop}>
+        <div id='query_detail' className='query-detail'>
+          <div className='metadata-block'>
             <HistoryDetailMetadata {...this.props} />
           </div>
-          <div style={detailVerticalMiddle}>
+          <div className='query-statement-block'>
             <HistoryDetailQuery {...this.props}/>
           </div>
           <div>
-            <hr style={hrStyle}/>
+            <hr className='block-divider'/>
           </div>
-          <div style={detailVerticalBottom}>
+          <div className='message-block'>
             <HistoryDetailMessage {...this.props}/>
           </div>
         </div>);

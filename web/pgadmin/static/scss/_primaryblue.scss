@@ -1,0 +1,49 @@
+/*doc
+---
+title: Primary blue
+name: colors-primaryblue
+category: colors
+---
+This color should be used to call attention to the main part of the app. Use sparingly.
+
+```html_example
+<div class="row">
+  <div class="row">
+    <div class="col-xs-6 col-md-3">
+      <div class="color-chip bg-primary-blue font-white">
+        #2c76b4
+      </div>
+    </div>
+  </div>
+</div>
+
+```
+
+*/
+
+.color-chip {
+  align-items: center;
+  border-radius: 3px;
+  box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, .15);
+  color: rgba(0, 0, 0, .65);
+  display: flex;
+  font-size: 1.25em;
+  height: 100px;
+  justify-content: center;
+  margin: 0 0 1em;
+  width: 100%;
+}
+
+$primary-blue: #2c76b4;
+
+.bg-primary-blue {
+  background-color: $primary-blue;
+}
+
+.border-primary-blue {
+  border-color: $primary-blue;
+}
+
+.font-primary-blue {
+  color: $primary-blue;
+}

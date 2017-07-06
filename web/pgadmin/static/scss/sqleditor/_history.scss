@@ -1,0 +1,139 @@
+.query-history {
+  .list-item {
+    border-bottom: 1px solid $color-gray-3;
+  }
+
+  .entry {
+    @extend .text-14;
+    @extend .bg-white-1;
+    padding: -2px 18px -2px 8px;
+    font-family: monospace;
+    border: 2px solid transparent;
+    margin-left: 1px;
+
+    .other-info{
+      @extend .text-13;
+      @extend .font-gray-4;
+      font-family: monospace;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .timestamp {
+        align-self: flex-start;
+      }
+    }
+
+    .query {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      user-select: initial;
+    }
+  }
+
+  .entry.error {
+    @extend .bg-red-1;
+  }
+
+  .entry.selected.error {
+    background-color: #d7d0d9;
+  }
+
+  .entry.selected {
+    @extend .font-primary-blue;
+    @extend .border-primary-blue;
+    @extend .bg-blue-1;
+    font-weight: bold;
+    border: 2px solid;
+
+    .other-info{
+      @extend .font-primary-blue;
+      font-weight: bold;
+    }
+  }
+}
+
+.header-label {
+  @extend .text-12;
+  @extend .font-gray-4;
+  display: block;
+}
+
+.query-detail {
+  width: 100%;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .metadata-block {
+    flex: 1;
+    padding: 0 10px;
+
+    .metadata {
+      display: flex;
+
+      .item {
+        flex: 1;
+
+        .value {
+          @extend .text-14;
+          display: block;
+        }
+
+        .description {
+          @extend .header-label;
+        }
+      }
+
+    }
+  }
+
+  .query-statement-block {
+    flex: 5;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 0;
+    position: relative;
+  }
+
+  .block-divider {
+    @extend .border-gray-3;
+    margin-top: 11px;
+    margin-bottom: 8px;
+  }
+
+  .message-block {
+    flex: 2;
+    display: flex;
+    padding-left: 10px;
+
+    .message {
+      flex: 2 2 0%;
+      flex-direction: column;
+      display: flex;
+
+      .message-header {
+        @extend .header-label;
+        @extend .not-selectable;
+        flex: 0 0 auto;
+      }
+
+      .content {
+        flex: 0 1 auto;
+        overflow: auto;
+        position: relative;
+        height: 100%;
+
+        .content-value {
+          @extend .bg-white-1;
+          @extend .text-13;
+          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          border: 0;
+          padding-left: 0;
+          position: absolute;
+        }
+      }
+    }
+  }
+}

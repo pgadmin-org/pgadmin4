@@ -19,9 +19,6 @@ const queryEntryListDivStyle = {
 const queryDetailDivStyle = {
   display: 'flex',
 };
-const liStyle = {
-  borderBottom: '1px solid #cccccc',
-};
 
 export default class QueryHistory extends React.Component {
 
@@ -75,11 +72,11 @@ export default class QueryHistory extends React.Component {
     return (
       <SplitPane defaultSize="50%" split="vertical" pane1Style={queryEntryListDivStyle}
                  pane2Style={queryDetailDivStyle}>
-        <div id='query_list'>
+        <div id='query_list' className="query-history">
           <ul>
             {this.retrieveOrderedHistory()
               .map((entry, index) =>
-                <li key={index} style={liStyle} onClick={this.onClickHandler.bind(this, index)}>
+                <li key={index} className='list-item' onClick={this.onClickHandler.bind(this, index)}>
                   <QueryHistoryEntry historyEntry={entry} isSelected={index == this.state.selectedEntry}/>
                 </li>)
               .value()

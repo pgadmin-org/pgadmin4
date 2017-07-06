@@ -94,12 +94,13 @@ describe('QueryHistory', () => {
 
         it('renders the most recent query as selected', () => {
           expect(foundChildren.at(0).nodes.length).toBe(1);
-          expect(foundChildren.at(0).find('QueryHistorySelectedEntry').length).toBe(1);
+          expect(foundChildren.at(0).hasClass('selected')).toBeTruthy();
         });
 
         it('renders the older query as not selected', () => {
           expect(foundChildren.at(1).nodes.length).toBe(1);
-          expect(foundChildren.at(1).find('QueryHistoryErrorEntry').length).toBe(1);
+          expect(foundChildren.at(1).hasClass('selected')).toBeFalsy();
+          expect(foundChildren.at(1).hasClass('error')).toBeTruthy();
         });
       });
 
@@ -143,12 +144,14 @@ describe('QueryHistory', () => {
 
         it('renders the most recent query as selected in the left pane', () => {
           expect(foundChildren.at(0).nodes.length).toBe(1);
-          expect(foundChildren.at(0).find('QueryHistoryVanillaEntry').length).toBe(1);
+          expect(foundChildren.at(0).hasClass('selected')).toBeFalsy();
+          expect(foundChildren.at(0).hasClass('error')).toBeFalsy();
         });
 
         it('renders the older query as selected in the left pane', () => {
           expect(foundChildren.at(1).nodes.length).toBe(1);
-          expect(foundChildren.at(1).find('QueryHistorySelectedErrorEntry').length).toBe(1);
+          expect(foundChildren.at(1).hasClass('selected')).toBeTruthy();
+          expect(foundChildren.at(1).hasClass('error')).toBeTruthy();
         });
       });
 
