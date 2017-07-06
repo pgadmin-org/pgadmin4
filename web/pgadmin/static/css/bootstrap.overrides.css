@@ -566,6 +566,7 @@ fieldset[disabled] .form-control {
 .edit-cell, .delete-cell {
     text-align:center !important;
     width:25px;
+    height:29px !important;
 }
 
 .backgrid.presentation {
