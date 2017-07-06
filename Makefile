@@ -25,17 +25,23 @@ appbundle-webkit: docs
 install-node:
 	cd web && yarn install
 
-check: install-node
-	cd web && yarn run bundle && yarn run linter && yarn run karma start -- --single-run && python regression/runtests.py
+bundle:
+	cd web && yarn run bundle
 
-check-python: install-node
-	cd web && yarn run bundle && python regression/runtests.py --exclude feature_tests
+linter:
+	cd web && yarn run linter
 
-check-feature: install-node
-	cd web && yarn run bundle && python regression/runtests.py --pkg feature_tests
+check: install-node bundle linter
+	cd web && yarn run karma start -- --single-run && python regression/runtests.py
 
-check-js: install-node
-	cd web && yarn run linter && yarn run karma start -- --single-run
+check-python: install-node bundle
+	cd web && python regression/runtests.py --exclude feature_tests
+
+check-feature: install-node bundle
+	cd web && python regression/runtests.py --pkg feature_tests
+
+check-js: install-node linter
+	cd web && yarn run karma start -- --single-run
 
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-dist clean-docs clean-pip clean-src
