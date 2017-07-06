@@ -692,7 +692,7 @@ define('pgadmin.node.server', [
             return m.get('connect_now') && m.isNew();
           },
           disabled: function(m) {
-            return current_user.allow_save_password;
+            return !current_user.allow_save_password;
           }
         },{
           id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
