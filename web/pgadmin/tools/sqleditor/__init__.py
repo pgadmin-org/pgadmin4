@@ -116,7 +116,7 @@ class SqlEditorModule(PgAdminModule):
 
         self.open_in_new_tab = self.preference.register(
             'display', 'new_browser_tab',
-            gettext("Open in new browser tab"), 'boolean', True,
+            gettext("Open in new browser tab"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Query Tool '
                              'will be opened in a new browser tab.')
