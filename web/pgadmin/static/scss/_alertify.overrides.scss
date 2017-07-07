@@ -124,18 +124,22 @@
 }
 
 /* Restyling alertify query results messages */
+.alertify-notifier.ajs-right {
+  min-width: 250px;
+  width: auto;
+  width: initial;
+  max-width: 800px;
+}
+
 .alertify-notifier.ajs-right .ajs-message.ajs-visible {
-  right: 0;
   padding: 0;
+  right: 0;
+  width: auto;
+  width: initial;
 }
 
 .alertify-notifier .ajs-message {
-  width: initial;
   border-radius: 4px;
-}
-
-.alertify-notifier {
-  width: initial;
 }
 
 button.pg-alertify-button {
