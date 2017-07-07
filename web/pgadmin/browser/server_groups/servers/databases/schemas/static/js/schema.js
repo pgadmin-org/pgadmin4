@@ -145,6 +145,16 @@ define('pgadmin.node.schema', [
     group: gettext('Table'), mode: ['edit', 'create'],
     type: 'switch',
     disabled: function(m) {
+      // If table is partitioned table then disabled it.
+      if (m.top && m.top.get('is_partitioned')) {
+        // We also need to unset rest of all
+        setTimeout(function() {
+          m.set('autovacuum_custom', false);
+        }, 10);
+
+        return true;
+      }
+
       if(!m.top.inSchema.apply(this, [m])) {
         return false;
       }
@@ -459,6 +469,32 @@ define('pgadmin.node.schema', [
         return true;
       }
     });
+
+    pgBrowser.tableChildTreeNodeHierarchy = function(i) {
+      var idx = 0,
+          res = {},
+          t = pgBrowser.tree;
+
+      do {
+        d = t.itemData(i);
+        if (
+          d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
+        ) {
+          if (d._type === 'partition' || d._type === 'table') {
+            if (!('table' in res)) {
+              res['table'] = _.extend({}, d, {'priority': idx});
+              idx -= 1;
+            }
+          } else {
+            res[d._type] = _.extend({}, d, {'priority': idx});
+            idx -= 1;
+          }
+        }
+        i = t.hasParent(i) ? t.parent(i) : null;
+      } while (i);
+
+      return res;
+    };
   }
 
   // Switch Cell with Deps (specifically for table children)

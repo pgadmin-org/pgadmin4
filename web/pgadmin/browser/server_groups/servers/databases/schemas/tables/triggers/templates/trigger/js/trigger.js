@@ -30,13 +30,15 @@ define('pgadmin.node.trigger', [
         node: 'trigger',
         label: gettext('Triggers'),
         type: 'coll-trigger',
+        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         columns: ['name', 'description']
       });
   };
 
   if (!pgBrowser.Nodes['trigger']) {
-    pgAdmin.Browser.Nodes['trigger'] = pgAdmin.Browser.Node.extend({
-      parent_type: ['table', 'view'],
+    pgAdmin.Browser.Nodes['trigger'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
+      parent_type: ['table', 'view', 'partition'],
       collection_type: ['coll-table', 'coll-view'],
       type: 'trigger',
       label: gettext('Trigger'),
@@ -67,6 +69,12 @@ define('pgadmin.node.trigger', [
           enable: 'canCreate'
         },{
           name: 'create_trigger_onTable', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 4, label: gettext('Trigger...'),
+          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+          enable: 'canCreate'
+        },{
+          name: 'create_trigger_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger...'),
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
@@ -206,6 +214,17 @@ define('pgadmin.node.trigger', [
           mode: ['create','edit', 'properties'],
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
+            // Disabled if table is a partitioned table.
+            if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
+                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
+            {
+              setTimeout(function(){
+                  m.set('is_row_trigger', false);
+              },10);
+
+              return true;
+            }
+
             // If constraint trigger is set to True then row trigger will
             // automatically set to True and becomes disable
             var is_constraint_trigger = m.get('is_constraint_trigger');
@@ -232,7 +251,19 @@ define('pgadmin.node.trigger', [
           id: 'is_constraint_trigger', label: gettext('Constraint trigger?'),
           type: 'switch', disabled: 'inSchemaWithModelCheck',
           mode: ['create','edit', 'properties'],
-          group: gettext('Definition')
+          group: gettext('Definition'),
+          disabled: function(m) {
+            // Disabled if table is a partitioned table.
+            if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
+                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
+            {
+              setTimeout(function(){
+                  m.set('is_constraint_trigger', false);
+              },10);
+
+              return true;
+            }
+          }
         },{
           id: 'tgdeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'),

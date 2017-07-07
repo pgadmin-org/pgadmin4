@@ -29,6 +29,7 @@ class PgAdminModule(Blueprint):
         kwargs.setdefault('template_folder', 'templates')
         kwargs.setdefault('static_folder', 'static')
         self.submodules = []
+        self.parentmodules = []
 
         super(PgAdminModule, self).__init__(name, import_name, **kwargs)
 
@@ -59,6 +60,8 @@ class PgAdminModule(Blueprint):
         super(PgAdminModule, self).register(app, options, first_registration)
 
         for module in self.submodules:
+            if first_registration:
+                module.parentmodules.append(self)
             app.register_blueprint(module)
 
     def get_own_stylesheets(self):

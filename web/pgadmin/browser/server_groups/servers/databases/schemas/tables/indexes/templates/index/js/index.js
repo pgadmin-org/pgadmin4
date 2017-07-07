@@ -10,6 +10,7 @@ define('pgadmin.node.index', [
         node: 'index',
         label: gettext('Indexes'),
         type: 'coll-index',
+        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         sqlAlterHelp: 'sql-alterindex.html',
         sqlCreateHelp: 'sql-createindex.html',
         dialogHelp: url_for('help.static', {'filename': 'index_dialog.html'}),
@@ -210,8 +211,9 @@ define('pgadmin.node.index', [
     });
 
   if (!pgBrowser.Nodes['index']) {
-    pgAdmin.Browser.Nodes['index'] = pgAdmin.Browser.Node.extend({
-      parent_type: ['table', 'view', 'mview'],
+    pgAdmin.Browser.Nodes['index'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
+      parent_type: ['table', 'view', 'mview', 'partition'],
       collection_type: ['coll-table', 'coll-view'],
       sqlAlterHelp: 'sql-alterindex.html',
       sqlCreateHelp: 'sql-createindex.html',
@@ -242,6 +244,12 @@ define('pgadmin.node.index', [
           enable: 'canCreate'
         },{
           name: 'create_index_onTable', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 4, label: gettext('Index...'),
+          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
+          enable: 'canCreate'
+        },{
+          name: 'create_index_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
@@ -472,12 +480,23 @@ define('pgadmin.node.index', [
           if (data && data.check == false)
             return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+          var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+            immediate_parent_table_found = false,
+            is_immediate_parent_table_partitioned = false;
           // To iterate over tree to check parent node
           while (i) {
-            // If it is schema then allow user to c reate table
+            // Do not allow creating index on partitioned tables.
+            if (!immediate_parent_table_found &&
+                _.indexOf(['table', 'partition'], d._type) > -1) {
+              immediate_parent_table_found = true;
+              if ('is_partitioned' in d && d.is_partitioned) {
+                is_immediate_parent_table_partitioned = true;
+              }
+            }
+
+            // If it is schema then allow user to create index
             if (_.indexOf(['schema'], d._type) > -1)
-              return true;
+              return !is_immediate_parent_table_partitioned;
             parents.push(d._type);
             i = t.hasParent(i) ? t.parent(i) : null;
             d = i ? t.itemData(i) : null;
@@ -486,7 +505,7 @@ define('pgadmin.node.index', [
           if (_.indexOf(parents, 'catalog') > -1) {
             return false;
           } else {
-            return true;
+            return !is_immediate_parent_table_partitioned;
           }
       }
   });

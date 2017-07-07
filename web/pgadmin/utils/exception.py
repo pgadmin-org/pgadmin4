@@ -40,3 +40,11 @@ class ConnectionLost(HTTPException):
                 'conn_id': self.conn_id
             }
         )
+
+    def __str__(self):
+        return "Connection (id #{2}) lost for the server (#{0}) on " \
+               "database ({1})".format(self.sid, self.db, self.conn_id)
+
+    def __repr__(self):
+        return "Connection (id #{2}) lost for the server (#{0}) on " \
+               "database ({1})".format(self.sid, self.db, self.conn_id)

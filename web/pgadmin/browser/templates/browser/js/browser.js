@@ -20,7 +20,7 @@ define(
   $ = $ || window.jQuery || window.$;
   Bootstrap = Bootstrap || window.Bootstrap;
 
-  pgAdmin.Browser = pgAdmin.Browser || {};
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   var panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
@@ -1753,6 +1753,201 @@ define(
         });
       } else {
         fetchNodeInfo(_i, d, n);
+      }
+    },
+
+    removeChildTreeNodesById: function(_parentNode, _collType, _childIds) {
+      var tree = pgBrowser.tree;
+      if(_parentNode && _collType) {
+        var children = tree.children(_parentNode),
+            idx = 0, size = children.length,
+            childNode, childNodeData;
+
+        _parentNode = null;
+
+        for (; idx < size; idx++) {
+          childNode = children.eq(idx);
+          childNodeData = tree.itemData(childNode);
+
+          if (childNodeData._type == _collType) {
+            _parentNode = childNode;
+            break;
+          }
+        }
+      }
+
+      if (_parentNode) {
+        var children = tree.children(_parentNode),
+            idx = 0, size = children.length,
+            childNode, childNodeData,
+            prevChildNode;
+
+        for (; idx < size; idx++) {
+          childNode = children.eq(idx);
+          childNodeData = tree.itemData(childNode);
+
+          if (_childIds.indexOf(childNodeData._id) != -1) {
+            pgBrowser.removeTreeNode(childNode, false, _parentNode);
+          }
+        }
+        return true;
+      }
+      return false;
+    },
+
+    removeTreeNode: function(_node, _selectNext, _parentNode) {
+      var tree = pgBrowser.tree,
+          nodeToSelect = null;
+
+      if (!_node)
+        return false;
+
+      if (_selectNext) {
+        nodeToSelect = tree.next(_node);
+        if (!nodeToSelect || !nodeToSelect.length) {
+          nodeToSelect = tree.prev(_node);
+
+          if (!nodeToSelect || !nodeToSelect.length) {
+            if (!_parentNode) {
+              nodeToSelect = tree.parent(_node);
+            } else {
+              nodeToSelect = _parentNode;
+            }
+          }
+        }
+        if (nodeToSelect)
+          tree.select(nodeToSelect);
+      }
+      tree.remove(_node);
+      return true;
+    },
+
+    findSiblingTreeNode: function(_node, _id) {
+      var tree = pgBrowser.tree,
+          parentNode = tree.parent(_node),
+          siblings = tree.children(parentNode),
+          idx = 0, nodeData, node;
+
+      for(; idx < siblings.length; idx++) {
+        node = siblings.eq(idx);
+        nodeData = tree.itemData(node);
+
+        if (nodeData && nodeData._id == _id)
+          return node;
+      }
+      return null;
+    },
+
+    findParentTreeNodeByType: function(_node, _parentType) {
+      var tree = pgBrowser.tree,
+          nodeData,
+          node = _node;
+
+      do {
+        nodeData = tree.itemData(node);
+        if (nodeData && nodeData._type == _parentType)
+          return node;
+        node = tree.hasParent(node) ? tree.parent(node) : null;
+      } while (node);
+
+      return null;
+    },
+
+    findChildCollectionTreeNode: function(_node, _collType) {
+      var tree = pgBrowser.tree,
+          nodeData, idx = 0,
+          node = _node,
+          children = _node && tree.children(_node);
+
+      if (!children || !children.length)
+        return null;
+
+      for(; idx < children.length; idx++) {
+        node = children.eq(idx);
+        nodeData = tree.itemData(node);
+
+        if (nodeData && nodeData._type == _collType)
+          return node;
+      }
+      return null;
+    },
+
+    addChildTreeNodes: function(_treeHierarchy, _node, _type, _arrayIds, _callback) {
+      var module = _type in pgBrowser.Nodes && pgBrowser.Nodes[_type],
+          childTreeInfo = _arrayIds.length && _.extend(
+            {}, _.mapObject(
+              _treeHierarchy, function(_val, _key) {
+                _val.priority -= 1; return _val;
+              })
+          ),
+          arrayChildNodeData = [],
+          fetchNodeInfo = function(_callback) {
+            if (!_arrayIds.length) {
+              if (_callback) {
+                _callback();
+              }
+              return;
+            }
+
+            var childDummyInfo = {
+                  '_id': _arrayIds.pop(), '_type': _type, 'priority': 0
+                },
+                childNodeUrl;
+            childTreeInfo[_type] = childDummyInfo;
+
+            childNodeUrl = module.generate_url(
+              null, 'nodes', childDummyInfo, true, childTreeInfo
+            );
+            console.debug("Fetching node information using: ", childNodeUrl);
+
+            $.ajax({
+              url: childNodeUrl,
+              dataType: "json",
+              success: function(res) {
+                if (res.success) {
+                  arrayChildNodeData.push(res.data);
+                }
+                fetchNodeInfo(_callback);
+              },
+              error: function(xhr, status, error) {
+                try {
+                  var err = $.parseJSON(xhr.responseText);
+                  if (err.success == 0) {
+                    var alertifyWrapper = new AlertifyWrapper();
+                    alertifyWrapper.error(err.errormsg);
+                  }
+                } catch (e) {}
+                fetchNodeInfo(_callback);
+              }
+            });
+          };
+
+
+      if (!module) {
+        console.warning(
+          "Developer: Couldn't find the module for the given child: ",
+          _.clone(arguments)
+        );
+        return;
+      }
+
+      if (pgBrowser.tree.wasLoad(_node) || pgBrowser.tree.isLeaf(_node)) {
+        fetchNodeInfo(function() {
+          console.log('Append this nodes:', arrayChildNodeData);
+          _.each(arrayChildNodeData, function(_nodData) {
+            pgBrowser.Events.trigger(
+              'pgadmin:browser:tree:add', _nodData, _treeHierarchy
+            );
+          });
+
+          if (_callback) {
+            _callback();
+          }
+        });
+      } else {
+        if (_callback) {
+          _callback();
+        }
       }
     },
 

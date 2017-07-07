@@ -652,18 +652,7 @@ define([
                 if (res.success == 0) {
                   pgBrowser.report_error(res.errormsg, res.info);
                 } else {
-                  var n = t.next(i);
-                  if (!n || !n.length) {
-                    n = t.prev(i);
-                    if (!n || !n.length) {
-                      n = t.parent(i);
-                      t.setInode(n, true);
-                    }
-                  }
-                  t.remove(i);
-                  if (n.length) {
-                    t.select(n);
-                  }
+                  pgBrowser.removeTreeNode(i, true);
                 }
                 return true;
               },
@@ -1320,9 +1309,14 @@ define([
           pgBrowser.Events.trigger(
             'pgadmin:browser:tree:update',
             _old, _new, info, {
-              success: function() {
+              success: function(_item, _newNodeData, _oldNodeData) {
                 pgBrowser.Events.trigger(
-                  'pgadmin:browser:node:updated', _new
+                  'pgadmin:browser:node:updated', _item, _newNodeData,
+                  _oldNodeData
+                );
+                pgBrowser.Events.trigger(
+                  'pgadmin:browser:node:' + _newNodeData._type + ':updated',
+                  _item, _newNodeData, _oldNodeData
                 );
               }
             }

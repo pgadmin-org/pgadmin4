@@ -6,6 +6,7 @@ define('pgadmin.node.{{node_type}}', [
   // Extend the browser's node class for index constraint node
   if (!pgBrowser.Nodes['{{node_type}}']) {
     pgAdmin.Browser.Nodes['{{node_type}}'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: '{{node_type}}',
       label: '{{ node_label }}',
       collection_type: 'coll-constraints',
@@ -20,7 +21,7 @@ define('pgadmin.node.{{node_type}}', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: ['Index size'],
-      parent_type: 'table',
+      parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
       Init: function() {
@@ -45,12 +46,28 @@ define('pgadmin.node.{{node_type}}', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+          immediate_parent_table_found = false,
+          is_immediate_parent_table_partitioned = false;
+
         // To iterate over tree to check parent node
         while (i) {
-          // If it is schema then allow user to c reate table
+          // If table is partitioned table then return false
+          if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
+            immediate_parent_table_found = true;
+            if ('is_partitioned' in d && d.is_partitioned) {
+                is_immediate_parent_table_partitioned = true;
+            }
+          }
+
+          // If it is schema then allow user to create table
           if (_.indexOf(['schema'], d._type) > -1) {
             {% if node_type == 'primary_key' %}
+
+            if (is_immediate_parent_table_partitioned) {
+              return false;
+            }
+
             // There should be only one primary key per table.
             var children = t.children(arguments[1], false),
               primary_key_found = false;
@@ -63,7 +80,7 @@ define('pgadmin.node.{{node_type}}', [
             });
             return !primary_key_found;
             {% else %}
-            return true;
+            return !is_immediate_parent_table_partitioned;
             {% endif %}
           }
           parents.push(d._type);
@@ -74,7 +91,7 @@ define('pgadmin.node.{{node_type}}', [
         if (_.indexOf(parents, 'catalog') > -1) {
           return false;
         } else {
-            return true;
+            return !is_immediate_parent_table_partitioned;
         }
       },
 

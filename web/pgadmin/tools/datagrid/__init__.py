@@ -127,6 +127,10 @@ def initialize_datagrid(cmd_type, obj_type, sid, did, obj_id):
         return internal_server_error(errormsg=str(msg))
 
     try:
+        # if object type is partition then it is nothing but a table.
+        if obj_type == 'partition':
+            obj_type = 'table'
+
         # Get the object as per the object type
         command_obj = ObjectRegistry.get_object(obj_type, conn_id=conn_id, sid=sid,
                                                 did=did, obj_id=obj_id, cmd_type=cmd_type,
@@ -201,12 +205,14 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         new_browser_tab = 'false'
 
-    return render_template("datagrid/index.html", _=gettext, uniqueId=trans_id,
-                           is_query_tool=is_query_tool,
-                           editor_title=editor_title, script_type_url=sURL,
-                           is_desktop_mode=app.PGADMIN_RUNTIME,
-                           is_linux=is_linux_platform,
-                           is_new_browser_tab=new_browser_tab)
+    return render_template(
+        "datagrid/index.html", _=gettext, uniqueId=trans_id,
+        is_query_tool=is_query_tool,
+        editor_title=editor_title, script_type_url=sURL,
+        is_desktop_mode=app.PGADMIN_RUNTIME,
+        is_linux=is_linux_platform,
+        is_new_browser_tab=new_browser_tab
+    )
 
 
 @blueprint.route(
@@ -346,6 +352,8 @@ def validate_filter(sid, did, obj_id):
 @login_required
 def script():
     """render the required javascript"""
-    return Response(response=render_template("datagrid/js/datagrid.js", _=gettext),
-                    status=200,
-                    mimetype="application/javascript")
+    return Response(
+        response=render_template("datagrid/js/datagrid.js", _=gettext),
+        status=200, mimetype="application/javascript"
+    )
+

@@ -150,7 +150,7 @@ define([
 
         var maintenance_supported_nodes = [
               'database', 'table', 'primary_key',
-              'unique_constraint', 'index'
+              'unique_constraint', 'index', 'partition'
             ];
 
         /**
@@ -180,7 +180,7 @@ define([
 
         var menus = [{
           name: 'maintenance', module: this,
-          applies: ['tools'], callback: 'callback_maintenace',
+          applies: ['tools'], callback: 'callback_maintenance',
           priority: 10, label: gettext('Maintenance...'),
           icon: 'fa fa-wrench', enable: menu_enabled
         }];
@@ -190,7 +190,7 @@ define([
           menus.push({
             name: 'maintenance_context_' + maintenance_supported_nodes[idx],
             node: maintenance_supported_nodes[idx], module: this,
-            applies: ['context'], callback: 'callback_maintenace',
+            applies: ['context'], callback: 'callback_maintenance',
             priority: 10, label: gettext('Maintenance...'),
             icon: 'fa fa-wrench', enable: menu_enabled
           });
@@ -201,7 +201,7 @@ define([
       /*
         Open the dialog for the maintenance functionality
       */
-      callback_maintenace: function(args, item) {
+      callback_maintenance: function(args, item) {
         var i = item || pgBrowser.tree.selected(),
           server_data = null;
 
@@ -320,7 +320,10 @@ define([
                   if (treeInfo.schema != undefined) {
                     schema = treeInfo.schema._label;
                   }
-                  if (treeInfo.table != undefined) {
+
+                  if (treeInfo.partition != undefined) {
+                    table = treeInfo.partition._label;
+                  } else if  (treeInfo.table != undefined) {
                     table = treeInfo.table._label;
                   }
 

@@ -602,6 +602,7 @@ define('pgadmin.node.foreign_key', [
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {
     pgAdmin.Browser.Nodes['foreign_key'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'foreign_key',
       label: gettext('Foreign key'),
       collection_type: 'coll-constraints',
@@ -610,7 +611,7 @@ define('pgadmin.node.foreign_key', [
       dialogHelp: url_for('help.static', {'filename': 'foreign_key_dialog.html'}),
       hasSQL: true,
       hasDepends: false,
-      parent_type: 'table',
+      parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
       hasDepends: true,
@@ -1068,12 +1069,22 @@ define('pgadmin.node.foreign_key', [
           if (data && data.check == false)
             return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+          var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+            immediate_parent_table_found = false,
+            is_immediate_parent_table_partitioned = false;
           // To iterate over tree to check parent node
           while (i) {
+            // If table is partitioned table then return false
+            if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
+              immediate_parent_table_found = true;
+              if ('is_partitioned' in d && d.is_partitioned) {
+                is_immediate_parent_table_partitioned = true;
+              }
+            }
+
             // If it is schema then allow user to c reate table
             if (_.indexOf(['schema'], d._type) > -1)
-              return true;
+              return !is_immediate_parent_table_partitioned;
             parents.push(d._type);
             i = t.hasParent(i) ? t.parent(i) : null;
             d = i ? t.itemData(i) : null;
@@ -1082,7 +1093,7 @@ define('pgadmin.node.foreign_key', [
           if (_.indexOf(parents, 'catalog') > -1) {
             return false;
           } else {
-            return true;
+            return !is_immediate_parent_table_partitioned;
           }
       }
     });

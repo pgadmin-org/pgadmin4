@@ -1,33 +1,31 @@
-define('pgadmin.node.table', [
+define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
-  'sources/alerts/alertify_wrapper',
-  'pgadmin.browser.collection', 'pgadmin.node.column',
-  'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils'
-], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, AlertifyWrapper
-) {
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils'
+],
+function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
-  if (!pgBrowser.Nodes['coll-table']) {
-    var databases = pgBrowser.Nodes['coll-table'] =
-      pgBrowser.Collection.extend({
-        node: 'table',
-        label: gettext('Tables'),
-        type: 'coll-table',
-        columns: ['name', 'relowner', 'is_partitioned', 'description'],
-        hasStatistics: true,
-        statsPrettifyFields: ['Size', 'Indexes size', 'Table size',
-                              'Toast table size', 'Tuple length',
-                              'Dead tuple length', 'Free space']
+  if (!pgBrowser.Nodes['coll-partition']) {
+    var databases = pgAdmin.Browser.Nodes['coll-partition'] =
+      pgAdmin.Browser.Collection.extend({
+        node: 'partition',
+        label: gettext('Partitions'),
+        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
+        type: 'coll-partition',
+        columns: [
+          'name', 'schema', 'partition_value', 'is_partitioned', 'description'
+        ],
+        hasStatistics: true
       });
   };
 
-  if (!pgBrowser.Nodes['table']) {
-    pgBrowser.Nodes['table'] = pgBrowser.Node.extend({
+  if (!pgBrowser.Nodes['partition']) {
+    pgAdmin.Browser.Nodes['partition'] = pgBrowser.Node.extend({
       getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
-      type: 'table',
-      label: gettext('Table'),
-      collection_type: 'coll-table',
+      parent_type: 'table',
+      collection_type: 'coll-partition',
+      type: 'partition',
+      label: gettext('Partition'),
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
@@ -37,66 +35,102 @@ define('pgadmin.node.table', [
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-createtable.html',
       dialogHelp: url_for('help.static', {'filename': 'table_dialog.html'}),
-      parent_type: ['schema', 'catalog'],
-      hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
+      hasScriptTypes: ['create'],
       height: '95%',
       width: '85%',
       Init: function() {
-        /* Avoid multiple registration of menus */
+        /* Avoid mulitple registration of menus */
         if (this.initialized)
             return;
 
         this.initialized = true;
 
         pgBrowser.add_menus([{
-          name: 'create_table_on_coll', node: 'coll-table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate'
-        },{
-          name: 'create_table', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate'
-        },{
-          name: 'create_table__on_schema', node: 'schema', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: false},
-          enable: 'canCreate'
-        },{
-          name: 'truncate_table', node: 'table', module: this,
+          name: 'truncate_table', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
           category: 'Truncate', priority: 3, label: gettext('Truncate'),
           icon: 'fa fa-eraser', enable : 'canCreate'
         },{
-          name: 'truncate_table_cascade', node: 'table', module: this,
+          name: 'truncate_table_cascade', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table_cascade',
           category: 'Truncate', priority: 3, label: gettext('Truncate Cascade'),
           icon: 'fa fa-eraser', enable : 'canCreate'
         },{
           // To enable/disable all triggers for the table
-          name: 'enable_all_triggers', node: 'table', module: this,
+          name: 'enable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
           category: 'Trigger(s)', priority: 4, label: gettext('Enable All'),
           icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable'
         },{
-          name: 'disable_all_triggers', node: 'table', module: this,
+          name: 'disable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
           category: 'Trigger(s)', priority: 4, label: gettext('Disable All'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable'
         },{
-          name: 'reset_table_stats', node: 'table', module: this,
+          name: 'reset_table_stats', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
           category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
           icon: 'fa fa-bar-chart', enable : 'canCreate'
+        },{
+          name: 'detach_partition', node: 'partition', module: this,
+          applies: ['object', 'context'], callback: 'detach_partition',
+          priority: 2, label: gettext('Detach Partition'),
+          icon: 'fa fa-remove'
         }
         ]);
-        pgBrowser.Events.on(
-          'pgadmin:browser:node:table:updated', this.onTableUpdated, this
-        );
+      },
+      getTreeNodeHierarchy: function(i) {
+        var idx = 0,
+            res = {},
+            t = pgBrowser.tree;
+
+        do {
+          d = t.itemData(i);
+          if (
+            d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
+          ) {
+            if (d._type == 'partition' && 'partition' in res) {
+              if (!('table' in res)) {
+                res['table'] = _.extend({}, d, {'priority': idx});
+                idx -= 1;
+              }
+            } else if (d._type == 'table') {
+              if (!('table' in res)) {
+                res['table'] = _.extend({}, d, {'priority': idx});
+                idx -= 1;
+              }
+            } else {
+              res[d._type] = _.extend({}, d, {'priority': idx});
+              idx -= 1;
+            }
+          }
+          i = t.hasParent(i) ? t.parent(i) : null;
+        } while (i);
+
+        return res;
+      },
+      generate_url: function(item, type, d, with_id, info) {
+        if (_.indexOf([
+            'stats', 'statistics', 'dependency', 'dependent', 'reset',
+            'get_relations', 'get_oftype', 'get_attach_tables'
+            ], type) == -1) {
+          return pgBrowser.Node.generate_url.apply(this, arguments);
+        }
+
+        if (type == 'statistics') {
+          type = 'stats';
+        }
+
+        info = (_.isUndefined(item) || _.isNull(item)) ?
+          info || {} : this.getTreeNodeHierarchy(item);
+
+        return S('table/%s/%s/%s/%s/%s/%s').sprintf(
+            encodeURIComponent(type), encodeURIComponent(info['server-group']._id),
+            encodeURIComponent(info['server']._id),
+            encodeURIComponent(info['database']._id),
+            encodeURIComponent(info['partition'].schema_id),
+            encodeURIComponent(info['partition']._id)
+            ).value();
       },
       canDrop: pgBrowser.Nodes['schema'].canChildDrop,
       canDropCascade: pgBrowser.Nodes['schema'].canChildDrop,
@@ -129,8 +163,7 @@ define('pgadmin.node.table', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -143,8 +176,7 @@ define('pgadmin.node.table', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -172,6 +204,7 @@ define('pgadmin.node.table', [
             return false;
 
           alertify.confirm(
+            gettext('Truncate Table'),
             S(gettext('Are you sure you want to truncate table %s?')).sprintf(d.label).value(),
             function (e) {
             if (e) {
@@ -183,8 +216,7 @@ define('pgadmin.node.table', [
                 dataType: "json",
                 success: function(res) {
                   if (res.success == 1) {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.success(res.info);
+                    alertify.success(res.info);
                     t.removeIcon(i);
                     data.icon = 'icon-table';
                     t.addIcon(i, {icon: data.icon});
@@ -201,17 +233,17 @@ define('pgadmin.node.table', [
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg);
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
                 }
               });
-            }
-         });
-       },
-       reset_table_stats: function(args) {
+            }},
+            function() {}
+          );
+        },
+        reset_table_stats: function(args) {
           var input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -232,8 +264,7 @@ define('pgadmin.node.table', [
                   type:'DELETE',
                   success: function(res) {
                     if (res.success == 1) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.success(res.info);
+                      alertify.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-table';
                       t.addIcon(i, {icon: data.icon});
@@ -250,11 +281,60 @@ define('pgadmin.node.table', [
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.error(err.errormsg);
+                        alertify.error(err.errormsg);
                       }
                     } catch (e) {}
                     t.unload(i);
+                  }
+                });
+              }
+            },
+            function() {}
+          );
+        },
+        detach_partition: function(args) {
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          alertify.confirm(
+            gettext('Detach Partition'),
+            S(gettext('Are you sure you want to detach the partition %s?')).sprintf(d._label).value(),
+            function (e) {
+              if (e) {
+                var data = d;
+                $.ajax({
+                  url: obj.generate_url(i, 'detach' , d, true),
+                  type:'PUT',
+                  success: function(res) {
+                    if (res.success == 1) {
+                      alertify.success(res.info);
+                      var n = t.next(i);
+                      if (!n || !n.length) {
+                        n = t.prev(i);
+                        if (!n || !n.length) {
+                          n = t.parent(i);
+                          t.setInode(n, true);
+                        }
+                      }
+                      t.remove(i);
+                      if (n.length) {
+                        t.select(n);
+                      }
+                    }
+                  },
+                  error: function(xhr, status, error) {
+                    try {
+                      var err = $.parseJSON(xhr.responseText);
+                      if (err.success == 0) {
+                        alertify.error(err.errormsg);
+                      }
+                    } catch (e) {}
                   }
                 });
               }
@@ -293,7 +373,8 @@ define('pgadmin.node.table', [
           primary_key: [],
           partitions: [],
           partition_type: 'range',
-          is_partitioned: false
+          is_partitioned: false,
+          partition_value: undefined
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -321,7 +402,7 @@ define('pgadmin.node.table', [
           disabled: 'inSchema', control: 'node-list-by-name'
         },{
           id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
-          control: 'node-list-by-name', mode: ['create', 'edit'],
+          control: 'node-list-by-name', mode: ['create', 'edit', 'properties'],
           disabled: 'inSchema', filter: function(d) {
             // If schema name start with pg_* then we need to exclude them
             if(d && d.label.match(/^pg_/))
@@ -366,99 +447,20 @@ define('pgadmin.node.table', [
         },{
           id: 'description', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema'
-        },{
-          id: 'coll_inherits', label: gettext('Inherited from table(s)'),
-          url: 'get_inherits', type: 'array', group: gettext('Columns'),
-          disabled: 'checkInheritance', deps: ['typname', 'is_partitioned'],
-          mode: ['create', 'edit'],
-          select2: { multiple: true, allowClear: true,
-          placeholder: gettext('Select to inherit from...')},
-          transform: function(data, cell) {
-            var control = cell || this,
-              m = control.model;
-              m.inherited_tables_list = data;
-              return data;
-          },
-          control: Backform.MultiSelectAjaxControl.extend({
-            // When changes we need to add/clear columns collection
-            onChange: function() {
-              Backform.MultiSelectAjaxControl.prototype.onChange.apply(this, arguments);
-              var self = this,
-              // current table list and previous table list
-              cTbl_list = self.model.get('coll_inherits') || [],
-              pTbl_list = self.model.previous('coll_inherits') || [];
-
-              if (!_.isUndefined(cTbl_list)) {
-                var tbl_name = undefined,
-                  tid = undefined;
-
-                // Add columns logic
-                // If new table is added in list
-                if(cTbl_list.length > 1 && cTbl_list.length > pTbl_list.length) {
-                  // Find newly added table from current list
-                  tbl_name = _.difference(cTbl_list, pTbl_list);
-                  tid = this.get_table_oid(tbl_name[0]);
-                  this.add_columns(tid);
-                } else if (cTbl_list.length == 1) {
-                  // First table added
-                  tid = this.get_table_oid(cTbl_list[0]);
-                  this.add_columns(tid);
-                }
-
-                // Remove columns logic
-                if(cTbl_list.length > 0 && cTbl_list.length < pTbl_list.length) {
-                  // Find deleted table from previous list
-                  tbl_name = _.difference(pTbl_list, cTbl_list);
-                  this.remove_columns(tbl_name[0]);
-                } else if (pTbl_list.length === 1 && cTbl_list.length < 1) {
-                  // We got last table from list
-                  tbl_name = pTbl_list[0];
-                  this.remove_columns(tbl_name);
-                }
-
-              }
-            },
-            add_columns: function(tid) {
-              // Create copy of old model if anything goes wrong at-least we have backup
-              // Then send AJAX request to fetch table specific columns
-              var self = this,
-                url = 'get_columns',
-                m = self.model.top || self.model,
-                data = undefined,
-                old_columns = _.clone(m.get('columns')),
-                column_collection = m.get('columns');
-
-              var arg = {'tid': tid}
-              data = self.model.fetch_columns_ajax.apply(self, [arg]);
-
-              // Update existing column collection
-              column_collection.set(data, { merge:false,remove:false });
-            },
-            remove_columns: function(tblname) {
-              // Remove all the column models for deleted table
-              var tid = this.get_table_oid(tblname),
-                column_collection = this.model.get('columns');
-              column_collection.remove(column_collection.where({'inheritedid': tid }));
-            },
-            get_table_oid: function(tblname) {
-              // Here we will fetch the table oid from table name
-              var tbl_oid = undefined;
-              // iterate over list to find table oid
-              _.each(this.model.inherited_tables_list, function(obj) {
-                  if(obj.label === tblname) {
-                    tbl_oid = obj.tid;
-                  }
-              });
-              return tbl_oid;
-            }
-          })
+        },
+        {
+          id: 'partition_value', label:gettext('Partition Scheme'),
+          type: 'text', visible: false
         },{
           id: 'coll_inherits', label: gettext('Inherited from table(s)'),
           type: 'text', group: gettext('Advanced'), mode: ['properties']
         },{
-          id: 'inherited_tables_cnt', label: gettext('Inherited tables count'),
-          type: 'text', mode: ['properties'], group: gettext('Advanced'),
-          disabled: 'inSchema'
+          id: 'Columns', type: 'group', label: gettext('Columns'),
+          mode: ['edit', 'create'], min_version: 100000,
+          visible: function(m) {
+            // Always hide in case of partition table.
+            return false;
+          }
         },{
           // Tab control for columns
           id: 'columns', label: gettext('Columns'), type: 'collection',
@@ -578,6 +580,10 @@ define('pgadmin.node.table', [
             }
           }),
           allowMultipleEmptyRow: false
+        },{
+          id: 'inherited_tables_cnt', label: gettext('Inherited tables count'),
+          type: 'text', mode: ['properties'], group: gettext('Advanced'),
+          disabled: 'inSchema'
         },{
           // Here we will create tab control for constraints
           type: 'nested', control: 'tab', group: gettext('Constraints'),
@@ -895,30 +901,6 @@ define('pgadmin.node.table', [
             }
           }
         },{
-          id: 'partition_key_note', label: gettext('Partition Keys'),
-          type: 'note', group: 'partition', mode: ['create'],
-          text: [
-            '<br>&nbsp;&nbsp;',
-            gettext('Partition table supports two types of keys:'),
-            '<br><ul><li>',
-            gettext('Column: User can select any column from the list of available columns.'),
-            '</li><li>',
-            gettext('Expression: User can specify expression to create partition key.'),
-            '<br><p>',
-            gettext('Example'),
-            ':',
-            gettext("Let's say, we want to create a partition table based per year for the column 'saledate', having datatype 'date/timestamp', then we need to specify the expression as 'extract(YEAR from saledate)' as partition key."),
-            '</p></li></ul>'
-          ].join(''),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-              m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          }
-        }, {
           id: 'partitions', label:gettext('Partitions'),
           model: Backform.PartitionsModel,
           subnode: Backform.PartitionsModel,
@@ -991,24 +973,12 @@ define('pgadmin.node.table', [
             }
           }
         },{
-          id: 'partition_note', label: gettext('Partitions'),
+          id: 'partition_note', label: gettext('Partition'),
           type: 'note', group: 'partition',
-          text: [
-            '<ul>',
-            ' <li>',
-            gettext('Create a table: User can create multiple partitions while creating new partitioned table. Operation switch is disabled in this scenario.'),
-            '</li><li>',
-            gettext('Edit existing table: User can create/attach/detach multiple partitions. In attach operation user can select table from the list of suitable tables to be attached.'),
-            '</li><li>',
-            gettext('From/To/In input: Values for these fields must be quoted with single quote. For more than one partition key values must be comma(,) separated.'),
-            '<br>',
-            gettext('Example'),
-            ':<ul><li>',
-            gettext("From/To: Enabled for range partition. Consider partitioned table with multiple keys of type Integer, then values should be specified like '100','200'."),
-            '</li><li> ',
-            gettext('In: Enabled for list partition. Values must be comma(,) separated and quoted with single quote.'),
-            '</li></ul></li></ul>'
-          ].join(''),
+          text: gettext('Above control will be used to Create/Attach/Detach partitions.<br>' +
+            '<ul><li>Create Mode: User will be able to create N number of partitions. Mode switch control is disabled in this scenario.</li>' +
+            '<li>Edit Mode: User will be able to create/attach/detach N number of partitions.' +
+            'In attach mode there will be list of suitable tables to be attached.</li></ul>'),
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
@@ -1052,42 +1022,39 @@ define('pgadmin.node.table', [
               is_partitioned = this.get('is_partitioned'),
               partition_keys = this.get('partition_keys');
 
-          if (
-            _.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == ''
-          ) {
+          // If nothing to validate or VacuumSetting keys then
+          // return from here
+          if ( keys && (keys.length == 0
+                        || _.indexOf(keys, 'autovacuum_enabled') != -1
+                        || _.indexOf(keys, 'toast_autovacuum_enabled') != -1) ) {
+            return null;
+          }
+
+          // Have to clear existing validation before initiating current state validation only
+          this.errorModel.clear();
+
+          if (_.isUndefined(name) || _.isNull(name) ||
+            String(name).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Table name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
-          }
-          this.errorModel.unset('name');
-          if (
-            _.isUndefined(schema) || _.isNull(schema) ||
-            String(schema).replace(/^\s+|\s+$/g, '') == ''
-          ) {
+          } else if (_.isUndefined(schema) || _.isNull(schema) ||
+            String(schema).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Table schema cannot be empty.');
             this.errorModel.set('schema', msg);
             return msg;
-          }
-          this.errorModel.unset('schema');
-          if (
-            _.isUndefined(relowner) || _.isNull(relowner) ||
-            String(relowner).replace(/^\s+|\s+$/g, '') == ''
-          ) {
+          } else if (_.isUndefined(relowner) || _.isNull(relowner) ||
+            String(relowner).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Table owner cannot be empty.');
             this.errorModel.set('relowner', msg);
             return msg;
-          }
-          this.errorModel.unset('relowner');
-          if (
-            is_partitioned && this.isNew() &&
-            !_.isNull(partition_keys) && partition_keys.length <= 0
-          ) {
+          } else if (is_partitioned && this.isNew() &&
+            !_.isNull(partition_keys) && partition_keys.length <= 0)
+          {
             msg = gettext('Please specify at least one key for partitioned table.');
             this.errorModel.set('partition_keys', msg);
             return msg;
           }
-          this.errorModel.unset('partition_keys');
           return null;
         },
         // We will disable everything if we are under catalog node
@@ -1301,119 +1268,9 @@ define('pgadmin.node.table', [
             return false;
           }
         }
-      },
-      onTableUpdated: function(_node, _oldNodeData, _newNodeData) {
-        if (
-          _newNodeData.is_partitioned && 'affected_partitions' in _newNodeData
-        ) {
-          var partitions = _newNodeData.affected_partitions,
-              idx, node_info, self = this,
-              newPartitionsIDs = [],
-              insertChildTreeNodes = [],
-              insertChildrenNodes = function() {
-                if (!insertChildTreeNodes.length)
-                  return;
-                var option = insertChildTreeNodes.pop();
-                pgBrowser.addChildTreeNodes(
-                  option.treeHierarchy, option.parent, option.type,
-                  option.childrenIDs, insertChildrenNodes
-                );
-              };
-
-          if ('detached' in partitions && partitions.detached.length > 0) {
-            // Remove it from the partition collections node first
-            pgBrowser.removeChildTreeNodesById(
-              _node, 'coll-partition', _.map(
-                partitions.detached, function(_d) { return parseInt(_d.oid); }
-              )
-            );
-
-            var schemaNode = pgBrowser.findParentTreeNodeByType(
-                  _node, 'schema'
-                ),
-                detachedBySchema = _.groupBy(
-                  partitions.detached,
-                  function(_d) { return parseInt(_d.schema_id); }
-                ), childIDs;
-
-            for (var key in detachedBySchema) {
-              schemaNode = pgBrowser.findSiblingTreeNode(schemaNode, key);
-
-              if (schemaNode) {
-                childIDs = _.map(
-                  detachedBySchema[key],
-                  function(_d) { return parseInt(_d.oid); }
-                );
-
-                var tablesCollNode = pgBrowser.findChildCollectionTreeNode(
-                  schemaNode, 'coll-table'
-                );
-
-                if (tablesCollNode) {
-                  insertChildTreeNodes.push({
-                    'parent': tablesCollNode,
-                    'type': 'table',
-                    'treeHierarchy': pgAdmin.Browser.Nodes.schema.getTreeNodeHierarchy(schemaNode),
-                    'childrenIDs': _.clone(childIDs)
-                  });
-                }
-              }
-            }
-          }
-
-          if ('attached' in partitions && partitions.attached.length > 0) {
-            var schemaNode = pgBrowser.findParentTreeNodeByType(
-                  _node, 'schema'
-                ),
-                attachedBySchema = _.groupBy(
-                  partitions.attached,
-                  function(_d) { return parseInt(_d.schema_id); }
-                ), childIDs;
-
-            for (var key in attachedBySchema) {
-              schemaNode = pgBrowser.findSiblingTreeNode(schemaNode, key);
-
-              if (schemaNode) {
-                childIDs = _.map(
-                  attachedBySchema[key],
-                  function(_d) { return parseInt(_d.oid); }
-                );
-                // Remove it from the table collections node first
-                pgBrowser.removeChildTreeNodesById(
-                  schemaNode, 'coll-table', childIDs
-                );
-              }
-              newPartitionsIDs = newPartitionsIDs.concat(childIDs);
-            }
-          }
-
-          if ('created' in partitions && partitions.created.length > 0) {
-            _.each(partitions.created, function(_data) {
-              newPartitionsIDs.push(_data.oid);
-            });
-          }
-
-          if (newPartitionsIDs.length) {
-            node_info = self.getTreeNodeHierarchy(_node);
-
-            var partitionsCollNode = pgBrowser.findChildCollectionTreeNode(
-              _node, 'coll-partition'
-            );
-
-            if (partitionsCollNode) {
-              insertChildTreeNodes.push({
-                'parent': partitionsCollNode,
-                'type': 'partition',
-                'treeHierarchy': self.getTreeNodeHierarchy(_node),
-                'childrenIDs': newPartitionsIDs
-              });
-            }
-          }
-          insertChildrenNodes();
-        }
       }
     });
   }
 
-  return pgBrowser.Nodes['table'];
+  return pgBrowser.Nodes['partition'];
 });

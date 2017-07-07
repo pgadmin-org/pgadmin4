@@ -23,7 +23,7 @@ class TableDeleteTestCase(BaseTestGenerator):
     """This class will delete new table under schema node."""
     scenarios = [
         # Fetching default URL for table node.
-        ('Fetch table Node URL', dict(url='/browser/table/obj/'))
+        ('Delete Table', dict(url='/browser/table/obj/'))
     ]
 
     def setUp(self):

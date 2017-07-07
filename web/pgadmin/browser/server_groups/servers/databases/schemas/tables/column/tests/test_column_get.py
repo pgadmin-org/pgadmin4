@@ -24,7 +24,7 @@ from . import utils as columns_utils
 class ColumnGetTestCase(BaseTestGenerator):
     """This class will get column under table node."""
     scenarios = [
-        ('Fetch table Node URL', dict(url='/browser/column/obj/'))
+        ('Fetch columns under table node', dict(url='/browser/column/obj/'))
     ]
 
     def setUp(self):

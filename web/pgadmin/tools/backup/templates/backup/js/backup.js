@@ -270,7 +270,7 @@ TODO LIST FOR BACKUP:
 
         // Define list of nodes on which backup context menu option appears
         var backup_supported_nodes = [
-              'database', 'schema', 'table'
+              'database', 'schema', 'table', 'partition'
             ];
 
         /**

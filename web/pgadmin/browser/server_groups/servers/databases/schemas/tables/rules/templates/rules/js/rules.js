@@ -16,6 +16,7 @@ define('pgadmin.node.rule', [
         node: 'rule',
         label: gettext('Rules'),
         type: 'coll-rule',
+        getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
         columns: ["name", "owner", "comment"]
       });
   }
@@ -33,8 +34,9 @@ define('pgadmin.node.rule', [
     rule option in the context menu
    */
   if (!pgBrowser.Nodes['rule']) {
-    pgAdmin.Browser.Nodes['rule'] = pgAdmin.Browser.Node.extend({
-      parent_type: ['table','view'],
+    pgAdmin.Browser.Nodes['rule'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
+      parent_type: ['table','view', 'partition'],
       type: 'rule',
       sqlAlterHelp: 'sql-alterrule.html',
       sqlCreateHelp: 'sql-createrule.html',
@@ -94,6 +96,12 @@ define('pgadmin.node.rule', [
           enable: 'canCreate'
         },{
           name: 'create_rule', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 4, label: gettext('Rule...'),
+          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
+          enable: 'canCreate'
+        },{
+          name: 'create_rule', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},

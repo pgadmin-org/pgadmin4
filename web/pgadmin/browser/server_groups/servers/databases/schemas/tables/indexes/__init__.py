@@ -72,12 +72,28 @@ class IndexesModule(CollectionNodeModule):
         if super(IndexesModule, self).BackendSupported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
+            # In case of partitioned table return false.
+            if 'tid' in kwargs and manager.version >= 100000:
+                partition_path = 'partition/sql/#{0}#'.format(manager.version)
+                SQL = render_template(
+                    "/".join([partition_path, 'backend_support.sql']),
+                    tid=kwargs['tid']
+                )
+                status, res = conn.execute_scalar(SQL)
+
+                # check if any errors
+                if not status:
+                    return internal_server_error(errormsg=res)
+                return not res
+
             if 'vid' not in kwargs:
                 return True
 
             template_path = 'index/sql/#{0}#'.format(manager.version)
-            SQL = render_template("/".join(
-                [template_path, 'backend_support.sql']), vid=kwargs['vid'])
+            SQL = render_template(
+                "/".join([template_path, 'backend_support.sql']),
+                vid=kwargs['vid']
+            )
             status, res = conn.execute_scalar(SQL)
 
             # check if any errors
@@ -239,9 +255,10 @@ class IndexesView(PGChildNodeView):
             # We need parent's name eg table name and schema name
             # when we create new index in update we can fetch it using
             # property sql
-            SQL = render_template("/".join([self.template_path,
-                                            'get_parent.sql']),
-                                  tid=kwargs['tid'])
+            SQL = render_template(
+                "/".join([self.template_path, 'get_parent.sql']),
+                tid=kwargs['tid']
+            )
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -262,8 +279,9 @@ class IndexesView(PGChildNodeView):
         """
         res = [{'label': '', 'value': ''}]
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_collations.sql']))
+            SQL = render_template(
+                "/".join([self.template_path, 'get_collations.sql'])
+            )
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -289,8 +307,7 @@ class IndexesView(PGChildNodeView):
         """
         res = [{'label': '', 'value': ''}]
         try:
-            SQL = render_template("/".join([self.template_path,
-                                            'get_am.sql']))
+            SQL = render_template("/".join([self.template_path, 'get_am.sql']))
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -317,17 +334,17 @@ class IndexesView(PGChildNodeView):
         res = dict()
         try:
             # Fetching all the access methods
-            SQL = render_template("/".join([self.template_path,
-                                            'get_am.sql']))
+            SQL = render_template("/".join([self.template_path, 'get_am.sql']))
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
             for row in rset['rows']:
                 # Fetching all the op_classes for each access method
-                SQL = render_template("/".join([self.template_path,
-                                                'get_op_class.sql']),
-                                      oid=row['oid'])
+                SQL = render_template(
+                    "/".join([self.template_path, 'get_op_class.sql']),
+                    oid=row['oid']
+                )
                 status, result = self.conn.execute_2darray(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -365,8 +382,9 @@ class IndexesView(PGChildNodeView):
             JSON of available schema nodes
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), tid=tid)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']), tid=tid
+        )
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -393,10 +411,10 @@ class IndexesView(PGChildNodeView):
         Returns:
             JSON of available schema child nodes
         """
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
-                              tid=tid,
-                              idx=idx)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            tid=tid, idx=idx
+        )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -433,8 +451,9 @@ class IndexesView(PGChildNodeView):
             JSON of available schema child nodes
         """
         res = []
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), tid=tid)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']), tid=tid
+        )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -465,8 +484,9 @@ class IndexesView(PGChildNodeView):
             Updated properties data with column details
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'column_details.sql']), idx=idx)
+        SQL = render_template(
+            "/".join([self.template_path, 'column_details.sql']), idx=idx
+        )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -521,10 +541,10 @@ class IndexesView(PGChildNodeView):
             JSON of selected schema node
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              did=did, tid=tid, idx=idx,
-                              datlastsysoid=self.datlastsysoid)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+        )
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -595,9 +615,10 @@ class IndexesView(PGChildNodeView):
         try:
             # Start transaction.
             self.conn.execute_scalar("BEGIN;")
-            SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
-                                  data=data, conn=self.conn, mode='create')
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn, mode='create'
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 # End transaction.
@@ -606,9 +627,10 @@ class IndexesView(PGChildNodeView):
 
             # If user chooses concurrent index then we cannot run it along
             # with other alter statements so we will separate alter index part
-            SQL = render_template("/".join([self.template_path,
-                                            'alter.sql']),
-                                  data=data, conn=self.conn)
+            SQL = render_template(
+                "/".join([self.template_path, 'alter.sql']),
+                data=data, conn=self.conn
+            )
             SQL = SQL.strip('\n').strip(' ')
             if SQL != '':
                 status, res = self.conn.execute_scalar(SQL)
@@ -618,9 +640,10 @@ class IndexesView(PGChildNodeView):
                     return internal_server_error(errormsg=res)
 
             # we need oid to to add object in tree at browser
-            SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']),
-                                  tid=tid, data=data)
+            SQL = render_template(
+                "/".join([self.template_path, 'get_oid.sql']),
+                tid=tid, data=data
+            )
             status, idx = self.conn.execute_scalar(SQL)
             if not status:
                 # End transaction.
@@ -665,10 +688,10 @@ class IndexesView(PGChildNodeView):
         try:
             # We will first fetch the index name for current request
             # so that we create template for dropping index
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  did=did, tid=tid, idx=idx,
-                                  datlastsysoid=self.datlastsysoid)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -687,9 +710,10 @@ class IndexesView(PGChildNodeView):
 
             data = dict(res['rows'][0])
 
-            SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
-                                  data=data, conn=self.conn, cascade=cascade)
+            SQL = render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                data=data, conn=self.conn, cascade=cascade
+            )
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -787,10 +811,10 @@ class IndexesView(PGChildNodeView):
         This function will genrate sql from model data
         """
         if idx is not None:
-            SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
-                                  did=did, tid=tid, idx=idx,
-                                  datlastsysoid=self.datlastsysoid)
+            SQL = render_template(
+                "/".join([self.template_path, 'properties.sql']),
+                did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+            )
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -826,11 +850,15 @@ class IndexesView(PGChildNodeView):
                     return gettext('-- definition incomplete')
 
             # If the request for new object which do not have did
-            SQL = render_template("/".join([self.template_path, 'create.sql']),
-                                  data=data, conn=self.conn, mode=mode)
+            SQL = render_template(
+                "/".join([self.template_path, 'create.sql']),
+                data=data, conn=self.conn, mode=mode
+            )
             SQL += "\n"
-            SQL += render_template("/".join([self.template_path, 'alter.sql']),
-                                   data=data, conn=self.conn)
+            SQL += render_template(
+                "/".join([self.template_path, 'alter.sql']),
+                data=data, conn=self.conn
+            )
 
         return SQL, data['name'] if 'name' in data else old_data['name']
 
@@ -848,10 +876,10 @@ class IndexesView(PGChildNodeView):
            idx: Index ID
         """
 
-        SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
-                              did=did, tid=tid, idx=idx,
-                              datlastsysoid=self.datlastsysoid)
+        SQL = render_template(
+            "/".join([self.template_path, 'properties.sql']),
+            did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+        )
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -872,9 +900,10 @@ class IndexesView(PGChildNodeView):
             return SQL
         sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])
 
-        sql_header += render_template("/".join([self.template_path,
-                                                'delete.sql']),
-                                      data=data, conn=self.conn)
+        sql_header += render_template(
+            "/".join([self.template_path, 'delete.sql']),
+            data=data, conn=self.conn
+        )
 
         SQL = sql_header + '\n\n' + SQL
 
@@ -959,10 +988,11 @@ class IndexesView(PGChildNodeView):
 
             if is_pgstattuple:
                 # Fetch index details only if extended stats available
-                SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
-                                      did=did, tid=tid, idx=idx,
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.template_path, 'properties.sql']),
+                    did=did, tid=tid, idx=idx,
+                    datlastsysoid=self.datlastsysoid
+                )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)

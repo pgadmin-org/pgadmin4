@@ -10,6 +10,7 @@ define('pgadmin.node.check_constraints', [
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraints']) {
     pgAdmin.Browser.Nodes['check_constraints'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'check_constraints',
       label: gettext('Check'),
       collection_type: 'coll-constraints',
@@ -18,7 +19,7 @@ define('pgadmin.node.check_constraints', [
       dialogHelp: url_for('help.static', {'filename': 'check_dialog.html'}),
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['table'],
+      parent_type: ['table','partition'],
       Init: function() {
         // Avoid mulitple registration of menus
         if (this.initialized)
@@ -137,6 +138,18 @@ define('pgadmin.node.check_constraints', [
           'switch', cell: 'boolean', group: gettext('Definition'), mode:
           ['properties', 'create', 'edit'], min_version: 90200,
           disabled: function(m) {
+            // Disabled if table is a partitioned table.
+            if ((_.has(m , 'top') && !_.isUndefined(m.top) && m.top.get('is_partitioned')) ||
+                (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
+                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
+            ){
+              setTimeout(function(){
+                  m.set('connoinherit', false);
+              },10);
+
+              return true;
+            }
+
             return ((_.has(m, 'handler') &&
               !_.isUndefined(m.handler) &&
               !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));

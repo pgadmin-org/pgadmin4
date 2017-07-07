@@ -228,7 +228,8 @@ define([
         var restore_supported_nodes = [
               'database', 'schema',
               'table', 'function',
-              'trigger', 'index'
+              'trigger', 'index',
+              'partition'
             ];
 
         /**

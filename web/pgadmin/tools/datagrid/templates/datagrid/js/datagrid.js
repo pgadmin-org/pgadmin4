@@ -29,7 +29,7 @@ define([
         // Define list of nodes on which view data option appears
         var supported_nodes = [
            'table', 'view', 'mview',
-           'foreign-table', 'catalog_object'
+           'foreign-table', 'catalog_object', 'partition'
         ],
 
         /* Enable/disable View data menu in tools based

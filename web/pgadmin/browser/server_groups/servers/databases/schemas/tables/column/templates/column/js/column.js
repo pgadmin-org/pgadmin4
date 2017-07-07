@@ -86,6 +86,7 @@ define('pgadmin.node.column', [
 
   if (!pgBrowser.Nodes['column']) {
     pgBrowser.Nodes['column'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       parent_type: ['table', 'view', 'mview'],
       collection_type: ['coll-table', 'coll-view', 'coll-mview'],
       type: 'column',
@@ -197,11 +198,17 @@ define('pgadmin.node.column', [
             );
           },
           disabled: function(m){
-            // If primary key already exist then disable.
+            // Disable it, when one of this:
+            // - Primary key already exist
+            // - Table is a partitioned table
             if (
-              m.top && !_.isUndefined(m.top.get('oid')) &&
-                m.top.get('primary_key').length > 0 &&
-                !_.isUndefined(m.top.get('primary_key').first().get('oid'))
+              m.top && ((
+                !_.isUndefined(m.top.get('oid')) &&
+                  m.top.get('primary_key').length > 0 &&
+                  !_.isUndefined(m.top.get('primary_key').first().get('oid'))
+              ) || (
+                m.top.has('is_partitioned') && m.top.get('is_partitioned')
+              ))
             ) {
               return true;
             }
@@ -224,6 +231,17 @@ define('pgadmin.node.column', [
             if (m.top && !_.isUndefined(m.top.get('oid')) &&
                       m.top.get('primary_key').length > 0 &&
                       !_.isUndefined(m.top.get('primary_key').first().get('oid'))) {
+
+              return false;
+            }
+
+            // If table is partitioned table then disable
+            if (m.top && !_.isUndefined(m.top.get('is_partitioned')) &&
+              m.top.get('is_partitioned'))
+            {
+              setTimeout(function () {
+                m.set('is_primary_key', false);
+              }, 10);
 
               return false;
             }

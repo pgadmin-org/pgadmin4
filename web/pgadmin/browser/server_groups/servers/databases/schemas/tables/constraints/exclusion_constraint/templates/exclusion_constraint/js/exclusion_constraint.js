@@ -602,6 +602,7 @@ define('pgadmin.node.exclusion_constraint', [
   // Extend the browser's node class for exclusion constraint node
   if (!pgBrowser.Nodes['exclusion_constraint']) {
     pgAdmin.Browser.Nodes['exclusion_constraint'] = pgBrowser.Node.extend({
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       type: 'exclusion_constraint',
       label: gettext('Exclusion constraint'),
       collection_type: 'coll-constraints',
@@ -609,7 +610,7 @@ define('pgadmin.node.exclusion_constraint', [
       sqlCreateHelp: 'ddl-constraints.html',
       dialogHelp: url_for('help.static', {'filename': 'exclusion_constraint_dialog.html'}),
       hasSQL: true,
-      parent_type: 'table',
+      parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
       hasDepends: true,
@@ -916,12 +917,22 @@ define('pgadmin.node.exclusion_constraint', [
           if (data && data.check == false)
             return true;
 
-          var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+          var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+            immediate_parent_table_found = false,
+            is_immediate_parent_table_partitioned = false;
           // To iterate over tree to check parent node
           while (i) {
+            // If table is partitioned table then return false
+            if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
+              immediate_parent_table_found = true;
+              if ('is_partitioned' in d && d.is_partitioned) {
+                is_immediate_parent_table_partitioned = true;
+              }
+            }
+
             // If it is schema then allow user to create table
             if (_.indexOf(['schema'], d._type) > -1)
-              return true;
+              return !is_immediate_parent_table_partitioned;
             parents.push(d._type);
             i = t.hasParent(i) ? t.parent(i) : null;
             d = i ? t.itemData(i) : null;
@@ -930,7 +941,7 @@ define('pgadmin.node.exclusion_constraint', [
           if (_.indexOf(parents, 'catalog') > -1) {
             return false;
           } else {
-            return true;
+            return !is_immediate_parent_table_partitioned;
           }
       }
     });
