@@ -63,7 +63,7 @@ class DebuggerModule(PgAdminModule):
     def register_preferences(self):
         self.open_in_new_tab = self.preference.register(
             'display', 'debugger_new_browser_tab',
-            gettext("Open in new browser tab"), 'boolean', False,
+            gettext("Open in new browser tab"), 'boolean', True,
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Debugger '
                              'will be opened in a new browser tab.')
