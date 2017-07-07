@@ -1325,8 +1325,7 @@ define([
         alertify.confirm(gettext("Clear history"),
           gettext("Are you sure you wish to clear the history?"),
           function() {
-            // Remove any existing grid first
-            if (self.history_grid) {
+            if (self.history_collection) {
               self.history_collection.reset();
             }
           },

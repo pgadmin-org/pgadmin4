@@ -36,6 +36,10 @@ export default class QueryHistory extends React.Component {
     this.props.historyCollection.onChange((historyList) => {
       this.resetCurrentHistoryDetail(historyList);
     });
+
+    this.props.historyCollection.onReset((historyList) => {
+      this.clearCurrentHistoryDetail(historyList);
+    });
   }
 
   componentDidMount() {
@@ -56,6 +60,14 @@ export default class QueryHistory extends React.Component {
 
   resetCurrentHistoryDetail(historyList) {
     this.setCurrentHistoryDetail(0, historyList);
+  }
+
+  clearCurrentHistoryDetail(historyList) {
+    this.setState({
+      history: historyList,
+      currentHistoryDetail: undefined,
+      selectedEntry: 0,
+    });
   }
 
   retrieveOrderedHistory() {

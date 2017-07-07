@@ -25,10 +25,14 @@ export default class HistoryCollection {
 
   reset() {
     this.historyList = [];
-    this.onChangeHandler(this.historyList);
+    this.onResetHandler(this.historyList);
   }
 
   onChange(onChangeHandler) {
     this.onChangeHandler = onChangeHandler;
+  }
+
+  onReset(onResetHandler) {
+    this.onResetHandler = onResetHandler;
   }
 }

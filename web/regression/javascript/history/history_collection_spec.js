@@ -10,13 +10,15 @@
 import HistoryCollection from '../../../pgadmin/static/js/history/history_collection';
 
 describe('historyCollection', function () {
-  let historyCollection, historyModel, onChangeSpy;
+  let historyCollection, historyModel, onChangeSpy, onResetSpy;
   beforeEach(() => {
     historyModel = [{some: 'thing', someOther: ['array element']}];
     historyCollection = new HistoryCollection(historyModel);
     onChangeSpy = jasmine.createSpy('onChangeHandler');
+    onResetSpy = jasmine.createSpy('onResetHandler');
 
     historyCollection.onChange(onChangeSpy);
+    historyCollection.onReset(onResetSpy);
   });
 
   describe('length', function () {
@@ -61,8 +63,8 @@ describe('historyCollection', function () {
       expect(historyCollection.length()).toBe(0);
     });
 
-    it('calls the onChange function', function () {
-      expect(onChangeSpy).toHaveBeenCalledWith([]);
+    it('calls the onReset function', function () {
+      expect(onResetSpy).toHaveBeenCalledWith([]);
     });
   });
 
