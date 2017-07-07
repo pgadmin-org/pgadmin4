@@ -23,7 +23,6 @@ define('pgadmin.node.server', [
       },{
         id: 'label', label: gettext('Security Label'),
         type: 'text', editable: true,
-        cellHeaderClasses:'width_percent_50'
       }],
       validate: function() {
         var err = {},

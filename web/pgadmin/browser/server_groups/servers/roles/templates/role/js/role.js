@@ -31,7 +31,6 @@ define('pgadmin.node.role', [
     },{
       id: 'label', label: gettext('Security Label'),
       type: 'text', disabled: false,
-      cellHeaderClasses:'width_percent_50'
     }],
     validate: function() {
       var err = {},
