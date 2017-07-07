@@ -725,19 +725,33 @@ define('pgadmin.node.table', [
                   arg = undefined,
                   column_collection = self.model.get('columns');
 
-                if (!_.isUndefined(tbl_name) &&
+                if (!_.isUndefined(tbl_name) && !_.isNull(tbl_name) &&
                     tbl_name !== '' && column_collection.length !== 0) {
-                  var msg = gettext('Changing of type table will clear columns collection');
-                  alertify.confirm(msg, function (e) {
-                    if (e) {
+                  var title = gettext('Remove column definitions?'),
+                      msg = gettext('Changing \'Of type\' will remove column definitions.');
+
+                  alertify.confirm(title, msg, function (e) {
                       // User clicks Ok, lets clear columns collection
-                      column_collection.reset();
-                    } else {
-                      return this;
+                      column_collection.remove(
+                        column_collection.filter(function(model) {
+                          return true;
+                          }
+                        )
+                      );
+                    },
+                    function() {
+                      setTimeout(function() {
+                        self.model.set('typname', null);
+                      }, 10)
                     }
-                  });
+                  );
                 } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
-                  column_collection.reset();
+                  column_collection.remove(
+                    column_collection.filter(function(model) {
+                      return true;
+                      }
+                    )
+                  );
                 }
 
                 // Run Ajax now to fetch columns

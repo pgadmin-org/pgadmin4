@@ -18,7 +18,7 @@
 {% endif %}
 CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}
 {% if data.typname %}
-    OF {{ conn|qtTypeIdent(data.typname) }}
+    OF {{ data.typname }}
 {% endif %}
 {% if data.like_relation or data.coll_inherits or data.columns|length > 0 or data.primary_key|length > 0 or data.unique_constraint|length > 0 or data.foreign_key|length > 0 or data.check_constraint|length > 0 or data.exclude_constraint|length > 0 %}
 (
