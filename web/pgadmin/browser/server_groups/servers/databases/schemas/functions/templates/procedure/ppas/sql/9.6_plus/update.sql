@@ -23,7 +23,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if d
 
     {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows %}
 
-    ROWS {{data.prorows}}{% elif o_data.prorows %}ROWS {{o_data.prorows}}{% endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
+    ROWS {{data.prorows}}{% elif o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}}{% endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
 
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor -%}
 {% endif %}

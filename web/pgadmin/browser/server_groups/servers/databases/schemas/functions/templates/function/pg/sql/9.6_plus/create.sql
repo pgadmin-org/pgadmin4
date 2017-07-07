@@ -17,6 +17,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 
     LANGUAGE {{ data.lanname|qtLiteral }}
 {% if data.procost %}
+
     COST {{data.procost}}
 {% endif %}
     {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
@@ -26,7 +27,9 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's') %}
 {% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif -%}
 {% if data.prorows %}
+
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
+
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 

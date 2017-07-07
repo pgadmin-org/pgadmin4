@@ -23,8 +23,11 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's') %}
 {% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% endif %}{% endif %}
 {% if data.procost %}
+
     COST {{data.procost}}{% endif %}{% if data.prorows %}
+
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
+
     SET {{ conn|qtIdent(v.name) }}={{ v.value|qtLiteral }}{% endfor %}
 {% endif %}
 
