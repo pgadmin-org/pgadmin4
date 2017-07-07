@@ -5,6 +5,7 @@ const webpackConfig = require('./webpack.test.config.js');
 module.exports = function (config) {
   config.set({
     frameworks: ['jasmine'],
+    reporters: ['progress', 'kjhtml'],
     plugins: [
       'karma-webpack',
       'karma-phantomjs-launcher',
