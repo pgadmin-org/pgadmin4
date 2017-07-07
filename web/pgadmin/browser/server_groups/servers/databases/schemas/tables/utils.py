@@ -1899,7 +1899,7 @@ class BaseTableView(PGChildNodeView):
                     icon="icon-partition" if (
                         'is_partitioned' in res['rows'][0] and res['rows'][0]['is_partitioned']
                         ) or self.node_type == 'partition' else "icon-table",
-                    is_partitioned=True if res['rows'][0]['relkind'] == 'p' else False,
+                    is_partitioned=True if 'relkind' in res['rows'][0] and res['rows'][0]['relkind'] == 'p' else False,
                     parent_schema_id=scid,
                     schema_id=rest['rows'][0]['scid'],
                     schema_name=rest['rows'][0]['nspname'],
