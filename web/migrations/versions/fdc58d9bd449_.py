@@ -15,8 +15,15 @@ Create Date: 2017-03-13 11:15:16.401139
 
 """
 from alembic import op
+import base64
+from flask import current_app
+from flask_security import Security, SQLAlchemyUserDatastore
+from flask_security.utils import encrypt_password
+import os
 import sqlalchemy as sa
-from pgadmin.model import db
+
+import config
+from pgadmin.model import db, User, Role
 from pgadmin.setup import get_version
 
 from pgadmin.setup import user_info
@@ -90,17 +97,6 @@ def upgrade():
                     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )
-    email, password = user_info()
-    db.engine.execute("""
-INSERT INTO "user"
-    VALUES(1, '%s',
-           '%s',
-           1, NULL)
-    """ % (email, password))
-    db.engine.execute("""
-INSERT INTO "version"
-VALUES('ConfigDB', 2);
-    """)
     db.engine.execute("""
 INSERT INTO "role"
 VALUES(1, 'Administrators', 'pgAdmin Administrators Role')
@@ -113,6 +109,32 @@ VALUES(1, 1);
 INSERT INTO "servergroup"
 VALUES(1, 1, 'Servers')
 """)
+
+    email, password = user_info()
+    current_salt = getattr(
+        config, 'SECURITY_PASSWORD_SALT', base64.urlsafe_b64encode(
+            os.urandom(32)
+        ).decode()
+    )
+    if current_app.extensions.get('security') is None:
+        current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
+        user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+        Security(current_app, user_datastore, register_blueprint=False)
+    else:
+        current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
+    setattr(config, 'SECURITY_PASSWORD_SALT', current_salt)
+    password = encrypt_password(password)
+
+    db.engine.execute("""
+INSERT INTO "user"
+    VALUES(1, '%s',
+           '%s',
+           1, NULL)
+    """ % (email, password))
+    db.engine.execute("""
+INSERT INTO "version"
+VALUES('ConfigDB', 2);
+    """)
     # ### end Alembic commands ###
 
 

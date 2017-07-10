@@ -86,6 +86,7 @@ Bug fixes
 | `Bug #2486 <https://redmine.postgresql.org/issues/2486>`_ - Ensure the feature tests use the correct test settings database
 | `Bug #2487 <https://redmine.postgresql.org/issues/2487>`_ - Maintain a client-side cache of preference values, populated using an async call
 | `Bug #2489 <https://redmine.postgresql.org/issues/2489>`_ - Fix clipboard handling with large datasets
+| `Bug #2492 <https://redmine.postgresql.org/issues/2492>`_ - Ensure the initial password is properly hashed during setup in web mode
 | `Bug #2498 <https://redmine.postgresql.org/issues/2498>`_ - Properly handle bytea[], and 'infinity'::real/real[]
 | `Bug #2502 <https://redmine.postgresql.org/issues/2502>`_ - Properly handle bytea[], and 'infinity'::real/real[]
 | `Bug #2503 <https://redmine.postgresql.org/issues/2503>`_ - Handle missing/dropped synonyms gracefully
