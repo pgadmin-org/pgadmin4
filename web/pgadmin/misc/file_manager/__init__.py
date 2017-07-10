@@ -30,7 +30,11 @@ from pgadmin.utils.ajax import make_json_response
 # Checks if platform is Windows
 if _platform == "win32":
     import ctypes
-
+    oldmode = ctypes.c_uint()
+    kernel32 = ctypes.WinDLL('kernel32')
+    SEM_FAILCRITICALERRORS = 1
+    SEM_NOOPENFILEERRORBOX = 0x8000
+    SEM_FAIL = SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS
     file_root = ""
 
 # uppercase supported in py2, ascii_uppercase supported in py3
@@ -281,6 +285,7 @@ class Filemanager(object):
 
         # Define configs for dialog types
         # select file, select folder, create mode
+        Filemanager.suspend_windows_warning()
         fm_type = params['dialog_type']
         storage_dir = get_storage_directory()
 
@@ -384,6 +389,7 @@ class Filemanager(object):
         configs['upload']['fileSizeLimit'] = file_upload_size
         file_manager_data[trans_id] = configs
         session['fileManagerData'] = file_manager_data
+        Filemanager.resume_windows_warning()
 
         return trans_id
 
@@ -453,11 +459,30 @@ class Filemanager(object):
             return u'/'
 
     @staticmethod
+    def suspend_windows_warning():
+        """
+        Prevents 'there is no disk in drive' waning on windows
+        """
+        # StackOverflow Ref: https://goo.gl/9gYdef
+        if _platform == "win32":
+            kernel32.SetThreadErrorMode(SEM_FAIL, ctypes.byref(oldmode))
+
+    @staticmethod
+    def resume_windows_warning():
+        """
+        Resumes waning on windows
+        """
+        if _platform == "win32":
+            # Resume windows error
+            kernel32.SetThreadErrorMode(oldmode, ctypes.byref(oldmode))
+
+    @staticmethod
     def list_filesystem(dir, path, trans_data, file_type):
         """
         It lists all file and folders within the given
         directory.
         """
+        Filemanager.suspend_windows_warning()
         path = unquote(path)
         if hasattr(str, 'decode'):
             path = unquote(path).encode('utf-8').decode('utf-8')
@@ -465,6 +490,7 @@ class Filemanager(object):
         try:
             Filemanager.check_access_permission(dir, path)
         except Exception as e:
+            Filemanager.resume_windows_warning()
             err_msg = u"Error: {0}".format(e)
             files = {
                 'Code': 0,
@@ -496,6 +522,7 @@ class Filemanager(object):
                         "Size": drive_size_in_units
                     }
                 }
+            Filemanager.resume_windows_warning()
             return files
 
         if dir is None:
@@ -503,6 +530,7 @@ class Filemanager(object):
         orig_path = Filemanager.get_abs_path(dir, path)
 
         if not path_exists(orig_path):
+            Filemanager.resume_windows_warning()
             return {
                 'Code': 0,
                 'Error': gettext(u"'{0}' file does not exist.".format(path))
@@ -564,6 +592,7 @@ class Filemanager(object):
                     }
                 }
         except Exception as e:
+            Filemanager.resume_windows_warning()
             if (hasattr(e, 'strerror') and
                     e.strerror == gettext('Permission denied')):
                 err_msg = u"Error: {0}".format(e.strerror)
@@ -573,6 +602,7 @@ class Filemanager(object):
                 'Code': 0,
                 'Error': err_msg
             }
+        Filemanager.resume_windows_warning()
         return files
 
     @staticmethod
