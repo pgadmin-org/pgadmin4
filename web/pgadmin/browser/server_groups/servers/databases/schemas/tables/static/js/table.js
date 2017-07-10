@@ -172,6 +172,7 @@ define('pgadmin.node.table', [
             return false;
 
           alertify.confirm(
+            gettext('Truncate Table'),
             S(gettext('Are you sure you want to truncate table %s?')).sprintf(d.label).value(),
             function (e) {
             if (e) {
@@ -186,7 +187,7 @@ define('pgadmin.node.table', [
                     var alertifyWrapper = new AlertifyWrapper();
                     alertifyWrapper.success(res.info);
                     t.removeIcon(i);
-                    data.icon = 'icon-table';
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                     t.addIcon(i, {icon: data.icon});
                     t.unload(i);
                     t.setInode(i);
@@ -209,7 +210,8 @@ define('pgadmin.node.table', [
                 }
               });
             }
-         });
+          }, function() {}
+        );
        },
        reset_table_stats: function(args) {
           var input = args || {},
@@ -235,7 +237,7 @@ define('pgadmin.node.table', [
                       var alertifyWrapper = new AlertifyWrapper();
                       alertifyWrapper.success(res.info);
                       t.removeIcon(i);
-                      data.icon = 'icon-table';
+                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                       t.addIcon(i, {icon: data.icon});
                       t.unload(i);
                       t.setInode(i);

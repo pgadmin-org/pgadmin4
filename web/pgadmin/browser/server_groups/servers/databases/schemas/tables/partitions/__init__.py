@@ -179,6 +179,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
             {'get': 'properties', 'delete': 'delete', 'put': 'update'},
             {'get': 'list', 'post': 'create'}
         ],
+        'delete': [{'delete': 'delete'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
@@ -575,6 +576,46 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings):
                 return internal_server_error(errormsg=res)
 
             return super(PartitionsView, self).truncate(gid, sid, did, scid, ptid, res)
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    @BaseTableView.check_precondition
+    def delete(self, gid, sid, did, scid, tid, ptid):
+        """
+        This function will delete the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+        """
+
+        try:
+            SQL = render_template(
+                "/".join([self.partition_template_path, 'properties.sql']),
+                did=did, scid=scid, tid=tid,ptid=ptid,
+                datlastsysoid=self.datlastsysoid
+            )
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if not res['rows']:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        'Error: Object not found.'
+                    ),
+                    info=gettext(
+                        'The specified partition could not be found.\n'
+                    )
+                )
+
+            return super(PartitionsView, self).delete(
+                gid, sid, did, scid, tid, res)
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))

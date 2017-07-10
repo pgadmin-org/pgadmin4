@@ -2084,6 +2084,45 @@ class BaseTableView(PGChildNodeView):
             }
         )
 
+    def delete(self, gid, sid, did, scid, tid, res):
+        """
+        This function will delete the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+        """
+
+        # Below will decide if it's simple drop or drop with cascade call
+        if self.cmd == 'delete':
+            # This is a cascade operation
+            cascade = True
+        else:
+            cascade = False
+
+        data = res['rows'][0]
+
+        SQL = render_template(
+            "/".join([self.table_template_path, 'delete.sql']),
+            data=data, cascade=cascade,
+            conn=self.conn
+        )
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+            success=1,
+            info=gettext("Table dropped"),
+            data={
+                'id': tid,
+                'scid': scid
+            }
+        )
+
     def get_schema_and_table_name(self, tid):
         """
         This function will fetch the schema qualified name of the

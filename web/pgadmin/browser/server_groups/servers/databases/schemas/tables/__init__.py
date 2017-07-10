@@ -1009,12 +1009,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
            scid: Schema ID
            tid: Table ID
         """
-        # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
 
         try:
             SQL = render_template(
@@ -1037,25 +1031,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
                     )
                 )
 
-            data = res['rows'][0]
-
-            SQL = render_template(
-                "/".join([self.table_template_path, 'delete.sql']),
-                data=data, cascade=cascade,
-                conn=self.conn
-            )
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            return make_json_response(
-                success=1,
-                info=gettext("Table dropped"),
-                data={
-                    'id': tid,
-                    'scid': scid
-                }
-            )
+            return super(TableView, self).delete(gid, sid, did, scid, tid, res)
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
