@@ -51,7 +51,8 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 	array_to_string(rel.reloptions, ',') AS table_vacuum_settings_str,
 	array_to_string(tst.reloptions, ',') AS toast_table_vacuum_settings_str,
-	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype, typ.typname,
+	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype,
+	(select quote_ident(nspname) FROM pg_namespace WHERE oid = {{scid}}::oid )||'.'||quote_ident(typ.typname) AS typname,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
     -- Added for pgAdmin4
 	(CASE WHEN (substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::boolean  THEN true ELSE false END) AS autovacuum_custom,

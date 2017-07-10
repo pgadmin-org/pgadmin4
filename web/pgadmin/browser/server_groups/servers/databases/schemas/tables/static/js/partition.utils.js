@@ -116,7 +116,9 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
          custom_options: function() {
            // We will add all the columns entered by user in table model
            var columns = this.model.top.get('columns'),
-             added_columns_from_tables = [];
+               typename = this.model.top.get('typname'),
+               of_types_tables = this.model.top.of_types_tables,
+               added_columns_from_tables = [];
 
            if (columns.length > 0) {
              _.each(columns.models, function(m) {
@@ -127,7 +129,21 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
                    );
                  }
              });
+           } else if (!_.isUndefined(typename) && !_.isNull(typename)
+              && !_.isUndefined(of_types_tables) && of_types_tables.length > 0) {
+              // Iterate through all the of_type tables
+              _.each(of_types_tables, function(type) {
+                if (type.label == typename) {
+                  // Iterate all the columns of selected "OF TYPE".
+                  _.each(type.oftype_columns, function(col) {
+                    added_columns_from_tables.push(
+                      {label: col.name, value: col.name, image:'icon-column'}
+                    );
+                  });
+                }
+              });
            }
+
            // Set the values in to options so that user can select
            this.column.set('options', added_columns_from_tables);
          },

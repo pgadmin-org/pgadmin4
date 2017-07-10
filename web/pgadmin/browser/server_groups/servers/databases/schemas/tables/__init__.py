@@ -661,9 +661,18 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings):
             if not status:
                 return internal_server_error(errormsg=res)
             for row in rset['rows']:
+                # Get columns for all 'OF TYPES'.
+                SQL = render_template("/".join([self.table_template_path,
+                                                'get_columns_for_table.sql']),
+                                      tid=row['oid'])
+
+                status, type_cols = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=type_cols)
+
                 res.append(
                     {'label': row['typname'], 'value': row['typname'],
-                     'tid': row['oid']
+                     'tid': row['oid'], 'oftype_columns': type_cols['rows']
                      }
                 )
             return make_json_response(
