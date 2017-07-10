@@ -505,14 +505,6 @@ fieldset[disabled] .form-control {
     border-radius: 3px;
 }
 
-.fa-edit:before, .fa-pencil-square-o:before, .fa-pencil-square:before {
-  padding: 0 5px 0 7px;
-}
-
-.fa-edit:before, .fa-trash:before {
-    padding: 0 8px;
-}
-
 .icon-fa::before {
     font: normal normal normal 14px/1 FontAwesome;
     text-rendering: auto;
