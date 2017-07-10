@@ -15,8 +15,8 @@ Features
 | `Feature #1535 <https://redmine.postgresql.org/issues/1535>`_ - Teach dialogues about Escape to cancel, Enter to Save/OK, and F1 for help
 | `Feature #1971 <https://redmine.postgresql.org/issues/1971>`_ - Retain column sizing in the query tool results grid when the same query is re-run multiple times in a row
 | `Feature #1972 <https://redmine.postgresql.org/issues/1972>`_ - Prompt the user to save dirty queries rather than discard them for a more natural workflow
-| `Feature #2137 <https://redmine.postgresql.org/issues/2437>`_ - Fixed Row selection issue and row past issue
-| `Feature #2191 <https://redmine.postgresql.org/issues/2491>`_ - Add support for the hostaddr connection parameter. This helps us play nicely with Kerberos/SSPI and friends
+| `Feature #2137 <https://redmine.postgresql.org/issues/2137>`_ - On-demand loading for the query tool results
+| `Feature #2191 <https://redmine.postgresql.org/issues/2191>`_ - Add support for the hostaddr connection parameter. This helps us play nicely with Kerberos/SSPI and friends
 | `Feature #2282 <https://redmine.postgresql.org/issues/2282>`_ - Overhaul the query history tab to allow browsing of the history and full query text
 | `Feature #2379 <https://redmine.postgresql.org/issues/2379>`_ - Support inserting multiple new rows into a table without clicking Save for each row
 | `Feature #2485 <https://redmine.postgresql.org/issues/2485>`_ - Add a shortcut to reset the zoom level in the runtime
