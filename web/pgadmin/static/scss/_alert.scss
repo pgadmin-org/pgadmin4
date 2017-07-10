@@ -155,6 +155,8 @@ category: alerts
 .alert-text {
   display: inline-block;
   padding: 0 12px 0 10px;
+  // To make sure IE picks up the correct font
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .alert-info {
