@@ -256,10 +256,19 @@ REM Main function Ends
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\Qt5MultimediaWidgets.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\libQt5WebKit.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-    copy "%QTDIR%\bin\libQt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
-    IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+    IF %QT_VERSION% GEQ 5.9 (
+        copy "%QTDIR%\bin\Qt5WebKit.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\Qt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    ) ELSE (
+        copy "%QTDIR%\bin\libQt5WebKit.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        copy "%QTDIR%\bin\libQt5WebKitWidgets.dll" "%PGBUILDPATH%\runtime"
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    )
+
     copy "%QTDIR%\bin\icudt57.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\icuin57.dll" "%PGBUILDPATH%\runtime"
@@ -268,13 +277,13 @@ REM Main function Ends
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     copy "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime"
+    copy "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime"
+    copy "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\libxml2-2.dll" "%PGBUILDPATH%\runtime"
+    copy "%QTDIR%\bin\libxml2-2.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        copy "%QTDIR%\bin\libxslt-1.dll" "%PGBUILDPATH%\runtime"
+    copy "%QTDIR%\bin\libxslt-1.dll" "%PGBUILDPATH%\runtime"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
     MKDIR "%PGBUILDPATH%\runtime\platforms"
     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
