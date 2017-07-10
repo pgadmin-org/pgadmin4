@@ -826,6 +826,10 @@ define(
                   _o.d = null;
                   _o.pI.push({coll: true, item: i, d: d});
 
+                  // Set load to false when the current collection node's inode is false
+                  if (!_o.t.isInode(i)) {
+                    _o.load = false;
+                  }
                   _o.b._findTreeChildNode(i, _d, _o);
                   return;
                 }
@@ -1502,27 +1506,39 @@ define(
                       }
                     });
                   } else {
-                    ctx.t.append(ctx.i, {
-                      itemData: _new,
-                      success: function() {
-                        var new_item = $(arguments[1].items[0]);
-                        ctx.t.openPath(new_item);
-                        ctx.t.select(new_item);
-                        if (
-                          ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
-                        ) {
-                          ctx.o.success.apply(ctx.t, [ctx.i, _old, _new]);
+                    var _appendNode = function() {
+                      ctx.t.append(ctx.i, {
+                        itemData: _new,
+                        success: function() {
+                          var new_item = $(arguments[1].items[0]);
+                          ctx.t.openPath(new_item);
+                          ctx.t.select(new_item);
+                          if (
+                            ctx.o && ctx.o.success && typeof(ctx.o.success) == 'function'
+                          ) {
+                            ctx.o.success.apply(ctx.t, [ctx.i, _old, _new]);
+                          }
+                        },
+                        fail: function() {
+                          console.log('Failed to append');
+                          if (
+                            ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
+                          ) {
+                            ctx.o.fail.apply(ctx.t, [ctx.i, _old, _new]);
+                          }
                         }
-                      },
-                      fail: function() {
-                        console.log('Failed to append');
-                        if (
-                          ctx.o && ctx.o.fail && typeof(ctx.o.fail) == 'function'
-                        ) {
-                          ctx.o.fail.apply(ctx.t, [ctx.i, _old, _new]);
-                        }
-                      }
-                    });
+                      })
+                    };
+
+                    // If the current node's inode is false
+                    if (ctx.i && !ctx.t.isInode(ctx.i)) {
+                      ctx.t.setInode(ctx.i, {success: _appendNode});
+                    } else {
+                      // Handle case for node without parent i.e. server-group
+                      // or if parent node's inode is true.
+                      _appendNode();
+                    }
+
                   }
                 }.bind(ctx);
 
