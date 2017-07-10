@@ -34,6 +34,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015-without-strict": "~0.0.4",
     "babelify": "~7.3.0",
+    "bowser": "1.6.1",
     "browserify": "~14.1.0",
     "exports-loader": "~0.6.4",
     "immutability-helper": "^2.2.0",
