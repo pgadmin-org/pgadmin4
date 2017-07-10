@@ -82,3 +82,9 @@
     padding-top: 20px;
     padding-bottom: 40px;
 }
+
+.icon-postgres:before {
+    height: 43px;
+    margin-top: 13px;
+    display: block;
+}

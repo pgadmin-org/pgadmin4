@@ -505,8 +505,12 @@ fieldset[disabled] .form-control {
     border-radius: 3px;
 }
 
-.highlight.has-error {
-    border-color: #A94442;
+.fa-edit:before, .fa-pencil-square-o:before, .fa-pencil-square:before {
+  padding: 0 5px 0 7px;
+}
+
+.fa-edit:before, .fa-trash:before {
+    padding: 0 8px;
 }
 
 .icon-fa::before {
@@ -710,23 +714,6 @@ td.switch-cell > div.bootstrap-switch {
 .width_percent_95 { width: 95%; }
 .width_percent_99 { width: 99%; }
 .width_percent_100 { width: 100%; }
-
-.pg-prop-status-bar {
-    left: 0px;
-    right: 0px;
-    background-color: #8E1A17;
-    color: white;
-    padding: 5px;
-    opacity: 0.8;
-}
-
-.pg-prop-status-bar:empty {
-  display: none;
-}
-
-.pg-prop-status-bar:hover {
-  opacity: 1;
-}
 
 .pg-prop-header {
     position: absolute;

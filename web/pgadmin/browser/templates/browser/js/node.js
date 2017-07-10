@@ -260,9 +260,17 @@ define([
           }
 
           var onSessionInvalid = function(msg) {
-
+            var alertMessage = '\
+              <div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">\
+                <div class="media-body media-middle">\
+                  <div class="alert-icon error-icon">\
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
+                  </div>\
+                    <div class="alert-text">' + msg + '</div>\
+                </div>\
+              </div>';
             if(!_.isUndefined(that.statusBar)) {
-              that.statusBar.html(msg).css("visibility", "visible");
+              that.statusBar.html(alertMessage).css("visibility", "visible");
             }
             callback(true);
 

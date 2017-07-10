@@ -1,0 +1,21 @@
+.has-error {
+  .pgadmin-controls > .form-control {
+    border-color: #d0021b;
+    position: relative;
+  }
+
+  .control-label {
+    color: #d0021b;
+  }
+
+  .pgadmin-controls:before {
+    font: normal normal normal 16px/1 FontAwesome;
+    content: "\f071";
+    text-decoration: inherit;
+    position: absolute;
+    color: #d0021b;
+    right: 15px;
+    padding-top: 10px;
+    z-index: 1;
+  }
+}
