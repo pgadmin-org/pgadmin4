@@ -169,3 +169,7 @@ button.pg-alertify-button {
   @extend .border-green-2;
   @extend .ajs-text-smoothing;
 }
+
+.media-body {
+  display: table-row;
+}
