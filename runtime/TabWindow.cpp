@@ -76,7 +76,7 @@ DockTabWidget::DockTabWidget(QWidget *parent) :
 }
 
 DockTabWidget::DockTabWidget(DockTabWidget *other, QWidget *parent) :
-        DockTabWidget(parent)
+        QTabWidget(parent)
 {
     setFloatingBaseWidget(other->floatingBaseWidget());
     setFloatingEnabled(other->isFloatingEnabled());
