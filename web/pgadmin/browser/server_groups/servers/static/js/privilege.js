@@ -627,7 +627,16 @@
        * focused active element.
        */
       setTimeout(function() {
-        if (self.$el[0] != document.activeElement && !isDescendant(self.$el[0], document.activeElement)){
+        /*
+         Do not close the control if user clicks outside dialog window,
+         only close the row if user clicks on add button or on another row, if user
+         clicks somewhere else then we will get tagName as 'BODY' or 'WINDOW'
+        */
+        var is_active_element = document.activeElement.tagName == 'DIV' ||
+                                document.activeElement.tagName == 'BUTTON';
+
+        if (is_active_element && self.$el[0] != document.activeElement &&
+                !isDescendant(self.$el[0], document.activeElement)) {
           var m = self.model;
           m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
         }},10);
