@@ -22,9 +22,13 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
 
             // Bind the Dashboard object with the 'object_selected' function
             var selected = this.object_selected.bind(this);
+            var disconnected = this.object_disconnected.bind(this);
 
             // Listen for selection of any of object
             pgBrowser.Events.on('pgadmin-browser:tree:selected', selected);
+
+            // Listen for server disconnected event
+            pgBrowser.Events.on('pgadmin:server:disconnect', disconnected);
 
             // Load the default welcome dashboard
             url = '{{ url_for('dashboard.index') }}';
@@ -53,6 +57,11 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                     $(dashboardPanel).data('did', -1)
                 }
             }
+        },
+
+        // Handle Server Disconnect
+        object_disconnected: function(obj) {
+            this.object_selected(obj.item, obj.data, pgBrowser.Nodes[obj.data._type]);
         },
 
         // Handle treeview clicks
@@ -89,28 +98,40 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                         );
 
                     if (div) {
-                        // Avoid unnecessary reloads
-                        if (url != $(dashboardPanel).data('dashboard_url')) {
-                            // Clear out everything so any existing timers die off
-                            $(div).empty();
+                        if (itemData.connected || _.isUndefined(itemData.connected)) {
+                            // Avoid unnecessary reloads
+                            if (url != $(dashboardPanel).data('dashboard_url') ||
+                               (url == $(dashboardPanel).data('dashboard_url') && $(dashboardPanel).data('server_status') == false )) {
+                                // Clear out everything so any existing timers die off
+                                $(div).empty();
 
-                            $.ajax({
-                                url: url,
-                                type: "GET",
-                                dataType: "html",
-                                success: function (data) {
-                                    $(div).html(data);
-                                },
-                                error: function (xhr, status) {
-                                    $(div).html(
-                                        '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                                    );
-                                }
-                            });
+                                $.ajax({
+                                    url: url,
+                                    type: "GET",
+                                    dataType: "html",
+                                    success: function (data) {
+                                        $(div).html(data);
+                                    },
+                                    error: function (xhr, status) {
+                                        $(div).html(
+                                            '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                                        );
+                                    }
+                                });
+                                $(dashboardPanel).data('server_status', true);
+                            }
 
-                            // Cache the current IDs for next time
-                            $(dashboardPanel).data('dashboard_url', url);
                         }
+                        else {
+                            $(div).empty();
+                            $(div).html(
+                                '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
+                            );
+                            $(dashboardPanel).data('server_status', false);
+                        }
+                        // Cache the current IDs for next time
+                        $(dashboardPanel).data('dashboard_url', url);
+
                     }
                 }
             }
