@@ -57,7 +57,7 @@ In order to configure the Python code, follow these steps:
 
        $ python setup.py
 
-Alternatively, you can simply run ``pgAdmin4.py`` at this point or aat a later time,
+Alternatively, you can simply run ``pgAdmin4.py`` at this point or at a later time,
 and ``pgadmin4.db`` will be created automatically at first run.
     
 Runtime
@@ -73,6 +73,25 @@ semi-colon character, for example:
 
      /Users/dpage/.virtualenvs/pgadmin4/lib/python2.7/site-packages/;/Users/dpage/python-libs/
     
-The configuration settings are stored using the QSettings class in Qt, which 
-will use an INI file on Unix systems, a plist file on Mac OS X, and the registry
-on Windows. The Python Path setting is stored in the ``PythonPath`` key.
+The configuration settings are stored using the QSettings class in Qt, which
+will use an INI file on Unix systems (~/.config/pgadmin/pgadmin4.conf),
+a plist file on Mac OS X (~/Library/Preferences/org.pgadmin.pgadmin4.plist),
+and the registry on Windows (HKEY_CURRENT_USER\\Software\\pgadmin\\pgadmin4).
+
+The configuration settings:
+
++--------------------------+--------------------+---------------------------------------------------------------+
+| Key                      | Type               | Purpose                                                       |
++==========================+====================+===============================================================+
+| ApplicationPath          | String             | The directory containing pgAdmin4.py                          |
++--------------------------+--------------------+---------------------------------------------------------------+
+| ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
++--------------------------+--------------------+---------------------------------------------------------------+
+| PythonPath               | String             | The Python module search path                                 |
++--------------------------+--------------------+---------------------------------------------------------------+
+| Browser/Geometry         | Binary             | The runtime window's size/shape                               |
++--------------------------+--------------------+---------------------------------------------------------------+
+| Browser/WindowState      | Binary             | The runtime window's state                                    |
++--------------------------+--------------------+---------------------------------------------------------------+
+| Browser/Zoom             | String             | The runtime window's zoom level (zoom % / 100)                |
++--------------------------+--------------------+---------------------------------------------------------------+

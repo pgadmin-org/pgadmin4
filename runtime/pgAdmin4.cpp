@@ -340,28 +340,36 @@ int main(int argc, char * argv[])
     // Generate the app server URL
     QString appServerUrl = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
 
+    // Read the server connection timeout from the registry or set the default timeout.
+    QSettings settings;
+    int timeout = settings.value("ConnectionTimeout", 30).toInt();
+
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.
-    int attempt = 0;
-    while (attempt++ < 50)
+
+    QTime endTime = QTime::currentTime().addSecs(timeout);
+    bool alive = false;
+
+    while(QTime::currentTime() <= endTime)
     {
-        bool alive = PingServer(QUrl(appServerUrl));
+        alive = PingServer(QUrl(appServerUrl));
 
         if (alive)
         {
             break;
         }
 
-        if (attempt == 50)
-        {
-            splash->finish(NULL);
-            QString error(QWidget::tr("The application server could not be contacted."));
-            QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
-
-            exit(1);
-        }
-
         delay(200);
+    }
+
+    // Attempt to connect one more time in case of a long network timeout while looping
+    if(!alive && !PingServer(QUrl(appServerUrl)))
+    {
+        splash->finish(NULL);
+        QString error(QWidget::tr("The application server could not be contacted."));
+        QMessageBox::critical(NULL, QString(QWidget::tr("Fatal Error")), error);
+
+        exit(1);
     }
 
     // Create & show the main window
@@ -394,7 +402,7 @@ bool PingServer(QUrl url)
     QNetworkReply *reply;
     QVariant redirectUrl;
 
-    url.setPath("/misc/ping");
+    url.setPath("/misc/pingx");
 
     do
     {
