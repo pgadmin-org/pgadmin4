@@ -13,7 +13,7 @@ time({{ type_length }}) with time zone{% endif %}{% if is_type_array %}
 {###### Need to check against separate time types - END ######}
 {#############################################################}
 {% else %}
-{{ conn|qtTypeIdent(type_name) }}{% if type_length %}
+{{ type_name }}{% if type_length %}
 ({{ type_length }}{% if type_precision%}, {{ type_precision }}{% endif %}){% endif %}{% if is_type_array %}
 []{% endif %}
 {% endif %}
