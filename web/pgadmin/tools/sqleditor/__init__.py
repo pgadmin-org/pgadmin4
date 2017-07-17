@@ -1490,14 +1490,15 @@ def load_file():
             errormsg=gettext("File type not supported")
         )
 
-    with codecs.open(file_path, 'r', encoding=enc) as fileObj:
-        data = fileObj.read()
+    def gen():
+        with codecs.open(file_path, 'r', encoding=enc) as fileObj:
+            while True:
+                data = fileObj.read(4194304)  # 4MB chunk (4 * 1024 * 1024 Bytes)
+                if not data:
+                    break
+                yield data
 
-    return make_json_response(
-        data={
-            'status': True, 'result': data,
-        }
-    )
+    return Response(gen(), mimetype='text/plain')
 
 
 @blueprint.route('/save_file/', methods=["PUT", "POST"], endpoint='save_file')

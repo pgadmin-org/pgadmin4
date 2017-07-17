@@ -1624,7 +1624,7 @@ if (has_capability(data, 'upload')) {
       complete: function(file) {
         if (file.status == "error") {
           var alertifyWrapper = new AlertifyWrapper();
-          alertifyWrapper.error(lg.ERROR_UPLOADING_FILE);
+          alertifyWrapper.error(lg.upload_error);
         }
         $('.upload_file .dz_cross_btn').removeAttr('disabled');
         getFolderInfo(path);

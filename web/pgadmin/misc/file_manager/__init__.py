@@ -886,10 +886,14 @@ class Filemanager(object):
             newName = u"{0}{1}".format(orig_path, file_name)
 
             with open(newName, 'wb') as f:
-                f.write(file_obj.read())
+                while True:
+                    data = file_obj.read(4194304)  # 4MB chunk (4 * 1024 * 1024 Bytes)
+                    if not data:
+                        break
+                    f.write(data)
         except Exception as e:
             code = 0
-            err_msg = u"Error: {0}".format(e.strerror)
+            err_msg = u"Error: {0}".format(e.strerror if hasattr(e, 'strerror') else u'Unknown')
 
         try:
             Filemanager.check_access_permission(dir, path)
