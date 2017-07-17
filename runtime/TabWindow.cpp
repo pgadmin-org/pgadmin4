@@ -232,7 +232,7 @@ void DockTabWidget::dockClosetabs()
     // Check if main pgAdmin4 application has only one tab then close tab bar.
     // Here - check for count 2 because tab will be deleted later.
     DockTabWidget *mainTab = DockTabWidget::getMainTabWidget();
-    if (mainTab != NULL && mainTab->count() == 2)
+    if (mainTab != NULL && l_tab_widget != NULL && l_tab_widget == mainTab && mainTab->count() == 2)
         mainTab->tabBar()->setVisible(false);
 }
 
