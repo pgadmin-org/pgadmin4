@@ -522,9 +522,6 @@ DockTabBar::DockTabBar(DockTabWidget *tabWidget, QWidget *parent) :
 // Insert new tab at specified index.
 int DockTabBar::insertionIndexAt(const QPoint &pos)
 {
-#ifndef __APPLE__
-    this->setStyleSheet("background-color: #E8E8E8");
-#endif
     int index = count();
     for (int i = 0; i < count(); ++i)
     {
@@ -635,9 +632,6 @@ void DockTabBar::mouseMoveEvent(QMouseEvent *event)
 // Actual tab drag started.
 void DockTabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-#ifndef __APPLE__
-    this->setStyleSheet("background-color: #84ACDD");
-#endif
     if (DockTabWidget::eventIsTabDrag(event))
         event->acceptProposedAction();
 }
@@ -646,9 +640,6 @@ void DockTabBar::dragEnterEvent(QDragEnterEvent *event)
 void DockTabBar::dragLeaveEvent(QDragLeaveEvent * event)
 {
     Q_UNUSED(event)
-#ifndef __APPLE__
-    this->setStyleSheet("background-color: #E8E8E8");
-#endif
 }
 
 // Drop event handler for tabbar.
