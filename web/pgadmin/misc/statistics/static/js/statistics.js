@@ -324,14 +324,23 @@ define([
       this.columns = [];
       for (var idx in columns) {
         var rawColumn = columns[idx],
-            col = {
+        cell_type = typeCellMapper[rawColumn['type_code']] || 'string';
+
+        // Don't show PID comma separated
+        if(rawColumn['name'] == 'PID') {
+          cell_type = cell_type.extend({
+            orderSeparator: ''
+          });
+        }
+
+        var col = {
             editable: false,
             name: rawColumn['name'],
-            cell: typeCellMapper[rawColumn['type_code']] || 'string'
-           };
-           if (_.indexOf(prettifyFields, rawColumn['name']) != -1) {
-            col['formatter'] = SizeFormatter
-           }
+            cell: cell_type
+        };
+        if (_.indexOf(prettifyFields, rawColumn['name']) != -1) {
+          col['formatter'] = SizeFormatter
+        }
         this.columns.push(col);
 
       }
