@@ -402,7 +402,7 @@ bool PingServer(QUrl url)
     QNetworkReply *reply;
     QVariant redirectUrl;
 
-    url.setPath("/misc/pingx");
+    url.setPath("/misc/ping");
 
     do
     {
