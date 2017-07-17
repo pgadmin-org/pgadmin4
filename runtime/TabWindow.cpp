@@ -81,6 +81,49 @@ DockTabWidget::DockTabWidget(DockTabWidget *other, QWidget *parent) :
     setFloatingBaseWidget(other->floatingBaseWidget());
     setFloatingEnabled(other->isFloatingEnabled());
     resize(other->size());
+
+    // set custom tab bar in tab widget to receive events for docking.
+    setTabBar(new DockTabBar(this));
+    setDocumentMode(true);
+    setAcceptDrops(true);
+
+    // Get the system colours we need
+    QPalette palette = QApplication::palette("QPushButton");
+    QColor activebg = palette.color(QPalette::Button);
+    QColor activefg = palette.color(QPalette::ButtonText);
+    QColor inactivebg = palette.color(QPalette::Dark);
+    QColor inactivefg = palette.color(QPalette::ButtonText);
+    QColor border = palette.color(QPalette::Mid);
+
+    setStyleSheet(
+        "QTabBar::tab { "
+                "background-color: " + inactivebg.name() + "; "
+                "color: " + inactivefg.name() + "; "
+                "border: 1px solid " + border.name() + "; "
+                "padding: 1px 0px; "
+                "margin-left: 0px; "
+                "margin-top: 1px; "
+#ifndef __APPLE__
+                "width: 15em; "
+                "height: 1.5em; "
+#else
+                "font: 11pt; "
+                "width: 19em; "
+                "height: 1.5em; "
+#endif
+            "} "
+        "QTabBar::tab:selected { "
+                "background-color: " + activebg.name() + "; "
+                "color: " + activefg.name() + "; "
+                "border-bottom-style: none; "
+            "} "
+        "QTabWidget::pane { "
+                "border: 0; "
+            "} "
+        "QTabWidget::tab-bar {"
+                "alignment: left; "
+            "}"
+    );
 }
 
 void DockTabWidget::setFloatingBaseWidget(QWidget *widget)
