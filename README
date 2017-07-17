@@ -18,7 +18,7 @@ utilised.
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
 subdirectory contains a QT based runtime application intended to allow this -
-it is essentially a browser and Python interpretor in one package which is
+it is essentially a browser and Python interpreter in one package which is
 capable of hosting the Python application and presenting it to the user as a
 desktop application.
 
