@@ -1030,26 +1030,27 @@ class BaseTableView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=rset)
 
-            sql_header = u"\n-- Partitions SQL"
-            partition_sql = ''
-            for row in rset['rows']:
-                part_data = dict()
-                part_data['partitioned_table_name'] = data['name']
-                part_data['parent_schema'] = data['schema']
-                part_data['schema'] = row['schema_name']
-                part_data['relispartition'] = True
-                part_data['name'] = row['name']
-                part_data['partition_value'] = row['partition_value']
-                part_data['is_partitioned'] = row ['is_partitioned']
-                part_data['partition_scheme'] = row['partition_scheme']
+            if len(rset['rows']):
+                sql_header = u"\n-- Partitions SQL"
+                partition_sql = ''
+                for row in rset['rows']:
+                    part_data = dict()
+                    part_data['partitioned_table_name'] = data['name']
+                    part_data['parent_schema'] = data['schema']
+                    part_data['schema'] = row['schema_name']
+                    part_data['relispartition'] = True
+                    part_data['name'] = row['name']
+                    part_data['partition_value'] = row['partition_value']
+                    part_data['is_partitioned'] = row ['is_partitioned']
+                    part_data['partition_scheme'] = row['partition_scheme']
 
-                partition_sql += render_template("/".join(
-                    [self.partition_template_path, 'create.sql']),
-                    data=part_data, conn=self.conn)
+                    partition_sql += render_template("/".join(
+                        [self.partition_template_path, 'create.sql']),
+                        data=part_data, conn=self.conn)
 
-            # Add into main sql
-            partition_sql = re.sub('\n{2,}', '\n\n', partition_sql)
-            main_sql.append(sql_header + '\n\n' + partition_sql.strip('\n'))
+                # Add into main sql
+                partition_sql = re.sub('\n{2,}', '\n\n', partition_sql)
+                main_sql.append(sql_header + '\n\n' + partition_sql.strip('\n'))
 
         sql = '\n'.join(main_sql)
 

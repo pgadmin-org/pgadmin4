@@ -19,9 +19,15 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data
 {% endif %}
     {{ data.partition_value }}{% if data.is_partitioned is defined and data.is_partitioned %}
 
-    PARTITION BY {{ data.partition_scheme }}{% endif %};
+    PARTITION BY {{ data.partition_scheme }}{% endif %}
+{### SQL for Tablespace ###}
+{% if data.spcname %}
 
+TABLESPACE {{ conn|qtIdent(data.spcname) }};
+{% else %}
+;
 
+{% endif %}
 {### Alter SQL for Owner ###}
 {% if data.relowner %}
 
