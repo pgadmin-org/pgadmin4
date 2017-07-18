@@ -8,14 +8,15 @@ function (copyData, RangeSelectionHelper) {
     var KEY_A = 65;
     var modifiedKey = event.keyCode;
     var isModifierDown = event.ctrlKey || event.metaKey;
-    this.slickgrid = args.grid;
+    var self = this || window;
+    self.slickgrid = args.grid;
 
     if (isModifierDown && modifiedKey == KEY_C) {
-      copyData.apply(this);
+      copyData.apply(self);
     }
 
     if (isModifierDown && modifiedKey == KEY_A) {
-      RangeSelectionHelper.selectAll(this.slickgrid);
+      RangeSelectionHelper.selectAll(self.slickgrid);
     }
   }
 });

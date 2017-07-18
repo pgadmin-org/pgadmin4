@@ -1,4 +1,4 @@
-define([
+define('misc.sql', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
   'alertify', 'pgadmin.alertifyjs'
 ], function(gettext, _, S, $, pgBrowser, Alertify) {
@@ -8,6 +8,7 @@ define([
   if (pgBrowser.ShowNodeSQL.initialized) {
     return pgBrowser.ShowNodeSQL;
   }
+  var wcDocker = window.wcDocker;
 
   _.extend(pgBrowser.ShowNodeSQL, {
     init: function() {
@@ -17,6 +18,7 @@ define([
       this.initialized = true;
       _.bindAll(this, 'showSQL', 'sqlPanelVisibilityChanged');
 
+      var sqlPanels;
       this.sqlPanels = sqlPanels = pgBrowser.docker.findPanels('sql');
 
       // We will listend to the visibility change of the SQL panel
@@ -64,6 +66,7 @@ define([
        **/
       this.timeout && clearTimeout(this.timeout);
 
+      var that = this;
       this.timeout =  setTimeout(
         function() {
           var sql = '';
@@ -75,11 +78,11 @@ define([
                 treeHierarchy = node.getTreeNodeHierarchy(item);
 
             // Avoid unnecessary reloads
-            if (_.isEqual($(this.sqlPanels[0]).data('node-prop'), treeHierarchy)) {
+            if (_.isEqual($(that.sqlPanels[0]).data('node-prop'), treeHierarchy)) {
               return;
             }
             // Cache the current IDs for next time
-            $(this.sqlPanels[0]).data('node-prop', treeHierarchy);
+            $(that.sqlPanels[0]).data('node-prop', treeHierarchy);
 
             if (node.hasSQL) {
 

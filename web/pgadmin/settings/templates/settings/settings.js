@@ -1,4 +1,4 @@
-define(
+define('pgadmin.settings',
   [
     'jquery', 'alertify', 'pgadmin', 'underscore', 'backform',
     'sources/gettext', 'sources/url_for', 'pgadmin.backform'

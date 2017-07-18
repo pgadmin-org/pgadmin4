@@ -1,17 +1,16 @@
 define(
-    ['underscore', 'alertify', 'pgadmin'],
-function(_, alertify, pgAdmin) {
+    ['sources/gettext', 'underscore', 'alertify', 'pgadmin'],
+function(gettext, _, alertify, pgAdmin) {
   pgAdmin.Browser = pgAdmin.Browser || {};
 
   _.extend(pgAdmin.Browser, {
     report_error: function(title, message, info) {
-      text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
+      var text = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">\
            <div class="panel panel-default">\
            <div class="panel-heading" role="tab" id="headingOne">\
            <h4 class="panel-title">\
            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">\
-           {{ _('Error message') }}\
-      </a>\
+           ' + gettext("Error message") + '</a>\
         </h4>\
         </div>\
         <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">\
@@ -24,7 +23,7 @@ function(_, alertify, pgAdmin) {
             <div class="panel-heading" role="tab" id="headingTwo">\
             <h4 class="panel-title">\
             <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">\
-            {{ _('Additional info') }}</a>\
+            ' + gettext("Additional info") + '</a>\
           </h4>\
           </div>\
           <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">\

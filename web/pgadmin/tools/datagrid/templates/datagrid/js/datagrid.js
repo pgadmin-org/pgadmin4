@@ -1,9 +1,8 @@
-define([
-  'sources/gettext', 'sources/url_for', 'jquery','alertify', 'pgadmin','codemirror',
-  'sources/sqleditor_utils', 'pgadmin.browser', 'wcdocker',
-  'codemirror/addon/edit/matchbrackets', 'codemirror/addon/edit/closebrackets'
-
-], function(gettext, url_for, $, alertify, pgAdmin, codemirror, sqlEditorUtils) {
+define('tools.datagrid', [
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'pgadmin',
+  'bundled_codemirror',
+  'sources/sqleditor_utils', 'wcdocker'
+], function(gettext, url_for, $, _, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
@@ -42,14 +41,7 @@ define([
             return (_.indexOf(supported_nodes, obj._type) !== -1 ? true: false);
           else
             return false;
-        };
-
-        // Define list of nodes on which Query tool option doesn't appears
-        var unsupported_nodes = pgAdmin.unsupported_nodes = [
-           'server-group', 'server', 'coll-tablespace', 'tablespace',
-           'coll-role', 'role', 'coll-resource_group', 'resource_group',
-           'coll-database'
-        ],
+        },
 
         /* Enable/disable Query tool menu in tools based
          * on node selected. if selected node is present
@@ -58,7 +50,7 @@ define([
          */
         query_tool_menu_enabled = function(obj) {
           if(!_.isUndefined(obj) && !_.isNull(obj)) {
-            if(_.indexOf(unsupported_nodes, obj._type) == -1) {
+            if(_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
               if (obj._type == 'database' && obj.allowConn)
                 return true;
               else if(obj._type != 'database')
@@ -427,7 +419,7 @@ define([
       show_query_tool: function(url, i, panel_title) {
         var self = this,
           sURL = url || '',
-          panel_title = panel_title || '';
+          panel_title = panel_title || '',
           d = pgAdmin.Browser.tree.itemData(i);
         if (d === undefined) {
           alertify.alert(

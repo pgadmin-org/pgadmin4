@@ -3,7 +3,7 @@ define('pgadmin.node.server', [
   'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.server.supported_servers',
   'pgadmin.user_management.current_user',
-  'sources/alerts/alertify_wrapper',
+  'sources/alerts/alertify_wrapper', 'pgadmin.browser.server.privilege'
 ], function(
   gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify,
   supported_servers, current_user, AlertifyWrapper
@@ -1037,7 +1037,7 @@ define('pgadmin.node.server', [
       };
 
       data.is_connecting = true;
-      url = obj.generate_url(item, "connect", data, true);
+      var url = obj.generate_url(item, "connect", data, true);
       $.post(url)
       .done(function(res) {
         if (res.success == 1) {

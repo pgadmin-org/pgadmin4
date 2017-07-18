@@ -62,7 +62,7 @@ class DashboardModule(PgAdminModule):
                 isPrivate=False,
                 limit=1,
                 isIframe=False,
-                canHide=True)
+                canHide=True).__dict__
         ]
 
     def register_preferences(self):
@@ -114,6 +114,41 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('The number of seconds between graph samples.')
         )
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return [
+            'dashboard.index', 'dashboard.get_by_sever_id',
+            'dashboard.get_by_database_id',
+            'dashboard.session_stats',
+            'dashboard.get_session_stats_by_sever_id',
+            'dashboard.get_session_stats_by_database_id',
+            'dashboard.tps_stats',
+            'dashboard.tps_stats_by_server_id',
+            'dashboard.tps_stats_by_database_id',
+            'dashboard.ti_stats',
+            'dashboard.ti_stats_by_server_id',
+            'dashboard.ti_stats_by_database_id',
+            'dashboard.to_stats',
+            'dashboard.to_stats_by_server_id',
+            'dashboard.to_stats_by_database_id',
+            'dashboard.bio_stats',
+            'dashboard.bio_stats_by_server_id',
+            'dashboard.bio_stats_by_database_id',
+            'dashboard.activity',
+            'dashboard.get_activity_by_server_id',
+            'dashboard.get_activity_by_database_id',
+            'dashboard.locks',
+            'dashboard.get_locks_by_server_id',
+            'dashboard.get_locks_by_database_id',
+            'dashboard.prepared',
+            'dashboard.get_prepared_by_server_id',
+            'dashboard.get_prepared_by_database_id',
+            'dashboard.config',
+            'dashboard.get_config_by_server_id',
+        ]
 
 blueprint = DashboardModule(MODULE_NAME, __name__)
 
@@ -200,9 +235,9 @@ def script():
                     mimetype="application/javascript")
 
 
-@blueprint.route('/')
-@blueprint.route('/<int:sid>')
-@blueprint.route('/<int:sid>/<int:did>')
+@blueprint.route('/', endpoint='index')
+@blueprint.route('/<int:sid>', endpoint='get_by_sever_id')
+@blueprint.route('/<int:sid>/<int:did>', endpoint='get_by_database_id')
 @login_required
 def index(sid=None, did=None):
     """
@@ -286,9 +321,13 @@ def get_data(sid, did, template):
     )
 
 
-@blueprint.route('/session_stats/')
-@blueprint.route('/session_stats/<int:sid>')
-@blueprint.route('/session_stats/<int:sid>/<int:did>')
+@blueprint.route('/session_stats/', endpoint='session_stats')
+@blueprint.route(
+    '/session_stats/<int:sid>', endpoint='get_session_stats_by_sever_id')
+@blueprint.route(
+    '/session_stats/<int:sid>/<int:did>',
+    endpoint='get_session_stats_by_database_id'
+)
 @login_required
 @check_precondition
 def session_stats(sid=None, did=None):
@@ -300,9 +339,11 @@ def session_stats(sid=None, did=None):
     return get_data(sid, did, 'session_stats.sql')
 
 
-@blueprint.route('/tps_stats/')
-@blueprint.route('/tps_stats/<int:sid>')
-@blueprint.route('/tps_stats/<int:sid>/<int:did>')
+@blueprint.route('/tps_stats/', endpoint='tps_stats')
+@blueprint.route('/tps_stats/<int:sid>', endpoint='tps_stats_by_server_id')
+@blueprint.route(
+    '/tps_stats/<int:sid>/<int:did>', endpoint='tps_stats_by_database_id'
+)
 @login_required
 @check_precondition
 def tps_stats(sid=None, did=None):
@@ -314,9 +355,10 @@ def tps_stats(sid=None, did=None):
     return get_data(sid, did, 'tps_stats.sql')
 
 
-@blueprint.route('/ti_stats/')
-@blueprint.route('/ti_stats/<int:sid>')
-@blueprint.route('/ti_stats/<int:sid>/<int:did>')
+@blueprint.route('/ti_stats/', endpoint='ti_stats')
+@blueprint.route('/ti_stats/<int:sid>', endpoint='ti_stats_by_server_id')
+@blueprint.route(
+    '/ti_stats/<int:sid>/<int:did>', endpoint='ti_stats_by_database_id')
 @login_required
 @check_precondition
 def ti_stats(sid=None, did=None):
@@ -328,9 +370,10 @@ def ti_stats(sid=None, did=None):
     return get_data(sid, did, 'ti_stats.sql')
 
 
-@blueprint.route('/to_stats/')
-@blueprint.route('/to_stats/<int:sid>')
-@blueprint.route('/to_stats/<int:sid>/<int:did>')
+@blueprint.route('/to_stats/', endpoint='to_stats')
+@blueprint.route('/to_stats/<int:sid>', endpoint='to_stats_by_server_id')
+@blueprint.route(
+    '/to_stats/<int:sid>/<int:did>', endpoint='to_stats_by_database_id')
 @login_required
 @check_precondition
 def to_stats(sid=None, did=None):
@@ -342,9 +385,10 @@ def to_stats(sid=None, did=None):
     return get_data(sid, did, 'to_stats.sql')
 
 
-@blueprint.route('/bio_stats/')
-@blueprint.route('/bio_stats/<int:sid>')
-@blueprint.route('/bio_stats/<int:sid>/<int:did>')
+@blueprint.route('/bio_stats/', endpoint='bio_stats')
+@blueprint.route('/bio_stats/<int:sid>', endpoint='bio_stats_by_server_id')
+@blueprint.route(
+    '/bio_stats/<int:sid>/<int:did>', endpoint='bio_stats_by_database_id')
 @login_required
 @check_precondition
 def bio_stats(sid=None, did=None):
@@ -356,9 +400,10 @@ def bio_stats(sid=None, did=None):
     return get_data(sid, did, 'bio_stats.sql')
 
 
-@blueprint.route('/activity/')
-@blueprint.route('/activity/<int:sid>')
-@blueprint.route('/activity/<int:sid>/<int:did>')
+@blueprint.route('/activity/', endpoint='activity')
+@blueprint.route('/activity/<int:sid>', endpoint='get_activity_by_server_id')
+@blueprint.route(
+    '/activity/<int:sid>/<int:did>', endpoint='get_activity_by_database_id')
 @login_required
 @check_precondition
 def activity(sid=None, did=None):
@@ -370,9 +415,10 @@ def activity(sid=None, did=None):
     return get_data(sid, did, 'activity.sql')
 
 
-@blueprint.route('/locks/')
-@blueprint.route('/locks/<int:sid>')
-@blueprint.route('/locks/<int:sid>/<int:did>')
+@blueprint.route('/locks/', endpoint='locks')
+@blueprint.route('/locks/<int:sid>', endpoint='get_locks_by_server_id')
+@blueprint.route(
+    '/locks/<int:sid>/<int:did>', endpoint='get_locks_by_database_id')
 @login_required
 @check_precondition
 def locks(sid=None, did=None):
@@ -384,9 +430,10 @@ def locks(sid=None, did=None):
     return get_data(sid, did, 'locks.sql')
 
 
-@blueprint.route('/prepared/')
-@blueprint.route('/prepared/<int:sid>')
-@blueprint.route('/prepared/<int:sid>/<int:did>')
+@blueprint.route('/prepared/', endpoint='prepared')
+@blueprint.route('/prepared/<int:sid>', endpoint='get_prepared_by_server_id')
+@blueprint.route(
+    '/prepared/<int:sid>/<int:did>', endpoint='get_prepared_by_database_id')
 @login_required
 @check_precondition
 def prepared(sid=None, did=None):
@@ -398,8 +445,8 @@ def prepared(sid=None, did=None):
     return get_data(sid, did, 'prepared.sql')
 
 
-@blueprint.route('/config/')
-@blueprint.route('/config/<int:sid>')
+@blueprint.route('/config/', endpoint='config')
+@blueprint.route('/config/<int:sid>', endpoint='get_config_by_server_id')
 @login_required
 @check_precondition
 def config(sid=None):

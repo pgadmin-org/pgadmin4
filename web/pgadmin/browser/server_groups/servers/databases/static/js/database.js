@@ -1,6 +1,6 @@
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'pgadmin', 'pgadmin.browser.utils', 'alertify',
   'sources/alerts/alertify_wrapper',
 
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',

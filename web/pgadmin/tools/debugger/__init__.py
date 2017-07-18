@@ -69,10 +69,29 @@ class DebuggerModule(PgAdminModule):
                              'will be opened in a new browser tab.')
         )
 
+
+    def get_exposed_url_endpoints(self):
+        """
+        Returns the list of URLs exposed to the client.
+        """
+        return ['debugger.index','debugger.init_for_function',
+                'debugger.init_for_trigger',
+                'debugger.direct', 'debugger.initialize_target_for_function',
+                'debugger.initialize_target_for_trigger', 'debugger.close',
+                'debugger.restart',
+                'debugger.start_listener', 'debugger.execute_query',
+                'debugger.messages',
+                'debugger.start_execution', 'debugger.set_breakpoint',
+                'debugger.clear_all_breakpoint', 'debugger.deposit_value',
+                'debugger.select_frame', 'debugger.get_arguments',
+                'debugger.set_arguments',
+                'debugger.poll_end_execution_result', 'debugger.poll_result'
+            ]
+
 blueprint = DebuggerModule(MODULE_NAME, __name__)
 
 
-@blueprint.route("/")
+@blueprint.route("/", endpoint='index')
 @login_required
 def index():
     return bad_request(errormsg=gettext("This URL cannot be called directly!"))
@@ -120,8 +139,14 @@ def update_session_function_transaction(trans_id, data):
     session['functionData'] = function_data
 
 
-@blueprint.route('/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>', methods=['GET'])
-@blueprint.route('/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>/<int:trid>', methods=['GET'])
+@blueprint.route(
+    '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>',
+    methods=['GET'], endpoint='init_for_function'
+)
+@blueprint.route(
+    '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>/<int:trid>',
+    methods=['GET'], endpoint='init_for_trigger'
+)
 @login_required
 def init_function(node_type, sid, did, scid, fid, trid=None):
     """
@@ -291,7 +316,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     )
 
 
-@blueprint.route('/direct/<int:trans_id>', methods=['GET'])
+@blueprint.route('/direct/<int:trans_id>', methods=['GET'], endpoint='direct')
 @login_required
 def direct_new(trans_id):
     debugger_data = session['debuggerData']
@@ -333,10 +358,16 @@ def direct_new(trans_id):
     )
 
 
-@blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
-                 methods=['GET', 'POST'])
-@blueprint.route('/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>/<int:tri_id>',
-                 methods=['GET', 'POST'])
+@blueprint.route(
+    '/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
+    methods=['GET', 'POST'],
+    endpoint='initialize_target_for_function'
+)
+@blueprint.route(
+    '/initialize_target/<debug_type>/<int:sid>/<int:did>/<int:scid>/<int:func_id>/<int:tri_id>',
+    methods=['GET', 'POST'],
+    endpoint='initialize_target_for_trigger'
+)
 @login_required
 def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
     """
@@ -524,7 +555,7 @@ def initialize_target(debug_type, sid, did, scid, func_id, tri_id=None):
                                     'newBrowserTab': new_browser_tab})
 
 
-@blueprint.route('/close/<int:trans_id>', methods=["DELETE"])
+@blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
 def close(trans_id):
     """
     close(trans_id)
@@ -564,7 +595,7 @@ def close(trans_id):
         return internal_server_error(errormsg=str(e))
 
 
-@blueprint.route('/restart/<int:trans_id>', methods=['GET'])
+@blueprint.route('/restart/<int:trans_id>', methods=['GET'], endpoint='restart')
 @login_required
 def restart_debugging(trans_id):
     """
@@ -623,7 +654,10 @@ def restart_debugging(trans_id):
     return make_json_response(data={'status': status})
 
 
-@blueprint.route('/start_listener/<int:trans_id>', methods=['GET', 'POST'])
+@blueprint.route(
+    '/start_listener/<int:trans_id>', methods=['GET', 'POST'],
+    endpoint='start_listener'
+)
 @login_required
 def start_debugger_listener(trans_id):
     """
@@ -810,8 +844,10 @@ def start_debugger_listener(trans_id):
 
     return make_json_response(data={'status': status, 'result': result})
 
-
-@blueprint.route('/execute_query/<int:trans_id>/<query_type>', methods=['GET'])
+@blueprint.route(
+    '/execute_query/<int:trans_id>/<query_type>', methods=['GET'],
+    endpoint='execute_query'
+)
 @login_required
 def execute_debugger_query(trans_id, query_type):
     """
@@ -892,7 +928,7 @@ def execute_debugger_query(trans_id, query_type):
     )
 
 
-@blueprint.route('/messages/<int:trans_id>/', methods=["GET"])
+@blueprint.route('/messages/<int:trans_id>/', methods=["GET"],endpoint='messages')
 @login_required
 def messages(trans_id):
     """
@@ -957,9 +993,10 @@ def messages(trans_id):
         return internal_server_error(errormsg=str(result))
 
 
-
-
-@blueprint.route('/start_execution/<int:trans_id>/<int:port_num>', methods=['GET'])
+@blueprint.route(
+    '/start_execution/<int:trans_id>/<int:port_num>', methods=['GET'],
+    endpoint='start_execution'
+)
 @login_required
 def start_execution(trans_id, port_num):
     """
@@ -1027,7 +1064,10 @@ def start_execution(trans_id, port_num):
     return make_json_response(data={'status': 'Success', 'result': res_port['rows'][0]['pldbg_attach_to_port']})
 
 
-@blueprint.route('/set_breakpoint/<int:trans_id>/<int:line_no>/<int:set_type>', methods=['GET'])
+@blueprint.route(
+    '/set_breakpoint/<int:trans_id>/<int:line_no>/<int:set_type>',
+    methods=['GET'], endpoint='set_breakpoint'
+)
 @login_required
 def set_clear_breakpoint(trans_id, line_no, set_type):
     """
@@ -1096,7 +1136,10 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     return make_json_response(data={'status': status, 'result': result['rows']})
 
 
-@blueprint.route('/clear_all_breakpoint/<int:trans_id>', methods=['POST'])
+@blueprint.route(
+    '/clear_all_breakpoint/<int:trans_id>', methods=['POST'],
+    endpoint='clear_all_breakpoint'
+)
 @login_required
 def clear_all_breakpoint(trans_id):
     """
@@ -1148,7 +1191,9 @@ def clear_all_breakpoint(trans_id):
     return make_json_response(data={'status': status, 'result': result['rows']})
 
 
-@blueprint.route('/deposit_value/<int:trans_id>', methods=['POST'])
+@blueprint.route(
+    '/deposit_value/<int:trans_id>', methods=['POST'], endpoint='deposit_value'
+)
 @login_required
 def deposit_parameter_value(trans_id):
     """
@@ -1206,7 +1251,10 @@ def deposit_parameter_value(trans_id):
     return make_json_response(data={'status': status, 'result': result})
 
 
-@blueprint.route('/select_frame/<int:trans_id>/<int:frame_id>', methods=['GET'])
+@blueprint.route(
+    '/select_frame/<int:trans_id>/<int:frame_id>', methods=['GET'],
+    endpoint='select_frame'
+)
 @login_required
 def select_frame(trans_id, frame_id):
     """
@@ -1256,7 +1304,10 @@ def select_frame(trans_id, frame_id):
     return make_json_response(data={'status': status, 'result': result['rows']})
 
 
-@blueprint.route('/get_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>', methods=['GET'])
+@blueprint.route(
+    '/get_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
+    methods=['GET'], endpoint='get_arguments'
+)
 @login_required
 def get_arguments_sqlite(sid, did, scid, func_id):
     """
@@ -1305,7 +1356,10 @@ def get_arguments_sqlite(sid, did, scid, func_id):
         return make_json_response(data={'result': 'result', 'args_count': DbgFuncArgsCount})
 
 
-@blueprint.route('/set_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>', methods=['POST'])
+@blueprint.route(
+    '/set_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
+    methods=['POST'], endpoint='set_arguments'
+)
 @login_required
 def set_arguments_sqlite(sid, did, scid, func_id):
     """
@@ -1382,6 +1436,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
     return make_json_response(data={'status': True, 'result': 'Success'})
 
+
 def convert_data_to_dict(conn, result):
     """
     This function helps us to convert result set into dict
@@ -1422,7 +1477,10 @@ def convert_data_to_dict(conn, result):
     return columns, result
 
 
-@blueprint.route('/poll_end_execution_result/<int:trans_id>/', methods=["GET"])
+@blueprint.route(
+    '/poll_end_execution_result/<int:trans_id>/',
+    methods=["GET"], endpoint='poll_end_execution_result'
+)
 @login_required
 def poll_end_execution_result(trans_id):
     """
@@ -1518,7 +1576,9 @@ def poll_end_execution_result(trans_id):
     return make_json_response(data={'status': status, 'result': result})
 
 
-@blueprint.route('/poll_result/<int:trans_id>/', methods=["GET"])
+@blueprint.route(
+    '/poll_result/<int:trans_id>/', methods=["GET"], endpoint='poll_result'
+)
 @login_required
 def poll_result(trans_id):
     """

@@ -225,7 +225,7 @@ define('pgadmin.node.foreign_key', [
                 /*
                  * Transform the data
                  */
-                transform = this.field.get('transform') || self.defaults.transform;
+                var transform = this.field.get('transform') || self.defaults.transform;
                 if (transform && _.isFunction(transform)) {
                   // We will transform the data later, when rendering.
                   // It will allow us to generate different data based on the
@@ -494,7 +494,7 @@ define('pgadmin.node.foreign_key', [
         newRow.addClass("new");
         $(newRow).pgMakeVisible('backform-tab');
       } else {
-        delete m;
+        //delete m;
       }
 
       return false;
@@ -534,7 +534,7 @@ define('pgadmin.node.foreign_key', [
 
       var self = this,
           url = 'get_coveringindex',
-          m = self.model
+          m = self.model,
           cols = [],
           coveringindex = null;
 
@@ -610,7 +610,6 @@ define('pgadmin.node.foreign_key', [
       sqlCreateHelp: 'ddl-constraints.html',
       dialogHelp: url_for('help.static', {'filename': 'foreign_key_dialog.html'}),
       hasSQL: true,
-      hasDepends: false,
       parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
@@ -641,7 +640,7 @@ define('pgadmin.node.foreign_key', [
       },
       callbacks: {
         validate_foreign_key: function(args) {
-          var input = args || {};
+          var input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
@@ -926,7 +925,7 @@ define('pgadmin.node.foreign_key', [
               }, 10);
 
               setTimeout(function () {
-                constraints = self.model.top.get("foreign_key");
+                var constraints = self.model.top.get("foreign_key");
                 var removed = [];
                 constraints.each(function(constraint) {
                   if (constraint.get("columns").length == 0) {

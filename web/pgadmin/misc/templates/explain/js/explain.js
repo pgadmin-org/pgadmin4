@@ -1,7 +1,7 @@
 define (
   'pgadmin.misc.explain',
-  ['jquery', 'underscore', 'underscore.string', 'pgadmin', 'backbone', 'snap.svg'],
-  function($, _, S, pgAdmin, Backbone, Snap) {
+  ['sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin', 'backbone', 'snapsvg'],
+  function(url_for, $, _, S, pgAdmin, Backbone, Snap) {
 
 pgAdmin = pgAdmin || window.pgAdmin || {};
 var pgExplain = pgAdmin.Explain;
@@ -86,7 +86,7 @@ if (pgAdmin.Explain)
 
 var pgExplain = pgAdmin.Explain = {
    // Prefix path where images are stored
-   prefix: '{{ url_for('misc.static', filename='explain/img') }}/'
+   prefix: url_for('misc.index') + 'static/explain/img/'
 };
 
 /*
@@ -198,8 +198,10 @@ var imageMapper = {
 }
 
 // Some predefined constants used to calculate image location and its border
-var pWIDTH = pHEIGHT = 100.
-    IMAGE_WIDTH = IMAGE_HEIGHT = 50;
+var pWIDTH =100.;
+var pHEIGHT = 100.;
+var IMAGE_WIDTH =50;
+var IMAGE_HEIGHT = 50;
 var offsetX = 200,
     offsetY = 60;
 var ARROW_WIDTH = 10,
@@ -214,7 +216,7 @@ var xMargin = 25,
 var MIN_ZOOM_FACTOR = 0.01,
     MAX_ZOOM_FACTOR = 2,
     INIT_ZOOM_FACTOR = 1;
-    ZOOM_RATIO = 0.05;
+var ZOOM_RATIO = 0.05;
 
 
 // Backbone model for each plan property of input JSON object
@@ -589,7 +591,7 @@ _.extend(
                 }).appendTo(zoomArea).append(
                   $('<i></i>',{
                     class: 'fa fa-arrows-alt'
-                  }))
+                  })),
               zoomOutBtn = $('<button></button>', {
                 class: 'btn pg-explain-zoom-btn badge',
                 title: 'Zoom out'

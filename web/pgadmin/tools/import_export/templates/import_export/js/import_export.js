@@ -81,7 +81,7 @@ define([
             if (_.isFunction(options)) {
               try {
                 var all_cols = options.apply(self);
-                for(idx in all_cols) {
+                for(var idx in all_cols) {
                   op_vals.push((all_cols[idx])['value']);
                 }
               } catch(e) {
@@ -276,7 +276,7 @@ define([
          Enable/disable import menu in tools based on node selected
          Import menu will be enabled only when user select table node.
         */
-        menu_enabled = function(itemData, item, data) {
+        var menu_enabled = function(itemData, item, data) {
          var t = pgBrowser.tree, i = item, d = itemData;
          var parent_item = t.hasParent(i) ? t.parent(i): null,
              parent_data = parent_item ? t.itemData(parent_item) : null;

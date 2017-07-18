@@ -96,7 +96,7 @@ function(gettext, alertify, S) {
       if (contentType) {
         try {
           if (contentType.indexOf('application/json') == 0) {
-            resp = $.parseJSON(msg);
+            var resp = $.parseJSON(msg);
 
             if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
                 onJSONResult && typeof(onJSONResult) == 'function') {
@@ -116,7 +116,8 @@ function(gettext, alertify, S) {
               });
               return;
           }
-        } catch (exc) {
+        } catch (e) {
+          alertify.alert().show().set('message', e.message).set('title', "Error");
         }
       }
       alertify.alert().show().set(

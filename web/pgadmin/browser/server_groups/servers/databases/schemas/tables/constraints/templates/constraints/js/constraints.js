@@ -1,6 +1,8 @@
 define('pgadmin.node.constraints', [
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser', 'pgadmin.browser.collection'{% for c in constraints %}, 'pgadmin.node.{{ c|safe }}'{%endfor%}
+  'pgadmin.browser', 'pgadmin.browser.collection', 'pgadmin.node.unique_constraint',
+  'pgadmin.node.check_constraints', 'pgadmin.node.foreign_key',
+  'pgadmin.node.exclusion_constraint', 'pgadmin.node.primary_key'
 ], function(gettext, $, _, S, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-constraints']) {

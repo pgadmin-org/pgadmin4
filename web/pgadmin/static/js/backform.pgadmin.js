@@ -5,8 +5,7 @@
     define([
       'sources/gettext', 'underscore', 'underscore.string', 'jquery',
       'backbone', 'backform', 'backgrid', 'codemirror', 'pgadmin.backgrid',
-      'codemirror/mode/sql/sql', 'select2', 'codemirror/addon/edit/matchbrackets',
-      'codemirror/addon/edit/closebrackets'
+      'select2'
       ],
      function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
       // Export global even in AMD case in case this script is loaded with
@@ -20,13 +19,11 @@
       $ = root.jQuery || root.$ || root.Zepto || root.ender,
       Backbone = require('backbone') || root.Backbone,
       Backform = require('backform') || root.Backform,
-      Backgrid = require('backgrid') || root.Backgrid;
-      CodeMirror = require('codemirror') || root.CodeMirror;
-      pgAdminBackgrid = require('pgadmin.backgrid');
+      Backgrid = require('backgrid') || root.Backgrid,
+      CodeMirror = require('codemirror') || root.CodeMirror,
       S = require('underscore.string'),
       gettext = require('sources/gettext');
     factory(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
-
   // Finally, as a browser global.
   } else {
     factory(root, root.gettext, root._, root.s, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
@@ -125,8 +122,8 @@
 
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
-          attrArr = d.split('.');
-          name = attrArr.shift();
+          var attrArr = d.split('.');
+          var name = attrArr.shift();
           self.listenTo(self.model, "change:" + name, self.render);
         });
       }
@@ -143,8 +140,8 @@
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
 
-          attrArr = d.split('.');
-          name = attrArr.shift();
+          var attrArr = d.split('.');
+          var name = attrArr.shift();
 
           self.stopListening(self.model, "change:" + name, self.render);
         });
@@ -807,7 +804,7 @@
 
         // Check if unique columns provided are also in model attributes.
         if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
-            errorMsg = "Developer: Unique columns [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
+            var errorMsg = "Developer: Unique columns [ "+_.difference(uniqueCol, columns)+" ] not found in collection model [ " + columns +" ]."
             alert (errorMsg);
         }
 
@@ -873,7 +870,7 @@
         if (newModel != model) {
           var duplicateAttrValues = []
           _.each(uniqueCol, function(attr) {
-            attrValue = newModel.get(attr);
+            var attrValue = newModel.get(attr);
             if (!_.isUndefined(attrValue) && attrValue == model.get(attr)) {
               duplicateAttrValues.push(attrValue)
             }
@@ -961,7 +958,7 @@
       this.control_data = _.clone(data);
 
       // Show Backgrid Control
-      grid = this.showGridControl(data);
+      var grid = this.showGridControl(data);
 
       this.$el.html(grid).addClass(field.name);
       this.updateInvalid();
@@ -1054,7 +1051,7 @@
       });
 
       // Render subNode grid
-      subNodeGrid = self.grid.render().$el;
+      var subNodeGrid = self.grid.render().$el;
 
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
@@ -1062,7 +1059,7 @@
         $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
       }
 
-      $dialog =  gridBody.append(subNodeGrid);
+      var $dialog =  gridBody.append(subNodeGrid);
 
       // Add button callback
       if (!(data.disabled || data.canAdd == false)) {
@@ -1179,7 +1176,7 @@
         canDelete: evalF(data.canDelete, data, this.model)
       });
       // Show Backgrid Control
-      grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
+      var grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
 
       // Clean up first
       this.$el.removeClass(Backform.hiddenClassname);
@@ -1229,7 +1226,7 @@
           gridHeader = ["<div class='subnode-header'>",
           "  <label class='control-label pg-el-sm-10'>" + data.label + "</label>" ,
           "  <button class='btn-sm btn-default add fa fa-plus'></button>",
-          "</div>"].join("\n");
+          "</div>"].join("\n"),
         gridBody = $("<div class='pgadmin-control-group backgrid form-group pg-el-xs-12 object subnode'></div>").append(gridHeader);
 
       var subnode = data.subnode.schema ? data.subnode : data.subnode.prototype,
@@ -1318,7 +1315,7 @@
       });
 
       // Render subNode grid
-      subNodeGrid = grid.render().$el;
+      var subNodeGrid = grid.render().$el;
 
       // Combine Edit and Delete Cell
       if (data.canDelete && data.canEdit) {
@@ -1326,7 +1323,7 @@
         $(subNodeGrid).find("th.pg-backform-edit").attr("colspan", "2");
       }
 
-      $dialog =  gridBody.append(subNodeGrid);
+      var $dialog =  gridBody.append(subNodeGrid);
 
       // Add button callback
       $dialog.find('button.add').click(function(e) {
@@ -1859,8 +1856,8 @@
 
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
-          attrArr = d.split('.');
-          name = attrArr.shift();
+          var attrArr = d.split('.'),
+            name = attrArr.shift();
           self.listenTo(self.model, "change:" + name, self.render);
         });
       }
@@ -2160,7 +2157,7 @@
       });
     },
     onSelect: function(ev) {
-      var dialog_type = this.field.get('dialog_type');
+      var dialog_type = this.field.get('dialog_type'),
           supp_types = this.field.get('supp_types'),
           btn_primary = this.field.get('btn_primary'),
           dialog_title = this.field.get('dialog_title'),

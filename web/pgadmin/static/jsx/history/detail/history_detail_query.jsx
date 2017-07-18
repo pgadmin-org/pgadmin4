@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import '../../../vendor/codemirror/mode/sql/sql';
+import 'codemirror/mode/sql/sql';
 
 import CodeMirror from './code_mirror';
 import Shapes from '../../react_shapes';

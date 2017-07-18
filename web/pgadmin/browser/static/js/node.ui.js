@@ -1,8 +1,8 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'pgadmin', 'backbone', 'backform', 'alertify',
-  'pgadmin.browser.node'
+  'sources/gettext', 'jquery', 'underscore', 'pgadmin', 'backbone', 'backform',
+   'alertify', 'backgrid', 'select2', 'pgadmin.browser.node'
 ],
-function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Node) {
+function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Backgrid) {
 
   var pgBrowser = pgAdmin.Browser;
 
@@ -169,7 +169,7 @@ function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         /*
          * Transform the data
          */
-        transform = this.field.get('transform') || self.defaults.transform;
+        var transform = this.field.get('transform') || self.defaults.transform;
         if (transform && _.isFunction(transform)) {
           // We will transform the data later, when rendering.
           // It will allow us to generate different data based on the
@@ -405,7 +405,7 @@ function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Node) {
         /*
          * Transform the data
          */
-        transform = column.get('transform') || self.defaults.transform;
+        var transform = column.get('transform') || self.defaults.transform;
         if (transform && _.isFunction(transform)) {
           // We will transform the data later, when rendering.
           // It will allow us to generate different data based on the

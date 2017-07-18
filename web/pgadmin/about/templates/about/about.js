@@ -1,6 +1,8 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'sources/gettext'],
-  function($, alertify, pgAdmin, gettext) {
+  ['jquery', 'alertify', 'pgadmin', 'underscore.string', 'sources/gettext',
+   'sources/url_for'
+  ],
+  function($, alertify, pgAdmin, S, gettext, url_for) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
@@ -39,9 +41,11 @@ define(
         }
 
         var content = '';
-        $.get("{{ url_for('about.index') }}",
+        $.get(url_for('about.index'),
             function(data) {
-              alertify.aboutDialog(gettext("About %(appname)s", {appname: "{{ config.APP_NAME }}"}), data).resizeTo(800, 450);
+              alertify.aboutDialog(
+                  S(gettext("About %s")).sprintf(pgAdmin.Browser.utils.app_name).value(), data
+              ).resizeTo(800, 450);
             });
       }
     };

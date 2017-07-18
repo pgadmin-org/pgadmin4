@@ -1,11 +1,9 @@
-define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'pgadmin.browser.menu', 'backbone', 'alertify', 'pgadmin.browser.datamodel',
-  'backform',
-  'sources/alerts/alertify_wrapper',
-
-  'pgadmin.backform', 'wcdocker', 'pgadmin.alertifyjs'
-], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, AlertifyWrapper) {
+define(
+  'pgadmin.browser.node', [
+    'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+    'pgadmin.browser.menu', 'backbone', 'alertify', 'pgadmin.browser.datamodel',
+    'backform', 'pgadmin.browser.utils', 'pgadmin.backform', 'pgadmin.alertifyjs'
+], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
   var wcDocker = window.wcDocker,
     keyCode = {
@@ -71,7 +69,7 @@ define([
     sqlCreateHelp: '',
     dialogHelp: '',
 
-    title: function(d) {
+    title: function(o, d) {
       return o.label + (d ? (' - ' + d.label) : '');
     },
     hasId: true,
@@ -128,7 +126,7 @@ define([
       }
 
       // show query tool only in context menu of supported nodes.
-      if (pgAdmin.DataGrid && pgAdmin.unsupported_nodes) {
+      if (true) {
         if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
           pgAdmin.Browser.add_menus([{
             name: 'show_query_tool', node: self.type, module: self,
@@ -154,7 +152,7 @@ define([
           _.each(self.hasScriptTypes, function(stype) {
 
             var type_label = S(
-                "{{ _("%s Script") }}"
+                gettext("%s Script")
                 ).sprintf(stype.toUpperCase()).value(),
               stype = stype.toLowerCase();
 
@@ -329,45 +327,46 @@ define([
               }
             }, 1000, ctx);
 
-            newModel.fetch()
-            .success(function(res, msg, xhr) {
-              // clear timeout and remove message
-              clearTimeout(timer);
-              $msgDiv.addClass('hidden');
+            newModel.fetch({
+              success: function(res, msg, xhr) {
+                // clear timeout and remove message
+                clearTimeout(timer);
+                $msgDiv.addClass('hidden');
 
-              // We got the latest attributes of the
-              // object. Render the view now.
-              view.render();
-              setFocusOnEl();
-              newModel.startNewSession();
-            })
-            .error(function(xhr, error, message) {
-              var _label = that && item ?
-                            that.getTreeNodeHierarchy(
-                              item
-                            )[that.type].label : '';
-              pgBrowser.Events.trigger(
-                'pgadmin:node:retrieval:error', 'properties',
-                xhr, error, message, item
-              );
-              if (
-                !Alertify.pgHandleItemError(
-                  xhr, error, message, {item: item, info: info}
-                )
-              ) {
-                Alertify.pgNotifier(
-                  error, xhr,
-                  S(
-                    gettext("Error retrieving properties - %s")
-                  ).sprintf(message || _label).value(),
-                  function() {
-                    console.log(arguments);
-                  }
+                // We got the latest attributes of the
+                // object. Render the view now.
+                view.render();
+                setFocusOnEl();
+                newModel.startNewSession();
+              },
+              error: function(xhr, error, message) {
+                var _label = that && item ?
+                              that.getTreeNodeHierarchy(
+                                item
+                              )[that.type].label : '';
+                pgBrowser.Events.trigger(
+                  'pgadmin:node:retrieval:error', 'properties',
+                  xhr, error, message, item
                 );
-              }
-              // Close the panel (if could not fetch properties)
-              if (cancelFunc) {
-                cancelFunc();
+                if (
+                  !Alertify.pgHandleItemError(
+                    xhr, error, message, {item: item, info: info}
+                  )
+                ) {
+                  Alertify.pgNotifier(
+                    error, xhr,
+                    S(
+                      gettext("Error retrieving properties - %s")
+                    ).sprintf(message || _label).value(),
+                    function() {
+                      console.log(arguments);
+                    }
+                  );
+                }
+                // Close the panel (if could not fetch properties)
+                if (cancelFunc) {
+                  cancelFunc();
+                }
               }
             });
           } else {
@@ -410,7 +409,7 @@ define([
           isCloseable: true,
           isPrivate: true,
           elContainer: true,
-          content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please wait while we fetch information about the node from the server!') }}</div></div>',
+          content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server!') + '</div></div>',
           onCreate: function(myPanel, $container) {
             $container.addClass('pg-no-overflow');
           },
@@ -464,7 +463,7 @@ define([
       show_obj_properties: function(args, item) {
         var t = pgBrowser.tree,
           i = args.item || item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined
+          d = i && i.length == 1 ? t.itemData(i) : undefined,
           o = this,
           l = o.title.apply(this, [d]);
 
@@ -490,19 +489,19 @@ define([
               d.body.insertBefore(el, d.body.firstChild);
 
               var pW = screen.width < 800 ? '95%' : '500px',
-                  pH = screen.height < 600 ? '95%' : '550px';
+                  pH = screen.height < 600 ? '95%' : '550px',
                   w = pgAdmin.toPx(el, self.width || pW, 'width', true),
                   h = pgAdmin.toPx(el, self.height|| pH, 'height', true),
                   x = (b.offsetWidth - w) / 2,
                   y = (b.offsetHeight - h) / 2;
 
-              p = pgBrowser.docker.addPanel(
+              var p = pgBrowser.docker.addPanel(
                 'node_props', wcDocker.DOCK.FLOAT, undefined,
                 {w: w + 'px', h: h + 'px', x: x + 'px', y: y + 'px'}
               );
 
               b.removeChild(el);
-              delete(el);
+              // delete(el);
 
               return p;
             };
@@ -525,7 +524,7 @@ define([
             // And, actual parent of a table is schema, not Tables.
             while (i && t.hasParent(i)) {
               i = t.parent(i);
-              pd = t.itemData(i);
+              var pd = t.itemData(i);
 
               if (isParent(pd)) {
                 // Assign the data, this is my actual parent.
@@ -559,7 +558,7 @@ define([
         } else {
           if (pgBrowser.Node.panels && pgBrowser.Node.panels[d.id] &&
               pgBrowser.Node.panels[d.id].$container) {
-            p = pgBrowser.Node.panels[d.id];
+            var p = pgBrowser.Node.panels[d.id];
             /**  TODO ::
              *  Run in edit mode (if asked) only when it is
              *  not already been running edit mode
@@ -697,7 +696,8 @@ define([
          * Make sure - we're using the correct version of node
          */
         obj = pgBrowser.Nodes[d._type];
-        var objName = d.label;
+        var objName = d.label,
+          sql_url;
 
         // URL for script type
         if(scriptType == 'insert') {
@@ -996,7 +996,7 @@ define([
             // Release the view
             view.remove({data: true, internal: true, silent: true});
             // Deallocate the view
-            delete view;
+            // delete view;
             view = null;
             // Reset the data object
             j.data('obj-view', null);
@@ -1052,26 +1052,26 @@ define([
         onSqlHelp = function() {
           var panel = this;
           // See if we can find an existing panel, if not, create one
-          pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
+          var pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
 
           if (pnlSqlHelp == null) {
-            pnlProperties = pgBrowser.docker.findPanels('properties')[0];
+            var pnlProperties = pgBrowser.docker.findPanels('properties')[0];
             pgBrowser.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
             pnlSqlHelp = pgBrowser.docker.findPanels('pnl_sql_help')[0];
           }
 
           // Construct the URL
-          server = that.getTreeNodeHierarchy(item).server;
+          var server = that.getTreeNodeHierarchy(item).server;
 
-          url = '{{ pg_help_path }}'
+          var url = pgBrowser.utils.pg_help_path;
           if (server.server_type == 'ppas') {
-            url = '{{ edbas_help_path }}'
+            url = pgBrowser.utils.edbas_help_path;
           }
 
-          major = Math.floor(server.version / 10000)
-          minor = Math.floor(server.version / 100) - (major * 100)
+          var major = Math.floor(server.version / 10000),
+            minor = Math.floor(server.version / 100) - (major * 100);
 
-          url = url.replace('$VERSION$', major + '.' + minor)
+          url = url.replace('$VERSION$', major + '.' + minor);
           if (!S(url).endsWith('/')) {
             url = url + '/'
           }
@@ -1088,7 +1088,7 @@ define([
           }
 
           // Update the panel
-          iframe = $(pnlSqlHelp).data('embeddedFrame');
+          var iframe = $(pnlSqlHelp).data('embeddedFrame');
           pnlSqlHelp.title('SQL: ' + that.label);
 
           pnlSqlHelp.focus();
@@ -1098,16 +1098,16 @@ define([
         onDialogHelp = function() {
           var panel = this;
           // See if we can find an existing panel, if not, create one
-          pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
+          var pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
 
           if (pnlDialogHelp == null) {
-            pnlProperties = pgBrowser.docker.findPanels('properties')[0];
+            var pnlProperties = pgBrowser.docker.findPanels('properties')[0];
             pgBrowser.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
             pnlDialogHelp = pgBrowser.docker.findPanels('pnl_online_help')[0];
           }
 
           // Update the panel
-          iframe = $(pnlDialogHelp).data('embeddedFrame');
+          var iframe = $(pnlDialogHelp).data('embeddedFrame');
 
           pnlDialogHelp.focus();
           iframe.openURL(that.dialogHelp);
@@ -1180,7 +1180,6 @@ define([
             // Release the view
             view.remove({data: true, internal: true, silent: true});
             // Deallocate the view
-            delete view;
             view = null;
             // Reset the data object
             j.data('obj-view', null);
@@ -1495,7 +1494,8 @@ define([
     getTreeNodeHierarchy: function(i) {
       var idx = 0,
           res = {},
-          t = pgBrowser.tree;
+          t = pgBrowser.tree,
+          d;
       do {
         d = t.itemData(i);
         if (d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId) {

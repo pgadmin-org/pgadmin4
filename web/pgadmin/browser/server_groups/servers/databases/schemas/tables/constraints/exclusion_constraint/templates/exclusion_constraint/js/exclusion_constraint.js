@@ -286,7 +286,7 @@ define('pgadmin.node.exclusion_constraint', [
             },
             remove: function () {
               if(self.model.handler) {
-                  tableCols = self.model.top.get('columns');
+                  var tableCols = self.model.top.get('columns');
                   this.stopListening(tableCols, 'remove' , this.removeColumn);
                   this.stopListening(tableCols, 'change:name' , this.resetColOptions);
                   this.stopListening(tableCols, 'change:cltype' , this.resetColOptions);
@@ -561,7 +561,7 @@ define('pgadmin.node.exclusion_constraint', [
         newRow.addClass("new");
         $(newRow).pgMakeVisible('backform-tab');
       } else {
-        delete m;
+        //delete m;
       }
 
       return false;
@@ -770,7 +770,7 @@ define('pgadmin.node.exclusion_constraint', [
           }
         },{
           id: 'columns', label: gettext('Columns'),
-          type: 'collection', group: gettext('Columns'), disabled: false,
+          type: 'collection', group: gettext('Columns'),
           deps:['amname'], canDelete: true, editable: false,
           canAdd: function(m) {
             // We can't update columns of existing exclusion constraint.
@@ -815,7 +815,7 @@ define('pgadmin.node.exclusion_constraint', [
               }, 10);
 
               setTimeout(function () {
-                constraints = self.model.top.get("exclude_constraint");
+                var constraints = self.model.top.get("exclude_constraint");
                 var removed = [];
                 constraints.each(function(constraint) {
                   if (constraint.get("columns").length == 0) {
@@ -837,7 +837,7 @@ define('pgadmin.node.exclusion_constraint', [
               }, 10);
 
               setTimeout(function () {
-                constraints = self.model.top.get("exclude_constraint");
+                var constraints = self.model.top.get("exclude_constraint");
                 var removed = [];
                 constraints.each(function(constraint) {
                   if (constraint.get("columns").length == 0) {

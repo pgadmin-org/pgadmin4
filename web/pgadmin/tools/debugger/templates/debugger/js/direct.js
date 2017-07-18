@@ -1,20 +1,18 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'codemirror', 'backform',
-  'pgadmin.tools.debugger.ui',
+  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'alertify',
+  'pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'sources/../bundle/codemirror', 'backform',
+  'tools.debugger.ui',
   'sources/alerts/alertify_wrapper',
 
   'wcdocker', 'pgadmin.backform',
-  'pgadmin.backgrid', 'codemirror/addon/selection/active-line',
-  'codemirror/addon/fold/foldgutter', 'codemirror/addon/fold/foldcode',
-  'pgadmin-sqlfoldcode', 'codemirror/addon/edit/matchbrackets',
-  'codemirror/addon/edit/closebrackets',
+  'pgadmin.backgrid'
 
 ], function(
-  gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  CodeMirror, Backform, debug_function_again, AlertifyWrapper
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  codemirror, Backform, debug_function_again, AlertifyWrapper
 ) {
 
+  var CodeMirror = codemirror.default;
   if (pgAdmin.Browser.tree != null) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
   }
@@ -41,8 +39,11 @@ define([
         var self = this;
 
         // Make ajax call to set/clear the break point by user
-        var baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + line_no + "/" + set_type;
-
+        var baseUrl = url_for('debugger.set_breakpoint', {
+                        'trans_id': trans_id,
+                        'line_no': line_no,
+                        'set_type': set_type
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -72,13 +73,13 @@ define([
 
         var breakpoint_list = new Array();
 
-        for (i = 0; i < br_list.length; i++) {
+        for (var i = 0; i < br_list.length; i++) {
           if (br_list[i].linenumber != -1) {
             breakpoint_list.push(br_list[i].linenumber)
           }
         }
 
-        for (i = 0;i< breakpoint_list.length;i++) {
+        for (var i = 0;i< breakpoint_list.length;i++) {
           var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
 
           if (info.gutterMarkers != undefined) {
@@ -101,8 +102,10 @@ define([
         var result = '';
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "get_breakpoints";
-
+        var baseUrl = url_for('debugger.execute_query', {
+                        'trans_id': trans_id,
+                        'query_type': 'get_breakpoints'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -133,8 +136,11 @@ define([
       start_execution: function(trans_id, port_num) {
         var self = this;
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "start_execution/" + trans_id + "/" + port_num;
-
+        var baseUrl = url_for(
+                        'debugger.start_execution', {
+                          'trans_id': trans_id,
+                          'port_num': port_num
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -163,8 +169,11 @@ define([
       execute_query: function(trans_id) {
         var self = this;
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "wait_for_breakpoint";
-
+        var baseUrl = url_for(
+                        'debugger.execute_query', {
+                          'trans_id': trans_id,
+                          'query_type': 'wait_for_breakpoint'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -173,7 +182,7 @@ define([
               // set the return code to the code editor text area
               if (res.data.result[0].src != null && res.data.result[0].linenumber != null) {
                 pgTools.DirectDebug.editor.setValue(res.data.result[0].src);
-                active_line_no = self.active_line_no = (res.data.result[0].linenumber - 2);
+                var active_line_no = self.active_line_no = (res.data.result[0].linenumber - 2);
                 pgTools.DirectDebug.editor.addLineClass((res.data.result[0].linenumber - 2), 'wrap', 'CodeMirror-activeline-background');
               }
 
@@ -204,8 +213,11 @@ define([
         var self = this;
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "get_variables";
-
+        var baseUrl = url_for(
+                        'debugger.execute_query', {
+                          'trans_id': trans_id,
+                          'query_type': 'get_variables'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -243,8 +255,11 @@ define([
         var self = this;
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "get_stack_info";
-
+        var baseUrl = url_for(
+                        'debugger.execute_query', {
+                          'trans_id': trans_id,
+                          'query_type': 'get_stack_info'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -283,7 +298,7 @@ define([
       }
 
       // Make ajax call to listen the database message
-      var baseUrl = "{{ url_for('debugger.index') }}" + "poll_result/" + trans_id;
+      var baseUrl = url_for('debugger.poll_result', {'trans_id': trans_id});
 
       /*
         During the execution we should poll the result in minimum seconds but once the execution is completed
@@ -434,7 +449,7 @@ define([
       }
 
       // Make ajax call to listen the database message
-      var baseUrl = "{{ url_for('debugger.index') }}" + "poll_end_execution_result/" + trans_id;
+      var baseUrl = url_for('debugger.poll_end_execution_result', {'trans_id': trans_id});
 
       /*
         During the execution we should poll the result in minimum seconds but once the execution is completed
@@ -592,7 +607,7 @@ define([
     Restart: function(trans_id) {
 
       var self = this,
-        baseUrl = "{{ url_for('debugger.index') }}" + "restart/" + trans_id;
+        baseUrl = url_for('debugger.restart', {'trans_id': trans_id});
       self.enable('stop', false);
       self.enable('step_over', false);
       self.enable('step_into', false);
@@ -629,7 +644,7 @@ define([
           }
           else {
             // Debugging of void function is started again so we need to start the listener again
-            var baseUrl = "{{ url_for('debugger.index') }}" + "start_listener/" + trans_id;
+            var baseUrl = url_for('debugger.start_listener', {'trans_id': trans_id});
 
             $.ajax({
               url: baseUrl,
@@ -676,8 +691,10 @@ define([
       }
       else {
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "continue";
-
+        var baseUrl = url_for('debugger.execute_query', {
+                        'trans_id': trans_id,
+                        'query_type': 'continue'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -712,8 +729,10 @@ define([
         self.enable('continue', false);
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "step_over";
-
+        var baseUrl = url_for('debugger.execute_query', {
+                        'trans_id': trans_id,
+                        'query_type': 'step_over'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -747,8 +766,10 @@ define([
         self.enable('continue', false);
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "step_into";
-
+        var baseUrl = url_for('debugger.execute_query', {
+                        'trans_id': trans_id,
+                        'query_type': 'step_into'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -782,8 +803,11 @@ define([
         self.enable('continue', false);
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "execute_query/" + trans_id + "/" + "abort_target";
-
+        var baseUrl = url_for(
+                        'debugger.execute_query', {
+                          'trans_id': trans_id,
+                          'query_type': 'abort_target'
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -838,10 +862,18 @@ define([
         // If gutterMarker is undefined that means there is no marker defined previously
         // So we need to set the breakpoint command here...
         if (info.gutterMarkers == undefined) {
-            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + (self.active_line_no + 1) + "/" + "1";
+            baseUrl = url_for('debugger.set_breakpoint', {
+                        'trans_id': trans_id,
+                        'line_no': self.active_line_no + 1,
+                        'set_type': '1'
+                      });
         }
         else {
-            baseUrl = "{{ url_for('debugger.index') }}" + "set_breakpoint/" + trans_id + "/" + (self.active_line_no + 1) + "/" + "0";
+            baseUrl = url_for('debugger.set_breakpoint', {
+                        'trans_id': trans_id,
+                        'line_no': self.active_line_no + 1,
+                        'set_type': '0'
+                      });
         }
 
         $.ajax({
@@ -903,14 +935,14 @@ define([
 
         var breakpoint_list = new Array();
 
-        for (i = 0; i < br_list.length; i++) {
+        for (var i = 0; i < br_list.length; i++) {
           if (br_list[i].linenumber != -1) {
             breakpoint_list.push(br_list[i].linenumber)
           }
         }
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "clear_all_breakpoint/" + trans_id;
+        var baseUrl = url_for('debugger.clear_all_breakpoint', {'trans_id': trans_id});
 
         $.ajax({
           url: baseUrl,
@@ -918,7 +950,7 @@ define([
           data: { 'breakpoint_list': breakpoint_list.join() },
           success: function(res) {
             if (res.data.status) {
-              for (i = 0;i< breakpoint_list.length;i++) {
+              for (var i = 0; i < breakpoint_list.length; i++) {
                 var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
 
                 if (info) {
@@ -966,7 +998,7 @@ define([
           model: DebuggerStackModel
         });
 
-        stackGridCols = [
+        var stackGridCols = [
           {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
           {name: 'value', label:'Value', type:'text', editable: false, cell:'string'},
           {name: 'line_no', label:'Line No.', type:'text', editable: false, cell:'string'}
@@ -975,7 +1007,7 @@ define([
         var my_obj = [];
         if (result.length != 0)
         {
-          for (i = 0; i < result.length; i++) {
+          for (var i = 0; i < result.length; i++) {
             my_obj.push({ "name": result[i].targetname, "value": result[i].args, "line_no": result[i].linenumber });
           }
         }
@@ -994,7 +1026,7 @@ define([
             },
             rowClick: function(e) {
               //Find which row is selected and depending on that send the frame id
-              for (i = 0; i < this.model.collection.length; i++) {
+              for (var i = 0; i < this.model.collection.length; i++) {
                 if (this.model.collection.models[i].get('name') == this.model.get('name')) {
                   self.frame_id_ = i;
                   break;
@@ -1085,7 +1117,7 @@ define([
           model: DebuggerVariablesModel
         });
 
-        gridCols = [
+        var gridCols = [
           {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
           {name: 'type', label:'Type', type: 'text', editable: false, cell:'string'},
           {name: 'value', label:'Value', type: 'text', cell: 'string'}
@@ -1094,7 +1126,7 @@ define([
         var my_obj = [];
         if (result.length != 0)
         {
-          for (i = 0; i < result.length; i++) {
+          for (var i = 0; i < result.length; i++) {
             if (result[i].varclass == 'L') {
               my_obj.push({ "name": result[i].name, "type": result[i].dtype, "value": result[i].value});
             }
@@ -1139,7 +1171,7 @@ define([
 
         self.ParametersCollection.prototype.on('change', self.deposit_parameter_value, self);
 
-        paramGridCols = [
+        var paramGridCols = [
           {name: 'name', label:'Name', type:'text', editable: false, cell:'string'},
           {name: 'type', label:'Type', type: 'text', editable: false, cell:'string'},
           {name: 'value', label:'Value', type: 'text', cell: 'string'}
@@ -1148,7 +1180,7 @@ define([
         var param_obj = [];
         if (result.length != 0)
         {
-          for (i = 0; i < result.length; i++) {
+          for (var i = 0; i < result.length; i++) {
             if (result[i].varclass == 'A') {
               param_obj.push({ "name": result[i].name, "type": result[i].dtype, "value": result[i].value});
             }
@@ -1177,8 +1209,9 @@ define([
         name_value_list.push({ 'name': model.get('name'),'type': model.get('type'), 'value': model.get('value')});
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "deposit_value/" + pgTools.DirectDebug.trans_id;
-
+        var baseUrl = url_for('debugger.deposit_value', {
+                        'trans_id': pgTools.DirectDebug.trans_id
+                      });
         $.ajax({
           url: baseUrl,
           method: 'POST',
@@ -1209,8 +1242,10 @@ define([
         var self = this;
 
         // Make ajax call to listen the database message
-        var baseUrl = "{{ url_for('debugger.index') }}" + "select_frame/" + pgTools.DirectDebug.trans_id + "/" + self.frame_id_;
-
+        var baseUrl = url_for('debugger.select_frame', {
+                        'trans_id': pgTools.DirectDebug.trans_id,
+                        'frame_id': self.frame_id_
+                      });
         $.ajax({
           url: baseUrl,
           method: 'GET',
@@ -1376,7 +1411,7 @@ define([
           '#container', {
           allowContextMenu: false,
           allowCollapse: false,
-          themePath: '{{ url_for("static", filename="css") }}',
+          themePath: url_for('static', {'filename': 'css'}),
           theme: 'webcabin.overrides.css'
         });
 
@@ -1386,7 +1421,7 @@ define([
       // indirect debugging - 0  and for direct debugging - 1
       if (trans_id != undefined && !debug_type) {
         // Make ajax call to execute the and start the target for execution
-        var baseUrl = "{{ url_for('debugger.index') }}" + "start_listener/" + trans_id;
+        var baseUrl = url_for('debugger.start_listener', {'trans_id': trans_id });
 
         $.ajax({
           url: baseUrl,
@@ -1408,7 +1443,7 @@ define([
       else if (trans_id != undefined && debug_type)
       {
         // Make ajax call to execute the and start the target for execution
-        var baseUrl = "{{ url_for('debugger.index') }}" + "start_listener/" + trans_id;
+        var baseUrl = url_for('debugger.start_listener', {'trans_id': trans_id });
 
         $.ajax({
           url: baseUrl,
@@ -1434,7 +1469,7 @@ define([
     messages: function(trans_id) {
       var self = this;
       // Make ajax call to listen the database message
-      var baseUrl = "{{ url_for('debugger.index') }}" + "messages/" + trans_id;
+      var baseUrl = url_for('debugger.messages', {'trans_id': trans_id });
 
       $.ajax({
         url: baseUrl,
@@ -1658,6 +1693,7 @@ define([
   });
 
   pgTools.DirectDebug = new DirectDebug();
+  pgTools.DirectDebug['jquery'] = $;
 
   return pgTools.DirectDebug;
 });

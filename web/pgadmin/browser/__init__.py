@@ -523,9 +523,9 @@ def index():
 
     return response
 
-@blueprint.route("/js/browser.js")
+@blueprint.route("/js/utils.js")
 @login_required
-def browser_js():
+def utils():
     layout = get_setting('Browser/Layout', default='')
     snippets = []
 
@@ -559,7 +559,7 @@ def browser_js():
         snippets.extend(submodule.jssnippets)
     return make_response(
         render_template(
-            'browser/js/browser.js',
+            'browser/js/utils.js',
             layout=layout,
             jssnippets=snippets,
             pg_help_path=pg_help_path,
@@ -569,7 +569,7 @@ def browser_js():
             editor_wrap_code=editor_wrap_code,
             editor_brace_matching=brace_matching,
             editor_insert_pair_brackets=insert_pair_brackets,
-            _=gettext
+            app_name=config.APP_NAME
         ),
         200, {'Content-Type': 'application/x-javascript'})
 

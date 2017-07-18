@@ -183,6 +183,7 @@ SELECT generate_series(1, {}) as id""".format(
             config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS)
 
         wait = WebDriverWait(self.page.driver, 10)
+        time.sleep(1)
         self.page.fill_codemirror_area_with(query)
 
         self.page.find_by_id("btn-flash").click()
@@ -194,16 +195,15 @@ SELECT generate_series(1, {}) as id""".format(
 
         # scroll to bottom to fetch next chunk of result set.
         self.driver.execute_script(
-            "$('.slick-viewport').scrollTop($('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
-
         # wait for ajax to complete.
         time.sleep(1)
 
         # again scroll to bottom to bring last row of next chunk in
         # viewport.
         self.driver.execute_script(
-            "$('.slick-viewport').scrollTop($('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
 
         row_id_to_find = config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS
@@ -234,7 +234,7 @@ SELECT generate_series(1, {}) as id""".format(
         # scroll to bottom to bring last row of next chunk in
         # viewport.
         self.driver.execute_script(
-            "$('.slick-viewport').scrollTop($('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
 
         canvas = wait.until(EC.presence_of_element_located(
@@ -274,7 +274,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
         # scroll to bottom to bring last row of next chunk in
         # viewport.
         self.driver.execute_script(
-            "$('.slick-viewport').scrollTop($('.grid-canvas').height());"
+            "pgAdmin.SqlEditor.jquery('.slick-viewport').scrollTop(pgAdmin.SqlEditor.jquery('.grid-canvas').height());"
         )
 
         canvas = wait.until(EC.presence_of_element_located(

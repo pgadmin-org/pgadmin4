@@ -1,4 +1,4 @@
-define('pgadmin.node.server-group', [
+define('pgadmin.node.server_group', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin',
   'backbone', 'pgadmin.browser', 'pgadmin.browser.node'
 ], function(gettext, url_for, $, _, pgAdmin, Backbone) {

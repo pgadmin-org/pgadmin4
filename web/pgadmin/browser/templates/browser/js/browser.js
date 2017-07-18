@@ -1,17 +1,16 @@
 define(
   'pgadmin.browser', [
     'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
-    'bootstrap', 'pgadmin', 'alertify', 'codemirror',
-    'sources/check_node_visibility', 'codemirror/mode/sql/sql', 'wcdocker',
+    'bootstrap', 'pgadmin', 'alertify', 'bundled_codemirror',
+    'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
     'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
     'pgadmin.alertifyjs', 'pgadmin.browser.messages',
     'pgadmin.browser.menu', 'pgadmin.browser.panel',
     'pgadmin.browser.error', 'pgadmin.browser.frame',
-    'pgadmin.browser.node', 'pgadmin.browser.collection',
-    'codemirror/addon/edit/matchbrackets', 'codemirror/addon/edit/closebrackets'
+    'pgadmin.browser.node', 'pgadmin.browser.collection'
   ], function(
     gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
-    CodeMirror, checkNodeVisibility
+    codemirror, checkNodeVisibility
 ) {
 
   // Some scripts do export their object in the window only.
@@ -19,8 +18,10 @@ define(
   var wcDocker = window.wcDocker;
   $ = $ || window.jQuery || window.$;
   Bootstrap = Bootstrap || window.Bootstrap;
+  var CodeMirror = codemirror.default;
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  var select_object_msg = gettext('Please select an object in the tree view.');
 
   var panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
@@ -64,7 +65,7 @@ define(
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
-            n = b.Nodes[d._type];
+            var n = b.Nodes[d._type];
             if (n)
               settings.url = n.generate_url(item, 'children', d, true);
           }
@@ -121,7 +122,7 @@ define(
         isCloseable: false,
         isPrivate: true,
         elContainer: true,
-        content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">{{ _('Please select an object in the tree view.') }}</div></div>',
+        content: '<div class="obj_properties"><div class="alert alert-info pg-panel-message">' + select_object_msg + '</div></div>',
         events: panelEvents,
         onCreate: function(myPanel, $container) {
           $container.addClass('pg-no-overflow');
@@ -135,7 +136,7 @@ define(
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-statistics-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container hidden"></div></div>',
         events: panelEvents
       }),
       // Reversed engineered SQL for the object
@@ -156,7 +157,7 @@ define(
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container hidden"></div></div>',
         events: panelEvents
       }),
       // Dependents of the object
@@ -167,38 +168,12 @@ define(
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">{{ _('Please select an object in the tree view.') }}</div><div class="pg-panel-depends-container hidden"></div></div>',
+        content: '<div><div class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-depends-container hidden"></div></div>',
         events: panelEvents
-      })/* Add hooked-in panels by extensions */{% for panel_item in current_app.panels %}{% if not panel_item.isIframe %},'{{ panel_item.name }}' : new pgAdmin.Browser.Panel({
-        name: '{{ panel_item.name }}',
-        title: '{{ panel_item.title }}',
-        icon: '{{ panel_item.icon }}',
-        width: {{ panel_item.width }},
-        height: {{ panel_item.height }},
-        showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
-        isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
-        isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
-        content: '{{ panel_item.content }}',
-        canHide: {% if panel_item.canHide %}true{% else %}false{% endif %}{% if panel_item.limit is not none %},
-        limit: {{ panel_item.limit }}{% endif %}{% if panel_item.events is not none %},
-        events: {{ panel_item.events }} {% endif %}
-      }){% endif %}{% endfor %}
+      })
     },
     // We also support showing dashboards, HTML file, external URL
-    frames: {
-      /* Add hooked-in frames by extensions */{% for panel_item in current_app.panels %}{% if panel_item.isIframe %}
-      '{{ panel_item.name }}' : new pgAdmin.Browser.Frame({
-        name: '{{ panel_item.name }}',
-        title: '{{ panel_item.title }}',
-        icon: '{{ panel_item.icon }}',
-        width: {{ panel_item.width }},
-        height: {{ panel_item.height }},
-        showTitle: {% if panel_item.showTitle %}true{% else %}false{% endif %},
-        isCloseable: {% if panel_item.isCloseable %}true{% else %}false{% endif %},
-        isPrivate: {% if panel_item.isPrivate %}true{% else %}false{% endif %},
-        url: '{{ panel_item.content }}'
-     }),{% endif %}{% endfor %}
-    },
+    frames: {},
       /* Menus */
       // pgAdmin.Browser.MenuItem.add_menus(...) will register all the menus
       // in this container
@@ -219,10 +194,44 @@ define(
       // Help menus
       help: {}
     },
+    add_panels: function() {
+      /* Add hooked-in panels by extensions */
+      //debugger;
+      var panels = JSON.parse(pgBrowser.panels_items);
+      _.each(panels, function(panel) {
+        if (panel.isIframe) {
+          pgBrowser.frames[panel.name] = new pgBrowser.Frame({
+            name: panel.name,
+            title: panel.title,
+            icon: panel.icon,
+            width: panel.width,
+            height: panel.height,
+            showTitle: panel.showTitle,
+            isCloseable: panel.isCloseable,
+            isPrivate: panel.isPrivate,
+            url: panel.content
+          })
+        } else {
+          pgBrowser.panels[panel.name] = new pgBrowser.Panel({
+            name: panel.name,
+            title: panel.title,
+            icon: panel.icon,
+            width: panel.width,
+            height: panel.height,
+            showTitle: panel.showTitle,
+            isCloseable: panel.isCloseable,
+            isPrivate: panel.isPrivate,
+            content: (panel.content) ? panel.content : '',
+            events: (panel.events) ? panel.events : ''
+          })
+        }
+      });
+
+    },
     menu_categories: {
       /* name, label (pair) */
       'create': {
-        label: '{{ _('Create')|safe }}',
+        label: gettext('Create'),
         priority: 1,
         /* separator above this menu */
         above: false,
@@ -300,9 +309,9 @@ define(
         )
       } else {
         // Create a dummy 'no object seleted' menu
-        create_submenu = pgAdmin.Browser.MenuGroup(
+        var create_submenu = pgAdmin.Browser.MenuGroup(
           obj.menu_categories['create'], [{
-            $el: $('<li class="menu-item disabled"><a href="#">{{ _("No object selected") }}</a></li>'),
+            $el: $('<li class="menu-item disabled"><a href="#">' + gettext("No object selected") + '</a></li>'),
             priority: 1,
             category: 'create',
             update: function() {}
@@ -312,8 +321,8 @@ define(
     },
     save_current_layout: function(obj) {
       if(obj.docker) {
-        state = obj.docker.save();
-        settings = { setting: "Browser/Layout", value: state };
+        var state = obj.docker.save();
+        var settings = { setting: "Browser/Layout", value: state };
         $.ajax({
           type: 'POST',
           url: url_for('settings.store_bulk'),
@@ -330,7 +339,7 @@ define(
 
       // Cache preferences
       obj.cache_preferences();
-
+      this.add_panels();
       // Initialize the Docker
       obj.docker = new wcDocker(
         '#dockerContainer', {
@@ -350,7 +359,7 @@ define(
         });
 
         // Stored layout in database from the previous session
-        var layout = '{{ layout }}';
+        var layout = pgBrowser.utils.layout;
 
         // Try to restore the layout if there is one
         if (layout != '') {
@@ -445,36 +454,6 @@ define(
                  *
                  */
                 delete obj.scripts[d._type];
-
-                setTimeout(function() {
-                  _.each(scripts, function(s) {
-                    if (!s.loaded) {
-                      require([s.name], function(m) {
-                        s.loaded = true;
-                        // Call the initializer (if present)
-                        if (m && m.init && typeof m.init == 'function') {
-                          try {
-                            m.init();
-                            obj.Events.trigger(
-                              'pgadmin:module:' + s.name + ':initialized', m, obj
-                            );
-                          } catch (err) {
-                            console.log("Error running module init script for '" + s.path + "'");
-                            console.log(err);
-
-                            obj.report_error(
-                              gettext('Error initializing script - ') + s.path, err);
-                            }
-                        }
-                      }, function() {
-                        console.log("Error loading script - " + s.path);
-                        console.log(arguments);
-                        obj.report_error(
-                          gettext('Error loading script - ') + s.path);
-                      }).bind(s);
-                    }
-                  });
-                }, 1);
               }
             }
             break;
@@ -518,45 +497,9 @@ define(
         return true;
       });
 
-      // There are some scripts which needed to be loaded immediately,
-      // but - not all. We will will need to generate all the menus only
-      // after they all were loaded completely.
-      var counter = {total: 0, loaded: 0};
-      {% for script in current_app.javascripts %}{% if 'when' in script %}
-      {% if script.when %}/* Registering '{{ script.path }}.js' to be loaded when a node '{{ script.when }}' is loaded */
-      this.register_script('{{ script.when }}', '{{ script.name }}', '{{ script.path }}.js');{% else %}/* Loading '{{ script.path }}' */
-      counter.total += 1;
-      this.load_module('{{ script.name }}', '{{ script.path }}', counter);{% endif %}{% endif %}{% endfor %}
-
-      var geneate_menus = function() {
-        // Generate the menu items only when all the initial scripts
-        // were loaded completely.
-        //
-        // First - register the menus from the other
-        // modules/extensions.
-        if (counter.total == counter.loaded) {
-{% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
-          obj.add_menus([{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if loop.index != 1 %}, {% endif %}{
-            name: "{{ item.name }}",
-            {% if item.module %}module: {{ item.module }},
-            {% endif %}{% if item.url %}url: "{{ item.url }}",
-            {% endif %}{% if item.target %}target: "{{ item.target }}",
-            {% endif %}{% if item.callback %}callback: "{{ item.callback }}",
-            {% endif %}{% if item.category %}category: "{{ item.category }}",
-            {% endif %}{% if item.icon %}icon: '{{ item.icon }}',
-            {% endif %}{% if item.data %}data: {{ item.data }},
-            {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
-            priority: {{ item.priority }},
-            enable: '{{ item.enable }}'
-          }{% set hasMenus = True %}{% endfor %}]);
-{% endfor %}
-          obj.create_menus();
-        } else {
-          // recall after some time
-          setTimeout(function() { geneate_menus(); }, 300);
-        }
-      };
-      geneate_menus();
+      // Register scripts and add menus
+      pgBrowser.utils.registerScripts(this);
+      pgBrowser.utils.addMenus(obj);
 
       // Ping the server every 5 minutes
       setInterval(function() {
@@ -571,27 +514,7 @@ define(
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
     },
-    // load the module right now
-    load_module: function(name, path, c) {
-      var obj = this;
-      require([name],function(m) {
-        try {
-          // initialze the module (if 'init' function present).
-          if (m.init && typeof(m.init) == 'function')
-            m.init();
-        } catch (e) {
-          // Log this exception on console to understand the issue properly.
-          console.log(e);
-          obj.report_error(gettext('Error loading script - ') + path);
-        }
-        if (c)
-        c.loaded += 1;
-      }, function() {
-        // Log the arguments on console to understand the issue properly.
-        console.log(arguments);
-        obj.report_error(gettext('Error loading script - ') + path);
-      });
-    },
+
     add_menu_category: function(
       id, label, priority, icon, above_separator, below_separator, single
     ) {
@@ -644,12 +567,7 @@ define(
               menus = pgMenu[a];
             }
 
-            if (_.has(menus, m.name)) {
-              console && console.log && console.log(m.name +
-                ' has been ignored!\nIt already exists in the ' +
-                a +
-                ' list of menus!');
-            } else {
+            if (!_.has(menus, m.name)) {
               menus[m.name] = new MenuItem({
                 name: m.name, label: m.label, module: m.module,
                 category: m.category, callback: m.callback,
@@ -704,32 +622,31 @@ define(
     showHelp: function(type, url, node, item, label) {
       if (type == "object_help") {
         // See if we can find an existing panel, if not, create one
-        pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
+        var pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
 
         if (pnlSqlHelp == null) {
-          pnlProperties = this.docker.findPanels('properties')[0];
+          var pnlProperties = this.docker.findPanels('properties')[0];
           this.docker.addPanel('pnl_sql_help', wcDocker.DOCK.STACKED, pnlProperties);
           pnlSqlHelp = this.docker.findPanels('pnl_sql_help')[0];
         }
 
         // Construct the URL
-        server = node.getTreeNodeHierarchy(item).server;
-
-        baseUrl = '{{ pg_help_path }}'
+        var server = node.getTreeNodeHierarchy(item).server;
+        var baseUrl = pgBrowser.utils.pg_help_path;
         if (server.server_type == 'ppas') {
-          baseUrl = '{{ edbas_help_path }}'
+          baseUrl = pgBrowser.utils.edbas_help_path;
         }
 
-        major = Math.floor(server.version / 10000)
-        minor = Math.floor(server.version / 100) - (major * 100)
+        var major = Math.floor(server.version / 10000),
+          minor = Math.floor(server.version / 100) - (major * 100);
 
         baseUrl = baseUrl.replace('$VERSION$', major + '.' + minor)
         if (!S(baseUrl).endsWith('/')) {
           baseUrl = baseUrl + '/'
         }
-        fullUrl = baseUrl+ url;
+        var fullUrl = baseUrl+ url;
         // Update the panel
-        iframe = $(pnlSqlHelp).data('embeddedFrame');
+        var iframe = $(pnlSqlHelp).data('embeddedFrame');
         pnlSqlHelp.title('Help: '+ label);
 
         pnlSqlHelp.focus();
@@ -737,16 +654,16 @@ define(
       } else if(type == "dialog_help") {
         if(this.docker) {
           // See if we can find an existing panel, if not, create one
-          pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
+          var pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
 
           if (pnlDialogHelp == null) {
-            pnlProperties = this.docker.findPanels('properties')[0];
+            var pnlProperties = this.docker.findPanels('properties')[0];
             this.docker.addPanel('pnl_online_help', wcDocker.DOCK.STACKED, pnlProperties);
             pnlDialogHelp = this.docker.findPanels('pnl_online_help')[0];
           }
 
           // Update the panel
-          iframe = $(pnlDialogHelp).data('embeddedFrame');
+          var iframe = $(pnlDialogHelp).data('embeddedFrame');
 
           pnlDialogHelp.focus();
           iframe.openURL(url);
@@ -932,7 +849,7 @@ define(
                       linearSearch = function() {
                         while (e >= s) {
                           i = items.eq(s);
-                          d = ctx.t.itemData(i);
+                          var d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
                               d._label, _data._label
@@ -957,7 +874,7 @@ define(
                         // We will try until it's half.
                         while (e - s > 22) {
                           i = items.eq(s);
-                          d = ctx.t.itemData(i);
+                          var d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
                               d._label, _data._label
@@ -972,7 +889,7 @@ define(
                             ) != 1
                           )
                             return true;
-                          m = s + Math.round((e - s) / 2);
+                          var m = s + Math.round((e - s) / 2);
                           i = items.eq(m);
                           d = ctx.t.itemData(i);
                           var res = pgAdmin.natural_sort(d._label, _data._label);
@@ -1186,7 +1103,7 @@ define(
                   if (_item_parent && !_item_grand_parent) {
                     var parent = null;
                     // We need to search in all parent siblings (eg: server groups)
-                    parents = this.t.siblings(this.i) || [];
+                    var parents = this.t.siblings(this.i) || [];
                     parents.push(this.i[0])
                     _.each(parents, function (p) {
                       var d = self.t.itemData($(p));
@@ -1208,8 +1125,8 @@ define(
                       this.notFound = errorOut;
 
                       var _d = {_id: this.new._pid, _type: self.d._type}
-                        parent = $(parent),
-                        loaded = this.t.wasLoad(parent),
+                        parent = $(parent);
+                        var loaded = this.t.wasLoad(parent),
                         onLoad = function() {
                           self.i = parent;
                           self.d = self.d;
@@ -1431,7 +1348,7 @@ define(
                       linearSearch = function() {
                         while (e >= s) {
                           i = items.eq(s);
-                          d = ctx.t.itemData(i);
+                          var d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
                               d._label, _new._label
@@ -1450,7 +1367,7 @@ define(
                       binarySearch = function() {
                         while (e - s > 22) {
                           i = items.eq(s);
-                          d = ctx.t.itemData(i);
+                          var d = ctx.t.itemData(i);
                           if (
                             pgAdmin.natural_sort(
                               d._label, _new._label
@@ -1465,7 +1382,7 @@ define(
                             ) != 1
                           )
                             return true;
-                          m = s + Math.round((e - s) / 2);
+                          var m = s + Math.round((e - s) / 2);
                           i = items.eq(m);
                           d = ctx.t.itemData(i);
                           var res = pgAdmin.natural_sort(d._label, _new._label);
@@ -1981,7 +1898,7 @@ define(
 
             for (; idx < size; idx++) {
               d = _d.branch[idx];
-              n = _ctx.b.Nodes[d._type];
+              var n = _ctx.b.Nodes[d._type];
               ctx = {
                 b: _ctx.b,
                 t: _ctx.t,
@@ -1989,7 +1906,7 @@ define(
                 i: _ctx.i,
                 d: d,
                 select: _ctx.select,
-                hasId: !n.collection_node,
+                hasId: n && !n.collection_node,
                 o: _ctx.o,
                 load: true
               };
@@ -2050,10 +1967,10 @@ define(
       "Shift-Tab": "indentLess"
     },
     editor_options: {
-      tabSize: '{{ editor_tab_size }}',
-      wrapCode: '{{ editor_wrap_code }}' == 'True',
-      insert_pair_brackets: '{{ editor_insert_pair_brackets }}' == 'True',
-      brace_matching: '{{ editor_brace_matching }}' == 'True'
+      tabSize: pgBrowser.utils.tabSize,
+      wrapCode: pgBrowser.utils.wrapCode,
+      insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
+      brace_matching: pgBrowser.utils.braceMatching
     }
 
   });
@@ -2066,13 +1983,13 @@ define(
   delete CodeMirror.keyMap.emacsy["Ctrl-V"];
 
   // Use spaces instead of tab
-  if ('{{ editor_use_spaces }}' == 'True') {
+  if (pgBrowser.utils.useSpaces == 'True') {
     pgAdmin.Browser.editor_shortcut_keys.Tab = "insertSoftTab";
   }
 
   window.onbeforeunload = function(ev) {
     var e = ev || window.event,
-        msg = '{{ _('Are you sure you wish to close the %(appname)s browser?', appname=config.APP_NAME) }}';
+        msg = S(gettext('Are you sure you wish to close the %s browser?')).sprintf(pgBrowser.utils.app_name).value();
 
     // For IE and Firefox prior to version 4
     if (e) {

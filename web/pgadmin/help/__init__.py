@@ -52,28 +52,28 @@ class HelpModule(PgAdminModule):
                 priority=100,
                 isPrivate=True,
                 title=gettext('Online Help'),
-                icon='fa fa-question'),
+                icon='fa fa-question').__dict__,
 
             Panel(
                 name='pnl_pgadmin_website',
                 priority=200,
                 title=gettext('pgAdmin Website'),
                 icon='fa fa-external-link',
-                content='https://www.pgadmin.org/'),
+                content='https://www.pgadmin.org/').__dict__,
 
             Panel(
                 name='pnl_postgresql_website',
                 priority=300,
                 title=gettext('PostgreSQL Website'),
                 icon='fa fa-external-link',
-                content='http://www.postgresql.org/'),
+                content='http://www.postgresql.org/').__dict__,
 
             Panel(
                 name='pnl_sql_help',
                 priority=400,
                 isPrivate=True,
                 icon='fa fa-info',
-                title=gettext('SQL Help'))]
+                title=gettext('SQL Help')).__dict__]
 
     def register_preferences(self):
         """

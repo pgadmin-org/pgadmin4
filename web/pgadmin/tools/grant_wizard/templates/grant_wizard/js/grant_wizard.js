@@ -493,7 +493,7 @@ define([
                 }
 
                 coll.sort();
-                dbObjectFilter = this.dbObjectFilter = this.DbObjectFilter(coll);
+                var dbObjectFilter = this.dbObjectFilter = this.DbObjectFilter(coll);
 
                 /**
                   privArray holds objects selected which further helps

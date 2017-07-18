@@ -86,18 +86,18 @@ define([
       {
         type: 'nested', control: 'fieldset', label: gettext('Vacuum'), group: gettext('Options'),
         schema:[{
-          id: 'vacuum_full', disabled: false, group: gettext('Vacuum'), disabled: 'isDisabled',
+          id: 'vacuum_full', group: gettext('Vacuum'), disabled: 'isDisabled',
           control: Backform.CustomSwitchControl, label: gettext('FULL'), deps: ['op']
         },{
-          id: 'vacuum_freeze', disabled: false, deps: ['op'], disabled: 'isDisabled',
+          id: 'vacuum_freeze', deps: ['op'], disabled: 'isDisabled',
           control: Backform.CustomSwitchControl, label: gettext('FREEZE'), group: gettext('Vacuum')
         },{
-          id: 'vacuum_analyze', disabled: false, deps: ['op'], disabled: 'isDisabled',
+          id: 'vacuum_analyze', deps: ['op'], disabled: 'isDisabled',
           control: Backform.CustomSwitchControl, label: gettext('ANALYZE'), group: gettext('Vacuum')
         }]
       },
       {
-        id: 'verbose', disabled: false, group: gettext('Options'), deps: ['op'],
+        id: 'verbose', group: gettext('Options'), deps: ['op'],
         control: Backform.CustomSwitchControl, label: gettext('Verbose Messages'), disabled: 'isDisabled'
       }
     ],
@@ -157,7 +157,7 @@ define([
          Enable/disable Maintenance menu in tools based on node selected.
          Maintenance menu will be enabled only when user select table and database node.
         */
-        menu_enabled = function(itemData, item, data) {
+        var menu_enabled = function(itemData, item, data) {
          var t = pgBrowser.tree, i = item, d = itemData;
          var parent_item = t.hasParent(i) ? t.parent(i): null,
              parent_data = parent_item ? t.itemData(parent_item) : null;

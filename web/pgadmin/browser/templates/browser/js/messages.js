@@ -1,7 +1,7 @@
 define(
  'pgadmin.browser.messages',
-  ['sources/gettext', 'underscore', 'underscore.string', 'pgadmin'],
-  function(gettext, S, _, pgAdmin) {
+  ['sources/gettext', 'pgadmin'],
+  function(gettext, pgAdmin) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 

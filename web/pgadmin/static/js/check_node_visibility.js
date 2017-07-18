@@ -30,7 +30,7 @@ define(['jquery', 'underscore', 'underscore.string'],
         return true;
       }
 
-      preference = pgBrowser.get_preference("browser", 'show_node_'+node_type);
+      var preference = pgBrowser.get_preference("browser", 'show_node_'+node_type);
 
       if (preference) {
         return preference.value

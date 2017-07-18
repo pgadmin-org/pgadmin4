@@ -24,9 +24,9 @@ define('pgadmin.node.type', [
         this.$el.empty();
         var model = this.model;
         var column = this.column;
-        editable = this.column.get("editable");
+        var editable = this.column.get("editable");
 
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable){ this.$el.addClass("editable"); }
         else { this.$el.removeClass("editable"); }
 
@@ -48,7 +48,7 @@ define('pgadmin.node.type', [
           editable = this.column.get("editable"),
           input = this.$el.find('select').first();
 
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable) {
            this.$el.addClass("editable");
            input.prop('disabled', false);
@@ -337,7 +337,6 @@ define('pgadmin.node.type', [
           id: 'typtype', label: gettext('Type'),
           mode: ['create','edit'], disabled: 'inSchemaWithModelCheck',
           group: gettext('Definition'),
-          mode: ['edit', 'create'],
           select2: { width: "50%", allowClear: false },
           options: function(obj) {
               return [
@@ -929,7 +928,7 @@ define('pgadmin.node.type', [
 
             if ('coll-type' == d._type) {
               //Check if we are not child of catalog
-              prev_i = t.hasParent(i) ? t.parent(i) : null;
+              var prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_d = prev_i ? t.itemData(prev_i) : null;
               if( prev_d._type == 'catalog') {
                 return false;

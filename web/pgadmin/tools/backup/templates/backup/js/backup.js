@@ -2,7 +2,7 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
-  'sources/alerts/alertify_wrapper',
+  'sources/alerts/alertify_wrapper'
 ], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode, AlertifyWrapper) {
 
   // if module is already initialized, refer to that.
@@ -280,7 +280,7 @@ TODO LIST FOR BACKUP:
           menu will be enabled otherwise disabled.
           Also, hide it for system view in catalogs
         */
-        menu_enabled = function(itemData, item, data) {
+        var menu_enabled = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
           var parent_item = t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
@@ -301,7 +301,7 @@ TODO LIST FOR BACKUP:
               return false;
         };
 
-        menu_enabled_server = function(itemData, item, data) {
+        var menu_enabled_server = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
           var parent_item = t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
@@ -628,7 +628,7 @@ TODO LIST FOR BACKUP:
           return;
         }
 
-        var title = S('{{ 'Backup (%s: %s)' }}'),
+        var title = S(gettext('Backup (%s: %s)')),
             tree = pgBrowser.tree,
             item = treeItem || tree.selected(),
             data = item && item.length == 1 && tree.itemData(item),

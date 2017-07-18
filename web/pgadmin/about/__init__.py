@@ -47,6 +47,8 @@ class AboutModule(PgAdminModule):
             'when': None
         }]
 
+    def get_exposed_url_endpoints(self):
+        return ['about.index']
 
 blueprint = AboutModule(MODULE_NAME, __name__,
                         static_url_path='')
@@ -55,7 +57,7 @@ blueprint = AboutModule(MODULE_NAME, __name__,
 ##########################################################################
 # A test page
 ##########################################################################
-@blueprint.route("/")
+@blueprint.route("/", endpoint='index')
 @login_required
 def index():
     """Render the about box."""

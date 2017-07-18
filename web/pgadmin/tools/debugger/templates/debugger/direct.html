@@ -4,10 +4,12 @@
 
 try {
   require(
-    ['pgadmin', 'pgadmin.tools.debugger.direct'],
-    function(pgAdmin, pgDirectDebug) {
-      pgDirectDebug.init({{ uniqueId }}, {{ debug_type }});
+    ['sources/generated/debugger_direct'],
+    function(pgDirectDebug) {
+      var pgDirectDebug = pgDirectDebug || pgAdmin.Tools.DirectDebug;
+      var $ = pgDirectDebug.jquery;
 
+      pgDirectDebug.init({{ uniqueId }}, {{ debug_type }});
       window.onbeforeunload = function(ev) {
         $.ajax({
           url: "{{ url_for('debugger.index') }}close/{{ uniqueId }}",

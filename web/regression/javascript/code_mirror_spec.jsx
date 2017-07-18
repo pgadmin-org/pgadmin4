@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import $ from '../../pgadmin/static/vendor/jquery/jquery-1.11.2';
+import $ from 'jquery';
 import CodeMirror from '../../pgadmin/static/jsx/history/detail/code_mirror';
 import jasmineEnzyme from 'jasmine-enzyme';
 

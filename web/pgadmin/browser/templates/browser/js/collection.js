@@ -1,8 +1,8 @@
 define([
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-  'backbone', 'alertify', 'backform', 'pgadmin.backform', 'pgadmin.backgrid',
+  'backbone', 'alertify', 'backform', 'backgrid', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node'
-], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform) {
+], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -113,25 +113,27 @@ define([
       j.append(content);
 
       // Fetch Data
-      collection.fetch({reset: true})
-      .error(function(xhr, error, message) {
-        pgBrowser.Events.trigger(
-          'pgadmin:collection:retrieval:error', 'properties', xhr, error, message, item, that
-        );
-        if (
-          !Alertify.pgHandleItemError(xhr, error, message, {item: item, info: info})
-        ) {
-          Alertify.pgNotifier(
-            error, xhr,
-            S(
-              gettext("Error retrieving properties - %s.")
-            ).sprintf(message || that.label).value(),
-            function() {
-              console.log(arguments);
-            }
+      collection.fetch({
+        reset: true,
+        error: function(xhr, error, message) {
+          pgBrowser.Events.trigger(
+            'pgadmin:collection:retrieval:error', 'properties', xhr, error, message, item, that
           );
+          if (
+            !Alertify.pgHandleItemError(xhr, error, message, {item: item, info: info})
+          ) {
+            Alertify.pgNotifier(
+              error, xhr,
+              S(
+                gettext("Error retrieving properties - %s.")
+              ).sprintf(message || that.label).value(),
+              function() {
+                console.log(arguments);
+              }
+            );
+          }
         }
-      });
+      })
     },
     generate_url: function(item, type, d) {
       var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',

@@ -230,12 +230,12 @@ define('pgadmin.node.rule', [
           if ('coll-rule' == d._type) {
 
             //Check if we are not child of rule
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_d = prev_i ? t.itemData(prev_i) : null;
-            prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;
-            prev_e = prev_j ? t.itemData(prev_j) : null;
-            prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null;
-            prev_f = prev_k ? t.itemData(prev_k) : null;
+            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_d = prev_i ? t.itemData(prev_i) : null,
+              prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
+              prev_e = prev_j ? t.itemData(prev_j) : null,
+              prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null,
+              prev_f = prev_k ? t.itemData(prev_k) : null;
             if( prev_f._type == 'catalog') {
               return false;
             } else {

@@ -51,7 +51,7 @@ define('pgadmin.node.check_constraints', [
       },
       callbacks: {
         validate_check_constraint: function(args) {
-          var input = args || {};
+          var input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),

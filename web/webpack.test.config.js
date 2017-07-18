@@ -56,13 +56,11 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      'alertify': sourcesDir + '/vendor/alertifyjs/alertify',
-      'jquery': sourcesDir + '/vendor/jquery/jquery-1.11.2',
-      'jquery.ui': sourcesDir + '/vendor/jquery-ui/jquery-ui-1.11.3',
-      'jquery.event.drag': sourcesDir + '/vendor/jquery-ui/jquery.event.drag-2.2',
+      'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
+      'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
+      'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.2'),
+      'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
       'sources': sourcesDir + '/js',
-      'underscore.string': sourcesDir + '/vendor/underscore/underscore.string',
-      'vendor': sourcesDir + '/vendor/',
       'translations': regressionDir + '/javascript/fake_translations',
       'pgadmin.browser.endpoints': regressionDir + '/javascript/fake_endpoints',
       'slickgrid': nodeModulesDir + '/slickgrid/',
@@ -70,6 +68,7 @@ module.exports = {
       'slickgrid.grid': nodeModulesDir + '/slickgrid/slick.grid',
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
+      'pgadmin.sqlfoldcode': sourcesDir + '/js/codemirror/addon/fold/pgadmin-sqlfoldcode',
     },
   },
   externals: {

@@ -103,3 +103,7 @@ export default class QueryHistory extends React.Component {
 QueryHistory.propTypes = {
   historyCollection: Shapes.historyCollectionClass.isRequired,
 };
+
+export {
+  QueryHistory,
+};

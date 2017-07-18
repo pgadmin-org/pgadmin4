@@ -144,6 +144,19 @@ class FileManagerModule(PgAdminModule):
             'file_items': []
         }
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+            list: a list of url endpoints exposed to the client.
+        """
+        return [
+            'file_manager.filemanager',
+            'file_manager.index',
+            'file_manager.get_trans_id',
+            'file_manager.delete_trans_id',
+            'file_manager.save_last_dir'
+        ]
+
     def get_file_size_preference(self):
         return self.file_upload_size
 
@@ -165,7 +178,7 @@ class FileManagerModule(PgAdminModule):
 blueprint = FileManagerModule(MODULE_NAME, __name__)
 
 
-@blueprint.route("/")
+@blueprint.route("/", endpoint='index')
 @login_required
 def index():
     """Render the preferences dialog."""
@@ -226,7 +239,9 @@ def file_manager_config(trans_id):
         mimetype="application/json")
 
 
-@blueprint.route("/get_trans_id", methods=["GET", "POST"])
+@blueprint.route(
+    "/get_trans_id", methods=["GET", "POST"], endpoint='get_trans_id'
+)
 @login_required
 def get_trans_id():
     if len(req.data) != 0:
@@ -239,7 +254,10 @@ def get_trans_id():
     )
 
 
-@blueprint.route("/del_trans_id/<int:trans_id>", methods=["GET", "POST"])
+@blueprint.route(
+    "/del_trans_id/<int:trans_id>",
+    methods=["GET", "POST"], endpoint='delete_trans_id'
+)
 @login_required
 def delete_trans_id(trans_id):
     Filemanager.release_transaction(trans_id)
@@ -248,7 +266,9 @@ def delete_trans_id(trans_id):
     )
 
 
-@blueprint.route("/save_last_dir/<int:trans_id>", methods=["POST"])
+@blueprint.route(
+    "/save_last_dir/<int:trans_id>", methods=["POST"], endpoint='save_last_dir'
+)
 @login_required
 def save_last_directory_visited(trans_id):
     blueprint.last_directory_visited.set(req.json['path'])
@@ -1126,7 +1146,10 @@ class Filemanager(object):
         return res
 
 
-@blueprint.route("/filemanager/<int:trans_id>/", methods=["GET", "POST"])
+@blueprint.route(
+    "/filemanager/<int:trans_id>/",
+    methods=["GET", "POST"], endpoint='filemanager'
+)
 @login_required
 def file_manager(trans_id):
     """

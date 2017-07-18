@@ -1,6 +1,6 @@
-define([
+define('tools.querytool', [
     'sources/gettext','sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
-    'pgadmin', 'backbone', 'backgrid', 'codemirror', 'pgadmin.misc.explain',
+    'pgadmin', 'backbone', 'sources/../bundle/codemirror', 'pgadmin.misc.explain',
     'sources/selection/grid_selector',
     'sources/selection/active_cell_capture',
     'sources/selection/clipboard',
@@ -10,36 +10,25 @@ define([
     'sources/selection/xcell_selection_model',
     'sources/selection/set_staged_rows',
     'sources/sqleditor_utils',
+    'sources/history/index.js',
+    'sources/../jsx/history/query_history',
+    'react', 'react-dom',
     'sources/alerts/alertify_wrapper',
-
-    'sources/generated/history',
-    'sources/generated/reactComponents',
-
-    'slickgrid', 'bootstrap', 'pgadmin.browser', 'wcdocker',
-    'codemirror/mode/sql/sql', 'codemirror/addon/selection/mark-selection',
-    'codemirror/addon/selection/active-line', 'codemirror/addon/fold/foldcode',
-    'codemirror/addon/fold/foldgutter', 'codemirror/addon/hint/show-hint',
-    'codemirror/addon/hint/sql-hint', 'pgadmin.file_manager',
-    'pgadmin-sqlfoldcode',
-    'codemirror/addon/scroll/simplescrollbars',
-    'codemirror/addon/dialog/dialog',
-    'codemirror/addon/search/search',
-    'codemirror/addon/search/searchcursor',
-    'codemirror/addon/search/jump-to-line',
-    'codemirror/addon/edit/matchbrackets',
-    'codemirror/addon/edit/closebrackets',
-
+    'sources/../bundle/slickgrid',
+    'misc.file_manager',
     'backgrid.sizeable.columns',
     'slick.pgadmin.formatters',
     'slick.pgadmin.editors',
+    'pgadmin.browser'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, Backgrid, CodeMirror,
+  gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-    XCellSelectionModel, setStagedRows,  SqlEditorUtils, AlertifyWrapper, HistoryBundle, reactComponents
+    XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM, AlertifyWrapper
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
       return pgAdmin.SqlEditor;
+    var CodeMirror = codemirror.default;
 
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
@@ -1013,9 +1002,9 @@ define([
 
         self.history_collection = new HistoryBundle.HistoryCollection([]);
 
-        var queryHistoryElement = reactComponents.React.createElement(
-          reactComponents.QueryHistory, {historyCollection: self.history_collection});
-        reactComponents.render(queryHistoryElement, $('#history_grid')[0]);
+        var queryHistoryElement = React.createElement(
+          queryHistory.QueryHistory, {historyCollection: self.history_collection});
+        ReactDOM.render(queryHistoryElement, $('#history_grid')[0]);
       },
 
       // Callback function for Add New Row button click.
@@ -1990,7 +1979,9 @@ define([
             // To show column label and data type in multiline,
             // The elements should be put inside the div.
             // Create column label and type.
-            var col_type = column_label = '';
+            var col_type = '',
+              column_label = '',
+              col_cell;
             var type = pg_types[c.type_code] ?
                          pg_types[c.type_code][0] :
                          // This is the case where user might
@@ -2290,7 +2281,7 @@ define([
             );
 
             // Add the columns to the data so the server can remap the data
-            req_data = self.data_store
+            var req_data = self.data_store;
             req_data.columns = view ? view.handler.columns : self.columns;
 
             // Make ajax call to save the data
@@ -2327,7 +2318,7 @@ define([
                       } else {
                         dataView.beginUpdate();
                         for (var i = 0; i < rows.length; i++) {
-                          item = grid.getDataItem(rows[i]);
+                          var item = grid.getDataItem(rows[i]);
                           data.push(item);
                           dataView.deleteItem(item[self.client_primary_key]);
                         }
@@ -2376,7 +2367,7 @@ define([
                     if(_row_index in self.data_store.added_index) {
                       // Remove new row index from temp_list if save operation
                       // fails
-                      var index = self.handler.temp_new_rows.indexOf(_rowid);
+                      var index = self.handler.temp_new_rows.indexOf(res.data._rowid);
                       if (index > -1) {
                          self.handler.temp_new_rows.splice(index, 1);
                       }
@@ -2569,11 +2560,11 @@ define([
 
         // read data from codemirror and write to file
         _save_file_handler: function(e) {
-          var self = this;
-          data = {
-            'file_name': decodeURI(e),
-            'file_content': self.gridView.query_tool_obj.getValue()
-          }
+          var self = this,
+            data = {
+              'file_name': decodeURI(e),
+              'file_content': self.gridView.query_tool_obj.getValue()
+            };
           self.trigger(
             'pgadmin-sqleditor:loading-icon:show',
             gettext("Saving the queries in the file...")
@@ -2937,7 +2928,7 @@ define([
 
         // This function will apply the filter.
         _apply_filter: function() {
-          var self = this;
+          var self = this,
               sql = self.gridView.filter_obj.getValue();
 
           self.trigger(
@@ -3064,7 +3055,7 @@ define([
 
         // This function will set the limit for SQL query
         _set_limit: function() {
-          var self = this;
+          var self = this,
               limit = parseInt($(".limit").val());
 
           self.trigger(
@@ -3382,7 +3373,7 @@ define([
         },
 
         _auto_rollback: function() {
-          var self = this;
+          var self = this,
               auto_rollback = true;
 
           if ($('.auto-rollback').hasClass('visibility-hidden') === true)
@@ -3730,7 +3721,9 @@ define([
       // This function is used to create and return the object of grid controller.
       create: function(container) {
         return new SqlEditorController(container);
-      }
+      },
+      jquery: $,
+      S: S
     };
 
     return pgAdmin.SqlEditor;

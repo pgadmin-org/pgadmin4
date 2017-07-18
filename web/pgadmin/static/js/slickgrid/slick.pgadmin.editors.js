@@ -35,7 +35,7 @@
   // Generate and return editor buttons
   function getButtons(editable) {
     var $buttons = $("<div class='pg_buttons' />"),
-      label = editable ? 'Cancel': 'OK';
+      label = editable ? 'Cancel': 'OK',
       button_type = editable ? 'btn-danger' : 'btn-primary';
 
     if (editable) {
@@ -43,7 +43,7 @@
           .appendTo($buttons);
     }
 
-    $cancel_button = $("<button class='btn " + button_type + " fa fa-lg fa-times long_text_editor pg-alertify-button'>"+ label +"</button>")
+    var $cancel_button = $("<button class='btn " + button_type + " fa fa-lg fa-times long_text_editor pg-alertify-button'>"+ label +"</button>")
         .appendTo($buttons);
     return $buttons;
   }
@@ -119,7 +119,7 @@
 
   // Text data type editor
   function pgTextEditor(args) {
-    var $input, $wrapper;
+    var $input, $wrapper, $buttons;
     var defaultValue;
     var scope = this;
 
@@ -256,7 +256,7 @@
 
   // JSON data type editor
   function JsonTextEditor(args) {
-    var $input, $wrapper;
+    var $input, $wrapper, $buttons;
     var defaultValue;
     var scope = this;
 
@@ -379,7 +379,7 @@
 
   // Text data type editor
   function ReadOnlypgTextEditor(args) {
-    var $input, $wrapper;
+    var $input, $wrapper, $buttons;
     var defaultValue;
     var scope = this;
 
@@ -584,7 +584,7 @@
 
   // JSON data type editor
   function ReadOnlyJsonTextEditor(args) {
-    var $input, $wrapper;
+    var $input, $wrapper, $buttons;
     var defaultValue;
     var scope = this;
 

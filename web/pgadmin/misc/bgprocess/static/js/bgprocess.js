@@ -1,4 +1,4 @@
-define([
+define('misc.bgprocess', [
   'pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
   'underscore.string', 'jquery', 'pgadmin.browser', 'alertify',
   'pgadmin.browser.messages'
@@ -135,12 +135,14 @@ define([
           !self.details && !_.isNull(self.exit_code)
         );
 
-        var io = ie = 0, res = [],
-            escapeEl = document.createElement('textarea'),
-            escapeHTML = function(html) {
-              escapeEl.textContent = html;
-              return escapeEl.innerHTML;
-            };
+        var io = 0,
+          ie = 0,
+          res = [],
+          escapeEl = document.createElement('textarea'),
+          escapeHTML = function(html) {
+            escapeEl.textContent = html;
+            return escapeEl.innerHTML;
+          };
 
         while (io < out.length && ie < err.length) {
           if (pgAdmin.natural_sort(out[io][0], err[ie][0]) <= 0){
@@ -452,7 +454,7 @@ define([
             if (!res || !_.isArray(res)) {
               return;
             }
-            for (idx in res) {
+            for (var idx in res) {
               var process = res[idx];
               if ('id' in process) {
                 if (!(process.id in observer.bgprocesses)) {

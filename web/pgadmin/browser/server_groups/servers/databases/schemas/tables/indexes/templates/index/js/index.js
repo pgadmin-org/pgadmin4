@@ -32,7 +32,7 @@ define('pgadmin.node.index', [
           editable = this.column.get("editable"),
           input = this.$el.find('select').first();
 
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable) {
            this.$el.addClass("editable");
            input.prop('disabled', false);
@@ -165,7 +165,7 @@ define('pgadmin.node.index', [
 
           if (_.isUndefined(this.get('colname'))
               || String(this.get('colname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Column Name cannot be empty.');
+            var msg = gettext('Column Name cannot be empty.');
             this.errorModel.set('colname', msg);
             return msg;
           }

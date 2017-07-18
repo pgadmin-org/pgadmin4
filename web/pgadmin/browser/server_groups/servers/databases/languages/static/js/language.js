@@ -217,7 +217,7 @@ define('pgadmin.node.language', [
             }
             return true;
           }
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, {
           id: 'lanacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection', mode: ['edit', 'create'],
           model: pgBrowser.Node.PrivilegeRoleModel.extend({

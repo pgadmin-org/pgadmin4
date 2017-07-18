@@ -1,36 +1,8 @@
-(function(root, factory) {
-  // Set up Backform appropriately for the environment. Start with AMD.
-  if (typeof define === 'function' && define.amd) {
-    define([
-      'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-      'pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
-      ],
-     function(_, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
-      // Export global even in AMD case in case this script is loaded with
-      // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone, Backform, Alertify, pgAdmin, pgNode);
-    });
-
-  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
-  } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore') || root._,
-      $ = root.jQuery || root.$ || root.Zepto || root.ender,
-      Backbone = require('backbone') || root.Backbone,
-      Backform = require('backform') || root.Backform;
-      Alertify = require('alertify') || root.Alertify;
-      pgAdmin = require('pgadmin') || root.pgAdmin,
-      pgNode = require('pgadmin.browser.node') || root.pgAdmin.Browser.Node;
-
-    factory(root, _, $, Backbone, Backform, Alertify, pgAdmin, pgNode);
-
-  // Finally, as a browser global.
-  } else {
-    factory(
-        root, root._, (root.jQuery || root.Zepto || root.ender || root.$),
-        root.Backbone, root.Backform, root.pgAdmin.Browser.Node
-        );
-  }
-} (this, function(root, _, $, Backbone, Backform, Alertify, pgAdmin, pgNode) {
+define([
+  'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
+  'pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
+  ],
+ function(_, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
 
   /*
    * cellFunction for variable control.
@@ -159,7 +131,7 @@
     },
     schema: [
       {
-        id: 'name', label:'Name', type:'text', editable: true, cellHeaderClasses: 'width_percent_30',
+        id: 'name', label:'Name', type:'text', cellHeaderClasses: 'width_percent_30',
         editable: function(m) {
           return (m instanceof Backbone.Collection) ? true : m.isNew();
         },
@@ -513,8 +485,6 @@
 
         newRow.addClass("new");
         $(newRow).pgMakeVisible('backform-tab');
-      } else {
-        delete m;
       }
 
       return false;
@@ -522,4 +492,4 @@
   });
 
   return VariableModel;
-}));
+});

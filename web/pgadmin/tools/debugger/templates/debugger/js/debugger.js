@@ -1,9 +1,9 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
-  'backform', 'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
+  'backform', 'tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
   'pgadmin.backgrid', 'pgadmin.browser.frame'
-], function(gettext, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform, get_function_arguments) {
+], function(gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform, get_function_arguments) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
@@ -173,7 +173,7 @@ define([
 
         var args = {
           'URL': _url,
-          'BASEURL': '{{ url_for('debugger.index')}}',
+          'BASEURL': url_for('debugger.index'),
           'REF': ref,
           'OBJTYPE': encodeURI(node.type)
         };
@@ -229,33 +229,68 @@ define([
         var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
         if (d._type == "function") {
-          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
+          var baseUrl = url_for(
+                          'debugger.initialize_target_for_function', {
+                            'debug_type': 'indirect',
+                            'sid': treeInfo.server._id,
+                            'did': treeInfo.database._id,
+                            'scid': treeInfo.schema._id,
+                            'func_id': treeInfo.function._id
+                          }
+                        );
         }
         else if (d._type == "procedure") {
-          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+          var baseUrl = url_for(
+                          'debugger.initialize_target_for_function', {
+                            'debug_type': 'indirect',
+                            'sid': treeInfo.server._id,
+                            'did': treeInfo.database._id,
+                            'scid': treeInfo.schema._id,
+                            'func_id': treeInfo.procedure._id
+                          }
+                        );
         }
         else if (d._type == "trigger_function") {
-          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.trigger_function._id;
+          var baseUrl = url_for(
+                          'debugger.initialize_target_for_function', {
+                            'debug_type': 'indirect',
+                            'sid': treeInfo.server._id,
+                            'did': treeInfo.database._id,
+                            'scid': treeInfo.schema._id,
+                            'func_id': treeInfo.trigger_function._id
+                          }
+                        );
         }
         else if (d._type == "trigger" && "table" in treeInfo) {
-          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.table._id +
-                                "/" + treeInfo.trigger._id;
+          var baseUrl = url_for(
+                          'debugger.initialize_target_for_trigger', {
+                            'debug_type': 'indirect',
+                            'sid': treeInfo.server._id,
+                            'did': treeInfo.database._id,
+                            'scid': treeInfo.schema._id,
+                            'func_id': treeInfo.table._id,
+                            'tri_id': treeInfo.trigger._id
+                          }
+                        );
         }
         else if (d._type == "trigger" && "view" in treeInfo) {
-          var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "indirect/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.view._id +
-                                "/" + treeInfo.trigger._id;
+          var baseUrl = url_for(
+                          'debugger.initialize_target_for_trigger', {
+                            'debug_type': 'indirect',
+                            'sid': treeInfo.server._id,
+                            'did': treeInfo.database._id,
+                            'scid': treeInfo.schema._id,
+                            'func_id': treeInfo.view._id,
+                            'tri_id': treeInfo.trigger._id
+                          }
+                        );
         }
 
         $.ajax({
           url: baseUrl,
           method: 'GET',
           success: function(res) {
-            var url = "{{ url_for('debugger.index') }}" + "direct/" + res.data.debuggerTransId;
+            var url = url_for('debugger.direct', {'trans_id': res.data.debuggerTransId});
 
             if (res.data.newBrowserTab) {
               window.open(url, '_blank');
@@ -277,7 +312,7 @@ define([
 
               // Panel Closed event
               panel.on(wcDocker.EVENT.CLOSED, function() {
-                var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
+                var closeUrl = url_for('debugger.close', {'trans_id': res.data.debuggerTransId});
                 $.ajax({
                   url: closeUrl,
                   method: 'DELETE'
@@ -339,12 +374,26 @@ define([
               var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
               if (d._type == "function") {
-                var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.function._id;
+                var baseUrl = url_for(
+                                'debugger.initialize_target_for_function', {
+                                  'debug_type': 'direct',
+                                  'sid': treeInfo.server._id,
+                                  'did': treeInfo.database._id,
+                                  'scid': treeInfo.schema._id,
+                                  'func_id': treeInfo.function._id
+                                }
+                              );
               }
               else {
-                var baseUrl = "{{ url_for('debugger.index') }}" + "initialize_target/" + "direct/" + treeInfo.server._id +
-                                "/" + treeInfo.database._id + "/" + treeInfo.schema._id + "/" + treeInfo.procedure._id;
+                var baseUrl = url_for(
+                                'debugger.initialize_target_for_function', {
+                                  'debug_type': 'direct',
+                                  'sid': treeInfo.server._id,
+                                  'did': treeInfo.database._id,
+                                  'scid': treeInfo.schema._id,
+                                  'func_id': treeInfo.procedure._id
+                                }
+                              );
               }
 
               $.ajax({
@@ -352,7 +401,7 @@ define([
                 method: 'GET',
                 success: function(res) {
 
-                  var url = "{{ url_for('debugger.index') }}" + "direct/" + res.data.debuggerTransId;
+                  var url = url_for('debugger.direct', {'trans_id': res.data.debuggerTransId});
 
                   if (res.data.newBrowserTab) {
                     window.open(url, '_blank');
@@ -374,7 +423,7 @@ define([
 
                     // Register Panel Closed event
                     panel.on(wcDocker.EVENT.CLOSED, function() {
-                      var closeUrl = "{{ url_for('debugger.index') }}" + "close/" + res.data.debuggerTransId;
+                      var closeUrl = url_for('debugger.close', {'trans_id': res.data.debuggerTransId});
                       $.ajax({
                         url: closeUrl,
                         method: 'DELETE'

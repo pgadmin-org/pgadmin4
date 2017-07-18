@@ -1,4 +1,4 @@
-define(
+define('pgadmin.node.table_partition_utils',
         ['sources/gettext', 'jquery', 'underscore', 'pgadmin.browser',
         'backform','backgrid', 'pgadmin.browser.collection'],
 function(gettext, $, _, pgBrowser, Backform, Backgrid) {
@@ -205,21 +205,21 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
 
       if (_.isUndefined(col_type) || _.isNull(col_type) ||
         String(col_type).replace(/^\s+|\s+$/g, '') == '') {
-        msg = gettext('Partition key type cannot be empty.');
+        var msg = gettext('Partition key type cannot be empty.');
         this.errorModel.set('key_type', msg);
         return msg;
       }
       else if (col_type == 'column' &&
         _.isUndefined(pt_column) || _.isNull(pt_column) ||
         String(pt_column).replace(/^\s+|\s+$/g, '') == '') {
-        msg = gettext('Partition key column cannot be empty.');
+        var msg = gettext('Partition key column cannot be empty.');
         this.errorModel.set('pt_column', msg);
         return msg;
       }
       else if (col_type == 'expression' &&
         _.isUndefined(expression) || _.isNull(expression) ||
         String(expression).replace(/^\s+|\s+$/g, '') == '') {
-        msg = gettext('Partition key expression cannot be empty.');
+        var msg = gettext('Partition key expression cannot be empty.');
         this.errorModel.set('expression', msg);
         return msg;
       }
@@ -306,7 +306,7 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
 
       if (_.isUndefined(partition_name) || _.isNull(partition_name) ||
        String(partition_name).replace(/^\s+|\s+$/g, '') == '') {
-       msg = gettext('Partition name cannot be empty.');
+       var msg = gettext('Partition name cannot be empty.');
        this.errorModel.set('partition_name', msg);
        return msg;
       }
@@ -314,19 +314,19 @@ function(gettext, $, _, pgBrowser, Backform, Backgrid) {
       if (this.top.get('partition_type') == 'range') {
         if (_.isUndefined(values_from) || _.isNull(values_from) ||
           String(values_from).replace(/^\s+|\s+$/g, '') == '') {
-          msg = gettext('For range partition From field cannot be empty.');
+          var msg = gettext('For range partition From field cannot be empty.');
           this.errorModel.set('values_from', msg);
           return msg;
         } else if (_.isUndefined(values_to) || _.isNull(values_to) ||
           String(values_to).replace(/^\s+|\s+$/g, '') == '') {
-          msg = gettext('For range partition To field cannot be empty.');
+          var msg = gettext('For range partition To field cannot be empty.');
           this.errorModel.set('values_to', msg);
           return msg;
         }
       } else if (this.top.get('partition_type') == 'list') {
         if (_.isUndefined(values_in) || _.isNull(values_in) ||
           String(values_in).replace(/^\s+|\s+$/g, '') == '') {
-          msg = gettext('For list partition In field cannot be empty.');
+          var msg = gettext('For list partition In field cannot be empty.');
           this.errorModel.set('values_in', msg);
           return msg;
         }

@@ -95,16 +95,16 @@
 }
 
 .wcFrameEdgeH {
-  height: 4px;
+  height: 6px;
 }
 
 .wcFrameEdgeV {
-  width: 4px;
+  width: 6px;
 }
 .wcFrameCornerNW,
 .wcFrameCornerNE {
-  height: 4px;
-  width: 4px;
+  height: 6px;
+  width: 6px;
 }
 
 .wcSplitterBar {
@@ -336,6 +336,7 @@ ul.dropdown-menu > li.menu-item > a > i.wcTabIcon {
 
 span.fa.fa-arrow-left, .fa-arrow-right {
   margin-top: 4px;
+  width: 14px;
 }
 
 .wcMenuSubMenu {
@@ -381,4 +382,8 @@ i.wcTabIcon {
 .wcPanelTabActive > div {
   width: auto !important;
   max-width: 100%;
+}
+
+.wcFrameTitleBar.wcTabTop .wcFrameButtonBar {
+  right: 30px !important;
 }

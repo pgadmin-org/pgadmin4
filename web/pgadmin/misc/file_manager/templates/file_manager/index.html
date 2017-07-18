@@ -1,7 +1,6 @@
 ﻿<html>
 <head>
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery.dropzone/dropzone.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('file_manager.index') }}utility.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('file_manager.static', filename='css/file_manager.css')}}"/>
 </head>
 <body>
 <div class="file_manager">
@@ -55,6 +54,11 @@
         </div>
 
     </div>
+    <script>
+	require(['sources/generated/file_utils'], function() {
+	    pgAdmin.FileUtils.init();
+    });
+    </script>
 </div>
 </body>
 </html>

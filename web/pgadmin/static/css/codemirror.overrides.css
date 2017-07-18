@@ -69,3 +69,7 @@
   padding-left: 5px;
   position: absolute;
 }
+
+.CodeMirror-gutters {
+  z-index: 2;
+}

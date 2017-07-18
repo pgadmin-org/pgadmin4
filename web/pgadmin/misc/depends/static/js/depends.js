@@ -1,10 +1,12 @@
-define([
+define('misc.depends', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
   'alertify', 'pgadmin.alertifyjs'
 ], function(gettext, _, S, $, pgBrowser, Alertify) {
 
   if (pgBrowser.ShowNodeDepends)
     return pgBrowser.ShowNodeDepends;
+
+  var wcDocker = window.wcDocker;
 
   pgBrowser.ShowNodeDepends = pgBrowser.ShowNodeDepends || {};
 
@@ -192,7 +194,7 @@ define([
       var msg = messages[0],
           $container = panel[0].layout().scene().find('.pg-panel-content'),
           $msgContainer = $container.find('.pg-panel-depends-message'),
-          $gridContainer = $container.find('.pg-panel-depends-container');
+          $gridContainer = $container.find('.pg-panel-depends-container'),
           treeHierarchy = node.getTreeNodeHierarchy(item),
           n_value = -1,
           n_type = type;

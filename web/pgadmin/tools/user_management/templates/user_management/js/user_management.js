@@ -1,11 +1,11 @@
-// Backup dialog
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
-  'sources/alerts/alertify_wrapper',
+  'sources/alerts/alertify_wrapper', 'pgadmin.user_management.current_user',
   'backgrid.select.all', 'backgrid.filter'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode, AlertifyWrapper
+  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
+  pgNode, AlertifyWrapper, userInfo
 ) {
 
     // if module is already initialized, refer to that.
@@ -36,11 +36,10 @@ define([
         this.initialized = true;
 
         return this;
-      }
-      {% if is_admin %},
-
+      },
       // Callback to draw User Management Dialog.
       show_users: function(action, item, params) {
+        if (!userInfo['is_admin']) return;
         var Roles = [];
 
         var UserModel = pgAdmin.Browser.Node.Model.extend({
@@ -97,7 +96,7 @@ define([
                 if(m instanceof Backbone.Collection) {
                   return true;
                 }
-                if (m.get("id") == {{user_id}}){
+                if (m.get("id") == userInfo['user_id']){
                     return false;
                 } else {
                     return true;
@@ -111,7 +110,7 @@ define([
                 if(m instanceof Backbone.Collection) {
                   return true;
                 }
-                if (m.get("id") == {{user_id}}){
+                if (m.get("id") == userInfo['user_id']){
                     return false;
                 } else {
                     return true;
@@ -284,7 +283,7 @@ define([
               self = this;
               e.preventDefault();
 
-              if (self.model.get("id") == {{user_id}}) {
+              if (self.model.get("id") == userInfo['user_id']) {
                 alertify.alert(
                   gettext('Cannot delete user.'),
                   gettext('Cannot delete currently logged in user.'),
@@ -468,7 +467,7 @@ define([
                       }
                     },
                     saveUser: function(m) {
-                      d = m.toJSON(true);
+                      var d = m.toJSON(true);
 
                       if(m.isNew() && (!m.get('email') || !m.get('role') ||
                           !m.get('newPassword') || !m.get('confirmPassword') ||
@@ -636,7 +635,7 @@ define([
        });
       }
         alertify.UserManagement(true).resizeTo('680px','400px');
-     }{% endif %}
+     }
 
     };
     return pgBrowser.UserManagement;

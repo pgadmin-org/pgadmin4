@@ -9,14 +9,11 @@
  *  @copyright  Authors
  */
 
-(function($) {
-"use strict";
-
-// use alertify and underscore js
-var AlertifyWrapper = require('sources/alerts/alertify_wrapper'),
-    _ = require("underscore"),
-    S = require("underscore.string"),
-    gettext = require('sources/gettext');
+define(['jquery', 'underscore', 'underscore.string',
+  'sources/alerts/alertify_wrapper', 'sources/gettext',
+  'sources/url_for', 'dropzone'
+  ],
+function($, _, S, AlertifyWrapper, gettext, url_for, Dropzone) {
 
 /*---------------------------------------------------------
   Define functions used for various operations
@@ -97,6 +94,7 @@ var formatBytes = function(bytes) {
   var n = parseFloat(bytes),
       d = parseFloat(1024),
       c = 0,
+      lg = pgAdmin.FileUtils.lg,
       u = [lg.bytes,lg.kb,lg.mb,lg.gb];
 
   while(true) {
@@ -144,175 +142,6 @@ var getFilename = function(filename) {
   }
 };
 
-// helpful in show/hide toolbar button for Windows
-var hideButtons = function() {
-    return (
-      config.options.platform_type == 'win32' &&
-      $('.currentpath').val() === ''
-    );
-};
-
-/*
- * Sets the folder status, upload, and new folder functions
- * to the path specified. Called on initial page load and
- * whenever a new directory is selected.
- */
-var setUploader = function(path) {
-  $('.storage_dialog #uploader').find('a').remove();
-  $('.storage_dialog #uploader').find('b').remove();
-
-  if(config.options.platform_type === "win32") {
-    path = path.replace(/\//g, '\\')
-  } else {
-    path = path.replace(/\\/g, '/')
-  }
-
-  path = decodeURI(path);
-  if (config.options.platform_type === "win32") {
-    if (config.options.show_volumes && path == '\\') {
-      $('.storage_dialog #uploader .input-path').val('');
-    } else {
-        $('.storage_dialog #uploader .input-path').val(path);
-    }
-  } else if (!config.options.platform_type === "win32" &&
-        (path == '' || !S.startsWith(path, '/'))) {
-    path = '/' + path;
-    $('.storage_dialog #uploader .input-path').val(path);
-  } else {
-    $('.storage_dialog #uploader .input-path').val(path);
-  }
-
-  if( path.lastIndexOf('\\') == -1 && path.lastIndexOf('/') == -1) {
-    $('.currentpath').val(path);
-  } else if(path.lastIndexOf('/') > path.lastIndexOf('\\')) {
-    $('.currentpath').val(path.substr(0, path.lastIndexOf('/') + 1));
-  } else {
-    $('.currentpath').val(path.substr(0, path.lastIndexOf('\\') + 1));
-  }
-
-  enab_dis_level_up();
-  if ($('.storage_dialog #uploader h1 span').length === 0) {
-    $('<span>'+lg.current_folder+'</span>').appendTo($('.storage_dialog #uploader h1'));
-  }
-
-  $('.storage_dialog #uploader .input-path').attr('title', path);
-  $('.storage_dialog #uploader .input-path').attr('data-path', path);
-
-  // create new folder
-  $('.create').unbind().click(function() {
-    var foldername =  lg.new_folder;
-    var $file_element,
-        $file_element_list,
-        folder_div;
-
-
-    $('.file_manager button.create').attr('disabled', 'disabled');
-    if ($('.fileinfo').data('view') == 'grid') {
-
-      // template for creating new folder
-      folder_div =
-        "<li class='cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload'>" +
-        "<div class='clip'><span data-alt='' class='fa fa-folder-open fm_folder'></span></div>" +
-        "<p><input type='text' class='fm_file_rename'><span title=''>New_Folder</span></p>" +
-        "<span class='meta size'></span><span class='meta created'></span><span class='meta modified'></span></li>";
-
-      path = $('.currentpath').val();
-      $file_element =  $(folder_div);
-      $('.fileinfo #contents.grid').append($file_element);
-      $file_element.find('p span').toggle();
-      $file_element.find('p input').toggle().val(lg.new_folder).select();
-
-      // rename folder/file on pressing enter key
-      $('.file_manager').bind().on('keyup', function(e) {
-        if (e.keyCode == 13) {
-          e.stopPropagation();
-          $file_element.find('p input').trigger('blur');
-        }
-      });
-
-      // rename folder/file on blur
-      $file_element.find('p input').on('blur', function(e) {
-        $('.file_manager button.create').removeAttr('disabled');
-        var text_value = $file_element.find('p input').val();
-
-        path = $('.currentpath').val();
-
-        $file_element.find('p input').toggle();
-        $file_element.find('p span').toggle().html(text_value);
-        if (text_value === undefined) {
-          text_value = lg.new_folder;
-        }
-        getFolderName(text_value);
-        getFolderInfo(path);
-      });
-
-    } else if ($('.fileinfo').data('view') == 'list') {
-      // template to create new folder in table view
-      folder_div = $(
-        "<tr class='cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload'>" +
-        "<td title='' class='fa fa-folder-open tbl_folder'>" +
-        "<p><input type='text' class='fm_file_rename'><span>" +
-        lg.new_folder + "</span></p>" +
-        "</td><td><abbr title=''></abbr></td>" +
-        "<td></td>" +
-        "</tr>"
-      );
-
-      $file_element_list =  $(folder_div);
-      $('.fileinfo #contents.list').prepend($file_element_list);
-      $file_element_list.find('p span').toggle();
-      $file_element_list.find('p input').toggle().val(lg.new_folder).select();
-
-      // rename folder/file on pressing enter key
-      $('.file_manager').bind().on('keyup', function(e) {
-        if (e.keyCode == 13) {
-          e.stopPropagation();
-          $file_element_list.find('p input').trigger('blur');
-        }
-      });
-
-      // rename folder/file on blur
-      $file_element_list.find('p input').on('blur', function(e) {
-        $('.file_manager button.create').removeAttr('disabled');
-        var text_value = $file_element_list.find('p input').val();
-        path = $('.currentpath').val();
-        $file_element_list.find('p input').toggle();
-        $file_element_list.find('p span').toggle().html(text_value);
-        if (text_value === undefined) {
-          text_value = lg.new_folder;
-        }
-        getFolderName(text_value);
-        getFolderInfo(path);
-      });
-    }
-
-    // create a new folder
-    var getFolderName = function(value) {
-      var fname = value;
-
-      if (fname != '') {
-        foldername = fname;
-        var d = new Date(); // to prevent IE cache issues
-        $.getJSON(fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername, function(resp) {
-          var result = resp.data.result;
-          if (result.Code === 1) {
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.success(lg.successful_added_folder);
-            getFolderInfo(result.Parent);
-          } else {
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.error(result.Error);
-          }
-        });
-      } else {
-        var alertifyWrapper = new AlertifyWrapper();
-        alertifyWrapper.error(lg.no_foldername);
-      }
-    };
-
-  });
-};
-
 /*
  * Binds specific actions to the toolbar based on capability.
  * and show/hide buttons
@@ -324,7 +153,7 @@ var bindToolbar = function(data) {
     _.each(data.Capabilities, function(cap) {
       var target_btn = 'button.' + cap,
           $target_el = $('.file_manager').find(target_btn);
-      if (!has_capability(data, cap) || hideButtons()) {
+      if (!has_capability(data, cap) || pgAdmin.FileUtils.hideButtons()) {
         $target_el.hide();
       } else {
         $target_el.show();
@@ -332,7 +161,7 @@ var bindToolbar = function(data) {
     });
   }
 
-  if (!has_capability(data, 'delete') || hideButtons()) {
+  if (!has_capability(data, 'delete') || pgAdmin.FileUtils.hideButtons()) {
     $('.file_manager').find('button.delete').hide();
   } else {
     $('.file_manager').find('button.delete').click(function() {
@@ -367,17 +196,17 @@ var bindToolbar = function(data) {
   }
 
   // Download file on download button click
-  if (!has_capability(data, 'download') || hideButtons()) {
+  if (!has_capability(data, 'download') || pgAdmin.FileUtils.hideButtons()) {
     $('.file_manager').find('button.download').hide();
   } else {
     $('.file_manager').find('button.download').unbind().click(function() {
       var path;
       if ($('.fileinfo').data('view') == 'grid') {
         path = $('.fileinfo li.selected').find('.clip span').attr('data-alt');
-        window.open(fileConnector + '?mode=download&path=' + path, '_blank');
+        window.open(pgAdmin.FileUtils.fileConnector + '?mode=download&path=' + path, '_blank');
       } else {
         path = $('.fileinfo').find('table#contents tbody tr.selected td:first-child').attr('title');
-        window.open(fileConnector + '?mode=download&path=' + path, '_blank');
+        window.open(pgAdmin.FileUtils.fileConnector + '?mode=download&path=' + path, '_blank');
       }
     });
   }
@@ -418,7 +247,8 @@ var enable_disable_btn = function() {
  */
 var renameItem = function(data) {
   var orig_name = getFilename(data.Filename),
-      finalName = '';
+      finalName = '',
+      lg = pgAdmin.FileUtils.lg;
 
   var getNewName = function(rname) {
     if (rname !== '') {
@@ -438,7 +268,7 @@ var renameItem = function(data) {
       $.ajax({
         type: 'POST',
         data: JSON.stringify(post_data),
-        url: fileConnector,
+        url: pgAdmin.FileUtils.fileConnector,
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
         async: false,
@@ -492,6 +322,7 @@ var renameItem = function(data) {
  */
 var deleteItem = function(data) {
   var isDeleted = false,
+      lg = pgAdmin.FileUtils.lg,
       msg = lg.confirmation_delete;
 
   var doDelete = function(data) {
@@ -504,7 +335,7 @@ var deleteItem = function(data) {
     $.ajax({
       type: 'POST',
       data: JSON.stringify(post_data),
-      url: fileConnector,
+      url: pgAdmin.FileUtils.fileConnector,
       dataType: 'json',
       contentType: "application/json; charset=utf-8",
       async: false,
@@ -536,21 +367,6 @@ var deleteItem = function(data) {
 /*---------------------------------------------------------
   Functions to Retrieve File and Folder Details
 ---------------------------------------------------------*/
-
-/* Decides whether to retrieve file or folder info based on
- * the path provided.
- */
-var getDetailView = function(path) {
-  if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
-    var allowed_types = config.options.allowed_file_types;
-    var set_type = allowed_types[0];
-    if (allowed_types[0] == "*") {
-      set_type = allowed_types[1];
-    }
-    getFolderInfo(path, set_type);
-  }
-};
-
 /*
  * Retrieves information about the specified file as a JSON
  * object and uses that data to populate a template for
@@ -560,20 +376,22 @@ var getDetailView = function(path) {
  */
 var getFileInfo = function(file) {
   // Update location for status, upload, & new folder functions.
-  setUploader(file);
+  pgAdmin.FileUtils.setUploader(file);
+  var capabilities = pgAdmin.FileUtils.data.capabilities;
 
   // Retrieve the data & populate the template.
   var d = new Date(), // to prevent IE cache issues
     is_file_valid =  false;
   var post_data = {
-        'path': file,
-        'mode': 'getinfo'
-      };
+    'path': file,
+    'mode': 'getinfo'
+  };
+  var lg = pgAdmin.FileUtils.lg;
 
   $.ajax({
     type: 'POST',
     data: JSON.stringify(post_data),
-    url: fileConnector,
+    url: pgAdmin.FileUtils.fileConnector,
     dataType: 'json',
     contentType: "application/json; charset=utf-8",
     async: false,
@@ -626,7 +444,7 @@ var checkPermission = function(path) {
   $.ajax({
     type: 'POST',
     data: JSON.stringify(post_data),
-    url: fileConnector,
+    url: pgAdmin.FileUtils.fileConnector,
     dataType: 'json',
     contentType: "application/json; charset=utf-8",
     async: false,
@@ -660,8 +478,9 @@ var getFolderInfo = function(path, file_type) {
   if (!file_type) {
     file_type = '';
   }
+  var capabilities = pgAdmin.FileUtils.data.Capabilities;
   // Update location for status, upload, & new folder functions.
-  setUploader(path);
+  pgAdmin.FileUtils.setUploader(path);
 
   // set default selected file type
   if (file_type === '') {
@@ -681,15 +500,16 @@ var getFolderInfo = function(path, file_type) {
   });
 
    // hide select file if we are listing drives in windows.
-   if (hideButtons()) {
+   if (pgAdmin.FileUtils.hideButtons()) {
      $(".allowed_file_types .change_file_types").hide();
    } else {
      $(".allowed_file_types .change_file_types").show();
    }
+   var img_url = url_for('browser.static') + 'vendor/aciTree/image/load-root.gif';
 
   // Display an activity indicator.
   $('.fileinfo').find('span.activity').html(
-    "<img src='{{ url_for('browser.static', filename='vendor/aciTree/image/load-root.gif') }}'>"
+    "<img src='" + img_url + ">"
   );
 
   var post_data = {
@@ -698,10 +518,11 @@ var getFolderInfo = function(path, file_type) {
     'file_type': file_type || "*"
   };
 
+  var lg = pgAdmin.FileUtils.lg;
   $.ajax({
     type: 'POST',
     data: JSON.stringify(post_data),
-    url: fileConnector,
+    url: pgAdmin.FileUtils.fileConnector,
     dataType: 'json',
     contentType: "application/json; charset=utf-8",
     async: false,
@@ -1187,7 +1008,7 @@ var getFolderInfo = function(path, file_type) {
         });
 
       }
-      input_object.set_cap(data_cap);
+      //input_object.set_cap(data_cap);
     },
     error: function() {
       $('.storage_dialog #uploader .input-path').prop('disabled', false);
@@ -1222,311 +1043,314 @@ var enab_dis_level_up = function() {
  * get transaction id to generate request url and
  * to generate config files on runtime
  */
-var fm_url = "{{ url_for('file_manager.index') }}get_trans_id",
-    transId = loadData(fm_url),
-    t_res,
-    t_id;
+pgAdmin.FileUtils = {
+  init: function() {
+    var fm_url = url_for('file_manager.get_trans_id'),
+        transId = loadData(fm_url),
+        t_res,
+        t_id;
 
-if (transId.readyState == 4) {
-  t_res = JSON.parse(transId.responseText);
-}
-t_id = t_res.data.fileTransId;
-var root_url = '{{ url_for("file_manager.index") }}',
-    file_manager_config_json = root_url+t_id+'/file_manager_config.json',
-    file_manager_config_js = root_url+'file_manager_config.js',
-    fileConnector = root_url+'filemanager/'+t_id+'/',
-    cfg = loadData(file_manager_config_json),
-    config;
+    if (transId.readyState == 4) {
+      t_res = JSON.parse(transId.responseText);
+    }
+    t_id = t_res.data.fileTransId;
+    var root_url = url_for("file_manager.index"),
+        file_manager_config_json = root_url+t_id+'/file_manager_config.json',
+        file_manager_config_js = root_url+'file_manager_config.js',
+        fileConnector = root_url+'filemanager/'+t_id+'/',
+        cfg = loadData(file_manager_config_json),
+        config;
 
-// load user configuration file
-if (cfg.readyState == 4) {
-  config = JSON.parse(cfg.responseText);
-}
-
-// set main url to filemanager and its capabilites
-var fileRoot = config.options.fileRoot,
-    capabilities = config.options.capabilities;
-
-/*
- * Get localized messages from file
- * through culture var or from URL
- */
-
-var lg = [],
-    enjs = '{{ url_for("file_manager.index") }}' + "en.js",
-    lgf = loadData(enjs);
-
-if (lgf.readyState == 4) {
-  lg = JSON.parse(lgf.responseText);
-}
-
-// create and enable user to create new file
-if (
-  config.options.dialog_type == 'select_file' ||
-  config.options.dialog_type == 'create_file' ||
-  config.options.dialog_type == 'storage_dialog'
-) {
-  // Create file selection dropdown
-  var allowed_types = config.options.allowed_file_types,
-      types_len = allowed_types.length,
-      select_box = '',
-      file_type = '';
-
-  if (types_len > 0) {
-    var i = 0, j = 0, t,
-        selected = false,
-        have_all_types = false;
-
-    select_box = "<div class='change_file_types'>" +
-      "<select name='type'>";
-
-    while(i < types_len) {
-      t = allowed_types[i];
-      if (!selected && (types_len == 1 || t != '*')) {
-        select_box += "<option value=" + t + " selected>" + t + "</option>";
-        selected = true;
-        have_all_types = (have_all_types || (t == '*'));
-      } else {
-        select_box += '<option value="' + t +'">' +
-          (t == '*' ? gettext('All Files') : t) + "</option>";
-        have_all_types = (have_all_types || (t == '*'));
-      }
-      i++;
+    this.fileConnector = fileConnector;
+    // load user configuration file
+    if (cfg.readyState == 4) {
+      this.config = config = JSON.parse(cfg.responseText);
     }
 
-    if (!have_all_types) {
-      select_box += '<option value="*">' + gettext('All Files') + '</option>';
+    // set main url to filemanager and its capabilites
+    var fileRoot = config.options.fileRoot,
+        capabilities = config.options.capabilities;
+
+    /*
+     * Get localized messages from file
+     * through culture var or from URL
+     */
+
+    var lg = [],
+        enjs = url_for("file_manager.index") + "en.js",
+        lgf = loadData(enjs);
+
+    if (lgf.readyState == 4) {
+      this.lg = lg = JSON.parse(lgf.responseText);
     }
-    select_box += "</select><label>" + gettext('Format') + ": </label></div>";
-  }
 
-  $(".allowed_file_types").html(select_box);
+    // create and enable user to create new file
+    if (
+      config.options.dialog_type == 'select_file' ||
+      config.options.dialog_type == 'create_file' ||
+      config.options.dialog_type == 'storage_dialog'
+    ) {
+      // Create file selection dropdown
+      var allowed_types = config.options.allowed_file_types,
+          types_len = allowed_types.length,
+          select_box = '',
+          file_type = '';
 
-  $(".allowed_file_types select").on('change', function() {
-    var selected_val = $(this).val(),
-        curr_path = $('.currentpath').val();
-    getFolderInfo(curr_path, selected_val);
-  });
-}
+      if (types_len > 0) {
+        var i = 0, j = 0, t,
+            selected = false,
+            have_all_types = false;
 
-/*---------------------------------------------------------
-  Item Actions - Object events
----------------------------------------------------------*/
+        var select_box = "<div class='change_file_types'>" +
+          "<select name='type'>";
 
-// switch to folder view
-$('.file_manager .fileinfo').on('click', function(e) {
-  $('.file_manager #uploader .input-path').val($('.currentpath').val())
-  enable_disable_btn();
-});
-
-// refresh current directory
-$('.file_manager .refresh').on('click', function(e) {
-  enable_disable_btn();
-  var curr_path = $('.currentpath').val();
-    $('.file_manager #uploader .input-path').val(curr_path);
-    if(curr_path.endsWith("/")) {
-        var path = curr_path.substring(0, curr_path.lastIndexOf("/")) + "/";
-    } else {
-        var path = curr_path.substring(0, curr_path.lastIndexOf("\\")) + "\\";
-    }
-  getFolderInfo(path);
-});
-
-// hide message prompt and dimmer if clicked no
-$('.delete_item button.btn_no').on('click', function() {
-  $('.delete_item, .fileinfo .fm_dimmer').hide();
-});
-
-// Disable home button on load
-$('.file_manager').find('button.home').attr('disabled', 'disabled');
-$('.file_manager').find('button.rename').attr('disabled', 'disabled');
-
-// stop click event on dimmer click
-$('.fileinfo .fm_dimmer').on('click', function(e) {
-  e.stopPropagation();
-});
-
-$('.fileinfo .replace_file').not(
-  $(this).find('span.pull-right')
-).on(
-'click', function(e) {
-  $('#uploader .filemanager-btn-group').unbind().on(
-    'click', function() {
-      $('.fileinfo .delete_item, .fileinfo .replace_file, .fileinfo .fm_dimmer').hide();
-    });
-  e.stopPropagation();
-});
-
-// Set initial view state.
-$('.fileinfo').data('view', config.options.defaultViewMode);
-setViewButtonsFor(config.options.defaultViewMode);
-
-// Upload click event
-$('.file_manager .uploader').on('click', 'a', function(e) {
-  e.preventDefault();
-  var b = $('.currentpath').val();
-  var node_val = $(this).next().text();
-  parent = b.substring(0, b.slice(0, -1).lastIndexOf(node_val));
-  getFolderInfo(parent);
-});
-
-// re-render the home view
-$('.file_manager .home').click(function() {
-  var currentViewMode = $('.fileinfo').data('view');
-  $('.fileinfo').data('view', currentViewMode);
-  getFolderInfo('/');
-  enab_dis_level_up();
-});
-
-// Go one directory back
-$(".file_manager .level-up").click(function() {
-  var b = $('.currentpath').val();
-  // Enable/Disable level up button
-  enab_dis_level_up();
-
-  if (b.endsWith('\\') || b.endsWith('/')) {
-    b = b.substring(0, b.length - 1)
-  }
-
-  if (b != '/') {
-      if(b.lastIndexOf('/') > b.lastIndexOf('\\')) {
-        var parent = b.substring(0, b.slice(0, -1).lastIndexOf("/")) + "/";
-      } else {
-        var parent = b.substring(0, b.slice(0, -1).lastIndexOf("\\")) + "\\";
-      }
-
-      var d = $(".fileinfo").data("view");
-      $(".fileinfo").data("view", d);
-      getFolderInfo(parent);
-  }
-});
-
-// set buttons to switch between grid and list views.
-$('.file_manager .grid').click(function() {
-  setViewButtonsFor('grid');
-  $('.fileinfo').data('view', 'grid');
-  enable_disable_btn();
-  getFolderInfo($('.currentpath').val());
-});
-
-// Show list mode
-$('.file_manager .list').click(function() {
-  setViewButtonsFor('list');
-  $('.fileinfo').data('view', 'list');
-  enable_disable_btn();
-  getFolderInfo($('.currentpath').val());
-});
-
-// Provide initial values for upload form, status, etc.
-setUploader(fileRoot);
-
-var data = {
-  'Capabilities': capabilities
-};
-
-function InputObject() {
-  this.init= function(cap) {
-    var self = this,
-        check_obj = function(path, check) {
-
-          var path = decodeURI(path);
-
-          if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
-            if (
-              has_capability(self.data_cap, 'select_folder')
-            ) {
-              $('.file_manager_ok').removeClass('disabled');
-              $('.file_manager button.delete, .file_manager button.rename').removeAttr(
-                'disabled', 'disabled'
-              );
-              $('.file_manager button.download').attr(
-                'disabled', 'disabled'
-              );
-              // set selected folder name in breadcrums
-              $('.file_manager #uploader .input-path').hide();
-              $('.file_manager #uploader .show_selected_file').remove();
-              $('<span class="show_selected_file">'+path+'</span>').appendTo(
-                '.file_manager #uploader .filemanager-path-group'
-              );
-            } else {
-              $('.file_manager_ok').addClass('disabled');
-              if(check) {
-                // Enable/Disable level up button
-                enab_dis_level_up();
-
-                $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
-                $('.file_manager button.download').attr('disabled', 'disabled');
-                getFolderInfo(path);
-              }
-            }
+        while(i < types_len) {
+          t = allowed_types[i];
+          if (!selected && (types_len == 1 || t != '*')) {
+            select_box += "<option value=" + t + " selected>" + t + "</option>";
+            selected = true;
+            have_all_types = (have_all_types || (t == '*'));
           } else {
-            if (
-              has_capability(self.data_cap, 'select_file')
-            ) {
-              $('.file_manager_ok').removeClass('disabled');
-              $('.file_manager button.delete, .file_manager button.download, .file_manager button.rename').removeAttr(
-                'disabled'
-              );
-              // set selected folder name in breadcrums
-              $('.file_manager #uploader .show_selected_file').remove();
-            }
+            select_box += '<option value="' + t +'">' +
+              (t == '*' ? gettext('All Files') : t) + "</option>";
+            have_all_types = (have_all_types || (t == '*'));
+          }
+          i++;
+        }
 
-            if(check) {
-              if (config.options.dialog_type == 'create_file') {
-                var status = checkPermission(path)
-                if (status) {
-                  $('.file_manager').trigger('enter-key');
+        if (!have_all_types) {
+          select_box += '<option value="*">' + gettext('All Files') + '</option>';
+        }
+        select_box += "</select><label>" + gettext('Format') + ": </label></div>";
+      }
+
+      $(".allowed_file_types").html(select_box);
+
+      $(".allowed_file_types select").on('change', function() {
+        var selected_val = $(this).val(),
+            curr_path = $('.currentpath').val();
+        getFolderInfo(curr_path, selected_val);
+      });
+    }
+
+    /*---------------------------------------------------------
+      Item Actions - Object events
+    ---------------------------------------------------------*/
+
+    // switch to folder view
+    $('.file_manager .fileinfo').on('click', function(e) {
+      $('.file_manager #uploader .input-path').val($('.currentpath').val())
+      enable_disable_btn();
+    });
+
+    // refresh current directory
+    $('.file_manager .refresh').on('click', function(e) {
+      enable_disable_btn();
+      var curr_path = $('.currentpath').val();
+        $('.file_manager #uploader .input-path').val(curr_path);
+        if(curr_path.endsWith("/")) {
+            var path = curr_path.substring(0, curr_path.lastIndexOf("/")) + "/";
+        } else {
+            var path = curr_path.substring(0, curr_path.lastIndexOf("\\")) + "\\";
+        }
+      getFolderInfo(path);
+    });
+
+    // hide message prompt and dimmer if clicked no
+    $('.delete_item button.btn_no').on('click', function() {
+      $('.delete_item, .fileinfo .fm_dimmer').hide();
+    });
+
+    // Disable home button on load
+    $('.file_manager').find('button.home').attr('disabled', 'disabled');
+    $('.file_manager').find('button.rename').attr('disabled', 'disabled');
+
+    // stop click event on dimmer click
+    $('.fileinfo .fm_dimmer').on('click', function(e) {
+      e.stopPropagation();
+    });
+
+    $('.fileinfo .replace_file').not(
+      $(this).find('span.pull-right')
+    ).on(
+    'click', function(e) {
+      $('#uploader .filemanager-btn-group').unbind().on(
+        'click', function() {
+          $('.fileinfo .delete_item, .fileinfo .replace_file, .fileinfo .fm_dimmer').hide();
+        });
+      e.stopPropagation();
+    });
+
+    // Set initial view state.
+    $('.fileinfo').data('view', config.options.defaultViewMode);
+    setViewButtonsFor(config.options.defaultViewMode);
+
+    // Upload click event
+    $('.file_manager .uploader').on('click', 'a', function(e) {
+      e.preventDefault();
+      var b = $('.currentpath').val();
+      var node_val = $(this).next().text();
+      parent = b.substring(0, b.slice(0, -1).lastIndexOf(node_val));
+      getFolderInfo(parent);
+    });
+
+    // re-render the home view
+    $('.file_manager .home').click(function() {
+      var currentViewMode = $('.fileinfo').data('view');
+      $('.fileinfo').data('view', currentViewMode);
+      getFolderInfo('/');
+      enab_dis_level_up();
+    });
+
+    // Go one directory back
+    $(".file_manager .level-up").click(function() {
+      var b = $('.currentpath').val();
+      // Enable/Disable level up button
+      enab_dis_level_up();
+
+      if (b.endsWith('\\') || b.endsWith('/')) {
+        b = b.substring(0, b.length - 1)
+      }
+
+      if (b != '/') {
+          if(b.lastIndexOf('/') > b.lastIndexOf('\\')) {
+            var parent = b.substring(0, b.slice(0, -1).lastIndexOf("/")) + "/";
+          } else {
+            var parent = b.substring(0, b.slice(0, -1).lastIndexOf("\\")) + "\\";
+          }
+
+          var d = $(".fileinfo").data("view");
+          $(".fileinfo").data("view", d);
+          getFolderInfo(parent);
+      }
+    });
+
+    // set buttons to switch between grid and list views.
+    $('.file_manager .grid').click(function() {
+      setViewButtonsFor('grid');
+      $('.fileinfo').data('view', 'grid');
+      enable_disable_btn();
+      getFolderInfo($('.currentpath').val());
+    });
+
+    // Show list mode
+    $('.file_manager .list').click(function() {
+      setViewButtonsFor('list');
+      $('.fileinfo').data('view', 'list');
+      enable_disable_btn();
+      getFolderInfo($('.currentpath').val());
+    });
+
+    // Provide initial values for upload form, status, etc.
+    pgAdmin.FileUtils.setUploader(fileRoot);
+
+    var data;
+    this.data = data = {
+      'Capabilities': capabilities
+    };
+
+    function InputObject() {
+      this.init= function(cap) {
+        var self = this,
+            check_obj = function(path, check) {
+
+              var path = decodeURI(path);
+
+              if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+                if (
+                  has_capability(self.data_cap, 'select_folder')
+                ) {
+                  $('.file_manager_ok').removeClass('disabled');
+                  $('.file_manager button.delete, .file_manager button.rename').removeAttr(
+                    'disabled', 'disabled'
+                  );
+                  $('.file_manager button.download').attr(
+                    'disabled', 'disabled'
+                  );
+                  // set selected folder name in breadcrums
+                  $('.file_manager #uploader .input-path').hide();
+                  $('.file_manager #uploader .show_selected_file').remove();
+                  $('<span class="show_selected_file">'+path+'</span>').appendTo(
+                    '.file_manager #uploader .filemanager-path-group'
+                  );
+                } else {
+                  $('.file_manager_ok').addClass('disabled');
+                  if(check) {
+                    // Enable/Disable level up button
+                    enab_dis_level_up();
+
+                    $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
+                    $('.file_manager button.download').attr('disabled', 'disabled');
+                    getFolderInfo(path);
+                  }
                 }
-              } else if(config.options.dialog_type == 'select_file') {
-                var file_status = getFileInfo(path);
-                if (file_status) {
-                  $('.file_manager').trigger('enter-key');
+              } else {
+                if (
+                  has_capability(self.data_cap, 'select_file')
+                ) {
+                  $('.file_manager_ok').removeClass('disabled');
+                  $('.file_manager button.delete, .file_manager button.download, .file_manager button.rename').removeAttr(
+                    'disabled'
+                  );
+                  // set selected folder name in breadcrums
+                  $('.file_manager #uploader .show_selected_file').remove();
+                }
+
+                if(check) {
+                  if (config.options.dialog_type == 'create_file') {
+                    var status = checkPermission(path)
+                    if (status) {
+                      $('.file_manager').trigger('enter-key');
+                    }
+                  } else if(config.options.dialog_type == 'select_file') {
+                    var file_status = getFileInfo(path);
+                    if (file_status) {
+                      $('.file_manager').trigger('enter-key');
+                    }
+                  }
                 }
               }
+            };
+
+        self.data_cap = cap;
+
+        $('.storage_dialog #uploader .input-path').keyup(function(e) {
+          if(e.keyCode == 13) {
+            e.stopPropagation();
+            var path = $(this).val();
+            if(path == '') {
+              path = '/';
             }
+
+            if(config.options.platform_type === "win32") {
+              path = path.replace(/\//g, '\\')
+            } else {
+              path = path.replace(/\\/g, '/')
+              if (!S.startsWith(path, '/')) {
+                path = '/' + path;
+              }
+            }
+
+            $(this).val(path);
+            setTimeout(function() {
+              check_obj(path, true);
+            });
+
+            return;
           }
-        };
-
-    self.data_cap = cap;
-
-    $('.storage_dialog #uploader .input-path').keyup(function(e) {
-      if(e.keyCode == 13) {
-        e.stopPropagation();
-        var path = $(this).val();
-        if(path == '') {
-          path = '/';
-        }
-
-        if(config.options.platform_type === "win32") {
-          path = path.replace(/\//g, '\\')
-        } else {
-          path = path.replace(/\\/g, '/')
-          if (!S.startsWith(path, '/')) {
-            path = '/' + path;
-          }
-        }
-
-        $(this).val(path);
-        setTimeout(function() {
-          check_obj(path, true);
+          check_obj($(this).val(), false);
         });
-
-        return;
       }
-      check_obj($(this).val(), false);
-    });
-  }
-  this.set_cap = function(cap) {
-    this.data_cap = cap;
-  }
-}
+      this.set_cap = function(cap) {
+        this.data_cap = cap;
+      }
+    }
+    var input_object = new InputObject();
+    input_object.init(data);
 
-var input_object = new InputObject()
-input_object.init(data);
-
-// Upload file
-if (has_capability(data, 'upload')) {
-  Dropzone.autoDiscover = false;
+    // Upload file
+    if (has_capability(data, 'upload')) {
+      Dropzone.autoDiscover = false;
   // we remove simple file upload element
   $('.file-input-container').remove();
   $('.upload').remove();
@@ -1573,7 +1397,7 @@ if (has_capability(data, 'upload')) {
 
     $("div#multiple-uploads").dropzone({
       paramName: "newfile",
-      url: fileConnector,
+      url: pgAdmin.FileUtils.fileConnector,
       maxFilesize: fileSize,
       maxFiles: config.upload.number,
       addRemoveLinks: true,
@@ -1632,6 +1456,190 @@ if (has_capability(data, 'upload')) {
     });
   });
 }
-getDetailView(fileRoot);
-})(jQuery);
+
+    this.getDetailView(fileRoot);
+  },
+   /*
+   * Sets the folder status, upload, and new folder functions
+   * to the path specified. Called on initial page load and
+   * whenever a new directory is selected.
+   */
+  setUploader: function(path) {
+    var config = this.config;
+    var lg = this.lg;
+    $('.storage_dialog #uploader').find('a').remove();
+    $('.storage_dialog #uploader').find('b').remove();
+
+    if(config.options.platform_type === "win32") {
+      path = path.replace(/\//g, '\\')
+    } else {
+      path = path.replace(/\\/g, '/')
+    }
+
+    path = decodeURI(path);
+    if (config.options.platform_type === "win32") {
+      if (config.options.show_volumes && path == '\\') {
+        $('.storage_dialog #uploader .input-path').val('');
+      } else {
+          $('.storage_dialog #uploader .input-path').val(path);
+      }
+    } else if (!config.options.platform_type === "win32" &&
+          (path == '' || !S.startsWith(path, '/'))) {
+      path = '/' + path;
+      $('.storage_dialog #uploader .input-path').val(path);
+    } else {
+      $('.storage_dialog #uploader .input-path').val(path);
+    }
+
+    if( path.lastIndexOf('\\') == -1 && path.lastIndexOf('/') == -1) {
+      $('.currentpath').val(path);
+    } else if(path.lastIndexOf('/') > path.lastIndexOf('\\')) {
+      $('.currentpath').val(path.substr(0, path.lastIndexOf('/') + 1));
+    } else {
+      $('.currentpath').val(path.substr(0, path.lastIndexOf('\\') + 1));
+    }
+
+    enab_dis_level_up();
+    if ($('.storage_dialog #uploader h1 span').length === 0) {
+      $('<span>'+lg.current_folder+'</span>').appendTo($('.storage_dialog #uploader h1'));
+    }
+
+    $('.storage_dialog #uploader .input-path').attr('title', path);
+    $('.storage_dialog #uploader .input-path').attr('data-path', path);
+
+    // create new folder
+    $('.create').unbind().click(function() {
+      var foldername =  lg.new_folder;
+      var $file_element,
+          $file_element_list,
+          folder_div;
+
+
+      $('.file_manager button.create').attr('disabled', 'disabled');
+      if ($('.fileinfo').data('view') == 'grid') {
+
+        // template for creating new folder
+        folder_div =
+          "<li class='cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload'>" +
+          "<div class='clip'><span data-alt='' class='fa fa-folder-open fm_folder'></span></div>" +
+          "<p><input type='text' class='fm_file_rename'><span title=''>New_Folder</span></p>" +
+          "<span class='meta size'></span><span class='meta created'></span><span class='meta modified'></span></li>";
+
+        path = $('.currentpath').val();
+        $file_element =  $(folder_div);
+        $('.fileinfo #contents.grid').append($file_element);
+        $file_element.find('p span').toggle();
+        $file_element.find('p input').toggle().val(lg.new_folder).select();
+
+        // rename folder/file on pressing enter key
+        $('.file_manager').bind().on('keyup', function(e) {
+          if (e.keyCode == 13) {
+            e.stopPropagation();
+            $file_element.find('p input').trigger('blur');
+          }
+        });
+
+        // rename folder/file on blur
+        $file_element.find('p input').on('blur', function(e) {
+          $('.file_manager button.create').removeAttr('disabled');
+          var text_value = $file_element.find('p input').val();
+
+          path = $('.currentpath').val();
+
+          $file_element.find('p input').toggle();
+          $file_element.find('p span').toggle().html(text_value);
+          if (text_value === undefined) {
+            text_value = lg.new_folder;
+          }
+          getFolderName(text_value);
+          getFolderInfo(path);
+        });
+
+      } else if ($('.fileinfo').data('view') == 'list') {
+        // template to create new folder in table view
+        folder_div = $(
+          "<tr class='cap_download cap_delete cap_select_file cap_select_folder cap_rename cap_create cap_upload'>" +
+          "<td title='' class='fa fa-folder-open tbl_folder'>" +
+          "<p><input type='text' class='fm_file_rename'><span>" +
+          lg.new_folder + "</span></p>" +
+          "</td><td><abbr title=''></abbr></td>" +
+          "<td></td>" +
+          "</tr>"
+        );
+
+        $file_element_list =  $(folder_div);
+        $('.fileinfo #contents.list').prepend($file_element_list);
+        $file_element_list.find('p span').toggle();
+        $file_element_list.find('p input').toggle().val(lg.new_folder).select();
+
+        // rename folder/file on pressing enter key
+        $('.file_manager').bind().on('keyup', function(e) {
+          if (e.keyCode == 13) {
+            e.stopPropagation();
+            $file_element_list.find('p input').trigger('blur');
+          }
+        });
+
+        // rename folder/file on blur
+        $file_element_list.find('p input').on('blur', function(e) {
+          $('.file_manager button.create').removeAttr('disabled');
+          var text_value = $file_element_list.find('p input').val();
+          path = $('.currentpath').val();
+          $file_element_list.find('p input').toggle();
+          $file_element_list.find('p span').toggle().html(text_value);
+          if (text_value === undefined) {
+            text_value = lg.new_folder;
+          }
+          getFolderName(text_value);
+          getFolderInfo(path);
+        });
+      }
+
+      // create a new folder
+      var getFolderName = function(value) {
+        var fname = value;
+
+        if (fname != '') {
+          foldername = fname;
+          var d = new Date(); // to prevent IE cache issues
+          $.getJSON(pgAdmin.FileUtils.fileConnector + '?mode=addfolder&path=' + $('.currentpath').val() + '&name=' + foldername, function(resp) {
+            var result = resp.data.result;
+            if (result.Code === 1) {
+              alertify.success(lg.successful_added_folder);
+              getFolderInfo(result.Parent);
+            } else {
+              alertify.error(result.Error);
+            }
+          });
+        } else {
+          alertify.error(lg.no_foldername);
+        }
+      };
+
+    });
+  },
+  /* Decides whether to retrieve file or folder info based on
+   * the path provided.
+   */
+  getDetailView: function(path) {
+    if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+      var allowed_types = this.config.options.allowed_file_types;
+      var set_type = allowed_types[0];
+      if (allowed_types[0] == "*") {
+        set_type = allowed_types[1];
+      }
+      getFolderInfo(path, set_type);
+    }
+  },
+  // helpful in show/hide toolbar button for Windows
+  hideButtons: function() {
+      return (
+        this.config.options.platform_type == 'win32' &&
+        $('.currentpath').val() === ''
+      );
+  },
+
+};
+return pgAdmin.FileUtils;
+});
 //@ sourceURL=utility.js

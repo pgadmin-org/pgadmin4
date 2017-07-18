@@ -194,6 +194,7 @@ class PgadminPage:
             except (NoSuchElementException, WebDriverException):
                 return False
 
+        time.sleep(1)
         WebDriverWait(self.driver, timeout=self.timeout, poll_frequency=0.01).\
             until(find_codemirror, "Timed out waiting for codemirror to appear").\
             click()

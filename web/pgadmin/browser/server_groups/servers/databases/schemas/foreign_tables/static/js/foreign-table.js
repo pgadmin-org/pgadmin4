@@ -25,9 +25,9 @@ define('pgadmin.node.foreign-table', [
         this.$el.empty();
         var model = this.model;
         var column = this.column;
-        editable = this.column.get("editable");
+        var editable = this.column.get("editable");
+        var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
 
-        is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable){ this.$el.addClass("editable"); }
         else { this.$el.removeClass("editable"); }
 
@@ -364,7 +364,7 @@ define('pgadmin.node.foreign-table', [
         cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
 
         m.trigger('pgadmin:view:fetching', m, self.field);
-        data = {attrelid: table_id}
+        var data = {attrelid: table_id}
 
         // Fetching Columns data for the selected table.
         $.ajax({
@@ -591,8 +591,8 @@ define('pgadmin.node.foreign-table', [
           'cache_level': 'database',
           transform: function(d, self){
             if (this.field.get('mode') == 'edit') {
-              oid = this.model.get('oid');
-              s = _.findWhere(d, {'id': oid});
+              var oid = this.model.get('oid');
+              var s = _.findWhere(d, {'id': oid});
               if (s) {
                 d = _.reject(d, s);
               }
@@ -697,8 +697,8 @@ define('pgadmin.node.foreign-table', [
 
           if ('coll-foreign-table' == d._type) {
             //Check if we are not child of catalog
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_d = prev_i ? t.itemData(prev_i) : null;
+            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_d = prev_i ? t.itemData(prev_i) : null;
             if( prev_d._type == 'catalog') {
               return false;
             } else {

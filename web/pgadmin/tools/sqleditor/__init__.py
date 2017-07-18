@@ -25,7 +25,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.misc.file_manager import Filemanager
-
+from pgadmin.utils.menu import MenuItem
 
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
 
@@ -61,7 +61,14 @@ class SqlEditorModule(PgAdminModule):
     LABEL = gettext("SQL Editor")
 
     def get_own_menuitems(self):
-        return {}
+        return {'tools': [
+            MenuItem(name='mnu_query_tool',
+                     label=gettext('Query tool'),
+                     priority=100,
+                     callback='show_query_tool',
+                     icon='fa fa-question',
+                     url=url_for('help.static', filename='index.html'))
+        ]}
 
     def get_own_javascripts(self):
         return [{
@@ -69,6 +76,7 @@ class SqlEditorModule(PgAdminModule):
             'path': url_for('sqleditor.index') + "sqleditor",
             'when': None
         }]
+
 
     def get_panels(self):
         return []

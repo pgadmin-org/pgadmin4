@@ -1,5 +1,5 @@
 // Restore dialog
-define([
+define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
   'backform', 'pgadmin.browser.node',
@@ -239,7 +239,7 @@ define([
           menu will be enabled otherwise disabled.
           Also, hide it for system view in catalogs
         */
-        menu_enabled = function(itemData, item, data) {
+        var menu_enabled = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
           var parent_item = t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
@@ -260,7 +260,7 @@ define([
               return false;
         };
 
-        is_parent_catalog = function(itemData, item, data) {
+        var is_parent_catalog = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
           // To iterate over tree to check parent node
           while (i) {
@@ -342,7 +342,7 @@ define([
           return;
         }
 
-        var title = S('{{ 'Restore (%s: %s)' }}'),
+        var title = S(gettext('Restore (%s: %s)')),
             tree = pgBrowser.tree,
             item = treeItem || tree.selected(),
             data = item && item.length == 1 && tree.itemData(item),

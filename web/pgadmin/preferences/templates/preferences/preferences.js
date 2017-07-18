@@ -1,4 +1,4 @@
-define([
+define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
   'pgadmin', 'backform', 'pgadmin.browser', 'pgadmin.backform'
 ], function(gettext, url_for, $, _, alertify, pgAdmin, Backform, pgBrowser) {

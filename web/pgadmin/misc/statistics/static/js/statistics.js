@@ -1,5 +1,6 @@
-define([
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser', 'backgrid',
+define('misc.statistics', [
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'pgadmin.browser', 'backgrid',
   'alertify', 'sources/size_prettify'
 ], function(gettext, _, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
 
@@ -350,7 +351,7 @@ define([
 
     __createSingleLineStatistics: function(data, prettifyFields) {
       var row = data['rows'][0],
-          columns = data['columns']
+          columns = data['columns'],
           res = [];
 
       this.columns = this.statistic_columns;

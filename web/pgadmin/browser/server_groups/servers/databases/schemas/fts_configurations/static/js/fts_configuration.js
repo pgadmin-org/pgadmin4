@@ -14,7 +14,7 @@ define('pgadmin.node.fts_configuration', [
         // Define the schema for the token/dictionary list
         schema: [{
           id: 'token', label:'Token', type:'text', group: null,
-          cellHeaderClasses:'width_percent_50', editable: true,
+          cellHeaderClasses:'width_percent_50',
           editable: false, cell: 'string', url: 'tokens'
         },{
           id: 'dictname', label: 'Dictionaries', type: 'text', group:null,
@@ -57,6 +57,7 @@ define('pgadmin.node.fts_configuration', [
         this, arguments
       );
 
+      var that;
       var self = that = this,
           node = 'fts_configuration',
           headerSchema = [{
@@ -134,7 +135,7 @@ define('pgadmin.node.fts_configuration', [
                   /*
                    * Transform the data
                    */
-                  transform = (this.field.get('transform')
+                  var transform = (this.field.get('transform')
                                 || self.defaults.transform);
                   if (transform && _.isFunction(transform)) {
                     self.field.set('options', transform.bind(self, data));
@@ -338,7 +339,7 @@ define('pgadmin.node.fts_configuration', [
       // Find if token exists in grid
       self.collection.each(function(m) {
         _.each(checkVars, function(v) {
-          val = m.get(v);
+          var val = m.get(v);
           if(val == token) {
             idx = coll.indexOf(m);
           }
@@ -592,8 +593,8 @@ define('pgadmin.node.fts_configuration', [
 
           if ('coll-fts_configuration' == d._type) {
             //Check if we are not child of catalog
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_d = prev_i ? t.itemData(prev_i) : null;
+            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_d = prev_i ? t.itemData(prev_i) : null;
             if( prev_d._type == 'catalog') {
               return false;
             } else {

@@ -1321,3 +1321,17 @@ body {
 .pg-panel-depends-container table {
     font-size: 12px !important;
 }
+
+.backgrid tr th button {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 0;
+}
+
+/* Latest backgrid adds column name like `label` to td element, override color*/
+.backgrid td.label {
+  color: #333;
+  font-size: 14px;
+  font-weight: normal;
+}

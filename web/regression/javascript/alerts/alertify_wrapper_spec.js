@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import alertify from '../../../pgadmin/static/vendor/alertifyjs/alertify';
-import AlertifyWrapper from '../../../pgadmin/static/js/alerts/alertify_wrapper';
+import alertify from 'alertify';
+import AlertifyWrapper from 'sources/alerts/alertify_wrapper';
 
 describe('alertify_wrapper', function () {
   describe('success', function () {

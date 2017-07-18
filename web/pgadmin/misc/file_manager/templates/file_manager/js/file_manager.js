@@ -1,8 +1,7 @@
-// This defines File Manager dialog
-define([
-  'sources/gettext', 'jquery', 'underscore', 'alertify',
-  'sources/alerts/alertify_wrapper',
-], function(gettext, $, _, alertify, AlertifyWrapper) {
+define('misc.file_manager', [
+      'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
+      'sources/alerts/alertify_wrapper'
+], function(gettext, url_for, $, _, alertify, AlertifyWrapper) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -21,45 +20,43 @@ define([
 
         this.initialized = true;
 
-        var module_url = "{{ url_for('file_manager.index') }}",
-            fileConnector = module_url + "filemanager/";
+        // send a request to get transaction id
+        var getTransId = function(configs) {
+          return $.ajax({
+            data: configs,
+            type: "POST",
+            async: false,
+            url: url_for('file_manager.get_trans_id'),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+          });
+        };
 
-          // send a request to get transaction id
-          var getTransId = function(configs) {
-            return $.ajax({
-              data: configs,
-              type: "POST",
-              async: false,
-              url: module_url + "get_trans_id",
-              dataType: "json",
-              contentType: "application/json; charset=utf-8",
-            });
-          };
+        // Function to remove trans id from session
+        var removeTransId = function(trans_id) {
+          return $.ajax({
+            type: "GET",
+            async: false,
+            url: url_for('file_manager.delete_trans_id', {'trans_id': trans_id}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+          });
+        };
 
-          // Function to remove trans id from session
-          var removeTransId = function(trans_id) {
-            return $.ajax({
-              type: "GET",
-              async: false,
-              url: module_url + "del_trans_id/" + trans_id,
-              dataType: "json",
-              contentType: "application/json; charset=utf-8",
-            });
-          };
-
-          var set_last_traversed_dir = function(path, trans_id) {
-            return $.ajax({
-              url: "{{ url_for('file_manager.index') }}save_last_dir/" + trans_id,
-              type: 'POST',
-              data: JSON.stringify(path),
-              contentType: 'application/json'
-            });
-          };
+        var set_last_traversed_dir = function(path, trans_id) {
+          return $.ajax({
+            url: url_for('file_manager.save_last_dir', {'trans_id': trans_id}),
+            type: 'POST',
+            data: JSON.stringify(path),
+            contentType: 'application/json'
+          });
+        };
         // Declare the Storage dialog
         alertify.dialog('storageManagerDlg', function() {
           var controls = [], // Keep tracking of all the backform controls
               // Dialog containter
-              $container = $("<div class='storage_dialog'></div>");
+              $container = $("<div class='storage_dialog'></div>"),
+              trans_id;
 
           /*
            * Function: renderStoragePanel
@@ -73,12 +70,11 @@ define([
              */
             var content = $container.find('.storage_content');
             content.empty();
-
-            $.get("{{ url_for('file_manager.index') }}", function(data) {
+            $.get(url_for('file_manager.index'), function(data) {
               content.append(data);
             });
 
-            transId = getTransId(params);
+            var transId = getTransId(params);
             var t_res;
             if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
@@ -181,6 +177,7 @@ define([
           var controls = [], // Keep tracking of all the backform controls
               // Dialog containter
               $container = $("<div class='storage_dialog file_selection_dlg'></div>");
+          var trans_id;
 
           // send a request to get transaction id
           /*
@@ -196,11 +193,11 @@ define([
             var content = $container.find('.storage_content');
             content.empty();
 
-            $.get("{{ url_for('file_manager.index') }}", function(data) {
+            $.get(url_for('file_manager.index'), function(data) {
               content.append(data);
             });
 
-            transId = getTransId(configs);
+            var transId = getTransId(configs);
             var t_res;
             if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
@@ -305,7 +302,8 @@ define([
         alertify.dialog('folderSelectionDlg', function() {
           var controls = [], // Keep tracking of all the backform controls
               // Dialog containter
-              $container = $("<div class='storage_dialog folder_selection_dlg'></div>");
+              $container = $("<div class='storage_dialog folder_selection_dlg'></div>"),
+              trans_id;
 
           // send a request to get transaction id
           /*
@@ -321,11 +319,11 @@ define([
             var content = $container.find('.storage_content');
             content.empty();
 
-            $.get("{{ url_for('file_manager.index') }}", function(data) {
+            $.get(url_for('file_manager.index'), function(data) {
               content.append(data);
             });
 
-            transId = getTransId(params);
+            var transId = getTransId(params);
             var t_res;
             if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
@@ -428,7 +426,8 @@ define([
         alertify.dialog('createModeDlg', function() {
           var controls = [], // Keep tracking of all the backform controls
               // Dialog containter
-              $container = $("<div class='storage_dialog create_mode_dlg'></div>");
+              $container = $("<div class='storage_dialog create_mode_dlg'></div>"),
+              trans_id;
 
           /*
            * Function: renderStoragePanel
@@ -443,11 +442,11 @@ define([
             var content = $container.find('.storage_content');
             content.empty();
 
-            $.get("{{ url_for('file_manager.index') }}", function(data) {
+            $.get(url_for('file_manager.index'), function(data) {
               content.append(data);
             });
 
-            transId = getTransId(params);
+            var transId = getTransId(params);
             var t_res;
             if (transId.readyState == 4) {
               t_res = JSON.parse(transId.responseText);
@@ -561,12 +560,12 @@ define([
               $.ajax({
                 type: 'POST',
                 data: JSON.stringify(file_data),
-                url: fileConnector + trans_id+'/',
+                url: url_for('file_manager.filemanager', {'trans_id': trans_id}),
                 dataType: 'json',
                 contentType: "application/x-download; charset=utf-8",
                 async: false,
                 success: function(resp) {
-                  data = resp.data.result;
+                  var data = resp.data.result;
                   if(data['Code'] === 1) {
                     is_exist = true;
                   } else {
@@ -586,7 +585,7 @@ define([
               $.ajax({
                 type: 'POST',
                 data: JSON.stringify(post_data),
-                url: fileConnector + trans_id+'/',
+                url: url_for('file_manager.filemanager', {'trans_id': trans_id}),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 async: false,

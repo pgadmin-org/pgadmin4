@@ -50,7 +50,6 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
          * called for each copy operation performed on any input/textarea from
          * this document.
          */
-        document.removeEventListener('copy', arguments.callee);
 
         var clipboardData = e.clipboardData || window.clipboardData;
 

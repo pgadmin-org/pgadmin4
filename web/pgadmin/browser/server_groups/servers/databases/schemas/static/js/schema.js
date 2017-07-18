@@ -13,7 +13,7 @@ define('pgadmin.node.schema', [
     initialize: function() {
       Backform.Control.prototype.initialize.apply(this, arguments);
       var self = this,
-          m = this.model;
+          m = this.model,
           url = self.field.get('url');
 
       if (url && m.isNew()) {
@@ -457,9 +457,9 @@ define('pgadmin.node.schema', [
             return true;
 
             //Check if we are not child of catalog
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
+          var prev_i = t.hasParent(i) ? t.parent(i) : null,
             prev_d = prev_i ? t.itemData(prev_i) : null;
-            if( prev_d && prev_d._type == 'catalog') {
+            if(prev_d && prev_d._type == 'catalog') {
               return false;
             }
           i = t.hasParent(i) ? t.parent(i) : null;
@@ -476,7 +476,7 @@ define('pgadmin.node.schema', [
           t = pgBrowser.tree;
 
       do {
-        d = t.itemData(i);
+        var d = t.itemData(i);
         if (
           d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
         ) {
@@ -509,7 +509,8 @@ define('pgadmin.node.schema', [
           column = this.column,
           editable = this.column.get("editable"),
           input = this.$el.find('input[type=checkbox]').first(),
-          self_name = column.get('name');
+          self_name = column.get('name'),
+          is_editable;
 
         is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
         if (is_editable) {

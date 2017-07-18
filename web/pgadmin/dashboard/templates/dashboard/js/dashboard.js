@@ -1,8 +1,9 @@
-define([
-    'require', 'jquery', 'pgadmin', 'underscore', 'backbone', 'sources/gettext', 'flotr2', 'wcdocker',
-    'pgadmin.browser', 'bootstrap'
+define('pgadmin.dashboard', [
+    'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
+    'pgadmin', 'backbone', 'backgrid', 'flotr2', 'backgrid.filter',
+    'pgadmin.browser', 'bootstrap', 'wcdocker'
     ],
-function(r, $, pgAdmin, _, Backbone, gettext) {
+function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
 
   var wcDocker = window.wcDocker,
   pgBrowser = pgAdmin.Browser;
@@ -31,7 +32,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             pgBrowser.Events.on('pgadmin:server:disconnect', disconnected);
 
             // Load the default welcome dashboard
-            url = '{{ url_for('dashboard.index') }}';
+            var url = url_for('dashboard.index');
 
             var dashboardPanel = pgBrowser.panels['dashboard'].panel;
             if (dashboardPanel) {
@@ -68,7 +69,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
         object_selected: function(item, itemData, node) {
             if (itemData && itemData._type && dashboardVisible) {
                 var treeHierarchy = node.getTreeNodeHierarchy(item),
-                    url = '{{ url_for('dashboard.index') }}',
+                    url = url_for('dashboard.index'),
                     sid = -1, did = -1, b = pgAdmin.Browser,
                     m = b && b.Nodes[itemData._type];
 
@@ -150,7 +151,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             if (!dashboardVisible)
               return;
 
-            y = 0;
+            var y = 0;
             if (dataset.length == 0) {
                 if (counter == true)
                 {
@@ -185,7 +186,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                     }
 
                     // Reset the time index to get a proper scrolling display
-                    for (z = 0; z < dataset[y]['data'].length; z++) {
+                    for (var z = 0; z < dataset[y]['data'].length; z++) {
                         dataset[y]['data'][z][0] = z;
                     }
 
@@ -215,11 +216,10 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
 
             // Animate
             var setTimeoutFunc = function () {
-                path = url + sid;
+                var path = url + sid;
                 if (did != -1) {
                     path += '/' + did;
                 }
-
                 $.ajax({
                     url: path,
                     type: "GET",
@@ -231,7 +231,8 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                     },
                     error: function (xhr, status, msg) {
                         var err = $.parseJSON(xhr.responseText),
-                            msg = err.errormsg
+                            msg = err.errormsg,
+                            cls;
                         // If we get a 428, it means the server isn't connected
                         if (xhr.status == 428) {
                             if (_.isUndefined(msg) || _.isNull(msg)) {
@@ -287,7 +288,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
         render_grid: function(container, sid, did, url, columns) {
             var Datum = Backbone.Model.extend({});
 
-            path = url + sid;
+            var path = url + sid;
             if (did != -1) {
                 path += '/' + did;
             }
@@ -330,9 +331,9 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
 
         // Render the data in a grid
         render_grid_data: function(container) {
-            data = $(container).data('data');
-            grid = $(container).data('grid');
-            filter = $(container).data('filter');
+            var data = $(container).data('data'),
+              grid = $(container).data('grid'),
+              filter = $(container).data('filter');
 
             if(_.isUndefined(data)){
               return null;
@@ -353,7 +354,8 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
                 },
                 error: function(model, xhr, options) {
                      var err = $.parseJSON(xhr.responseText),
-                         msg = err.errormsg
+                         msg = err.errormsg,
+                         cls;
                     // If we get a 428, it means the server isn't connected
                     if (xhr.status == 428) {
                         if (_.isUndefined(msg) || _.isNull(msg)) {
@@ -406,7 +408,7 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             var data_bio = [];
 
             // Fake DB ID
-            did = -1;
+            var did = -1;
 
             var options_line = {
                   parseFloat: false,
@@ -606,17 +608,17 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             }];
 
             // Render the graphs
-            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, '{{ url_for('dashboard.session_stats') }}', options_line, false, session_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, '{{ url_for('dashboard.tps_stats') }}', options_line, true, tps_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, '{{ url_for('dashboard.ti_stats') }}', options_line, true, ti_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, '{{ url_for('dashboard.to_stats') }}', options_line, true, to_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, '{{ url_for('dashboard.bio_stats') }}', options_line, true, bio_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, url_for('dashboard.session_stats'), options_line, false, session_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, url_for('dashboard.tps_stats'), options_line, true, tps_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, url_for('dashboard.ti_stats'), options_line, true, ti_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, url_for('dashboard.to_stats'), options_line, true, to_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, url_for('dashboard.bio_stats'), options_line, true, bio_stats_refresh);
 
             // Render the tabs, but only get data for the activity tab for now
-            pgAdmin.Dashboard.render_grid(div_server_activity, sid, did, '{{ url_for('dashboard.activity') }}', server_activity_columns);
-            pgAdmin.Dashboard.render_grid(div_server_locks, sid, did, '{{ url_for('dashboard.locks') }}', server_locks_columns);
-            pgAdmin.Dashboard.render_grid(div_server_prepared, sid, did, '{{ url_for('dashboard.prepared') }}', server_prepared_columns);
-            pgAdmin.Dashboard.render_grid(div_server_config, sid, did, '{{ url_for('dashboard.config') }}', server_config_columns);
+            pgAdmin.Dashboard.render_grid(div_server_activity, sid, did, url_for('dashboard.activity'), server_activity_columns);
+            pgAdmin.Dashboard.render_grid(div_server_locks, sid, did, url_for('dashboard.locks'), server_locks_columns);
+            pgAdmin.Dashboard.render_grid(div_server_prepared, sid, did, url_for('dashboard.prepared'), server_prepared_columns);
+            pgAdmin.Dashboard.render_grid(div_server_config, sid, did, url_for('dashboard.config'), server_config_columns);
 
             pgAdmin.Dashboard.render_grid_data(div_server_activity);
 
@@ -841,16 +843,16 @@ function(r, $, pgAdmin, _, Backbone, gettext) {
             }];
 
             // Render the graphs
-            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, '{{ url_for('dashboard.session_stats') }}', options_line, false, session_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, '{{ url_for('dashboard.tps_stats') }}', options_line, true, tps_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, '{{ url_for('dashboard.ti_stats') }}', options_line, true, ti_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, '{{ url_for('dashboard.to_stats') }}', options_line, true, to_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, '{{ url_for('dashboard.bio_stats') }}', options_line, true, bio_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, url_for('dashboard.session_stats'), options_line, false, session_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, url_for('dashboard.tps_stats'), options_line, true, tps_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, url_for('dashboard.ti_stats'), options_line, true, ti_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, url_for('dashboard.to_stats'), options_line, true, to_stats_refresh);
+            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, url_for('dashboard.bio_stats'), options_line, true, bio_stats_refresh);
 
             // Render the tabs, but only get data for the activity tab for now
-            pgAdmin.Dashboard.render_grid(div_database_activity, sid, did, '{{ url_for('dashboard.activity') }}', database_activity_columns);
-            pgAdmin.Dashboard.render_grid(div_database_locks, sid, did, '{{ url_for('dashboard.locks') }}', database_locks_columns);
-            pgAdmin.Dashboard.render_grid(div_database_prepared, sid, did, '{{ url_for('dashboard.prepared') }}', database_prepared_columns);
+            pgAdmin.Dashboard.render_grid(div_database_activity, sid, did, url_for('dashboard.activity'), database_activity_columns);
+            pgAdmin.Dashboard.render_grid(div_database_locks, sid, did, url_for('dashboard.locks'), database_locks_columns);
+            pgAdmin.Dashboard.render_grid(div_database_prepared, sid, did, url_for('dashboard.prepared'), database_prepared_columns);
 
             pgAdmin.Dashboard.render_grid_data(div_database_activity);
 

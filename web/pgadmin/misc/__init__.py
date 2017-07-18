@@ -66,7 +66,7 @@ class MiscModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['misc.ping']
+        return ['misc.ping', 'misc.index']
 
 
 # Initialise the module
@@ -76,7 +76,7 @@ blueprint = MiscModule(MODULE_NAME, __name__)
 ##########################################################################
 # A special URL used to "ping" the server
 ##########################################################################
-@blueprint.route("/")
+@blueprint.route("/", endpoint='index')
 def index():
     return ''
 

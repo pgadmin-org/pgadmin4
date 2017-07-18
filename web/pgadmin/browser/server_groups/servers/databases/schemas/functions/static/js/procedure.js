@@ -17,7 +17,7 @@ define('pgadmin.node.procedure', [
       });
   };
 
-  pgSchemaNode = pgBrowser.Nodes['schema'];
+  var pgSchemaNode = pgBrowser.Nodes['schema'];
 
   // Inherit Functions Node
   if (!pgBrowser.Nodes['procedure']) {

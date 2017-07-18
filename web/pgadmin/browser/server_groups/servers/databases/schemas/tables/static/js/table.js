@@ -114,7 +114,7 @@ define('pgadmin.node.table', [
         set_triggers: function(args, params) {
           // This function will send request to enable or
           // disable triggers on table level
-          var input = args || {};
+          var input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
@@ -162,7 +162,7 @@ define('pgadmin.node.table', [
             this.callbacks.truncate.apply(this, [args, params]);
         },
         truncate: function(args, params) {
-          var input = args || {};
+          var input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
@@ -708,7 +708,7 @@ define('pgadmin.node.table', [
           }]
         },{
           id: 'typname', label: gettext('Of type'), type: 'text',
-          control: 'node-ajax-options', mode: ['properties', 'create', 'edit'],
+          mode: ['properties', 'create', 'edit'],
           disabled: 'checkOfType', url: 'get_oftype', group: gettext('Advanced'),
           deps: ['coll_inherits'], transform: function(data, cell) {
             var control = cell || this,
@@ -1244,7 +1244,7 @@ define('pgadmin.node.table', [
           var self = this,
               url = 'get_columns',
               m = self.model.top || self.model,
-              old_columns = _.clone(m.get('columns'))
+              old_columns = _.clone(m.get('columns')),
               data = undefined,
               node = this.field.get('schema_node'),
               node_info = this.field.get('node_info'),
@@ -1291,7 +1291,7 @@ define('pgadmin.node.table', [
 
             if ('coll-table' == d._type) {
               //Check if we are not child of catalog
-              prev_i = t.hasParent(i) ? t.parent(i) : null;
+              var prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_d = prev_i ? t.itemData(prev_i) : null;
               if( prev_d._type == 'catalog') {
                 return false;

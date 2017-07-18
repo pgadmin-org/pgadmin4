@@ -7,7 +7,7 @@ define([
 ],
 function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
   var copyData = function () {
-    var self = this;
+    var self = this || window;
 
     var grid = self.slickgrid;
     var columnDefinitions = grid.getColumns();

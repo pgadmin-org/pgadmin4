@@ -261,8 +261,8 @@ define('pgadmin.node.mview', [
           if ('coll-mview' == d._type) {
 
             // Check if we are not child of view
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_d = prev_i ? t.itemData(prev_i) : null;
+            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_d = prev_i ? t.itemData(prev_i) : null;
             if( prev_d._type == 'catalog') {
               return false;
             } else {

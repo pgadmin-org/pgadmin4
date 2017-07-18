@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 import React from 'react';
-import $ from '../../../vendor/jquery/jquery-1.11.2';
-import code_mirror from '../../../vendor/codemirror/lib/codemirror';
+import $ from 'jquery';
+import code_mirror from 'sources/../bundle/codemirror';
 
 export default class CodeMirror extends React.Component {
 
