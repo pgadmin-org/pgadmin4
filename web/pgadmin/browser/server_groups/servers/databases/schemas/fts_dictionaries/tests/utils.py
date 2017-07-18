@@ -26,7 +26,8 @@ def create_fts_dictionary(server, db_name, schema_name, fts_dict_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         query = "CREATE TEXT SEARCH DICTIONARY %s.%s (TEMPLATE = simple)" % (
@@ -68,7 +69,8 @@ def verify_fts_dict(server, db_name, fts_dict_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(

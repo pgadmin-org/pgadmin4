@@ -37,7 +37,8 @@ def create_event_trigger(server, db_name, schema_name, func_name,
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -77,7 +78,8 @@ def verify_event_trigger(server, db_name, trigger_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT oid FROM pg_event_trigger WHERE evtname = '%s'"

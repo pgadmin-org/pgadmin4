@@ -26,7 +26,8 @@ def create_fts_parser(server, db_name, schema_name, fts_parser_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         query = "DROP TEXT SEARCH PARSER IF EXISTS " + schema_name + "." + fts_parser_name
@@ -72,7 +73,8 @@ def verify_fts_parser(server, db_name, fts_parser_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(

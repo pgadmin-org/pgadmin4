@@ -52,7 +52,8 @@ class CastsAddTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         cast_utils.drop_cast(connection, self.data["srctyp"],
                              self.data["trgtyp"])
         database_utils.disconnect_database(self, self.server_id,

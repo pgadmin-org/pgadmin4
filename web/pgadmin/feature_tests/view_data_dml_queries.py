@@ -80,7 +80,8 @@ CREATE TABLE public.defaults
                                                   self.server['username'],
                                                   self.server['db_password'],
                                                   self.server['host'],
-                                                  self.server['port'])
+                                                  self.server['port'],
+                                                  self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
 
@@ -114,7 +115,8 @@ CREATE TABLE public.defaults
                                                   self.server['username'],
                                                   self.server['db_password'],
                                                   self.server['host'],
-                                                  self.server['port'])
+                                                  self.server['port'],
+                                                  self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
 
     @staticmethod

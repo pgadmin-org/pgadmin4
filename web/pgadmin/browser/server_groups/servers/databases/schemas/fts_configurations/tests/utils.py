@@ -27,7 +27,8 @@ def create_fts_configuration(server, db_name, schema_name, fts_conf_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         query = "CREATE TEXT SEARCH CONFIGURATION " + schema_name + "." + fts_conf_name + \
@@ -69,7 +70,8 @@ def verify_fts_configuration(server, db_name, fts_conf_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(

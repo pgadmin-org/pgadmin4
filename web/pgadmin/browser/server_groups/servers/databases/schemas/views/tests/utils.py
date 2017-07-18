@@ -36,7 +36,8 @@ def create_view(server, db_name, schema_name, sql_query, view_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -74,7 +75,8 @@ def verify_view(server, db_name, view_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("select oid from pg_class where relname='%s'" %
                           view_name)

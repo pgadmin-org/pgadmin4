@@ -26,7 +26,8 @@ def create_fts_template(server, db_name, schema_name, fts_temp_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         query = "DROP TEXT SEARCH TEMPLATE IF EXISTS " + schema_name + "." + fts_temp_name
@@ -69,7 +70,8 @@ def verify_fts_template(server, db_name, fts_temp_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(

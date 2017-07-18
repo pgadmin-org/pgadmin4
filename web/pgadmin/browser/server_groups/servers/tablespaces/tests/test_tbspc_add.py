@@ -68,5 +68,6 @@ class TableSpaceAddTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         tablespace_utils.delete_tablespace(connection, self.tablespace_name)

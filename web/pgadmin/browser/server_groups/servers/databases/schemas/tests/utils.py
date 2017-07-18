@@ -75,7 +75,8 @@ def verify_schemas(server, db_name, schema_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM pg_namespace sch"
                           " WHERE sch.nspname='%s'" % schema_name)

@@ -33,7 +33,8 @@ def create_user_mapping(server, db_name, fsrv_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -73,7 +74,8 @@ def verify_user_mapping(server, db_name, fsrv_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "select umid from pg_user_mappings where srvname = '%s' order by"

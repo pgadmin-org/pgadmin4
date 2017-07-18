@@ -34,7 +34,8 @@ class SchemaPutTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         self.schema_details = schema_utils.create_schema(connection,
                                                          self.schema_name)
 

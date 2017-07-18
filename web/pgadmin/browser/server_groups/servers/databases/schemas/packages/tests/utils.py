@@ -34,7 +34,8 @@ def create_package(server, db_name, schema_name, pkg_name, proc_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         query = "CREATE OR REPLACE PACKAGE %s.%s IS PROCEDURE %s(); END %s; " \
                 "CREATE OR REPLACE PACKAGE BODY %s.%s IS PROCEDURE %s() IS BEGIN " \
@@ -71,7 +72,8 @@ def verify_package(server, db_name, pkg_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT oid FROM pg_namespace WHERE nspname='%s'" %
                           pkg_name)

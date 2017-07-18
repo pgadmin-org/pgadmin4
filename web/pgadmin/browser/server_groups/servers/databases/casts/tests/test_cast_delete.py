@@ -48,7 +48,8 @@ class CastsDeleteTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         response = cast_utils.verify_cast(connection, self.source_type,
                                           self.target_type)
         if len(response) == 0:

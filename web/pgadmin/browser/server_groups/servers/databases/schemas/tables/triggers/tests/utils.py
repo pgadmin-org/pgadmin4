@@ -39,7 +39,8 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -80,7 +81,8 @@ def verify_trigger(server, db_name, trigger_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
                           trigger_name)

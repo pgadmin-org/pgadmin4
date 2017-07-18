@@ -53,5 +53,6 @@ class LoginRoleAddTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         roles_utils.delete_role(connection, self.role_name)

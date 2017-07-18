@@ -58,7 +58,8 @@ def create_fdw(server, db_name, fdw_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -96,7 +97,8 @@ def verify_fdw(server, db_name, fdw_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT oid FROM pg_foreign_data_wrapper WHERE fdwname = '%s'"

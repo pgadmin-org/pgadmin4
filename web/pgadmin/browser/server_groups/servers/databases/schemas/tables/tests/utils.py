@@ -34,7 +34,8 @@ def create_table(server, db_name, schema_name, table_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -75,7 +76,8 @@ def verify_table(server, db_name, table_id):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM pg_class tb WHERE tb.oid=%s" %
                           table_id)
@@ -107,7 +109,8 @@ def create_table_for_partition(server, db_name, schema_name, table_name,
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()

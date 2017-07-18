@@ -36,7 +36,8 @@ def verify_role(server, role_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT * from pg_catalog.pg_roles pr WHERE pr.rolname='%s'" %
@@ -100,7 +101,8 @@ def create_role(server, role_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE ROLE %s LOGIN" % role_name)
         connection.commit()

@@ -22,7 +22,8 @@ def create_collation(server, schema_name, coll_name, db_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute('CREATE COLLATION %s.%s FROM pg_catalog."POSIX"' %
                           (schema_name, coll_name))
@@ -46,7 +47,8 @@ def verify_collation(server, db_name, coll_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         # Get 'oid' from newly created database
         pg_cursor.execute("SELECT coll.oid, coll.collname FROM"

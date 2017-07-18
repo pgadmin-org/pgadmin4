@@ -30,7 +30,8 @@ def create_resource_groups(server, resource_group_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -64,7 +65,8 @@ def verify_resource_group(server, resource_group_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM edb_resource_group WHERE "
                           "rgrpname='%s'" % resource_group_name)

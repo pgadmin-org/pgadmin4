@@ -39,7 +39,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                                                   self.server['username'],
                                                   self.server['db_password'],
                                                   self.server['host'],
-                                                  self.server['port'])
+                                                  self.server['port'],
+                                                  self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
         test_utils.create_database(self.server, "acceptance_test_db")
         test_utils.create_table(self.server, "acceptance_test_db",
@@ -70,7 +71,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                                                   self.server['username'],
                                                   self.server['db_password'],
                                                   self.server['host'],
-                                                  self.server['port'])
+                                                  self.server['port'],
+                                                  self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
 
     def _connects_to_server(self):

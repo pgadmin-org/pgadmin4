@@ -16,7 +16,8 @@ class TestCheckRecovery(BaseTestGenerator):
                                               self.server['username'],
                                               self.server['db_password'],
                                               self.server['host'],
-                                              self.server['port']).cursor()
+                                              self.server['port'],
+                                              self.server['sslmode']).cursor()
 
         if cursor is not None and cursor.connection is not None:
             server_version = cursor.connection.server_version

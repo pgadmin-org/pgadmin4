@@ -50,5 +50,6 @@ class DatabaseDeleteTestCase(BaseTestGenerator):
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
-                                             self.server['port'])
+                                             self.server['port'],
+                                             self.server['sslmode'])
         utils.drop_database(connection, self.db_name)

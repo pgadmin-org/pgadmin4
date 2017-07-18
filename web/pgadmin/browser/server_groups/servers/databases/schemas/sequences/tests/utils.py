@@ -34,7 +34,8 @@ def create_sequences(server, db_name, schema_name, sequence_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         query = "CREATE SEQUENCE %s.%s START 101" % (schema_name,
                                                      sequence_name)
@@ -70,7 +71,8 @@ def verify_sequence(server, db_name, sequence_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("select * from pg_class where relname='%s'" %
                           sequence_name)

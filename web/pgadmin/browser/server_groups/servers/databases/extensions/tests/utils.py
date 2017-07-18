@@ -43,7 +43,8 @@ def create_extension(server, db_name, extension_name, schema_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -83,7 +84,8 @@ def verify_extension(server, db_name, extension_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(
@@ -111,7 +113,8 @@ def drop_extension(server, db_name, extension_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT * FROM pg_extension WHERE extname='%s'"

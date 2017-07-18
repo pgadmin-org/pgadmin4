@@ -50,7 +50,8 @@ def create_tablespace(server, test_tablespace_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -88,7 +89,8 @@ def verify_table_space(server, test_tablespace_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM pg_tablespace ts WHERE"
                           " ts.spcname='%s'" % test_tablespace_name)

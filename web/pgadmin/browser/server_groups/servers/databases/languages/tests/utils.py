@@ -32,7 +32,8 @@ def create_language(server, db_name, lang_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
 
         pg_cursor = connection.cursor()
         query = ("CREATE TRUSTED PROCEDURAL LANGUAGE %s "
@@ -67,7 +68,8 @@ def verify_language(server, db_name, lang_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT oid from pg_language where lanname='%s'" %
                           lang_name)
@@ -94,7 +96,8 @@ def delete_language(server, db_name, lang_name):
                                        server['username'],
                                        server['db_password'],
                                        server['host'],
-                                       server['port'])
+                                       server['port'],
+                                       server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * from pg_language where lanname='%s'" %
                           lang_name)

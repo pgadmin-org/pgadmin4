@@ -23,7 +23,8 @@ def create_trigger_function(server, db_name, schema_name, func_name,
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         r_type = "event_trigger"
         if server_version != 0:
@@ -53,7 +54,8 @@ def create_trigger_function_with_trigger(server, db_name, schema_name,
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         query = "CREATE FUNCTION "+schema_name+"."+func_name+"()" \
                 " RETURNS trigger LANGUAGE 'plpgsql' STABLE LEAKPROOF" \
@@ -78,7 +80,8 @@ def verify_trigger_function(server, db_name, func_name):
                                          server['username'],
                                          server['db_password'],
                                          server['host'],
-                                         server['port'])
+                                         server['port'],
+                                         server['sslmode'])
     pg_cursor = connection.cursor()
     pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
                       " pg_proc pro WHERE pro.proname='%s'" %

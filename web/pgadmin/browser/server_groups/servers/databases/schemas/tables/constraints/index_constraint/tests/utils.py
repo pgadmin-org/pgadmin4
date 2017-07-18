@@ -39,7 +39,8 @@ def create_index_constraint(server, db_name, schema_name, table_name,
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
@@ -76,7 +77,8 @@ def verify_index_constraint(server, db_name, table_name):
                                              server['username'],
                                              server['db_password'],
                                              server['host'],
-                                             server['port'])
+                                             server['port'],
+                                             server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "SELECT oid FROM pg_constraint where conname='%s'" %
