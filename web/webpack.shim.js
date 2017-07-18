@@ -1,0 +1,282 @@
+/* eslint-env node */
+//Configuration file contains requireJS like shim and paths used by webpack shim-loader
+const path = require('path');
+
+var webpackShimConfig = {
+  shim: {
+    'moment': {
+      exports: 'moment',
+    },
+    'underscore': {
+      exports: '_',
+    },
+    'jquery': {
+      'exports': '$',
+    },
+    'bootstrap': {
+      'deps': ['jquery'],
+    },
+    'select2': {
+      'deps': ['jquery'],
+      'exports': '$.fn.select2',
+    },
+    'bootstrap.datepicker': {
+      'deps': ['jquery', 'bootstrap'],
+      'exports': 'jQuery.fn.datepicker',
+    },
+    'bootstrap.datetimepicker': {
+      'exports': 'jQuery.fn.datetimepicker',
+    },
+    'bootstrap.switch': {
+      deps: ['jquery', 'bootstrap'],
+      'exports': '$.fn.bootstrapSwitch',
+    },
+    'backbone': {
+      exports: 'Backbone', // Once loaded, use the global 'Backbone' as the module value.
+      deps: [
+        'underscore', // just make sure that underscore is loaded before (uses it's global value)
+        'jquery:$', // Provide jquery as dependency with name $
+      ],
+    },
+    'backgrid': {
+      'deps': ['backform'],
+      'exports': 'Backgrid',
+    },
+    'pgadmin.backform': {
+      'deps': ['backform', 'pgadmin.backgrid', 'select2'],
+    },
+    'pgadmin.backgrid': {
+      'deps': ['backgrid', 'bootstrap.datetimepicker', 'bootstrap.switch'],
+    },
+
+    'backgrid.select.all': {
+      'deps': ['backgrid'],
+    },
+    'backgrid.paginator': {
+      'deps': ['backgrid', 'backbone.paginator'],
+    },
+    'backgrid.filter': {
+      'deps': ['backgrid'],
+    },
+    'backgrid.sizeable.columns': {
+      'deps': ['backgrid'],
+    },
+    'jquery.event.drag': {
+      'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
+    },
+    'jquery.ui': {'deps': ['jquery']},
+    'slick.pgadmin.formatters': {
+      'deps': ['slickgrid'],
+    },
+    'slick.pgadmin.editors': {
+      'deps': ['slickgrid'],
+    },
+    'slickgrid': {
+      'deps': ['jquery', 'jquery.ui', 'jquery.event.drag'],
+      'exports': 'Slick',
+    },
+    'flotr2': {
+      deps: ['bean'],
+    },
+    'alertify': {
+      'exports': 'alertify',
+    },
+    'jqueryui.position': {
+      'deps': ['jquery'],
+      'exports': 'jQuery.ui.position',
+    },
+    'jquery.contextmenu': {
+      'deps': ['jquery', 'jqueryui.position'],
+      'exports': 'jQuery.contextMenu',
+    },
+    'jquery.aciplugin': {
+      'deps': ['jquery'],
+      'exports': 'aciPluginClass',
+    },
+    'jquery.acitree': {
+      'deps': ['jquery', 'jquery.aciplugin'],
+      'exports': 'aciPluginClass.plugins.aciTree',
+    },
+    'jquery.acisortable': {
+      'deps': ['jquery', 'jquery.aciplugin'],
+      'exports': 'aciPluginClass.plugins.aciSortable',
+    },
+    'jquery.acifragment': {
+      'deps': ['jquery', 'jquery.aciplugin'],
+      'exports': 'aciPluginClass.plugins.aciFragment',
+    },
+    'wcdocker': {
+      'deps': ['jquery.contextmenu'],
+    },
+    'pgadmin.browser.messages': {
+      'deps': ['pgadmin.browser.datamodel'],
+    },
+  },
+
+  resolveAlias: {
+    'baseurl': path.join(__dirname, './pgadmin'),
+    'misc': path.join(__dirname, './pgadmin/static/bundle/misc'),
+    'browser_node': path.join(__dirname, './pgadmin/static/bundle/browser'),
+    'sources': path.join(__dirname, './pgadmin/static/js'),
+    'pgadmin': path.join(__dirname, './pgadmin/static/js/pgadmin'),
+    'tools.translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
+    'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),
+    'babel-polyfill': path.join(__dirname, './node_modules/babel-polyfill/dist/polyfill'),
+
+    // Vendor JS
+    'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
+    'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
+    'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
+    'moment': path.join(__dirname, './node_modules/moment/moment'),
+    'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.2'),
+    'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
+    'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
+    'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
+    'jqueryui.position': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.ui.position'),
+    'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextmenu'),
+    'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
+    'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
+
+    // AciTree
+    'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),
+    'jquery.aciplugin': path.join(__dirname, './node_modules/acitree/js/jquery.aciPlugin.min'),
+    'jquery.acisortable': path.join(__dirname, './node_modules/acitree/js/jquery.aciSortable.min'),
+    'jquery.acifragment': path.join(__dirname, './node_modules/acitree/js/jquery.aciFragment.min'),
+
+    // Backbone and Backgrid
+    'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
+    'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
+    'backform': path.join(__dirname, './node_modules/backform/src/backform'),
+    'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
+    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/bootstrap-datetime-picker/js/bootstrap-datetimepicker'),
+    'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),
+    'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
+    'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
+    'backgrid.sizeable.columns': path.join(__dirname, './node_modules/backgrid-sizeable-columns/backgrid-sizeable-columns'),
+    'backgrid.select.all': path.join(__dirname, './node_modules/backgrid-select-all/backgrid-select-all'),
+
+    'pgadmin.alertifyjs': path.join(__dirname, './pgadmin/static/js/alertify.pgadmin.defaults'),
+    'pgadmin.backform': path.join(__dirname, './pgadmin/static/js/backform.pgadmin'),
+    'pgadmin.backgrid': path.join(__dirname, './pgadmin/static/js/backgrid.pgadmin'),
+    'pgadmin.misc.explain': path.join(__dirname, './pgadmin/misc/templates/explain/js/explain'),
+    'pgadmin.settings': path.join(__dirname, './pgadmin/settings/templates/settings/settings'),
+    'pgadmin.preferences': path.join(__dirname, './pgadmin/preferences/templates/preferences/preferences'),
+    'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/templates/dashboard/js/dashboard'),
+    'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
+    'pgadmin.sqlfoldcode': path.join(__dirname, './pgadmin/static/js/codemirror/addon/fold/pgadmin-sqlfoldcode'),
+    'pgadmin.about': path.join(__dirname, './pgadmin/about/templates/about/about'),
+
+    //tools JS
+    'tools.backup': path.join(__dirname, './pgadmin/tools/backup/templates/backup/js/backup'),
+    'tools.restore': path.join(__dirname, './pgadmin/tools/restore/templates/restore/js/restore'),
+    'pgadmin.browser.wizard': path.join(__dirname, './pgadmin/browser/static/js/wizard'),
+    'tools.grant_wizard': path.join(__dirname, './pgadmin/tools/grant_wizard/templates/grant_wizard/js/grant_wizard'),
+    'tools.datagrid': path.join(__dirname, './pgadmin/tools/datagrid/templates/datagrid/js/datagrid'),
+    'tools.querytool': path.join(__dirname, './pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor'),
+    'tools.maintenance': path.join(__dirname, './pgadmin/tools/maintenance/templates/maintenance/js/maintenance'),
+    'tools.import_export': path.join(__dirname, './pgadmin/tools/import_export/templates/import_export/js/import_export'),
+    'tools.debugger.ui': path.join(__dirname, './pgadmin/tools/debugger/templates/debugger/js/debugger_ui'),
+    'tools.debugger': path.join(__dirname, './pgadmin/tools/debugger/templates/debugger/js/debugger'),
+    'tools.direct': path.join(__dirname, './pgadmin/tools/debugger/templates/debugger/js/direct'),
+
+    // Misc JS
+    'misc.bgprocess': path.join(__dirname, './pgadmin/misc/bgprocess/static/js/bgprocess'),
+    'misc.file_manager': path.join(__dirname, './pgadmin/misc/file_manager/templates/file_manager/js/file_manager'),
+    'misc.file_utility': path.join(__dirname, './pgadmin/misc/file_manager/templates/file_manager/js/utility'),
+    'misc.statistics':  path.join(__dirname, './pgadmin/misc/statistics/static/js/statistics'),
+    'misc.depends':  path.join(__dirname, './pgadmin/misc/depends/static/js/depends'),
+    'misc.sql': path.join(__dirname, './pgadmin/misc/sql/static/js/sql'),
+
+    // Browser Plugins JS
+    'pgadmin.browser': path.join(__dirname, './pgadmin/browser/templates/browser/js/browser'),
+    'pgadmin.browser.error': path.join(__dirname, './pgadmin/browser/templates/browser/js/error'),
+    'pgadmin.browser.utils': path.join(__dirname, './pgadmin/browser/templates/browser/js/utils'),
+    'pgadmin.browser.server.privilege': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/privilege'),
+    'pgadmin.browser.server.variable': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/variable'),
+    'pgadmin.browser.collection': path.join(__dirname, './pgadmin/browser/templates/browser/js/collection'),
+    'pgadmin.browser.node': path.join(__dirname, './pgadmin/browser/templates/browser/js/node'),
+    'pgadmin.browser.node.ui': path.join(__dirname, './pgadmin/browser/static/js/node.ui'),
+    'pgadmin.browser.datamodel': path.join(__dirname, './pgadmin/browser/static/js/datamodel'),
+    'pgadmin.browser.menu': path.join(__dirname, './pgadmin/browser/static/js/menu'),
+    'pgadmin.browser.panel': path.join(__dirname, './pgadmin/browser/static/js/panel'),
+    'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
+    'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/templates/user_management/js/user_management'),
+    'slick.pgadmin.editors': path.join(__dirname, './pgadmin/static/js/slickgrid/slick.pgadmin.editors'),
+    'slick.pgadmin.formatters': path.join(__dirname, './pgadmin/static/js/slickgrid/slick.pgadmin.formatters'),
+
+    // Browser Nodes JS
+    'pgadmin.node.server_group': path.join(__dirname, './pgadmin/browser/server_groups/static/js/server-group'),
+    'pgadmin.node.server': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/server'),
+    'pgadmin.node.database': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/static/js/database'),
+    'pgadmin.node.role': path.join(__dirname, './pgadmin/browser/server_groups/servers/roles/templates/role/js/role'),
+    'pgadmin.node.tablespace': path.join(__dirname, './pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/js/tablespaces'),
+    'pgadmin.node.resource_group': path.join(__dirname, './pgadmin/browser/server_groups/servers/resource_groups/templates/resource_groups/js/resource_groups'),
+    'pgadmin.node.cast': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/casts/static/js/cast'),
+    'pgadmin.node.event_trigger': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger'),
+    'pgadmin.node.extension': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension'),
+    'pgadmin.node.foreign_data_wrapper': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper'),
+    'pgadmin.node.language': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/languages/static/js/language'),
+    'pgadmin.node.schema': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema'),
+    'pgadmin.node.catalog': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog'),
+    'pgadmin.node.catalog_object': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object'),
+    'pgadmin.node.collation': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation'),
+    'pgadmin.node.domain': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain'),
+    'pgadmin.node.domain_constraints': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints'),
+    'pgadmin.node.foreign_table': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign-table'),
+    'pgadmin.node.fts_configuration': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration'),
+    'pgadmin.node.fts_dictionary': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary'),
+    'pgadmin.node.fts_parser': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser'),
+    'pgadmin.node.fts_template': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template'),
+
+    'pgadmin.node.function': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function'),
+    'pgadmin.node.procedure': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure'),
+    'pgadmin.node.trigger_function': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function'),
+    'pgadmin.node.package': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package'),
+    'pgadmin.node.sequence': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence'),
+    'pgadmin.node.synonym': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym'),
+
+    'pgadmin.node.table': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table'),
+    'pgadmin.browser.table.partition.utils': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils'),
+    'pgadmin.node.type': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type'),
+    'pgadmin.node.view': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view'),
+    'pgadmin.node.mview': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview'),
+    'pgadmin.node.rule': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/templates/rules/js/rules'),
+    'pgadmin.node.index': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/templates/index/js/index'),
+    'pgadmin.node.trigger': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/templates/trigger/js/trigger'),
+    'pgadmin.node.column': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/column/templates/column/js/column'),
+    'pgadmin.node.constraints': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/templates/constraints/js/constraints'),
+    'pgadmin.node.check_constraints': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/templates/check_constraint/js/check_constraint'),
+    'pgadmin.node.exclusion_constraint': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/templates/exclusion_constraint/js/exclusion_constraint'),
+    'pgadmin.node.foreign_key': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/templates/foreign_key/js/foreign_key'),
+    'pgadmin.node.primary_key': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key'),
+    'pgadmin.node.unique_constraint': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint'),
+    'pgadmin.node.catalog_object_column': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/templates/catalog_object_column/js/catalog_object_column'),
+    'pgadmin.node.edbfunc': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfunc/js/edbfunc'),
+    'pgadmin.node.edbproc': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbproc/js/edbproc'),
+    'pgadmin.node.edbvar': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/templates/edbvar/js/edbvar'),
+
+    // pgAgent jobs JS
+    'pgadmin.node.pga_job': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job'),
+    'pgadmin.node.pga_schedule': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule'),
+    'pgadmin.node.pga_jobstep': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep'),
+  },
+  pgLibs: [
+    'pgadmin.browser.wizard', 'pgadmin.browser.error', 'pgadmin.browser.server.privilege',
+    'pgadmin.browser.server.variable', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+    'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
+    'pgadmin.browser.frame', 'slick.pgadmin.editors', 'slick.pgadmin.formatters',
+    'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser', 'misc.file_manager',
+    'misc.file_utility', 'sources/alerts/alertify_wrapper', 'pgadmin.browser.node',
+    'pgadmin.alertifyjs', 'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
+  ],
+  isExternal: function(module) {
+    var context = module.context;
+    if (typeof context !== 'string') { return false; }
+    return context.indexOf('node_modules') !== -1;
+  },
+  isPgAdminLib: function (module) {
+    if (module.rawRequest === undefined) { return false; }
+    return this.pgLibs.indexOf(module.rawRequest) !== -1;
+  },
+};
+module.exports = webpackShimConfig;

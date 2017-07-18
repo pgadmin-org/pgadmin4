@@ -1,0 +1,88 @@
+define('pgadmin.browser.utils',
+  ['pgadmin'], function(pgAdmin) {
+
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+
+  /* Add hooked-in panels by extensions */
+  pgBrowser['panels_items'] = '{{ current_app.panels|tojson }}';
+
+
+  // Define list of nodes on which Query tool option doesn't appears
+  var unsupported_nodes = pgAdmin.unsupported_nodes = [
+     'server-group', 'server', 'coll-tablespace', 'tablespace',
+     'coll-role', 'role', 'coll-resource_group', 'resource_group',
+     'coll-database'
+  ];
+
+  pgBrowser.utils = {
+    layout: '{{ layout }}',
+    pg_help_path: '{{ pg_help_path }}',
+    edbas_help_path: '{{ edbas_help_path }}',
+    tabSize: '{{ editor_tab_size }}',
+    wrapCode: '{{ editor_wrap_code }}' == 'True',
+    useSpaces: '{{ editor_use_spaces }}',
+    insertPairBrackets: '{{ editor_insert_pair_brackets }}' == 'True',
+    braceMatching: '{{ editor_brace_matching }}' == 'True',
+    app_name: '{{ app_name }}',
+
+    counter: {total: 0, loaded: 0},
+    registerScripts: function (ctx) {
+      // There are some scripts which needed to be loaded immediately,
+      // but - not all. We will will need to generate all the menus only
+      // after they all were loaded completely.
+    },
+
+    addMenus: function (obj) {
+      // Generate the menu items only when all the initial scripts
+      // were loaded completely.
+      //
+      // First - register the menus from the other
+      // modules/extensions.
+      var self = this;
+      if (this.counter.total == this.counter.loaded) {
+        {% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
+        obj.add_menus([{% for item in current_app.menu_items['%s_items' % key.lower()] %}{% if loop.index != 1 %}, {% endif %}{
+          name: "{{ item.name }}",
+          {% if item.module %}module: {{ item.module }},
+          {% endif %}{% if item.url %}url: "{{ item.url }}",
+          {% endif %}{% if item.target %}target: "{{ item.target }}",
+          {% endif %}{% if item.callback %}callback: "{{ item.callback }}",
+          {% endif %}{% if item.category %}category: "{{ item.category }}",
+          {% endif %}{% if item.icon %}icon: '{{ item.icon }}',
+          {% endif %}{% if item.data %}data: {{ item.data }},
+          {% endif %}label: '{{ item.label }}', applies: ['{{ key.lower() }}'],
+          priority: {{ item.priority }},
+          enable: '{{ item.enable }}'
+        }{% set hasMenus = True %}{% endfor %}]);
+        {% endfor %}
+        obj.create_menus();
+      } else {
+         //recall after some time
+         setTimeout(function(){ self.addMenus(obj); }, 3000);
+      }
+    },
+
+    // load the module right now
+    load_module: function(name, path, c) {
+      var obj = this;
+      require([name],function(m) {
+        try {
+          // initialize the module (if 'init' function present).
+          if (m.init && typeof(m.init) == 'function')
+            m.init();
+        } catch (e) {
+          // Log this exception on console to understand the issue properly.
+          console.log(e);
+          obj.report_error(gettext('Error loading script - ') + path);
+        }
+        if (c)
+        c.loaded += 1;
+      }, function() {
+        // Log the arguments on console to understand the issue properly.
+        console.log(arguments);
+        obj.report_error(gettext('Error loading script - ') + path);
+      });
+    }
+  };
+  return pgBrowser;
+});

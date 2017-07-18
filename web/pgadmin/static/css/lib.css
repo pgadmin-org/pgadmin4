@@ -1,0 +1,37 @@
+@import '~bootstrap/dist/css/bootstrap.css';
+@import '~alertifyjs/build/css/alertify.css';
+@import '~alertifyjs/build/css/themes/bootstrap.css';
+@import '~bootstrap/dist/css/bootstrap-theme.css';
+@import '~font-awesome/css/font-awesome.css';
+@import '~font-mfizz/font/font-mfizz.css';
+@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
+@import '~bootstrap-datetime-picker/css/bootstrap-datetimepicker.css';
+@import '~bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css';
+@import '~backgrid-select-all/backgrid-select-all.css';
+@import '~backgrid-filter/backgrid-filter.css';
+@import '~backgrid-sizeable-columns/backgrid-sizeable-columns.css';
+@import '~slickgrid/css/select2.css';
+@import '~jquery-contextmenu/dist/jquery.contextMenu.css';
+@import '~webcabin-docker/Build/wcDocker.css';
+@import '~acitree/css/aciTree.css';
+
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/addon/dialog/dialog.css';
+@import '~codemirror/addon/scroll/simplescrollbars.css';
+
+@import '~slickgrid/slick.grid.css';
+@import '~slickgrid/slick-default-theme.css';
+@import '~slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
+
+@import '../../preferences/static/css/preferences.css';
+@import '../../browser/static/css/browser.css';
+@import '../../dashboard/static/css/dashboard.css';
+@import '../../browser/static/css/wizard.css';
+@import '../../tools/debugger/static/css/debugger.css';
+
+@import '../../tools/grant_wizard/static/css/grant_wizard.css';
+@import '../../tools/maintenance/static/css/maintenance.css';
+@import '../../tools/sqleditor/static/css/sqleditor.css';
+@import '../../misc/static/explain/css/explain.css';
+@import '../../misc/bgprocess/static/css/bgprocess.css';
+@import '../../misc/static/explain/css/explain.css';
