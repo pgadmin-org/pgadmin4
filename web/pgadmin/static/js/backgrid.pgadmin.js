@@ -119,6 +119,7 @@
         // extract the values from the models
 
         var l = func(left, attr), r = func(right, attr), t;
+        if (_.isUndefined(l) || _.isUndefined(r)) return;
 
         var types = ['number-cell', 'integer-cell'];
         if (_.include(types, type)) {
