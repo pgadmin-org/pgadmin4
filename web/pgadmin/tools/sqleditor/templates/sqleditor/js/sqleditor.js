@@ -39,7 +39,10 @@ define('tools.querytool', [
     // Define key codes for shortcut keys
     var F5_KEY = 116,
         F7_KEY = 118,
-        F8_KEY = 119;
+        F8_KEY = 119,
+        COMMA_KEY = 188,
+        PERIOD_KEY = 190,
+        FWD_SLASH_KEY = 191;
 
     var is_query_running = false;
 
@@ -92,7 +95,15 @@ define('tools.querytool', [
         "click #btn-explain-buffers": "on_explain_buffers",
         "click #btn-explain-timing": "on_explain_timing",
         "change .limit": "on_limit_change",
-        "keydown": "keyAction"
+        "keydown": "keyAction",
+        // Comment options
+        "click #btn-comment-code": "on_toggle_comment_block_code",
+        "click #btn-toggle-comment-block": "on_toggle_comment_block_code",
+        "click #btn-comment-line": "on_comment_line_code",
+        "click #btn-uncomment-line": "on_uncomment_line_code",
+        // Indentation options
+        "click #btn-indent-code": "on_indent_code",
+        "click #btn-unindent-code": "on_unindent_code"
       },
 
       // This function is used to render the template.
@@ -1277,6 +1288,59 @@ define('tools.querytool', [
         );
       },
 
+      // Callback function for the line comment code
+      on_comment_line_code: function() {
+        var self = this;
+        // Trigger the comment signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:comment_line_code',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for the line uncomment code
+      on_uncomment_line_code: function() {
+        var self = this;
+        // Trigger the comment signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:uncomment_line_code',
+            self,
+            self.handler
+        );
+      },
+
+      // Callback function for the block comment/uncomment code
+      on_toggle_comment_block_code: function() {
+        var self = this;
+        // Trigger the comment signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:toggle_comment_block_code',
+            self,
+            self.handler
+        );
+      },
+
+      on_indent_code: function() {
+        var self = this;
+        // Trigger the comment signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:indent_selected_code',
+            self,
+            self.handler
+        );
+      },
+
+      on_unindent_code: function() {
+        var self = this;
+        // Trigger the comment signal to the SqlEditorController class
+        self.handler.trigger(
+            'pgadmin-sqleditor:unindent_selected_code',
+            self,
+            self.handler
+        );
+      },
+
       // Callback function for the clear button click.
       on_clear: function(ev) {
         var self = this, sql;
@@ -1487,6 +1551,18 @@ define('tools.querytool', [
           // Download query result as CSV.
           this.on_download(ev);
           ev.preventDefault();
+        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == COMMA_KEY ) {
+          // Toggle comments
+          this.on_comment_line_code(ev);
+          ev.preventDefault();
+        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == PERIOD_KEY ) {
+          // Toggle comments
+          this.on_uncomment_line_code(ev);
+          ev.preventDefault();
+        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == FWD_SLASH_KEY ) {
+          // Toggle comments
+          this.on_toggle_comment_block_code(ev);
+          ev.preventDefault();
         }
       }
     });
@@ -1576,6 +1652,13 @@ define('tools.querytool', [
           self.on('pgadmin-sqleditor:button:explain-costs', self._explain_costs, self);
           self.on('pgadmin-sqleditor:button:explain-buffers', self._explain_buffers, self);
           self.on('pgadmin-sqleditor:button:explain-timing', self._explain_timing, self);
+          // Commenting related
+          self.on('pgadmin-sqleditor:comment_line_code', self._comment_line_code, self);
+          self.on('pgadmin-sqleditor:uncomment_line_code', self._uncomment_line_code, self);
+          self.on('pgadmin-sqleditor:toggle_comment_block_code', self._comment_block_code, self);
+          // Indentation related
+          self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
+          self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
 
           if (self.is_query_tool) {
             self.gridView.query_tool_obj.refresh();
@@ -3621,6 +3704,71 @@ define('tools.querytool', [
               );
             }
           });
+        },
+
+        /*
+         * This function will comment code (Wrapper function)
+         */
+        _comment_line_code: function() {
+          this._toggle_comment_code('comment_line');
+        },
+
+        /*
+         * This function will uncomment code (Wrapper function)
+         */
+        _uncomment_line_code: function() {
+          this._toggle_comment_code('uncomment_line');
+        },
+
+        /*
+         * This function will comment/uncomment code (Wrapper function)
+         */
+        _comment_block_code: function() {
+          this._toggle_comment_code('block');
+        },
+
+        /*
+         * This function will comment/uncomment code (Main function)
+         */
+        _toggle_comment_code: function(of_type) {
+          var self = this, editor = self.gridView.query_tool_obj,
+          selected_code = editor.getSelection(),
+          sql = selected_code.length > 0 ? selected_code : editor.getValue();
+          // If it is an empty query, do nothing.
+          if (sql.length <= 0) return;
+
+          // Find the code selection range
+          var range = {
+            from: editor.getCursor(true),
+            to: editor.getCursor(false)
+          },
+          option = { lineComment: '--' };
+
+          if(of_type == 'comment_line') {
+            // Comment line
+            editor.lineComment(range.from, range.to, option);
+          } else if(of_type == 'uncomment_line') {
+            // Uncomment line
+            editor.uncomment(range.from, range.to, option);
+          } else if(of_type == 'block') {
+            editor.toggleComment(range.from, range.to);
+          }
+        },
+
+        /*
+         * This function will indent selected code
+         */
+        _indent_selected_code: function() {
+          var self = this, editor = self.gridView.query_tool_obj;
+          editor.execCommand("indentMore");
+        },
+
+        /*
+         * This function will unindent selected code
+         */
+        _unindent_selected_code: function() {
+          var self = this, editor = self.gridView.query_tool_obj;
+          editor.execCommand("indentLess");
         },
 
         /*

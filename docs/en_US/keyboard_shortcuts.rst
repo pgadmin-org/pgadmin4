@@ -41,6 +41,12 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
 +--------------------------+------------------+-------------------------------------+
 | Ctrl+Alt+Right           | Cmd+Option+Right | Move right one word                 |
 +--------------------------+------------------+-------------------------------------+
+| Ctrl+Shift+,             | Ctrl+Shift+,     | Comment selected code (Inline)      |
++--------------------------+------------------+-------------------------------------+
+| Ctrl+Shift+.             | Ctrl+Shift+.     | Uncomment selected code (Inline)    |
++--------------------------+------------------+-------------------------------------+
+| Ctrl+Shift+/             | Ctrl+Shift+/     | Comment/Uncomment code (Block)      |
++--------------------------+------------------+-------------------------------------+
 | Ctrl+A                   | Cmd+A            | Select all                          |
 +--------------------------+------------------+-------------------------------------+
 | Ctrl+C                   | Cmd+C            | Copy selected text to the clipboard |

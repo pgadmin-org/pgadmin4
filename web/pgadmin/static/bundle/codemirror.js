@@ -13,6 +13,7 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/search/jump-to-line';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/comment/comment'
 import 'pgadmin.sqlfoldcode';
 
 export default CodeMirror;

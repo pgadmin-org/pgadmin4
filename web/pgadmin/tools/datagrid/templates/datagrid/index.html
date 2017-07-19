@@ -24,14 +24,14 @@
         <div id="btn-toolbar" class="pg-prop-btn-group bg-gray-2 border-gray-3" role="toolbar" aria-label="">
             <div class="btn-group" role="group" aria-label="">
                 <button id="btn-load-file" type="button" class="btn btn-default btn-load-file"
-                        title="{{ _('Open File') }}">
+                        title="{{ _('Open File') }}" accesskey="o">
                     <i class="fa fa-folder-open-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-save" type="button" class="btn btn-default" title="{{ _('Save') }}" disabled>
                     <i class="fa fa-floppy-o" aria-hidden="true"></i>
                 </button>
                 <button id="btn-file-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled  accesskey="s">
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
@@ -42,7 +42,7 @@
                     </li>
                     <li>
                         <a id="btn-file-menu-save-as" href="#">
-                            <span>{{ _('Save as') }}</span>
+                            <span>{{ _('Save As') }}</span>
                         </a>
                     </li>
                 </ul>
@@ -52,7 +52,7 @@
                     <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
                 <button id="btn-find-menu-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="f">
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
@@ -96,20 +96,51 @@
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-copy-row" type="button" class="btn btn-default" title="{{ _('Copy') }}" disabled>
+                <button id="btn-copy-row" type="button" class="btn btn-default"
+                        title="{{ _('Copy') }}" disabled accesskey="c">
                     <i class="fa fa-files-o" aria-hidden="true"></i>
                 </button>
-                <button id="btn-paste-row" type="button" class="btn btn-default" title="{{ _('Paste Row') }}" disabled>
+                <button id="btn-paste-row" type="button" class="btn btn-default"
+                        title="{{ _('Paste Row') }}" disabled accesskey="p">
                     <i class="fa fa-clipboard" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-delete-row" type="button" class="btn btn-default" title="{{ _('Delete Row(s)') }}" disabled>
+                <button id="btn-delete-row" type="button" class="btn btn-default"
+                        title="{{ _('Delete Row(s)') }}" disabled accesskey="d">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-filter" type="button" class="btn btn-default" title="{{ _('Filter') }}" disabled>
+                <button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        title="{{ _('Edit') }}" accesskey="e">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu">
+                    <li>
+                        <a id="btn-indent-code" href="#">
+                            <span> {{ _('Indent Selection (Tab)') }} </span>
+                        </a>
+                        <a id="btn-unindent-code" href="#">
+                            <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
+                        </a>
+                        <a id="btn-comment-line" href="#">
+                            <span> {{ _('Inline Comment Selection (Ctrl+Shift+,)') }} </span>
+                        </a>
+                        <a id="btn-uncomment-line" href="#">
+                            <span> {{ _('Inline Uncomment Selection (Ctrl+Shift+.)') }} </span>
+                        </a>
+                        <a id="btn-toggle-comment-block" href="#">
+                            <span> {{ _('Block Comment/Uncomment Selection (Ctrl+Shift+/)') }} </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group" aria-label="">
+                <button id="btn-filter" type="button" class="btn btn-default"
+                        title="{{ _('Filter') }}" disabled accesskey="i">
                     <i class="fa fa-filter" aria-hidden="true"></i>
                 </button>
                 <button id="btn-filter-dropdown" type="button" class="btn btn-default dropdown-toggle"
@@ -126,7 +157,7 @@
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <select class="limit" style="height: 30px; width: 90px;" disabled>
+                <select class="limit" style="height: 30px; width: 90px;" disabled accesskey="r">
                     <option value="-1">No limit</option>
                     <option value="1000">1000 rows</option>
                     <option value="500">500 rows</option>
@@ -139,7 +170,7 @@
                     <i class="fa fa-bolt" aria-hidden="true"></i>
                 </button>
                 <button id="btn-query-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" accesskey="x">
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu">
@@ -203,33 +234,31 @@
                     </li>
                 </ul>
                 <button id="btn-cancel-query" type="button" class="btn btn-default" title="{{ _('Cancel query') }}"
-                        disabled>
+                        disabled accesskey="q">
                     <i class="fa fa-stop" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-edit" type="button" class="btn btn-default" title="{{ _('Clear query window') }}">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                </button>
                 <button id="btn-edit-dropdown" type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        title="{{ _('Clear') }}" accesskey="l">
+                    <i class="fa fa-eraser" aria-hidden="true"></i>
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu">
                     <li>
                         <a id="btn-clear" href="#">
-                            <i class="fa fa-eraser" aria-hidden="true"></i>
                             <span> {{ _('Clear Query Window') }} </span>
                         </a>
                         <a id="btn-clear-history" href="#">
-                            <i class="fa fa-eraser" aria-hidden="true"></i>
                             <span> {{ _('Clear History') }} </span>
                         </a>
                     </li>
                 </ul>
             </div>
             <div class="btn-group" role="group" aria-label="">
-                <button id="btn-download" type="button" class="btn btn-default" title="{{ _('Download as CSV (F8)') }}">
+                <button id="btn-download" type="button" class="btn btn-default"
+                        title="{{ _('Download as CSV (F8)') }}" accesskey="v">
                     <i class="fa fa-download" aria-hidden="true"></i>
                 </button>
             </div>
