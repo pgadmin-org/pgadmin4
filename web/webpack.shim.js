@@ -133,7 +133,7 @@ var webpackShimConfig = {
     'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
     'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
     'jqueryui.position': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.ui.position'),
-    'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextmenu'),
+    'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
 
