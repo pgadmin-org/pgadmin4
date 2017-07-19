@@ -493,8 +493,6 @@ define('pgadmin.node.foreign_key', [
 
         newRow.addClass("new");
         $(newRow).pgMakeVisible('backform-tab');
-      } else {
-        //delete m;
       }
 
       return false;

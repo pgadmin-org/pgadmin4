@@ -332,8 +332,8 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
         // Render the data in a grid
         render_grid_data: function(container) {
             var data = $(container).data('data'),
-              grid = $(container).data('grid'),
-              filter = $(container).data('filter');
+                grid = $(container).data('grid'),
+                filter = $(container).data('filter');
 
             if(_.isUndefined(data)){
               return null;
@@ -608,17 +608,49 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
             }];
 
             // Render the graphs
-            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, url_for('dashboard.session_stats'), options_line, false, session_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, url_for('dashboard.tps_stats'), options_line, true, tps_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, url_for('dashboard.ti_stats'), options_line, true, ti_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, url_for('dashboard.to_stats'), options_line, true, to_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, url_for('dashboard.bio_stats'), options_line, true, bio_stats_refresh);
+            pgAdmin.Dashboard.render_chart(
+              div_sessions, data_sessions, dataset_sessions, sid, did,
+              url_for('dashboard.session_stats'), options_line, false,
+              session_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_tps, data_tps, dataset_tps, sid, did,
+              url_for('dashboard.tps_stats'), options_line, true,
+              tps_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_ti, data_ti, dataset_ti, sid, did,
+              url_for('dashboard.ti_stats'), options_line, true,
+              ti_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_to, data_to, dataset_to, sid, did,
+              url_for('dashboard.to_stats'), options_line, true,
+              to_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_bio, data_bio, dataset_bio, sid, did,
+              url_for('dashboard.bio_stats'), options_line, true,
+              bio_stats_refresh
+            );
 
             // Render the tabs, but only get data for the activity tab for now
-            pgAdmin.Dashboard.render_grid(div_server_activity, sid, did, url_for('dashboard.activity'), server_activity_columns);
-            pgAdmin.Dashboard.render_grid(div_server_locks, sid, did, url_for('dashboard.locks'), server_locks_columns);
-            pgAdmin.Dashboard.render_grid(div_server_prepared, sid, did, url_for('dashboard.prepared'), server_prepared_columns);
-            pgAdmin.Dashboard.render_grid(div_server_config, sid, did, url_for('dashboard.config'), server_config_columns);
+            pgAdmin.Dashboard.render_grid(
+              div_server_activity, sid, did,
+              url_for('dashboard.activity'), server_activity_columns
+            );
+            pgAdmin.Dashboard.render_grid(
+              div_server_locks, sid, did, url_for('dashboard.locks'),
+              server_locks_columns
+            );
+            pgAdmin.Dashboard.render_grid(
+              div_server_prepared, sid, did, url_for('dashboard.prepared'),
+              server_prepared_columns
+            );
+            pgAdmin.Dashboard.render_grid(
+              div_server_config, sid, did, url_for('dashboard.config'),
+              server_config_columns
+            );
 
             pgAdmin.Dashboard.render_grid_data(div_server_activity);
 
@@ -843,16 +875,45 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
             }];
 
             // Render the graphs
-            pgAdmin.Dashboard.render_chart(div_sessions, data_sessions, dataset_sessions, sid, did, url_for('dashboard.session_stats'), options_line, false, session_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_tps, data_tps, dataset_tps, sid, did, url_for('dashboard.tps_stats'), options_line, true, tps_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_ti, data_ti, dataset_ti, sid, did, url_for('dashboard.ti_stats'), options_line, true, ti_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_to, data_to, dataset_to, sid, did, url_for('dashboard.to_stats'), options_line, true, to_stats_refresh);
-            pgAdmin.Dashboard.render_chart(div_bio, data_bio, dataset_bio, sid, did, url_for('dashboard.bio_stats'), options_line, true, bio_stats_refresh);
+            pgAdmin.Dashboard.render_chart(
+              div_sessions, data_sessions, dataset_sessions, sid, did,
+              url_for('dashboard.session_stats'), options_line, false,
+              session_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_tps, data_tps, dataset_tps, sid, did,
+              url_for('dashboard.tps_stats'), options_line, true,
+              tps_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_ti, data_ti, dataset_ti, sid, did,
+              url_for('dashboard.ti_stats'), options_line, true,
+              ti_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_to, data_to, dataset_to, sid, did,
+              url_for('dashboard.to_stats'), options_line, true,
+              to_stats_refresh
+            );
+            pgAdmin.Dashboard.render_chart(
+              div_bio, data_bio, dataset_bio, sid, did,
+              url_for('dashboard.bio_stats'), options_line, true,
+              bio_stats_refresh
+            );
 
             // Render the tabs, but only get data for the activity tab for now
-            pgAdmin.Dashboard.render_grid(div_database_activity, sid, did, url_for('dashboard.activity'), database_activity_columns);
-            pgAdmin.Dashboard.render_grid(div_database_locks, sid, did, url_for('dashboard.locks'), database_locks_columns);
-            pgAdmin.Dashboard.render_grid(div_database_prepared, sid, did, url_for('dashboard.prepared'), database_prepared_columns);
+            pgAdmin.Dashboard.render_grid(
+              div_database_activity, sid, did, url_for('dashboard.activity'),
+              database_activity_columns
+            );
+            pgAdmin.Dashboard.render_grid(
+              div_database_locks, sid, did, url_for('dashboard.locks'),
+              database_locks_columns
+            );
+            pgAdmin.Dashboard.render_grid(
+              div_database_prepared, sid, did, url_for('dashboard.prepared'),
+              database_prepared_columns
+            );
 
             pgAdmin.Dashboard.render_grid_data(div_database_activity);
 

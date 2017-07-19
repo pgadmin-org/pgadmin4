@@ -1,4 +1,6 @@
-define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'],
+define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
+  'backgrid', 'alertify', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
+  ],
  function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
   /**
    * Each Privilege, supporeted by an database object, will be represented

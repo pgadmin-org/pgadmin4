@@ -126,23 +126,21 @@ define(
       }
 
       // show query tool only in context menu of supported nodes.
-      if (true) {
-        if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
-          pgAdmin.Browser.add_menus([{
-            name: 'show_query_tool', node: self.type, module: self,
-            applies: ['context'], callback: 'show_query_tool',
-            priority: 998, label: gettext('Query Tool...'),
-            icon: 'fa fa-bolt',
-            enable: function(itemData, item, data) {
-              if (itemData._type == 'database' && itemData.allowConn)
-                return true;
-              else if(itemData._type != 'database')
-                return true;
-              else
-                return false;
-            }
-          }]);
-        }
+      if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
+        pgAdmin.Browser.add_menus([{
+          name: 'show_query_tool', node: self.type, module: self,
+          applies: ['context'], callback: 'show_query_tool',
+          priority: 998, label: gettext('Query Tool...'),
+          icon: 'fa fa-bolt',
+          enable: function(itemData, item, data) {
+            if (itemData._type == 'database' && itemData.allowConn)
+              return true;
+            else if(itemData._type != 'database')
+              return true;
+            else
+              return false;
+          }
+        }]);
       }
 
       // This will add options of scripts eg:'CREATE Script'
@@ -501,7 +499,6 @@ define(
               );
 
               b.removeChild(el);
-              // delete(el);
 
               return p;
             };
@@ -995,8 +992,6 @@ define(
           if (view) {
             // Release the view
             view.remove({data: true, internal: true, silent: true});
-            // Deallocate the view
-            // delete view;
             view = null;
             // Reset the data object
             j.data('obj-view', null);
@@ -1179,7 +1174,6 @@ define(
           if (view) {
             // Release the view
             view.remove({data: true, internal: true, silent: true});
-            // Deallocate the view
             view = null;
             // Reset the data object
             j.data('obj-view', null);

@@ -560,8 +560,6 @@ define('pgadmin.node.exclusion_constraint', [
 
         newRow.addClass("new");
         $(newRow).pgMakeVisible('backform-tab');
-      } else {
-        //delete m;
       }
 
       return false;
