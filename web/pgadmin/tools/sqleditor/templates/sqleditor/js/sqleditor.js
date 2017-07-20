@@ -14,6 +14,7 @@ define('tools.querytool', [
     'sources/../jsx/history/query_history',
     'react', 'react-dom',
     'sources/alerts/alertify_wrapper',
+    'sources/sqleditor/keyboard_shortcuts',
     'sources/../bundle/slickgrid',
     'misc.file_manager',
     'backgrid.sizeable.columns',
@@ -23,7 +24,8 @@ define('tools.querytool', [
 ], function(
   gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-    XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM, AlertifyWrapper
+  XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM, AlertifyWrapper,
+  keyboardShortcuts
 ) {
     /* Return back, this has been called more than once */
     if (pgAdmin.SqlEditor)
@@ -35,14 +37,6 @@ define('tools.querytool', [
     var wcDocker = window.wcDocker,
         pgBrowser = pgAdmin.Browser,
         Slick = window.Slick;
-
-    // Define key codes for shortcut keys
-    var F5_KEY = 116,
-        F7_KEY = 118,
-        F8_KEY = 119,
-        COMMA_KEY = 188,
-        PERIOD_KEY = 190,
-        FWD_SLASH_KEY = 191;
 
     var is_query_running = false;
 
@@ -1270,14 +1264,7 @@ define('tools.querytool', [
 
       // Callback function for the flash button click.
       on_flash: function() {
-        var self = this;
-
-        // Trigger the flash signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:button:flash',
-            self,
-            self.handler
-        );
+        this.handler.executeQuery();
       },
 
       // Callback function for the cancel query button click.
@@ -1292,49 +1279,19 @@ define('tools.querytool', [
         );
       },
 
-      // Callback function for the download button click.
-      on_download: function() {
-        var self = this;
-
-        // Trigger the download signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:button:download',
-            self,
-            self.handler
-        );
-      },
-
       // Callback function for the line comment code
       on_comment_line_code: function() {
-        var self = this;
-        // Trigger the comment signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:comment_line_code',
-            self,
-            self.handler
-        );
+        this.handler.commentLineCode();
       },
 
       // Callback function for the line uncomment code
       on_uncomment_line_code: function() {
-        var self = this;
-        // Trigger the comment signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:uncomment_line_code',
-            self,
-            self.handler
-        );
+        this.handler.uncommentLineCode();
       },
 
       // Callback function for the block comment/uncomment code
       on_toggle_comment_block_code: function() {
-        var self = this;
-        // Trigger the comment signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:toggle_comment_block_code',
-            self,
-            self.handler
-        );
+        this.handler.commentBlockCode();
       },
 
       on_indent_code: function() {
@@ -1433,33 +1390,19 @@ define('tools.querytool', [
       },
 
       // Callback function for explain button click.
-      on_explain: function(ev) {
-        var self = this;
+      on_explain: function(event) {
+        this._stopEventPropogation(event);
+        this._closeDropDown(event);
 
-        this._stopEventPropogation(ev);
-        this._closeDropDown(ev);
-
-        // Trigger the explain signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:button:explain',
-            self,
-            self.handler
-        );
+        this.handler.explain(event);
       },
 
       // Callback function for explain analyze button click.
-      on_explain_analyze: function(ev) {
-        var self = this;
+      on_explain_analyze: function(event) {
+        this._stopEventPropogation(event);
+        this._closeDropDown(event);
 
-        this._stopEventPropogation(ev);
-        this._closeDropDown(ev);
-
-        // Trigger the explain analyze signal to the SqlEditorController class
-        self.handler.trigger(
-            'pgadmin-sqleditor:button:explain-analyze',
-            self,
-            self.handler
-        );
+        this.handler.explainAnalyze(event);
       },
 
       // Callback function for explain option "verbose" button click
@@ -1537,50 +1480,13 @@ define('tools.querytool', [
         );
       },
 
-      /*
-       * Callbacks for keyboard events bind to the
-       * query tool buttons.
-       * Following are the keyboard shortcuts:
-       *  F5 - Execute query
-       *  F7 - Explain query
-       *  F8 - Download result as CSV
-       *  Shift+F7 - Explain analyze query
-       */
-      keyAction: function(ev) {
-        // return if query is running
-        if (is_query_running) return;
+      on_download: function() {
+        this.handler.download();
+      },
 
-        var keyCode = ev.which || ev.keyCode;
-        if (ev.shiftKey && keyCode == F7_KEY) {
-          // Explain analyze query.
-          this.on_explain_analyze(ev);
-          ev.preventDefault();
-        } else if (keyCode == F5_KEY) {
-          // Execute query.
-          this.on_flash(ev);
-          ev.preventDefault();
-        } else if (keyCode == F7_KEY) {
-          // Explain query.
-          this.on_explain(ev);
-          ev.preventDefault();
-        } else if (keyCode == F8_KEY) {
-          // Download query result as CSV.
-          this.on_download(ev);
-          ev.preventDefault();
-        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == COMMA_KEY ) {
-          // Toggle comments
-          this.on_comment_line_code(ev);
-          ev.preventDefault();
-        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == PERIOD_KEY ) {
-          // Toggle comments
-          this.on_uncomment_line_code(ev);
-          ev.preventDefault();
-        } else if (ev.shiftKey && ev.ctrlKey  && keyCode == FWD_SLASH_KEY ) {
-          // Toggle comments
-          this.on_toggle_comment_block_code(ev);
-          ev.preventDefault();
-        }
-      }
+      keyAction: function(event) {
+        keyboardShortcuts.processEvent(this.handler, event);
+      },
     });
 
     /* Defining controller class for data grid, which actually
@@ -1657,21 +1563,13 @@ define('tools.querytool', [
           self.on('pgadmin-sqleditor:button:copy_row', self._copy_row, self);
           self.on('pgadmin-sqleditor:button:paste_row', self._paste_row, self);
           self.on('pgadmin-sqleditor:button:limit', self._set_limit, self);
-          self.on('pgadmin-sqleditor:button:flash', self._refresh, self);
           self.on('pgadmin-sqleditor:button:cancel-query', self._cancel_query, self);
-          self.on('pgadmin-sqleditor:button:download', self._download, self);
           self.on('pgadmin-sqleditor:button:auto_rollback', self._auto_rollback, self);
           self.on('pgadmin-sqleditor:button:auto_commit', self._auto_commit, self);
-          self.on('pgadmin-sqleditor:button:explain', self._explain, self);
-          self.on('pgadmin-sqleditor:button:explain-analyze', self._explain_analyze, self);
           self.on('pgadmin-sqleditor:button:explain-verbose', self._explain_verbose, self);
           self.on('pgadmin-sqleditor:button:explain-costs', self._explain_costs, self);
           self.on('pgadmin-sqleditor:button:explain-buffers', self._explain_buffers, self);
           self.on('pgadmin-sqleditor:button:explain-timing', self._explain_timing, self);
-          // Commenting related
-          self.on('pgadmin-sqleditor:comment_line_code', self._comment_line_code, self);
-          self.on('pgadmin-sqleditor:uncomment_line_code', self._uncomment_line_code, self);
-          self.on('pgadmin-sqleditor:toggle_comment_block_code', self._comment_block_code, self);
           // Indentation related
           self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
           self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
@@ -2745,7 +2643,7 @@ define('tools.querytool', [
 
 
         // This function will run the SQL query and refresh the data in the backgrid.
-        _refresh: function() {
+        executeQuery: function() {
           var self = this;
 
           // Start execution of the query.
@@ -2874,7 +2772,7 @@ define('tools.querytool', [
                 function() {
                   if (res.data.status) {
                     // Refresh the sql grid
-                    self._refresh();
+                    self.executeQuery();
                   }
                   else {
                     alertify.alert('Filter By Selection Error', res.data.result);
@@ -2944,7 +2842,7 @@ define('tools.querytool', [
                 function() {
                   if (res.data.status) {
                     // Refresh the sql grid
-                    self._refresh();
+                    self.executeQuery();
                   }
                   else {
                     alertify.alert('Filter Exclude Selection Error', res.data.result);
@@ -2995,7 +2893,7 @@ define('tools.querytool', [
                 function() {
                   if (res.data.status) {
                     // Refresh the sql grid
-                    self._refresh();
+                    self.executeQuery();
                   }
                   else {
                     alertify.alert('Remove Filter Error', res.data.result);
@@ -3050,7 +2948,7 @@ define('tools.querytool', [
                     $('#filter').addClass('hidden');
                     $('#editor-panel').removeClass('sql-editor-busy-fetching');
                     // Refresh the sql grid
-                    self._refresh();
+                    self.executeQuery();
                   }
                   else {
                     alertify.alert('Apply Filter Error',res.data.result);
@@ -3174,7 +3072,7 @@ define('tools.querytool', [
                 function() {
                   if (res.data.status) {
                     // Refresh the sql grid
-                    self._refresh();
+                    self.executeQuery();
                   }
                   else
                     alertify.alert('Change limit Error', res.data.result);
@@ -3414,7 +3312,7 @@ define('tools.querytool', [
         },
 
         // This function will download the grid data as CSV file.
-        _download: function() {
+        download: function() {
           var self = this,
           selected_code = self.gridView.query_tool_obj.getSelection(),
           sql = "";
@@ -3551,7 +3449,7 @@ define('tools.querytool', [
         },
 
         // This function will
-        _explain: function() {
+        explain: function() {
           var self = this;
           var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
           var costs = $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
@@ -3563,7 +3461,7 @@ define('tools.querytool', [
         },
 
         // This function will
-        _explain_analyze: function() {
+        explainAnalyze: function() {
           var self = this;
           var verbose = $('.explain-verbose').hasClass('visibility-hidden') ? 'OFF' : 'ON';
           var costs = $('.explain-costs').hasClass('visibility-hidden') ? 'OFF' : 'ON';
@@ -3726,21 +3624,21 @@ define('tools.querytool', [
         /*
          * This function will comment code (Wrapper function)
          */
-        _comment_line_code: function() {
+        commentLineCode: function() {
           this._toggle_comment_code('comment_line');
         },
 
         /*
          * This function will uncomment code (Wrapper function)
          */
-        _uncomment_line_code: function() {
+        uncommentLineCode: function() {
           this._toggle_comment_code('uncomment_line');
         },
 
         /*
          * This function will comment/uncomment code (Wrapper function)
          */
-        _comment_block_code: function() {
+        commentBlockCode: function() {
           this._toggle_comment_code('block');
         },
 
@@ -3786,6 +3684,10 @@ define('tools.querytool', [
         _unindent_selected_code: function() {
           var self = this, editor = self.gridView.query_tool_obj;
           editor.execCommand("indentLess");
+        },
+
+        isQueryRunning: function () {
+          return is_query_running;
         },
 
         /*
