@@ -8,6 +8,7 @@
  *  @author Simon Georget <simon (at) linea21 (dot) com>
  *  @copyright  Authors
  */
+import loading_icon from 'acitree/image/load-root.gif';
 
 define(['jquery', 'underscore', 'underscore.string',
   'sources/alerts/alertify_wrapper', 'sources/gettext',
@@ -505,11 +506,14 @@ var getFolderInfo = function(path, file_type) {
    } else {
      $(".allowed_file_types .change_file_types").show();
    }
-   var img_url = url_for('browser.static') + 'vendor/aciTree/image/load-root.gif';
+
+  var loading_icon_url = url_for(
+    'static', {'filename': 'js/generated/' + loading_icon }
+  );
 
   // Display an activity indicator.
   $('.fileinfo').find('span.activity').html(
-    "<img src='" + img_url + ">"
+    '<img src="' + loading_icon_url + '"/>'
   );
 
   var post_data = {
