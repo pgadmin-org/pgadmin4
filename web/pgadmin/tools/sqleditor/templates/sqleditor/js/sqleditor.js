@@ -1019,9 +1019,19 @@ define('tools.querytool', [
 
         self.history_collection = new HistoryBundle.HistoryCollection([]);
 
-        var queryHistoryElement = React.createElement(
-          queryHistory.QueryHistory, {historyCollection: self.history_collection});
-        ReactDOM.render(queryHistoryElement, $('#history_grid')[0]);
+        var historyComponent;
+        var historyCollectionReactElement = React.createElement(
+          queryHistory.QueryHistory, {
+            historyCollection: self.history_collection,
+            ref: function(component) {
+              historyComponent = component;
+            },
+          });
+        ReactDOM.render(historyCollectionReactElement, $('#history_grid')[0]);
+
+        self.history_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function () {
+          historyComponent.refocus();
+        });
       },
 
       // Callback function for Add New Row button click.
@@ -1801,7 +1811,7 @@ define('tools.querytool', [
           });
         },
 
-        // This is a wrapper to call _render function
+        // This is a wrapper to call_render function
         // We need this because we have separated columns route & result route
         // We need to combine both result here in wrapper before rendering grid
         call_render_after_poll: function(res) {

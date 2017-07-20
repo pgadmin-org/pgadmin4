@@ -11,6 +11,7 @@ import pyperclip
 import time
 
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -75,17 +76,41 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._execute_query("SELECT * FROM shoes")
 
         self.page.click_tab("History")
-        history_element = self.page.find_by_id("query_list")
-        self.assertIn("SELECT * FROM test_table", history_element.text)
-        self.assertIn("SELECT * FROM shoes", history_element.text)
+        selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
+        self.assertIn("SELECT * FROM shoes", selected_history_entry.text)
+        ActionChains(self.page.driver) \
+            .send_keys(Keys.ARROW_DOWN) \
+            .perform()
+        selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
+        self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_entry.text)
 
-        history_detail = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM shoes", history_detail.text)
+        selected_history_detail_pane = self.page.find_by_id("query_detail")
+        self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_detail_pane.text)
 
-        old_history_list_element = self.page.find_by_xpath("//*[@id='query_list']/ul/li[2]")
-        self.page.click_element(old_history_list_element)
-        history_detail = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM test_table", history_detail.text)
+        newly_selected_history_entry = self.page.find_by_xpath("//*[@id='query_list']/ul/li[1]")
+        self.page.click_element(newly_selected_history_entry)
+        selected_history_detail_pane = self.page.find_by_id("query_detail")
+        self.assertIn("SELECT * FROM shoes", selected_history_detail_pane.text)
+
+        self.__clear_query_tool()
+
+        self.page.click_element(editor_input)
+        for _ in range(15):
+            self._execute_query("SELECT * FROM hats")
+
+        self.page.click_tab("History")
+
+        query_we_need_to_scroll_to = self.page.find_by_xpath("//*[@id='query_list']/ul/li[17]")
+
+        self.page.click_element(query_we_need_to_scroll_to)
+        self._assert_not_clickable_because_out_of_view(query_we_need_to_scroll_to)
+
+        for _ in range(17):
+            ActionChains(self.page.driver) \
+                .send_keys(Keys.ARROW_DOWN) \
+                .perform()
+
+        self._assert_clickable(query_we_need_to_scroll_to)
 
     def __clear_query_tool(self):
         self.page.click_element(self.page.find_by_xpath("//*[@id='btn-edit']"))
@@ -103,6 +128,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
         self.page.find_by_id("btn-flash").click()
+
+    def _assert_clickable(self, element):
+        self.page.click_element(element)
+
+    def _assert_not_clickable_because_out_of_view(self, element):
+        self.assertRaises(self.page.click_element(element))
 
     def after(self):
         self.page.close_query_tool()
