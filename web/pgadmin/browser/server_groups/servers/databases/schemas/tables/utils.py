@@ -72,6 +72,12 @@ class BaseTableView(PGChildNodeView):
 
     * reset_statistics(self, scid, tid):
       - This function will reset statistics of table.
+
+    * get_trigger_function_schema(self, data)
+      - This function will return trigger function with schema name
+
+    * _format_args(self, arg)
+      - This function will format trigger function arguments.
     """
     @staticmethod
     def check_precondition(f):
@@ -134,6 +140,49 @@ class BaseTableView(PGChildNodeView):
             return f(*args, **kwargs)
 
         return wrap
+
+    def get_trigger_function_schema(self, data):
+        """
+        This function will return trigger function with schema name
+        """
+        # If language is 'edbspl' then trigger function should be
+        # 'Inline EDB-SPL' else we will find the trigger function
+        # with schema name.
+        if data['lanname'] == 'edbspl':
+            data['tfunction'] = 'Inline EDB-SPL'
+        else:
+            SQL = render_template(
+                "/".join(
+                    [self.trigger_template_path,'get_triggerfunctions.sql']
+                ),
+                tgfoid=data['tgfoid'],
+                show_system_objects=self.blueprint.show_system_objects
+            )
+
+            status, result = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Update the trigger function which we have fetched with
+            # schema name
+            if 'rows' in result and len(result['rows']) > 0 and \
+                            'tfunctions' in result['rows'][0]:
+                data['tfunction'] = result['rows'][0]['tfunctions']
+        return data
+
+    def _format_args(self, args):
+        """
+        This function will format arguments.
+
+        Args:
+            args: Arguments
+
+        Returns:
+            Formated arguments for function
+        """
+        formatted_args = ["'{0}'".format(arg) for arg in args]
+        return ', '.join(formatted_args)
+
 
     def _columns_formatter(self, tid, data):
         """
@@ -816,7 +865,7 @@ class BaseTableView(PGChildNodeView):
         else:
             table_sql = render_template("/".join([self.table_template_path,
                                                   'create.sql']),
-                                        data=data, conn=self.conn)
+                                        data=data, conn=self.conn, is_sql=True)
 
         # Add into main sql
         table_sql = re.sub('\n{2,}', '\n\n', table_sql)
@@ -935,10 +984,11 @@ class BaseTableView(PGChildNodeView):
             data['schema'] = schema
             data['table'] = table
 
-            if data['tgnargs'] > 1:
-                # We know that trigger has more than 1 arguments,
-                # let's join them
-                data['tgargs'] = ', '.join(data['tgargs'])
+            data = self.get_trigger_function_schema(data)
+
+            if len(data['custom_tgargs']) > 1:
+                # We know that trigger has more than 1 argument, let's join them
+                data['tgargs'] = self._format_args(data['custom_tgargs'])
 
             if len(data['tgattr']) > 1:
                 columns = ', '.join(data['tgattr'].split(' '))
@@ -1628,28 +1678,40 @@ class BaseTableView(PGChildNodeView):
                             old_data['isdup'], old_data['attndims'], old_data['atttypmod']
                         )
 
+                        length = False
+                        precision = False
+                        if 'elemoid' in column:
+                            length, precision, typeval = \
+                                self.get_length_precision(column['elemoid'])
+
+
+                        # Set length and precision to None
+                        column['attlen'] = None
+                        column['attprecision'] = None
+
                         # If we have length & precision both
-                        matchObj = re.search(r'(\d+),(\d+)', fulltype)
-                        if matchObj:
-                            old_data['attlen'] = int(matchObj.group(1))
-                            old_data['attprecision'] = int(matchObj.group(2))
-                        else:
+                        if length and precision:
+                            matchObj = re.search(r'(\d+),(\d+)', fulltype)
+                            if matchObj:
+                                column['attlen'] = matchObj.group(1)
+                                column['attprecision'] = matchObj.group(2)
+                        elif length:
                             # If we have length only
                             matchObj = re.search(r'(\d+)', fulltype)
                             if matchObj:
-                                old_data['attlen'] = int(matchObj.group(1))
-                                old_data['attprecision'] = None
-                            else:
-                                old_data['attlen'] = None
-                                old_data['attprecision'] = None
+                                column['attlen'] = matchObj.group(1)
+                                column['attprecision'] = None
 
-                        old_data['cltype'] = DataTypeReader.parse_type_name(old_data['cltype'])
+                        old_data['cltype'] = DataTypeReader.parse_type_name(
+                            old_data['cltype']
+                        )
 
                         # Sql for alter column
                         if 'inheritedfrom' not in c:
                             column_sql += render_template("/".join(
                                 [self.column_template_path, 'update.sql']),
-                                data=c, o_data=old_data, conn=self.conn).strip('\n') + '\n\n'
+                                data=c, o_data=old_data, conn=self.conn
+                            ).strip('\n') + '\n\n'
 
                 # If column(s) is/are added
                 if 'added' in columns:
