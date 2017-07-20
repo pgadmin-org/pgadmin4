@@ -22,6 +22,7 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
 from flask_security.utils import login_user
 from werkzeug.datastructures import ImmutableDict
+from flask_paranoid import Paranoid
 
 from pgadmin.utils import PgAdminModule, driver
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -284,6 +285,11 @@ def create_app(app_name=None):
     security.init_app(app)
 
     app.session_interface = create_session_interface(app)
+
+    # Make the Session more secure against XSS & CSRF when running in web mode
+    if config.SERVER_MODE:
+        paranoid = Paranoid(app)
+        paranoid.redirect_view = 'browser.index'
 
     ##########################################################################
     # Load all available server drivers

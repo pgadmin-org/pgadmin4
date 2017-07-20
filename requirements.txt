@@ -41,3 +41,4 @@ sqlparse==0.1.19
 Werkzeug==0.9.6
 WTForms==2.0.2
 backports.csv==1.0.4; python_version <= '2.7'
+Flask-Paranoid==0.1.0
