@@ -78,6 +78,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_tab("History")
         selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
         self.assertIn("SELECT * FROM shoes", selected_history_entry.text)
+        failed_history_detail_pane = self.page.find_by_id("query_detail")
+
+        self.assertIn("Error Message relation \"shoes\" does not exist", failed_history_detail_pane.text)
+
         ActionChains(self.page.driver) \
             .send_keys(Keys.ARROW_DOWN) \
             .perform()

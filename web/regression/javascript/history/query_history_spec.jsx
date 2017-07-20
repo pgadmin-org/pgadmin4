@@ -49,6 +49,7 @@ describe('QueryHistory', () => {
       expect(foundChildren.length).toBe(0);
       done();
     });
+    
     it('nothing is displayed on right panel', (done) => {
       let foundChildren = historyWrapper.find(QueryHistoryDetail);
       expect(foundChildren.length).toBe(1);
@@ -68,7 +69,7 @@ describe('QueryHistory', () => {
         status: true,
         row_affected: 12345,
         total_time: '14 msec',
-        message: 'message from first sql query',
+        message: 'something important ERROR:  message from first sql query',
       }, {
         query: 'second sql statement',
         start_time: new Date(2016, 11, 11, 1, 33, 5, 99),
@@ -191,27 +192,41 @@ describe('QueryHistory', () => {
               done();
             }, 1000);
           });
+
+          describe('when the query failed', () => {
+            let failedEntry;
+
+            beforeEach(() => {
+              failedEntry = foundChildren.at(1);
+              failedEntry.simulate('click');
+            });
+            it('displays the error message on top of the details pane', () => {
+              expect(queryDetail.at(0).text()).toContain('Error Message message from second sql query');
+            });
+          });
         });
 
         describe('when the older query is clicked on', () => {
+          let firstEntry, secondEntry;
+
           beforeEach(() => {
-            foundChildren.at(1).simulate('click');
+            firstEntry = foundChildren.at(0);
+            secondEntry = foundChildren.at(1);
+            secondEntry.simulate('click');
           });
 
           it('displays the query in the right pane', () => {
             expect(queryDetail.at(0).text()).toContain('second sql statement');
           });
 
-          it('renders the most recent query as selected in the left pane', () => {
-            expect(foundChildren.at(0).nodes.length).toBe(1);
-            expect(foundChildren.at(0).hasClass('selected')).toBeFalsy();
-            expect(foundChildren.at(0).hasClass('error')).toBeFalsy();
+          it('deselects the first history entry', () => {
+            expect(firstEntry.nodes.length).toBe(1);
+            expect(firstEntry.hasClass('selected')).toBeFalsy();
           });
 
-          it('renders the older query as selected in the left pane', () => {
-            expect(foundChildren.at(1).nodes.length).toBe(1);
-            expect(foundChildren.at(1).hasClass('selected')).toBeTruthy();
-            expect(foundChildren.at(1).hasClass('error')).toBeTruthy();
+          it('selects the second history entry', () => {
+            expect(secondEntry.nodes.length).toBe(1);
+            expect(secondEntry.hasClass('selected')).toBeTruthy();
           });
         });
 
@@ -223,7 +238,7 @@ describe('QueryHistory', () => {
               status: false,
               row_affected: 5,
               total_time: '26 msec',
-              message: 'third sql message',
+              message: 'pretext ERROR:  third sql message',
             });
 
             foundChildren = historyWrapper.find(QueryHistoryEntry);
