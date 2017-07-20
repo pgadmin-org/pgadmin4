@@ -120,6 +120,31 @@ def register_string_typecasters(connection):
         psycopg2.extensions.register_type(unicode_array_type)
 
 
+def register_binary_typecasters(connection):
+    psycopg2.extensions.register_type(
+        psycopg2.extensions.new_type(
+            (
+                # To cast bytea type
+                17,
+             ),
+            'BYTEA_PLACEHOLDER',
+            # Only show placeholder if data actually exists.
+            lambda value, cursor: 'binary data' if value is not None else None),
+        connection
+    )
+
+    psycopg2.extensions.register_type(
+        psycopg2.extensions.new_type(
+            (
+                # To cast bytea[] type
+                1001,
+             ),
+            'BYTEA_ARRAY_PLACEHOLDER',
+            # Only show placeholder if data actually exists.
+            lambda value, cursor: 'binary data[]' if value is not None else None),
+        connection
+    )
+
 class Connection(BaseConnection):
     """
     class Connection(object)
@@ -201,7 +226,8 @@ class Connection(BaseConnection):
 
     """
 
-    def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0):
+    def __init__(self, manager, conn_id, db, auto_reconnect=True, async=0,
+                 use_binary_placeholder=False):
         assert (manager is not None)
         assert (conn_id is not None)
 
@@ -222,6 +248,7 @@ class Connection(BaseConnection):
         self.wasConnected = False
         # This flag indicates the connection reconnecting status.
         self.reconnecting = False
+        self.use_binary_placeholder = use_binary_placeholder
 
         super(Connection, self).__init__()
 
@@ -239,6 +266,7 @@ class Connection(BaseConnection):
         res['database'] = self.db
         res['async'] = self.async
         res['wasConnected'] = self.wasConnected
+        res['use_binary_placeholder'] = self.use_binary_placeholder
 
         return res
 
@@ -397,6 +425,10 @@ Failed to connect to the database server(#{server_id}) for connection ({conn_id}
                 self.conn.autocommit = True
 
         register_string_typecasters(self.conn)
+
+        if self.use_binary_placeholder:
+            register_binary_typecasters(self.conn)
+
         status = _execute(cur, """
 SET DateStyle=ISO;
 SET client_min_messages=notice;
@@ -1639,7 +1671,7 @@ class ServerManager(object):
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
-            async=None
+            async=None, use_binary_placeholder=False
     ):
         if database is not None:
             if hasattr(str, 'decode') and \
@@ -1693,7 +1725,8 @@ WHERE db.oid = {0}""".format(did))
             else:
                 async = 1 if async is True else 0
             self.connections[my_id] = Connection(
-                self, my_id, database, auto_reconnect, async
+                self, my_id, database, auto_reconnect, async,
+                use_binary_placeholder=use_binary_placeholder
             )
 
             return self.connections[my_id]
@@ -1722,7 +1755,8 @@ WHERE db.oid = {0}""".format(did))
             conn_info = connections[conn_id]
             conn = self.connections[conn_info['conn_id']] = Connection(
                 self, conn_info['conn_id'], conn_info['database'],
-                True, conn_info['async']
+                True, conn_info['async'],
+                use_binary_placeholder=conn_info['use_binary_placeholder']
             )
             # only try to reconnect if connection was connected previously.
             if conn_info['wasConnected']:

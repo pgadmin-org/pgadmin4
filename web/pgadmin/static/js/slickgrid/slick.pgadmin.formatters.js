@@ -92,6 +92,9 @@
       (_.isUndefined(value) || _.isNull(value))
     ) {
       return "<span class='pull-left disabled_cell'>[null]</span>";
+    } else if(columnDef.column_type_internal == 'bytea' ||
+      columnDef.column_type_internal == 'bytea[]') {
+      return "<span class='pull-left disabled_cell'>[" + _.escape(value) + "]</span>";
     }
     else {
       return _.escape(value);

@@ -578,6 +578,7 @@ define('tools.querytool', [
               name: c.label,
               display_name: c.display_name,
               column_type: c.column_type,
+              column_type_internal: c.column_type_internal,
               not_null: c.not_null,
               has_default_val: c.has_default_val
             };
@@ -744,6 +745,11 @@ define('tools.querytool', [
         // Listener function which will be called before user updates existing cell
         // This will be used to collect primary key for that row
         grid.onBeforeEditCell.subscribe(function (e, args) {
+            if (args.column.column_type_internal == 'bytea' ||
+                args.column.column_type_internal == 'bytea[]') {
+              return false;
+            }
+
             var before_data = args.item;
 
             // If newly added row is saved but grid is not refreshed,
@@ -2074,9 +2080,9 @@ define('tools.querytool', [
                            pg_types[pg_types.length - 1][0] : 'unknown';
 
             if (!is_primary_key)
-              col_type += ' ' + type;
+              col_type += type;
             else
-              col_type += ' [PK] ' + type;
+              col_type += '[PK] ' + type;
 
             if (c.precision && c.precision >= 0 && c.precision != 65535) {
               col_type += ' (' + c.precision;
@@ -2125,6 +2131,7 @@ define('tools.querytool', [
               'name': c.name,
               'display_name': c.display_name,
               'column_type': col_type,
+              'column_type_internal': type,
               'pos': c.pos,
               'label': column_label,
               'cell': col_cell,

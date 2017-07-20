@@ -103,7 +103,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             '922337203685.922337203685', '-92233720368547758.08',
             '{1,2,3}', '{NaN,NaN,NaN}',
             'Infinity', '{Infinity}',
-            r'\336\255\276\357', r'{"\\336\\255\\276\\357","\\336\\255\\276\\357"}'
+            r'[binary data]', r'[binary data[]]'
         ]
 
         self.page.open_query_tool()
@@ -122,7 +122,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         cells.pop(0)
         for val, cell in zip(expected_output, cells):
             try:
-                source_code = cell.get_attribute('innerHTML')
+                source_code = cell.text
 
                 PGDataypeFeatureTest.check_result(
                     source_code,

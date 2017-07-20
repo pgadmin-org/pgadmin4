@@ -101,6 +101,7 @@ CREATE TABLE public.defaults
         # Open Object -> View/Edit data
         self._view_data_grid()
 
+        self.page.wait_for_query_tool_loading_indicator_to_disappear()
         # Run test to insert a new row in table with default values
         self._add_row()
         self._verify_row_data(True)
@@ -160,6 +161,7 @@ CREATE TABLE public.defaults
         Returns: None
 
         """
+
         self.wait.until(EC.visibility_of_element_located(
             (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
         )
@@ -197,6 +199,8 @@ CREATE TABLE public.defaults
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
+        # wait until all database dependant modules/js are loaded.
+        time.sleep(5)
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Tables')
@@ -263,6 +267,7 @@ CREATE TABLE public.defaults
             cell_xpath = CheckForViewDataTest._get_cell_xpath(
                 'r'+str(idx), 1
             )
+            time.sleep(0.4)
             self._update_cell(cell_xpath, config_data[str(idx)])
 
         self.page.find_by_id("btn-save").click()  # Save data
