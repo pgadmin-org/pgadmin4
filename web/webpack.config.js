@@ -1,16 +1,21 @@
 /* eslint-env node */
+// Import file, libraries and plugins
 const path = require('path');
 const webpack = require('webpack');
+const sourceDir = __dirname + '/pgadmin/static';
+// webpack.shim.js contains path references for resolve > alias configuration
+// and other util function used in CommonsChunksPlugin.
 const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
 const envType = PRODUCTION ? 'prod': 'dev';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const sourceDir = __dirname + '/pgadmin/static';
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractLib = new ExtractTextPlugin('style.css');
+const extractStyle = new ExtractTextPlugin('style.css');
 const extractSass = new ExtractTextPlugin('pgadmin.css');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
+// Extract vendor related libraries(node_modules/lib/lib.js) from bundles
+// specified in `chunks` into vendor.js bundle
 const vendorChunks = new webpack.optimize.CommonsChunkPlugin({
   name: 'vendor',
   chunks: ['app.bundle', 'sqleditor', 'codemirror', 'debugger_direct'],
@@ -20,6 +25,9 @@ const vendorChunks = new webpack.optimize.CommonsChunkPlugin({
   },
 });
 
+// Extract pgAdmin common libraries(pgadmin/web/module/filename.js) from bundles
+// specified in `chunks` into pgadmin_commons.js bundle.
+// pgLibs holds files that will be moved into this bundle.
 const pgAdminCommonChunks = new webpack.optimize.CommonsChunkPlugin({
   name: 'pgadmin_commons',
   chunks: ['app.bundle', 'sqleditor', 'codemirror', 'debugger_direct'],
@@ -29,6 +37,8 @@ const pgAdminCommonChunks = new webpack.optimize.CommonsChunkPlugin({
   },
 });
 
+// Expose libraries in app context so they need not to
+// require('libname') when used in a module
 const providePlugin = new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
@@ -40,16 +50,18 @@ const providePlugin = new webpack.ProvidePlugin({
   pgAdmin: 'pgadmin',
 });
 
+// Minify and omptimize JS/CSS to reduce bundle size. It is used in production
 const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
   output: {comments: false},
   compress: {
-    warnings: false,
+    warnings: true,
     unused: true,
     dead_code: true,
     drop_console: true,
   },
 });
 
+// Optimize CSS Assets by removing comments while bundling
 const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
   assetNameRegExp: /\.css$/g,
   cssProcessor: require('cssnano'),
@@ -57,12 +69,17 @@ const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
   canPrint: true,
 });
 
+// Helps in minimising the `React' production bundle. Bundle only code
+// requires in production mode. React keeps the code conditional
+// based on 'NODE_ENV' variable. [used only in production]
 const definePlugin = new webpack.DefinePlugin({
   'process.env': {
     'NODE_ENV': JSON.stringify('production'),
   },
 });
 
+// Manages the cache and stores it into 'sources/generated/.cache/<env><hash>/' path
+// where env = dev || prod
 const hardSourceWebpackPlugin = new HardSourceWebpackPlugin({
   cacheDirectory: './.cache/hard-source/' + envType +'/[confighash]',
   recordsPath: './.cache/hard-source/' + envType +'/[confighash]/records.json',
@@ -76,7 +93,10 @@ const hardSourceWebpackPlugin = new HardSourceWebpackPlugin({
 
 module.exports = {
   stats: { children: false },
+  // The base directory, an absolute path, for resolving entry points and loaders
+  // from configuration.
   context: __dirname,
+  // Specify entry points of application
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
@@ -84,15 +104,19 @@ module.exports = {
     debugger_direct: './pgadmin/tools/debugger/templates/debugger/js/direct.js',
     file_utils: './pgadmin/misc/file_manager/templates/file_manager/js/utility.js',
     pgadmin_css: './pgadmin/static/scss/pgadmin.scss',
-    lib_css: './pgadmin/static/css/lib.css',
+    style_css: './pgadmin/static/css/style.css',
   },
+  // path: The output directory for generated bundles(defined in entry)
+  // Ref: https://webpack.js.org/configuration/output/#output-library
   output: {
     libraryTarget: 'amd',
     path: __dirname + '/pgadmin/static/js/generated',
     filename: '[name].js',
     libraryExport: 'default',
   },
-  /*Templates files to be loaded dynamically*/
+  // Templates files which contains python code needs to load dynamically
+  // Such files specified in externals are loaded at first and defined in
+  // the start of generated bundle within define(['libname'],fn) etc.
   externals: {
     'pgadmin.browser.messages': 'pgadmin.browser.messages',
     'pgadmin.browser.utils': 'pgadmin.browser.utils',
@@ -102,8 +126,16 @@ module.exports = {
     'pgadmin.node.unique_key': 'pgadmin.node.unique_key',
     'translations': 'translations',
   },
-
   module: {
+    // References:
+    // Module and Rules: https://webpack.js.org/configuration/module/
+    // Loaders: https://webpack.js.org/loaders/
+    //
+    // imports-loader: it adds dependent modules(use:imports-loader?module1)
+    // at the beginning of module it is dependency of like:
+    // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+    // It solves number of problems
+    // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
       test: /\.jsx?$/,
       exclude: [/node_modules/, /vendor/],
@@ -114,6 +146,10 @@ module.exports = {
         },
       },
     }, {
+      // Transforms the code in a way that it works in the webpack environment.
+      // It uses imports-loader internally to load dependency. Its
+      // configuration is specified in webpack.shim.js
+      // Ref: https://www.npmjs.com/package/shim-loader
       test: /\.js/,
       loader: 'shim-loader',
       query: webpackShimConfig,
@@ -242,12 +278,13 @@ module.exports = {
       }),
     }, {
       test: /\.css$/,
-      use: extractLib.extract({
+      use: extractStyle.extract({
         use: [{
           loader: 'css-loader',
         }],
       }),
     }],
+    // Prevent module from parsing through webpack, helps in reducing build time
     noParse: [/moment.js/],
   },
   resolve: {
@@ -256,9 +293,11 @@ module.exports = {
     extensions: ['.js', '.jsx'],
     unsafeCache: true,
   },
+  // Define list of Plugins used in Production or development mode
+  // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
   plugins: PRODUCTION ? [
     extractSass,
-    extractLib,
+    extractStyle,
     vendorChunks,
     pgAdminCommonChunks,
     providePlugin,
@@ -268,7 +307,7 @@ module.exports = {
     hardSourceWebpackPlugin,
   ]: [
     extractSass,
-    extractLib,
+    extractStyle,
     vendorChunks,
     pgAdminCommonChunks,
     providePlugin,

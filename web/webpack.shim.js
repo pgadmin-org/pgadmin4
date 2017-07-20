@@ -113,6 +113,8 @@ var webpackShimConfig = {
     },
   },
 
+  // Map module id to file path used in 'define(['baseurl', 'misc']). It is
+  // used by webpack while creating bundle
   resolveAlias: {
     'baseurl': path.join(__dirname, './pgadmin'),
     'misc': path.join(__dirname, './pgadmin/static/bundle/misc'),
@@ -260,6 +262,8 @@ var webpackShimConfig = {
     'pgadmin.node.pga_schedule': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule'),
     'pgadmin.node.pga_jobstep': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep'),
   },
+  // Define list of pgAdmin common libraries to bundle them separately
+  // into commons JS from app.bundle.js
   pgLibs: [
     'pgadmin.browser.wizard', 'pgadmin.browser.error', 'pgadmin.browser.server.privilege',
     'pgadmin.browser.server.variable', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
@@ -269,11 +273,13 @@ var webpackShimConfig = {
     'misc.file_utility', 'sources/alerts/alertify_wrapper', 'pgadmin.browser.node',
     'pgadmin.alertifyjs', 'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
   ],
+  // Checks whether JS module is npm module or not
   isExternal: function(module) {
     var context = module.context;
     if (typeof context !== 'string') { return false; }
     return context.indexOf('node_modules') !== -1;
   },
+  // Checks whether module is in pgLibs or not. Returns true if exists
   isPgAdminLib: function (module) {
     if (module.rawRequest === undefined) { return false; }
     return this.pgLibs.indexOf(module.rawRequest) !== -1;
