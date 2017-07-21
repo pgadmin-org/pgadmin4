@@ -173,11 +173,11 @@ define('pgadmin.node.database', [
         },
         /* Disconnect the database */
         disconnect_database: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -192,8 +192,8 @@ define('pgadmin.node.database', [
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 1) {
-                    var prv_i = t.parent(i);
-                    var alertifyWrapper = new AlertifyWrapper();
+                    var prv_i = t.parent(i),
+                      alertifyWrapper = new AlertifyWrapper();
                     alertifyWrapper.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
