@@ -119,11 +119,19 @@ if __name__ == '__main__':
         if IS_WIN:
             os.environ['PYTHONHOME'] = sys.prefix
 
+    # Initialize Flask service only once
+    # If `WERKZEUG_RUN_MAIN` is None, i.e: app is initializing for first time
+    # so set `use_reloader` = False, thus reload won't call.
+    # Reference:
+    # https://github.com/pallets/werkzeug/issues/220#issuecomment-11176538
     try:
         app.run(
             host=config.DEFAULT_SERVER,
             port=server_port,
-            use_reloader=((not PGADMIN_RUNTIME) and app.debug),
+            use_reloader=(
+                (not PGADMIN_RUNTIME) and app.debug
+                and os.environ.get("WERKZEUG_RUN_MAIN") is not None
+            ),
             threaded=config.THREADED_MODE
         )
     except IOError:
