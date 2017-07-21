@@ -57,13 +57,13 @@ export default class QueryHistory extends React.Component {
 
   refocus() {
     if (this.state.history.length > 0) {
-      this.retrieveSelectedQuery().parentElement.focus();
+      this.retrieveQueryListPane().focus();
     }
   }
 
-  retrieveSelectedQuery() {
+  retrieveQueryListPane() {
     return ReactDOM.findDOMNode(this)
-      .getElementsByClassName('selected')[0];
+      .getElementsByClassName('query-history')[0];
   }
 
   getCurrentHistoryDetail() {
@@ -172,13 +172,14 @@ export default class QueryHistory extends React.Component {
       <SplitPane defaultSize="50%" split="vertical" pane1Style={queryEntryListDivStyle}
                  pane2Style={queryDetailDivStyle}>
         <div id='query_list'
-             className="query-history">
+             className="query-history"
+             onKeyDown={this.navigateUpAndDown}
+             tabIndex='0'>
           <ul>
             {this.retrieveOrderedHistory()
               .map((entry, index) =>
-                <li key={index} className='list-item' tabIndex='0'
-                    onClick={this.onClickHandler.bind(this, index)}
-                    onKeyDown={this.navigateUpAndDown}>
+                <li key={index} className='list-item'
+                    onClick={this.onClickHandler.bind(this, index)}>
                   <QueryHistoryEntry
                     historyEntry={entry}
                     isSelected={index == this.state.selectedEntry}/>

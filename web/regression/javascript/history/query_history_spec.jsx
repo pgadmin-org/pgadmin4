@@ -36,11 +36,11 @@ describe('QueryHistory', () => {
     describe('when we switch to the query history tab', () => {
       beforeEach(() => {
         historyWrapper.node.refocus();
-        spyOn(historyWrapper.node, 'retrieveSelectedQuery');
+        spyOn(historyWrapper.node, 'retrieveQueryListPane');
       });
 
       it('does not try to focus on any element', () => {
-        expect(historyWrapper.node.retrieveSelectedQuery).not.toHaveBeenCalled();
+        expect(historyWrapper.node.retrieveQueryListPane).not.toHaveBeenCalled();
       });
     });
 
@@ -49,7 +49,7 @@ describe('QueryHistory', () => {
       expect(foundChildren.length).toBe(0);
       done();
     });
-    
+
     it('nothing is displayed on right panel', (done) => {
       let foundChildren = historyWrapper.find(QueryHistoryDetail);
       expect(foundChildren.length).toBe(1);
@@ -264,7 +264,7 @@ describe('QueryHistory', () => {
 
           beforeEach(() => {
             selectedListItem = ReactDOM.findDOMNode(historyWrapper.node)
-              .getElementsByClassName('selected')[0].parentElement;
+              .getElementsByClassName('query-history')[0];
 
             spyOn(selectedListItem, 'focus');
             historyWrapper.node.refocus();
