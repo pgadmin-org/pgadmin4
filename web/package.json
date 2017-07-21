@@ -7,6 +7,7 @@
     "cross-env": "^5.0.1",
     "enzyme": "~2.8.2",
     "enzyme-matchers": "^3.1.0",
+    "eclint": "^2.3.0",
     "eslint": "3.19.0",
     "eslint-plugin-react": "^6.10.3",
     "extract-text-webpack-plugin": "^2.1.2",
