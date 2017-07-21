@@ -138,7 +138,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(element)
 
     def _assert_not_clickable_because_out_of_view(self, element):
-        self.assertTrue(element.is_displayed())
+        self.assertRaises(self.page.click_element(element))
 
     def after(self):
         self.page.close_query_tool()
