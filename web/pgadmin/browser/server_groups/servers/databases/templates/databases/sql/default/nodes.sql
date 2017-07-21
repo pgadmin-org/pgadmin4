@@ -8,5 +8,10 @@ WHERE {% if did %}
 db.oid = {{ did|qtLiteral }}::OID{% else %}
 db.oid > {{ last_system_oid }}::OID
 {% endif %}
+{% if db_restrictions %}
+
+AND
+db.datname in ({{db_restrictions}})
+{% endif %}
 
 ORDER BY datname;

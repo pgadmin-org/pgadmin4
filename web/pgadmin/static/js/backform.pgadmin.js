@@ -1707,7 +1707,8 @@
     defaults: _.extend({}, Backform.SelectControl.prototype.defaults, {
       select2: {
         first_empty: true,
-        multiple: false
+        multiple: false,
+        emptyOptions: false
       }
     }),
     formatter: Select2Formatter,
@@ -1761,7 +1762,8 @@
       data.select2 = data.select2 || {};
       _.defaults(data.select2, this.defaults.select2, {
         first_empty: true,
-        multiple: false
+        multiple: false,
+        emptyOptions: false
       });
 
       // Evaluate the disabled, visible, and required option
@@ -1807,7 +1809,28 @@
        * Add empty option as Select2 requires any empty '<option><option>' for
        * some of its functionality to work and initialize select2 control.
        */
+
+      if (data.select2.tags && data.select2.emptyOptions) {
+        select2Opts.data = data.rawValue;
+      }
+
       this.$sel = this.$el.find("select").select2(select2Opts);
+
+      // Add or remove tags from select2 control
+      if (data.select2.tags && data.select2.emptyOptions) {
+        this.$sel.val(data.rawValue);
+        this.$sel.trigger('change.select2');
+        this.$sel.on('select2:unselect', function(evt) {
+
+          $(this).find('option[value="'+evt.params.data.text.replace("'","\\'").replace('"','\\"')+'"]').remove();
+          $(this).trigger('change.select2');
+          if ($(this).val() == null) {
+            $(this).empty();
+          }
+        });
+
+
+      }
 
       // Select the highlighted item on Tab press.
       if (this.$sel) {

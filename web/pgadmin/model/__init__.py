@@ -128,6 +128,8 @@ class Server(db.Model):
     servers = db.relationship('ServerGroup',
                            backref=db.backref('server', cascade="all, delete-orphan"),
                            lazy='joined')
+    db_res = db.Column(db.Text(), nullable=True)
+
 
 
 

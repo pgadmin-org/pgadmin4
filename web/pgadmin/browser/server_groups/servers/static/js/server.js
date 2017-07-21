@@ -624,7 +624,8 @@ define('pgadmin.node.server', [
           role: null,
           connect_now: true,
           password: undefined,
-          save_password: false
+          save_password: false,
+          db_res: ''
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -669,6 +670,10 @@ define('pgadmin.node.server', [
         },{
           id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected'
+        },{
+          id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'], disabled: 'isConnected', select2: {multiple: true, allowClear: false,
+          tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true}
         },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], disabled: 'isConnected', min: 1024, max: 65535

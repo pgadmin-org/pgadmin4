@@ -29,5 +29,10 @@ WHERE {% if did %}
 db.datid = {{ did|qtLiteral }}::OID{% else %}
 db.datid > {{ last_system_oid|qtLiteral }}::OID
 {% endif %}
+{% if db_restrictions %}
+
+AND
+db.datname in ({{db_restrictions}})
+{% endif %}
 
 ORDER BY db.datname;

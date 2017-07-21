@@ -28,7 +28,9 @@ from pgadmin.utils.ajax import gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
-
+from pgadmin.browser.server_groups.servers import ServerNode
+from flask_security import current_user
+from pgadmin.model import Server
 
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'database'
@@ -166,11 +168,18 @@ class DatabaseView(PGChildNodeView):
             (self.manager.db_info[self.manager.did])['datlastsysoid'] \
             if self.manager.db_info is not None and \
             self.manager.did in self.manager.db_info else 0
+
+        db_disp_res = None
+        params = None
+        if self.manager and self.manager.db_res:
+            db_disp_res = ", ".join(['%s'] * len(self.manager.db_res.split(',')))
+            params = tuple(self.manager.db_res.split(','))
+
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            conn=self.conn, last_system_oid=last_system_oid
+            conn=self.conn, last_system_oid=last_system_oid, db_restrictions=db_disp_res
         )
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -188,12 +197,19 @@ class DatabaseView(PGChildNodeView):
                 if self.manager.db_info is not None and \
                 self.manager.did in self.manager.db_info else 0
             )
+        server_node_res = self.manager
 
+        db_disp_res = None
+        params = None
+        if server_node_res and server_node_res.db_res:
+            db_disp_res = ", ".join(['%s']*len(server_node_res.db_res.split(',')))
+            params = tuple(server_node_res.db_res.split(','))
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            last_system_oid=last_system_oid
+            last_system_oid=last_system_oid,
+            db_restrictions=db_disp_res
         )
-        status, rset = self.conn.execute_dict(SQL)
+        status, rset = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=rset)
@@ -851,12 +867,17 @@ class DatabaseView(PGChildNodeView):
             if self.manager.db_info is not None and \
             self.manager.did in self.manager.db_info else 0
 
+        db_disp_res = None
+        params = None
+        if self.manager and self.manager.db_res:
+            db_disp_res = ", ".join(['%s'] * len(self.manager.db_res.split(',')))
+            params = tuple(self.manager.db_res.split(','))
+
         conn = self.manager.connection()
-        status, res = conn.execute_dict(
-            render_template(
-                "/".join([self.template_path, 'stats.sql']),
-                did=did, conn=conn, last_system_oid=last_system_oid
-            )
+        status, res = conn.execute_dict(render_template(
+            "/".join([self.template_path, 'stats.sql']),
+            did=did, conn=conn, last_system_oid=last_system_oid, db_restrictions=db_disp_res
+            ),params
         )
 
         if not status:

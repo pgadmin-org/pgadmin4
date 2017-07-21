@@ -380,7 +380,8 @@ class ServerNode(PGChildNodeView):
             'sslmode': 'ssl_mode',
             'gid': 'servergroup_id',
             'comment': 'comment',
-            'role': 'role'
+            'role': 'role',
+            'db_res': 'db_res'
         }
 
         disp_lbl = {
@@ -398,6 +399,8 @@ class ServerNode(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
+        if 'db_res' in data:
+            data['db_res'] = ','.join(data['db_res'])
 
         if 'hostaddr' in data and data['hostaddr'] != '':
             if not self.pat4.match(data['hostaddr']):
@@ -497,7 +500,8 @@ class ServerNode(PGChildNodeView):
                 'role': server.role,
                 'connected': connected,
                 'version': manager.ver,
-                'server_type': manager.server_type if connected else 'pg'
+                'server_type': manager.server_type if connected else 'pg',
+                'db_res': server.db_res.split(',') if server.db_res else None
             })
 
         return ajax_response(
@@ -544,7 +548,8 @@ class ServerNode(PGChildNodeView):
                 'connected': connected,
                 'version': manager.ver,
                 'sslmode': server.ssl_mode,
-                'server_type': manager.server_type if connected else 'pg'
+                'server_type': manager.server_type if connected else 'pg',
+                'db_res': server.db_res.split(',') if server.db_res else None
             }
         )
 
@@ -597,7 +602,8 @@ class ServerNode(PGChildNodeView):
                 username=data[u'username'],
                 ssl_mode=data[u'sslmode'],
                 comment=data[u'comment'] if u'comment' in data else None,
-                role=data[u'role'] if u'role' in data else None
+                role=data[u'role'] if u'role' in data else None,
+                db_res=','.join(data[u'db_res']) if u'db_res' in data else None
             )
             db.session.add(server)
             db.session.commit()

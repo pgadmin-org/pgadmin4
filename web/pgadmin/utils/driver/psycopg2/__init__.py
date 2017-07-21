@@ -1615,6 +1615,7 @@ class ServerManager(object):
         self.pinged = datetime.datetime.now()
         self.db_info = dict()
         self.server_types = None
+        self.db_res = server.db_res
 
         for con in self.connections:
             self.connections[con]._release()

@@ -41,5 +41,10 @@ db.oid = {{ did|qtLiteral }}::OID{% else %}{% if name %}
 db.datname = {{ name|qtLiteral }}::text{% else %}
 db.oid > {{ last_system_oid|qtLiteral }}::OID
 {% endif %}{% endif %}
+{% if db_restrictions %}
+
+AND
+db.datname in ({{db_restrictions}})
+{% endif %}
 
 ORDER BY datname;
