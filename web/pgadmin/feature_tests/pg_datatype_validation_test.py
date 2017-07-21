@@ -103,7 +103,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             '922337203685.922337203685', '-92233720368547758.08',
             '{1,2,3}', '{NaN,NaN,NaN}',
             'Infinity', '{Infinity}',
-            r'[binary data]', r'[binary data[]]'
+            'binary data', 'binary data[]'
         ]
 
         self.page.open_query_tool()

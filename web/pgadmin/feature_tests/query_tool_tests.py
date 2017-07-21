@@ -169,14 +169,16 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item('acceptance_test_db')
 
     def _clear_query_tool(self):
-        # clear codemirror.
-        self.page.find_by_id("btn-edit").click()
-        # wait for alertify dialog open animation to complete.
-        time.sleep(1)
-
-        self.page.click_element(self.page.find_by_xpath("//button[contains(.,'Yes')]"))
-        # wait for alertify dialog close animation to complete.
-        time.sleep(1)
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
+        )
+        ActionChains(self.driver)\
+            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']"))\
+            .perform()
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear']")
+        )
+        self.page.click_modal('Yes')
 
     def _on_demand_result(self):
         ON_DEMAND_CHUNKS = 2
@@ -314,24 +316,16 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 SELECT generate_series(1, 1000) as id order by id desc"""
 
         wait = WebDriverWait(self.page.driver, 10)
-
         self.page.fill_codemirror_area_with(query)
-
         query_op = self.page.find_by_id("btn-query-dropdown")
         query_op.click()
-
         ActionChains(self.driver).move_to_element(
             query_op.find_element_by_xpath(
                 "//li[contains(.,'Explain Options')]")).perform()
-
         self.page.find_by_id("btn-explain-verbose").click()
-
         self.page.find_by_id("btn-explain").click()
-
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-
         self.page.click_tab('Data Output')
-
         canvas = wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#datagrid .slick-viewport .grid-canvas"))
         )

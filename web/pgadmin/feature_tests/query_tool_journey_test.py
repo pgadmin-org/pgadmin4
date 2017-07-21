@@ -70,7 +70,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_history_tab(self):
         self.__clear_query_tool()
-
         editor_input = self.page.find_by_id("output-panel")
         self.page.click_element(editor_input)
         self._execute_query("SELECT * FROM shoes")
@@ -79,45 +78,47 @@ class QueryToolJourneyTest(BaseFeatureTest):
         selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
         self.assertIn("SELECT * FROM shoes", selected_history_entry.text)
         failed_history_detail_pane = self.page.find_by_id("query_detail")
-
-        self.assertIn("Error Message relation \"shoes\" does not exist", failed_history_detail_pane.text)
-
+        self.assertIn("ERROR: relation \"shoes\" does not exist", failed_history_detail_pane.text)
         ActionChains(self.page.driver) \
             .send_keys(Keys.ARROW_DOWN) \
             .perform()
         selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
         self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_entry.text)
-
         selected_history_detail_pane = self.page.find_by_id("query_detail")
         self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_detail_pane.text)
-
         newly_selected_history_entry = self.page.find_by_xpath("//*[@id='query_list']/ul/li[1]")
         self.page.click_element(newly_selected_history_entry)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
         self.assertIn("SELECT * FROM shoes", selected_history_detail_pane.text)
 
         self.__clear_query_tool()
-
         self.page.click_element(editor_input)
         for _ in range(15):
             self._execute_query("SELECT * FROM hats")
 
         self.page.click_tab("History")
-
-        query_we_need_to_scroll_to = self.page.find_by_xpath("//*[@id='query_list']/ul/li[17]")
-
-        self.page.click_element(query_we_need_to_scroll_to)
-        self._assert_not_clickable_because_out_of_view(query_we_need_to_scroll_to)
-
+        query_we_need_to_scroll_to = self.page.find_by_xpath(
+            "//*[@id='query_list']/ul/li[17]"
+        )
+        self._assert_not_clickable_because_out_of_view(
+            query_we_need_to_scroll_to
+        )
         for _ in range(17):
             ActionChains(self.page.driver) \
                 .send_keys(Keys.ARROW_DOWN) \
                 .perform()
-
         self._assert_clickable(query_we_need_to_scroll_to)
 
     def __clear_query_tool(self):
-        self.page.click_element(self.page.find_by_xpath("//*[@id='btn-edit']"))
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear-dropdown']")
+        )
+        ActionChains(self.driver)\
+            .move_to_element(self.page.find_by_xpath("//*[@id='btn-clear']"))\
+            .perform()
+        self.page.click_element(
+            self.page.find_by_xpath("//*[@id='btn-clear']")
+        )
         self.page.click_modal('Yes')
 
     def _navigate_to_query_tool(self):
@@ -137,7 +138,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(element)
 
     def _assert_not_clickable_because_out_of_view(self, element):
-        self.assertRaises(self.page.click_element(element))
+        self.assertTrue(element.is_displayed())
 
     def after(self):
         self.page.close_query_tool()
