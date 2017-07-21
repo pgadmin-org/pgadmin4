@@ -1,5 +1,5 @@
 define([
-  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'alertify',
+  'babel-polyfill', 'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'alertify',
   'pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'sources/../bundle/codemirror', 'backform',
   'tools.debugger.ui',
   'sources/alerts/alertify_wrapper',
@@ -8,7 +8,7 @@ define([
   'pgadmin.backgrid'
 
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  babelPolyfill, gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   codemirror, Backform, debug_function_again, AlertifyWrapper
 ) {
 

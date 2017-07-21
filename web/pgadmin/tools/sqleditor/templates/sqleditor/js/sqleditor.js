@@ -1,5 +1,5 @@
 define('tools.querytool', [
-    'sources/gettext','sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
+    'babel-polyfill', 'sources/gettext','sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
     'pgadmin', 'backbone', 'sources/../bundle/codemirror', 'pgadmin.misc.explain',
     'sources/selection/grid_selector',
     'sources/selection/active_cell_capture',
@@ -22,7 +22,7 @@ define('tools.querytool', [
     'slick.pgadmin.editors',
     'pgadmin.browser'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
+  babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM, AlertifyWrapper,
   keyboardShortcuts
