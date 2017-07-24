@@ -170,6 +170,12 @@ button.pg-alertify-button {
   @extend .ajs-text-smoothing;
 }
 
+.ajs-message.ajs-visible {
+  @extend .bg-blue-1;
+  @extend .border-blue-2;
+  @extend .ajs-text-smoothing;
+}
+
 .media-body {
   display: table-row;
 }

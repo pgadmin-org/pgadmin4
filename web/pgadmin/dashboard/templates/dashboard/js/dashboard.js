@@ -1,9 +1,11 @@
 define('pgadmin.dashboard', [
     'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
-    'pgadmin', 'backbone', 'backgrid', 'flotr2', 'backgrid.filter',
+    'pgadmin', 'backbone', 'backgrid', 'flotr2', 'alertify',
+    'sources/alerts/alertify_wrapper', 'backgrid.filter',
     'pgadmin.browser', 'bootstrap', 'wcdocker'
     ],
-function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
+function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
+  alertify, AlertifyWrapper) {
 
   var wcDocker = window.wcDocker,
   pgBrowser = pgAdmin.Browser;
@@ -12,7 +14,81 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
   if (pgAdmin.Dashboard)
     return;
 
-  var dashboardVisible = true;
+  var dashboardVisible = true,
+    cancel_query_url = '',
+    is_super_user = false,
+    current_user, maintenance_database,
+    is_server_dashboard = false,
+    is_database_dashboard = false;
+
+  // Custom BackGrid cell, Responsible for cancelling active sessions
+  var cancelQueryCell = Backgrid.Extension.DeleteCell.extend({
+        render: function () {
+          this.$el.empty();
+          this.$el.html(
+            "<i class='fa fa-times-circle' data-toggle='tooltip' " +
+            "title='" + gettext('Cancel the active query') +
+            "'></i>"
+          );
+          this.delegateEvents();
+          return this;
+        },
+        deleteRow: function(e) {
+          var self = this;
+          e.preventDefault();
+
+          var canDeleteRow = Backgrid.callByNeed(
+            self.column.get('canDeleteRow'), self.column, self.model
+          );
+          // If we are not allowed to cancel the query, return from here
+          if(!canDeleteRow)
+            return;
+
+          // This will refresh the grid
+          var refresh_grid = function() {
+            if(is_server_dashboard) {
+              $('#btn_server_activity_refresh').click();
+            } else if(is_database_dashboard) {
+              $('#btn_database_activity_refresh').click();
+            }
+          };
+
+          var title = gettext('Cancel Active Query?'),
+            txtConfirm = gettext('Are you sure you wish to cancel the active query?');
+
+          alertify.confirm(
+            title,
+            txtConfirm,
+            function(evt) {
+              $.ajax({
+                url: cancel_query_url + self.model.get('pid'),
+                type:'DELETE',
+                success: function(res) {
+                  var alertifyWrapper = new AlertifyWrapper();
+                  if (res == gettext('Success')) {
+                    alertifyWrapper.success(gettext('Active query cancelled successfully.'));
+                    refresh_grid();
+                  } else {
+                    alertifyWrapper.error(gettext('An error occurred whilst cancelling the active query.'));
+                  }
+                },
+                error: function(xhr, status, error) {
+                  try {
+                    var err = $.parseJSON(xhr.responseText);
+                    if (err.success == 0) {
+                      var alertifyWrapper = new AlertifyWrapper();
+                      alertifyWrapper.error(err.errormsg);
+                    }
+                  } catch (e) {}
+                }
+              });
+            },
+            function(evt) {
+              return true;
+            }
+          );
+        }
+  });
 
   pgAdmin.Dashboard = {
         init: function() {
@@ -73,6 +149,20 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
                     sid = -1, did = -1, b = pgAdmin.Browser,
                     m = b && b.Nodes[itemData._type];
 
+                cancel_query_url = url_for('dashboard.index') + 'cancel_query/';
+
+                // Check if user is super user
+                var server = treeHierarchy['server'];
+                maintenance_database = (server && server.db) || null;
+
+                if(server && server.user && server.user.is_superuser) {
+                  is_super_user = true;
+                } else {
+                  is_super_user = false;
+                  // Set current user
+                  current_user = (server && server.user) ? server.user.name : null;
+                }
+
                 if (m && m.dashboard) {
                     if (_.isFunction(m.dashboard)) {
                         url = m.dashboard.apply(
@@ -85,10 +175,16 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
                     if ('database' in treeHierarchy) {
                         sid = treeHierarchy.server._id;
                         did = treeHierarchy.database._id;
+                        is_server_dashboard = false;
+                        is_database_dashboard = true;
                         url += sid + '/' + did;
+                        cancel_query_url += sid + '/' + did + '/';
                     } else if ('server' in treeHierarchy) {
                         sid = treeHierarchy.server._id;
+                        is_server_dashboard = true;
+                        is_database_dashboard = false;
                         url += sid;
+                        cancel_query_url += sid + '/';
                     }
                 }
 
@@ -486,6 +582,15 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
                 }]);
             }
 
+            // Add cancel active query button
+            server_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: cancelQueryCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_cancel_active_query,
+              postgres_version: version
+            });
+
             var server_locks_columns = [{
                 name: "pid",
                 label: gettext('PID'),
@@ -790,6 +895,14 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
                 }]);
             }
 
+            database_activity_columns.unshift({
+              name: "pg-backform-delete", label: "",
+              cell: cancelQueryCell,
+              editable: false, cell_priority: -1,
+              canDeleteRow: pgAdmin.Dashboard.can_cancel_active_query,
+              postgres_version: version
+            });
+
             var database_locks_columns = [{
                 name: "pid",
                 label: gettext('PID'),
@@ -954,6 +1067,52 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr) {
         },
         toggleVisibility: function(flag) {
           dashboardVisible = flag;
+        },
+        can_cancel_active_query: function(m) {
+          // We will validate if user is allowed to cancel the active query
+          // If there is only one active session means it probably our main
+          // connection session
+          var active_sessions = m.collection.where({'state': 'active'}),
+            alertifyWrapper = new AlertifyWrapper(),
+            pg_version = this.get('postgres_version') || null;
+
+          // With PG10, We have background process showing on dashboard
+          // We will not allow user to cancel them as they will fail with error
+          // anyway, so better usability we will throw our on notification
+
+          // Background processes do not have database field populated
+          if (pg_version && pg_version >= 100000 && !m.get('datname')) {
+            alertifyWrapper.info(
+              gettext('You cannot cancel background worker processes.')
+            );
+            return false;
+          // If it is the last active connection on maintenance db then error out
+          } else if (maintenance_database == m.get('datname') &&
+              m.get('state') == 'active' && active_sessions.length == 1) {
+            alertifyWrapper.error(
+              gettext('You are not allowed to cancel the main active session.')
+            );
+            return false;
+          } else if(m.get('state') == 'idle') {
+            // If this session is already idle then do nothing
+            alertifyWrapper.info(
+              gettext('The session is already in idle state.')
+            );
+            return false;
+          } else if(is_super_user) {
+            // Super user can do anything
+            return true;
+          } else if (current_user && current_user == m.get('usename')) {
+            // Non-super user can cancel only their active queries
+            return true;
+          } else {
+            // Do not allow to cancel someone else session to non-super user
+            var alertifyWrapper = new AlertifyWrapper();
+            alertifyWrapper.error(
+              gettext('Superuser privileges are required to cancel another users query.')
+            );
+            return false;
+          }
         }
   };
 

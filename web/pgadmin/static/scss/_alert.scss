@@ -110,37 +110,6 @@ category: alerts
   width: 50px;
   height: 50px;
   font-size: 14px;
-}
-
-.success-icon {
-  background: #3a773a;
-}
-
-.error-icon {
-  background: #d0021b;
-}
-
-.alert-text {
-  display: inline-block;
-  padding: 0 12px 0 10px;
-}
-
-.alert-row {
-  display: block;
-}
-
-.alert-box {
-  padding: 0px;
-  display: inline-block;
-}
-
-.alert-icon {
-  display: inline-block;
-  color: white;
-  padding: 15px;
-  width: 50px;
-  height: 50px;
-  font-size: 14px;
   text-align: center;
 }
 
@@ -150,6 +119,10 @@ category: alerts
 
 .error-icon {
   background: #d0021b;
+}
+
+.info-icon {
+  background: #2c76b4;
 }
 
 .alert-text {

@@ -71,7 +71,7 @@ iframe {
 }
 
 /*
- * Bootstrap 3 remove submenus as they don't work overly well on Mobile. The 
+ * Bootstrap 3 remove submenus as they don't work overly well on Mobile. The
  * following CSS adds them back in - for our purposes they actually work fine
  * on Mobile and are perfectly responsive
  */
@@ -570,7 +570,7 @@ fieldset[disabled] .form-control {
 }
 
 .backgrid.presentation td.renderable {
-    padding: 3px;
+    padding: 6px 3px 3px 3px;
     font-size: 12px;
 }
 
@@ -984,7 +984,7 @@ ul.nav.nav-tabs {
   background-position: 0px 2px;
 }
 
-/* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */ 
+/* This rule will stop Chrome apply highlighting to elements such as DIV's used as modals */
 *:focus {
   outline: none;
 }
@@ -993,7 +993,7 @@ ul.nav.nav-tabs {
 .alert-info-panel {
   border: 2px solid #a1a1a1;
   margin-top: 2em;
-  padding: 5px 5px; 
+  padding: 5px 5px;
   background: #dddddd;
   border-radius: 5px;
   height: 8em;

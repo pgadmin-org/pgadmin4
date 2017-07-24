@@ -31,9 +31,24 @@ define([
       return alert;
     };
 
+    var info = function(message, timeout) {
+      var alertMessage = '\
+      <div class="media alert-info font-blue text-14">\
+        <div class="media-body media-middle">\
+          <div class="alert-icon info-icon">\
+            <i class="fa fa-info" aria-hidden="true"></i>\
+          </div>\
+            <div class="alert-text">' + message + '</div>\
+        </div>\
+      </div>';
+      var alert = alertify.notify(alertMessage, timeout);
+      return alert;
+    };
+
     $.extend(this, {
       'success': success,
       'error': error,
+      'info': info,
     });
   };
   return AlertifyWrapper;

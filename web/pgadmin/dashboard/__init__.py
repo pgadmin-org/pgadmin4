@@ -456,3 +456,30 @@ def config(sid=None):
     :return:
     """
     return get_data(sid, None, 'config.sql')
+
+
+@blueprint.route(
+    '/cancel_query/<int:sid>/<int:pid>', methods=['DELETE']
+)
+@blueprint.route(
+    '/cancel_query/<int:sid>/<int:did>/<int:pid>', methods=['DELETE']
+)
+@login_required
+@check_precondition
+def cancel_query(sid=None, did=None, pid=None):
+    """
+    This function cancel the specific session
+    :param sid: server id
+    :param did: database id
+    :param pid: session/process id
+    :return: Response
+    """
+    sql = "SELECT pg_cancel_backend({0});".format(pid)
+    status, res = g.conn.execute_scalar(sql)
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    return ajax_response(
+        response=gettext("Success") if res else gettext("Failed"),
+        status=200
+    )
