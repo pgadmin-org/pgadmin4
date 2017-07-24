@@ -36,11 +36,11 @@ describe('QueryHistory', () => {
     describe('when we switch to the query history tab', () => {
       beforeEach(() => {
         historyWrapper.node.refocus();
-        spyOn(historyWrapper.node, 'retrieveQueryListPane');
+        spyOn(historyWrapper.node, 'retrieveSelectedQuery');
       });
 
       it('does not try to focus on any element', () => {
-        expect(historyWrapper.node.retrieveQueryListPane).not.toHaveBeenCalled();
+        expect(historyWrapper.node.retrieveSelectedQuery).not.toHaveBeenCalled();
       });
     });
 
@@ -55,8 +55,6 @@ describe('QueryHistory', () => {
       expect(foundChildren.length).toBe(1);
       done();
     });
-
-    it('does not error', () => { });
   });
 
   describe('when there is history', () => {
@@ -221,12 +219,47 @@ describe('QueryHistory', () => {
 
           it('deselects the first history entry', () => {
             expect(firstEntry.nodes.length).toBe(1);
-            expect(firstEntry.hasClass('selected')).toBeFalsy();
+            expect(firstEntry.hasClass('selected')).toBe(false);
           });
 
           it('selects the second history entry', () => {
             expect(secondEntry.nodes.length).toBe(1);
-            expect(secondEntry.hasClass('selected')).toBeTruthy();
+            expect(secondEntry.hasClass('selected')).toBe(true);
+          });
+        });
+
+        describe('when the user clicks inside the main pane but not in any history entry', () => {
+          let queryList;
+          let firstEntry, secondEntry;
+
+          beforeEach(() => {
+            firstEntry = foundChildren.at(0);
+            secondEntry = foundChildren.at(1);
+            queryList = historyWrapper.find('#query_list');
+
+            secondEntry.simulate('click');
+            queryList.simulate('click');
+          });
+
+          it('should not change the selected entry', () => {
+            expect(firstEntry.hasClass('selected')).toBe(false);
+            expect(secondEntry.hasClass('selected')).toBe(true);
+          });
+
+          describe('when up arrow is keyed', () => {
+            beforeEach(() => {
+              pressArrowUpKey(queryList);
+            });
+
+            it('selects the first history entry', () => {
+              expect(firstEntry.nodes.length).toBe(1);
+              expect(firstEntry.hasClass('selected')).toBe(true);
+            });
+
+            it('deselects the second history entry', () => {
+              expect(secondEntry.nodes.length).toBe(1);
+              expect(secondEntry.hasClass('selected')).toBe(false);
+            });
           });
         });
 
@@ -264,7 +297,7 @@ describe('QueryHistory', () => {
 
           beforeEach(() => {
             selectedListItem = ReactDOM.findDOMNode(historyWrapper.node)
-              .getElementsByClassName('query-history')[0];
+              .getElementsByClassName('list-item')[0];
 
             spyOn(selectedListItem, 'focus');
             historyWrapper.node.refocus();

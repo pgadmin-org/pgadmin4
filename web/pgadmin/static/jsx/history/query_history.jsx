@@ -57,13 +57,13 @@ export default class QueryHistory extends React.Component {
 
   refocus() {
     if (this.state.history.length > 0) {
-      this.retrieveQueryListPane().focus();
+      this.retrieveSelectedQuery().parentElement.focus();
     }
   }
 
-  retrieveQueryListPane() {
+  retrieveSelectedQuery() {
     return ReactDOM.findDOMNode(this)
-      .getElementsByClassName('query-history')[0];
+      .getElementsByClassName('selected')[0];
   }
 
   getCurrentHistoryDetail() {
@@ -115,8 +115,8 @@ export default class QueryHistory extends React.Component {
   }
 
   navigateUpAndDown(event) {
-    let arrowKeys = [ARROWUP, ARROWDOWN];
-    let key = event.keyCode || event.which;
+    const arrowKeys = [ARROWUP, ARROWDOWN];
+    const key = event.keyCode || event.which;
     if (arrowKeys.indexOf(key) > -1) {
       event.preventDefault();
       this.onKeyDownHandler(event);
@@ -169,17 +169,18 @@ export default class QueryHistory extends React.Component {
 
   render() {
     return (
-      <SplitPane defaultSize="50%" split="vertical" pane1Style={queryEntryListDivStyle}
+      <SplitPane defaultSize='50%' split='vertical' pane1Style={queryEntryListDivStyle}
                  pane2Style={queryDetailDivStyle}>
         <div id='query_list'
-             className="query-history"
+             className='query-history'
              onKeyDown={this.navigateUpAndDown}
-             tabIndex='0'>
+             tabIndex={-1}>
           <ul>
             {this.retrieveOrderedHistory()
               .map((entry, index) =>
                 <li key={index} className='list-item'
-                    onClick={this.onClickHandler.bind(this, index)}>
+                    onClick={this.onClickHandler.bind(this, index)}
+                    tabIndex={-1}>
                   <QueryHistoryEntry
                     historyEntry={entry}
                     isSelected={index == this.state.selectedEntry}/>
