@@ -41,14 +41,14 @@
                     slickgrid: "{{ url_for('static', filename='js/generated/slickgrid') }}",
                     codemirror: "{{ url_for('static', filename='js/generated/codemirror') }}",
                     datagrid: "{{ url_for('static', filename='js/generated/datagrid') }}",
-                    sqleditor: "{{ url_for('static', filename='js/generated/sqleditor') }}"
-                    ,'browser_node': "{{ url_for('static', filename='js/generated/browser_node') }}"
-                    ,'pgadmin.browser.utils': "/browser/js/utils"
-                    ,'pgadmin.browser.endpoints': "/browser/js/endpoints"
-                    ,'pgadmin.browser.messages': "/browser/js/messages"
-                    ,'pgadmin.server.supported_servers': "/browser/server/supported_servers"
-                    ,'pgadmin.user_management.current_user': "/user_management/current_user"
-                    ,'translations': "/tools/translations"
+                    sqleditor: "{{ url_for('static', filename='js/generated/sqleditor') }}",
+                    'browser_node': "{{ url_for('static', filename='js/generated/browser_node') }}",
+                    'pgadmin.browser.utils': "{{ url_for('browser.index') }}" + "js/utils",
+                    'pgadmin.browser.endpoints': "{{ url_for('browser.index') }}" + "js/endpoints",
+                    'pgadmin.browser.messages': "{{ url_for('browser.index') }}" + "js/messages",
+                    'pgadmin.server.supported_servers': "{{ url_for('browser.index') }}" + "server/supported_servers",
+                    'pgadmin.user_management.current_user': "{{ url_for('user_management.index') }}" + "current_user",
+                    'translations': "{{ url_for('tools.index') }}" + "translations"
                 }
             });
 

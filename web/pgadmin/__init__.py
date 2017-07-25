@@ -14,7 +14,7 @@ import os, sys
 from collections import defaultdict
 from importlib import import_module
 
-from flask import Flask, abort, request, current_app, session
+from flask import Flask, abort, request, current_app, session, url_for
 from flask_babel import Babel, gettext
 from flask_htmlmin import HTMLMIN
 from flask_login import user_logged_in
@@ -89,13 +89,39 @@ class PgAdmin(Flask):
 
     @property
     def exposed_endpoint_url_map(self):
+        #############################################################
+        # To handle WSGI paths
+        # If user has setup application under WSGI alias
+        # like 'localhost/pgadmin4' then we have to append '/pgadmin4'
+        # into endpoints
+        #############################################################
+        import config
+        is_wsgi_root_present = False
+        if config.SERVER_MODE:
+            pgadmin_root_path = url_for('browser.index')
+            if pgadmin_root_path != '/browser/':
+                is_wsgi_root_present = True
+                wsgi_root_path = pgadmin_root_path.replace(
+                    '/browser/', ''
+                )
+
+        def get_full_url_path(url):
+            """
+            Generate endpoint URL at per WSGI alias
+            """
+            if is_wsgi_root_present and url:
+                return wsgi_root_path + url
+            else:
+                return url
+
+        # Fetch all endpoints and their respective url
         for rule in current_app.url_map.iter_rules('static'):
-            yield rule.endpoint, rule.rule
+            yield rule.endpoint, get_full_url_path(rule.rule)
 
         for module in self.submodules:
             for endpoint in module.exposed_endpoints:
                 for rule in current_app.url_map.iter_rules(endpoint):
-                    yield rule.endpoint, rule.rule
+                    yield rule.endpoint, get_full_url_path(rule.rule)
 
     @property
     def javascripts(self):
