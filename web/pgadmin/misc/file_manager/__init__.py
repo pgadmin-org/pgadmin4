@@ -155,7 +155,8 @@ class FileManagerModule(PgAdminModule):
             'file_manager.index',
             'file_manager.get_trans_id',
             'file_manager.delete_trans_id',
-            'file_manager.save_last_dir'
+            'file_manager.save_last_dir',
+            'file_manager.save_file_dialog_view'
         ]
 
     def get_file_size_preference(self):
@@ -284,6 +285,17 @@ def delete_trans_id(trans_id):
 @login_required
 def save_last_directory_visited(trans_id):
     blueprint.last_directory_visited.set(req.json['path'])
+    return make_json_response(
+        data={'status': True}
+    )
+
+@blueprint.route(
+    "/save_file_dialog_view/<int:trans_id>", methods=["POST"],
+    endpoint='save_file_dialog_view'
+)
+@login_required
+def save_file_dialog_view(trans_id):
+    blueprint.file_dialog_view.set(req.json['view'])
     return make_json_response(
         data={'status': True}
     )

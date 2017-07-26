@@ -60,6 +60,17 @@ var setViewButtonsFor = function(viewMode) {
   }
 };
 
+var save_file_dialog_view = function(view, trans_id) {
+  return $.ajax({
+    url: url_for('file_manager.save_file_dialog_view', {'trans_id': trans_id}),
+    type: 'POST',
+    async: true,
+    data: JSON.stringify({'view':view}),
+    contentType: 'application/json'
+  });
+};
+
+
 /*
  * preg_replace
  */
@@ -1066,6 +1077,7 @@ pgAdmin.FileUtils = {
         config;
 
     this.fileConnector = fileConnector;
+    this.transId = t_id;
     // load user configuration file
     if (cfg.readyState == 4) {
       this.config = config = JSON.parse(cfg.responseText);
@@ -1235,6 +1247,7 @@ pgAdmin.FileUtils = {
       $('.fileinfo').data('view', 'grid');
       enable_disable_btn();
       getFolderInfo($('.currentpath').val());
+      save_file_dialog_view('grid', pgAdmin.FileUtils.transId);
     });
 
     // Show list mode
@@ -1243,6 +1256,7 @@ pgAdmin.FileUtils = {
       $('.fileinfo').data('view', 'list');
       enable_disable_btn();
       getFolderInfo($('.currentpath').val());
+      save_file_dialog_view('list', pgAdmin.FileUtils.transId);
     });
 
     // Provide initial values for upload form, status, etc.
