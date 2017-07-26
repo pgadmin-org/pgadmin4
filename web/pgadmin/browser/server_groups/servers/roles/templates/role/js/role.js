@@ -174,10 +174,10 @@ define('pgadmin.node.role', [
       }
 
       // Clean up first
-      this.$el.removeClass(Backform.hiddenClassname);
+      this.$el.removeClass(Backform.hiddenClassName);
 
       if (!data.visible)
-        this.$el.addClass(Backform.hiddenClassname);
+        this.$el.addClass(Backform.hiddenClassName);
 
       this.$el.html(this.template(data)).addClass(field.name);
       this.updateInvalid();

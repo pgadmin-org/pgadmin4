@@ -227,10 +227,10 @@
       });
 
       // Clean up first
-      this.$el.removeClass(Backform.hiddenClassname);
+      this.$el.removeClass(Backform.hiddenClassName);
 
       if (!data.visible)
-        this.$el.addClass(Backform.hiddenClassname);
+        this.$el.addClass(Backform.hiddenClassName);
 
       this.$el.html(this.template(data)).addClass(field.name);
       this.updateInvalid();
@@ -346,10 +346,10 @@
     }
 
     // Clean up first
-    this.$el.removeClass(Backform.hiddenClassname);
+    this.$el.removeClass(Backform.hiddenClassName);
 
     if (!data.visible)
-      this.$el.addClass(Backform.hiddenClassname);
+      this.$el.addClass(Backform.hiddenClassName);
 
     this.$el.html(this.template(data)).addClass(field.name);
     this.updateInvalid();
@@ -1179,10 +1179,10 @@
       var grid = (data.subnode == undefined) ? "" : this.showGridControl(data);
 
       // Clean up first
-      this.$el.removeClass(Backform.hiddenClassname);
+      this.$el.removeClass(Backform.hiddenClassName);
 
       if (!data.visible)
-        this.$el.addClass(Backform.hiddenClassname);
+        this.$el.addClass(Backform.hiddenClassName);
 
       this.$el.html(grid).addClass(field.name);
       this.updateInvalid();
@@ -1787,10 +1787,10 @@
       }
 
       // Clean up first
-      this.$el.removeClass(Backform.hiddenClassname);
+      this.$el.removeClass(Backform.hiddenClassName);
 
       if (!data.visible)
-        this.$el.addClass(Backform.hiddenClassname);
+        this.$el.addClass(Backform.hiddenClassName);
 
       this.$el.html(this.template(data)).addClass(field.name);
 
@@ -2065,7 +2065,7 @@
       }
 
       if (!isVisible)
-        self.$el.addClass(Backform.hiddenClassname);
+        self.$el.addClass(Backform.hiddenClassName);
 
       // There is an issue with the Code Mirror SQL.
       //
@@ -2277,14 +2277,14 @@
       if (this.has_datepicker)
         this.$el.find("input").datetimepicker('destroy');
       this.$el.empty();
-      this.$el.removeClass(Backform.hiddenClassname);
+      this.$el.removeClass(Backform.hiddenClassName);
 
 
       this.$el.html(this.template(data)).addClass(field.name);
 
       if (!data.visible) {
         this.has_datepicker = false;
-        this.$el.addClass(Backform.hiddenClassname);
+        this.$el.addClass(Backform.hiddenClassName);
       } else {
         this.has_datepicker = true;
         var self = this;
