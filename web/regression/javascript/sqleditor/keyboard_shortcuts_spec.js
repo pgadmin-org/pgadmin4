@@ -14,9 +14,9 @@ describe('the keyboard shortcuts', () => {
     F5_KEY = 116,
     F7_KEY = 118,
     F8_KEY = 119,
-    COMMA_KEY = 188,
     PERIOD_KEY = 190,
-    FWD_SLASH_KEY = 191;
+    FWD_SLASH_KEY = 191,
+    isMacSystem = window.navigator.platform.search('Mac') != -1;
 
   let sqlEditorControllerSpy;
   let event;
@@ -164,12 +164,13 @@ describe('the keyboard shortcuts', () => {
     });
   });
 
-  describe('Shift+CTRL+Comma', () => {
+  describe('inlineComment', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
+        event.metaKey = isMacSystem;
         event.shiftKey = true;
-        event.ctrlKey = true;
-        event.which = COMMA_KEY;
+        event.ctrlKey = !isMacSystem;
+        event.which = FWD_SLASH_KEY;
         keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
       });
 
@@ -182,9 +183,9 @@ describe('the keyboard shortcuts', () => {
 
     describe('when the query is already running', () => {
       it('does nothing', () => {
-        event.shiftKey = true;
-        event.ctrlKey = true;
-        event.which = COMMA_KEY;
+        event.shiftKey = isMacSystem;
+        event.ctrlKey = !isMacSystem;
+        event.which = FWD_SLASH_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
         keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
@@ -194,11 +195,12 @@ describe('the keyboard shortcuts', () => {
     });
   });
 
-  describe('Shift+CTRL+Period', () => {
+  describe('inlineUncomment', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
+        event.metaKey = isMacSystem;
         event.shiftKey = true;
-        event.ctrlKey = true;
+        event.ctrlKey = !isMacSystem;
         event.which = PERIOD_KEY;
         keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
       });
@@ -212,9 +214,10 @@ describe('the keyboard shortcuts', () => {
 
     describe('when the query is already running', () => {
       it('does nothing', () => {
+        event.metaKey = isMacSystem;
         event.shiftKey = true;
-        event.ctrlKey = true;
-        event.which = COMMA_KEY;
+        event.ctrlKey = !isMacSystem;
+        event.which = PERIOD_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
         keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
@@ -224,11 +227,11 @@ describe('the keyboard shortcuts', () => {
     });
   });
 
-  describe('Shift+CTRL+/', () => {
+  describe('blockComment', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
-        event.shiftKey = true;
-        event.ctrlKey = true;
+        event.metaKey = isMacSystem;
+        event.ctrlKey = !isMacSystem;
         event.which = FWD_SLASH_KEY;
         keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
       });
@@ -242,8 +245,8 @@ describe('the keyboard shortcuts', () => {
 
     describe('when the query is already running', () => {
       it('does nothing', () => {
-        event.shiftKey = true;
-        event.ctrlKey = true;
+        event.metaKey = isMacSystem;
+        event.ctrlKey = !isMacSystem;
         event.which = FWD_SLASH_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
