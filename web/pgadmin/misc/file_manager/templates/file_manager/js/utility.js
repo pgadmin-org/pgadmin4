@@ -668,8 +668,8 @@ var getFolderInfo = function(path, file_type) {
                 file_name_original + '">' + fm_filename + '</span></p></td>';
             }
             if (props.Size && props.Size != '') {
-              result += '<td><abbr title="' + props.Size + '">' +
-                props.Size + '</abbr></td>';
+              result += '<td><span title="' + props.Size + '">' +
+                props.Size + '</span></td>';
             } else {
               result += '<td></td>';
             }
@@ -1566,7 +1566,7 @@ pgAdmin.FileUtils = {
           "<td title='' class='fa fa-folder-open tbl_folder'>" +
           "<p><input type='text' class='fm_file_rename'><span>" +
           lg.new_folder + "</span></p>" +
-          "</td><td><abbr title=''></abbr></td>" +
+          "</td><td><span title=''></span></td>" +
           "<td></td>" +
           "</tr>"
         );

@@ -2,7 +2,7 @@
  "options": {
   "culture": "en",
   "lang": "py",
-  "defaultViewMode": "grid",
+  "defaultViewMode": "{{file_dialog_view}}",
   "autoload": true,
   "showFullPath": false,
   "dialog_type": "{{data.dialog_type}}",

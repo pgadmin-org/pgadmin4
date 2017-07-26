@@ -26,6 +26,7 @@ from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.preferences import Preferences
 
 # Checks if platform is Windows
 if _platform == "win32":
@@ -172,6 +173,13 @@ class FileManagerModule(PgAdminModule):
             gettext("Last directory visited"), 'text', '/',
             category_label=gettext('Options')
         )
+        self.file_dialog_view = self.preference.register(
+            'options', 'file_dialog_view',
+            gettext("File dialog view"), 'options', 'list',
+            category_label=gettext('Options'),
+            options=[{'label': gettext('List'), 'value': 'list'},
+                     {'label': gettext('Grid'), 'value': 'grid'}]
+        )
 
 
 # Initialise the module
@@ -232,9 +240,13 @@ def file_manager_config(trans_id):
     """render the required json"""
     # trans_id = Filemanager.create_new_transaction()
     data = Filemanager.get_trasaction_selection(trans_id)
+    pref = Preferences.module('file_manager')
+    file_dialog_view = pref.preference('file_dialog_view').get()
+
     return Response(response=render_template(
         "file_manager/js/file_manager_config.json", _=gettext,
-        data=data),
+        data=data,
+        file_dialog_view=file_dialog_view),
         status=200,
         mimetype="application/json")
 
