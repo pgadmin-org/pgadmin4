@@ -1,9 +1,9 @@
 const F5_KEY = 116,
   F7_KEY = 118,
   F8_KEY = 119,
-  COMMA_KEY = 188,
   PERIOD_KEY = 190,
-  FWD_SLASH_KEY = 191;
+  FWD_SLASH_KEY = 191,
+  IS_CMD_KEY = window.navigator.platform.search('Mac') != -1;
 
 function keyboardShortcuts(sqlEditorController, event) {
   if (sqlEditorController.isQueryRunning()) {
@@ -24,13 +24,16 @@ function keyboardShortcuts(sqlEditorController, event) {
   } else if (keyCode === F8_KEY) {
     event.preventDefault();
     sqlEditorController.download();
-  } else if (event.shiftKey && event.ctrlKey && keyCode === COMMA_KEY) {
+  } else if (((IS_CMD_KEY && event.metaKey) || (!IS_CMD_KEY && event.ctrlKey)) &&
+             event.shiftKey && keyCode === FWD_SLASH_KEY) {
     _stopEventPropagation();
     sqlEditorController.commentLineCode();
-  } else if (event.shiftKey && event.ctrlKey && keyCode === PERIOD_KEY) {
+  } else if (((IS_CMD_KEY && event.metaKey) || (!IS_CMD_KEY && event.ctrlKey)) &&
+             event.shiftKey && keyCode === PERIOD_KEY) {
     _stopEventPropagation();
     sqlEditorController.uncommentLineCode();
-  } else if (event.shiftKey && event.ctrlKey && keyCode === FWD_SLASH_KEY) {
+  } else if (((IS_CMD_KEY && event.metaKey) || (!IS_CMD_KEY && event.ctrlKey)) &&
+             keyCode === FWD_SLASH_KEY) {
     _stopEventPropagation();
     sqlEditorController.commentBlockCode();
   }

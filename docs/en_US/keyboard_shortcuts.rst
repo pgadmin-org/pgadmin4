@@ -41,11 +41,11 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
 +--------------------------+------------------+-------------------------------------+
 | Ctrl+Alt+Right           | Cmd+Option+Right | Move right one word                 |
 +--------------------------+------------------+-------------------------------------+
-| Ctrl+Shift+,             | Ctrl+Shift+,     | Comment selected code (Inline)      |
+| Ctrl+Shift+/             | Cmd+Shift+/      | Comment selected code (Inline)      |
 +--------------------------+------------------+-------------------------------------+
-| Ctrl+Shift+.             | Ctrl+Shift+.     | Uncomment selected code (Inline)    |
+| Ctrl+Shift+.             | Cmd+Shift+.      | Uncomment selected code (Inline)    |
 +--------------------------+------------------+-------------------------------------+
-| Ctrl+Shift+/             | Ctrl+Shift+/     | Comment/Uncomment code (Block)      |
+| Ctrl+/                   | Cmd+/            | Comment/Uncomment code (Block)      |
 +--------------------------+------------------+-------------------------------------+
 | Ctrl+A                   | Cmd+A            | Select all                          |
 +--------------------------+------------------+-------------------------------------+
@@ -89,9 +89,7 @@ When using the Query Tool, the following shortcuts are available:
 +--------------------------+--------------------+-----------------------------------+
 | Ctrl+G                   | Cmd+G              | Find next                         |
 +--------------------------+--------------------+-----------------------------------+
-| Shift+Ctrl+G             | Shift+Cmd+G        | Find previous                     |
+| Ctrl+Shift+G             | Cmd+Shift+G        | Find previous                     |
 +--------------------------+--------------------+-----------------------------------+
-| Shift+Ctrl+F             | Shift+Cmd+F        | Replace                           |
-+--------------------------+--------------------+-----------------------------------+
-| Shift+Ctrl+R             | Shift+Cmd+Option+F | Replace all                       |
+| Ctrl+Shift+F             | Cmd+Shift+F        | Replace                           |
 +--------------------------+--------------------+-----------------------------------+

@@ -58,17 +58,26 @@
                 <ul class="dropdown-menu">
                     <li>
                         <a id="btn-find-menu-find" href="#">
-                            <span>{{ _('Find (Ctrl/Cmd+F)') }}</span>
+                            <span> {{ _('Find') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+F)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+F)') }}{%- endif %}</span>
                         </a>
                     </li>
                     <li>
                         <a id="btn-find-menu-find-next" href="#">
-                            <span>{{ _('Find next (Ctrl/Cmd+G)') }}</span>
+                            <span> {{ _('Find next') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+G)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+G)') }}{%- endif %}</span>
                         </a>
                     </li>
                     <li>
                         <a id="btn-find-menu-find-previous" href="#">
-                            <span>{{ _('Find previous (Shift+Ctrl/Cmd+G)') }}</span>
+                            <span> {{ _('Find previous') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+Shift+G)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+Shift+G)') }}{%- endif %}</span>
                         </a>
                     </li>
                     <li>
@@ -79,7 +88,10 @@
                     <li class="divider"></li>
                     <li>
                         <a id="btn-find-menu-replace" href="#">
-                            <span>{{ _('Replace (Shift+Ctrl/Cmd+F)') }}</span>
+                            <span> {{ _('Replace') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+Shift+F)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+Shift+F)') }}{%- endif %}</span>
                         </a>
                     </li>
                     <li>
@@ -127,13 +139,22 @@
                             <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
                         </a>
                         <a id="btn-comment-line" href="#">
-                            <span> {{ _('Inline Comment Selection (Ctrl+Shift+,)') }} </span>
+                            <span> {{ _('Inline Comment Selection') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+Shift+/)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+Shift+/)') }}{%- endif %}</span>
                         </a>
                         <a id="btn-uncomment-line" href="#">
-                            <span> {{ _('Inline Uncomment Selection (Ctrl+Shift+.)') }} </span>
+                            <span> {{ _('Inline Uncomment Selection') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+Shift+.)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+Shift+.)') }}{%- endif %}</span>
                         </a>
                         <a id="btn-toggle-comment-block" href="#">
-                            <span> {{ _('Block Comment/Uncomment Selection (Ctrl+Shift+/)') }} </span>
+                            <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_plaform == 'macos' -%}
+                                 {{ _(' (Cmd+/)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+/)') }}{%- endif %}</span>
                         </a>
                     </li>
                 </ul>

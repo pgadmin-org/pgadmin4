@@ -15,6 +15,7 @@ import pickle
 import random
 
 from flask import Response, url_for, session, request, make_response
+from werkzeug.useragents import UserAgent
 from flask import current_app as app
 from flask_babel import gettext
 from flask_security import login_required
@@ -183,6 +184,9 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         sURL = None
 
+    # We need client OS information to render correct Keyboard shortcuts
+    user_agent = UserAgent(request.headers.get('User-Agent'))
+
     """
     Animations and transitions are not automatically GPU accelerated and by default use browser's slow rendering engine.
     We need to set 'translate3d' value of '-webkit-transform' property in order to use GPU.
@@ -212,7 +216,8 @@ def panel(trans_id, is_query_tool, editor_title):
         editor_title=editor_title, script_type_url=sURL,
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
-        is_new_browser_tab=new_browser_tab
+        is_new_browser_tab=new_browser_tab,
+        client_plaform=user_agent.platform
     )
 
 
