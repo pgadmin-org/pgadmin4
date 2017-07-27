@@ -46,7 +46,7 @@ class CheckConstraintModule(CollectionNodeModule):
       - Load the module script for the Check Constraint, when any of the
         Check node is initialized.
     """
-    NODE_TYPE = 'check_constraints'
+    NODE_TYPE = 'check_constraint'
     COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):
@@ -74,6 +74,16 @@ class CheckConstraintModule(CollectionNodeModule):
         Check node is initialized.
         """
         return database.DatabaseModule.NODE_TYPE
+
+
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
     @property
     def csssnippets(self):

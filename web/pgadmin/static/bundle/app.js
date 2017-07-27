@@ -1,5 +1,5 @@
 define('app', [
-  'babel-polyfill','pgadmin', 'browser_node', 'tools.datagrid'
+  'babel-polyfill', 'pgadmin', 'bundled_browser', 'pgadmin.datagrid'
   ], function() {
     var initializeModules = function(Object) {
       for (var key in Object) {

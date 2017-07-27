@@ -25,7 +25,7 @@ class CheckConstraintDeleteTestCase(BaseTestGenerator):
     """This class will delete check constraint to existing table"""
     scenarios = [
         ('Delete check constraint to table',
-         dict(url='/browser/check_constraints/obj/'))
+         dict(url='/browser/check_constraint/obj/'))
     ]
 
     def setUp(self):

@@ -20,7 +20,7 @@ class SgNodeTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching the default url for server group node
-        ('Check Server Group Node', dict(url='/browser/server-group/obj/'))
+        ('Check Server Group Node', dict(url='/browser/server_group/obj/'))
     ]
 
     def runTest(self):

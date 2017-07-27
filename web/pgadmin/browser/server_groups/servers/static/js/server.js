@@ -42,7 +42,7 @@ define('pgadmin.node.server', [
     });
 
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
-      parent_type: 'server-group',
+      parent_type: 'server_group',
       type: 'server',
       dialogHelp: url_for('help.static', {'filename': 'server_dialog.html'}),
       label: gettext('Server'),
@@ -61,7 +61,7 @@ define('pgadmin.node.server', [
         this.initialized = true;
 
         pgBrowser.add_menus([{
-          name: 'create_server_on_sg', node: 'server-group', module: this,
+          name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Server...'),
           data: {action: 'create'}, icon: 'wcTabIcon icon-server'
@@ -632,7 +632,7 @@ define('pgadmin.node.server', [
           var isNew = (_.size(attrs) === 0);
 
           if (isNew) {
-            this.set({'gid': args.node_info['server-group']._id});
+            this.set({'gid': args.node_info['server_group']._id});
           }
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
         },
@@ -643,7 +643,7 @@ define('pgadmin.node.server', [
           mode: ['properties', 'edit', 'create']
         },{
           id: 'gid', label: gettext('Server group'), type: 'int',
-          control: 'node-list-by-id', node: 'server-group',
+          control: 'node-list-by-id', node: 'server_group',
           mode: ['create', 'edit'], select2: {allowClear: false}
         },{
           id: 'server_type', label: gettext('Server type'), type: 'options',

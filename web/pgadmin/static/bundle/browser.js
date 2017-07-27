@@ -1,4 +1,4 @@
-define('browser_node',[
+define('bundled_browser',[
  'pgadmin.browser'
 ], function(pgBrowser) {
   pgBrowser.init();

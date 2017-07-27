@@ -26,7 +26,7 @@ from pgadmin.model import db, ServerGroup
 
 
 class ServerGroupModule(BrowserPluginModule):
-    NODE_TYPE = "server-group"
+    NODE_TYPE = "server_group"
 
     def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""

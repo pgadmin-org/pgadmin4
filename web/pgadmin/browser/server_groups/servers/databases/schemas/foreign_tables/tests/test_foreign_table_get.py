@@ -29,7 +29,7 @@ class ForeignTableGetTestCase(BaseTestGenerator):
     """
     scenarios = [
         # Fetching default URL for foreign server node.
-        ('Check foreign table Node', dict(url='/browser/foreign-table/obj/'))
+        ('Check foreign table Node', dict(url='/browser/foreign_table/obj/'))
     ]
 
     def setUp(self):

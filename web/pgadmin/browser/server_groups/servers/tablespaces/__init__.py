@@ -47,6 +47,14 @@ class TablespaceModule(CollectionNodeModule):
         return servers.ServerModule.NODE_TYPE
 
     @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
+    @property
     def node_inode(self):
         return False
 

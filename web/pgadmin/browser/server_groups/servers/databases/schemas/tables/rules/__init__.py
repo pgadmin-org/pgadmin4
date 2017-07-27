@@ -121,6 +121,14 @@ class RuleModule(CollectionNodeModule):
 
         return snippets
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 # Create blueprint of RuleModule.
 blueprint = RuleModule(__name__)

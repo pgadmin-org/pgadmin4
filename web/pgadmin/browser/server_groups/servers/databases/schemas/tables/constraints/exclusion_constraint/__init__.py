@@ -93,6 +93,14 @@ class ExclusionConstraintModule(ConstraintTypeModule):
         """
         return database.DatabaseModule.NODE_TYPE
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = ExclusionConstraintModule(__name__)
 

@@ -109,6 +109,14 @@ class EdbFuncModule(CollectionNodeModule):
             self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
         )
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 
 blueprint = EdbFuncModule(__name__)
 
@@ -692,6 +700,14 @@ class EdbProcModule(CollectionNodeModule):
             gettext('Package {0}').format(self.label), 'node',
             self.SHOW_ON_BROWSER, category_label=gettext('Nodes')
         )
+
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
 
 procedure_blueprint = EdbProcModule(__name__)
 

@@ -91,6 +91,14 @@ class EdbVarModule(CollectionNodeModule):
         """
         return False
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
 blueprint = EdbVarModule(__name__)
 
 

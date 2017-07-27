@@ -115,6 +115,14 @@ class TriggerModule(CollectionNodeModule):
         return False
 
     @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
+    @property
     def csssnippets(self):
         """
         Returns a snippet of css to include in the page

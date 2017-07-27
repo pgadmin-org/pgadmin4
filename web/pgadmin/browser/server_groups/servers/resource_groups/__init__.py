@@ -100,6 +100,15 @@ class ResourceGroupModule(CollectionNodeModule):
         return servers.ServerModule.NODE_TYPE
 
 
+    @property
+    def module_use_template_javascript(self):
+        """
+        Returns whether Jinja2 template is used for generating the javascript
+        module.
+        """
+        return False
+
+
 blueprint = ResourceGroupModule(__name__)
 
 

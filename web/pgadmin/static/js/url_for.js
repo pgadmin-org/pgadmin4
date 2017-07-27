@@ -1,5 +1,4 @@
 define(["pgadmin.browser.endpoints"], function (endpoints) {
-
   /***
    * This method behaves as a drop-in replacement for flask url_for function.
    * It uses the exposed URLs file under the hood, and replace the substitions provided by the modules.

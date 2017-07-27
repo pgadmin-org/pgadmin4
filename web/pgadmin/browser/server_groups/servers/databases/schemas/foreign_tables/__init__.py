@@ -56,7 +56,7 @@ class ForeignTableModule(SchemaChildModule):
       - Load the module script for Foreign Table, when schema node is
         initialized.
     """
-    NODE_TYPE = 'foreign-table'
+    NODE_TYPE = 'foreign_table'
     COLLECTION_LABEL = gettext("Foreign Tables")
 
     def __init__(self, *args, **kwargs):
@@ -396,7 +396,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-foreign-table"
+                    icon="icon-foreign_table"
                 ))
 
         return make_json_response(
@@ -430,7 +430,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-foreign-table"
+                    icon="icon-foreign_table"
                 ),
                 status=200
             )
@@ -689,7 +689,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader):
                     foid,
                     scid,
                     self.request['name'],
-                    icon="icon-foreign-table"
+                    icon="icon-foreign_table"
                 )
             )
         except Exception as e:

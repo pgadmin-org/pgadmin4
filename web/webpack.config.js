@@ -100,9 +100,9 @@ module.exports = {
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
-    sqleditor: './pgadmin/tools/sqleditor/templates/sqleditor/js/sqleditor.js',
-    debugger_direct: './pgadmin/tools/debugger/templates/debugger/js/direct.js',
-    file_utils: './pgadmin/misc/file_manager/templates/file_manager/js/utility.js',
+    sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
+    debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
+    file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
     pgadmin_css: './pgadmin/static/scss/pgadmin.scss',
     style_css: './pgadmin/static/css/style.css',
   },
@@ -117,15 +117,7 @@ module.exports = {
   // Templates files which contains python code needs to load dynamically
   // Such files specified in externals are loaded at first and defined in
   // the start of generated bundle within define(['libname'],fn) etc.
-  externals: {
-    'pgadmin.browser.messages': 'pgadmin.browser.messages',
-    'pgadmin.browser.utils': 'pgadmin.browser.utils',
-    'pgadmin.browser.endpoints': 'pgadmin.browser.endpoints',
-    'pgadmin.server.supported_servers': 'pgadmin.server.supported_servers',
-    'pgadmin.user_management.current_user': 'pgadmin.user_management.current_user',
-    'pgadmin.node.unique_key': 'pgadmin.node.unique_key',
-    'translations': 'translations',
-  },
+  externals: webpackShimConfig.externals,
   module: {
     // References:
     // Module and Rules: https://webpack.js.org/configuration/module/
@@ -155,15 +147,15 @@ module.exports = {
       query: webpackShimConfig,
       include: path.join(__dirname, '/pgadmin/browser'),
     }, {
-      test: require.resolve('./pgadmin/tools/datagrid/templates/datagrid/js/datagrid'),
+      test: require.resolve('./pgadmin/tools/datagrid/static/js/datagrid'),
       use: {
         loader: 'imports-loader?' +
         'pgadmin.dashboard' +
         ',pgadmin.tools.user_management' +
-        ',misc.statistics' +
-        ',misc.depends' +
-        ',misc.sql' +
-        ',misc.bgprocess' +
+        ',pgadmin.browser.object_statistics' +
+        ',pgadmin.browser.object_depends' +
+        ',pgadmin.browser.object_sql' +
+        ',pgadmin.browser.bgprocess' +
         ',pgadmin.node.server_group' +
         ',pgadmin.node.server' +
         ',pgadmin.node.database' +
@@ -221,15 +213,15 @@ module.exports = {
         loader: 'imports-loader?' +
         'pgadmin.about' +
         ',pgadmin.preferences' +
-        ',misc.file_manager' +
+        ',pgadmin.file_manager' +
         ',pgadmin.settings' +
-        ',tools.backup' +
-        ',tools.restore' +
-        ',tools.grant_wizard' +
-        ',tools.maintenance' +
-        ',tools.import_export' +
-        ',tools.debugger' +
-        ',tools.direct',
+        ',pgadmin.tools.backup' +
+        ',pgadmin.tools.restore' +
+        ',pgadmin.tools.grant_wizard' +
+        ',pgadmin.tools.maintenance' +
+        ',pgadmin.tools.import_export' +
+        ',pgadmin.tools.debugger.controller' +
+        ',pgadmin.tools.debugger.direct',
       },
     }, {
       test: require.resolve('snapsvg'),

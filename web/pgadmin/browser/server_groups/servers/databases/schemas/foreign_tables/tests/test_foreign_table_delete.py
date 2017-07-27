@@ -30,7 +30,7 @@ class ForeignTableDeleteTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for foreign table node.
-        ('Check foreign table Node', dict(url='/browser/foreign-table/obj/'))
+        ('Check foreign table Node', dict(url='/browser/foreign_table/obj/'))
     ]
 
     def setUp(self):
