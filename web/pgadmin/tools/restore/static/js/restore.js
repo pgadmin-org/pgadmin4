@@ -1,12 +1,11 @@
 // Restore dialog
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
-  'backform', 'pgadmin.browser.node',
-  'sources/alerts/alertify_wrapper',
+  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser', 'backbone', 'backgrid',
+  'backform', 'pgadmin.browser.node'
 ], function(
   gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode, AlertifyWrapper
+  pgNode
 ) {
 
     // if module is already initialized, refer to that.
@@ -531,8 +530,7 @@ define('tools.restore', [
                     data:{ 'data': JSON.stringify(args) },
                     success: function(res) {
                       if (res.success) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.success(
+                        alertify.success(
                           gettext('Restore job created.'), 5
                         );
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);

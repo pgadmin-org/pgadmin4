@@ -1,15 +1,12 @@
 define([
-  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'sources/../bundle/codemirror', 'backform',
   'pgadmin.tools.debugger.ui',
-  'sources/alerts/alertify_wrapper',
-
   'wcdocker', 'pgadmin.backform',
   'pgadmin.backgrid'
-
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  codemirror, Backform, debug_function_again, AlertifyWrapper
+  codemirror, Backform, debug_function_again
 ) {
 
   var CodeMirror = codemirror.default;
@@ -481,8 +478,7 @@ define([
                 pgTools.DirectDebug.polling_timeout_idle = true;
 
                 //Set the alertify message to inform the user that execution is completed.
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info, 3);
+                Alertify.success(res.info, 3);
 
                 // Update the message tab of the debugger
                 if (res.data.status_message) {
@@ -513,8 +509,7 @@ define([
                   pgTools.DirectDebug.polling_timeout_idle = true;
 
                   //Set the alertify message to inform the user that execution is completed.
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.success(res.info, 3);
+                  Alertify.success(res.info, 3);
 
                   // Update the message tab of the debugger
                   if (res.data.status_message) {
@@ -556,11 +551,9 @@ define([
               pgTools.DirectDebug.direct_execution_completed = true;
               pgTools.DirectDebug.editor.removeLineClass(self.active_line_no, 'wrap', 'CodeMirror-activeline-background');
 
-              //Set the alertify message to inform the user that execution is completed with error.
-              var alertifyWrapper = new AlertifyWrapper();
-
+              //Set the Alertify message to inform the user that execution is completed with error.
               if(!pgTools.DirectDebug.is_user_aborted_debugging) {
-                alertifyWrapper.error(res.info, 3);
+                Alertify.error(res.info, 3);
               }
 
               // Update the message tab of the debugger
@@ -825,10 +818,9 @@ define([
               // We will give same behaviour as pgAdmin3 and disable all buttons
               self.enable('continue', false);
 
-              // Set the alertify message to inform the user that execution
+              // Set the Alertify message to inform the user that execution
               // is completed.
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success(res.info, 3);
+              Alertify.success(res.info, 3);
             }
             else if (res.data.status === 'NotConnected') {
               Alertify.alert(
@@ -1221,11 +1213,10 @@ define([
               // Get the updated variables value
               self.GetLocalVariables(pgTools.DirectDebug.trans_id);
               // Show the message to the user that deposit value is success or failure
-              var alertifyWrapper = new AlertifyWrapper();
               if (res.data.result) {
-                alertifyWrapper.success(res.data.info, 3);
+                Alertify.success(res.data.info, 3);
               } else {
-                alertifyWrapper.error(res.data.info, 3);
+                Alertify.error(res.data.info, 3);
               }
             }
           },

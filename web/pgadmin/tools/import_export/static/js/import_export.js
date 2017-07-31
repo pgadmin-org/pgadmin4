@@ -1,11 +1,9 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
   'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'sources/alerts/alertify_wrapper',
-
   'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform, AlertifyWrapper
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -420,8 +418,7 @@ define([
                     data:{ 'data': JSON.stringify(this.view.model.toJSON()) },
                     success: function(res) {
                       if (res.success) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.success(gettext('Import/export job created.'), 5);
+                        Alertify.success(gettext('Import/export job created.'), 5);
                         pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                       }
                     },

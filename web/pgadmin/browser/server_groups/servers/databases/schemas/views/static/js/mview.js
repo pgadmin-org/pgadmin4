@@ -1,10 +1,8 @@
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'alertify', 'pgadmin.browser', 'codemirror',
-  'sources/alerts/alertify_wrapper',
-
+  'underscore.string', 'pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser', 'codemirror',
   'pgadmin.browser.server.privilege'
-], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror, AlertifyWrapper) {
+], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 
   /**
     Create and add a view collection into nodes
@@ -294,8 +292,7 @@ define('pgadmin.node.mview', [
           dataType: "json",
           success: function(res) {
             if (res.success == 1) {
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success('View refreshed successfully');
+              alertify.success('View refreshed successfully');
             }
             else {
               alertify.alert(

@@ -1,6 +1,6 @@
 define('tools.querytool', [
     'babel-polyfill', 'sources/gettext','sources/url_for', 'jquery',
-    'underscore', 'underscore.string', 'alertify',
+    'underscore', 'underscore.string', 'pgadmin.alertifyjs',
     'pgadmin', 'backbone', 'sources/../bundle/codemirror',
     'pgadmin.misc.explain',
     'sources/selection/grid_selector',
@@ -15,7 +15,6 @@ define('tools.querytool', [
     'sources/history/index.js',
     'sources/../jsx/history/query_history',
     'react', 'react-dom',
-    'sources/alerts/alertify_wrapper',
     'sources/sqleditor/keyboard_shortcuts',
     'sources/../bundle/slickgrid',
     'pgadmin.file_manager',
@@ -26,7 +25,7 @@ define('tools.querytool', [
 ], function(
   babelPollyfill, gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-  XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM, AlertifyWrapper,
+  XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM,
   keyboardShortcuts
 ) {
     /* Return back, this has been called more than once */
@@ -1734,8 +1733,7 @@ define('tools.querytool', [
             self.update_msg_history(true, res.result, false);
             // Display the notifier if the timeout is set to >= 0
             if (self.info_notifier_timeout >= 0) {
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success(msg, self.info_notifier_timeout);
+              alertify.success(msg, self.info_notifier_timeout);
             }
           }
 
@@ -1886,8 +1884,7 @@ define('tools.querytool', [
 
               // Display the notifier if the timeout is set to >= 0
               if (self.info_notifier_timeout >= 0) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(msg1 + ' ' + msg2, self.info_notifier_timeout);
+                alertify.success(msg1 + ' ' + msg2, self.info_notifier_timeout);
               }
 
               var _msg = msg1 + '\n' + msg2;
@@ -2205,8 +2202,7 @@ define('tools.querytool', [
               } else {
                 $("#btn-save").prop('disabled', true);
               }
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success(gettext("Row(s) deleted"));
+              alertify.success(gettext("Row(s) deleted"));
           } else {
             // There are other data to needs to be updated on server
             if(is_updated) {
@@ -2357,8 +2353,7 @@ define('tools.querytool', [
                   $("#btn-flash").prop('disabled', false);
                   $('.sql-editor-message').text(res.data.result);
                   var err_msg = S(gettext("%s.")).sprintf(res.data.result).value();
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err_msg, 20);
+                  alertify.error(err_msg, 20);
                   grid.setSelectedRows([]);
                   // To highlight the row at fault
                   if(_.has(res.data, '_rowid') &&
@@ -2393,8 +2388,7 @@ define('tools.querytool', [
                 self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
                 grid.invalidate();
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(gettext("Data saved successfully."));
+                alertify.success(gettext("Data saved successfully."));
                 if (self.close_on_save) {
                   self.close();
                 }
@@ -2549,8 +2543,7 @@ define('tools.querytool', [
             },
             error: function(e) {
               var errmsg = $.parseJSON(e.responseText).errormsg;
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.error(errmsg);
+              alertify.error(errmsg);
               self.trigger('pgadmin-sqleditor:loading-icon:hide');
               // hide cursor
               $busy_icon_div.removeClass('show_progress');
@@ -2578,8 +2571,7 @@ define('tools.querytool', [
             data: JSON.stringify(data),
             success: function(res) {
               if (res.data.status) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(gettext("File saved successfully."));
+                alertify.success(gettext("File saved successfully."));
                 self.gridView.current_file = e;
                 self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''));
                 // disable save button on file save
@@ -2600,8 +2592,7 @@ define('tools.querytool', [
               var errmsg = $.parseJSON(e.responseText).errormsg;
               setTimeout(
                 function() {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(errmsg);
+                  alertify.error(errmsg);
                 }, 10
               );
             },

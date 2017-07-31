@@ -1,10 +1,9 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
-  'sources/alerts/alertify_wrapper',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils'
 ],
-function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, AlertifyWrapper) {
+function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   if (!pgBrowser.Nodes['coll-partition']) {
     var databases = pgAdmin.Browser.Nodes['coll-partition'] =
@@ -164,8 +163,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -178,8 +176,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -219,8 +216,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                 dataType: "json",
                 success: function(res) {
                   if (res.success == 1) {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.success(res.info);
+                    alertify.success(res.info);
                     t.removeIcon(i);
                     data.icon = 'icon-partition';
                     t.addIcon(i, {icon: data.icon});
@@ -237,8 +233,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg);
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -269,8 +264,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                   type:'DELETE',
                   success: function(res) {
                     if (res.success == 1) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.success(res.info);
+                      alertify.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-partition';
                       t.addIcon(i, {icon: data.icon});
@@ -287,8 +281,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.error(err.errormsg);
+                        alertify.error(err.errormsg);
                       }
                     } catch (e) {}
                     t.unload(i);
@@ -320,8 +313,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                   type:'PUT',
                   success: function(res) {
                     if (res.success == 1) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.success(res.info);
+                      alertify.success(res.info);
                       var n = t.next(i);
                       if (!n || !n.length) {
                         n = t.prev(i);
@@ -340,8 +332,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.error(err.errormsg);
+                        alertify.error(err.errormsg);
                       }
                     } catch (e) {}
                   }

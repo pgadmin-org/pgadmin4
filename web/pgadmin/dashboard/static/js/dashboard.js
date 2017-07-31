@@ -1,11 +1,11 @@
 define('pgadmin.dashboard', [
     'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
-    'pgadmin', 'backbone', 'backgrid', 'flotr2', 'alertify',
-    'sources/alerts/alertify_wrapper', 'backgrid.filter',
+    'pgadmin', 'backbone', 'backgrid', 'flotr2',
+    'pgadmin.alertifyjs', 'backgrid.filter',
     'pgadmin.browser', 'bootstrap', 'wcdocker'
     ],
 function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
-  alertify, AlertifyWrapper) {
+  alertify) {
 
   var wcDocker = window.wcDocker,
   pgBrowser = pgAdmin.Browser;
@@ -64,20 +64,18 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                 url: cancel_query_url + self.model.get('pid'),
                 type:'DELETE',
                 success: function(res) {
-                  var alertifyWrapper = new AlertifyWrapper();
                   if (res == gettext('Success')) {
-                    alertifyWrapper.success(gettext('Active query cancelled successfully.'));
+                    alertify.success(gettext('Active query cancelled successfully.'));
                     refresh_grid();
                   } else {
-                    alertifyWrapper.error(gettext('An error occurred whilst cancelling the active query.'));
+                    alertify.error(gettext('An error occurred whilst cancelling the active query.'));
                   }
                 },
                 error: function(xhr, status, error) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg);
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                 }
@@ -1073,7 +1071,6 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
           // If there is only one active session means it probably our main
           // connection session
           var active_sessions = m.collection.where({'state': 'active'}),
-            alertifyWrapper = new AlertifyWrapper(),
             pg_version = this.get('postgres_version') || null;
 
           // With PG10, We have background process showing on dashboard
@@ -1082,20 +1079,20 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
 
           // Background processes do not have database field populated
           if (pg_version && pg_version >= 100000 && !m.get('datname')) {
-            alertifyWrapper.info(
+            alertify.info(
               gettext('You cannot cancel background worker processes.')
             );
             return false;
           // If it is the last active connection on maintenance db then error out
           } else if (maintenance_database == m.get('datname') &&
               m.get('state') == 'active' && active_sessions.length == 1) {
-            alertifyWrapper.error(
+            alertify.error(
               gettext('You are not allowed to cancel the main active session.')
             );
             return false;
           } else if(m.get('state') == 'idle') {
             // If this session is already idle then do nothing
-            alertifyWrapper.info(
+            alertify.info(
               gettext('The session is already in idle state.')
             );
             return false;
@@ -1107,8 +1104,7 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
             return true;
           } else {
             // Do not allow to cancel someone else session to non-super user
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.error(
+            alertify.error(
               gettext('Superuser privileges are required to cancel another users query.')
             );
             return false;

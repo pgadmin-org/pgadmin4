@@ -69,6 +69,7 @@ module.exports = {
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
       'pgadmin.sqlfoldcode': sourcesDir + '/js/codemirror/addon/fold/pgadmin-sqlfoldcode',
+      'pgadmin.alertifyjs': sourcesDir + '/js/alertify.pgadmin.defaults',
     },
   },
   externals: {

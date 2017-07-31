@@ -1,11 +1,10 @@
-require(
+define(
     ['sources/gettext', 'alertify', 'underscore.string'],
 function(gettext, alertify, S) {
   alertify.defaults.transition = "zoom";
   alertify.defaults.theme.ok = "btn btn-primary";
   alertify.defaults.theme.cancel = "btn btn-danger";
   alertify.defaults.theme.input = "form-control";
-
   alertify.pgIframeDialog || alertify.dialog('pgIframeDialog', function() {
     var iframe;
     return {
@@ -84,7 +83,6 @@ function(gettext, alertify, S) {
         }
     };
   });
-
   alertify.pgNotifier = function(type, xhr, promptmsg, onJSONResult) {
       var msg = xhr.responseText,
           contentType = xhr.getResponseHeader('Content-Type');
@@ -309,4 +307,56 @@ function(gettext, alertify, S) {
     return false;
   };
 
+  var alertifySuccess = alertify.success,
+      alertifyError   = alertify.error;
+
+  /*
+  For adding the jasmine test cases, we needed to refer the original success,
+   and error functions, as orig_success and orig_error respectively.
+  */
+  _.extend(alertify, {
+    orig_success: alertifySuccess, orig_error: alertifyError
+  });
+
+  _.extend(alertify, {
+    success: function (message, timeout, callback) {
+      var alertMessage = '\
+      <div class="media font-green-3 text-14">\
+        <div class="media-body media-middle">\
+          <div class="alert-icon success-icon">\
+            <i class="fa fa-check" aria-hidden="true"></i>\
+          </div>\
+            <div class="alert-text">' + message + '</div>\
+        </div>\
+      </div>';
+      return alertify.orig_success(alertMessage, timeout, callback);
+    },
+    error: function(message, timeout, callback) {
+      var alertMessage = '\
+      <div class="media font-red-3 text-14">\
+        <div class="media-body media-middle">\
+          <div class="alert-icon error-icon">\
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>\
+          </div>\
+            <div class="alert-text">' + message + '</div>\
+        </div>\
+      </div>';
+      return alertify.orig_error(alertMessage, timeout, callback);
+    },
+    info: function(message, timeout) {
+      var alertMessage = '\
+      <div class="media alert-info font-blue text-14">\
+        <div class="media-body media-middle">\
+          <div class="alert-icon info-icon">\
+            <i class="fa fa-info" aria-hidden="true"></i>\
+          </div>\
+            <div class="alert-text">' + message + '</div>\
+        </div>\
+      </div>';
+      var alert = alertify.notify(alertMessage, timeout);
+      return alert;
+    }
+  });
+
+  return alertify;
 });

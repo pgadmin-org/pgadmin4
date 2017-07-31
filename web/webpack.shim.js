@@ -271,7 +271,7 @@ var webpackShimConfig = {
     'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'slick.pgadmin.editors', 'slick.pgadmin.formatters',
     'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser', 'pgadmin.file_manager',
-    'pgadmin.file_utility', 'sources/alerts/alertify_wrapper', 'pgadmin.browser.node',
+    'pgadmin.file_utility', 'pgadmin.browser.node',
     'pgadmin.alertifyjs', 'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
   ],
   // Checks whether JS module is npm module or not

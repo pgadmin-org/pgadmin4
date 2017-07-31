@@ -1,11 +1,9 @@
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
-  'sources/alerts/alertify_wrapper',
-
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, AlertifyWrapper) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraints']) {
@@ -66,8 +64,7 @@ define('pgadmin.node.check_constraint', [
             type:'GET',
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.valid = true;
                 data.icon = 'icon-check_constraints';
@@ -80,8 +77,7 @@ define('pgadmin.node.check_constraint', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);

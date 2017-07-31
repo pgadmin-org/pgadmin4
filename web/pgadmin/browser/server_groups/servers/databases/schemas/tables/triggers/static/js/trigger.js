@@ -1,9 +1,8 @@
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
-  'sources/alerts/alertify_wrapper',
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, AlertifyWrapper) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 
   var CustomSwitchControl = Backform.CustomSwitchControl = Backform.SwitchControl.extend({
     template: _.template([
@@ -118,8 +117,7 @@ define('pgadmin.node.trigger', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger';
                 t.addIcon(i, {icon: data.icon});
@@ -136,8 +134,7 @@ define('pgadmin.node.trigger', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -163,8 +160,7 @@ define('pgadmin.node.trigger', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger-bad';
                 t.addIcon(i, {icon: data.icon});
@@ -181,8 +177,7 @@ define('pgadmin.node.trigger', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);

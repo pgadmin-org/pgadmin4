@@ -1,8 +1,8 @@
 define(
   'pgadmin.browser.node', [
     'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
-    'pgadmin.browser.menu', 'backbone', 'alertify', 'pgadmin.browser.datamodel',
-    'backform', 'pgadmin.browser.utils', 'pgadmin.backform', 'pgadmin.alertifyjs'
+    'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
+    'backform', 'pgadmin.browser.utils', 'pgadmin.backform'
 ], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
 
   var wcDocker = window.wcDocker,
@@ -626,8 +626,7 @@ define(
 
           if (!(_.isFunction(obj.canDropCascade) ?
                 obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
-                var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(
+                Alertify.error(
                 S('The %s "%s" cannot be dropped!')
                 .sprintf(obj.label, d.label).value(),
                 10
@@ -641,8 +640,7 @@ define(
 
           if (!(_.isFunction(obj.canDrop) ?
               obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.error(
+            Alertify.error(
               S('The %s "%s" cannot be dropped!')
               .sprintf(obj.label, d.label).value(),
               10

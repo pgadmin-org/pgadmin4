@@ -1,10 +1,10 @@
 define(
   'pgadmin.browser', [
     'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
-    'bootstrap', 'pgadmin', 'alertify', 'bundled_codemirror',
+    'bootstrap', 'pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
     'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
     'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
-    'pgadmin.alertifyjs', 'pgadmin.browser.messages',
+    'pgadmin.browser.messages',
     'pgadmin.browser.menu', 'pgadmin.browser.panel',
     'pgadmin.browser.error', 'pgadmin.browser.frame',
     'pgadmin.browser.node', 'pgadmin.browser.collection'
@@ -1846,8 +1846,7 @@ define(
                 try {
                   var err = $.parseJSON(xhr.responseText);
                   if (err.success == 0) {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.error(err.errormsg);
+                    Alertify.error(err.errormsg);
                   }
                 } catch (e) {}
                 fetchNodeInfo(_callback);

@@ -1,10 +1,8 @@
 define('pgadmin.node.synonym', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
-  'sources/alerts/alertify_wrapper',
-
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, AlertifyWrapper) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {
     var databases = pgAdmin.Browser.Nodes['coll-synonym'] =
@@ -169,8 +167,7 @@ define('pgadmin.node.synonym', [
                     try {
                       var err = $.parseJSON(xhr.responseText);
                       if (err.success == 0) {
-                        var alertifyWrapper = new AlertifyWrapper();
-                        alertifyWrapper.error(err.errormsg);
+                        alertify.error(err.errormsg);
                       }
                     } catch (e) {}
                   }

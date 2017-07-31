@@ -1,11 +1,9 @@
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser.utils', 'alertify',
-  'sources/alerts/alertify_wrapper',
-
+  'underscore.string', 'pgadmin', 'pgadmin.browser.utils', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-  'pgadmin.browser.server.variable',
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, AlertifyWrapper) {
+  'pgadmin.browser.server.variable'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     var databases = pgBrowser.Nodes['coll-database'] =
@@ -192,9 +190,8 @@ define('pgadmin.node.database', [
                 type:'DELETE',
                 success: function(res) {
                   if (res.success == 1) {
-                    var prv_i = t.parent(i),
-                      alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.success(res.info);
+                    var prv_i = t.parent(i);
+                    Alertify.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
                     data.icon = 'icon-database-not-connected';
@@ -208,8 +205,7 @@ define('pgadmin.node.database', [
                   }
                   else {
                     try {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(res.errormsg);
+                      Alertify.error(res.errormsg);
                     } catch (e) {}
                     t.unload(i);
                   }
@@ -218,8 +214,7 @@ define('pgadmin.node.database', [
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg);
+                      Alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -516,8 +511,7 @@ define('pgadmin.node.database', [
                 tree.addIcon(item, {icon: data.icon});
               }
 
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success(res.info);
+              Alertify.success(res.info);
               obj.trigger('connected', obj, item, data);
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', item, data

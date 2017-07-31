@@ -11,10 +11,10 @@
 import loading_icon from 'acitree/image/load-root.gif';
 
 define(['jquery', 'underscore', 'underscore.string',
-  'sources/alerts/alertify_wrapper', 'sources/gettext',
+  'pgadmin.alertifyjs', 'sources/gettext',
   'sources/url_for', 'dropzone'
   ],
-function($, _, S, AlertifyWrapper, gettext, url_for, Dropzone) {
+function($, _, S, alertify, gettext, url_for, Dropzone) {
 
 /*---------------------------------------------------------
   Define functions used for various operations
@@ -311,11 +311,9 @@ var renameItem = function(data) {
             // UnBind toolbar functions.
             $('.fileinfo').find('button.rename, button.delete, button.download').unbind();
 
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.success(lg.successful_rename);
+            alertify.success(lg.successful_rename);
           } else {
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.error(result.Error);
+            alertify.error(result.Error);
           }
 
           finalName = result['New Name'];
@@ -356,16 +354,14 @@ var deleteItem = function(data) {
         if (result.Code === 1) {
           isDeleted = true;
           if (isDeleted) {
-            var alertifyWrapper = new AlertifyWrapper();
-            alertifyWrapper.success(lg.successful_delete);
+            alertify.success(lg.successful_delete);
             var rootpath = result.Path.substring(0, result.Path.length-1); // removing the last slash
                 rootpath = rootpath.substr(0, rootpath.lastIndexOf('/') + 1);
             getFolderInfo(rootpath);
           }
         } else {
           isDeleted = false;
-          var alertifyWrapper = new AlertifyWrapper();
-          alertifyWrapper.error(result.Error);
+          alertify.error(result.Error);
         }
       }
     });
@@ -438,8 +434,7 @@ var getFileInfo = function(file) {
         }
       } else {
         $('.file_manager_ok').addClass('disabled');
-        var alertifyWrapper = new AlertifyWrapper();
-        alertifyWrapper.error(data.Error);
+        alertify.error(data.Error);
       }
     }
   });
@@ -466,14 +461,12 @@ var checkPermission = function(path) {
         permission = true;
       } else {
         $('.file_manager_ok').addClass('disabled');
-        var alertifyWrapper = new AlertifyWrapper();
-        alertifyWrapper.error(data.Error);
+        alertify.error(data.Error);
       }
     },
     error: function() {
       $('.file_manager_ok').addClass('disabled');
-      var alertifyWrapper = new AlertifyWrapper();
-      alertifyWrapper.error( gettext('Error occurred while checking access permission.'));
+      alertify.error( gettext('Error occurred while checking access permission.'));
     }
   });
   return permission;
@@ -549,8 +542,7 @@ var getFolderInfo = function(path, file_type) {
       // hide activity indicator
       $('.fileinfo').find('span.activity').hide();
       if (data.Code === 0) {
-        var alertifyWrapper = new AlertifyWrapper();
-        alertifyWrapper.error(data.Error);
+        alertify.error(data.Error);
         return;
       }
       // generate HTML for files/folder and render into container
@@ -1452,21 +1444,18 @@ pgAdmin.FileUtils = {
             $this.find(".dz-upload").addClass("success");
           }, 1000);
           $this.find(".dz-upload").css('width', "100%").html("100%");
-          var alertifyWrapper = new AlertifyWrapper();
-          alertifyWrapper.success(lg.upload_success);
+          alertify.success(lg.upload_success);
         } else {
           $this.find(".dz-upload").addClass("error");
           $this.find(".dz-upload").css('width', "0%").html("0%");
-          var alertifyWrapper = new AlertifyWrapper();
-          alertifyWrapper.error(data.Error);
+          alertify.error(data.Error);
         }
         getFolderInfo(path);
       },
       totaluploadprogress: function(progress) {},
       complete: function(file) {
         if (file.status == "error") {
-          var alertifyWrapper = new AlertifyWrapper();
-          alertifyWrapper.error(lg.upload_error);
+          alertify.error(lg.upload_error);
         }
         $('.upload_file .dz_cross_btn').removeAttr('disabled');
         getFolderInfo(path);

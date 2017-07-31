@@ -1,10 +1,8 @@
 define('pgadmin.node.foreign_key', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
-  'sources/alerts/alertify_wrapper',
-
+  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, AlertifyWrapper) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 
   var formatNode = function(opt) {
         if (!opt.id) {
@@ -655,8 +653,7 @@ define('pgadmin.node.foreign_key', [
             type:'GET',
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.removeIcon(i);
                 data.valid = true;
                 data.icon = 'icon-foreign_key';
@@ -669,8 +666,7 @@ define('pgadmin.node.foreign_key', [
               try {
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);

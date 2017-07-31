@@ -1,7 +1,7 @@
 define('misc.file_manager', [
-      'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
-      'sources/alerts/alertify_wrapper'
-], function(gettext, url_for, $, _, alertify, AlertifyWrapper) {
+      'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+      'pgadmin.alertifyjs'
+], function(gettext, url_for, $, _, alertify) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -595,14 +595,12 @@ define('misc.file_manager', [
                     permission = true;
                   } else {
                     $('.file_manager_ok').addClass('disabled');
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.error(data.Error);
+                    alertify.error(data.Error);
                   }
                 },
                 error: function() {
                   $('.file_manager_ok').addClass('disabled');
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error( gettext('Error occurred while checking access permission.'));
+                  alertify.error( gettext('Error occurred while checking access permission.'));
                 }
               });
               return permission;

@@ -1,12 +1,12 @@
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'pgadmin', 'pgadmin.browser',
   'pgadmin.server.supported_servers',
   'pgadmin.user_management.current_user',
-  'sources/alerts/alertify_wrapper', 'pgadmin.browser.server.privilege'
+  'pgadmin.alertifyjs', 'pgadmin.browser.server.privilege'
 ], function(
-  gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify,
-  supported_servers, current_user, AlertifyWrapper
+  gettext, url_for, $, _, S, pgAdmin, pgBrowser,
+  supported_servers, current_user, alertify
 ) {
 
   if (!pgBrowser.Nodes['server']) {
@@ -189,8 +189,7 @@ define('pgadmin.node.server', [
               type:'DELETE',
               success: function(res) {
                 if (res.success == 1) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.success(res.info);
+                  alertify.success(res.info);
                   d = t.itemData(i);
                   t.removeIcon(i);
                   d.connected = false;
@@ -209,8 +208,7 @@ define('pgadmin.node.server', [
                 }
                 else {
                   try {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.error(res.errormsg);
+                    alertify.error(res.errormsg);
                   } catch (e) {}
                   t.unload(i);
                 }
@@ -219,8 +217,7 @@ define('pgadmin.node.server', [
                 try {
                   var err = $.parseJSON(xhr.responseText);
                   if (err.success == 0) {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.error(err.errormsg);
+                    alertify.error(err.errormsg);
                   }
                 } catch (e) {}
                 t.unload(i);
@@ -288,20 +285,17 @@ define('pgadmin.node.server', [
                 method:'GET',
                 success: function(res) {
                   if (res.data.status) {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.success(res.data.result);
+                    alertify.success(res.data.result);
                   }
                   else {
-                    var alertifyWrapper = new AlertifyWrapper();
-                    alertifyWrapper.error(res.data.result);
+                    alertify.error(res.data.result);
                   }
                 },
                 error: function(xhr, status, error) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg);
+                      alertify.error(err.errormsg);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -336,15 +330,13 @@ define('pgadmin.node.server', [
                 method:'POST',
                 data:{ 'value': JSON.stringify(value) },
                 success: function(res) {
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.success(res.data.result, 10);
+                  alertify.success(res.data.result, 10);
                 },
                 error: function(xhr, status, error) {
                   try {
                     var err = $.parseJSON(xhr.responseText);
                     if (err.success == 0) {
-                      var alertifyWrapper = new AlertifyWrapper();
-                      alertifyWrapper.error(err.errormsg, 10);
+                      alertify.error(err.errormsg, 10);
                     }
                   } catch (e) {}
                   t.unload(i);
@@ -352,8 +344,7 @@ define('pgadmin.node.server', [
               });
              } else {
                 evt.cancel = true;
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.error( gettext('Please enter a valid name.'), 10);
+                alertify.error( gettext('Please enter a valid name.'), 10);
              }
            },
            // We will execute this function when user clicks on the Cancel button
@@ -494,20 +485,18 @@ define('pgadmin.node.server', [
                       method:'POST',
                       data:{'data': JSON.stringify(args) },
                       success: function(res) {
-                        var alertifyWrapper = new AlertifyWrapper();
                         if (res.success) {
-                          alertifyWrapper.success(res.info);
+                          alertify.success(res.info);
                           self.close();
                         } else {
-                          alertifyWrapper.error(res.errormsg);
+                          alertify.error(res.errormsg);
                         }
                       },
                       error: function(xhr, status, error) {
                         try {
                           var err = $.parseJSON(xhr.responseText);
                           if (err.success == 0) {
-                            var alertifyWrapper = new AlertifyWrapper();
-                            alertifyWrapper.error(err.errormsg);
+                            alertify.error(err.errormsg);
                           }
                         } catch (e) {}
                       }
@@ -540,8 +529,7 @@ define('pgadmin.node.server', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.itemData(i).wal_pause=res.data.wal_pause;
                 t.unload(i);
                 t.setInode(i);
@@ -557,8 +545,7 @@ define('pgadmin.node.server', [
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
                   msg = S(err.errormsg).value();
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -584,8 +571,7 @@ define('pgadmin.node.server', [
             dataType: "json",
             success: function(res) {
               if (res.success == 1) {
-                var alertifyWrapper = new AlertifyWrapper();
-                alertifyWrapper.success(res.info);
+                alertify.success(res.info);
                 t.itemData(i).wal_pause=res.data.wal_pause;
                 t.unload(i);
                 t.setInode(i);
@@ -601,8 +587,7 @@ define('pgadmin.node.server', [
                 var err = $.parseJSON(xhr.responseText);
                 if (err.success == 0) {
                   msg = S(err.errormsg).value();
-                  var alertifyWrapper = new AlertifyWrapper();
-                  alertifyWrapper.error(err.errormsg);
+                  alertify.error(err.errormsg);
                 }
               } catch (e) {}
               t.unload(i);
@@ -908,8 +893,7 @@ define('pgadmin.node.server', [
                 pgBrowser.serverInfo || {};
               serverInfo[data._id] = _.extend({}, data);
 
-              var alertifyWrapper = new AlertifyWrapper();
-              alertifyWrapper.success(res.info);
+              alertify.success(res.info);
               obj.trigger('connected', obj, item, data);
 
               // Generate the event that server is connected

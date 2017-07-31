@@ -6,19 +6,16 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
-
-import alertify from 'alertify';
-import AlertifyWrapper from 'sources/alerts/alertify_wrapper';
+import alertify from 'pgadmin.alertifyjs';
 
 describe('alertify_wrapper', function () {
   describe('success', function () {
     it('calls the success function from alertify and adds the checkmark to the element', function () {
-      spyOn(alertify, 'success');
-      var alertifyWrapper = new AlertifyWrapper();
+      spyOn(alertify, 'orig_success');
 
-      alertifyWrapper.success('Yay, congrats!', 1);
+      alertify.success('Yay, congrats!', 1);
 
-      var calledWithMessage = alertify.success.calls.mostRecent().args[0];
+      var calledWithMessage = alertify.orig_success.calls.mostRecent().args[0];
 
       expect(calledWithMessage).toContain('Yay, congrats!');
       expect(calledWithMessage).toContain('class="fa fa-check"');
@@ -27,12 +24,11 @@ describe('alertify_wrapper', function () {
 
   describe('error', function () {
     it('calls the error function from alertify and adds the warning symbol to the element', function () {
-      spyOn(alertify, 'error');
-      var alertifyWrapper = new AlertifyWrapper();
+      spyOn(alertify, 'orig_error');
 
-      alertifyWrapper.error('bad, very bad', 1);
+      alertify.error('bad, very bad', 1);
 
-      var calledWithMessage = alertify.error.calls.mostRecent().args[0];
+      var calledWithMessage = alertify.orig_error.calls.mostRecent().args[0];
 
       expect(calledWithMessage).toContain('bad, very bad');
       expect(calledWithMessage).toContain('class="fa fa-exclamation-triangle"');
