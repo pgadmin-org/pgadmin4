@@ -196,7 +196,6 @@ define(
     },
     add_panels: function() {
       /* Add hooked-in panels by extensions */
-      //debugger;
       var panels = JSON.parse(pgBrowser.panels_items);
       _.each(panels, function(panel) {
         if (panel.isIframe) {
@@ -222,7 +221,8 @@ define(
             isCloseable: panel.isCloseable,
             isPrivate: panel.isPrivate,
             content: (panel.content) ? panel.content : '',
-            events: (panel.events) ? panel.events : ''
+            events: (panel.events) ? panel.events : '',
+            canHide: (panel.canHide) ? panel.canHide : ''
           })
         }
       });
