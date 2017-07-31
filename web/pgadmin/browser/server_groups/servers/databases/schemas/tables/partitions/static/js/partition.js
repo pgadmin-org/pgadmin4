@@ -15,8 +15,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
         type: 'coll-partition',
         columns: [
           'name', 'schema', 'partition_value', 'is_partitioned', 'description'
-        ],
-        hasStatistics: true
+        ]
       });
   };
 
@@ -86,7 +85,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
             t = pgBrowser.tree;
 
         do {
-          d = t.itemData(i);
+          var d = t.itemData(i);
           if (
             d._type in pgBrowser.Nodes && pgBrowser.Nodes[d._type].hasId
           ) {
@@ -126,7 +125,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
           info || {} : this.getTreeNodeHierarchy(item);
 
         return S('table/%s/%s/%s/%s/%s/%s').sprintf(
-            encodeURIComponent(type), encodeURIComponent(info['server-group']._id),
+            encodeURIComponent(type), encodeURIComponent(info['server_group']._id),
             encodeURIComponent(info['server']._id),
             encodeURIComponent(info['database']._id),
             encodeURIComponent(info['partition'].schema_id),
@@ -149,11 +148,12 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
         set_triggers: function(args, params) {
           // This function will send request to enable or
           // disable triggers on table level
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
+
           if (!d)
             return false;
 
@@ -197,11 +197,11 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
             this.callbacks.truncate.apply(this, [args, params]);
         },
         truncate: function(args, params) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+              obj = this,
+              t = pgBrowser.tree,
+              i = input.item || t.selected(),
+              d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -1195,7 +1195,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
           var self = this,
               url = 'get_columns',
               m = self.model.top || self.model,
-              old_columns = _.clone(m.get('columns'))
+              old_columns = _.clone(m.get('columns')),
               data = undefined,
               node = this.field.get('schema_node'),
               node_info = this.field.get('node_info'),
@@ -1242,8 +1242,8 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify, Aler
 
             if ('coll-table' == d._type) {
               //Check if we are not child of catalog
-              prev_i = t.hasParent(i) ? t.parent(i) : null;
-              prev_d = prev_i ? t.itemData(prev_i) : null;
+              var prev_i = t.hasParent(i) ? t.parent(i) : null;
+              var prev_d = prev_i ? t.itemData(prev_i) : null;
               if( prev_d._type == 'catalog') {
                 return false;
               } else {

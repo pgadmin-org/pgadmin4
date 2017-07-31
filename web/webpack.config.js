@@ -195,7 +195,8 @@ module.exports = {
         ',pgadmin.node.catalog_object_column' +
         ',pgadmin.node.view' +
         ',pgadmin.node.mview' +
-        ',pgadmin.node.table',
+        ',pgadmin.node.table' +
+        ',pgadmin.node.partition',
       },
     }, {
       test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),

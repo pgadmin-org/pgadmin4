@@ -17,9 +17,10 @@ define('pgadmin.node.unique_constraint', [
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: ['Index size'],
-      parent_type: 'table',
+      parent_type: ['table','partition'],
       canDrop: true,
       canDropCascade: true,
+      getTreeNodeHierarchy: pgBrowser.tableChildTreeNodeHierarchy,
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
@@ -42,12 +43,23 @@ define('pgadmin.node.unique_constraint', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+            immediate_parent_table_found = false,
+            is_immediate_parent_table_partitioned = false;
+
         // To iterate over tree to check parent node
         while (i) {
+          // If table is partitioned table then return false
+          if (!immediate_parent_table_found && (d._type == 'table' || d._type == 'partition')) {
+            immediate_parent_table_found = true;
+            if ('is_partitioned' in d && d.is_partitioned) {
+              is_immediate_parent_table_partitioned = true;
+            }
+          }
+
           // If it is schema then allow user to c reate table
           if (_.indexOf(['schema'], d._type) > -1) {
-            return true;
+            return !is_immediate_parent_table_partitioned;
           }
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;
@@ -57,7 +69,7 @@ define('pgadmin.node.unique_constraint', [
         if (_.indexOf(parents, 'catalog') > -1) {
           return false;
         } else {
-            return true;
+          return !is_immediate_parent_table_partitioned;
         }
       },
 

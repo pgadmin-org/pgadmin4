@@ -46,7 +46,7 @@ class CheckConstraintModule(CollectionNodeModule):
       - Load the module script for the Check Constraint, when any of the
         Check node is initialized.
     """
-    NODE_TYPE = 'check_constraint'
+    NODE_TYPE = 'check_constraints'
     COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):

@@ -25,7 +25,7 @@ class CheckConstraintGetTestCase(BaseTestGenerator):
     """This class will fetch check constraint to existing table"""
     scenarios = [
         ('Fetch check constraint to table',
-         dict(url='/browser/check_constraint/obj/'))
+         dict(url='/browser/check_constraints/obj/'))
     ]
 
     def setUp(self):
