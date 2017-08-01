@@ -123,7 +123,7 @@ define('pgadmin.node.domain', [
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
             // Set Selected Schema
-            schema = args.node_info.schema.label
+            var schema = args.node_info.schema.label
             this.set({'basensp': schema}, {silent: true});
 
             // Set Current User

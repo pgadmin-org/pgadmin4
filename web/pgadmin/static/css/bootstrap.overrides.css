@@ -1335,3 +1335,8 @@ body {
   font-size: 14px;
   font-weight: normal;
 }
+
+/* Security label's label column font size */
+.override_label_class_font_size {
+  font-size: inherit !important;
+}
