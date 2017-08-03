@@ -25,7 +25,7 @@ def create_collation(server, schema_name, coll_name, db_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute('CREATE COLLATION %s.%s FROM pg_catalog."POSIX"' %
+        pg_cursor.execute('CREATE COLLATION %s.%s FROM pg_catalog."C"' %
                           (schema_name, coll_name))
         connection.commit()
 
