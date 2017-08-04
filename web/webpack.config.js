@@ -222,7 +222,8 @@ module.exports = {
         ',pgadmin.tools.maintenance' +
         ',pgadmin.tools.import_export' +
         ',pgadmin.tools.debugger.controller' +
-        ',pgadmin.tools.debugger.direct',
+        ',pgadmin.tools.debugger.direct' +
+        ',pgadmin.node.pga_job',
       },
     }, {
       test: require.resolve('snapsvg'),
