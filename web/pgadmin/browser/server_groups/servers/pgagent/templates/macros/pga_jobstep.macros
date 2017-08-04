@@ -9,7 +9,7 @@ INSERT INTO pgagent.pga_jobstep (
     jstcode, jstdesc
 ) VALUES (
     {% if jid %}{{ jid|qtLiteral }}{% else %}jid{% endif %}, {{ data.jstname|qtLiteral }}::text, {% if data.jstenabled %}true{% else %}false {% endif %}, {% if data.jstkind %}'s'{% else %}'b'{% endif %}::character(1),
-    {% if has_connstr %}{% if data.jstconntype %}''{% else %}{{ data.jstconnstr|qtLiteral }}{% endif %}::text, {% if not data.jstconntype %}''::name{% else %}{{ data.jstdbname|qtLiteral }}{% endif %}::name{% else %}{{ data.jstdbname|qtLiteral }}::name{% endif %}, {{ data.jstonerror|qtLiteral }}::character(1),
+    {% if has_connstr %}{% if data.jstconntype %}''{% else %}{{ data.jstconnstr|qtLiteral }}{% endif %}::text, {% if not data.jstconntype or not data.jstkind %}''{% else %}{{ data.jstdbname|qtLiteral }}{% endif %}::name{% else %}{% if not data.jstkind %}''{% else %}{{ data.jstdbname|qtLiteral }}::name{% endif %}{% endif %}, {{ data.jstonerror|qtLiteral }}::character(1),
     {{ data.jstcode|qtLiteral }}::text, {{ data.jstdesc|qtLiteral }}::text
 ) {% if jid %}RETURNING jstid{% endif %};
 {%- endmacro %}
