@@ -1889,14 +1889,13 @@ define('tools.querytool', [
 
               var _msg = msg1 + '\n' + msg2;
 
-              self.update_msg_history(true, _msg, false);
               // If there is additional messages from server then add it to message
               if(!_.isNull(data.additional_messages) &&
                     !_.isUndefined(data.additional_messages)) {
                     _msg = data.additional_messages + '\n' + _msg;
               }
 
-              $('.sql-editor-message').text(_msg);
+              self.update_msg_history(true, _msg, false);
 
               /* Add the data to the collection and render the grid.
                * In case of Explain draw the graph on explain panel
@@ -2080,7 +2079,7 @@ define('tools.querytool', [
 
             $('.sql-editor-message').text(msg);
           } else {
-            $('.sql-editor-message').append(msg);
+            $('.sql-editor-message').append(_.escape(msg));
           }
 
           // Scroll automatically when msgs appends to element

@@ -528,7 +528,6 @@ def poll(trans_id):
     rows_fetched_from = 0
     rows_fetched_to = 0
     has_more_rows = False
-    additional_result = []
     columns = dict()
     columns_info = None
     primary_keys = None
@@ -640,29 +639,22 @@ def poll(trans_id):
         status = 'NotConnected'
         result = error_msg
 
-    # Procedure/Function output may comes in the form of Notices from the
-    # database server, so we need to append those outputs with the
-    # original result.
-
-    if status == 'Success' and result is None:
-        result = conn.status_message()
-        messages = conn.messages()
-        if messages:
-            additional_result = ''.join(messages)
-        else:
-            additional_result = ''
-        if result != 'SELECT 1' and result is not None:
-            result = additional_result + result
-        else:
-            result = additional_result
-
     # There may be additional messages even if result is present
     # eg: Function can provide result as well as RAISE messages
     additional_messages = None
-    if status == 'Success' and result is not None:
+    if status == 'Success':
         messages = conn.messages()
         if messages:
             additional_messages = ''.join(messages)
+
+    # Procedure/Function output may comes in the form of Notices from the
+    # database server, so we need to append those outputs with the
+    # original result.
+    if status == 'Success' and result is None:
+        result = conn.status_message()
+        if (result != 'SELECT 1' or result != 'SELECT 0') \
+            and result is not None and additional_messages:
+            result = additional_messages + result
 
     return make_json_response(
         data={
