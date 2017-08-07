@@ -425,7 +425,7 @@ define('pgadmin.node.role', [
           deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'}
         },{
           id: 'rolconnlimit',  type: 'int', group: gettext('Definition'),
-          label: gettext('Connection limit'), cell: 'number', min : -1,
+          label: gettext('Connection limit'), cell: 'integer', min : -1,
           mode: ['properties', 'edit', 'create'], disabled: 'readonly'
         },{
           id: 'rolcanlogin', label: gettext('Can login?'), type: 'switch',

@@ -56,7 +56,7 @@
     });
 
   var controlMapper = Backform.controlMapper = {
-    'int': ['uneditable-input', 'numeric', 'numeric'],
+    'int': ['uneditable-input', 'numeric', 'integer'],
     'text': ['uneditable-input', 'input', 'string'],
     'numeric': ['uneditable-input', 'numeric', 'numeric'],
     'date': 'datepicker',
