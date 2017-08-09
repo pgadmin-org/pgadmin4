@@ -19,3 +19,9 @@
     z-index: 1;
   }
 }
+
+.pgadmin-file-has-error {
+  .pgadmin-controls:before {
+    right: 40px !important;
+  }
+}

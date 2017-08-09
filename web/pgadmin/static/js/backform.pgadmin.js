@@ -2201,6 +2201,16 @@
 
       // Set selected value into the model
       this.model.set(name, decodeURI(value));
+    },
+    clearInvalid: function() {
+      Backform.InputControl.prototype.clearInvalid.apply(this, arguments);
+      this.$el.removeClass("pgadmin-file-has-error");
+      return this;
+    },
+    updateInvalid: function() {
+      Backform.InputControl.prototype.updateInvalid.apply(this, arguments);
+      // Introduce a new class to fix the error icon placement on the control
+      this.$el.addClass("pgadmin-file-has-error");
     }
   });
 
