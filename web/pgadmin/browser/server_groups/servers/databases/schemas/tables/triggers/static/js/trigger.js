@@ -1,6 +1,6 @@
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 

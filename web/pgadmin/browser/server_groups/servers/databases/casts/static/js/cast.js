@@ -1,5 +1,5 @@
 define('pgadmin.node.cast', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
     // Extend the collection class for cast

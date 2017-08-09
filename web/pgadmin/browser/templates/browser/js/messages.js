@@ -1,6 +1,6 @@
 define(
  'pgadmin.browser.messages',
-  ['sources/gettext', 'pgadmin'],
+  ['sources/gettext', 'sources/pgadmin'],
   function(gettext, pgAdmin) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};

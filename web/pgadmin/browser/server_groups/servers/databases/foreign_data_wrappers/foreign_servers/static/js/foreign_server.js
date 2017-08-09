@@ -1,5 +1,5 @@
 define('pgadmin.node.foreign_server', [
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege'
 ], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {

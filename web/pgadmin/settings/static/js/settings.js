@@ -1,6 +1,6 @@
 define('pgadmin.settings',
   [
-    'jquery', 'alertify', 'pgadmin', 'underscore', 'backform',
+    'jquery', 'alertify', 'sources/pgadmin', 'underscore', 'backform',
     'sources/gettext', 'sources/url_for', 'pgadmin.backform'
   ],
   // This defines the Preference/Options Dialog for pgAdmin IV.

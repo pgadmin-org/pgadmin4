@@ -1,6 +1,6 @@
 define('pgadmin.node.pga_jobstep', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'backform',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
   'pgadmin.backform'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
 

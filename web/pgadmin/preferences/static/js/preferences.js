@@ -1,6 +1,6 @@
 define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
-  'pgadmin', 'backform', 'pgadmin.browser', 'pgadmin.backform'
+  'sources/pgadmin', 'backform', 'pgadmin.browser', 'pgadmin.backform'
 ], function(gettext, url_for, $, _, alertify, pgAdmin, Backform, pgBrowser) {
   // This defines the Preference/Options Dialog for pgAdmin IV.
     pgAdmin = pgAdmin || window.pgAdmin || {};

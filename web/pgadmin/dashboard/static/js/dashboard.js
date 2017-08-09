@@ -1,6 +1,6 @@
 define('pgadmin.dashboard', [
     'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
-    'pgadmin', 'backbone', 'backgrid', 'flotr2',
+    'sources/pgadmin', 'backbone', 'backgrid', 'flotr2',
     'pgadmin.alertifyjs', 'backgrid.filter',
     'pgadmin.browser', 'bootstrap', 'wcdocker'
     ],

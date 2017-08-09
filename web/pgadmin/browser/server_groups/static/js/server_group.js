@@ -1,5 +1,5 @@
 define('pgadmin.node.server_group', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
   'backbone', 'pgadmin.browser', 'pgadmin.browser.node'
 ], function(gettext, url_for, $, _, pgAdmin, Backbone) {
 

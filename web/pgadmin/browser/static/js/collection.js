@@ -1,5 +1,5 @@
 define([
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'backbone', 'alertify', 'backform', 'backgrid', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node'
 ], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid) {

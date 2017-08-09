@@ -1,6 +1,6 @@
 define('pgadmin.node.foreign_key', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 

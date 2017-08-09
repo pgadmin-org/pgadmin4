@@ -1,7 +1,7 @@
 define('tools.querytool', [
     'babel-polyfill', 'sources/gettext','sources/url_for', 'jquery',
     'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-    'pgadmin', 'backbone', 'sources/../bundle/codemirror',
+    'sources/pgadmin', 'backbone', 'sources/../bundle/codemirror',
     'pgadmin.misc.explain',
     'sources/selection/grid_selector',
     'sources/selection/active_cell_capture',

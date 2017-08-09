@@ -1,5 +1,5 @@
 define(
-    ['sources/gettext', 'underscore', 'alertify', 'pgadmin'],
+    ['sources/gettext', 'underscore', 'alertify', 'sources/pgadmin'],
 function(gettext, _, alertify, pgAdmin) {
   pgAdmin.Browser = pgAdmin.Browser || {};
 

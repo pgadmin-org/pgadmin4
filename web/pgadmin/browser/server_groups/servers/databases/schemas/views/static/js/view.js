@@ -1,6 +1,6 @@
 define('pgadmin.node.view', [
   'sources/gettext',
-  'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege',
   'pgadmin.node.rule'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {

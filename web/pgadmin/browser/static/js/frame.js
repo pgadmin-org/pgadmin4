@@ -1,5 +1,5 @@
 define(
-    ['underscore', 'pgadmin', 'wcdocker'],
+    ['underscore', 'sources/pgadmin', 'wcdocker'],
 function(_, pgAdmin) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};

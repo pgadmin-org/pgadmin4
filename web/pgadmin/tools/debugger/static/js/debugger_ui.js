@@ -1,6 +1,6 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
+  'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
   'backform', 'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.panel'
 ], function(gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform ) {

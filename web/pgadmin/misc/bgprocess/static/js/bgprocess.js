@@ -1,5 +1,5 @@
 define('misc.bgprocess', [
-  'pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
+  'sources/pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
   'underscore.string', 'jquery', 'pgadmin.browser', 'alertify',
   'pgadmin.browser.messages'
 ], function(

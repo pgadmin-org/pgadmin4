@@ -1,7 +1,7 @@
 // Domain Constraint Module: Collection and Node
 define('pgadmin.node.domain_constraints', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 

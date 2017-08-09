@@ -1,5 +1,5 @@
 define(
-    ['underscore', 'backbone', 'pgadmin', 'pgadmin.browser'],
+    ['underscore', 'backbone', 'sources/pgadmin', 'pgadmin.browser'],
 function(_, Backbone, pgAdmin, pgBrowser) {
 
   pgBrowser = pgBrowser || pgAdmin.Browser || {};

@@ -1,6 +1,6 @@
 define(
   'pgadmin.browser.node', [
-    'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+    'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
     'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
     'backform', 'pgadmin.browser.utils', 'pgadmin.backform'
 ], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {

@@ -1,5 +1,5 @@
 define(
-   ['underscore', 'underscore.string', 'pgadmin', 'jquery'],
+   ['underscore', 'underscore.string', 'sources/pgadmin', 'jquery'],
 function(_, S, pgAdmin, $) {
   'use strict';
 

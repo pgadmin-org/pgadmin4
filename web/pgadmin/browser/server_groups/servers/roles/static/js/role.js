@@ -1,6 +1,6 @@
 define('pgadmin.node.role', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.backform', 'select2', 'pgadmin.browser.collection',
   'pgadmin.browser.node.ui', 'pgadmin.browser.server.variable'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backform) {

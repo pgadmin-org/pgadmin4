@@ -1,5 +1,5 @@
 define('pgadmin.node.catalog_object_column', [
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
 ], function(gettext, $, _, S, pgAdmin, pgBrowser, alertify) {
 

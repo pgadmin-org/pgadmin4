@@ -1,6 +1,6 @@
 define('pgadmin.node.table', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection', 'pgadmin.node.column',
   'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils'
 ], function(

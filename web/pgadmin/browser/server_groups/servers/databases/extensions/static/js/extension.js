@@ -1,6 +1,6 @@
 define('pgadmin.node.extension', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser) {
 

@@ -1,6 +1,6 @@
 define('pgadmin.node.tablespace', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
   'pgadmin.browser.server.privilege'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {

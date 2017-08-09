@@ -1,6 +1,6 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin', 'pgadmin.browser', 'backbone',
+  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
   'backgrid', 'backform',
   'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node.ui'

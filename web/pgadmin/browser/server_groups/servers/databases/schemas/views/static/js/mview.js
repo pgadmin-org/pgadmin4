@@ -1,6 +1,6 @@
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser', 'codemirror',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser', 'codemirror',
   'pgadmin.browser.server.privilege'
 ], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
 

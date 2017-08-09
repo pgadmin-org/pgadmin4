@@ -120,7 +120,7 @@ var webpackShimConfig = {
     'bundled_browser': path.join(__dirname, './pgadmin/static/bundle/browser'),
     'sources': path.join(__dirname, './pgadmin/static/js'),
     'pgadmin': path.join(__dirname, './pgadmin/static/js/pgadmin'),
-    'tools.translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
+    'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),
     'sources/gettext': path.join(__dirname, './pgadmin/static/js/gettext'),
     'babel-polyfill': path.join(__dirname, './node_modules/babel-polyfill/dist/polyfill'),
 
@@ -137,6 +137,7 @@ var webpackShimConfig = {
     'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
+    'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),
@@ -175,7 +176,6 @@ var webpackShimConfig = {
     'pgadmin.node.catalog': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog'),
     'pgadmin.node.role': path.join(__dirname, './pgadmin/browser/server_groups/servers/roles/static/js/role'),
     'pgadmin.node.check_constraint': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint'),
-    'translations': '/tools/translations',
     'pgadmin.node.user_mapping': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mapping/static/js/user_mapping'),
     'pgadmin.browser.messages': '/browser/js/messages',
     'pgadmin.node.collation': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation'),
@@ -202,7 +202,7 @@ var webpackShimConfig = {
     'pgadmin.browser.object_sql': path.join(__dirname, './pgadmin/misc/sql/static/js/sql'),
     'pgadmin.preferences': path.join(__dirname, './pgadmin/preferences/static/js/preferences'),
     'pgadmin.node.domain_constraints': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints'),
-    'slick.pgadmin.formatters': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/slick.pgadmin.formatters'),
+    'slick.pgadmin.formatters': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/formatters'),
     'pgadmin.node.catalog_object': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object'),
     'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/static/js/dashboard'),
     'pgadmin.node.foreign_data_wrapper': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper'),
@@ -243,7 +243,7 @@ var webpackShimConfig = {
     'pgadmin.node.fts_parser': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_parser/static/js/fts_parser'),
     'pgadmin.browser.utils': '/browser/js/utils',
     'pgadmin.about': path.join(__dirname, './pgadmin/about/static/js/about'),
-    'slick.pgadmin.editors': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/slick.pgadmin.editors'),
+    'slick.pgadmin.editors': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/editors'),
     'pgadmin.node.column': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/column/static/js/column'),
     'pgadmin.node.foreign_table': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table'),
     'pgadmin.node.fts_dictionary': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary'),

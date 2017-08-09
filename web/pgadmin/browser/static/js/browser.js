@@ -1,13 +1,14 @@
 define(
   'pgadmin.browser', [
     'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
-    'bootstrap', 'pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
+    'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
     'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
     'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
     'pgadmin.browser.messages',
     'pgadmin.browser.menu', 'pgadmin.browser.panel',
     'pgadmin.browser.error', 'pgadmin.browser.frame',
-    'pgadmin.browser.node', 'pgadmin.browser.collection'
+    'pgadmin.browser.node', 'pgadmin.browser.collection',
+    'sources/codemirror/addon/fold/pgadmin-sqlfoldcode'
   ], function(
     gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
     codemirror, checkNodeVisibility

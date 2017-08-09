@@ -1,7 +1,7 @@
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege'
 ], function(

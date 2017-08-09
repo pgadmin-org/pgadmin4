@@ -1,5 +1,5 @@
 define('pgadmin.datagrid', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'pgadmin',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'sources/pgadmin',
   'bundled_codemirror',
   'sources/sqleditor_utils', 'wcdocker'
 ], function(gettext, url_for, $, _, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {

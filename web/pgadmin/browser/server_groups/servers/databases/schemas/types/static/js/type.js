@@ -1,6 +1,6 @@
 define('pgadmin.node.type', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify', 'backgrid',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backgrid',
   'pgadmin.backgrid', 'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify, Backgrid) {
 

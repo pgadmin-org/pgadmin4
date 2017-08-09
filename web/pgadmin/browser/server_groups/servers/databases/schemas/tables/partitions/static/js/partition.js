@@ -1,6 +1,6 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'backform', 'pgadmin.alertifyjs',
   'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils'
 ],
 function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {

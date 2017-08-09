@@ -1,6 +1,6 @@
 define([
   'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
+  'sources/pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui'
   ],
  function(_, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
 

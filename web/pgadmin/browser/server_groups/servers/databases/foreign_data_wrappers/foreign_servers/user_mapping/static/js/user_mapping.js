@@ -1,5 +1,5 @@
 define('pgadmin.node.user_mapping', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'alertify', 'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 

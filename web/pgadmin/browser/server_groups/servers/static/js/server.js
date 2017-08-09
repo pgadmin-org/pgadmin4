@@ -1,6 +1,6 @@
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.server.supported_servers',
   'pgadmin.user_management.current_user',
   'pgadmin.alertifyjs', 'pgadmin.browser.server.privilege'

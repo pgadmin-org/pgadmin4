@@ -1,6 +1,6 @@
 define (
   'pgadmin.misc.explain',
-  ['sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin', 'backbone', 'snapsvg'],
+  ['sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin', 'backbone', 'snapsvg'],
   function(url_for, $, _, S, pgAdmin, Backbone, Snap) {
 
 pgAdmin = pgAdmin || window.pgAdmin || {};

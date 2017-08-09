@@ -1,5 +1,5 @@
 define(
-  ['jquery', 'alertify', 'pgadmin', 'underscore.string', 'sources/gettext',
+  ['jquery', 'alertify', 'sources/pgadmin', 'underscore.string', 'sources/gettext',
    'sources/url_for'
   ],
   function($, alertify, pgAdmin, S, gettext, url_for) {

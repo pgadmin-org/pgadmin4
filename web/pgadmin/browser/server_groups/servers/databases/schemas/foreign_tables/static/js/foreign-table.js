@@ -1,7 +1,7 @@
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign-table', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'alertify',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, alertify) {
 

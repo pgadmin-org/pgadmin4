@@ -1,6 +1,6 @@
 define('pgadmin.node.column', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin', 'pgadmin.browser', 'backform', 'alertify',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'backform', 'alertify',
   'pgadmin.browser.collection'
 ], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
 

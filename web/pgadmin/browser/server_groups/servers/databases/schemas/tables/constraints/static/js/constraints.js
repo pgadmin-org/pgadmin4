@@ -1,5 +1,5 @@
 define('pgadmin.node.constraints', [
-  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'pgadmin',
+  'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection', 'pgadmin.node.unique_constraint',
   'pgadmin.node.check_constraint', 'pgadmin.node.foreign_key',
   'pgadmin.node.exclusion_constraint', 'pgadmin.node.primary_key'

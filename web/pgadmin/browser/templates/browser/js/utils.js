@@ -1,5 +1,5 @@
 define('pgadmin.browser.utils',
-  ['pgadmin'], function(pgAdmin) {
+  ['sources/pgadmin'], function(pgAdmin) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
