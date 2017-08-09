@@ -72,13 +72,14 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.__clear_query_tool()
         editor_input = self.page.find_by_id("output-panel")
         self.page.click_element(editor_input)
-        self._execute_query("SELECT * FROM shoes")
+        self._execute_query("SELECT * FROM table_that_doesnt_exist")
 
-        self.page.click_tab("History")
+        self.page.click_tab("Query History")
         selected_history_entry = self.page.find_by_css_selector("#query_list .selected")
-        self.assertIn("SELECT * FROM shoes", selected_history_entry.text)
+        self.assertIn("SELECT * FROM table_that_doesnt_exist", selected_history_entry.text)
         failed_history_detail_pane = self.page.find_by_id("query_detail")
-        self.assertIn("ERROR: relation \"shoes\" does not exist", failed_history_detail_pane.text)
+
+        self.assertIn("Error Message relation \"table_that_doesnt_exist\" does not exist", failed_history_detail_pane.text)
         ActionChains(self.page.driver) \
             .send_keys(Keys.ARROW_DOWN) \
             .perform()
@@ -86,10 +87,30 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_entry.text)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
         self.assertIn("SELECT * FROM test_table ORDER BY value", selected_history_detail_pane.text)
-        newly_selected_history_entry = self.page.find_by_xpath("//*[@id='query_list']/ul/li[1]")
+        newly_selected_history_entry = self.page.find_by_xpath("//*[@id='query_list']/ul/li[2]")
         self.page.click_element(newly_selected_history_entry)
         selected_history_detail_pane = self.page.find_by_id("query_detail")
-        self.assertIn("SELECT * FROM shoes", selected_history_detail_pane.text)
+        self.assertIn("SELECT * FROM table_that_doesnt_exist", selected_history_detail_pane.text)
+
+        self.__clear_query_tool()
+
+        self.page.click_element(editor_input)
+        for _ in range(15):
+            self._execute_query("SELECT * FROM hats")
+
+        self.page.click_tab("Query History")
+
+        query_we_need_to_scroll_to = self.page.find_by_xpath("//*[@id='query_list']/ul/li[17]")
+
+        self.page.click_element(query_we_need_to_scroll_to)
+        self._assert_not_clickable_because_out_of_view(query_we_need_to_scroll_to)
+
+        for _ in range(17):
+            ActionChains(self.page.driver) \
+                .send_keys(Keys.ARROW_DOWN) \
+                .perform()
+
+        self._assert_clickable(query_we_need_to_scroll_to)
 
         self.__clear_query_tool()
         self.page.click_element(editor_input)

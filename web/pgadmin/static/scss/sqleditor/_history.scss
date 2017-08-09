@@ -7,10 +7,10 @@
   .entry {
     @extend .text-14;
     @extend .bg-white-1;
-    padding: -2px 18px -2px 8px;
     font-family: monospace;
     border: 2px solid transparent;
     margin-left: 1px;
+    padding: 0 8px 0 5px;
 
     .other-info {
       @extend .text-13;
@@ -31,6 +31,16 @@
       white-space: nowrap;
       user-select: initial;
     }
+  }
+
+  .date-label {
+    font-family: monospace;
+    background: #e8e8e8;
+    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #888888;
+    border-bottom: 1px solid #cccccc;
   }
 
   .entry.error {
@@ -114,6 +124,32 @@
     margin-right: 10px;
     height: 0;
     position: relative;
+
+    .copy-all, .was-copied {
+      float: left;
+      position: relative;
+      z-index: 10;
+      border: 1px solid $color-gray-3;
+      color: $primary-blue;
+      font-size: 12px;
+      box-shadow: 1px 2px 4px 0px $color-gray-3;
+      padding: 3px 12px 3px 10px;
+      font-weight: 500;
+      min-width: 75px;
+    }
+
+    .copy-all {
+      background-color: #ffffff;
+    }
+
+    .was-copied {
+      background-color: $color-blue-1;
+      border-color: $color-blue-2;
+    }
+
+    .CodeMirror-scroll {
+      padding-top: 25px;
+    }
   }
 
   .block-divider {

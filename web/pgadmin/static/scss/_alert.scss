@@ -1,92 +1,14 @@
-/*doc
----
-title: Alerts
-name: alerts
-category: alerts
----
-
-```html_example
-<div class="alert-row">
-  <div class="alert alert-success text-14 alert-box">
-    <div class="media">
-      <div class="media-body media-middle">
-        <div class="alert-icon success-icon">
-          <i class="fa fa-check" aria-hidden="true"></i>
-        </div>
-        <div class="alert-text">
-          Successfully run. Total query runtime: 32 msec. 1 row retrieved
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="alert-row">
-  <div class="alert alert-danger font-red text-14 alert-box">
-    <div class="media">
-      <div class="media-body media-middle">
-        <div class="alert-icon error-icon">
-          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        </div>
-        <div class="alert-text">
-          Error retrieving properties - INTERNAL SERVER ERROR
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="alert-row">
-  <div class="alert alert-info font-blue text-14 alert-box">
-    <div class="media">
-      <div class="media-body media-middle">
-        <div class="alert-text">
-          This is a neutral message
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-```
-*/
-
-
-// from bootstrap scss:
-
-@if $enable-flex {
-  .media {
-    display: flex;
-  }
-  .media-body {
-    flex: 1;
-  }
-  .media-middle {
-    align-self: center;
-  }
-  .media-bottom {
-    align-self: flex-end;
-  }
-} @else {
-  .media,
-  .media-body {
-    overflow: hidden;
-  }
-  .media-body {
-    width: 10000px;
-  }
-  .media-left,
-  .media-right,
-  .media-body {
-    display: inline;
-    vertical-align: top;
-  }
-  .media-middle {
-    vertical-align: middle;
-  }
-  .media-bottom {
-    vertical-align: bottom;
-  }
+.alert-icon {
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 15px 15px 15px 17px;
+  width: 50px;
+  min-height: 50px;
+  font-size: 14px;
+  text-align: center;
+  align-self: stretch;
+  flex-shrink: 0;
 }
 
 .alert-row {
@@ -103,22 +25,12 @@ category: alerts
   padding: 15px;
 }
 
-.alert-icon {
-  display: inline-block;
-  color: white;
-  padding: 15px;
-  width: 50px;
-  height: 50px;
-  font-size: 14px;
-  text-align: center;
-}
-
 .success-icon {
-  background: #3a773a;
+  background: $color-green-3;
 }
 
 .error-icon {
-  background: #d0021b;
+  background: $color-red-3;
 }
 
 .info-icon {
@@ -128,17 +40,27 @@ category: alerts
 .alert-text {
   display: inline-block;
   padding: 0 12px 0 10px;
+  align-self: center;
   // To make sure IE picks up the correct font
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .alert-info {
-  border-color: #84acdd
+  border-color: $color-blue-2;
+  background-image: none;
 }
 
-.media-body {
-  vertical-align: top;
-  width: initial;
+.alert-danger {
+  background-image: none;
+}
+
+.grid-error, .graph-error {
+  .alert-row {
+    align-items: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .ajs-message {
@@ -147,19 +69,36 @@ category: alerts
   }
 }
 
+.alert, .ajs-message {
+  .media {
+    .media-body {
+      display: inline-block;
+      width: auto;
+      .alert-icon {
+        display: inline-block;
+      }
+      .alert-text {
+        display: inline-block;
+      }
+    }
+  }
+}
+
 .pg-prop-status-bar {
   padding: 5px;
 
   .media-body {
     display: flex;
+    width: auto;
   }
 
   .alert-icon {
-    padding: 8px;
+    padding: 8px 8px 8px 10.5px;
     width: 35px;
     height: 35px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+    min-height: auto;
   }
 
   .alert-text {
@@ -167,8 +106,8 @@ category: alerts
     border: 1px solid $color-red-2;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
-    padding: 7px 12px 5px 10px;
-    border-left: 0px;
+    padding: 7px 12px 6px 10px;
+    border-left: none;
   }
 
   .error-in-footer {
@@ -193,7 +132,28 @@ category: alerts
     height: 35px;
 
     .alert-text {
-      border: 0px;
+      border: none;
     }
+  }
+}
+
+//Internet Explorer specific CSS
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .styleguide {
+    .alert-danger {
+      width: auto;
+    }
+
+    .alert-info {
+      width: auto;
+    }
+  }
+
+  .alert-danger {
+    width: 90%;
+  }
+
+  .alert-info {
+    width: 90%;
   }
 }

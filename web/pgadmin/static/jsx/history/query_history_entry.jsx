@@ -13,7 +13,7 @@ import moment from 'moment';
 
 export default class QueryHistoryEntry extends React.Component {
   formatDate(date) {
-    return (moment(date).format('MMM D YYYY [–] HH:mm:ss'));
+    return (moment(date).format('HH:mm:ss'));
   }
 
   renderWithClasses(outerDivStyle) {

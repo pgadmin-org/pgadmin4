@@ -12,11 +12,49 @@ import 'codemirror/mode/sql/sql';
 
 import CodeMirror from './code_mirror';
 import Shapes from '../../react_shapes';
+import clipboard from '../../../js/selection/clipboard';
 
 export default class HistoryDetailQuery extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.copyAllHandler = this.copyAllHandler.bind(this);
+    this.state = {isCopied: false};
+    this.timeout = undefined;
+  }
+
+  copyAllHandler() {
+    clipboard.copyTextToClipboard(this.props.historyEntry.query);
+
+    this.clearPreviousTimeout();
+
+    this.setState({isCopied: true});
+    this.timeout = setTimeout(() => {
+      this.setState({isCopied: false});
+    }, 1500);
+  }
+
+  clearPreviousTimeout() {
+    if (this.timeout !== undefined) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
+  }
+
+  copyButtonText() {
+    return this.state.isCopied ? 'Copied!' : 'Copy All';
+  }
+
+  copyButtonClass() {
+    return this.state.isCopied ? 'was-copied' : 'copy-all';
+  }
+
   render() {
     return (
       <div id="history-detail-query">
+        <button className={this.copyButtonClass()}
+                onClick={this.copyAllHandler}>{this.copyButtonText()}</button>
         <CodeMirror
           value={this.props.historyEntry.query}
           options={{

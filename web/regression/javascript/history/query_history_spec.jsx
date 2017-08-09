@@ -12,10 +12,15 @@
 import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
+
 import QueryHistory from '../../../pgadmin/static/jsx/history/query_history';
 import QueryHistoryEntry from '../../../pgadmin/static/jsx/history/query_history_entry';
+import QueryHistoryEntryDateGroup from '../../../pgadmin/static/jsx/history/query_history_entry_date_group';
+import QueryHistoryEntries from '../../../pgadmin/static/jsx/history/query_history_entries';
 import QueryHistoryDetail from '../../../pgadmin/static/jsx/history/query_history_detail';
 import HistoryCollection from '../../../pgadmin/static/js/history/history_collection';
+import clipboard from '../../../pgadmin/static/js/selection/clipboard';
 
 import {mount} from 'enzyme';
 
@@ -50,7 +55,7 @@ describe('QueryHistory', () => {
       done();
     });
 
-    it('nothing is displayed on right panel', (done) => {
+    it('nothing is displayed in the history details panel', (done) => {
       let foundChildren = historyWrapper.find(QueryHistoryDetail);
       expect(foundChildren.length).toBe(1);
       done();
@@ -58,254 +63,397 @@ describe('QueryHistory', () => {
   });
 
   describe('when there is history', () => {
-    let historyObjects;
+    let queryEntries;
+    let queryDetail;
+    let isInvisibleSpy;
 
-    beforeEach(function () {
-      historyObjects = [{
-        query: 'first sql statement',
-        start_time: new Date(2017, 5, 3, 14, 3, 15, 150),
-        status: true,
-        row_affected: 12345,
-        total_time: '14 msec',
-        message: 'something important ERROR:  message from first sql query',
-      }, {
-        query: 'second sql statement',
-        start_time: new Date(2016, 11, 11, 1, 33, 5, 99),
-        status: false,
-        row_affected: 1,
-        total_time: '234 msec',
-        message: 'something important ERROR:  message from second sql query',
-      }];
-      historyCollection = new HistoryCollection(historyObjects);
+    describe('when two SQL queries were executed', () => {
 
-      historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
-    });
+      beforeEach(() => {
+        const historyObjects = [{
+          query: 'first sql statement',
+          start_time: new Date(2017, 5, 3, 14, 3, 15, 150),
+          status: true,
+          row_affected: 12345,
+          total_time: '14 msec',
+          message: 'something important ERROR:  message from first sql query',
+        }, {
+          query: 'second sql statement',
+          start_time: new Date(2016, 11, 11, 1, 33, 5, 99),
+          status: false,
+          row_affected: 1,
+          total_time: '234 msec',
+          message: 'something important ERROR:  message from second sql query',
+        }];
+        historyCollection = new HistoryCollection(historyObjects);
 
-    describe('when all query entries are visible in the pane', () => {
-      describe('when two SQL queries were executed', () => {
-        let foundChildren;
-        let queryDetail;
+        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
 
-        beforeEach(() => {
-          spyOn(historyWrapper.node, 'isInvisible').and.returnValue(false);
-          foundChildren = historyWrapper.find(QueryHistoryEntry);
+        const queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
+        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.node, 'isInvisible')
+          .and.returnValue(false);
 
-          queryDetail = historyWrapper.find(QueryHistoryDetail);
+        queryEntries = queryHistoryEntriesComponent.find(QueryHistoryEntry);
+        queryDetail = historyWrapper.find(QueryHistoryDetail);
+      });
+
+      describe('the history entries panel', () => {
+        it('has two query history entries', () => {
+          expect(queryEntries.length).toBe(2);
         });
 
-        describe('the main pane', () => {
-          it('has two query history entries', () => {
-            expect(foundChildren.length).toBe(2);
-          });
+        it('displays the query history entries in order', () => {
+          expect(queryEntries.at(0).text()).toContain('first sql statement');
+          expect(queryEntries.at(1).text()).toContain('second sql statement');
+        });
 
-          it('displays the query history entries in order', () => {
-            expect(foundChildren.at(0).text()).toContain('first sql statement');
-            expect(foundChildren.at(1).text()).toContain('second sql statement');
-          });
+        it('displays the formatted timestamp of the queries in chronological order by most recent first', () => {
+          expect(queryEntries.at(0).find('.timestamp').text()).toBe('14:03:15');
+          expect(queryEntries.at(1).find('.timestamp').text()).toBe('01:33:05');
+        });
 
-          it('displays the formatted timestamp of the queries in chronological order by most recent first', () => {
-            expect(foundChildren.at(0).text()).toContain('Jun 3 2017 – 14:03:15');
-            expect(foundChildren.at(1).text()).toContain('Dec 11 2016 – 01:33:05');
-          });
+        it('renders the most recent query as selected', () => {
+          expect(queryEntries.at(0).nodes.length).toBe(1);
+          expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+        });
 
-          it('renders the most recent query as selected', () => {
-            expect(foundChildren.at(0).nodes.length).toBe(1);
-            expect(foundChildren.at(0).hasClass('selected')).toBeTruthy();
-          });
+        it('renders the older query as not selected', () => {
+          expect(queryEntries.at(1).nodes.length).toBe(1);
+          expect(queryEntries.at(1).hasClass('selected')).toBeFalsy();
+          expect(queryEntries.at(1).hasClass('error')).toBeTruthy();
+        });
 
-          it('renders the older query as not selected', () => {
-            expect(foundChildren.at(1).nodes.length).toBe(1);
-            expect(foundChildren.at(1).hasClass('selected')).toBeFalsy();
-            expect(foundChildren.at(1).hasClass('error')).toBeTruthy();
-          });
+        describe('when the selected query is the most recent', () => {
+          describe('when we press arrow down', () => {
+            beforeEach(() => {
+              pressArrowDownKey(queryEntries.parent().at(0));
+            });
 
-          describe('when the selected query is the most recent', () => {
-            describe('when we press arrow down', () => {
-              beforeEach(() => {
-                pressArrowDownKey(foundChildren.parent().at(0));
-              });
+            it('should select the next query', () => {
+              expect(queryEntries.at(1).nodes.length).toBe(1);
+              expect(queryEntries.at(1).hasClass('selected')).toBeTruthy();
+            });
 
-              it('should select the next query', () => {
-                expect(foundChildren.at(1).nodes.length).toBe(1);
-                expect(foundChildren.at(1).hasClass('selected')).toBeTruthy();
-              });
+            it('should display the corresponding detail on the right pane', () => {
+              expect(queryDetail.at(0).text()).toContain('message from second sql query');
+            });
 
-              it('should display the corresponding detail on the right pane', () => {
-                expect(queryDetail.at(0).text()).toContain('message from second sql query');
-              });
+            describe('when arrow down pressed again', () => {
+              it('should not change the selected query', () => {
+                pressArrowDownKey(queryEntries.parent().at(0));
 
-              describe('when arrow down pressed again', () => {
-                it('should not change the selected query', () => {
-                  pressArrowDownKey(foundChildren.parent().at(0));
-
-                  expect(foundChildren.at(1).nodes.length).toBe(1);
-                  expect(foundChildren.at(1).hasClass('selected')).toBeTruthy();
-                });
-              });
-
-              describe('when arrow up is pressed', () => {
-                it('should select the most recent query', () => {
-                  pressArrowUpKey(foundChildren.parent().at(0));
-
-                  expect(foundChildren.at(0).nodes.length).toBe(1);
-                  expect(foundChildren.at(0).hasClass('selected')).toBeTruthy();
-                });
+                expect(queryEntries.at(1).nodes.length).toBe(1);
+                expect(queryEntries.at(1).hasClass('selected')).toBeTruthy();
               });
             });
 
             describe('when arrow up is pressed', () => {
-              it('should not change the selected query', () => {
-                pressArrowUpKey(foundChildren.parent().at(0));
-                expect(foundChildren.at(0).nodes.length).toBe(1);
-                expect(foundChildren.at(0).hasClass('selected')).toBeTruthy();
+              it('should select the most recent query', () => {
+                pressArrowUpKey(queryEntries.parent().at(0));
+
+                expect(queryEntries.at(0).nodes.length).toBe(1);
+                expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+              });
+            });
+          });
+
+          describe('when arrow up is pressed', () => {
+            it('should not change the selected query', () => {
+              pressArrowUpKey(queryEntries.parent().at(0));
+              expect(queryEntries.at(0).nodes.length).toBe(1);
+              expect(queryEntries.at(0).hasClass('selected')).toBeTruthy();
+            });
+          });
+        });
+      });
+
+      describe('the historydetails panel', () => {
+        let copyAllButton;
+
+        beforeEach(() => {
+          copyAllButton = () => queryDetail.find('#history-detail-query > button');
+        });
+        it('displays the formatted timestamp', () => {
+          expect(queryDetail.at(0).text()).toContain('6-3-17 14:03:15Date');
+        });
+
+        it('displays the number of rows affected', () => {
+          if (/PhantomJS/.test(window.navigator.userAgent)) {
+            expect(queryDetail.at(0).text()).toContain('12345Rows Affected');
+          } else {
+            expect(queryDetail.at(0).text()).toContain('12,345Rows Affected');
+          }
+        });
+
+        it('displays the total time', () => {
+          expect(queryDetail.at(0).text()).toContain('14 msecDuration');
+        });
+
+        it('displays the full message', () => {
+          expect(queryDetail.at(0).text()).toContain('message from first sql query');
+        });
+
+        it('displays first query SQL', (done) => {
+          setTimeout(() => {
+            expect(queryDetail.at(0).text()).toContain('first sql statement');
+            done();
+          }, 1000);
+        });
+
+        describe('when the "Copy All" button is clicked', () => {
+          beforeEach(() => {
+            spyOn(clipboard, 'copyTextToClipboard');
+            copyAllButton().simulate('click');
+          });
+
+          it('copies the query to the clipboard', () => {
+            expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('first sql statement');
+          });
+        });
+
+        describe('Copy button', () => {
+          beforeEach(() => {
+            jasmine.clock().install();
+          });
+
+          afterEach(() => {
+            jasmine.clock().uninstall();
+          });
+
+          it('should have text \'Copy All\'', () => {
+            expect(copyAllButton().text()).toBe('Copy All');
+          });
+
+          it('should not have the class \'was-copied\'', () => {
+            expect(copyAllButton().hasClass('was-copied')).toBe(false);
+          });
+
+          describe('when the copy button is clicked', () => {
+            beforeEach(() => {
+              copyAllButton().simulate('click');
+            });
+
+            describe('before 1.5 seconds', () => {
+              beforeEach(() => {
+                jasmine.clock().tick(1499);
+              });
+
+              it('should change the button text to \'Copied!\'', () => {
+                expect(copyAllButton().text()).toBe('Copied!');
+              });
+
+              it('should have the class \'was-copied\'', () => {
+                expect(copyAllButton().hasClass('was-copied')).toBe(true);
+              });
+            });
+
+            describe('after 1.5 seconds', () => {
+              beforeEach(() => {
+                jasmine.clock().tick(1501);
+              });
+
+              it('should change the button text back to \'Copy All\'', () => {
+                expect(copyAllButton().text()).toBe('Copy All');
+              });
+            });
+
+            describe('when is clicked again after 1s', () => {
+              beforeEach(() => {
+                jasmine.clock().tick(1000);
+                copyAllButton().simulate('click');
+
+              });
+
+              describe('before 2.5 seconds', () => {
+                beforeEach(() => {
+                  jasmine.clock().tick(1499);
+                });
+
+                it('should change the button text to \'Copied!\'', () => {
+                  expect(copyAllButton().text()).toBe('Copied!');
+                });
+
+                it('should have the class \'was-copied\'', () => {
+                  expect(copyAllButton().hasClass('was-copied')).toBe(true);
+                });
+              });
+
+              describe('after 2.5 seconds', () => {
+                beforeEach(() => {
+                  jasmine.clock().tick(1501);
+                });
+
+                it('should change the button text back to \'Copy All\'', () => {
+                  expect(copyAllButton().text()).toBe('Copy All');
+                });
               });
             });
           });
         });
 
-        describe('the details pane', () => {
-          it('displays the formatted timestamp', () => {
-            expect(queryDetail.at(0).text()).toContain('6-3-17 14:03:15Date');
+        describe('when the query failed', () => {
+          let failedEntry;
+
+          beforeEach(() => {
+            failedEntry = queryEntries.at(1);
+            failedEntry.simulate('click');
           });
 
-          it('displays the number of rows affected', () => {
-            if (/PhantomJS/.test(window.navigator.userAgent)) {
-              expect(queryDetail.at(0).text()).toContain('12345Rows Affected');
-            } else {
-              expect(queryDetail.at(0).text()).toContain('12,345Rows Affected');
-            }
+          it('displays the error message on top of the details pane', () => {
+            expect(queryDetail.at(0).text()).toContain('Error Message message from second sql query');
           });
+        });
+      });
 
-          it('displays the total time', () => {
-            expect(queryDetail.at(0).text()).toContain('14 msecDuration');
+      describe('when the older query is clicked on', () => {
+        let firstEntry, secondEntry;
+
+        beforeEach(() => {
+          firstEntry = queryEntries.at(0);
+          secondEntry = queryEntries.at(1);
+          secondEntry.simulate('click');
+        });
+
+        it('displays the query in the right pane', () => {
+          expect(queryDetail.at(0).text()).toContain('second sql statement');
+        });
+
+        it('deselects the first history entry', () => {
+          expect(firstEntry.nodes.length).toBe(1);
+          expect(firstEntry.hasClass('selected')).toBeFalsy();
+
+        });
+
+        it('selects the second history entry', () => {
+          expect(secondEntry.nodes.length).toBe(1);
+          expect(secondEntry.hasClass('selected')).toBeTruthy();
+        });
+      });
+
+      describe('when the first query is outside the visible area', () => {
+        beforeEach(() => {
+          isInvisibleSpy.and.callFake((element) => {
+            return element.textContent.contains('first sql statement');
           });
+        });
 
-          it('displays the full message', () => {
-            expect(queryDetail.at(0).text()).toContain('message from first sql query');
-          });
-
-          it('displays first query SQL', (done) => {
-            setTimeout(() => {
-              expect(queryDetail.at(0).text()).toContain('first sql statement');
-              done();
-            }, 1000);
-          });
-
-          describe('when the query failed', () => {
-            let failedEntry;
+        describe('when the first query is the selected query', () => {
+          describe('when refocus function is called', () => {
+            let selectedListItem;
 
             beforeEach(() => {
-              failedEntry = foundChildren.at(1);
-              failedEntry.simulate('click');
-            });
-            it('displays the error message on top of the details pane', () => {
-              expect(queryDetail.at(0).text()).toContain('Error Message message from second sql query');
-            });
-          });
-        });
+              selectedListItem = ReactDOM.findDOMNode(historyWrapper.node)
+                .getElementsByClassName('selected')[0].parentElement;
 
-        describe('when the older query is clicked on', () => {
-          let firstEntry, secondEntry;
+              spyOn(selectedListItem, 'focus');
 
-          beforeEach(() => {
-            firstEntry = foundChildren.at(0);
-            secondEntry = foundChildren.at(1);
-            secondEntry.simulate('click');
-          });
-
-          it('displays the query in the right pane', () => {
-            expect(queryDetail.at(0).text()).toContain('second sql statement');
-          });
-
-          it('deselects the first history entry', () => {
-            expect(firstEntry.nodes.length).toBe(1);
-            expect(firstEntry.hasClass('selected')).toBe(false);
-          });
-
-          it('selects the second history entry', () => {
-            expect(secondEntry.nodes.length).toBe(1);
-            expect(secondEntry.hasClass('selected')).toBe(true);
-          });
-        });
-
-        describe('when the user clicks inside the main pane but not in any history entry', () => {
-          let queryList;
-          let firstEntry, secondEntry;
-
-          beforeEach(() => {
-            firstEntry = foundChildren.at(0);
-            secondEntry = foundChildren.at(1);
-            queryList = historyWrapper.find('#query_list');
-
-            secondEntry.simulate('click');
-            queryList.simulate('click');
-          });
-
-          it('should not change the selected entry', () => {
-            expect(firstEntry.hasClass('selected')).toBe(false);
-            expect(secondEntry.hasClass('selected')).toBe(true);
-          });
-
-          describe('when up arrow is keyed', () => {
-            beforeEach(() => {
-              pressArrowUpKey(queryList);
+              jasmine.clock().install();
             });
 
-            it('selects the first history entry', () => {
-              expect(firstEntry.nodes.length).toBe(1);
-              expect(firstEntry.hasClass('selected')).toBe(true);
+            afterEach(() => {
+              jasmine.clock().uninstall();
             });
 
-            it('deselects the second history entry', () => {
-              expect(secondEntry.nodes.length).toBe(1);
-              expect(secondEntry.hasClass('selected')).toBe(false);
+            it('the first query scrolls into view', () => {
+              historyWrapper.node.refocus();
+              expect(selectedListItem.focus).toHaveBeenCalledTimes(0);
+              jasmine.clock().tick(1);
+              expect(selectedListItem.focus).toHaveBeenCalledTimes(1);
             });
           });
         });
 
-        describe('when a third SQL query is executed', () => {
-          beforeEach(() => {
-            historyCollection.add({
-              query: 'third sql statement',
-              start_time: new Date(2017, 11, 11, 1, 33, 5, 99),
-              status: false,
-              row_affected: 5,
-              total_time: '26 msec',
-              message: 'pretext ERROR:  third sql message',
-            });
+      });
 
-            foundChildren = historyWrapper.find(QueryHistoryEntry);
+      describe('when a third SQL query is executed', () => {
+        beforeEach(() => {
+          historyCollection.add({
+            query: 'third sql statement',
+            start_time: new Date(2017, 11, 11, 1, 33, 5, 99),
+            status: false,
+            row_affected: 5,
+            total_time: '26 msec',
+            message: 'pretext ERROR:  third sql message',
           });
 
-          it('displays third query SQL in the right pane', () => {
-            expect(queryDetail.at(0).text()).toContain('third sql statement');
-          });
+          queryEntries = historyWrapper.find(QueryHistoryEntry);
+        });
+
+        it('displays third query SQL in the right pane', () => {
+          expect(queryDetail.at(0).text()).toContain('third sql statement');
         });
       });
     });
 
-    describe('when the first query is outside the visible area', () => {
+    describe('when several days of queries were executed', () => {
+      let queryEntryDateGroups;
+
       beforeEach(() => {
-        spyOn(historyWrapper.node, 'isInvisible').and.callFake((element) => {
-          return element.textContent.contains('first sql statement');
-        });
+        jasmine.clock().install();
+        const mockedCurrentDate = moment('2017-07-01 13:30:00');
+        jasmine.clock().mockDate(mockedCurrentDate.toDate());
+
+        const historyObjects = [{
+          query: 'first today sql statement',
+          start_time: mockedCurrentDate.toDate(),
+          status: true,
+          row_affected: 12345,
+          total_time: '14 msec',
+          message: 'message from first today sql query',
+        }, {
+          query: 'second today sql statement',
+          start_time: mockedCurrentDate.clone().subtract(1, 'hours').toDate(),
+          status: false,
+          row_affected: 1,
+          total_time: '234 msec',
+          message: 'message from second today sql query',
+        }, {
+          query: 'first yesterday sql statement',
+          start_time: mockedCurrentDate.clone().subtract(1, 'days').toDate(),
+          status: true,
+          row_affected: 12345,
+          total_time: '14 msec',
+          message: 'message from first yesterday sql query',
+        }, {
+          query: 'second yesterday sql statement',
+          start_time: mockedCurrentDate.clone().subtract(1, 'days').subtract(1, 'hours').toDate(),
+          status: false,
+          row_affected: 1,
+          total_time: '234 msec',
+          message: 'message from second yesterday sql query',
+        }, {
+          query: 'older than yesterday sql statement',
+          start_time: mockedCurrentDate.clone().subtract(3, 'days').toDate(),
+          status: true,
+          row_affected: 12345,
+          total_time: '14 msec',
+          message: 'message from older than yesterday sql query',
+        }];
+        historyCollection = new HistoryCollection(historyObjects);
+
+        historyWrapper = mount(<QueryHistory historyCollection={historyCollection}/>);
+
+        const queryHistoryEntriesComponent = historyWrapper.find(QueryHistoryEntries);
+        isInvisibleSpy = spyOn(queryHistoryEntriesComponent.node, 'isInvisible')
+          .and.returnValue(false);
+
+        queryEntries = queryHistoryEntriesComponent.find(QueryHistoryEntry);
+        queryEntryDateGroups = queryHistoryEntriesComponent.find(QueryHistoryEntryDateGroup);
       });
 
-      describe('when the first query is the selected query', () => {
-        describe('when refocus function is called', () => {
-          let selectedListItem;
+      afterEach(() => {
+        jasmine.clock().uninstall();
+      });
 
-          beforeEach(() => {
-            selectedListItem = ReactDOM.findDOMNode(historyWrapper.node)
-              .getElementsByClassName('list-item')[0];
+      describe('the history entries panel', () => {
+        it('has three query history entry data groups', () => {
+          expect(queryEntryDateGroups.length).toBe(3);
+        });
 
-            spyOn(selectedListItem, 'focus');
-            historyWrapper.node.refocus();
-          });
-
-          it('the first query scrolls into view', function () {
-            expect(selectedListItem.focus).toHaveBeenCalledTimes(1);
-          });
+        it('has title above', () => {
+          expect(queryEntryDateGroups.at(0).text()).toBe('Today - Jul 01 2017');
+          expect(queryEntryDateGroups.at(1).text()).toBe('Yesterday - Jun 30 2017');
+          expect(queryEntryDateGroups.at(2).text()).toBe('Jun 28 2017');
         });
       });
     });

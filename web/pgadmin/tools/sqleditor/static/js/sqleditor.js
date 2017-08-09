@@ -215,7 +215,7 @@ define('tools.querytool', [
 
         var history = new pgAdmin.Browser.Panel({
           name: 'history',
-          title: gettext("History"),
+          title: gettext("Query History"),
           width: '100%',
           height:'100%',
           isCloseable: false,
