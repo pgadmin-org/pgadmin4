@@ -175,6 +175,15 @@ void delay( int milliseconds )
 
 int main(int argc, char * argv[])
 {
+    /*
+     * Before starting main application, need to set 'QT_X11_NO_MITSHM=1'
+     * to make the runtime work with IBM PPC machine.
+     */
+#if defined (Q_OS_LINUX)
+    QByteArray val("1");
+    qputenv("QT_X11_NO_MITSHM", val);
+#endif
+
     // Create the QT application
     QApplication app(argc, argv);
 
