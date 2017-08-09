@@ -91,6 +91,15 @@ const hardSourceWebpackPlugin = new HardSourceWebpackPlugin({
   },
 });
 
+// Helps in debugging each single file, it extracts the module files
+// from bundle so that they are accessible by search in Chrome's sources panel.
+// Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
+const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
+  filename: '[name].js.map',
+  exclude: ['vendor.js', 'codemirror.js'],
+  columns: false,
+});
+
 module.exports = {
   stats: { children: false },
   // The base directory, an absolute path, for resolving entry points and loaders
@@ -306,5 +315,6 @@ module.exports = {
     pgAdminCommonChunks,
     providePlugin,
     hardSourceWebpackPlugin,
+    sourceMapDevToolPlugin,
   ],
 };
