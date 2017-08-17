@@ -12,7 +12,7 @@
 }
 
 .icon-server-connecting {
-  background-image: url('{{ url_for('browser.static', filename='vendor/aciTree/image/load-node.gif')}}') !important;
+  background-image: url('{{ url_for('static', filename='js/generated/img/load-node.gif')}}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
