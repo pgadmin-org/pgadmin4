@@ -403,7 +403,7 @@ class TypeView(PGChildNodeView, DataTypeReader):
                                             'additional_properties.sql']),
                                   type='c',
                                   typrelid=copy_dict['typrelid'])
-            status, rset = self.conn.execute_2darray(SQL)
+            status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
