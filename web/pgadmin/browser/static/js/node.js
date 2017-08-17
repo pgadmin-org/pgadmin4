@@ -2,8 +2,8 @@ define(
   'pgadmin.browser.node', [
     'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
     'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
-    'backform', 'pgadmin.browser.utils', 'pgadmin.backform'
-], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform) {
+    'backform', 'sources/browser/generate_url', 'pgadmin.browser.utils', 'pgadmin.backform'
+], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl) {
 
   var wcDocker = window.wcDocker,
     keyCode = {
@@ -1428,26 +1428,27 @@ define(
      * depends, statistics
      */
     generate_url: function(item, type, d, with_id, info) {
-      var url = pgBrowser.URL + '{TYPE}/{REDIRECT}{REF}',
-        opURL = {
+
+      var opURL = {
           'create': 'obj', 'drop': 'obj', 'edit': 'obj',
           'properties': 'obj', 'statistics': 'stats'
-        },
-        ref = '', self = this,
+        }, self = this,
         priority = -Infinity;
 
-      info = (_.isUndefined(item) || _.isNull(item)) ?
+      var treeInfo = (_.isUndefined(item) || _.isNull(item)) ?
         info || {} : this.getTreeNodeHierarchy(item);
+      var actionType = type in opURL ? opURL[type] : type;
+      var itemID = with_id && d._type == self.type ? encodeURIComponent(d._id) : '';
 
       if (self.parent_type) {
         if (_.isString(self.parent_type)) {
-          var p = info[self.parent_type];
+          var p = treeInfo[self.parent_type];
           if (p) {
             priority = p.priority;
           }
         } else {
           _.each(self.parent_type, function(o) {
-            var p = info[o];
+            var p = treeInfo[o];
             if (p) {
               if (priority < p.priority) {
                 priority = p.priority;
@@ -1456,34 +1457,10 @@ define(
           });
         }
       }
-
-      _.each(
-        _.sortBy(
-          _.values(
-           _.pick(info,
-            function(v, k, o) {
-              return (v.priority <= priority);
-            })
-           ),
-          function(o) { return o.priority; }
-          ),
-        function(o) {
-          ref = S('%s/%s').sprintf(ref, encodeURIComponent(o._id)).value();
-        });
-
-      ref = S('%s/%s').sprintf(
-          ref, with_id && d._type == self.type ? encodeURIComponent(d._id) : ''
-          ).value();
-
-      var args = {
-        'TYPE': self.type,
-        'REDIRECT': (type in opURL ? opURL[type] : type),
-        'REF': ref
+      var nodePickFunction = function (treeInfoValue) {
+        return (treeInfoValue.priority <= priority);
       };
-
-      return url.replace(/{(\w+)}/g, function(match, arg) {
-        return args[arg];
-      });
+      return generateUrl.generate_url(pgBrowser.URL, treeInfo, actionType, self.type, nodePickFunction, itemID);
     },
     // Base class for Node Data Collection
     Collection: pgBrowser.DataCollection,

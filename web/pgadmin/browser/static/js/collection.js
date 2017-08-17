@@ -1,8 +1,8 @@
 define([
   'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'backbone', 'alertify', 'backform', 'backgrid', 'pgadmin.backform', 'pgadmin.backgrid',
+  'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node'
-], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid) {
+], function(gettext, $, _, S, pgAdmin, Backbone, Alertify, Backform, Backgrid, generateUrl) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -135,41 +135,22 @@ define([
         }
       })
     },
-    generate_url: function(item, type, d) {
-      var url = pgAdmin.Browser.URL + '{TYPE}/{REDIRECT}{REF}',
-        /*
-         * Using list, and collection functions of a node to get the nodes
-         * under the collection, and properties of the collection respectively.
-         */
-        opURL = {
-          'properties': 'obj', 'children': 'nodes'
+    generate_url: function(item, type) {
+      /*
+     * Using list, and collection functions of a node to get the nodes
+     * under the collection, and properties of the collection respectively.
+     */
+      var opURL = {
+          'properties': 'obj', 'children': 'nodes',
         },
-        ref = '', self = this;
-
-      _.each(
-        _.sortBy(
-          _.values(
-           _.pick(
-            this.getTreeNodeHierarchy(item), function(v, k, o) {
-              return (k != self.type);
-            })
-           ),
-          function(o) { return o.priority; }
-          ),
-        function(o) {
-          ref = S('%s/%s').sprintf(ref, encodeURI(o._id)).value();
-        });
-
-      var args = {
-        'TYPE': self.node,
-        'REDIRECT': (type in opURL ? opURL[type] : type),
-        'REF': S('%s/').sprintf(ref).value()
+        self = this;
+      var collectionPickFunction = function (treeInfoValue, treeInfoKey) {
+        return (treeInfoKey != self.type);
       };
-
-      return url.replace(/{(\w+)}/g, function(match, arg) {
-        return args[arg];
-      });
-    }
+      var treeInfo = this.getTreeNodeHierarchy(item);
+      var actionType = type in opURL ? opURL[type] : type;
+      return generateUrl.generate_url(pgAdmin.Browser.URL, treeInfo, actionType, self.node, collectionPickFunction);
+    },
   });
 
   return pgBrowser.Collection;
