@@ -556,8 +556,7 @@ define('pgadmin.node.role', [
           return null;
         }
       })
-    }),
-    sg = pgBrowser.Nodes['server-group'];
+    })
   }
 
   return pgBrowser.Nodes['role'];

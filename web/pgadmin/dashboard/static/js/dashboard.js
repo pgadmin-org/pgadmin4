@@ -357,11 +357,13 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
         // Handler function to support the "Add Server" link
         add_new_server: function() {
             if (pgBrowser && pgBrowser.tree) {
-                var i = pgBrowser.tree.first(null, false),
-                    serverModule = r('pgadmin.node.server'),
-                    itemData = pgBrowser.tree.itemData(i);
+                var i = pgBrowser.tree.selected().length != 0 ?
+                          pgBrowser.tree.selected() :
+                          pgBrowser.tree.first(null, false),
+                     serverModule = r('pgadmin.node.server'),
+                     itemData = pgBrowser.tree.itemData(i);
 
-                while (itemData && itemData._type != "server-group") {
+                while (itemData && itemData._type != "server_group") {
                     i = pgBrowser.tree.next(i);
                     itemData = pgBrowser.tree.itemData(i);
                 }
