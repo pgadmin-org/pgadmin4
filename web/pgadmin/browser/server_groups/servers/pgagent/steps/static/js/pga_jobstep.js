@@ -1,8 +1,8 @@
 define('pgadmin.node.pga_jobstep', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
-  'pgadmin.backform'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform) {
+  'backgrid', 'pgadmin.backform', 'pgadmin.backgrid'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Alertify, Backform, Backgrid) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
@@ -17,6 +17,40 @@ define('pgadmin.node.pga_jobstep', [
         hasStatistics: false
       });
   }
+
+  // Switch Cell with Deps, Needed for SubNode control
+  var SwitchDepsCell = Backgrid.Extension.SwitchCell.extend({
+    initialize: function initialize() {
+      Backgrid.Extension.SwitchCell.prototype.initialize.apply(this, arguments);
+      Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+    },
+    dependentChanged: function dependentChanged() {
+      var model = this.model,
+          column = this.column,
+          editable = this.column.get("editable"),
+          input = this.$el.find('input[type=checkbox]').first(),
+          self_name = column.get('name'),
+          is_editable;
+
+      is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
+      if (is_editable) {
+        this.$el.addClass("editable");
+        input.bootstrapSwitch('disabled', false);
+      } else {
+        this.$el.removeClass("editable");
+        input.bootstrapSwitch('disabled', true);
+        // Set self value into model
+        setTimeout(function () {
+          model.set(self_name, true);
+        }, 10);
+
+      }
+
+      this.delegateEvents();
+      return this;
+    },
+    remove: Backgrid.Extension.DependentCell.prototype.remove
+  });
 
   if (!pgBrowser.Nodes['pga_jobstep']) {
     pgBrowser.Nodes['pga_jobstep'] = pgBrowser.Node.extend({
@@ -118,6 +152,11 @@ define('pgadmin.node.pga_jobstep', [
           id: 'jstconntype', label: gettext('Connection type'),
           type: 'switch', deps: ['jstkind'], mode: ['create', 'edit'],
           disabled: function(m) { return !m.get('jstkind'); },
+          cell: SwitchDepsCell,
+          editable: function(m) {
+            // If jstkind is Batch then disable it
+            return m.get('jstkind');
+          },
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
             'onColor': 'primary', 'offColor': 'primary'
