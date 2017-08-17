@@ -176,6 +176,6 @@ button.pg-alertify-button {
   @extend .ajs-text-smoothing;
 }
 
-.media-body {
+.ajs-message > .media > .media-body.media-middle {
   display: table-row;
 }
