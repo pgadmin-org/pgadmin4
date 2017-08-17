@@ -773,6 +773,12 @@ TODO LIST FOR BACKUP:
                     );
                   }
 
+                  // Remove ratio attribute from model if it has empty string.
+                  // The valid value can be between 0 to 9.
+                  if (_.isEmpty(this.view.model.get('ratio'))) {
+                    this.view.model.unset('ratio');
+                  }
+
                   var self = this,
                     baseUrl = url_for('backup.create_object_job', {'sid': treeInfo.server._id}),
                       args =  this.view.model.toJSON();

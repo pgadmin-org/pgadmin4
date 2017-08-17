@@ -360,6 +360,10 @@ def create_backup_objects_job(sid):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
+    # Remove ratio from data in case of empty string
+    if 'ratio' in data and data['ratio'] == '':
+        data.pop("ratio")
+
     try:
         backup_file = filename_with_file_manager_path(data['file'])
     except Exception as e:
