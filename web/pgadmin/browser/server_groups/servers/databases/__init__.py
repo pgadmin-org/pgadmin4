@@ -28,9 +28,7 @@ from pgadmin.utils.ajax import gone
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.browser.server_groups.servers import ServerNode
-from flask_security import current_user
-from pgadmin.model import Server
+
 
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'database'
@@ -145,8 +143,8 @@ class DatabaseView(PGChildNodeView):
                     self.db_allow_connection = True
                     # If connection to database is not allowed then
                     # provide generic connection
-                    if kwargs['did'] in self.conn.manager.db_info:
-                        self._db = self.conn.manager.db_info[kwargs['did']]
+                    if kwargs['did'] in self.manager.db_info:
+                        self._db = self.manager.db_info[kwargs['did']]
                         if self._db['datallowconn'] is False:
                             self.conn = self.manager.connection()
                             self.db_allow_connection = False
@@ -297,13 +295,12 @@ class DatabaseView(PGChildNodeView):
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
-        conn = self.manager.connection()
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            did=did, conn=conn, last_system_oid=0
+            did=did, conn=self.conn, last_system_oid=0
         )
-        status, res = conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -315,9 +312,9 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=conn
+            did=did, conn=self.conn
         )
-        status, dataclres = conn.execute_dict(SQL)
+        status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -325,9 +322,9 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=conn
+            did=did, conn=self.conn
         )
-        status, defaclres = conn.execute_dict(SQL)
+        status, defaclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -337,10 +334,10 @@ class DatabaseView(PGChildNodeView):
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=conn
+            did=did, conn=self.conn
         )
 
-        status, res1 = conn.execute_dict(SQL)
+        status, res1 = self.conn.execute_dict(SQL)
 
         if not status:
             return internal_server_error(errormsg=res1)
