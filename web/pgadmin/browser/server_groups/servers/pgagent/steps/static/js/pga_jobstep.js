@@ -241,7 +241,7 @@ define('pgadmin.node.pga_jobstep', [
             } else {
               this.errorModel.unset('jstdbname');
               var msg,
-                r = /\s*\b(\w+)\s*=\s*('([^'\\]*(?:\\.[^'\\]*)*)'|\w*)/g;
+                r = /\s*\b(\w+)\s*=\s*('([^'\\]*(?:\\.[^'\\]*)*)'|[\w|\.]*)/g;
               val = this.get('jstconnstr');
               if (
                 _.isUndefined(val) || _.isNull(val) ||
