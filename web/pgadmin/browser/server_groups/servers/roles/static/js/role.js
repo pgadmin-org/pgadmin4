@@ -196,7 +196,7 @@ define('pgadmin.node.role', [
             } else {
               var d = _.extend(
                  {}, data, {
-                   'opttext': opt.text,
+                   'opttext': _.escape(opt.text),
                    'optimage': optimage,
                    'checkbox': false
                  });
@@ -224,7 +224,7 @@ define('pgadmin.node.role', [
             } else {
               var d = _.extend(
                  {}, data, {
-                   'opttext': opt.text,
+                   'opttext': _.escape(opt.text),
                    'optimage': optimage,
                    'checkbox': true
                  }),

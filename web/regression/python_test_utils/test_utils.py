@@ -291,6 +291,56 @@ def drop_debug_function(server, db_name, function_name="test_func"):
         traceback.print_exc(file=sys.stderr)
 
 
+def create_role(server, db_name, role_name="test_role"):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'],
+                                       server['sslmode'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''
+            CREATE USER "%s" WITH
+              LOGIN
+              NOSUPERUSER
+              INHERIT
+              CREATEDB
+              NOCREATEROLE
+              NOREPLICATION
+            ''' % (role_name)
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def drop_role(server, db_name, role_name="test_role"):
+    try:
+        connection = get_db_connection(db_name,
+                                       server['username'],
+                                       server['db_password'],
+                                       server['host'],
+                                       server['port'],
+                                       server['sslmode'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''
+            DROP USER "%s"
+            ''' % (role_name)
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def drop_database(connection, database_name):
     """This function used to drop the database"""
     if database_name not in ["postgres", "template1", "template0"]:
