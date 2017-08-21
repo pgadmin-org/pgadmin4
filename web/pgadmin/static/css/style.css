@@ -5,7 +5,7 @@
 @import '~font-awesome/css/font-awesome.css';
 @import '~font-mfizz/font/font-mfizz.css';
 @import '~bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
-@import '~bootstrap-datetime-picker/css/bootstrap-datetimepicker.css';
+@import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
 @import '~bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css';
 @import '~backgrid-select-all/backgrid-select-all.css';
 @import '~backgrid-filter/backgrid-filter.css';

@@ -150,7 +150,7 @@ var webpackShimConfig = {
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
     'backform': path.join(__dirname, './node_modules/backform/src/backform'),
     'backgrid': path.join(__dirname, './node_modules/backgrid/lib/backgrid'),
-    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/bootstrap-datetime-picker/js/bootstrap-datetimepicker'),
+    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min'),
     'bootstrap.switch': path.join(__dirname, './node_modules/bootstrap-switch/dist/js/bootstrap-switch'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
     'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),

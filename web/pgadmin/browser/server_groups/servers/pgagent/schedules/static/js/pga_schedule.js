@@ -264,7 +264,7 @@ define('pgadmin.node.pga_schedule', [
         },{
           id: 'jscstart', label: gettext('Start'), type: 'text',
           control: 'datetimepicker', cell: 'moment',
-          disabled: function() { return false; },
+          disabled: function() { return false; }, displayInUTC: false,
           displayFormat: 'YYYY-MM-DD HH:mm:ss Z',
           modelFormat: 'YYYY-MM-DD HH:mm:ss Z', options: {
             format: 'YYYY-MM-DD HH:mm:ss Z',
