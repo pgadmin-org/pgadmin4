@@ -54,7 +54,7 @@
     "bootstrap-switch": "3.3.2",
     "bowser": "1.6.1",
     "browserify": "~14.1.0",
-    "codemirror": "^5.27.2",
+    "codemirror": "^5.28.0",
     "css-loader": "0.14.0",
     "cssnano": "^3.10.0",
     "dropzone": "^5.1.1",
