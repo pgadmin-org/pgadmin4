@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 import keyboardShortcuts from 'sources/sqleditor/keyboard_shortcuts';
+import {queryToolActions} from 'sources/sqleditor/query_tool_actions';
 
 describe('the keyboard shortcuts', () => {
   const F1_KEY = 112,
@@ -15,11 +16,9 @@ describe('the keyboard shortcuts', () => {
     F7_KEY = 118,
     F8_KEY = 119,
     PERIOD_KEY = 190,
-    FWD_SLASH_KEY = 191,
-    isMacSystem = window.navigator.platform.search('Mac') != -1;
+    FWD_SLASH_KEY = 191;
 
-  let sqlEditorControllerSpy;
-  let event;
+  let sqlEditorControllerSpy, event, queryToolActionsSpy;
   beforeEach(() => {
     event = {
       shift: false,
@@ -30,15 +29,27 @@ describe('the keyboard shortcuts', () => {
       stopImmediatePropagation: jasmine.createSpy('stopImmediatePropagation'),
     };
 
+    let gridView = {
+      query_tool_obj: {
+        getSelection: jasmine.createSpy('getSelection'),
+        getValue: jasmine.createSpy('getValue'),
+      },
+    };
+
     sqlEditorControllerSpy = jasmine.createSpyObj('SqlEditorController', [
       'isQueryRunning',
-      'download',
-      'explain',
+      'execute',
+    ]);
+
+    sqlEditorControllerSpy.gridView = gridView;
+    queryToolActionsSpy = jasmine.createSpyObj(queryToolActions, [
       'explainAnalyze',
-      'executeQuery',
+      'explain',
+      'download',
+      'commentBlockCode',
       'commentLineCode',
       'uncommentLineCode',
-      'commentBlockCode',
+      'executeQuery',
     ]);
   });
 
@@ -46,7 +57,7 @@ describe('the keyboard shortcuts', () => {
 
     beforeEach(() => {
       event.which = F1_KEY;
-      keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+      keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
     });
 
     it('should allow event to propagate', () => {
@@ -58,11 +69,11 @@ describe('the keyboard shortcuts', () => {
     describe('when there is no query already running', () => {
       beforeEach(() => {
         event.keyCode = F5_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
       });
 
       it('should execute the query', () => {
-        expect(sqlEditorControllerSpy.executeQuery).toHaveBeenCalled();
+        expect(queryToolActionsSpy.executeQuery).toHaveBeenCalledWith(sqlEditorControllerSpy);
       });
 
       it('should stop event propagation', () => {
@@ -75,9 +86,9 @@ describe('the keyboard shortcuts', () => {
         event.keyCode = F5_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
 
-        expect(sqlEditorControllerSpy.executeQuery).not.toHaveBeenCalled();
+        expect(queryToolActionsSpy.executeQuery).not.toHaveBeenCalled();
       });
     });
   });
@@ -86,11 +97,11 @@ describe('the keyboard shortcuts', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
         event.which = F7_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
       });
 
       it('should explain the query plan', () => {
-        expect(sqlEditorControllerSpy.explain).toHaveBeenCalledWith(event);
+        expect(queryToolActionsSpy.explain).toHaveBeenCalledWith(sqlEditorControllerSpy);
       });
 
       expectEventPropagationToStop();
@@ -101,23 +112,23 @@ describe('the keyboard shortcuts', () => {
         event.keyCode = F7_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
 
-        expect(sqlEditorControllerSpy.explain).not.toHaveBeenCalled();
+        expect(queryToolActionsSpy.explain).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('Shift+F7', () => {
-    describe('when therre is not a query already running', () => {
+    describe('when there is not a query already running', () => {
       beforeEach(() => {
         event.shiftKey = true;
         event.which = F7_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
       });
 
       it('should analyze explain the query plan', () => {
-        expect(sqlEditorControllerSpy.explainAnalyze).toHaveBeenCalledWith(event);
+        expect(queryToolActionsSpy.explainAnalyze).toHaveBeenCalledWith(sqlEditorControllerSpy);
       });
 
       expectEventPropagationToStop();
@@ -129,9 +140,9 @@ describe('the keyboard shortcuts', () => {
         event.which = F7_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
 
-        expect(sqlEditorControllerSpy.explainAnalyze).not.toHaveBeenCalled();
+        expect(queryToolActionsSpy.explainAnalyze).not.toHaveBeenCalled();
       });
     });
   });
@@ -140,11 +151,11 @@ describe('the keyboard shortcuts', () => {
     describe('when there is not a query already running', () => {
       beforeEach(() => {
         event.which = F8_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
       });
 
       it('should download the query results as a CSV', () => {
-        expect(sqlEditorControllerSpy.download).toHaveBeenCalled();
+        expect(queryToolActionsSpy.download).toHaveBeenCalled();
       });
 
       it('should stop event propagation', () => {
@@ -157,102 +168,196 @@ describe('the keyboard shortcuts', () => {
         event.keyCode = F8_KEY;
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
 
-        expect(sqlEditorControllerSpy.download).not.toHaveBeenCalled();
+        expect(queryToolActionsSpy.download).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('inlineComment', () => {
     describe('when there is not a query already running', () => {
-      beforeEach(() => {
-        event.metaKey = isMacSystem;
-        event.shiftKey = true;
-        event.ctrlKey = !isMacSystem;
-        event.which = FWD_SLASH_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+      describe('and the system is a Mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
+
+        it('should comment the line', () => {
+          expect(queryToolActionsSpy.commentLineCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
+
+        expectEventPropagationToStop();
       });
 
-      it('should comment the line', () => {
-        expect(sqlEditorControllerSpy.commentLineCode).toHaveBeenCalled();
-      });
+      describe('and the system is Windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
 
-      expectEventPropagationToStop();
+        it('should comment the line', () => {
+          expect(queryToolActionsSpy.commentLineCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
+
+        expectEventPropagationToStop();
+      });
     });
 
     describe('when the query is already running', () => {
-      it('does nothing', () => {
-        event.shiftKey = isMacSystem;
-        event.ctrlKey = !isMacSystem;
-        event.which = FWD_SLASH_KEY;
+      beforeEach(() => {
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+      });
+      describe('and the system is a Mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = FWD_SLASH_KEY;
+        });
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        it('does nothing', () => {
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
 
-        expect(sqlEditorControllerSpy.commentLineCode).not.toHaveBeenCalled();
+          expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('and the system is a Windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = FWD_SLASH_KEY;
+        });
+
+        it('does nothing', () => {
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+
+          expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
+        });
       });
     });
   });
 
   describe('inlineUncomment', () => {
     describe('when there is not a query already running', () => {
-      beforeEach(() => {
-        event.metaKey = isMacSystem;
-        event.shiftKey = true;
-        event.ctrlKey = !isMacSystem;
-        event.which = PERIOD_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
-      });
+      describe('and the system is a mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = PERIOD_KEY;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
 
-      it('should uncomment the line', () => {
-        expect(sqlEditorControllerSpy.uncommentLineCode).toHaveBeenCalled();
-      });
+        it('should uncomment the line', () => {
+          expect(queryToolActionsSpy.uncommentLineCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
 
-      expectEventPropagationToStop();
+        expectEventPropagationToStop();
+      });
+      describe('and the system is a windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = PERIOD_KEY;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
+
+        it('should uncomment the line', () => {
+          expect(queryToolActionsSpy.uncommentLineCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
+
+        expectEventPropagationToStop();
+      });
     });
 
     describe('when the query is already running', () => {
-      it('does nothing', () => {
-        event.metaKey = isMacSystem;
-        event.shiftKey = true;
-        event.ctrlKey = !isMacSystem;
-        event.which = PERIOD_KEY;
+      beforeEach(() => {
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+      });
+      describe('and the system is a Mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = PERIOD_KEY;
+        });
 
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
+        it('does nothing', () => {
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+          expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
+        });
+      });
+      describe('and the system is a Windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = PERIOD_KEY;
+        });
 
-        expect(sqlEditorControllerSpy.uncommentLineCode).not.toHaveBeenCalled();
+        it('does nothing', () => {
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+
+          expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
+        });
       });
     });
   });
 
   describe('blockComment', () => {
     describe('when there is not a query already running', () => {
-      beforeEach(() => {
-        event.metaKey = isMacSystem;
-        event.ctrlKey = !isMacSystem;
-        event.which = FWD_SLASH_KEY;
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
-      });
+      describe('and the system is a Mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          event.shiftKey = true;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
 
-      it('should comment a block of code', () => {
-        expect(sqlEditorControllerSpy.commentBlockCode).toHaveBeenCalled();
-      });
+        it('should comment out the block selection', () => {
+          expect(queryToolActionsSpy.commentBlockCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
 
-      expectEventPropagationToStop();
+        expectEventPropagationToStop();
+      });
     });
 
-    describe('when the query is already running', () => {
-      it('does nothing', () => {
-        event.metaKey = isMacSystem;
-        event.ctrlKey = !isMacSystem;
-        event.which = FWD_SLASH_KEY;
+    describe('when there is not a query already running', () => {
+      describe('and the system is a Windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          event.shiftKey = true;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
+
+        it('should comment out the block selection', () => {
+          expect(queryToolActionsSpy.commentBlockCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
+        });
+
+        expectEventPropagationToStop();
+      });
+    });
+
+    describe('when there is a query already running', () => {
+      beforeEach(() => {
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
-
-        keyboardShortcuts.processEvent(sqlEditorControllerSpy, event);
-
-        expect(sqlEditorControllerSpy.commentBlockCode).not.toHaveBeenCalled();
+      });
+      describe('and the system is a Mac', () => {
+        beforeEach(() => {
+          macKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          event.shiftKey = true;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
+        it('does nothing', () => {
+          expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();
+        });
+      });
+      describe('and the system is a Windows', () => {
+        beforeEach(() => {
+          windowsKeysSetup();
+          event.which = FWD_SLASH_KEY;
+          event.shiftKey = true;
+          keyboardShortcuts.processEvent(sqlEditorControllerSpy, queryToolActionsSpy, event);
+        });
+        it('does nothing', () => {
+          expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();
+        });
       });
     });
   });
@@ -273,5 +378,17 @@ describe('the keyboard shortcuts', () => {
         expect(event.stopImmediatePropagation).toHaveBeenCalled();
       });
     });
+  }
+
+  function windowsKeysSetup() {
+    spyOn(keyboardShortcuts, 'isMac').and.returnValue(false);
+    event.ctrlKey = true;
+    event.metaKey = false;
+  }
+
+  function macKeysSetup() {
+    spyOn(keyboardShortcuts, 'isMac').and.returnValue(true);
+    event.ctrlKey = false;
+    event.metaKey = true;
   }
 });

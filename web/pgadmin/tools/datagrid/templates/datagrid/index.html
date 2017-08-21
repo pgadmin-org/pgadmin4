@@ -58,7 +58,7 @@
                 <ul class="dropdown-menu">
                     <li>
                         <a id="btn-find-menu-find" href="#">
-                            <span> {{ _('Find') }}{% if client_plaform == 'macos' -%}
+                            <span> {{ _('Find') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+F)') }}
                             {% else %}
                                  {{ _(' (Ctrl+F)') }}{%- endif %}</span>
@@ -66,7 +66,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-find-next" href="#">
-                            <span> {{ _('Find next') }}{% if client_plaform == 'macos' -%}
+                            <span> {{ _('Find next') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+G)') }}
                             {% else %}
                                  {{ _(' (Ctrl+G)') }}{%- endif %}</span>
@@ -74,7 +74,7 @@
                     </li>
                     <li>
                         <a id="btn-find-menu-find-previous" href="#">
-                            <span> {{ _('Find previous') }}{% if client_plaform == 'macos' -%}
+                            <span> {{ _('Find previous') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+G)') }}
                             {% else %}
                                  {{ _(' (Ctrl+Shift+G)') }}{%- endif %}</span>
@@ -88,7 +88,7 @@
                     <li class="divider"></li>
                     <li>
                         <a id="btn-find-menu-replace" href="#">
-                            <span> {{ _('Replace') }}{% if client_plaform == 'macos' -%}
+                            <span> {{ _('Replace') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+Shift+F)') }}
                             {% else %}
                                  {{ _(' (Ctrl+Shift+F)') }}{%- endif %}</span>
@@ -139,22 +139,22 @@
                             <span> {{ _('Unindent Selection (Shift+Tab)') }} </span>
                         </a>
                         <a id="btn-comment-line" href="#">
-                            <span> {{ _('Inline Comment Selection') }}{% if client_plaform == 'macos' -%}
-                                 {{ _(' (Cmd+Shift+/)') }}
-                            {% else %}
-                                 {{ _(' (Ctrl+Shift+/)') }}{%- endif %}</span>
-                        </a>
-                        <a id="btn-uncomment-line" href="#">
-                            <span> {{ _('Inline Uncomment Selection') }}{% if client_plaform == 'macos' -%}
-                                 {{ _(' (Cmd+Shift+.)') }}
-                            {% else %}
-                                 {{ _(' (Ctrl+Shift+.)') }}{%- endif %}</span>
-                        </a>
-                        <a id="btn-toggle-comment-block" href="#">
-                            <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_plaform == 'macos' -%}
+                            <span> {{ _('Inline Comment Selection') }}{% if client_platform == 'macos' -%}
                                  {{ _(' (Cmd+/)') }}
                             {% else %}
                                  {{ _(' (Ctrl+/)') }}{%- endif %}</span>
+                        </a>
+                        <a id="btn-uncomment-line" href="#">
+                            <span> {{ _('Inline Uncomment Selection') }}{% if client_platform == 'macos' -%}
+                                 {{ _(' (Cmd+.)') }}
+                            {% else %}
+                                 {{ _(' (Ctrl+.)') }}{%- endif %}</span>
+                        </a>
+                        <a id="btn-toggle-comment-block" href="#">
+                            <span> {{ _('Block Comment/Uncomment Selection') }}{% if client_platform == 'macos' -%}
+                                 {{ _(' (Shift+Cmd+/)') }}
+                            {% else %}
+                                 {{ _(' (Shift+Ctrl+/)') }}{%- endif %}</span>
                         </a>
                     </li>
                 </ul>

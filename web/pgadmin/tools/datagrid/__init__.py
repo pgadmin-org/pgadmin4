@@ -217,7 +217,7 @@ def panel(trans_id, is_query_tool, editor_title):
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         is_new_browser_tab=new_browser_tab,
-        client_plaform=user_agent.platform
+        client_platform=user_agent.platform
     )
 
 
