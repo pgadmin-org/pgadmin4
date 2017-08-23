@@ -161,7 +161,7 @@ class BaseTableView(PGChildNodeView):
 
             status, result = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=result)
 
             # Update the trigger function which we have fetched with
             # schema name
@@ -1680,27 +1680,27 @@ class BaseTableView(PGChildNodeView):
 
                         length = False
                         precision = False
-                        if 'elemoid' in column:
+                        if 'elemoid' in c:
                             length, precision, typeval = \
-                                self.get_length_precision(column['elemoid'])
+                                self.get_length_precision(c['elemoid'])
 
 
                         # Set length and precision to None
-                        column['attlen'] = None
-                        column['attprecision'] = None
+                        c['attlen'] = None
+                        c['attprecision'] = None
 
                         # If we have length & precision both
                         if length and precision:
                             matchObj = re.search(r'(\d+),(\d+)', fulltype)
                             if matchObj:
-                                column['attlen'] = matchObj.group(1)
-                                column['attprecision'] = matchObj.group(2)
+                                c['attlen'] = matchObj.group(1)
+                                c['attprecision'] = matchObj.group(2)
                         elif length:
                             # If we have length only
                             matchObj = re.search(r'(\d+)', fulltype)
                             if matchObj:
-                                column['attlen'] = matchObj.group(1)
-                                column['attprecision'] = None
+                                c['attlen'] = matchObj.group(1)
+                                c['attprecision'] = None
 
                         old_data['cltype'] = DataTypeReader.parse_type_name(
                             old_data['cltype']

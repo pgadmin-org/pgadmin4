@@ -16,6 +16,7 @@ define('pgadmin.node.column', [
 
    // This Node model will be used for variable control for column
    var VariablesModel = Backform.VariablesModel = pgBrowser.Node.Model.extend({
+    idAttribute: 'name',
     defaults: {
       name: null,
       value: null
