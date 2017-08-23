@@ -2223,7 +2223,11 @@
         format: "YYYY-MM-DD HH:mm:ss Z",
         showClear: true,
         showTodayButton: true,
-        toolbarPlacement: 'top'
+        toolbarPlacement: 'top',
+        widgetPositioning: {
+          horizontal: 'auto',
+          vertical: 'bottom'
+        },
       },
       placeholder: "YYYY-MM-DD HH:mm:ss Z",
       extraClasses: [],
