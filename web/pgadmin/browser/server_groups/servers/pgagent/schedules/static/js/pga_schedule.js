@@ -348,7 +348,7 @@ define('pgadmin.node.pga_schedule', [
           }),
           schema:[{
             id: 'jscweekdays', label: gettext('Week Days'), cell: 'select2',
-            group: gettext('Days'), control: 'select2', type: 'array',
+            group: gettext('Days'), control: 'select2',
             select2: {
               first_empty: false,
               multiple: true,
@@ -364,7 +364,7 @@ define('pgadmin.node.pga_schedule', [
             options: BooleanArrayOptions
           },{
             id: 'jscmonthdays', label: gettext('Month Days'), cell: 'select2',
-            group: gettext('Days'), control: 'select2', type: 'array',
+            group: gettext('Days'), control: 'select2',
             select2: {
               first_empty: false,
               multiple: true,
@@ -379,7 +379,7 @@ define('pgadmin.node.pga_schedule', [
             selector: monthdays, options: BooleanArrayOptions
           },{
             id: 'jscmonths', label: gettext('Months'), cell: 'select2',
-            group: gettext('Days'), control: 'select2', type: 'array',
+            group: gettext('Days'), control: 'select2',
             select2: {
               first_empty: false,
               multiple: true,
@@ -398,7 +398,7 @@ define('pgadmin.node.pga_schedule', [
           group: gettext('Repeat'), mode: ['create', 'edit'],
           schema:[{
             id: 'jschours', label: gettext('Hours'), cell: 'select2',
-            group: gettext('Times'), control: 'select2', type: 'array',
+            group: gettext('Times'), control: 'select2',
             select2: {
               first_empty: false,
               multiple: true,
@@ -413,7 +413,7 @@ define('pgadmin.node.pga_schedule', [
             selector: hours, options: BooleanArrayOptions
           },{
             id: 'jscminutes', label: gettext('Minutes'), cell: 'select2',
-            group: gettext('Times'), control: 'select2', type: 'array',
+            group: gettext('Times'), control: 'select2',
             select2: {
               first_empty: false,
               multiple: true,

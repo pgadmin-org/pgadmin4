@@ -29,20 +29,21 @@ INSERT INTO pgagent.pga_schedule(
 {{ EXCEPTIONS.INSERT(None, exc) }}{% endfor %}{% endif %}
 {%- endmacro %}
 {% macro UPDATE(jid, jscid, data) -%}
-{% if 'jscname' in data or 'jscenabled' in data or 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %}
+{% if 'jscname' in data or 'jscenabled' in data or 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %}
+
 -- Updating the schedule (id: {{ jscid|qtLiteral }}, jobid: {{ jid|qtLiteral }})
 UPDATE pgagent.pga_schedule
 SET{% if 'jscname' in data %}
 
-    jscname={{ data.jscname|qtLiteral }}::text{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data or 'jscenabled' in data %},{% endif %}{% endif %}{% if 'jscenabled' in data %}
+    jscname={{ data.jscname|qtLiteral }}::text{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data or 'jscenabled' in data %},{% endif %}{% endif %}{% if 'jscenabled' in data %}
 
-    jscenabled={% if data.jscenabled %}true{% else %}false{% endif %}{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscdesc' in data %}
+    jscenabled={% if data.jscenabled %}true{% else %}false{% endif %}{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscdesc' in data %}
 
-    jscdesc={% if data.jscdesc %}{{ data.jscdesc|qtLiteral }}::text{% else %}''::text{% endif %}{% if 'jscstart' in data or 'jscend' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscstart' in data %}
+    jscdesc={% if data.jscdesc %}{{ data.jscdesc|qtLiteral }}::text{% else %}''::text{% endif %}{% if 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscstart' in data %}
 
-    jscstart={{ data.jscstart|qtLiteral }}::text{% if 'jscend' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscend' in data %}
+    jscstart={{ data.jscstart|qtLiteral }}::timestamptz{% if 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscend' in data %}
 
-    jscend={% if data.jscend %}{{ data.jscend|qtLiteral }}::timestamptz{% else %}NULL::timestamptz{% endif %}{% if 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscmonths' in data %}
+    jscend={% if data.jscend %}{{ data.jscend|qtLiteral }}::timestamptz{% else %}NULL::timestamptz{% endif %}{% if 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscmonths' in data %}
 
     jscmonths={{ data.jscmonths|qtLiteral }}::boolean[]{% if 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscminutes' in data %}
 
