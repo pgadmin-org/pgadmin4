@@ -16,6 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
+from pgadmin.browser.server_groups.servers.databases.schemas \
+    .fts_dictionaries.tests import utils as fts_dict_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -52,10 +54,10 @@ class FtsDictionaryAddTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema.")
-
+        self.fts_dict_name = "fts_dict_%s" % str(uuid.uuid4())[1:4]
         data = \
             {
-                "name": "fts_dict_%s" % str(uuid.uuid4())[1:4],
+                "name": self.fts_dict_name,
                 "options": [
                     {
                         "value": "synonym_sample",
@@ -77,7 +79,10 @@ class FtsDictionaryAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts dictionaries and disconnect the test
+        database."""
+        fts_dict_utils.delete_fts_dictionaries(self.server, self.db_name,
+                                               self.schema_name,
+                                               self.fts_dict_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

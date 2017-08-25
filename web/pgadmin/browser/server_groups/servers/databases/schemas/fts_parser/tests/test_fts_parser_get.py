@@ -71,7 +71,10 @@ class FtsParserGetTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_parser and disconnect the test
+        database."""
+        fts_parser_utils.delete_fts_parser(self.server, self.db_name,
+                                           self.schema_name,
+                                           self.fts_parser_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

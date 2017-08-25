@@ -86,3 +86,29 @@ def verify_fts_parser(server, db_name, fts_parser_name):
         return fts_parser
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def delete_fts_parser(server, db_name, schema_name, fts_parser_name):
+    """
+    This function delete FTS parsers.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fts_parser_name: FTS parser name to be added
+    :type fts_parser_name: str
+    :param schema_name: schema name
+    :type schema_name: str
+    :return: None
+    """
+    connection = get_db_connection(db_name,
+                                   server['username'],
+                                   server['db_password'],
+                                   server['host'],
+                                   server['port'],
+                                   server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("DROP TEXT SEARCH PARSER %s.%s" % (
+        schema_name, fts_parser_name))
+    connection.commit()
+    connection.close()

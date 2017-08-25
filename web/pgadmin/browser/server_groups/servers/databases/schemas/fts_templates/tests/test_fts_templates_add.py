@@ -19,6 +19,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as fts_temp_utils
 
 
 class FtsTemplateAddTestCase(BaseTestGenerator):
@@ -26,7 +27,8 @@ class FtsTemplateAddTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS template node.
-        ('Fetch FTS templates Node URL', dict(url='/browser/fts_template/obj/'))
+        (
+        'Fetch FTS templates Node URL', dict(url='/browser/fts_template/obj/'))
     ]
 
     def runTest(self):
@@ -54,9 +56,10 @@ class FtsTemplateAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
+        self.fts_template_name = "fts_temp_%s" % str(uuid.uuid4())[1:4]
         self.data = \
             {
-                "name": "fts_temp_%s" % str(uuid.uuid4())[1:4],
+                "name": self.fts_template_name,
                 "schema": self.schema_id,
                 "tmplinit": "dispell_init",
                 "tmpllexize": "dispell_lexize"
@@ -72,7 +75,10 @@ class FtsTemplateAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_template and disconnect the test
+                database."""
+        fts_temp_utils.delete_fts_template(self.server, self.db_name,
+                                           self.schema_name,
+                                           self.fts_template_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

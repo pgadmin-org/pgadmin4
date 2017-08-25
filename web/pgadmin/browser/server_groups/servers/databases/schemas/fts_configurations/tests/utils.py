@@ -83,3 +83,29 @@ def verify_fts_configuration(server, db_name, fts_conf_name):
         return fts_conf
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def delete_fts_configurations(server, db_name, schema_name, fts_conf_name):
+    """
+    This function delete FTS configuration.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fts_conf_name: FTS configuration name to be added
+    :type fts_conf_name: str
+    :param schema_name: schema name
+    :type schema_name: str
+    :return: None
+    """
+    connection = get_db_connection(db_name,
+                                   server['username'],
+                                   server['db_password'],
+                                   server['host'],
+                                   server['port'],
+                                   server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("DROP TEXT SEARCH CONFIGURATION %s.%s" % (schema_name,
+                                                                fts_conf_name))
+    connection.commit()
+    connection.close()

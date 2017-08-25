@@ -55,7 +55,7 @@ class FDWDGetTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database and drop added extension
-         and dependant objects."""
+        """This function delete the FDW and disconnect the test database """
+        fdw_utils.delete_fdw(self.server, self.db_name, self.fdw_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

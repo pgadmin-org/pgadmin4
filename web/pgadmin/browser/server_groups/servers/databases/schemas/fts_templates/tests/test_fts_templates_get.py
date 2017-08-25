@@ -71,7 +71,10 @@ class FtsTemplateGetTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_template and disconnect the test
+                        database."""
+        fts_temp_utils.delete_fts_template(self.server, self.db_name,
+                                           self.schema_name,
+                                           self.fts_temp_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

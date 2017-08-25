@@ -15,6 +15,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
+from pgadmin.browser.server_groups.servers.databases.schemas \
+    .fts_configurations.tests import utils as fts_config_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -45,7 +47,8 @@ class FTSConfGetTestCase(BaseTestGenerator):
             self.server, self.db_name, self.schema_name, self.fts_conf_name)
 
     def runTest(self):
-        """ This function will fetch new FTS configuration under test schema. """
+        """ This function will fetch new FTS configuration under test schema.
+        """
 
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
@@ -61,17 +64,21 @@ class FTSConfGetTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
-        get_response = self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
-                                       str(self.server_id) + '/' +
-                                       str(self.db_id) + '/' +
-                                       str(self.schema_id) + '/' +
-                                       str(self.fts_conf_id),
-                                       content_type='html/json')
+        get_response = self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.schema_id) + '/' +
+            str(self.fts_conf_id),
+            content_type='html/json')
 
         self.assertEquals(get_response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_config and disconnect the test
+        database."""
+        fts_config_utils.delete_fts_configurations(self.server, self.db_name,
+                                                   self.schema_name,
+                                                   self.fts_conf_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

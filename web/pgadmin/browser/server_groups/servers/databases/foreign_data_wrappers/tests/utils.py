@@ -108,3 +108,26 @@ def verify_fdw(server, db_name, fdw_name):
         return fdw
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def delete_fdw(server, db_name, fdw_name):
+    """
+    This function delete FDW.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fdw_name: fdw name to be deleted
+    :type fdw_name: str
+    :return: None
+    """
+    connection = get_db_connection(db_name,
+                                   server['username'],
+                                   server['db_password'],
+                                   server['host'],
+                                   server['port'],
+                                   server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("DROP FOREIGN DATA WRAPPER %s" % fdw_name)
+    connection.commit()
+    connection.close()

@@ -16,6 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
+from pgadmin.browser.server_groups.servers.databases.schemas \
+    .fts_configurations.tests import utils as fts_config_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -87,7 +89,10 @@ class FTSConfPutTestCase(BaseTestGenerator):
         self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_config and disconnect the test
+        database."""
+        fts_config_utils.delete_fts_configurations(self.server, self.db_name,
+                                                   self.schema_name,
+                                                   self.fts_conf_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

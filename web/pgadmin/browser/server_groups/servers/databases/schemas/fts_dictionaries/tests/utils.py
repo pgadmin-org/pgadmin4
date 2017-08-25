@@ -82,3 +82,29 @@ def verify_fts_dict(server, db_name, fts_dict_name):
         return fts_dict
     except Exception:
         traceback.print_exc(file=sys.stderr)
+
+
+def delete_fts_dictionaries(server, db_name, schema_name, fts_dict_name):
+    """
+    This function delete FTS dictionaries.
+    :param server: server details
+    :type server: dict
+    :param db_name: database name
+    :type db_name: str
+    :param fts_dict_name: FTS dict name to be added
+    :type fts_dict_name: str
+    :param schema_name: schema name
+    :type schema_name: str
+    :return: None
+    """
+    connection = get_db_connection(db_name,
+                                   server['username'],
+                                   server['db_password'],
+                                   server['host'],
+                                   server['port'],
+                                   server['sslmode'])
+    pg_cursor = connection.cursor()
+    pg_cursor.execute("DROP TEXT SEARCH DICTIONARY %s.%s" % (schema_name,
+                                                             fts_dict_name))
+    connection.commit()
+    connection.close()

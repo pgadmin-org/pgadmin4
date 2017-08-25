@@ -16,6 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas. \
     fts_parser.tests import utils as fts_parser_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
+from pgadmin.browser.server_groups.servers.databases.schemas \
+    .fts_configurations.tests import utils as fts_config_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -42,11 +44,8 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
         self.db_id = schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.fts_parser_name = "fts_parser_%s" % str(uuid.uuid4())[1:4]
-
-        self.fts_parser_id = fts_parser_utils.create_fts_parser(self.server,
-                                                                self.db_name,
-                                                                self.schema_name,
-                                                                self.fts_parser_name)
+        self.fts_parser_id = fts_parser_utils.create_fts_parser(
+            self.server, self.db_name, self.schema_name, self.fts_parser_name)
 
     def runTest(self):
         """ This function will add new FTS configuration under test schema. """
@@ -65,9 +64,10 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
 
+        self.fts_conf_name = "fts_conf_%s" % str(uuid.uuid4())[1:4]
         data = \
             {
-                "name": "fts_conf_%s" % str(uuid.uuid4())[1:4],
+                "name": self.fts_conf_name,
                 "owner": self.server["username"],
                 "prsname": "%s.%s" % (self.schema_name, self.fts_parser_name),
                 "schema": self.schema_id,
@@ -84,7 +84,10 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts_config and disconnect the test
+        database."""
+        fts_config_utils.delete_fts_configurations(self.server, self.db_name,
+                                                   self.schema_name,
+                                                   self.fts_conf_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

@@ -48,7 +48,8 @@ class FtsDictionaryPutTestCase(BaseTestGenerator):
             self.fts_dict_name)
 
     def runTest(self):
-        """ This function will update FTS dictionary present under test schema. """
+        """ This function will update FTS dictionary present under test schema.
+         """
 
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
@@ -89,7 +90,10 @@ class FtsDictionaryPutTestCase(BaseTestGenerator):
         self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database."""
-
+        """This function delete the fts dictionaries and disconnect the test
+        database."""
+        fts_dict_utils.delete_fts_dictionaries(self.server, self.db_name,
+                                               self.schema_name,
+                                               self.fts_dict_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

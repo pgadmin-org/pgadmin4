@@ -35,7 +35,7 @@ class FDWDPutTestCase(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.fdw_name = "fdw_put_%s".format(str(uuid.uuid4())[1:6])
+        self.fdw_name = "fdw_put_{0}".format(str(uuid.uuid4())[1:6])
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
@@ -65,7 +65,7 @@ class FDWDPutTestCase(BaseTestGenerator):
         self.assertEquals(put_response.status_code, 200)
 
     def tearDown(self):
-        """This function disconnect the test database and drop added extension
-         and dependant objects."""
+        """This function delete the FDW and disconnect the test database """
+        fdw_utils.delete_fdw(self.server, self.db_name, self.fdw_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)
