@@ -13,6 +13,16 @@ and settings database."""
 import os
 import sys
 
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
+
+# Grab the SERVER_MODE if it's been set by the runtime
+if 'SERVER_MODE' in globals():
+    builtins.SERVER_MODE = globals()['SERVER_MODE']
+else:
+    builtins.SERVER_MODE = None
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
