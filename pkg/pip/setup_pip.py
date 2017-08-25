@@ -13,6 +13,14 @@ import imp
 from setuptools import setup
 from codecs import open
 
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
+
+# Ensure the global server mode is set.
+builtins.SERVER_MODE = None
+
 """This script helps to generate PIP packages"""
 
 # Get the requirements list for the current version of Python
