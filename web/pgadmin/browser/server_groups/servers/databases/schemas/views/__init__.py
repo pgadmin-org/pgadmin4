@@ -901,6 +901,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
             # data.table and not data.relname so compatibility add new key as
             # table in res_rows.
             res_rows['table'] = res_rows['relname']
+            res_rows['schema'] = self.view_schema
 
             # Get trigger function with its schema name
             SQL = render_template("/".join([self.trigger_temp_path,
@@ -999,6 +1000,7 @@ class ViewNode(PGChildNodeView, VacuumSettings):
 
         # merging formated result with main result again
         result.update(frmtd_reslt)
+        self.view_schema = result.get('schema')
 
         # Fetch all privileges for view
         SQL = render_template("/".join(
