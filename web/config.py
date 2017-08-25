@@ -11,8 +11,14 @@
 #
 ##########################################################################
 
+import logging
 import os
 import sys
+
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
 
 
 # We need to include the root directory in sys.path to ensure that we can
@@ -91,46 +97,6 @@ MODULE_BLACKLIST = ['test']
 NODE_BLACKLIST = []
 
 
-# Data directory for storage of config settings etc. This shouldn't normally
-# need to be changed - it's here as various other settings depend on it.
-if IS_WIN:
-    # Use the short path on windows
-    DATA_DIR = os.path.realpath(
-        os.path.join(fs_short_path(env('APPDATA')), u"pgAdmin")
-    )
-else:
-    DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
-
-
-##########################################################################
-# Log settings
-##########################################################################
-
-# Debug mode?
-DEBUG = False
-
-
-import logging
-
-# Application log level - one of:
-#   CRITICAL 50
-#   ERROR    40
-#   WARNING  30
-#   SQL      25
-#   INFO     20
-#   DEBUG    10
-#   NOTSET    0
-CONSOLE_LOG_LEVEL = logging.WARNING
-FILE_LOG_LEVEL = logging.WARNING
-
-# Log format.
-CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
-FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
-
-# Log file name
-LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
-
-
 ##########################################################################
 # Server settings
 ##########################################################################
@@ -140,7 +106,19 @@ LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
 # default login.
 #
 # DO NOT DISABLE SERVER MODE IF RUNNING ON A WEBSERVER!!
-SERVER_MODE = True
+#
+# We only set SERVER_MODE if it's not already set. That's to allow the
+# runtime to force it to False.
+#
+# NOTE: If you change the value of SERVER_MODE in an included config file,
+#       you may also need to redefine any values below that are derived
+#       from it, notably various paths such as LOG_FILE and anything
+#       using DATA_DIR.
+
+if builtins.SERVER_MODE is None:
+    SERVER_MODE = True
+else:
+    SERVER_MODE = builtins.SERVER_MODE
 
 # User ID (email address) to use for the default user in desktop mode.
 # The default should be fine here, as it's not exposed in the app.
@@ -174,6 +152,52 @@ SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 # NOTE: The HTMLMIN module doesn't work with Python 2.6, so this option
 #       has no effect on <= Python 2.7.
 MINIFY_PAGE = True
+
+# Data directory for storage of config settings etc. This shouldn't normally
+# need to be changed - it's here as various other settings depend on it.
+# On Windows, we always store data in %APPDATA%\pgAdmin. On other platforms,
+# if we're in server mode we use /var/lib/pgadmin, otherwise ~/.pgadmin
+if IS_WIN:
+    # Use the short path on windows
+    DATA_DIR = os.path.realpath(
+        os.path.join(fs_short_path(env('APPDATA')), u"pgAdmin")
+    )
+else:
+    if SERVER_MODE:
+        DATA_DIR = '/var/lib/pgadmin'
+    else:
+        DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
+
+
+##########################################################################
+# Log settings
+##########################################################################
+
+# Debug mode?
+DEBUG = False
+
+# Application log level - one of:
+#   CRITICAL 50
+#   ERROR    40
+#   WARNING  30
+#   SQL      25
+#   INFO     20
+#   DEBUG    10
+#   NOTSET    0
+CONSOLE_LOG_LEVEL = logging.WARNING
+FILE_LOG_LEVEL = logging.WARNING
+
+# Log format.
+CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+
+# Log file name. This goes in the data directory, except on non-Windows
+# platforms in server mode.
+if SERVER_MODE and not IS_WIN:
+    LOG_FILE = '/var/log/pgadmin/pgadmin4.log'
+else:
+    LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
+
 
 ##########################################################################
 # Server Connection Driver Settings

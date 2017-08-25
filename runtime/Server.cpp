@@ -272,9 +272,10 @@ void Server::run()
         return;
     }
 
-    // Set the port number
+    // Set the port number and key, and force SERVER_MODE off.
     PyRun_SimpleString(QString("PGADMIN_PORT = %1").arg(m_port).toLatin1());
     PyRun_SimpleString(QString("PGADMIN_KEY = '%1'").arg(m_key).toLatin1());
+    PyRun_SimpleString(QString("SERVER_MODE = False").toLatin1());
 
     // Run the app!
     QByteArray m_appfile_utf8 = m_appfile.toUtf8();
