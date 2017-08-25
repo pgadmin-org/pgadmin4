@@ -103,7 +103,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
         query_we_need_to_scroll_to = self.page.find_by_xpath("//*[@id='query_list']/ul/li[17]")
 
         self.page.click_element(query_we_need_to_scroll_to)
-        self._assert_not_clickable_because_out_of_view(query_we_need_to_scroll_to)
 
         for _ in range(17):
             ActionChains(self.page.driver) \
@@ -120,9 +119,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_tab("History")
         query_we_need_to_scroll_to = self.page.find_by_xpath(
             "//*[@id='query_list']/ul/li[17]"
-        )
-        self._assert_not_clickable_because_out_of_view(
-            query_we_need_to_scroll_to
         )
         for _ in range(17):
             ActionChains(self.page.driver) \
@@ -157,9 +153,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _assert_clickable(self, element):
         self.page.click_element(element)
-
-    def _assert_not_clickable_because_out_of_view(self, element):
-        self.assertRaises(self.page.click_element(element))
 
     def after(self):
         self.page.close_query_tool()

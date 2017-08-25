@@ -643,7 +643,7 @@ SELECT 1/0;"""
         self.page.find_by_id("btn-flash").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.driver.find_element_by_xpath(
+        self.page.find_by_xpath(
             '//div[contains(@class, "sql-editor-message") and contains(string(), "division by zero")]'
         )
 
@@ -660,7 +660,7 @@ END;"""
         self.page.find_by_id("btn-flash").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.driver.find_element_by_xpath(
+        self.page.find_by_xpath(
             '//div[contains(@class, "sql-editor-message") and contains(string(), "Query returned successfully")]'
         )
 
@@ -689,7 +689,7 @@ SELECT relname FROM pg_class WHERE relkind IN ('r','s','t') and relnamespace = 2
 -- 3. Execute long running query.
 -- 4. Cancel long running query execution.
 END;
-SELECT 1, pg_sleep(10)"""
+SELECT 1, pg_sleep(300)"""
         self.page.fill_codemirror_area_with(query)
 
         self.page.find_by_id("btn-query-dropdown").click()
@@ -721,10 +721,10 @@ SELECT 1, pg_sleep(10)"""
             auto_commit_btn.click()
 
         self.page.find_by_id("btn-flash").click()
-        self.driver.find_element_by_xpath("//*[@id='fetching_data']")
+        self.page.find_by_xpath("//*[@id='fetching_data']")
         self.page.find_by_id("btn-cancel-query").click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
-        self.driver.find_element_by_xpath(
+        self.page.find_by_xpath(
             '//div[contains(@class, "sql-editor-message") and contains(string(), "canceling statement due to user request")]'
         )
