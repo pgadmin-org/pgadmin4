@@ -32,6 +32,9 @@ if sys.version_info[0] >= 3:
 else:
     import __builtin__ as builtins
 
+# Ensure the global server mode is set.
+builtins.SERVER_MODE = None
+
 logger = logging.getLogger(__name__)
 file_name = os.path.basename(__file__)
 
@@ -45,12 +48,6 @@ root = os.path.dirname(CURRENT_PATH)
 if sys.path[0] != root:
     sys.path.insert(0, root)
     os.chdir(root)
-
-# Grab the SERVER_MODE if it's been set by the runtime
-if 'SERVER_MODE' in globals():
-    builtins.SERVER_MODE = globals()['SERVER_MODE']
-else:
-    builtins.SERVER_MODE = None
 
 from pgadmin import create_app
 import config
