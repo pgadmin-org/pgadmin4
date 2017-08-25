@@ -13,6 +13,14 @@
 
 import sys, os
 
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
+
+# Ensure the global server mode is set.
+builtins.SERVER_MODE = None
+
 # Import the pgAdmin config
 root = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, root + '/../../web/')
