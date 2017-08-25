@@ -296,6 +296,15 @@ module.exports = {
     extensions: ['.js', '.jsx'],
     unsafeCache: true,
   },
+  // Watch mode Configuration: After initial build, webpack will watch for
+  // changes in files and compiles only files which are changed,
+  // if watch is set to True
+  // Reference: https://webpack.js.org/configuration/watch/#components/sidebar/sidebar.jsx
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000,
+    ignored: /node_modules/,
+  },
   // Define list of Plugins used in Production or development mode
   // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
   plugins: PRODUCTION ? [

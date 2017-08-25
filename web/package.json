@@ -86,9 +86,11 @@
   "scripts": {
     "linter": "yarn run eslint pgadmin/static/jsx/**/*.jsx pgadmin/static/js/selection/*.js regression/javascript/**/*.jsx regression/javascript/**/*.js *.js",
     "webpacker": "yarn run webpack -- --config webpack.config.js",
+    "webpacker:watch": "yarn run webpack -- --config webpack.config.js --progress --watch",
     "webpacker:dev": "yarn run webpack -- --config webpack.config.js",
     "webpacker:prod": "yarn run linter && yarn run webpack -- --config webpack.config.js",
     "bundle": "yarn run linter && yarn run webpacker",
+    "bundle:watch": "yarn run linter && yarn run webpacker:watch",
     "bundle:dev": "yarn run linter && yarn run webpacker:dev",
     "bundle:prod": "cross-env NODE_ENV=production yarn run webpacker:prod",
     "test:karma-once": "yarn run linter && yarn run karma start -- --single-run",
