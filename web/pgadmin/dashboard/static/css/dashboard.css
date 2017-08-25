@@ -88,3 +88,83 @@
     margin-top: 13px;
     display: block;
 }
+
+/* CSS to make subnode control look preety in backgrid - START */
+.dashboard-tab-container .subnode-dialog .form-control {
+    font-size: inherit;
+}
+
+#server_activity .CodeMirror,
+#database_activity .CodeMirror,
+#server_activity .CodeMirror-scroll,
+#database_activity .CodeMirror-scroll {
+    height: auto;
+    max-height:100px;
+}
+
+.dashboard-tab-container .sub-node-form > ul.tab-content {
+  padding-left: 0px;
+  left: 0px;
+}
+
+.dashboard-tab-container .sub-node-form > ul.pg-el-sm-12,
+.dashboard-tab-container .sub-node-form > ul.pg-el-md-12,
+.dashboard-tab-container .sub-node-form > ul.pg-el-lg-12,
+.dashboard-tab-container .sub-node-form > ul.pg-el-xs-12 {
+  padding: 0px;
+}
+
+.dashboard-tab-container .subnode-dialog {
+  background-color: white;
+  border: 0px solid #e8e8e8;
+}
+
+.dashboard-tab-container .subnode-dialog .control-label {
+  font-weight: inherit;
+}
+
+.dashboard-tab-container .sub-node-form {
+  padding: 0px 0px 0px 1px;
+  background-color: #f8f8f8;
+}
+
+.dashboard-tab-container .subnode-body {
+  background-color: #f8f8f8;
+}
+
+.dashboard-tab-container .sub-node-form > .nav-tabs {
+  background-color: #f8f8f8 !important;
+}
+
+.dashboard-tab-container .subnode-dialog .nav > li > a {
+  font-weight: bold;
+  border-color: #f8f8f8;
+}
+
+.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a,
+.dashboard-tab-container .subnode-dialog .nav-tabs > li.active > a:hover {
+  border-top: 1px solid #cccccc;
+  border-left: 1px solid #cccccc;
+  border-right: 1px solid #cccccc;
+  margin-bottom: -1px;
+  z-index: 10;
+}
+
+.dashboard-tab-container .backgrid .editor {
+  background-color: #f8f8f8 !important;
+  border-bottom-color: #f8f8f8;
+}
+
+.dashboard-tab-container .backgrid.presentation td.editable:not(.edit-cell) {
+  padding-right: 25px
+}
+
+.dashboard-tab-container .subnode-dialog .pgadmin-control-group {
+  padding: 5px;
+}
+
+.dashboard-tab-container .subnode-dialog .tab-pane {
+  border: 1px solid #cccccc;
+}
+
+/* CSS to make subnode control look preety in backgrid - END */

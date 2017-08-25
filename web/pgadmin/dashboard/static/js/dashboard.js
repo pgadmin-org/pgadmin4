@@ -88,6 +88,68 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
         }
   });
 
+  // Subnode Cell, which will display subnode control
+  var SessionDetailsCell = Backgrid.Extension.ObjectCell.extend({
+   enterEditMode: function () {
+      // Notify that we are about to enter in edit mode for current cell.
+      this.model.trigger("enteringEditMode", [this]);
+
+      Backgrid.Cell.prototype.enterEditMode.apply(this, arguments);
+      /* Make sure - we listen to the click event */
+      this.delegateEvents();
+      var editable = Backgrid.callByNeed(this.column.editable(), this.column, this.model);
+
+      if (editable) {
+        this.$el.html(
+          "<i class='fa fa-caret-down subnode-edit-in-process'></i>"
+          );
+        this.model.trigger(
+          "pg-sub-node:opened", this.model, this
+          );
+      }
+    },
+    render: function(){
+        this.$el.empty();
+        this.$el.html(
+          "<i class='fa fa-caret-right' data-toggle='tooltip' " +
+          "title='" + gettext('View the active session details') +
+          "'></i>"
+        );
+        this.delegateEvents();
+        if (this.grabFocus)
+          this.$el.focus();
+        return this;
+    }
+  });
+
+  // Subnode Model
+  var ActiveQueryDetailsModel = Backbone.Model.extend({
+    defaults: {
+      version: null /* Postgres version */
+    },
+    schema: [{
+      id: 'backend_type', label: gettext('Backend type'),
+      type: 'text', editable: true, disabled: true,
+      group: gettext('Details'),
+      visible: function(m) {
+        return m.get('version') >= 100000;
+      }
+    },{
+      id: 'query_start', label: gettext('Query started at'),
+      type: 'text', editable: false, disabled: true,
+      group: gettext('Details')
+    },{
+      id: 'state_change', label: gettext('Last state changed at'),
+      type: 'text', editable: true, disabled: true,
+      group: gettext('Details')
+    },{
+      id: 'query', label: gettext('SQL'),
+      type: 'text', editable: true, disabled: true,
+      control: Backform.SqlFieldControl,
+      group: gettext('Details')
+    }]
+  });
+
   pgAdmin.Dashboard = {
         init: function() {
             if (this.initialized)
@@ -582,6 +644,23 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                 }]);
             }
 
+            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel(
+              {'version': version}
+            );
+
+            var subNodeFieldsModel = Backform.generateViewSchema(
+              null, newActiveQueryDetailsModel, 'create', null, null, true
+            );
+
+            // Add cancel active query button
+            server_activity_columns.unshift({
+              name: "pg-backform-expand", label: "",
+              cell: SessionDetailsCell,
+              cell_priority: -1,
+              postgres_version: version,
+              schema: subNodeFieldsModel
+            });
+
             // Add cancel active query button
             server_activity_columns.unshift({
               name: "pg-backform-delete", label: "",
@@ -739,6 +818,10 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               bio_stats_refresh
             );
 
+            // To align subnode controls properly
+            $(div_server_activity).addClass('pg-el-container');
+            $(div_server_activity).attr('el', 'sm');
+
             // Render the tabs, but only get data for the activity tab for now
             pgAdmin.Dashboard.render_grid(
               div_server_activity, sid, did,
@@ -895,6 +978,23 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                 }]);
             }
 
+            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel(
+              {'version': version}
+            );
+
+            var subNodeFieldsModel = Backform.generateViewSchema(
+              null, newActiveQueryDetailsModel, 'create', null, null, true
+            );
+
+            // Add cancel active query button
+            database_activity_columns.unshift({
+              name: "pg-backform-expand", label: "",
+              cell: SessionDetailsCell,
+              cell_priority: -1,
+              postgres_version: version,
+              schema: subNodeFieldsModel
+            });
+
             database_activity_columns.unshift({
               name: "pg-backform-delete", label: "",
               cell: cancelQueryCell,
@@ -1013,6 +1113,10 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
               url_for('dashboard.bio_stats'), options_line, true,
               bio_stats_refresh
             );
+
+            // To align subnode controls properly
+            $(div_database_activity).addClass('pg-el-container');
+            $(div_database_activity).attr('el', 'sm');
 
             // Render the tabs, but only get data for the activity tab for now
             pgAdmin.Dashboard.render_grid(

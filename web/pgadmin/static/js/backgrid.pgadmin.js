@@ -217,12 +217,14 @@
     postRender: function(model, column) {
       var editor = this,
           el = this.el,
-          columns_length = this.columns_length;
+          columns_length = this.columns_length,
+          // To render schema directly from Backgrid cell we use columns schema attribute
+          schema = this.schema.length ? this.schema : this.column.get('schema');
 
       if (column != null && column.get("name") != this.column.get("name"))
         return false;
 
-      if (!_.isArray(this.schema)) throw new TypeError("schema must be an array");
+      if (!_.isArray(schema)) throw new TypeError("schema must be an array");
 
       // Create a Backbone model from our object if it does not exist
       var $dialog = this.createDialog(columns_length);
@@ -235,7 +237,7 @@
       var back_el = $dialog.find('form.form-dialog');
 
       this.objectView = new Backform.Dialog({
-        el: back_el, model: this.model, schema: this.schema,
+        el: back_el, model: this.model, schema: schema,
         tabPanelClassName: function() {
           return 'sub-node-form col-sm-12';
         }
