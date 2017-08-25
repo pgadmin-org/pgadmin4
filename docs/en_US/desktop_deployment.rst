@@ -16,12 +16,13 @@ packages and users interested in understanding how pgAdmin works.**
 Configuration
 *************
 
-In order to configure pgAdmin to run in desktop mode, it is first necessary to
-configure the Python code to run in single-user mode, and then to configure the
-runtime to find and execute the code.
+From pgAdmin 4 v2 onwards, the default configuration mode is server, however,
+this is overridden by the desktop runtime at startup. In most environments, no
+Python configuration is required unless you wish to override other default
+settings.
 
-Note that there are multiple configuration files that are read at startup by
-pgAdmin. These are as follows:
+There are multiple configuration files that are read at startup by pgAdmin. These
+are as follows:
 
 * ``config.py``: This is the main configuration file, and should not be modified.
   It can be used as a reference for configuration settings, that may be overridden
@@ -35,31 +36,11 @@ pgAdmin. These are as follows:
   for end users to change any default or packaging specific settings that they may
   wish to adjust to meet local preferences or standards.
 
-Python
-------
+NOTE: If the SERVER_MODE setting is changed in ``config_distro.py`` or ``config_local.py``,
+you will most likely need to re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH
+and STORAGE_DIR values as well as they will have been set based on the default
+configuration or overridden by the runtime.
 
-In order to configure the Python code, follow these steps:
-
-1. Ensure that any existing configuration database (``pgadmin4.db``) is moved 
-   out of the way in the ``web/`` directory containing the pgAdmin Python code.
-
-2. Create a ``config_local.py`` file alongside the existing ``config.py`` file.
-
-3. Edit ``config_local.py`` and add the following setting:
-
-   .. code-block:: python
-
-       SERVER_MODE = False
-    
-4. Run the following command to create the configuration database:
-
-   .. code-block:: bash
-
-       $ python setup.py
-
-Alternatively, you can simply run ``pgAdmin4.py`` at this point or at a later time,
-and ``pgadmin4.db`` will be created automatically at first run.
-    
 Runtime
 -------
 

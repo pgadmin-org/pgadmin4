@@ -46,7 +46,7 @@ little practical gain.
 Configuration
 *************
 
-In order to configure pgAdmin to run in server mode, it is first necessary to
+In order to configure pgAdmin to run in server mode, it may be necessary to
 configure the Python code to run in multi-user mode, and then to configure the
 web server to find and execute the code.
 
@@ -68,19 +68,17 @@ pgAdmin. These are as follows:
 Python
 ------
 
+From pgAdmin 4 v2 onwards, server mode is the default configuration. If running under
+the desktop runtime, this is overridden automatically. There should typically be no
+need to modify the configuration simply to enable server mode to work, however it may
+be desirable to adjust some of the paths used.
+
 In order to configure the Python code, follow these steps:
 
 1. Create a ``config_local.py`` file alongside the existing ``config.py`` file.
 
-2. Edit ``config_local.py`` and add the following setting:
-
-   .. code-block:: python
-
-       SERVER_MODE = True
-
-3. In most cases, the default file locations are setup for running in desktop mode.
-   Add settings similar to the following to ``config_local.py`` to use paths suitable
-   for server mode.
+2. Edit ``config_local.py`` and add the following settings. In most cases, the default
+   file locations should be appropriate:
 
    *NOTE: You must ensure the directories specified are writeable by
    the user that the web server processes will be running as, e.g. apache or www-data.*
