@@ -12,6 +12,12 @@ from pgadmin.browser.server_groups.servers.types import ServerType
 
 
 class GPDB(ServerType):
+    UTILITY_PATH_LABEL = gettext("Greenplum Database Binary Path")
+    UTILITY_PATH_HELP = gettext(
+        "Path to the directory containing the Greenplum Database utility"
+        " programs (pg_dump, pg_restore etc)."
+    )
+
     def instanceOf(self, ver):
         return "Greenplum Database" in ver
 

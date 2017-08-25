@@ -54,7 +54,10 @@ class ServerType(object):
 
         for key in cls.registry:
             st = cls.registry[key]
-            default_path = config.DEFAULT_BINARY_PATHS[st.stype] or ""
+            default_path = (
+                config.DEFAULT_BINARY_PATHS[st.stype] if st.stype in
+                config.DEFAULT_BINARY_PATHS else ""
+            ) or ""
 
             st.utility_path = paths.register(
                 'bin_paths', st.stype + '_bin_dir',
