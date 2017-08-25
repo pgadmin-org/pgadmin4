@@ -104,8 +104,13 @@ class BaseTableView(PGChildNodeView):
                 did in self.manager.db_info else 0
 
             ver = self.manager.version
+            server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = 'table/sql/#{0}#'.format(ver)
+            self.table_template_path = 'table/sql/' + (
+                '#{0}#{1}#'.format(server_type, ver)
+                if server_type == 'gpdb' else
+                '#{0}#'.format(ver)
+            )
             self.partition_template_path = 'partition/sql/#{0}#'.format(ver)
 
             # Template for Column ,check constraint and exclusion

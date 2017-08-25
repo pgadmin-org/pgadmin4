@@ -13,9 +13,9 @@ from jinja2 import TemplateNotFound
 
 class VersionedTemplateLoader(DispatchingJinjaLoader):
     def get_source(self, environment, template):
-        template_path_parts = template.split("#", 2)
+        template_path_parts = template.split("#", 3)
 
-        server_versions = (
+        postgres_versions = (
             {'name': "10_plus", 'number': 100000},
             {'name': "9.6_plus", 'number': 90600},
             {'name': "9.5_plus", 'number': 90500},
@@ -27,18 +27,29 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
             {'name': "default", 'number': 0}
         )
 
+        gpdb_versions = (
+            {'name': "gpdb_5.0_plus", 'number': 80323},
+            {'name': "default", 'number': 0}
+        )
+
+        server_versions = postgres_versions
         if len(template_path_parts) == 1:
             return super(VersionedTemplateLoader, self).get_source(environment, template)
+
+        if len(template_path_parts) == 4:
+            path_start, server_type, specified_version_number, file_name = template_path_parts
+            if server_type == 'gpdb':
+                server_versions = gpdb_versions
         else:
-            for server_version in server_versions:
-                path_start, specified_version_number, file_name = template_path_parts
+            path_start, specified_version_number, file_name = template_path_parts
 
-                if server_version['number'] > int(specified_version_number):
-                    continue
+        for server_version in server_versions:
+            if server_version['number'] > int(specified_version_number):
+                continue
 
-                template_path = path_start + '/' + server_version['name'] + '/' + file_name
-                try:
-                    return super(VersionedTemplateLoader, self).get_source(environment, template_path)
-                except TemplateNotFound:
-                    continue
-            raise TemplateNotFound(template)
+            template_path = path_start + '/' + server_version['name'] + '/' + file_name
+            try:
+                return super(VersionedTemplateLoader, self).get_source(environment, template_path)
+            except TemplateNotFound:
+                continue
+        raise TemplateNotFound(template)
