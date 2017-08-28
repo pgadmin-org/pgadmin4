@@ -10,7 +10,8 @@ SELECT
     pg_blocking_pids(pid) AS blocking_pids,
     query,
     to_char(state_change, 'YYYY-MM-DD HH24:MI:SS TZ') AS state_change,
-    to_char(query_start, 'YYYY-MM-DD HH24:MI:SS TZ') AS query_start
+    to_char(query_start, 'YYYY-MM-DD HH24:MI:SS TZ') AS query_start,
+    backend_type
 FROM
     pg_stat_activity
 {% if did %}WHERE

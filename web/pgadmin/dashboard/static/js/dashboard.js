@@ -132,7 +132,7 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
       type: 'text', editable: true, disabled: true,
       group: gettext('Details'),
       visible: function(m) {
-        return m.get('version') >= 100000;
+        return this.version >= 100000;
       }
     },{
       id: 'query_start', label: gettext('Query started at'),
@@ -644,13 +644,16 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                 }]);
             }
 
-            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel(
-              {'version': version}
-            );
+            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
 
             var subNodeFieldsModel = Backform.generateViewSchema(
               null, newActiveQueryDetailsModel, 'create', null, null, true
             );
+
+            // Add version to each field
+            _.each(subNodeFieldsModel[0].fields, function(obj) {
+              obj['version'] = version;
+            });
 
             // Add cancel active query button
             server_activity_columns.unshift({
@@ -978,13 +981,17 @@ function(url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, Flotr,
                 }]);
             }
 
-            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel(
-              {'version': version}
-            );
+            var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
 
             var subNodeFieldsModel = Backform.generateViewSchema(
               null, newActiveQueryDetailsModel, 'create', null, null, true
             );
+
+            // Add version to each field
+            _.each(subNodeFieldsModel[0].fields, function(obj) {
+              obj['version'] = version;
+            });
+
 
             // Add cancel active query button
             database_activity_columns.unshift({
