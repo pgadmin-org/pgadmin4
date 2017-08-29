@@ -12,6 +12,7 @@ and settings database."""
 
 import os
 import sys
+from pgadmin.model import db, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 
 if sys.version_info[0] >= 3:
     import builtins
@@ -50,4 +51,21 @@ if __name__ == '__main__':
     print(u"======================================\n")
 
     with app.app_context():
-        db_upgrade(app)
+        # Run migration for the first time i.e. create database
+        from config import SQLITE_PATH
+        if not os.path.exists(SQLITE_PATH):
+            db_upgrade(app)
+        else:
+            version = Version.query.filter_by(name='ConfigDB').first()
+            schema_version = version.value
+
+            # Run migration if current schema version is greater than the
+            # schema version stored in version table
+            if CURRENT_SCHEMA_VERSION >= schema_version:
+                db_upgrade(app)
+
+            # Update schema version to the latest
+            if CURRENT_SCHEMA_VERSION > schema_version:
+                version = Version.query.filter_by(name='ConfigDB').first()
+                version.value = CURRENT_SCHEMA_VERSION
+                db.session.commit()

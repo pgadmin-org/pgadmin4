@@ -32,7 +32,9 @@ from werkzeug.utils import find_modules
 
 from pgadmin.utils.preferences import Preferences
 
-from pgadmin.model import db, Role, Server, ServerGroup, User, Keys
+from pgadmin.model import db, Role, Server, ServerGroup, \
+    User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -283,7 +285,25 @@ def create_app(app_name=None):
     ##########################################################################
     # Upgrade the schema (if required)
     ##########################################################################
-    db_upgrade(app)
+    with app.app_context():
+        # Run migration for the first time i.e. create database
+        from config import SQLITE_PATH
+        if not os.path.exists(SQLITE_PATH):
+            db_upgrade(app)
+        else:
+            version = Version.query.filter_by(name='ConfigDB').first()
+            schema_version = version.value
+
+            # Run migration if current schema version is greater than the
+            # schema version stored in version table
+            if CURRENT_SCHEMA_VERSION >= schema_version:
+                db_upgrade(app)
+
+            # Update schema version to the latest
+            if CURRENT_SCHEMA_VERSION > schema_version:
+                version = Version.query.filter_by(name='ConfigDB').first()
+                version.value = CURRENT_SCHEMA_VERSION
+                db.session.commit()
 
     Mail(app)
 
