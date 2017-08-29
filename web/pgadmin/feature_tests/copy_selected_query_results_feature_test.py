@@ -8,7 +8,6 @@
 ##########################################################################
 
 import pyperclip
-import time
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -42,16 +41,16 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item(self.server['name'])
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
-        time.sleep(5)
-        self.page.find_by_partial_link_text("Tools").click()
-        self.page.find_by_partial_link_text("Query Tool").click()
-        self.page.click_tab('Query -')
-        time.sleep(5)
-        ActionChains(self.page.driver).send_keys("SELECT * FROM test_table ORDER BY some_column").perform()
-        self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
+        self.page.open_query_tool()
+
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+
+        self.page.fill_codemirror_area_with(
+            "SELECT * FROM test_table ORDER BY some_column")
+
         self.page.find_by_id("btn-flash").click()
 
-        time.sleep(5)
         self._copies_rows()
         self._copies_columns()
         self._copies_row_using_keyboard_shortcut()

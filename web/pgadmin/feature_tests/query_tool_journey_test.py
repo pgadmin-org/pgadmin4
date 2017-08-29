@@ -8,7 +8,6 @@
 ##########################################################################
 
 import pyperclip
-import time
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -39,7 +38,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def runTest(self):
         self._navigate_to_query_tool()
-        self._execute_query("SELECT * FROM test_table ORDER BY value")
+
+        self._execute_query(
+            "SELECT * FROM test_table ORDER BY value"
+        )
 
         self._test_copies_rows()
         self._test_copies_columns()
@@ -47,7 +49,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_copies_rows(self):
         pyperclip.copy("old clipboard contents")
-        time.sleep(5)
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
         self.page.find_by_xpath("//*[contains(@class, 'slick-row')]/*[1]").click()
@@ -95,8 +96,11 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.__clear_query_tool()
 
         self.page.click_element(editor_input)
+
+        self.page.fill_codemirror_area_with("SELECT * FROM hats")
         for _ in range(15):
-            self._execute_query("SELECT * FROM hats")
+            self.page.find_by_id("btn-flash").click()
+            self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab("Query History")
 
@@ -113,8 +117,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.__clear_query_tool()
         self.page.click_element(editor_input)
+        self.page.fill_codemirror_area_with("SELECT * FROM hats")
         for _ in range(15):
-            self._execute_query("SELECT * FROM hats")
+            self.page.find_by_id("btn-flash").click()
+            self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         self.page.click_tab("History")
         query_we_need_to_scroll_to = self.page.find_by_xpath(
@@ -143,12 +149,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.toggle_open_tree_item('Databases')
         self.page.toggle_open_tree_item('acceptance_test_db')
         self.page.open_query_tool()
-        time.sleep(5)
 
     def _execute_query(self, query):
-        ActionChains(self.page.driver).send_keys(query).perform()
-        self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(self.page.driver.find_element_by_tag_name("iframe"))
+        self.page.fill_codemirror_area_with(query)
         self.page.find_by_id("btn-flash").click()
 
     def _assert_clickable(self, element):

@@ -7,13 +7,9 @@
 #
 ##########################################################################
 
-from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-import time
+
 
 class CheckForXssFeatureTest(BaseFeatureTest):
     """
@@ -53,7 +49,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
-        self._connects_to_server()
+        self.page.add_server(self.server)
         self._tables_node_expandable()
         self._check_xss_in_browser_tree()
         self._check_xss_in_properties_tab()
@@ -65,7 +61,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.close_query_tool()
 
     def after(self):
-        time.sleep(1)
         self.page.remove_server(self.server)
         connection = test_utils.get_db_connection(self.server['db'],
                                                   self.server['username'],
@@ -74,24 +69,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                                                   self.server['port'],
                                                   self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
-
-    def _connects_to_server(self):
-        self.page.find_by_xpath("//*[@class='aciTreeText' and .='Servers']").click()
-        time.sleep(2)
-        self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.page.driver) \
-            .move_to_element(self.page.driver.find_element_by_link_text("Create")) \
-            .perform()
-        self.page.find_by_partial_link_text("Server...").click()
-
-        server_config = self.server
-        self.page.fill_input_by_field_name("name", server_config['name'])
-        self.page.find_by_partial_link_text("Connection").click()
-        self.page.fill_input_by_field_name("host", server_config['host'])
-        self.page.fill_input_by_field_name("port", server_config['port'])
-        self.page.fill_input_by_field_name("username", server_config['username'])
-        self.page.fill_input_by_field_name("password", server_config['db_password'])
-        self.page.find_by_xpath("//button[contains(.,'Save')]").click()
 
     def _tables_node_expandable(self):
         self.page.toggle_open_server(self.server['name'])
@@ -155,10 +132,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.driver.find_element_by_link_text("Tools").click()
         self.page.find_by_partial_link_text("Query Tool").click()
         self.page.click_tab('Query -')
-        self.page.fill_codemirror_area_with("select '<img src=\"x\" onerror=\"console.log(1)\">'")
-        time.sleep(1)
+        self.page.fill_codemirror_area_with(
+            "select '<img src=\"x\" onerror=\"console.log(1)\">'"
+        )
         self.page.find_by_id("btn-flash").click()
-        wait = WebDriverWait(self.page.driver, 5)
 
         result_row = self.page.find_by_xpath(
             "//*[contains(@class, 'ui-widget-content') and contains(@style, 'top:0px')]"
@@ -177,9 +154,4 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        if source_code.find(string_to_find) == -1:
-            # No escaped characters found
-            assert False, "{0} might be vulnerable to XSS ".format(source)
-        else:
-            # escaped characters found
-            assert True
+        assert source_code.find(string_to_find) != -1, "{0} might be vulnerable to XSS ".format(source)

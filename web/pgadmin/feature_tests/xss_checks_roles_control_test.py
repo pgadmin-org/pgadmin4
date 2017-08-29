@@ -11,6 +11,7 @@ from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 
+
 class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     """Tests to check role membership control for xss."""
 
@@ -22,9 +23,9 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     def before(self):
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",
-                                   "test_role")
+                               "test_role")
         test_utils.create_role(self.server, "postgres",
-                                   "<h1>test</h1>")
+                               "<h1>test</h1>")
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -34,9 +35,9 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
 
     def after(self):
         test_utils.drop_role(self.server, "postgres",
-                                   "test_role")
+                             "test_role")
         test_utils.drop_role(self.server, "postgres",
-                                   "<h1>test</h1>")
+                             "<h1>test</h1>")
         self.page.remove_server(self.server)
 
     def _connects_to_server(self):
@@ -77,12 +78,6 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         )
         self.page.find_by_xpath("//button[contains(.,'Cancel')]").click()
 
-
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        if source_code.find(string_to_find) == -1:
-            # No escaped characters found
-            assert False, "{0} might be vulnerable to XSS ".format(source)
-        else:
-            # escaped characters found
-            assert True
+        assert source_code.find(string_to_find) != -1, "{0} might be vulnerable to XSS ".format(source)

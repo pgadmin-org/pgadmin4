@@ -6,8 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import time
-from selenium.webdriver import ActionChains
+
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -38,7 +37,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
-        self._connects_to_server()
+        self.page.add_server(self.server)
         self._schema_node_expandable()
 
         # Check data types
@@ -54,31 +53,6 @@ class PGDataypeFeatureTest(BaseFeatureTest):
                                                   self.server['port'],
                                                   self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
-
-    def _connects_to_server(self):
-        self.page.find_by_xpath(
-            "//*[@class='aciTreeText' and .='Servers']"
-        ).click()
-        time.sleep(2)
-        self.page.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.page.driver) \
-            .move_to_element(
-            self.page.driver.find_element_by_link_text("Create")
-        ).perform()
-        self.page.find_by_partial_link_text("Server...").click()
-
-        server_config = self.server
-        self.page.fill_input_by_field_name("name", server_config['name'])
-        self.page.find_by_partial_link_text("Connection").click()
-        self.page.fill_input_by_field_name("host", server_config['host'])
-        self.page.fill_input_by_field_name("port", server_config['port'])
-        self.page.fill_input_by_field_name(
-            "username", server_config['username']
-        )
-        self.page.fill_input_by_field_name(
-            "password", server_config['db_password']
-        )
-        self.page.find_by_xpath("//button[contains(.,'Save')]").click()
 
     def _schema_node_expandable(self):
         self.page.toggle_open_tree_item(self.server['name'])
@@ -136,11 +110,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
     @staticmethod
     def check_result(source_code, string_to_find):
-        if source_code.find(string_to_find) == -1:
-            assert False, "{0} does not match with {1}".format(
+        assert source_code.find(string_to_find) != -1,\
+            "{0} does not match with {1}".format(
                 source_code, string_to_find
             )
-        else:
-            assert True
 
 
