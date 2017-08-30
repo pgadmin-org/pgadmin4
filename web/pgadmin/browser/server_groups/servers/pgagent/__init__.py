@@ -50,6 +50,9 @@ class JobModule(CollectionNodeModule):
 
         conn = manager.connection()
 
+        if manager.server_type == 'gpdb':
+            return False
+
         status, res = conn.execute_scalar("""
 SELECT
     has_table_privilege('pgagent.pga_job', 'INSERT, SELECT, UPDATE') has_priviledge

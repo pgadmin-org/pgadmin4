@@ -223,7 +223,9 @@ class LanguageView(PGChildNodeView):
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = "languages/sql/#{0}#".format(self.manager.version)
+            self.template_path = ("languages/sql/#gpdb#{0}#".format(self.manager.version)
+                                if self.manager.server_type == 'gpdb'
+                                else "languages/sql/#{0}#".format(self.manager.version))
 
             return f(*args, **kwargs)
 

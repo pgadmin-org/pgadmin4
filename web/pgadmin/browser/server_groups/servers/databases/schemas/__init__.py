@@ -139,11 +139,13 @@ def check_precondition(f):
 
         self.conn = self.manager.connection(did=kwargs['did'])
         # Set the template path for the SQL scripts
-        self.template_path = self.template_initial + '/' + (
-            self.ppas_template_path(self.manager.version)
-            if self.manager.server_type == 'ppas' else
-            self.pg_template_path(self.manager.version)
-        )
+        if self.manager.server_type == 'gpdb':
+            _temp = self.gpdb_template_path(self.manager.version)
+        elif self.manager.server_type == 'ppas':
+            _temp = self.ppas_template_path(self.manager.version)
+        else:
+            _temp = self.pg_template_path(self.manager.version)
+        self.template_path = self.template_initial + '/' + _temp
 
         return f(*args, **kwargs)
 
@@ -249,6 +251,13 @@ class SchemaView(PGChildNodeView):
         Returns the template path for PostgreSQL servers.
         """
         return 'pg/#{0}#'.format(ver)
+
+    @staticmethod
+    def gpdb_template_path(ver):
+        """
+        Returns the template path for GreenPlum servers.
+        """
+        return '#gpdb#{0}#'.format(ver)
 
     def format_request_acls(self, data, modified=False, specific=None):
         acls = {}

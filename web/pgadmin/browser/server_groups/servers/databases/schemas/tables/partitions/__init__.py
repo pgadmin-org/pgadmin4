@@ -88,6 +88,8 @@ class PartitionsModule(CollectionNodeModule):
         """
         Load this module if it is a partition table
         """
+        if manager.server_type == 'gpdb':
+            return False
         if 'tid' in kwargs and CollectionNodeModule.BackendSupported(self, manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 

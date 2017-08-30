@@ -60,6 +60,7 @@ class SequenceModule(SchemaChildModule):
         super(SequenceModule, self).__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
+        self.min_gpdbver = 1000000000
 
     def get_nodes(self, gid, sid, did, scid):
         """

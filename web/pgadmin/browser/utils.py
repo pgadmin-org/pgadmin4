@@ -19,6 +19,17 @@ from pgadmin.utils.ajax import make_json_response, precondition_required
 
 from config import PG_DEFAULT_DRIVER
 
+def is_version_in_range(sversion, min_ver, max_ver):
+    assert (max_ver is None or isinstance(max_ver, int))
+    assert (min_ver is None or isinstance(min_ver, int))
+
+    if min_ver is None and max_ver is None:
+        return True
+
+    if min_ver is None or min_ver <= sversion:
+        if max_ver is None or max_ver >= sversion:
+            return True
+    return False
 
 class PGChildModule(object):
     """
@@ -40,6 +51,8 @@ class PGChildModule(object):
         self.min_ver = 0
         self.max_ver = 1000000000
         self.server_type = None
+        self.min_gpdbver = 80323
+        self.max_gpdbver = 1000000000
 
         super(PGChildModule, self).__init__()
 
@@ -48,20 +61,15 @@ class PGChildModule(object):
             if not self.show_node:
                 return False
         sversion = getattr(manager, 'sversion', None)
+
         if (sversion is None or not isinstance(sversion, int)):
             return False
 
-        if (self.min_ver is None and self.max_ver is None):
-            return True
-
-        assert (self.max_ver is None or isinstance(self.max_ver, int))
-        assert (self.min_ver is None or isinstance(self.min_ver, int))
         assert (self.server_type is None or isinstance(self.server_type, list))
 
         if self.server_type is None or manager.server_type in self.server_type:
-            if self.min_ver is None or self.min_ver <= sversion:
-                if self.max_ver is None or self.max_ver >= sversion:
-                    return True
+            return is_version_in_range(sversion, self.min_gpdbver if manager.server_type == 'gpdb' else self.min_ver,
+                                       self.max_gpdbver if manager.server_type == 'gpdb' else self.max_ver)
 
         return False
 

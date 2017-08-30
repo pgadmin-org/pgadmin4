@@ -48,6 +48,10 @@ class FtsParserModule(SchemaChildModule):
     NODE_TYPE = 'fts_parser'
     COLLECTION_LABEL = _('FTS Parsers')
 
+    def __init__(self, *args, **kwargs):
+        super(FtsParserModule, self).__init__(*args, **kwargs)
+        self.min_gpdbver = 1000000000
+
     def get_nodes(self, gid, sid, did, scid):
         """
         Generate the collection node
