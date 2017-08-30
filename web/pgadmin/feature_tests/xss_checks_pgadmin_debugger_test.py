@@ -30,7 +30,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
         # Some test function is needed for debugger
         test_utils.create_debug_function(self.server, "postgres",
-                                   "test_function")
+                                   "a_test_function")
 
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
@@ -40,7 +40,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def after(self):
         test_utils.drop_debug_function(self.server, "postgres",
-                                   "test_function")
+                                   "a_test_function")
         self.page.remove_server(self.server)
 
     def _function_node_expandable(self):
@@ -50,7 +50,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         self.page.toggle_open_tree_item('Schemas')
         self.page.toggle_open_tree_item('public')
         self.page.toggle_open_tree_item('Functions')
-        self.page.select_tree_item("test_function()")
+        self.page.select_tree_item("a_test_function()")
 
     def _debug_function(self):
         self.page.driver.find_element_by_link_text("Object").click()
