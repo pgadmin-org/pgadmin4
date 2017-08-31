@@ -89,33 +89,42 @@ function(gettext, alertify, S) {
 
       if (xhr.status == 0) {
         msg = gettext('Connection to the server has been lost.');
-      }
+        promptmsg = gettext('Connection Lost');
+      } else {
+        if (contentType) {
+          try {
+            if (contentType.indexOf('application/json') == 0) {
+              resp = $.parseJSON(msg);
 
-      if (contentType) {
-        try {
-          if (contentType.indexOf('application/json') == 0) {
-            var resp = $.parseJSON(msg);
-
-            if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
-                onJSONResult && typeof(onJSONResult) == 'function') {
-              return onJSONResult(resp.result);
+              if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+                  onJSONResult && typeof(onJSONResult) == 'function') {
+                return onJSONResult(resp.result);
+              }
+              msg = _.escape(resp.result) || _.escape(resp.errormsg) || "Unknown error";
             }
-            msg = _.escape(resp.result) || _.escape(resp.errormsg) || "Unknown error";
+            if (contentType.indexOf('text/html') == 0) {
+              var alertMessage = promptmsg;
+              if (type === 'error') {
+                alertMessage = '\
+                  <div class="media font-red-3 text-14">\
+                    <div class="media-body media-middle">\
+                      <div class="alert-text">' + promptmsg + '</div><br/>\
+                      <div class="alert-text">' + gettext('Click for details.') + '</div>\
+                    </div>\
+                  </div>';
+              }
+
+              alertify.notify(
+                alertMessage, type, 0, function() {
+                  alertify.pgIframeDialog().show().set({frameless: false}).set(
+                    'pg_msg', msg
+                  );
+                });
+                return;
+            }
+          } catch (e) {
+            alertify.alert().show().set('message', e.message).set('title', "Error");
           }
-          if (contentType.indexOf('text/html') == 0) {
-            alertify.notify(
-              S(
-                '%s<br><br>' +
-                  gettext('Click here for details.')
-              ).sprintf(promptmsg).value(), type, 0, function() {
-                alertify.pgIframeDialog().show().set({frameless: false}).set(
-                  'pg_msg', msg
-                );
-              });
-              return;
-          }
-        } catch (e) {
-          alertify.alert().show().set('message', e.message).set('title', "Error");
         }
       }
       alertify.alert().show().set(
