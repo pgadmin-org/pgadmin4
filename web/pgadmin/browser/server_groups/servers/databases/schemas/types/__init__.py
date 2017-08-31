@@ -233,8 +233,14 @@ class TypeView(PGChildNodeView, DataTypeReader):
             # Declare allows acl on type
             self.acl = ['U']
 
-            # we will set template path for sql scripts
-            self.template_path = 'type/sql/#{0}#'.format(self.manager.version)
+            ver = self.manager.version
+            server_type = self.manager.server_type
+            # Set the template path for the SQL scripts
+            self.template_path = 'type/sql/' + (
+                '#{0}#{1}#'.format(server_type, ver)
+                if server_type == 'gpdb' else
+                '#{0}#'.format(ver)
+            )
 
             return f(*args, **kwargs)
         return wrap

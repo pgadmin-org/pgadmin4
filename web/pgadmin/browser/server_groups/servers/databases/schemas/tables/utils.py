@@ -111,6 +111,11 @@ class BaseTableView(PGChildNodeView):
                 if server_type == 'gpdb' else
                 '#{0}#'.format(ver)
             )
+            self.data_type_template_path='datatype/sql/'+ (
+                '#{0}#{1}#'.format(server_type, ver)
+                if server_type == 'gpdb' else
+                '#{0}#'.format(ver)
+            )
             self.partition_template_path = 'partition/sql/#{0}#'.format(ver)
 
             # Template for Column ,check constraint and exclusion

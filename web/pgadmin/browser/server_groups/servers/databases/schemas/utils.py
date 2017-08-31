@@ -95,7 +95,7 @@ class DataTypeReader:
         try:
 
             SQL = render_template(
-                '/datatype/sql/#{0}#/get_types.sql'.format(conn.manager.version),
+                "/".join([self.data_type_template_path,'get_types.sql']),
                 condition=condition,
                 add_serials=add_serials)
             status, rset = conn.execute_2darray(SQL)
