@@ -952,7 +952,7 @@ class TriggerView(PGChildNodeView):
             # We know that trigger has more than 1 argument, let's join them
             data['tgargs'] = self._format_args(data['custom_tgargs'])
 
-        if len(data['tgattr']) > 1:
+        if len(data['tgattr']) >= 1:
             columns = ', '.join(data['tgattr'].split(' '))
             data['columns'] = self._column_details(tid, columns)
 

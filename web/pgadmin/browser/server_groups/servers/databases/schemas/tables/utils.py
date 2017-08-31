@@ -995,7 +995,7 @@ class BaseTableView(PGChildNodeView):
                 # We know that trigger has more than 1 argument, let's join them
                 data['tgargs'] = self._format_args(data['custom_tgargs'])
 
-            if len(data['tgattr']) > 1:
+            if len(data['tgattr']) >= 1:
                 columns = ', '.join(data['tgattr'].split(' '))
 
                 SQL = render_template("/".join([self.trigger_template_path,
@@ -1009,7 +1009,7 @@ class BaseTableView(PGChildNodeView):
                 columns = []
 
                 for col_row in rset['rows']:
-                    columns.append({'column': col_row['name']})
+                    columns.append(col_row['name'])
 
                 data['columns'] = columns
 
