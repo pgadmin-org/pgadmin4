@@ -358,14 +358,15 @@ function(_, S, pgAdmin, $, Backbone) {
             if (!msg) {
               msg = self.validate(_.keys(attrs));
             }
+          }
 
-            /*
-             * If any parent present, we will need to inform the parent - that
-             * I have some issues/fixed the issue.
-             *
-             * If not parent found, we will raise the issue
-             */
-            if (_.size(self.errorModel.attributes) == 0) {
+          /*
+           * If any parent present, we will need to inform the parent - that
+           * I have some issues/fixed the issue.
+           *
+           * If not parent found, we will raise the issue
+           */
+          if (_.size(self.errorModel.attributes) == 0) {
               if (self.collection || self.handler) {
                 (self.collection || self.handler).trigger(
                     'pgadmin-session:model:valid', self, (self.collection || self.handler)
@@ -383,7 +384,6 @@ function(_, S, pgAdmin, $, Backbone) {
                 self.trigger('pgadmin-session:invalid', msg, self);
               }
             }
-          }
 
           return res;
         }
