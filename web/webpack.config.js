@@ -7,7 +7,7 @@ const sourceDir = __dirname + '/pgadmin/static';
 // and other util function used in CommonsChunksPlugin.
 const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
-const envType = PRODUCTION ? 'prod': 'dev';
+const envType = PRODUCTION ? 'production': 'development';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractStyle = new ExtractTextPlugin('style.css');
@@ -54,7 +54,7 @@ const providePlugin = new webpack.ProvidePlugin({
 const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
   output: {comments: false},
   compress: {
-    warnings: true,
+    warnings: false,
     unused: true,
     dead_code: true,
     drop_console: true,
@@ -74,7 +74,7 @@ const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
 // based on 'NODE_ENV' variable. [used only in production]
 const definePlugin = new webpack.DefinePlugin({
   'process.env': {
-    'NODE_ENV': JSON.stringify('production'),
+    'NODE_ENV': JSON.stringify(envType),
   },
 });
 
@@ -323,6 +323,7 @@ module.exports = {
     vendorChunks,
     pgAdminCommonChunks,
     providePlugin,
+    definePlugin,
     hardSourceWebpackPlugin,
     sourceMapDevToolPlugin,
   ],
