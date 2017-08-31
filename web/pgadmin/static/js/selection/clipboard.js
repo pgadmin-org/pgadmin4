@@ -43,14 +43,14 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
 
       textArea.select();
 
-      document.addEventListener('copy', function(e) {
+      var copyTextToClipboardHandler = function(e) {
         /* Remove oncopy event listener from document as we add listener for
          * oncopy event on each copy operation.
          * Also we don't want this listener to be persistent; Otherwise it'll get
          * called for each copy operation performed on any input/textarea from
          * this document.
          */
-
+        document.removeEventListener('copy', copyTextToClipboardHandler);
         var clipboardData = e.clipboardData || window.clipboardData;
 
         if (clipboardData) {
@@ -58,7 +58,9 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
           // We want our data, not data from any selection, to be written to the clipboard
           e.preventDefault();
         }
-      });
+      };
+
+      document.addEventListener('copy', copyTextToClipboardHandler);
 
       try {
         // just perform copy on empty textarea so that copy event will be
