@@ -41,6 +41,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.add_server(self.server)
         self._locate_database_tree_node()
         self.page.open_query_tool()
+        self._reset_options()
 
     def runTest(self):
         # on demand result set on scrolling.
@@ -96,6 +97,33 @@ class QueryToolFeatureTest(BaseFeatureTest):
                                                   self.server['port'],
                                                   self.server['sslmode'])
         test_utils.drop_database(connection, "acceptance_test_db")
+
+    def _reset_options(self):
+        # this will set focus to correct iframe.
+        self.page.fill_codemirror_area_with('')
+
+        query_op = self.page.find_by_id("btn-query-dropdown")
+        query_op.click()
+        ActionChains(self.driver).move_to_element(
+            query_op.find_element_by_xpath(
+                "//li[contains(.,'Explain Options')]")).perform()
+
+        # disable Explain options and auto rollback only if they are enabled.
+        for op in ('explain-verbose', 'explain-costs',
+                   'explain-buffers', 'explain-timing', 'auto-rollback'):
+            btn = self.page.find_by_id("btn-{}".format(op))
+            check = btn.find_element_by_tag_name('i')
+            if 'visibility-hidden' not in check.get_attribute('class'):
+                btn.click()
+
+        # enable autocommit only if it's disabled
+        btn = self.page.find_by_id("btn-auto-commit")
+        check = btn.find_element_by_tag_name('i')
+        if 'visibility-hidden' in check.get_attribute('class'):
+            btn.click()
+
+        # close menu
+        query_op.click()
 
     def _locate_database_tree_node(self):
         self.page.toggle_open_tree_item(self.server['name'])
