@@ -480,7 +480,7 @@ class IndexesView(PGChildNodeView):
             status=200
         )
 
-    def _column_details(self, idx, data):
+    def _column_details(self, idx, data, mode='properties'):
         """
         This functional will fetch list of column details for index
 
@@ -504,8 +504,10 @@ class IndexesView(PGChildNodeView):
         cols = []
         for row in rset['rows']:
             # We need all data as collection for ColumnsModel
+            # we will not strip down colname when using in SQL to display
             cols_data = {
-                'colname': row['attdef'].strip('"'),
+                'colname': row['attdef'] if mode == 'create' else
+                row['attdef'].strip('"'),
                 'collspcname': row['collnspname'],
                 'op_class': row['opcname'],
             }
@@ -901,7 +903,7 @@ class IndexesView(PGChildNodeView):
         data['table'] = self.table
 
         # Add column details for current index
-        data = self._column_details(idx, data)
+        data = self._column_details(idx, data, 'create')
 
         SQL, name = self.get_sql(did, scid, tid, None, data)
         if not isinstance(SQL, (str, unicode)):

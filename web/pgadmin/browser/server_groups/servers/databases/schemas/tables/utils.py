@@ -923,8 +923,9 @@ class BaseTableView(PGChildNodeView):
             cols = []
             for col_row in rset['rows']:
                 # We need all data as collection for ColumnsModel
+                # Only for displaying SQL, we can omit strip on colname
                 cols_data = {
-                    'colname': col_row['attdef'].strip('"'),
+                    'colname': col_row['attdef'],
                     'collspcname': col_row['collnspname'],
                     'op_class': col_row['opcname'],
                 }
