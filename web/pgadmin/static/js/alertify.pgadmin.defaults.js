@@ -94,7 +94,7 @@ function(gettext, alertify, S) {
         if (contentType) {
           try {
             if (contentType.indexOf('application/json') == 0) {
-              resp = $.parseJSON(msg);
+              var resp = $.parseJSON(msg);
 
               if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
                   onJSONResult && typeof(onJSONResult) == 'function') {
