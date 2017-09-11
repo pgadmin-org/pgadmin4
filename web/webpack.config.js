@@ -176,6 +176,8 @@ module.exports = {
         ',pgadmin.node.extension' +
         ',pgadmin.node.language' +
         ',pgadmin.node.foreign_data_wrapper' +
+        ',pgadmin.node.foreign_server' +
+        ',pgadmin.node.user_mapping' +
         ',pgadmin.node.schema' +
         ',pgadmin.node.catalog' +
         ',pgadmin.node.catalog_object' +

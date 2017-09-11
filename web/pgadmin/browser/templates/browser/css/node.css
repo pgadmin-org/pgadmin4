@@ -1,6 +1,7 @@
 .icon-{{node_type}} {
   background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
   background-repeat: no-repeat;
+  background-size: 20px !important;
   align-content: center;
   vertical-align: middle;
   height: 20px;
@@ -9,5 +10,6 @@
 .pgadmin-node-select option[node="{{node_type}}"] {
   background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
   background-repeat: no-repeat;
+  background-size: 20px !important;
   background-position: center left;
 }

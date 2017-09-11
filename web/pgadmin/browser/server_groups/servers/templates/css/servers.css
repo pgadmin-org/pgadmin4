@@ -1,6 +1,7 @@
 .icon-server {
   background-image: url('{{ url_for('NODE-server.static', filename='img/server.png') }}') !important;
   background-repeat: no-repeat;
+  background-size: 20px !important;
   align-content: center;
   vertical-align: middle;
   height: 1.3em;
@@ -9,6 +10,7 @@
 .icon-server-not-connected {
   background-image: url('{{ url_for('NODE-server.static', filename='img/serverbad.svg') }}') !important;
   background-repeat: no-repeat;
+  background-size: 20px !important;
   align-content: center;
   vertical-align: middle;
   height: 1.3em;
@@ -17,6 +19,7 @@
 .icon-server-connecting {
   background-image: url('{{ url_for('static', filename='js/generated/img/load-node.gif')}}') !important;
   background-repeat: no-repeat;
+  background-size: 20px !important;
   align-content: center;
   vertical-align: middle;
   height: 1.3em;
