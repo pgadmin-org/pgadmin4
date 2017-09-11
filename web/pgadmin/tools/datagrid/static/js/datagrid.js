@@ -164,7 +164,7 @@ define('pgadmin.datagrid', [
                         + nsp_name + '.' + d.label;
 
         // Initialize the data grid.
-        self.initialize_data_grid(baseUrl, grid_title, '');
+        self.initialize_data_grid(baseUrl, grid_title, '', parentData.server.server_type);
       },
 
       // This is a callback function to show filtered data when user click on menu item.
@@ -283,7 +283,7 @@ define('pgadmin.datagrid', [
                     success: function(res) {
                       if (res.data.status) {
                         // Initialize the data grid.
-                        self.initialize_data_grid(that.baseUrl, grid_title, sql);
+                        self.initialize_data_grid(that.baseUrl, grid_title, sql, parentData.server.server_type);
                       }
                       else {
                         alertify.alert(
@@ -336,7 +336,7 @@ define('pgadmin.datagrid', [
         return grid_title;
       },
 
-      initialize_data_grid: function(baseUrl, grid_title, sql_filter) {
+      initialize_data_grid: function(baseUrl, grid_title, sql_filter, server_type) {
         var self = this;
           self.grid_title = grid_title;
 
@@ -361,7 +361,8 @@ define('pgadmin.datagrid', [
               'editor_title': encodeURIComponent(self.grid_title)
             };
 
-            var baseUrl = url_for('datagrid.panel', url_params);
+            var baseUrl = url_for('datagrid.panel', url_params) +
+              "?query_url=&server_type=" + encodeURIComponent(server_type);
             var grid_title = gettext('Edit Data - ') + self.grid_title;
             if (res.data.newBrowserTab) {
               var newWin = window.open(baseUrl, '_blank');
@@ -465,7 +466,7 @@ define('pgadmin.datagrid', [
             }
 
             var baseUrl = url_for('datagrid.panel', url_params) +
-                '?' + "query_url=" + encodeURI(sURL);
+                '?' + "query_url=" + encodeURI(sURL) + "&server_type=" + encodeURIComponent(parentData.server.server_type);
 
             // Create title for CREATE/DELETE scripts
             if (panel_title) {

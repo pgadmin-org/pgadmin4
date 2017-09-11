@@ -184,6 +184,12 @@ def panel(trans_id, is_query_tool, editor_title):
     else:
         sURL = None
 
+    # Fetch server type from request
+    if request.args and request.args['server_type'] != '':
+        server_type = request.args['server_type']
+    else:
+        server_type = None
+
     # We need client OS information to render correct Keyboard shortcuts
     user_agent = UserAgent(request.headers.get('User-Agent'))
 
@@ -217,6 +223,7 @@ def panel(trans_id, is_query_tool, editor_title):
         is_desktop_mode=app.PGADMIN_RUNTIME,
         is_linux=is_linux_platform,
         is_new_browser_tab=new_browser_tab,
+        server_type=server_type,
         client_platform=user_agent.platform
     )
 

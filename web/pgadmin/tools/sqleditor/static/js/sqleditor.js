@@ -110,7 +110,7 @@ define('tools.querytool', [
       self.filter_obj = CodeMirror.fromTextArea(filter.get(0), {
         lineNumbers: true,
         indentUnit: 4,
-        mode: "text/x-pgsql",
+        mode: self.handler.server_type === "gpdb" ? "text/x-gpsql" : "text/x-pgsql",
         foldOptions: {
           widget: "\u2026"
         },
@@ -155,7 +155,7 @@ define('tools.querytool', [
         lineNumbers: true,
         indentUnit: 4,
         styleSelectedText: true,
-        mode: "text/x-pgsql",
+        mode: self.handler.server_type === "gpdb" ? "text/x-gpsql" : "text/x-pgsql",
         foldOptions: {
           widget: "\u2026"
         },
@@ -1514,7 +1514,7 @@ define('tools.querytool', [
        * call the render method of the grid view to render the backgrid
        * header and loading icon and start execution of the sql query.
        */
-      start: function (is_query_tool, editor_title, script_sql, is_new_browser_tab) {
+      start: function (is_query_tool, editor_title, script_sql, is_new_browser_tab, server_type) {
         var self = this;
 
         self.is_query_tool = is_query_tool;
@@ -1528,6 +1528,7 @@ define('tools.querytool', [
         self.has_more_rows = false;
         self.fetching_rows = false;
         self.close_on_save = false;
+        self.server_type = server_type;
 
         // We do not allow to call the start multiple times.
         if (self.gridView)
