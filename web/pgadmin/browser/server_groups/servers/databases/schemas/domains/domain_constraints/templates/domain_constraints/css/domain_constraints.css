@@ -8,7 +8,7 @@
 }
 
 .icon-check-bad, .icon-domain_constraints-bad {
-  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/domain_constraints-bad.png' )}}') !important;
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/domain_constraints-bad.svg' )}}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   align-content: center;

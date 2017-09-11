@@ -1,5 +1,5 @@
 .icon-server {
-  background-image: url('{{ url_for('NODE-server.static', filename='img/server.png') }}') !important;
+  background-image: url('{{ url_for('NODE-server.static', filename='img/server.svg') }}') !important;
   background-repeat: no-repeat;
   background-size: 20px !important;
   align-content: center;
