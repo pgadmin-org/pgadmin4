@@ -16,6 +16,7 @@ Features
 | `Feature #2579 <https://redmine.postgresql.org/issues/2579>`_ - Default the file browser view to list, and make it configurable
 | `Feature #2597 <https://redmine.postgresql.org/issues/2597>`_ - Allow queries to be cancelled from the dashboard and display additional info in the subnode control
 | `Feature #2662 <https://redmine.postgresql.org/issues/2662>`_ - Ship with pre-configured paths that can work in both Server and Desktop modes out of the box
+| `Feature #2689 <https://redmine.postgresql.org/issues/2689>`_ - Update icons with new designs and remove from menus to de-clutter the UI
 
 
 
