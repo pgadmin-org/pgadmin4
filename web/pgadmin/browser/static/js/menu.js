@@ -9,7 +9,7 @@ function(_, S, pgAdmin, $) {
   var MenuItem = pgAdmin.Browser.MenuItem = function(opts) {
     var menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
-      'category', 'target', 'url', 'icon', 'node'
+      'category', 'target', 'url'/* Do not show icon in the menus, 'icon' */, 'node'
     ],
     defaults = {
       url: '#',
@@ -34,7 +34,7 @@ function(_, S, pgAdmin, $) {
 
       this.context = {
         name: this.label,
-        icon: this.icon || this.module && (this.module.type),
+        /* icon: this.icon || this.module && (this.module.type), */
         disabled: this.is_disabled,
         callback: this.context_menu_callback.bind(this, item)
       };
@@ -76,6 +76,7 @@ function(_, S, pgAdmin, $) {
     applyDisabledStyle: function () {
       var span = this.$el.find('span');
       var icon = this.$el.find('i');
+
 
       span.addClass('font-gray-4');
       span.removeClass('font-white');
@@ -126,7 +127,7 @@ function(_, S, pgAdmin, $) {
 
       this.context = {
         name: this.label,
-        icon: this.icon || (this.module && this.module.type),
+        /* icon: this.icon || (this.module && this.module.type), */
         disabled: this.is_disabled,
         callback: this.context_menu_callback.bind(this, item)
       };

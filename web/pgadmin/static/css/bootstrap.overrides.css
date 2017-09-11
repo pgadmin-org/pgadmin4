@@ -104,7 +104,7 @@ iframe {
     border-width: 5px 0 5px 5px;
     border-left-color: #cccccc;
     margin-top: 5px;
-    margin-right: -10px;
+    margin-right: -2px;
 }
 
 .dropdown-submenu:hover>a:after {
@@ -150,6 +150,10 @@ iframe {
 .dropdown-menu > hr {
     margin-top: 0;
     margin-bottom: 0;
+}
+
+.dropdown-menu > li > a {
+  padding: 3px 5px;
 }
 
 .dropdown-menu > li > a > i {

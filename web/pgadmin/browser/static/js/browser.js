@@ -237,7 +237,7 @@ define(
         /* separator above this menu */
         above: false,
         below: true,
-        icon: 'fa fa-magic',
+        /* icon: 'fa fa-magic', */
         single: true
       }
     },
