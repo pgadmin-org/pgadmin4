@@ -148,7 +148,7 @@ define('pgadmin.node.mview', [
         },{
           id: 'system_view', label: gettext('System view?'), cell: 'string',
           type: 'switch', disabled: true, mode: ['properties'],
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'),
           mode: ['properties'], type: 'text', group: gettext('Security')
         },{

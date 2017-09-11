@@ -639,7 +639,7 @@ define('pgadmin.node.foreign_table', [
           id: 'relacl', label: gettext('Privileges'), cell: 'string',
           type: 'text', group: gettext('Security'),
           mode: ['properties'], min_version: 90200
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'), model: pgAdmin
           .Browser.Node.PrivilegeRoleModel.extend(
           {privileges: ['a','r','w','x']}), uniqueCol : ['grantee', 'grantor'],

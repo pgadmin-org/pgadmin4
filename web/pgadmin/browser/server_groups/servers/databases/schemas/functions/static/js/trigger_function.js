@@ -227,7 +227,7 @@ define('pgadmin.node.trigger_function', [
           id: 'proleakproof', label: gettext('Leak proof?'),
           group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
           disabled: 'isDisabled'
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, pgBrowser.SecurityGroupSchema, {
           id: 'proacl', label: gettext('Privileges'), mode: ['properties'],
            group: gettext('Security'), type: 'text'
         },{

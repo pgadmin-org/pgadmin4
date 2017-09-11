@@ -316,7 +316,7 @@ define('pgadmin.node.function', [
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: 'canVarAdd', canEdit: false,
           canDelete: true, disabled: 'isDisabled'
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'), editable: false,
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['X']

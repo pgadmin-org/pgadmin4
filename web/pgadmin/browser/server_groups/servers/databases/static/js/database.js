@@ -468,6 +468,20 @@ define('pgadmin.node.database', [
       })
     });
 
+    pgBrowser.SecurityGroupSchema = {
+      id: 'security', label: gettext('Security'), type: 'group',
+      // Show/Hide security group for nodes under the catalog
+      visible: function(args) {
+        if (args && 'node_info' in args) {
+          // If node_info is not present in current object then it might in its
+          // parent in case if we used sub node control
+          var node_info = args.node_info || args.handler.node_info;
+          return 'catalog' in node_info ? false : true;
+        }
+        return true;
+      }
+    };
+
     function connect_to_database(obj, data, tree, item, interactive) {
         connect(obj, data, tree, item)
     }

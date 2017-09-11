@@ -177,7 +177,7 @@ define('pgadmin.node.sequence', [
             'onColor': 'success', 'offColor': 'primary',
             'size': 'small'
           }
-        }, pgBrowser.SecurityGroupUnderSchema,{
+        }, pgBrowser.SecurityGroupSchema,{
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'], disabled: true
         },{

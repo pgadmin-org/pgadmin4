@@ -996,7 +996,7 @@ function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, Backform, alertify) {
         },{
           id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
           type: 'text', mode: ['properties'], group: gettext('Security')
-        }, pgBrowser.SecurityGroupUnderSchema,{
+        }, pgBrowser.SecurityGroupSchema,{
           id: 'relacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({

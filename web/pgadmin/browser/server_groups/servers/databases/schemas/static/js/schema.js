@@ -106,20 +106,6 @@ define('pgadmin.node.schema', [
     }
   };
 
-  pgBrowser.SecurityGroupUnderSchema = {
-    id: 'security', label: gettext('Security'), type: 'group',
-    // Show/Hide security group for nodes under the catalog
-    visible: function(args) {
-      if (args && 'node_info' in args) {
-        // If node_info is not present in current object then it might in its
-        // parent in case if we used sub node control
-        var node_info = args.node_info || args.handler.node_info;
-        return 'catalog' in node_info ? false : true;
-      }
-      return true;
-    }
-  };
-
   // Define Security Model with fields and validation for VacuumSettings Control
   var VacuumTableModel =  Backform.VacuumTableModel = pgBrowser.Node.Model.extend({
     defaults: {

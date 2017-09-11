@@ -554,7 +554,7 @@ define('pgadmin.node.column', [
           model: VariablesModel, uniqueCol : ['name'],
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true
-        }, pgBrowser.SecurityGroupUnderSchema, {
+        }, pgBrowser.SecurityGroupSchema, {
           id: 'attacl', label: 'Privileges', type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({

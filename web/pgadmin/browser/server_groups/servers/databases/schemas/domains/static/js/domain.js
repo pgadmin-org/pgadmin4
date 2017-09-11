@@ -263,7 +263,7 @@ define('pgadmin.node.domain', [
           model: ConstraintModel, canAdd: true, canDelete: true,
           canEdit: false, columns: ['conname','consrc', 'convalidated']
         },
-        pgBrowser.SecurityGroupUnderSchema,
+        pgBrowser.SecurityGroupSchema,
         {
           id: 'seclabels', label: gettext('Security Labels'),
           model: pgBrowser.SecLabelModel, type: 'collection',

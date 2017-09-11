@@ -148,7 +148,7 @@ define('pgadmin.node.foreign_server', [
           model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
           canAdd: true, canDelete: true, uniqueCol : ['fsrvoption'],
           columns: ['fsrvoption','fsrvvalue']
-         }, pgBrowser.SecurityGroupUnderSchema, {
+         }, pgBrowser.SecurityGroupSchema, {
             id: 'fsrvacl', label: 'Privileges', type: 'collection', group: 'security',
             model: pgAdmin.Browser.Node.PrivilegeRoleModel.extend({privileges: ['U']}), control: 'unique-col-collection',
             mode: ['edit', 'create'], canAdd: true, canDelete: true, uniqueCol : ['grantee']

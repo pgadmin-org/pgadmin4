@@ -716,7 +716,7 @@ define('pgadmin.node.type', [
           id: 'alias', label: gettext('Alias'), cell: 'string',
           type: 'text', mode: ['properties'],
           disabled: 'inSchema'
-        }, pgBrowser.SecurityGroupUnderSchema,{
+        }, pgBrowser.SecurityGroupSchema,{
           id: 'type_acl', label: gettext('Privileges'), cell: 'string',
           type: 'text', mode: ['properties'], group: 'security',
           disabled: 'inSchema'
