@@ -1,5 +1,5 @@
 .icon-role {
-  background-image: url('{{ url_for('NODE-role.static', filename='img/role.png')}}') !important;
+  background-image: url('{{ url_for('NODE-role.static', filename='img/role.svg')}}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
@@ -7,7 +7,7 @@
 }
 
 .icon-group {
-  background-image: url('{{ url_for('NODE-role.static', filename='img/group.png')}}') !important;
+  background-image: url('{{ url_for('NODE-role.static', filename='img/group.svg')}}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
@@ -15,13 +15,13 @@
 }
 
 .pgadmin-node-select option[node="role"] {
-  background-image: url('{{ url_for('NODE-role.static', filename='img/role.png')}}') !important;
+  background-image: url('{{ url_for('NODE-role.static', filename='img/role.svg')}}') !important;
   background-repeat: no-repeat;
   background-position: center left;
 }
 
 .pgadmin-node-select option[node="group"] {
-  background-image: url('{{ url_for('NODE-role.static', filename='img/group.png')}}') !important;
+  background-image: url('{{ url_for('NODE-role.static', filename='img/group.svg')}}') !important;
   background-repeat: no-repeat;
   background-position: center left;
 }

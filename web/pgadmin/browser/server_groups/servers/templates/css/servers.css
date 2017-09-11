@@ -7,8 +7,11 @@
 }
 
 .icon-server-not-connected {
-  background-image: url('{{ url_for('NODE-server.static', filename='img/serverbad.png') }}') !important;
-  border-radius: 10px
+  background-image: url('{{ url_for('NODE-server.static', filename='img/serverbad.svg') }}') !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
 }
 
 .icon-server-connecting {

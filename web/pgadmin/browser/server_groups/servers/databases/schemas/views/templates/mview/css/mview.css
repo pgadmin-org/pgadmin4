@@ -1,5 +1,5 @@
 .icon-mview{
-  background-image: url('{{ url_for('NODE-mview.static', filename='img/mview.png') }}') !important;
+  background-image: url('{{ url_for('NODE-mview.static', filename='img/mview.svg') }}') !important;
   border-radius: 10px;
   background-repeat: no-repeat;
   align-content: center;

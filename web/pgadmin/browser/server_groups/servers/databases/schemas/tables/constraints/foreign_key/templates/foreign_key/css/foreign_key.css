@@ -1,5 +1,5 @@
 .icon-foreign_key {
-  background-image: url('{{ url_for('NODE-foreign_key.static', filename='img/foreign_key.png') }}') !important;
+  background-image: url('{{ url_for('NODE-foreign_key.static', filename='img/foreign_key.svg') }}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
@@ -7,6 +7,6 @@
 }
 
 .icon-foreign_key_no_validate {
-  background-image: url('{{ url_for('NODE-foreign_key.static', filename='img/foreign_key_no_validate.png') }}') !important;
+  background-image: url('{{ url_for('NODE-foreign_key.static', filename='img/foreign_key_no_validate.svg') }}') !important;
   border-radius: 10px
 }

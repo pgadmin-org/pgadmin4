@@ -1,5 +1,5 @@
 .icon-pga_job {
-  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job.png') }}') !important;
+  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job.svg') }}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
@@ -7,7 +7,7 @@
 }
 
 .icon-pga_job-disabled {
-  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job-disabled.png') }}') !important;
+  background-image: url('{{ url_for('NODE-pga_job.static', filename='img/pga_job-disabled.svg') }}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;

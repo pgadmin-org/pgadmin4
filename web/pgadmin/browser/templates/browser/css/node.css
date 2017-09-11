@@ -1,5 +1,5 @@
 .icon-{{node_type}} {
-  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.png' % node_type )}}') !important;
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
   background-repeat: no-repeat;
   align-content: center;
   vertical-align: middle;
@@ -7,7 +7,7 @@
 }
 
 .pgadmin-node-select option[node="{{node_type}}"] {
-  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.png' % node_type )}}') !important;
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % node_type )}}') !important;
   background-repeat: no-repeat;
   background-position: center left;
 }
