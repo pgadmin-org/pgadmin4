@@ -18,6 +18,11 @@ class GPDB(ServerType):
         " programs (pg_dump, pg_restore etc)."
     )
 
+    @property
+    def icon(self):
+        return "gpdb.png"
+
+
     def instanceOf(self, ver):
         return "Greenplum Database" in ver
 

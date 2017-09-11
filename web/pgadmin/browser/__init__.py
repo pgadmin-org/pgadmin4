@@ -182,7 +182,7 @@ class BrowserModule(PgAdminModule):
         scripts.append({
             'name': 'pgadmin.browser.node.ui',
             'path': url_for('browser.static', filename='js/node.ui'),
-            'when': 'server-group'
+            'when': 'server_group'
         })
 
         for module in self.submodules:

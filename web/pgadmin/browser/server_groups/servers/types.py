@@ -41,6 +41,10 @@ class ServerType(object):
         ServerType.registry[server_type] = self
 
     @property
+    def icon(self):
+        return "%s.svg" % self.stype
+
+    @property
     def server_type(self):
         return self.stype
 
@@ -83,7 +87,8 @@ class ServerType(object):
         return [
             render_template(
                 "css/server_type.css",
-                server_type=self.stype
+                server_type=self.stype,
+                icon=self.icon
             )
         ]
 
