@@ -119,8 +119,8 @@ define('pgadmin.node.user_mapping', [
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
           disabled: function(m) { return !m.isNew(); },
           transform: function(data) {
-            var self = this;
-            node = self.field.get('schema_node');
+            var self = this,
+              node = self.field.get('schema_node');
             var res =
             Backform.NodeListByNameControl.prototype.defaults.transform.apply(
               this, arguments
