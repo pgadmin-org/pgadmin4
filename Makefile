@@ -28,6 +28,9 @@ install-node:
 bundle:
 	cd web && yarn run bundle
 
+bundle-dev:
+	cd web && yarn run bundle:dev
+
 linter:
 	cd web && yarn run linter
 

@@ -319,6 +319,7 @@ module.exports = {
     optimizeAssetsPlugin,
     definePlugin,
     hardSourceWebpackPlugin,
+    sourceMapDevToolPlugin,
   ]: [
     extractSass,
     extractStyle,
