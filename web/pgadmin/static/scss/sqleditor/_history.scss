@@ -7,7 +7,7 @@
   .entry {
     @extend .text-14;
     @extend .bg-white-1;
-    font-family: monospace;
+    font-family: 'Source Code Pro';
     border: 2px solid transparent;
     margin-left: 1px;
     padding: 0 8px 0 5px;
@@ -15,7 +15,7 @@
     .other-info {
       @extend .text-13;
       @extend .font-gray-4;
-      font-family: monospace;
+      font-family: 'Source Code Pro';
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -34,7 +34,7 @@
   }
 
   .date-label {
-    font-family: monospace;
+    font-family: 'Source Code Pro';
     background: #e8e8e8;
     padding: 2px 9px;
     font-size: 11px;
@@ -183,7 +183,7 @@
         .content-value {
           @extend .bg-white-1;
           @extend .text-13;
-          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          font-family: 'Source Code Pro';
           border: 0;
           padding-left: 0;
           position: absolute;

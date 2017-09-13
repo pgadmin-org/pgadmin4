@@ -2,6 +2,7 @@
 
 /* Ensure simple forms don't hit the top of the screen */
 body {
+    font-family: 'Open Sans';
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -1005,7 +1006,7 @@ ul.nav.nav-tabs {
 }
 
 span.button-label {
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: 'Open Sans';
   font-size: initial;
 }
 
@@ -1015,7 +1016,7 @@ span.button-label {
   border-radius: 3px;
   color: #333;
   display: block;
-  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+  font-family: 'Source Code Pro';
   font-size: 12px;
   line-height: 1.42857;
   margin: 0 0 10px;

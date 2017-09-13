@@ -285,7 +285,7 @@
   right: 5px;
 }
 .context-menu-list {
-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-family: 'Open Sans';;
 font-size: 13px;
 }
 
@@ -300,7 +300,7 @@ font-size: 13px;
 
 .context-menu-item {
   display:block;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 13px;
   font-weight: normal;
 }

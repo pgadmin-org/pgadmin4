@@ -48,7 +48,7 @@
 
 /* Codemirror buttons */
 .CodeMirror-dialog button {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Open Sans';
     color: white;
     font-size: 70%;
     background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);

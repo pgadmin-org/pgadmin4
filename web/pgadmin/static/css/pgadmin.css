@@ -813,3 +813,18 @@ lgg-el-container[el=md] .pg-el-lg-8,
 .Resizer.disabled:hover {
   border-color: transparent;
 }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/OpenSans-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('../fonts/SourceCodePro-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
