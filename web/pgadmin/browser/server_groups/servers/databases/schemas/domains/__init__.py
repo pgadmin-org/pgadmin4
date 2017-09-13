@@ -493,7 +493,8 @@ AND relname = typname AND relkind != 'c') AND
 relnamespace=typnamespace AND relname = substring(typname FROM 2)::name
 AND relkind != 'c'))"""
 
-        if self.blueprint.show_system_objects:
+        # To show hidden objects
+        if not self.blueprint.show_system_objects:
             condition += " AND nsp.nspname != 'information_schema'"
 
         # Get Types

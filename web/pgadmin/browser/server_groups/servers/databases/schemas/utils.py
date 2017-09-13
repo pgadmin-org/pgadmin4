@@ -93,6 +93,16 @@ class DataTypeReader:
         """
         res = []
         try:
+            # Check if template path is already set or not
+            # if not then we will set the template path here
+            if not hasattr(self, 'data_type_template_path'):
+                self.data_type_template_path = 'datatype/sql/' + (
+                    '#{0}#{1}#'.format(
+                        self.manager.server_type,
+                        self.manager.version
+                    ) if self.manager.server_type == 'gpdb' else
+                    '#{0}#'.format(self.manager.version)
+                )
 
             SQL = render_template(
                 "/".join([self.data_type_template_path,'get_types.sql']),
