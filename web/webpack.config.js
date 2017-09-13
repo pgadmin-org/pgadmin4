@@ -74,7 +74,7 @@ const optimizeAssetsPlugin = new OptimizeCssAssetsPlugin({
 // based on 'NODE_ENV' variable. [used only in production]
 const definePlugin = new webpack.DefinePlugin({
   'process.env': {
-    'NODE_ENV': JSON.stringify(envType),
+    'NODE_ENV': JSON.stringify('production'),
   },
 });
 
