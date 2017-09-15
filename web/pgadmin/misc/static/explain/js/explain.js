@@ -260,12 +260,14 @@ var PlanModel = Backbone.Model.extend({
             node_type = node_type.substring(0,7);
 
         // Get the image information for current node
-        var mapperObj = (_.isFunction(imageMapper[node_type]) &&
+        var mappedImage = (_.isFunction(imageMapper[node_type]) &&
                 imageMapper[node_type].apply(undefined, [data])) ||
-                imageMapper[node_type] || 'Undefined';
+                imageMapper[node_type] || {
+                  "image": "ex_unknown.png", "image_text": node_type
+                };
 
-        data["image"] = mapperObj["image"];
-        data["image_text"] = mapperObj["image_text"];
+        data["image"] = mappedImage["image"];
+        data["image_text"] = mappedImage["image_text"];
 
         // Start calculating xpos, ypos, width and height for child plans if any
         if ('Plans' in data) {
