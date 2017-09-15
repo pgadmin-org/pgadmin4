@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Source: types.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: types.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">define([], function () {
+
+    //stub
+    var wcDocker = {};
+
+    /**
+     * Enumerated Docking positions.
+     * @member module:wcDocker.DOCK
+     * @property {String} MODAL="modal" - A floating panel that blocks input until closed
+     * @property {String} FLOAT="float" - A floating panel
+     * @property {String} TOP="top" - Docks to the top of a target or window
+     * @property {String} LEFT="left" - Docks to the left of a target or window
+     * @property {String} RIGHT="right" - Docks to the right of a target or window
+     * @property {String} BOTTOM="bottom" - Docks to the bottom of a target or window
+     * @property {String} STACKED="stacked" - Docks as another tabbed item along with the target
+     * @version 3.0.0
+     * @const
+     */
+    wcDocker.DOCK = {
+        MODAL: 'modal',
+        FLOAT: 'float',
+        TOP: 'top',
+        LEFT: 'left',
+        RIGHT: 'right',
+        BOTTOM: 'bottom',
+        STACKED: 'stacked'
+    };
+
+    /**
+     * Enumerated Layout wcDocker.
+     * @member module:wcDocker.LAYOUT
+     * @property {String} SIMPLE="wcLayoutSimple" - Contains a single div item without management using a {@link module:wcLayoutSimple}, it is up to you to populate it however you wish.
+     * @property {String} TABLE="wcLayoutTable" - Manages a table grid layout using {@link module:wcLayoutTable}, this is the default layout used if none is specified.
+     * @version 3.0.0
+     * @const
+     */
+    wcDocker.LAYOUT = {
+        SIMPLE: 'wcLayoutSimple',
+        TABLE: 'wcLayoutTable'
+    };
+
+    /**
+     * Enumerated Internal events
+     * @member module:wcDocker.EVENT
+     * @property {String} INIT="panelInit" - When the panel is initialized
+     * @property {String} LOADED="dockerLoaded" - When all panels have finished loading
+     * @property {String} UPDATED="panelUpdated" - When the panel is updated
+     * @property {String} VISIBILITY_CHANGED="panelVisibilityChanged" - When the panel has changed its visibility&lt;br>This event is called with the current visibility state as the first parameter
+     * @property {String} BEGIN_DOCK="panelBeginDock" - When the user begins moving any panel from its current docked position
+     * @property {String} END_DOCK="panelEndDock" - When the user finishes moving or docking a panel
+     * @property {String} GAIN_FOCUS="panelGainFocus" - When the user brings any panel within a tabbed frame into focus
+     * @property {String} LOST_FOCUS="panelLostFocus" - When the user leaves focus on any panel within a tabbed frame
+     * @property {String} CLOSING="panelClosing" - When the panel is about to be closed, but before it closes. If any event handler returns a falsey value, the close action will be canceled.
+     * @property {String} CLOSED="panelClosed" - When the panel is being closed
+     * @property {String} PERSISTENT_CLOSED="panelPersistentClosed" - When a persistent panel is being hidden
+     * @property {String} PERSISTENT_OPENED="panelPersistentOpened" - When a persistent panel is being shown
+     * @property {String} BUTTON="panelButton" - When a custom button is clicked, See [wcPanel.addButton]{@link module:wcPanel~addButton}
+     * @property {String} ATTACHED="panelAttached" - When the panel has moved from floating to a docked position
+     * @property {String} DETACHED="panelDetached" - When the panel has moved from a docked position to floating
+     * @property {String} MOVE_STARTED="panelMoveStarted" - When the user has started moving the panel (top-left coordinates changed)&lt;br>This event is called with an object of the current {x, y} position as the first parameter
+     * @property {String} MOVE_ENDED="panelMoveEnded" - When the user has finished moving the panel&lt;br>This event is called with an object of the current {x, y} position as the first parameter
+     * @property {String} MOVED="panelMoved" - When the top-left coordinates of the panel has changed&lt;br>This event is called with an object of the current {x, y} position as the first parameter
+     * @property {String} RESIZE_STARTED="panelResizeStarted" - When the user has started resizing the panel (width or height changed)&lt;br>This event is called with an object of the current {width, height} size as the first parameter
+     * @property {String} RESIZE_ENDED="panelResizeEnded" - When the user has finished resizing the panel&lt;br>This event is called with an object of the current {width, height} size as the first parameter
+     * @property {String} RESIZED="panelResized" - When the panels width or height has changed&lt;br>This event is called with an object of the current {width, height} size as the first parameter
+     * @property {String} ORDER_CHANGED="panelOrderChanged" - This only happens with floating windows when the order of the windows have changed.
+     * @property {String} SCROLLED="panelScrolled" - When the contents of the panel has been scrolled
+     * @property {String} SAVE_LAYOUT="layoutSave" - When the layout is being saved, See [wcDocker.save]{@link module:wcDocker#save}
+     * @property {String} RESTORE_LAYOUT="layoutRestore" - When the layout is being restored, See [wcDocker.restore]{@link module:wcDocker#restore}
+     * @property {String} CUSTOM_TAB_CHANGED="customTabChanged" - When the current tab on a custom tab widget associated with this panel has changed, See {@link module:wcTabFrame}
+     * @property {String} CUSTOM_TAB_CLOSED="customTabClosed" - When a tab has been closed on a custom tab widget associated with this panel, See {@link module:wcTabFrame}
+     * @version 3.0.0
+     * @const
+     */
+    wcDocker.EVENT = {
+        INIT: 'panelInit',
+        LOADED: 'dockerLoaded',
+        UPDATED: 'panelUpdated',
+        VISIBILITY_CHANGED: 'panelVisibilityChanged',
+        BEGIN_DOCK: 'panelBeginDock',
+        END_DOCK: 'panelEndDock',
+        GAIN_FOCUS: 'panelGainFocus',
+        LOST_FOCUS: 'panelLostFocus',
+        CLOSING: 'panelClosing',
+        CLOSED: 'panelClosed',
+        PERSISTENT_CLOSED: 'panelPersistentClosed',
+        PERSISTENT_OPENED: 'panelPersistentOpened',
+        BUTTON: 'panelButton',
+        ATTACHED: 'panelAttached',
+        DETACHED: 'panelDetached',
+        MOVE_STARTED: 'panelMoveStarted',
+        MOVE_ENDED: 'panelMoveEnded',
+        MOVED: 'panelMoved',
+        RESIZE_STARTED: 'panelResizeStarted',
+        RESIZE_ENDED: 'panelResizeEnded',
+        RESIZED: 'panelResized',
+        ORDER_CHANGED: 'panelOrderChanged',
+        SCROLLED: 'panelScrolled',
+        SAVE_LAYOUT: 'layoutSave',
+        RESTORE_LAYOUT: 'layoutRestore',
+        CUSTOM_TAB_CHANGED: 'customTabChanged',
+        CUSTOM_TAB_CLOSED: 'customTabClosed'
+    };
+
+    /**
+     * The name of the placeholder panel.
+     * @private
+     * @memberOf module:wcDocker
+     * @constant {String} module:wcDocker.PANEL_PLACEHOLDER
+     */
+    wcDocker.PANEL_PLACEHOLDER = '__wcDockerPlaceholderPanel';
+
+    /**
+     * Used when [adding]{@link module:wcDocker#addPanel} or [moving]{@link module:wcDocker#movePanel} a panel to designate the target location as collapsed.&lt;br>
+     * Must be used with [docking]{@link module:wcDocker.DOCK} positions LEFT, RIGHT, or BOTTOM only.
+     * @memberOf module:wcDocker
+     * @constant {String} module:wcDocker.COLLAPSED
+     */
+    wcDocker.COLLAPSED = '__wcDockerCollapsedPanel';
+
+    /**
+     * Used for the splitter bar orientation.
+     * @member module:wcDocker.ORIENTATION
+     * @property {Boolean} VERTICAL=false - Top and Bottom panes
+     * @property {Boolean} HORIZONTAL=true - Left and Right panes
+     * @version 3.0.0
+     * @const
+     */
+    wcDocker.ORIENTATION = {
+        VERTICAL: false,
+        HORIZONTAL: true
+    };
+    /**
+     * Used to determine the position of tabbed widgets for stacked panels.&lt;br>
+     * &lt;b>Note:&lt;/b> Not supported on IE8 or below.
+     * @member module:wcDocker.TAB
+     * @property {String} TOP="top" - The default, puts tabs at the top of the frame
+     * @property {String} LEFT="left" - Puts tabs on the left side of the frame
+     * @property {String} RIGHT="right" - Puts tabs on the right side of the frame
+     * @property {String} BOTTOM="bottom" - Puts tabs on the bottom of the frame
+     * @version 3.0.0
+     * @const
+     */
+    wcDocker.TAB = {
+        TOP: 'top',
+        LEFT: 'left',
+        RIGHT: 'right',
+        BOTTOM: 'bottom'
+    };
+
+    return wcDocker;
+
+});</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

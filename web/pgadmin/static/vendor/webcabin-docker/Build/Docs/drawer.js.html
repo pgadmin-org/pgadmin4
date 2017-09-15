@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Source: drawer.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: drawer.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/** @module wcDrawer */
+define([
+    "dcl/dcl",
+    "./types",
+    "./frame",
+    "./base"
+], function (dcl, wcDocker, wcFrame, base) {
+    /**
+     * A docker container for carrying its own arrangement of docked panels as a slide out drawer.
+     * @class module:wcDrawer
+     * A collapsable container for carrying panels.&lt;br>
+     *
+     * @version 3.0.0
+     * @description &lt;b>&lt;i>PRIVATE&lt;i> - Handled internally by [docker]{@link module:wcDocker} and &lt;u>should never be constructed by the user.&lt;/u>&lt;/b>
+     */
+    var Module = dcl(base,{
+        declaredClass: 'wcDrawer',
+
+        /**
+         * @memberOf module:wcDrawer
+         * @param {external:jQuery~selector|external:jQuery~Object|external:domNode} container - A container element for this drawer.
+         * @param {wcSplitter|wcDocker} parent - The drawer's parent object.
+         * @param {module:wcDocker.DOCK} position - A docking position to place this drawer.
+         */
+        constructor:function (container, parent, position) {
+            this.$container = $(container);
+            this.$frame = null;
+
+            this._position = position;
+            this._parent = parent;
+            this._frame = null;
+            this._closeSize = 0;
+            this._expanded = false;
+            this._sliding = false;
+            this._orientation = (this._position === wcDocker.DOCK.LEFT || this._position === wcDocker.DOCK.RIGHT) ? wcDocker.ORIENTATION.HORIZONTAL : wcDocker.ORIENTATION.VERTICAL;
+
+            this.__init();
+        },
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Public Functions
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /**
+         * Collapses the drawer to its respective side wall.
+         * @function module:wcDrawer#collapse
+         */
+        collapse: function (instant) {
+            if (this._expanded) {
+                // Collapse happens before the tab is de-selected, so record the
+                // current size and assign it to the current panel.
+                var panel = this._frame.panel();
+                if (panel) {
+                    var size = this._parent.pos();
+                    if (this._position !== wcDocker.DOCK.LEFT) {
+                        size = 1.0 - size;
+                    }
+
+                    var max;
+                    if (this._position === wcDocker.DOCK.BOTTOM) {
+                        max = this.docker().$container.height();
+                        panel._size.y = size * max;
+                    } else {
+                        max = this.docker().$container.width();
+                        panel._size.x = size * max;
+                    }
+                }
+
+                this._expanded = false;
+                if (instant) {
+                    switch (this._position) {
+                        case wcDocker.DOCK.TOP:
+                        case wcDocker.DOCK.LEFT:
+                            this._parent.pos(0);
+                            break;
+                        case wcDocker.DOCK.RIGHT:
+                        case wcDocker.DOCK.BOTTOM:
+                            this._parent.pos(1);
+                            break;
+                    }
+                } else {
+                    this._sliding = true;
+
+                    var self = this;
+                    var fin = function () {
+                        self._sliding = false;
+                        self._parent.__update();
+                    };
+
+                    switch (this._position) {
+                        case wcDocker.DOCK.TOP:
+                        case wcDocker.DOCK.LEFT:
+                            this._parent.animPos(0, fin);
+                            break;
+                        case wcDocker.DOCK.RIGHT:
+                        case wcDocker.DOCK.BOTTOM:
+                            this._parent.animPos(1, fin);
+                            break;
+                    }
+                }
+            }
+        },
+
+        /**
+         * Expands the drawer.
+         * @function module:wcDrawer#expand
+         */
+        expand: function () {
+            if (!this._expanded) {
+                this._expanded = true;
+                this._sliding = true;
+
+                var panel = this._frame.panel();
+                if (panel) {
+                    // Determine the size to expand the drawer based on the size of the panel.
+                    var size, max;
+                    if (this._position === wcDocker.DOCK.BOTTOM) {
+                        size = panel._size.y;
+                        max = this.docker().$container.height();
+                    } else {
+                        size = panel._size.x;
+                        max = this.docker().$container.width();
+                    }
+
+                    if (this._position !== wcDocker.DOCK.LEFT) {
+                        size = max - size;
+                    }
+
+                    size = size / max;
+                    var self = this;
+                    this._parent.animPos(size, function () {
+                        self._sliding = false;
+                        self._parent.__update();
+                    });
+                }
+            }
+        },
+
+        /**
+         * Gets whether the drawer is expanded.
+         * @function module:wcDrawer#isExpanded
+         * @returns {Boolean} - The current expanded state.
+         */
+        isExpanded: function () {
+            return this._expanded;
+        },
+
+        /**
+         * The minimum size constraint for the drawer area.
+         * @function module:wcDrawer#minSize
+         * @returns {module:wcDocker~Size} - The minimum size.
+         */
+        minSize: function () {
+            if (this._expanded) {
+                if (this._root &amp;&amp; typeof this._root.minSize === 'function') {
+                    return this._root.minSize();
+                } else {
+                    return {x: 100, y: 100};
+                }
+            }
+            this.__adjustCollapsedSize();
+            return {x: this._closeSize, y: this._closeSize};
+        },
+
+        /**
+         * The maximum size constraint for the drawer area.
+         * @function module:wcDrawer#maxSize
+         * @returns {module:wcDocker~Size} - The maximum size.
+         */
+        maxSize: function () {
+            var isHorizontal = (this._orientation === wcDocker.ORIENTATION.HORIZONTAL) ? true : false;
+            if (this._expanded || this._sliding) {
+                if (this._root &amp;&amp; typeof this._root.maxSize === 'function') {
+                    return {
+                        x: (isHorizontal ? this._root.maxSize().x : Infinity),
+                        y: (!isHorizontal ? this._root.maxSize().y : Infinity)
+                    };
+                } else {
+                    return {x: Infinity, y: Infinity};
+                }
+            }
+            this.__adjustCollapsedSize();
+            return {
+                x: (isHorizontal ? this._closeSize : Infinity),
+                y: (!isHorizontal ? this._closeSize : Infinity)
+            };
+        },
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Private Functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        __init: function () {
+            this.$frame = $('&lt;div class="wcCollapserFrame">');
+            this.__container(this.$container);
+
+            this._frame = new (this.docker().__getClass('wcFrame'))(this.$frame, this, false);
+            this._frame.tabOrientation(this._position);
+        },
+
+        // Updates the size of the collapser.
+        __update: function (opt_dontMove) {
+            this.__adjustCollapsedSize();
+            this._frame.__update();
+        },
+
+        // Adjusts the size of the collapser when it is closed.
+        __adjustCollapsedSize: function () {
+            if (this._frame._panelList.length) {
+                this._closeSize = this._frame.$tabBar.outerHeight();
+                this._parent.$bar.removeClass('wcSplitterHidden');
+            } else {
+                this._closeSize = 0;
+                this._parent.$bar.addClass('wcSplitterHidden');
+            }
+        },
+
+        // Retrieves the bounding rect for this collapser.
+        __rect: function () {
+            var offset = this.$frame.offset();
+            var width = this.$frame.width();
+            var height = this.$frame.height();
+
+            var panel = this._frame.panel();
+            if (panel) {
+                // Determine the size to expand the drawer based on the size of the panel.
+                if (this._position === wcDocker.DOCK.BOTTOM) {
+                    height = panel._size.y;
+                    width = width / 3;
+                } else {
+                    width = panel._size.x;
+                    height = height / 3;
+                }
+            }
+
+            return {
+                x: offset.left,
+                y: offset.top,
+                w: width,
+                h: height
+            };
+        },
+
+        // Saves the current panel configuration into a meta
+        // object that can be used later to restore it.
+        __save: function () {
+
+            var data = {};
+            data.closeSize = this._closeSize;
+            data.frame = this._frame.__save();
+            return data;
+        },
+
+        // Restores a previously saved configuration.
+        __restore: function (data, docker) {
+            this._closeSize = data.closeSize;
+            this._frame.__restore(data.frame, docker);
+            this.__adjustCollapsedSize();
+        },
+
+        // Gets, or Sets a new container for this layout.
+        // Params:
+        //    $container          If supplied, sets a new container for this layout.
+        //    parent              If supplied, sets a new parent for this layout.
+        // Returns:
+        //    JQuery collection   The current container.
+        __container: function ($container) {
+            if (typeof $container === 'undefined') {
+                return this.$container;
+            }
+
+            this.$container = $container;
+            if (this.$container) {
+                this.$container.append(this.$frame);
+            } else {
+                this.$frame.remove();
+            }
+            return this.$container;
+        },
+
+        // Disconnects and prepares this widget for destruction.
+        __destroy: function () {
+            if (this._frame) {
+                this._frame.__destroy();
+                this._frame = null;
+            }
+
+            this.__container(null);
+            this._parent = null;
+        }
+    });
+
+    return Module;
+});</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

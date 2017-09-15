@@ -1,0 +1,24 @@
+{
+  "name": "webcabin-docker",
+  "author": {
+    "name": "WebCabin",
+    "url": "http://docker.webcabin.org"
+  },
+  "version": "2.2.2",
+  "description": "Dynamic docking panels for your app.",
+  "main": "Build/wcDocker.min.js",
+  "dependencies": {
+    "FileSaver": "^0.10.0",
+    "font-awesome": "^4.6.3",
+    "jquery": "^1.11.2",
+    "jquery-contextmenu": "^2.5.0"
+  },
+  "devDependencies": {
+    "almond": "0.3.2",
+    "dcl": "1.1.3",
+    "dojo": "1.11.2",
+    "lodash-amd": "4.15.0",
+    "requirejs": "2.2.0",
+    "requirejs-domready": "2.0.3"
+  }
+}

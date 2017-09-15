@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>Welcome!</h1><p>Welcome to WebCabin.org!  Your developers cabin, on the web!  </p>
+<p>Here at Web Cabin, we sincerely believe that anyone with the proper tools can become a developer! The open source community provides us with a powerful network for sharing, inspiring, and revolutionizing the world! It is awfully daunting, viewing the long road ahead through our small cabin window, but all memorable journeys must have a beginning. Will you join us?</p>
+<hr>
+<h3>New!</h3><p>I've create a new theme builder panel that appears right on the <a href="http://docker.webcabin.org">demonstration front page</a>! Build your own custom themes live within the page view!</p>
+<hr>
+<h3>What is wcDocker?</h3><p>wcDocker (Web Cabin Docker) is a responsive IDE interface designed for the developer at heart!  Compartmentalize your environment into smaller components, put each of those parts into a docker panel, and organize your environment however you like, whenever you like!</p>
+<h3><a href="http://docker.webcabin.org">http://docker.webcabin.org</a></h3><ul>
+<li>Try the front page demo.</li>
+</ul>
+<h3><a href="http://docker.api.webcabin.org">http://docker.api.webcabin.org</a></h3><ul>
+<li>View the API documentation.</li>
+</ul>
+<h3><a href="https://github.com/WebCabin/wcDocker">https://github.com/WebCabin/wcDocker</a></h3><ul>
+<li>View the source code.</li>
+</ul>
+<h3><a href="http://arpg.webcabin.org">http://arpg.webcabin.org</a></h3><ul>
+<li>Try out our upcoming project (currently in alpha development), a completely web based Action RPG Maker tool!  </li>
+</ul>
+<hr>
+<h3>Features</h3><ul>
+<li>Extremely responsive design!</li>
+<li>Organization and duplication of panels at any time!</li>
+<li>Easily create your own themes!</li>
+<li>Comprehensive API Documentation!</li>
+<li>Easily save and restore your layout!</li>
+<li>Compatible with all major browsers, including IE8.</li>
+<li>Completely free!</li>
+</ul>
+<hr>
+<h3>Getting Started</h3><p>See the <a href="http://docker.api.webcabin.org/tutorial-1.0-getting-started.html">Getting Started</a> tutorial.</p>
+<hr>
+<h3>Change Log</h3><h4>Version: (pre-release) 3.0.0</h4><ul>
+<li><p><strong>WARNING: Before upgrading to this version from 2.2.0, You will need to make the following changes in your implementation:</strong></p>
+<ul>
+<li>Themes are no longer linked directly to the page using the &lt;link&gt; tag, instead use wcDocker.theme().</li>
+<li><p>If your themes are not found in the &quot;Themes&quot; folder, you will need to assign the correct path when you construct your wcDocker instance.</p>
+<pre class="prettyprint source"><code>new wcDocker(domNode, {themePath: 'New/theme/folder'});</code></pre></li>
+<li><p>All <code>wcDocker.DOCK</code>, <code>wcDocker.EVENT</code>, and <code>wcDocker.ORIENTATION</code> enumerations have changed slightly, instead of each being one variable, they are broken into objects.</p>
+<pre class="prettyprint source"><code>// OLD format...
+wcDocker.DOCK_LEFT;
+wcDocker.EVENT_BUTTON;
+wcDocker.ORIENTATION_HORIZONTAL;
+
+// NEW format...
+wcDocker.DOCK.LEFT;
+wcDocker.EVENT.BUTTON;
+wcDocker.ORIENTATION.HORIZONTAL;
+
+// Notice how each used to be one variable name...
+// Now they each are an object with the same enumeration inside them,
+// just replace the first '_' with a '.' and they should work fine again!</code></pre></li>
+<li><p><code>wcLayout's</code> have changed in the following ways:</p>
+<ul>
+<li>The original layout class has been renamed to <a href="http://docker.api.webcabin.org/wcLayoutTable.html">wcLayoutTable</a>, and another type of layout now exists as <a href="http://docker.api.webcabin.org/wcLayoutSimple.html">wcLayoutSimple</a>.</li>
+<li><code>wcLayoutTable.addItem()</code> and <code>wcLayoutTable.item()</code> no longer return a jQuery object. Instead, they return a <a href="http://docker.api.webcabin.org/module-wcLayoutTable.html#~tableItem">layout table item</a> that can be used to make alterations to that cell.</li>
+<li><p>To use the simple layout on your panel, include the layout option when registering your panel:</p>
+<pre class="prettyprint source"><code>  myDocker.registerPanelType('Simple Panel', {
+    // Use the simple layout for the entire panel.
+    layout: wcDocker.LAYOUT.SIMPLE,
+    onCreate: function(myPanel) {
+
+      // Create a splitter widget with simple layouts.
+      var splitter = new wcSplitter($someContainer, myPanel, wcDocker.ORIENTATION.HORIZONTAL);
+      splitter.initLayouts(wcDocker.LAYOUT.SIMPLE, wcDocker.LAYOUT.SIMPLE);
+
+      // Create a tab frame widget with a tab that uses a simple layout.
+      var tabFrame = new wcTabFrame($someContainer, myPanel);
+      tabFrame.addTab('Custom Tab 1', 0, wcDocker.LAYOUT.SIMPLE).addItem($someItem);
+    }
+  });</code></pre></li>
+</ul>
+</li>
+<li>The following functions are now <code>deprecated</code> and will be removed in an upcoming version:<ul>
+<li><code>wcDocker.basicMenu()</code>, renamed to <code>wcDocker.menu()</code>.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>Collapsible panels:</code></strong> Panels can now be collapsed to the side or bottom of the screen, where they become a slide-out drawer above the main layout.</p>
+</li>
+<li><p><strong><code>Panel creation elements:</code></strong> Instead of relying on the context-menu controls to add new panels, you can now add the CSS class <strong><code>&quot;wcCreatePanel&quot;</code></strong> to any dom element along with the data attribute <strong><code>&quot;panel&quot;</code></strong> and wcDocker will treat it as a panel creation control. A user will then be able to drag-drop that element into their view to create new panels of the specified type.</p>
+<pre class="prettyprint source"><code>  {@lang xml}&lt;span class=&quot;wcCreatePanel&quot; data-panel=&quot;My Custom Panel Type&quot;>Create My Custom Panel Type&lt;/span></code></pre></li>
+<li><p><strong><code>Tab orientation:</code></strong> Tab controls displayed on panels and the custom tab widget can now be oriented to the left, right, or bottom edges (browser must support css transforms).</p>
+<pre class="prettyprint source"><code>  myDocker.addPanel('Some Panel', wcDocker.DOCK.STACKED, parentPanel, {tabOrientation: wcDocker.TAB.BOTTOM});
+
+  var myCustomTabFrame = new wcTabFrame(domElem, myPanel);
+  myCustomTabFrame.tabOrientation(wcDocker.TAB.LEFT);</code></pre></li>
+<li>Built in loading screens for both panels (<code>wcPanel.startLoading()</code> and <code>wcPanel.finishLoading()</code>), and the entire window (<code>wcDocker.startLoading()</code> and <code>wcDocker.finishLoading()</code>), and also included a new <code>wcDocker.EVENT.LOADED</code> event that is triggered once all panels have been initialized and have finished their loading screens if they've started one.</li>
+<li>Great improvements to splitter bar movement, moving one splitter no longer causes others to move (unless it explicitly pushes them).</li>
+<li>Improvements to the wcLayout object, css changes to the table cells and rows are now persistent even if the grid size changes.</li>
+<li>Tab widgets now only show on panel frames that contain more than one panel.</li>
+<li>Panels can now be registered as <code>persistent</code>.<ul>
+<li>When the user closes a persistent panel, it is hidden instead of destroyed.</li>
+<li>When the user adds that panel back into their view, if there are any previously hidden panels of that type, it will be shown instead of creating a new panel instance.<pre class="prettyprint source"><code>myDocker.registerPanelType('persistent panel', {
+  isPersistent: true,
+  onCreate: function(myPanel) {
+    myPanel.on(wcDocker.EVENT.PERSISTENT_CLOSED, function() {
+      // The user has closed this panel, but instead of being destroyed, it is only hidden.
+    });
+    myPanel.on(wcDocker.EVENT.PERSISTENT_OPENED, function() {
+      // The user added this panel type, but actually only re-shown this persistent version of the panel instead.
+    });
+  }
+});</code></pre></li>
+</ul>
+</li>
+<li><p>The collapse direction button on a panel can now be overridden if the built in calculation does not meet your needs. See <a href="http://docker.api.webcabin.org/wcPanel.html#collapseDirection">wcPanel#collapseDirection</a> for more information.</p>
+<pre class="prettyprint source"><code>  // You can override the direction with your own calculation function callback
+  myPanel.collapseDirection(function(bounds) {
+    return wcDocker.DOCK.LEFT;
+  });
+
+  // Or you can set it to a static direction
+  myPanel.collapseDirection(wcDocker.DOCK.RIGHT);
+
+  // Or you can restore it back to the default calculation
+  myPanel.collapseDirection(false);</code></pre></li>
+<li>Source code now supports <a href="http://www.dcljs.org/">DCL</a>!</li>
+<li>Front page Theme Builder is now built into the libraries.<ul>
+<li>To include it in your project, you will need to include <a href="https://bgrins.github.io/spectrum/">spectrum</a> into your project as well as register a panel to be used for the theme builder:<pre class="prettyprint source"><code>myDocker.registerPanelType('Theme Builder', {
+  faicon: 'map',
+  onCreate: wcThemeBuilder
+});</code></pre></li>
+</ul>
+</li>
+</ul>
+<h4>Version: 2.2.0</h4><ul>
+<li>Separated the default theme out of <code>wcDocker.css</code> (now use <code>wcDocker.css</code> with <code>Themes/default.css</code>).</li>
+<li>Added <code>wcDocker.panelTypeInfo()</code> and <code>wcPanel.info()</code> that will retrieve the registration data of a panel.</li>
+<li>Added <code>wcDocker.panelTypes()</code> to retrieve a list of all registered panel types.</li>
+<li>New event type <code>wcDocker.EVENT.INIT</code>.</li>
+<li>Panel width and height can now be retrieved.</li>
+<li><code>wcPanel</code> functions <code>initPos</code>, <code>initSize</code>, <code>minSize</code>, and <code>maxSize</code> can now take a string value with a <code>'px'</code> or <code>'%'</code> suffix.</li>
+<li>Fixed issue with using normal CSS icons in the context menu.</li>
+<li>Improved auto scrolling of tab items when clicked.</li>
+<li>Create your own <code>wcTabFrame</code> widget within your panels.</li>
+<li>Create your own <code>wcIFrame</code> widget within your panels.</li>
+<li>Floating panels can now be modal.</li>
+</ul>
+<h4>Version: 2.1.0</h4><ul>
+<li><code>wcDocker</code> now has Bower support for easy package management.</li>
+<li><code>wcSplitter</code> is now usable inside a panel.</li>
+<li>Improved performance of panel resizing.</li>
+<li><code>wcPanel.focus()</code> now actually sets itself as the current active tab.</li>
+<li><code>wcDocker.registerPanelType()</code> has a new option <code>{limit: Number}</code> that limits the total number of copies for this panel.</li>
+<li>New event type <code>wcDocker.EVENT.VISIBILITY_CHANGED</code>, triggered whenever the panel gains or loses visibility.  Use <code>wcPanel.isVisible()</code> to retrieve the current state.</li>
+<li>Reduced DOM changes during tab change and resize.</li>
+<li>New event types <code>wcDocker.EVENT.BEGIN_DOCK</code> and <code>wcDocker.EVENT.END_DOCK</code> that trigger whenever the user is dragging a panel to a new location.</li>
+<li>New event types <code>wcDocker.EVENT.GAIN_FOCUS</code> and <code>wcDocker.EVENT.LOST_FOCUS</code> that trigger whenever a panel is brought it and out of focus.</li>
+<li>Floating panels no longer change size whenever a new panel is added to it as a tab.</li>
+</ul>
+<h4>Version: 2.0.0</h4><ul>
+<li>Layout grid can now have a spacing size.</li>
+<li>Layout grid can now be set to alternating row color.</li>
+<li><code>wcLayout.item()</code> added to retrieve an already existing item in the layout.</li>
+<li><code>wcDocker</code> can now send and receive events.</li>
+<li><code>wcLayout</code> can now batch large numbers of elements added without page refreshing between each.</li>
+<li><code>wcPanel</code> can now contain custom buttons that appear within the title bar.</li>
+<li><code>wcDocker.basicMenu()</code> now has an option to include the default menu options along with your custom ones.</li>
+<li><code>wcDocker.basicMenu()</code> can now accept a dynamic callback function that returns custom menu's at the time of the event.</li>
+<li>New events added for resize start, resize end, move start, and move end.</li>
+<li>Panels can now be set to hide their contents whenever they are resized.</li>
+<li><code>wcDocker</code> constructor now takes an options object.</li>
+<li><code>wcDocker</code> now has an option to disable the default context menu.</li>
+<li>Panel tabs are now scrollable.</li>
+<li>Icons are now supported using regular CSS or the Font-Awesome library <a href="http://fortawesome.github.io/Font-Awesome/">http://fortawesome.github.io/Font-Awesome/</a>.</li>
+<li><code>wcDocker.registerPanelType()</code> can now take an options object instead of just a single callback.</li>
+<li>Fixed layout save/restore.</li>
+<li>Fixed layout clear not actually removing elements.</li>
+<li>Fixed compatibility with IE8.</li>
+<li>Fixed tabs disappearing when the panel is too small to fit them.</li>
+</ul>
+<hr>
+<h3>Dependencies</h3><ul>
+<li>JQuery Library version 1.11.1 <a href="http://jquery.com/">http://jquery.com/</a></li>
+<li>JQuery ContextMenu Library <a href="https://github.com/medialize/jQuery-contextMenu">https://github.com/medialize/jQuery-contextMenu</a></li>
+<li>Font-Awesome <a href="http://fortawesome.github.io/Font-Awesome/">http://fortawesome.github.io/Font-Awesome/</a></li>
+</ul>
+<hr>
+<h3>License</h3><p><a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a></p>
+<p>&copy; 2014-2016 Jeff Houde (<a href="mailto:lochemage@webcabin.org">lochemage@webcabin.org</a>)</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<hr>
+<h3>Suggestions/Comments?</h3><p>Please feel free to contact me, Jeff Houde (<a href="mailto:lochemage@webcabin.org">lochemage@webcabin.org</a>), for any information or to give feedback and suggestions.  Also, if you are a web programmer, and believe you can help, please let me know!</p>
+<p>Thank you</p></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

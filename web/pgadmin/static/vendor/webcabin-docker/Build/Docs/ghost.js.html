@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Source: ghost.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: ghost.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/** @module wcGhost **/
+define([
+    "dcl/dcl",
+    "./types"
+], function (dcl, wcDocker) {
+
+    /**
+     * @class module:wcGhost
+     * A ghost object that follows the mouse around during dock movement.
+     */
+    var Module = dcl(null, {
+        declaredClass: 'wcGhost',
+        
+        /**
+         * @memberOf module:wcGhost
+         * @param {module:wcDocker~Rect} rect - A rectangle area to begin the ghost highlighting.
+         * @param {module:wcDocker~Coordinate} mouse - The mouse position.
+         * @param {module:wcDocker} docker - The docker object.
+         */
+        constructor: function (rect, mouse, docker) {
+            this.$ghost = null;
+            this._rect;
+            this._anchorMouse = false;
+            this._anchor = null;
+            this._docker = docker;
+
+            this._outer = docker.__findInner();
+            if (this._outer &amp;&amp; this._outer.instanceOf('wcSplitter')) {
+                this._inner = this._outer.right();
+            }
+
+            this.__init(rect, mouse);
+        },
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Public Functions
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /**
+         * Updates the ghost based on the given screen position.
+         * @function module:wcGhost#update
+         * @param {module:wcDocker~Coordinate} position - The mouse position.
+         * @param {Boolean} [disableFloating] - If true, the ghost will not float.
+         */
+        update: function (position, disableFloating) {
+            this.__move(position);
+
+            for (var i = 0; i &lt; this._docker._floatingList.length; ++i) {
+                var rect = this._docker._floatingList[i].__rect();
+                if (position.x > rect.x &amp;&amp; position.y > rect.y
+                    &amp;&amp; position.x &lt; rect.x + rect.w &amp;&amp; position.y &lt; rect.y + rect.h) {
+
+                    if (!this._docker._floatingList[i].__checkAnchorDrop(position, false, this, true, undefined, true)) {
+                        if (!disableFloating) {
+                            this.anchor(position, null);
+                        }
+                    } else {
+                        this._anchor.panel = this._docker._floatingList[i].panel();
+                    }
+                    return;
+                }
+            }
+
+            for (var i = 0; i &lt; this._docker._frameList.length; ++i) {
+                var rect = this._docker._frameList[i].__rect();
+                if (position.x > rect.x &amp;&amp; position.y > rect.y
+                    &amp;&amp; position.x &lt; rect.x + rect.w &amp;&amp; position.y &lt; rect.y + rect.h) {
+
+                    if (!this._docker._frameList[i].__checkAnchorDrop(position, false, this, true, undefined, true)) {
+                        if (!disableFloating) {
+                            this.anchor(position, null);
+                        }
+                    } else {
+                        this._anchor.panel = this._docker._frameList[i].panel();
+                    }
+                    return;
+                }
+            }
+        },
+
+        /**
+         * Get, or Sets the ghost's anchor.
+         * @function module:wcGhost#anchor
+         * @param {module:wcDocker~Coordinate} [mouse] - If supplied with the anchor, .
+         * @param {module:wcDocker~Anchor} [anchor] - If supplied, assigns a new anchor.
+         */
+        anchor: function (mouse, anchor) {
+            if (typeof mouse === 'undefined') {
+                return this._anchor;
+            }
+
+            if (anchor &amp;&amp; this._anchor &amp;&amp; anchor.loc === this._anchor.loc &amp;&amp; anchor.item === this._anchor.item) {
+                return;
+            }
+
+            var rect = {
+                x: parseInt(this.$ghost.css('left')),
+                y: parseInt(this.$ghost.css('top')),
+                w: parseInt(this.$ghost.css('width')),
+                h: parseInt(this.$ghost.css('height'))
+            };
+
+            this._anchorMouse = {
+                x: rect.x - mouse.x,
+                y: rect.y - mouse.y
+            };
+
+            this._rect.x = -this._anchorMouse.x;
+            this._rect.y = -this._anchorMouse.y;
+
+            if (!anchor) {
+                if (!this._anchor) {
+                    return;
+                }
+
+                if (this._docker._draggingFrame &amp;&amp; this._docker._draggingFrame.$container) {
+                    var detachToWidth = this._docker._draggingFrame._panelList[0]._options.detachToWidth || this._docker._options.detachToWidth || this._rect.w;
+                    var detachToHeight = this._docker._draggingFrame._panelList[0]._options.detachToHeight || this._docker._options.detachToHeight || this._rect.h;
+                    this._rect.w = this._docker.__stringToPixel(detachToWidth, this._docker.$container.width());
+                    this._rect.h = this._docker.__stringToPixel(detachToHeight, this._docker.$container.height());
+                }
+
+                this._anchor = null;
+                this.$ghost.show();
+                this.$ghost.stop().animate({
+                    opacity: 0.3,
+                    'margin-left': this._rect.x - this._rect.w / 2 + 'px',
+                    'margin-top': this._rect.y - 10 + 'px',
+                    width: this._rect.w + 'px',
+                    height: this._rect.h + 'px'
+                }, 150);
+                return;
+            }
+
+            this._anchor = anchor;
+            var opacity = 0.8;
+            if (anchor.self &amp;&amp; anchor.loc === wcDocker.DOCK.STACKED) {
+                opacity = 0;
+                this.$ghost.hide();
+            } else {
+                this.$ghost.show();
+            }
+            this.$ghost.stop().animate({
+                opacity: opacity,
+                'margin-left': '2px',
+                'margin-top': '2px',
+                border: '0px',
+                left: anchor.x + 'px',
+                top: anchor.y + 'px',
+                width: anchor.w + 'px',
+                height: anchor.h + 'px'
+            }, 150);
+        },
+
+        /**
+         * Retrieves the rectangle area of the ghost's anchor.
+         * @function module:wcGhost#rect
+         * @returns {module:wcDocker~AnchorRect} - The rectangle area of the anchor.
+         */
+        rect: function () {
+            return {
+                x: this.$ghost.offset().left,
+                y: this.$ghost.offset().top,
+                w: parseInt(this.$ghost.css('width')),
+                h: parseInt(this.$ghost.css('height')),
+                tabOrientation: this._anchor &amp;&amp; this._anchor.tab
+            };
+        },
+
+        /**
+         * Destroys the instance of the ghost.
+         * @function module:wcGhost#destroy
+         */
+        destroy: function () {
+            this.__destroy();
+        },
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Private Functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Initialize
+        __init: function (rect, mouse) {
+            this.$ghost = $('&lt;div class="wcGhost">')
+                .css('opacity', 0)
+                .css('top', rect.y + 'px')
+                .css('left', rect.x + 'px')
+                .css('width', rect.w + 'px')
+                .css('height', rect.h + 'px');
+
+            this._anchorMouse = {
+                x: rect.x - mouse.x,
+                y: rect.y - mouse.y
+            };
+
+            this._rect = {
+                x: -this._anchorMouse.x,
+                y: -this._anchorMouse.y,
+                w: rect.w,
+                h: rect.h
+            };
+
+            $('body').append(this.$ghost);
+
+            this.anchor(mouse, rect);
+        },
+
+        // Updates the size of the layout.
+        __move: function (mouse) {
+            if (this._anchor) {
+                return;
+            }
+
+            var x = parseInt(this.$ghost.css('left'));
+            var y = parseInt(this.$ghost.css('top'));
+
+            x = mouse.x + this._anchorMouse.x;
+            y = mouse.y + this._anchorMouse.y;
+
+            this.$ghost.css('left', x + 'px');
+            this.$ghost.css('top', y + 'px');
+        },
+
+        // Gets the original size of the moving widget.
+        __rect: function () {
+            return this._rect;
+        },
+
+        // Exorcise the ghost.
+        __destroy: function () {
+            this.$ghost.stop().animate({
+                opacity: 0.0
+            }, {
+                duration: 175,
+                complete: function () {
+                    $(this).remove();
+                }
+            });
+        }
+    });
+
+    // window['wcGhost'] = Module;
+
+    return Module;
+
+});
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

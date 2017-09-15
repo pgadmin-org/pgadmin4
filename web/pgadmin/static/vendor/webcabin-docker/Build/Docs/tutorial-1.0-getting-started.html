@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Tutorial: Getting Started</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			<section class="tutorial-section">
+
+<header>
+    
+
+    <h2>Getting Started</h2>
+</header>
+
+<article>
+    <p><strong>wcDocker (Web Cabin Docker) is a page layout framework that allows users to organize an array-able list of panel types in almost any configuration. Panels can be docked beside other panels, floating on their own, resized, moved, duplicated, and removed at will by the user. It is a powerful library for use as an IDE or a visual data management interface.</strong></p>
+<ul>
+<li>wcDocker is developed and maintained by <strong>Jeff Houde</strong> (<a href="mailto:lochemage@webcabin.org">lochemage@webcabin.org</a>).  </li>
+</ul>
+<hr>
+<h3>Dependencies</h3><p>Begin by including the necessary dependencies.  </p>
+<ul>
+<li>JQuery Library version 1.11.1 <a href="http://jquery.com/">http://jquery.com/</a></li>
+<li>JQuery ContextMenu Library <a href="https://github.com/medialize/jQuery-contextMenu">https://github.com/medialize/jQuery-contextMenu</a></li>
+<li>Font-Awesome <a href="http://fortawesome.github.io/Font-Awesome/">http://fortawesome.github.io/Font-Awesome/</a></li>
+</ul>
+<hr>
+<h3>Installation</h3><p>You can use <a href="http://bower.io/">bower</a> for easy installation using the <a href="https://www.npmjs.com/">Node Package Manager</a></p>
+<pre class="prettyprint source"><code>{@lang bash}npm install -g bower
+bower install wcDocker</code></pre><p>Once installed, all of the source files will now be located in the <code>bower_components</code> folder and ready to link into your project.  </p>
+<p>You can also download the <a href="https://github.com/WebCabin/wcDocker">source</a> and link them directly.</p>
+<hr>
+<h3>Basic Implementation</h3><pre class="prettyprint source"><code>{@lang xml}&lt;link rel='stylesheet' type='text/css' href='bower_components/jQuery-contextMenu/src/jquery.contextMenu.css'/>
+&lt;link rel='stylesheet' type='text/css' href='bower_components/font-awesome/css/font-awesome.css'/>
+
+&lt;script src='bower_components/jquery/dist/jquery.min.js'>&lt;/script>
+&lt;script src='bower_components/jQuery-contextMenu/src/jquery.contextMenu.js'>&lt;/script>
+&lt;script src='bower_components/jQuery-contextMenu/src/jquery.ui.position.js'>&lt;/script></code></pre><p>Also include the wcDocker library files as well...</p>
+<pre class="prettyprint source"><code>{@lang xml}&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;bower_components/wcDocker/Build/wcDocker.min.css&quot;/>
+
+&lt;script src=&quot;bower_components/wcDocker/Build/wcDocker.min.js&quot;>&lt;/script></code></pre><p><br></p>
+<p>Once the dependencies have been included, start by creating an instance of the main <a href="module-wcDocker.html">docker</a> and assign it a <a href="external-domNode.html">DOM container</a> (this should be done after the document has finished loading). Typically this would be the document body element, but there is no restriction if you want to use a smaller area instead. Multiple <a href="module-wcDocker.html">dockers</a> can be used, however, that feature is not currently supported and may not work properly.</p>
+<pre class="prettyprint source"><code>$(document).ready(function() {
+  var myDocker = new wcDocker(document.body, {
+    themePath: 'My/themes/folder'
+  });
+});</code></pre><p><br></p>
+<p>Notice the themePath, if your theme CSS files are not in the default <code>'Themes'</code> folder, you will need to tell docker about the new path or it will not be able to initialize the default theme.</p>
+<p>Once the docker instance is made, you will need to <a href="module-wcDocker.html#registerPanelType">register</a> the panel types that will become the contents of your layout.  A <a href="module-wcPanel.html">panel</a> is an individual dockable window, generally designed to serve a single purpose.</p>
+<pre class="prettyprint source"><code>myDocker.registerPanelType('Some type name', {
+  onCreate: function(myPanel, options) {...},
+  options: {'some optional object': 'that will be passed to the create function above'}
+});</code></pre><p><br></p>
+<p>Once a panel is registered, any time an instance of it is created, the <a href="module-wcDocker.html#~onCreatePanel">onCreate</a> handler will be invoked allowing you to initialize the contents of your panel.</p>
+<p>To do this, you will need to use the <a href="module-wcLayout.html">layout</a> object found inside the panel.</p>
+<pre class="prettyprint source"><code>myPanel.layout().addItem(domNode, x, y, width, height);</code></pre><p><br></p>
+<p>Additionally, you can assign various starting properties of the panel here, such as the desired size, or size constraints...</p>
+<pre class="prettyprint source"><code>myPanel.initSize(200, 200);
+myPanel.minSize(100, 100);</code></pre><p><br></p>
+<p>Once you have registered the panels that you want, if they are not private, the user will be able to create them whenever they wish. However, it is recommended that you initialize docker with a default arrangement of panels, to make it easier for the users to get started.</p>
+<pre class="prettyprint source"><code>// Put Panel1 into the docking layout, since it is the first panel,
+// it will always fill the entire area regardless of what docking
+// position you request.
+var panel1 = myDocker.addPanel('Panel1', wcDocker.DOCK.LEFT);
+
+// Once we added a panel, we can use it as a target for another panel.
+myDocker.addPanel('Panel2', wcDocker.DOCK.BOTTOM, panel1);
+
+// The panel itself may have an initial size, but you may want more
+// control over that.
+myDocker.addPanel('Panel3', wcDocker.DOCK.RIGHT, null, {w:200, h:200});</code></pre><p><br></p>
+<p>See <a href="http://docker.api.webcabin.org/module-wcDocker.html#toc3">wcDocker.DOCK</a> for a list of all available docking positions.</p>
+<p>Continue to the <a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a> tutorial.</p>
+</article>
+
+</section>
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

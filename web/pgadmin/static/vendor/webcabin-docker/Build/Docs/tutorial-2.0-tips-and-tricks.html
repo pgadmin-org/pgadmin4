@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title> Tutorial: Tips and Tricks</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.slate.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><div style='font-size:15px;line-height:15px;margin-top:-5px;'>Web Cabin Docker<br>v3.0.0 (pre-release)</div></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcBase.html">wcBase</a></li><li><a href="module-wcCollapser.html">wcCollapser</a></li><li><a href="module-wcDocker.html">wcDocker</a></li><li><a href="module-wcDrawer.html">wcDrawer</a></li><li><a href="module-wcFrame.html">wcFrame</a></li><li><a href="module-wcGhost.html">wcGhost</a></li><li><a href="module-wcIFrame.html">wcIFrame</a></li><li><a href="module-wcLayout.html">wcLayout</a></li><li><a href="module-wcLayoutSimple.html">wcLayoutSimple</a></li><li><a href="module-wcLayoutTable.html">wcLayoutTable</a></li><li><a href="module-wcPanel.html">wcPanel</a></li><li><a href="module-wcSplitter.html">wcSplitter</a></li><li><a href="module-wcTabFrame.html">wcTabFrame</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-wcDocker.html#event:onEvent">wcDocker#event:onEvent</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="tutorial-1.0-getting-started.html">Getting Started</a></li><li><a href="tutorial-2.0-tips-and-tricks.html">Tips and Tricks</a></li><li><a href="tutorial-3.0-widgets.html">Widgets</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-domNode.html">domNode</a></li><li><a href="external-jQuery.html">jQuery</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			<section class="tutorial-section">
+
+<header>
+    
+
+    <h2>Tips and Tricks</h2>
+</header>
+
+<article>
+    <h3>Themes</h3><p>Assigning a theme to use with <a href="module-wcDocker.html">wcDocker</a> is as simple as calling a function.</p>
+<pre class="prettyprint source"><code>myDocker.theme('shadow');</code></pre><p>In this case, <code>shadow</code> is the name of a theme <code>shadow.css</code> found in the themes folder.</p>
+<hr>
+<h3>Using the Layout Table Item</h3><p>the <a href="module-wcLayoutTable.html">wcLayoutTable</a> object makes it easy to organize the contents of your <a href="module-wcPanel.html">wcPanel</a>. But, sometimes you need to make some style changes to the table cells themselves! <a href="module-wcLayoutTable.html#item">wcLayoutTable.item()</a> and <a href="module-wcLayoutTable.html#addItem">wcLayoutTable.addItem()</a> both return you a handy <a href="module-wcLayoutTable.html#tableItem">tableItem</a> object which contains convenient methods for styling!</p>
+<pre class="prettyprint source"><code>myPanel.addItem(domNode).css('text-align', 'right').css('border', '1px solid black').stretch('100%', '100%');</code></pre><p>Here we are using the <a href="module-wcLayoutTable.html#tableItem_css">tableItem.css()</a> and <a href="module-wcLayoutTable.html#tableItem_stretch">tableItem.stretch()</a> functions, which can be chained!  The first provides a way to add normal style attributes to the cell while the second provides a more reliable way to set your table cell sizes.</p>
+<hr>
+<h3>Event System</h3><p>The event system is critical for communication between your panels.  Often times you will need this to ensure all your panels integrate properly and intuitively.</p>
+<p>For example: One panel may be dedicated to showing the properties of an object, while another panel may be responsible for displaying and allowing the user to select an object.  If communication did not exist between the two panels, when an object is selected, the property panel would never know to show its properties.</p>
+<p>First our property panel has to be listening for the event, in this case we have named one 'object selected' (It can be any string).</p>
+<pre class="prettyprint source"><code>propertyPanel.on('object selected', function(object) {
+  // Registered event handler for the 'object selected' event
+  // Here, we do something to the object that was just selected.
+  if (object) {
+    showProperties(object);
+  }
+});</code></pre><p>Once an object is selected in the other panel, it can trigger an event to notify any panels who care</p>
+<pre class="prettyprint source"><code>otherPanel.trigger('object selected', selectedObject);</code></pre><p>All events are broadcast to all panels (including itself and docker) who have registered for the named event and will receive it. See <a href="module-wcDocker.html#on">wcDocker.on()</a> and <a href="module-wcDocker.html#trigger">wcDocker.trigger()</a> for further details.</p>
+<hr>
+<h3>Storing User Configurations</h3><p>Entire layout configurations can be saved and restored using <a href="module-wcDocker.html#save">wcDocker.save()</a> and <a href="module-wcDocker.html#restore">wcDocker.restore()</a>.</p>
+<pre class="prettyprint source"><code>var savedLayout = myDocker.save();
+
+// Any time you wish to restore a previously saved layout.
+myDocker.restore(savedLayout);</code></pre><p>The saved layout data is a serialized string that can be stored in cookies, or wherever you wish for later use!</p>
+<p>Additionally, any panel can register events if they need to save and restore any custom attributes.</p>
+<pre class="prettyprint source"><code>myPanel.on(wcDocker.EVENT.SAVE_LAYOUT, function(data) {
+  // Save a custom attribute into the layout configuration data
+  data.someValue = somePanelValueToSave;
+});
+
+myPanel.on(wcDocker.EVENT.RESTORE_LAYOUT, function(data) {
+  // When a layout is being restored, you can retrieve those custom values if they exist.
+  somePanelValueToRestore = data.someValue;
+});</code></pre><hr>
+<h3>Batch Operations</h3><p>Adding elements into the <a href="module-wcLayoutTable.html">wcLayoutTable</a> is not a problem in most cases, except when you need to add them in large quantities. Every time an item is added into the layout it causes the document to re-calculate and render. To improve performance, the layout can be put into a batch mode process, where it will queue all additions and add them all in a single operation.</p>
+<pre class="prettyprint source"><code>myPanel.layout().startBatch();
+for (var i = 0; i &lt; 1000; ++i) {
+  myPanel.layout().addItem($('div'), 0, i);
+}
+myPanel.layout().finishBatch();</code></pre><hr>
+<h3>Custom Panel Buttons</h3><p>All panels can contain their own custom buttons which appear in the upper right corner of the frame (where the title bar and close button are).</p>
+<p>To add a new button, use the <a href="module-wcPanel.html#addButton">wcPanel.addButton()</a> function.</p>
+<pre class="prettyprint source"><code>myPanel.addButton('Some ID Name', 'normalStateClass', 'B', 'Tooltip text', true, 'toggledStateClass');</code></pre><p>Also, you can register an event to receive notifications whenever any custom button has been pressed.</p>
+<pre class="prettyprint source"><code>myPanel.on(wcDocker.EVENT.BUTTON, function(button) {
+  // In case we have multiple custom panel buttons, we can check the name of the activated button
+  if (button.name === 'Some ID Name') {
+    var toggled = button.isToggled;
+    if (toggled) {
+      // The button has been clicked, and its current state is depressed.
+    } else {
+      // The button has been clicked, and its current state is normal.
+    }
+  }
+});</code></pre><hr>
+<h3>Popup or Modal Panels</h3><p>Popup windows are a part of almost any application, and with <a href="module-wcDocker.html">wcDocker</a>, it is a very simple process.  In this case, any panel can become a popup by creating them and setting them to a floating (or detached) state.</p>
+<pre class="prettyprint source"><code>myDocker.addPanel('popup', wcDocker.DOCK.FLOAT);</code></pre><p>And if you want to block all other input until the user closes or acknowledges the panel, you can set it to a modal state instead.</p>
+<pre class="prettyprint source"><code>myDocker.addPanel('popup', wcDocker.DOCK.MODAL);</code></pre><p>Just be careful that all modal panels can be closed somehow, or else you will permenantly block the application.</p>
+<p>Go back to the <a href="tutorial-1.0-getting-started.html">Getting Started</a> tutorial.<br>Continue to the <a href="tutorial-3.0-widgets.html">Widgets</a> tutorial.</p>
+<hr>
+<h3>Panel Creation Elements</h3><p>By default, <a href="module-wcDocker.html">wcDocker</a> provides a right-click context menu that allows users to create new panels into their view. However, you may want to implement panel creation a different way. <a href="module-wcDocker.html">wcDocker</a> provides an easy method for doing so, in the form of a CSS class. Simply create any HTML element, give it the CSS class <code>&quot;wcCreatePanel&quot;</code> and provide it with the panel type as the data attribute <code>&quot;panel&quot;</code>, and <a href="module-wcDocker.html">wcDocker</a> will instantly treat it as a panel creation element. The user can then drag-drop that element directly into their layout to add the new panel.</p>
+<pre class="prettyprint source"><code>{@lang xml}&lt;span class=&quot;wcCreatePanel&quot; data-panel=&quot;My Custom Panel Type&quot;>Create My Custom Panel Type&lt;/span></code></pre><p>This element can be styled to looked exactly the way you want, whether it be a simple text element, or a fancy looking button!</p>
+<p>Additionally, setting the data attribute <code>&quot;nofloating&quot;</code> to true will enforce that the user create this new panel docked within the layout rather than floating.</p>
+<p>Here is the example used in our <a href="http://docker.webcabin.org/">demo page</a> for the <code>Creation Panel</code>:</p>
+<pre class="prettyprint source"><code>myDocker.registerPanelType('Creation Panel', {
+  faicon: 'plus-square',
+  onCreate: function(myPanel) {
+    // Retrieve a list of all panel types, that are not marked as private.
+    var panelTypes = myDocker.panelTypes(false);
+    for (var i = 0; i &lt; panelTypes.length; ++i) {
+      // Retrieve more detailed information about the panel.
+      var info = myDocker.panelTypeInfo(panelTypes[i]);
+
+      // We want to show the panel icon, if it exists.
+      var $icon = $('&lt;div class=&quot;wcMenuIcon&quot; style=&quot;margin-right: 15px;&quot;>');
+      if (info.icon) {
+        $icon.addClass(info.icon);
+      }
+      if (info.faicon) {
+        $icon.addClass('fa fa-menu fa-' + info.faicon + ' fa-lg fa-fw');
+      }
+
+      // Now create the item using our theme's button style, but add a few styles of our own.
+      var $item = $('&lt;div class=&quot;wcCreatePanel wcButton&quot;>');
+      $item.css('padding', 5)
+        .css('margin-top', 5)
+        .css('margin-bottom', 5)
+        .css('border', '2px solid black')
+        .css('border-radius', '10px')
+        .css('text-align', 'center');
+
+      // Set our item content and insert the icon.
+      $item.text(panelTypes[i]);
+      $item.data('panel', panelTypes[i]);
+      $item.prepend($icon);
+
+      myPanel.layout().addItem($item, 0, i+1);
+    }
+    // Add a stretched element that will push everything to the top of the layout.
+    myPanel.layout().addItem($('&lt;div>'), 0, i+1).stretch(undefined, '100%');
+  }
+});</code></pre><hr>
+<h3>Loading Screens</h3><p>Sometimes panel content needs time to load, for this <a href="module-wcDocker.html">wcDocker</a> comes with a built in loading screen system.</p>
+<p>The loading screen system comes in two forms, an individual panel loader and a full screen loader.</p>
+<p>When an individual panel requires some loading time, you can use wcPanel.startLoading() and wcPanel.finishLoading() to display and hide the loading screen for it.</p>
+<pre class="prettyprint source"><code>myPanel.startLoading();
+
+// Perform some loading stuff...
+
+myPanel.finishLoading(500);</code></pre><p>Similarly, you can use <a href="module-wcDocker.html#startLoading">wcDocker.startLoading()</a> and <a href="module-wcDocker.html#finishLoading">wcDocker.finishLoading()</a> to display a loading screen for the entire view. This is especially useful as an initial loading screen for the entire page.</p>
+<pre class="prettyprint source"><code>myDocker.startLoading('Loading...');
+
+// Initialize all panels for the view.
+
+// Register our loaded event, this will be triggered after all panels have been initialized and all panel loading screens have been finished.
+myDocker.on(wcDocker.EVENT.LOADED, function() {
+  myDocker.finishLoading(500);
+});</code></pre><p>Note that while the full screen loading screen is active, all individual panel loading screens will be invisible, so it is perfectly ok to use them together!</p>
+<p>Also note that the <a href="http://docker.api.webcabin.org/module-wcDocker.html#toc4">wcDocker.EVENT.LOADED</a> event will only be triggered after all panels have finished their individual loading screens (if they are using it).</p>
+</article>
+
+</section>
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	2014-2016 Jeff Houde (<a href='mailto:lochemage@webcabin.org'>lochemage@webcabin.org</a>)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-08-18
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+
+
+
+<!-- Piwik Analytics -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  
+  
+  
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.webcabin.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 6]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://analytics.webcabin.org/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
