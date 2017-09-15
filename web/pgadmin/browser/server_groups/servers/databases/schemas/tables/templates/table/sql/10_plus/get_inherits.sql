@@ -1,6 +1,6 @@
 {% import 'table/sql/macros/db_catalogs.macro' as CATALOG %}
 SELECT c.oid, c.relname , nspname,
-CASE WHEN nspname NOT LIKE E'pg\_%' THEN
+CASE WHEN nspname NOT LIKE 'pg\_%' THEN
  quote_ident(nspname)||'.'||quote_ident(c.relname)
 ELSE quote_ident(c.relname)
 END AS inherits

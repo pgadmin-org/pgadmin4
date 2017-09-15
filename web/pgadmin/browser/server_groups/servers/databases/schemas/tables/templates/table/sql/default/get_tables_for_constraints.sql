@@ -3,6 +3,6 @@ FROM pg_namespace nsp, pg_class cl
 WHERE relnamespace=nsp.oid AND relkind='r'
    AND nsp.nspname NOT LIKE E'pg\_temp\_%'
    {% if not show_sysobj %}
-   AND (nsp.nspname NOT LIKE E'pg\_%' AND nsp.nspname NOT in ('information_schema'))
+   AND (nsp.nspname NOT LIKE 'pg\_%' AND nsp.nspname NOT in ('information_schema'))
    {% endif %}
 ORDER BY nspname, relname
