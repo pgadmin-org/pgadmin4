@@ -5,7 +5,7 @@ FROM
 	(SELECT oid, relname, relnamespace FROM pg_catalog.pg_class
 	  WHERE relkind in ('r', 'p') AND NOT relispartition) r
     JOIN (SELECT oid AS nspoid, nspname FROM
-          pg_catalog.pg_namespace WHERE nspname NOT LIKE E'pg\_%') n
+          pg_catalog.pg_namespace WHERE nspname NOT LIKE 'pg\_%') n
           ON (r.relnamespace = n.nspoid)
     JOIN (SELECT attrelid, attname, atttypid FROM
           pg_catalog.pg_attribute WHERE attnum > 0 ORDER BY attrelid, attnum) a

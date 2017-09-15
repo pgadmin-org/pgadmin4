@@ -12,7 +12,7 @@ WHERE
     nsp.oid={{scid}}::oid AND
     {% else %}
     {% if not show_sysobj %}
-    nspname NOT LIKE E'pg\_%' AND
+    nspname NOT LIKE 'pg\_%' AND
     {% endif %}
     {% endif %}
     NOT (
