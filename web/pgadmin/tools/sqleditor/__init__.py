@@ -70,14 +70,6 @@ class SqlEditorModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html'))
         ]}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.sqleditor',
-            'path': url_for('sqleditor.index') + "sqleditor",
-            'when': None
-        }]
-
-
     def get_panels(self):
         return []
 
