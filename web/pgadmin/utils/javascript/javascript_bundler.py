@@ -10,7 +10,8 @@
 import os
 from contextlib import contextmanager
 from subprocess import call
-from pgadmin.utils import u, fs_encoding, file_quote
+import config
+from pgadmin.utils import u, fs_encoding
 
 
 # enum-like for tracking whether we have
@@ -27,6 +28,13 @@ class JavascriptBundler:
         self.jsState = JsState.NONE
 
     def bundle(self):
+        debug_mode = getattr(config, 'DEBUG', False)
+        build_jsmodules = getattr(config, 'BUILD_JSMODULES', True)
+
+        if not debug_mode or not build_jsmodules:
+            self.jsState = JsState.NEW
+            return
+
         try:
             try_building_js()
             self.jsState = JsState.NEW
