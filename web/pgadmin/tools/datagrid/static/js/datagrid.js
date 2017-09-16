@@ -1,19 +1,22 @@
 define('pgadmin.datagrid', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify', 'sources/pgadmin',
-  'bundled_codemirror',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'alertify',
+  'sources/pgadmin', 'pgadmin.browser.tool', 'sources/generated/codemirror',
   'sources/sqleditor_utils', 'wcdocker'
-], function(gettext, url_for, $, _, alertify, pgAdmin, CodeMirror, sqlEditorUtils) {
+], function(
+  gettext, url_for, $, _, alertify, pgAdmin, pgTool, codemirror, sqlEditorUtils
+) {
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
+      CodeMirror = codemirror.default,
       pgBrowser = pgAdmin.Browser;
 
     /* Return back, this has been called more than once */
     if (pgAdmin.DataGrid)
       return pgAdmin.DataGrid;
 
-    pgAdmin.DataGrid = {
-      init: function() {
+    pgAdmin.DataGrid = pgTool.extend({
+      Init: function() {
         if (this.initialized)
             return;
         this.initialized = true;
@@ -102,7 +105,7 @@ define('pgadmin.datagrid', [
         pgAdmin.Browser.add_menus(menus);
 
         // Creating a new pgAdmin.Browser frame to show the data.
-        var dataGridFrameType = new pgAdmin.Browser.Frame({
+        var dataGridFrameType = pgBrowser.frames['frm_datagrid'] = new pgAdmin.Browser.Frame({
           name: 'frm_datagrid',
           showTitle: true,
           isCloseable: true,
@@ -249,7 +252,7 @@ define('pgadmin.datagrid', [
 
               build:function() {},
               prepare:function() {
-		        var $content = $(this.message),
+                var $content = $(this.message),
                     $sql_filter = $content.find('#sql_filter');
 
                 this.setContent($content.get(0));
@@ -466,7 +469,8 @@ define('pgadmin.datagrid', [
             }
 
             var baseUrl = url_for('datagrid.panel', url_params) +
-                '?' + "query_url=" + encodeURI(sURL) + "&server_type=" + encodeURIComponent(parentData.server.server_type);
+              '?query_url=" + encodeURI(sURL) + "&server_type=" +
+              encodeURIComponent(parentData.server.server_type);
 
             // Create title for CREATE/DELETE scripts
             if (panel_title) {
@@ -531,7 +535,7 @@ define('pgadmin.datagrid', [
           }
         });
       }
-    };
+    });
 
     return pgAdmin.DataGrid;
   });

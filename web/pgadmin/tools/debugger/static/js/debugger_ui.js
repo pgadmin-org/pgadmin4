@@ -1,15 +1,20 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
-  'backform', 'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.panel'
-], function(gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform ) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'alertify', 'sources/pgadmin', 'pgadmin.browser',
+  'backbone', 'backgrid', 'sources/generated/codemirror', 'backform',
+  'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.panel'
+], function(
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
+  codemirror, Backform
+) {
 
-  /*
-   * Function used to return the respective Backgrid control based on the data type
-   * of function input argument.
-   */
-  var cellFunction = function(model) {
+  var wcDocker = window.wcDocker,
+    CodeMirror = codemirror.default,
+    /*
+     * Function used to return the respective Backgrid control based on the data type
+     * of function input argument.
+     */
+    cellFunction = function(model) {
     var self = this,
     variable_type = model.get("type");
 

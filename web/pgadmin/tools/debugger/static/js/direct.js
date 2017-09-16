@@ -1,20 +1,21 @@
 define([
-  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'sources/pgadmin','pgadmin.browser', 'backbone', 'backgrid', 'sources/../bundle/codemirror', 'backform',
-  'pgadmin.tools.debugger.ui',
-  'wcdocker', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for' ,'jquery', 'underscore',
+  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin',
+  'pgadmin.browser', 'backbone', 'backgrid', 'sources/generated/codemirror',
+  'backform', 'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
   'pgadmin.backgrid'
 ], function(
   gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   codemirror, Backform, debug_function_again
 ) {
 
-  var CodeMirror = codemirror.default;
   if (pgAdmin.Browser.tree != null) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
   }
 
-  var pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
+  var wcDocker = window.wcDocker,
+    CodeMirror = codemirror.default,
+    pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
 
   if (pgTools.DirectDebug)
     return pgTools.DirectDebug;

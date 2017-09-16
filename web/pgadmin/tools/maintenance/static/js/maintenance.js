@@ -1,12 +1,11 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
-  'backgrid', 'backform',
-  'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.node.ui'
+  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin',
+  'pgadmin.browser', 'pgadmin.browser.tool', 'backbone', 'backgrid',
+  'backform', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, pgTool, Backbone,
+  Backgrid, Backform
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -137,8 +136,8 @@ define([
     }
   });
 
-  pgTools.maintenance = {
-      init: function() {
+  pgTools.maintenance = pgTool.extend({
+      Init: function() {
 
         // We do not want to initialize the module multiple times.
         if (this.initialized)
@@ -157,7 +156,7 @@ define([
         */
         var menu_enabled = function(itemData, item, data) {
          var t = pgBrowser.tree, i = item, d = itemData;
-         var parent_item = t.hasParent(i) ? t.parent(i): null,
+         var parent_item = t && t.hasParent(i) ? t.parent(i): null,
              parent_data = parent_item ? t.itemData(parent_item) : null;
            if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
              if (_.indexOf(maintenance_supported_nodes, d._type) !== -1 &&
@@ -424,7 +423,7 @@ define([
         // Open the Alertify dialog
         Alertify.MaintenanceDialog('Maintenance...').set('resizable',true).resizeTo('60%','80%');
       },
-    };
+    });
 
     return pgAdmin.Tools.maintenance;
   });

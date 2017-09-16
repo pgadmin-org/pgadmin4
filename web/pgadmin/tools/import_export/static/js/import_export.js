@@ -1,9 +1,12 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
-  'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui'
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin.alertifyjs', 'sources/pgadmin',
+  'pgadmin.browser', 'pgadmin.browser.tool', 'backbone', 'backgrid',
+  'backform', 'pgadmin.backform', 'pgadmin.backgrid',
+  'pgadmin.browser.node.ui'
 ], function(
-  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, Backform
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, pgTool, Backbone,
+  Backgrid, Backform
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -262,8 +265,8 @@ define([
     }
   });
 
-  pgTools.import_utility = {
-      init: function() {
+  pgTools.import_utility = pgTool.extend({
+      Init: function() {
         // We do not want to initialize the module multiple times.
         if (this.initialized)
             return;
@@ -528,12 +531,12 @@ define([
 
         // Open the Alertify dialog for the import/export module
         Alertify.ImportDialog(
-            S(
- gettext("Import/Export data - table '%s'")
-            ).sprintf(treeInfo.table.label).value(), node, i, d
+            S(gettext("Import/Export data - table '%s'")).sprintf(
+              treeInfo.table.label
+            ).value(), node, i, d
          ).set('resizable',true).resizeTo('70%','80%');
       }
-    };
+    });
 
     return pgAdmin.Tools.import_utility;
   });

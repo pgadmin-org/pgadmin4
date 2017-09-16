@@ -1,20 +1,26 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'alertify',
-  'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'codemirror',
-  'backform', 'pgadmin.tools.debugger.ui', 'wcdocker', 'pgadmin.backform',
-  'pgadmin.backgrid', 'pgadmin.browser.frame'
-], function(gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid, CodeMirror, Backform, get_function_arguments) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'alertify', 'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.browser.tool', 'backbone', 'backgrid',
+  'sources/generated/codemirror', 'backform', 'pgadmin.tools.debugger.ui',
+  'wcdocker', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.frame'
+], function(
+  gettext, url_for, $, _, S, Alertify, pgAdmin, pgBrowser, pgTool, Backbone,
+  Backgrid, codemirror, Backform, get_function_arguments
+) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
-  var pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
+  var pgTools = pgAdmin.Tools = pgAdmin.Tools || {},
+      CodeMirror = codemirror.default,
+      wcDocker = window.wcDocker;
 
   /* Return back, this has been called more than once */
   if (pgAdmin.Tools.Debugger)
     return pgAdmin.Tools.Debugger;
 
-  pgTools.Debugger = {
-      init: function() {
+  pgTools.Debugger = pgTool.extend({
+      Init: function() {
         // We do not want to initialize the module multiple times.
         if (this.initialized)
             return;
@@ -85,7 +91,7 @@ define([
         }]);
 
         // Create and load the new frame required for debugger panel
-        this.frame = new pgBrowser.Frame({
+        this.frame = pgBrowser.frames['frm_debugger'] = new pgBrowser.Frame({
           name: 'frm_debugger',
           title: gettext('Debugger'),
           width: 500,
@@ -450,7 +456,7 @@ define([
           }
         });
       }
-    };
+    });
 
     return pgAdmin.Tools.Debugger;
   });

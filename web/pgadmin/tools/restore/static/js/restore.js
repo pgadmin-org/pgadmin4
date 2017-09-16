@@ -1,11 +1,13 @@
 // Restore dialog
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser', 'backbone', 'backgrid',
-  'backform', 'pgadmin.browser.node'
+  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
+  'pgadmin.browser.tool', 'backbone', 'backgrid', 'backform',
+  'pgadmin.browser.node'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode
+  gettext, url_for, $, _, S, alertify, pgBrowser, pgTool, Backbone, Backgrid,
+  Backform, pgNode
+
 ) {
 
     // if module is already initialized, refer to that.
@@ -216,8 +218,8 @@ define('tools.restore', [
     });
 
     // Create an Object Restore of pgBrowser class
-    pgBrowser.Restore  = {
-      init: function() {
+    pgBrowser.Restore  = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
@@ -240,7 +242,7 @@ define('tools.restore', [
         */
         var menu_enabled = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
-          var parent_item = t.hasParent(i) ? t.parent(i): null,
+          var parent_item = t && t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
             if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
               if (_.indexOf(restore_supported_nodes, d._type) !== -1 &&
@@ -556,6 +558,6 @@ define('tools.restore', [
 
       alertify.pg_restore(title, item, data, node).resizeTo('65%','60%');
       }
-    };
+    });
     return pgBrowser.Restore;
   });

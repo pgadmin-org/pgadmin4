@@ -1,8 +1,10 @@
 // Backup dialog
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node'
-], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform, pgNode) {
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
+  'pgadmin.browser.tool', 'backbone', 'backgrid', 'backform',
+  'pgadmin.browser.node'
+], function(gettext, url_for, $, _, S, alertify, pgBrowser, pgTool, Backbone, Backgrid, Backform, pgNode) {
 
   // if module is already initialized, refer to that.
   if (pgBrowser.Backup) {
@@ -260,8 +262,8 @@ TODO LIST FOR BACKUP:
     });
 
     // Create an Object Backup of pgBrowser class
-    pgBrowser.Backup  = {
-      init: function() {
+    pgBrowser.Backup  = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
@@ -281,7 +283,7 @@ TODO LIST FOR BACKUP:
         */
         var menu_enabled = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
-          var parent_item = t.hasParent(i) ? t.parent(i): null,
+          var parent_item = t && t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
             if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
                 if (_.indexOf(backup_supported_nodes, d._type) !== -1 &&
@@ -302,7 +304,7 @@ TODO LIST FOR BACKUP:
 
         var menu_enabled_server = function(itemData, item, data) {
           var t = pgBrowser.tree, i = item, d = itemData;
-          var parent_item = t.hasParent(i) ? t.parent(i): null,
+          var parent_item = t && t.hasParent(i) ? t.parent(i): null,
               parent_data = parent_item ? t.itemData(parent_item) : null;
               // If server node selected && connected
               if(!_.isUndefined(d) && !_.isNull(d))
@@ -367,17 +369,17 @@ TODO LIST FOR BACKUP:
 
       // Callback to draw Backup Dialog for globals/server
       start_backup_global_server: function(action, item, params) {
-        var i = item || pgBrowser.tree.selected(),
+        var i = item || (pgBrowser.tree && pgBrowser.tree.selected()),
           server_data = null;
 
         while (i) {
-          var node_data = pgBrowser.tree.itemData(i);
+          var node_data = pgBrowser.tree && pgBrowser.tree.itemData(i);
           if (node_data._type == 'server') {
             server_data = node_data;
             break;
           }
 
-          if (pgBrowser.tree.hasParent(i)) {
+          if (pgBrowser.tree && pgBrowser.tree.hasParent(i)) {
             i = $(pgBrowser.tree.parent(i));
           } else {
             alertify.alert(gettext("Please select server or child node from the browser tree."));
@@ -484,8 +486,8 @@ TODO LIST FOR BACKUP:
                 var $container = $("<div class='backup_dialog'></div>");
                 // Find current/selected node
                 var t = pgBrowser.tree,
-                  i = t.selected(),
-                  d = i && i.length == 1 ? t.itemData(i) : undefined,
+                  i = t && t.selected(),
+                  d = i && i.length == 1 ? t && t.itemData(i) : undefined,
                   node = d && pgBrowser.Nodes[d._type];
 
                 if (!d)
@@ -810,6 +812,6 @@ TODO LIST FOR BACKUP:
         }
         alertify.backup_objects(title).resizeTo('65%','60%');
       }
-    };
+    });
     return pgBrowser.Backup;
   });

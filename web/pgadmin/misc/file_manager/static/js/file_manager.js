@@ -1,7 +1,7 @@
 define('misc.file_manager', [
       'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-      'pgadmin.alertifyjs'
-], function(gettext, url_for, $, _, alertify) {
+      'pgadmin.alertifyjs', 'pgadmin.browser.tool'
+], function(gettext, url_for, $, _, alertify, pgTool) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /*
@@ -12,8 +12,8 @@ define('misc.file_manager', [
       return pgAdmin.FileManager;
     }
 
-    pgAdmin.FileManager = {
-      init: function() {
+    pgAdmin.FileManager = pgTool.extend({
+      Init: function() {
         if (this.initialized) {
           return;
         }
@@ -672,7 +672,7 @@ define('misc.file_manager', [
           this.show_storage_dlg(params);
         }
       }
-    };
+    });
 
     return pgAdmin.FileManager;
   });

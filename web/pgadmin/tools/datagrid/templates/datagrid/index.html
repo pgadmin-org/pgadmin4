@@ -308,7 +308,7 @@
 {% endblock %}
 
 {% block init_script %}
-	require(['sources/generated/sqleditor'], function(ctx) {
+require(['{{ url_for('sqleditor.static', filename='js/generated/sqleditor.js') }}'], function(ctx) {
     var $ = pgAdmin.SqlEditor.jquery,
         S = pgAdmin.SqlEditor.S,
         editorPanel = $('.sql-editor'),

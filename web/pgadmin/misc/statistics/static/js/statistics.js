@@ -1,17 +1,13 @@
 define('misc.statistics', [
   'sources/gettext', 'underscore', 'underscore.string', 'jquery',
-  'pgadmin.browser', 'backgrid',
-  'alertify', 'sources/size_prettify'
-], function(gettext, _, S, $, pgBrowser, Backgrid, Alertify, sizePrettify) {
+  'pgadmin.browser', 'backgrid', 'pgadmin.alertifyjs',
+  'sources/size_prettify', 'pgadmin.browser.tool'
+], function(
+  gettext, _, S, $, pgBrowser, Backgrid, Alertify, sizePrettify, pgTool
+) {
 
   if (pgBrowser.NodeStatistics)
     return pgBrowser.NodeStatistics;
-
-  pgBrowser.NodeStatistics = pgBrowser.NodeStatistics || {};
-
-  if (pgBrowser.NodeStatistics.initialized) {
-    return pgBrowser.NodeStatistics;
-  }
 
   var SizeFormatter = Backgrid.SizeFormatter = function () {};
   _.extend(SizeFormatter.prototype, {
@@ -87,8 +83,8 @@ define('misc.statistics', [
     }
   );
 
-  _.extend(pgBrowser.NodeStatistics, {
-    init: function() {
+  pgBrowser.NodeStatistics = pgTool.extend({
+    Init: function() {
       if (this.initialized) {
         return;
       }

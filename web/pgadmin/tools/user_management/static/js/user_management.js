@@ -1,11 +1,12 @@
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-  'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node',
-  'pgadmin.user_management.current_user',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'pgadmin.alertifyjs', 'pgadmin.browser',
+  'pgadmin.browser.tool', 'backbone', 'backgrid', 'backform',
+  'pgadmin.browser.node', 'pgadmin.user_management.current_user',
   'backgrid.select.all', 'backgrid.filter'
 ], function(
-  gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode, userInfo
+  gettext, url_for, $, _, S, alertify, pgBrowser, pgTool, Backbone, Backgrid,
+  Backform, pgNode, userInfo
 ) {
 
     // if module is already initialized, refer to that.
@@ -28,8 +29,8 @@ define([
           }));
         }
 
-    pgBrowser.UserManagement  = {
-      init: function() {
+    pgBrowser.UserManagement = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
@@ -632,7 +633,6 @@ define([
       }
         alertify.UserManagement(true).resizeTo('680px','400px');
      }
-
-    };
+    });
     return pgBrowser.UserManagement;
   });

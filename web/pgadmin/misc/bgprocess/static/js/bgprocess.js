@@ -413,7 +413,7 @@ define('misc.bgprocess', [
   _.extend(
     pgBrowser.BackgroundProcessObsorver, {
       bgprocesses: {},
-      init: function() {
+      Init: function() {
         var self = this;
 
         if (self.initialized) {

@@ -1,10 +1,13 @@
 // Grant Wizard
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'alertify', 'pgadmin.browser', 'backbone', 'backgrid',
-  'pgadmin.browser.node', 'backgrid.select.all', 'backgrid.filter',
-  'pgadmin.browser.server.privilege', 'pgadmin.browser.wizard',
-], function(gettext, url_for, $, _, S, alertify, pgBrowser, Backbone, Backgrid, pgNode) {
+  'underscore.string', 'alertify', 'pgadmin.browser', 'pgadmin.browser.tool',
+  'backbone', 'backgrid', 'pgadmin.browser.node', 'backgrid.select.all',
+  'backgrid.filter', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.wizard'
+], function(
+  gettext, url_for, $, _, S, alertify, pgBrowser, pgTool, Backbone, Backgrid, pgNode
+) {
 
     // if module is already initialized, refer to that.
     if (pgBrowser.GrantWizard) {
@@ -128,8 +131,8 @@ define([
     }];
 
     // Create an Object GrantWizard of pgBrowser class
-    pgBrowser.GrantWizard  = {
-      init: function() {
+    pgBrowser.GrantWizard = pgTool.extend({
+      Init: function() {
         if (this.initialized)
           return;
 
@@ -151,7 +154,7 @@ define([
             */
             menu_enabled = function(itemData, item, data) {
               var t = pgBrowser.tree, i = item, d = itemData;
-              var parent_item = t.hasParent(i) ? t.parent(i): null,
+              var parent_item = t && t.hasParent(i) ? t.parent(i): null,
                   parent_data = parent_item ? t.itemData(parent_item) : null;
               if(!_.isUndefined(d) && !_.isNull(d) && !_.isNull(parent_data)) {
                 if (_.indexOf(supported_nodes, d._type) !== -1 &&
@@ -1123,7 +1126,7 @@ define([
         // Call Grant Wizard Dialog and set dimensions for wizard
         alertify.wizardDialog(true).resizeTo('55%', '75%');
       }
-    };
+    });
 
     return pgBrowser.GrantWizard;
   });

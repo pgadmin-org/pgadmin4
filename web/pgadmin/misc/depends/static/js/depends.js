@@ -1,17 +1,16 @@
 define('misc.depends', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs'
-], function(gettext, _, S, $, pgBrowser, Alertify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'pgadmin.browser', 'alertify', 'pgadmin.browser.tool',
+  'pgadmin.alertifyjs'
+], function(gettext, _, S, $, pgBrowser, Alertify, pgTool) {
 
   if (pgBrowser.ShowNodeDepends)
     return pgBrowser.ShowNodeDepends;
 
   var wcDocker = window.wcDocker;
 
-  pgBrowser.ShowNodeDepends = pgBrowser.ShowNodeDepends || {};
-
-  _.extend(pgBrowser.ShowNodeDepends, {
-    init: function() {
+  pgBrowser.ShowNodeDepends = pgTool.extend({
+    Init: function() {
       if (this.initialized) {
         return;
       }

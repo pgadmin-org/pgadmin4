@@ -4,7 +4,7 @@
 
 try {
   require(
-    ['sources/generated/debugger_direct'],
+    ['{{ url_for('debugger.static', filename='js/generated/direct_debug.js') }}'],
     function(pgDirectDebug) {
       var pgDirectDebug = pgDirectDebug || pgAdmin.Tools.DirectDebug;
       var $ = pgDirectDebug.jquery;

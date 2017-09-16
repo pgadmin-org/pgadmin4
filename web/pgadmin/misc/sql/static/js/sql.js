@@ -1,17 +1,15 @@
 define('misc.sql', [
-  'sources/gettext', 'underscore', 'underscore.string', 'jquery', 'pgadmin.browser',
-  'alertify', 'pgadmin.alertifyjs'
-], function(gettext, _, S, $, pgBrowser, Alertify) {
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.browser.tool'
+], function(gettext, _, S, $, pgBrowser, Alertify, pgTool) {
 
-  pgBrowser.ShowNodeSQL = pgBrowser.ShowNodeSQL || {};
-
-  if (pgBrowser.ShowNodeSQL.initialized) {
+  if (pgBrowser.ShowNodeSQL)
     return pgBrowser.ShowNodeSQL;
-  }
+
   var wcDocker = window.wcDocker;
 
-  _.extend(pgBrowser.ShowNodeSQL, {
-    init: function() {
+  pgBrowser.ShowNodeSQL = pgTool.extend({
+    Init: function() {
       if (this.initialized) {
         return;
       }
