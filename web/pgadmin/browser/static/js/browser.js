@@ -1,28 +1,26 @@
 define(
   'pgadmin.browser', [
-    'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore', 'underscore.string',
-    'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
-    'sources/check_node_visibility', 'pgadmin.browser.utils', 'wcdocker',
-    'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
-    'pgadmin.browser.messages',
-    'pgadmin.browser.menu', 'pgadmin.browser.panel',
-    'pgadmin.browser.error', 'pgadmin.browser.frame',
+    'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
+    'underscore.string', 'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs',
+    'sources/generated/codemirror', 'sources/check_node_visibility',
+    'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin', 'jquery.acitree',
+    'pgadmin.browser.messages', 'pgadmin.browser.menu',
+    'pgadmin.browser.panel', 'pgadmin.browser.error', 'pgadmin.browser.frame',
     'pgadmin.browser.node', 'pgadmin.browser.collection',
-    'sources/codemirror/addon/fold/pgadmin-sqlfoldcode'
+    'pgadmin.browser.utils'
   ], function(
     gettext, url_for, require, $, _, S, Bootstrap, pgAdmin, Alertify,
     codemirror, checkNodeVisibility
 ) {
-  window.jQuery = window.$ = $;
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+    select_object_msg = gettext('Please select an object in the tree view.'),
+    CodeMirror = codemirror.default,
+    wcDocker = window.wcDocker;
+
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
-  var wcDocker = window.wcDocker;
   $ = $ || window.jQuery || window.$;
   Bootstrap = Bootstrap || window.Bootstrap;
-  var CodeMirror = codemirror.default;
-
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
-  var select_object_msg = gettext('Please select an object in the tree view.');
 
   var panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
@@ -332,7 +330,7 @@ define(
       }
     },
     init: function() {
-      var obj=this;
+      var obj = pgBrowser;
       if (obj.initialized) {
         return;
       }
@@ -498,8 +496,22 @@ define(
         return true;
       });
 
-      // Register scripts and add menus
-      pgBrowser.utils.registerScripts(this);
+      // Initialize the registered modules
+      pgAdmin.register_module_initializer(
+        'browser', function(_module) {
+          if (_module && _.isFunction(_module.Init)) {
+            _module.Init.call(_module, pgBrowser);
+          }
+          if (this.create_menus_timeout) {
+            clearTimeout(this.create_menus_timeout);
+          }
+          this.create_menus_timeout = setTimeout(
+            pgBrowser.create_menus.bind(pgBrowser), 300
+          );
+        }.bind({create_menus_timeout: null})
+      );
+
+      // Add menus
       pgBrowser.utils.addMenus(obj);
 
       // Ping the server every 5 minutes
@@ -1247,7 +1259,6 @@ define(
                 // Find the grand parent
                 findParent();
               }
-              console.log(_d);
               _d = this.new._pid;
 
               // We can refresh the collection node, but - let's not bother about
@@ -1972,7 +1983,6 @@ define(
       insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
       brace_matching: pgBrowser.utils.braceMatching
     }
-
   });
 
   /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding

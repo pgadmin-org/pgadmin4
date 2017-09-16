@@ -54,7 +54,7 @@ function(_, S, pgAdmin, $) {
         }).data('pgMenu', {
           module: this.module || pgAdmin.Browser,
           cb: this.callback,
-          data: this.data
+          data: this.data, name: this.name
         }).addClass('menu-link');
 
       this.is_disabled = this.disabled(node, item);
@@ -76,7 +76,6 @@ function(_, S, pgAdmin, $) {
     applyDisabledStyle: function () {
       var span = this.$el.find('span');
       var icon = this.$el.find('i');
-
 
       span.addClass('font-gray-4');
       span.removeClass('font-white');
@@ -153,6 +152,12 @@ function(_, S, pgAdmin, $) {
           S('Developer Warning: Callback - "%s" not found!').
             sprintf(o.cb).value()
         );
+        if (console && console.warn) {
+          try {
+            console.warn('Callback for the menu does not found!');
+            console.warn(JSON.stringify(o));
+          } catch(e) {}
+        }
       }
     },
 
@@ -382,6 +387,9 @@ function(_, S, pgAdmin, $) {
         ev.preventDefault();
       } else {
         pgAdmin.Browser.report_error('Developer Warning: Callback - "' + d.cb + '" not found!');
+        if (console && console.warn) {
+          console.warn(`Callback for the menu for the menu - '${d.name}' does not found!`);
+        }
       }
     }
   }

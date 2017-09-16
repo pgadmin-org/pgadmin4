@@ -57,23 +57,6 @@ class GrantWizardModule(PgAdminModule):
         ]
         return stylesheets
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        scripts = []
-        scripts.append({
-            'name': 'pgadmin.tools.grant_wizard',
-            'path': url_for('grant_wizard.index') + 'grant_wizard',
-            'when': None
-        })
-        scripts.append({
-            'name': 'pgadmin.browser.wizard',
-            'path': url_for('browser.static', filename='js/wizard'),
-            'when': None
-        })
-        return scripts
 
     def show_system_objects(self):
         """

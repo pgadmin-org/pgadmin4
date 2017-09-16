@@ -10,7 +10,6 @@
 """A blueprint module container for keeping all submodule of type tool."""
 
 from flask import render_template, Response
-from flask import url_for
 from flask_babel import get_translations, gettext
 
 from pgadmin.utils import PgAdminModule
@@ -18,37 +17,8 @@ from pgadmin.utils.ajax import bad_request
 
 MODULE_NAME = 'tools'
 
-class ToolsModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'translations',
-            'path': url_for('tools.index') + "translations",
-            'when': None
-        },{
-            'name': 'pgadmin-sqlfoldcode',
-            'path': url_for(
-                'static',
-                filename='js/codemirror/addon/fold/pgadmin-sqlfoldcode'
-            ),
-            'when': 'debugger'
-        },{
-            'name': 'slick.pgadmin.editors',
-            'path': url_for(
-                'static',
-                filename='js/slickgrid/slick.pgadmin.editors'
-            ),
-            'when': 'debugger'
-        },{
-            'name': 'slick.pgadmin.formatters',
-            'path': url_for(
-                'static',
-                filename='js/slickgrid/slick.pgadmin.formatters'
-            ),
-            'when': 'debugger'
-        }]
-
 # Initialise the module
-blueprint = ToolsModule(MODULE_NAME, __name__)
+blueprint = PgAdminModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/")

@@ -1,7 +1,10 @@
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.browser', 'codemirror'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/generated/codemirror'
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, codemirror) {
+
+  var CodeMirror = codemirror.default;
 
   /**
     Create and add a rule collection into nodes

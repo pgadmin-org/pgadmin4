@@ -9,10 +9,10 @@
 
 from collections import defaultdict
 from operator import attrgetter
+import os
+import sys
 
-from flask import Blueprint
-
-from .paths import get_storage_directory
+from flask import Blueprint, current_app
 from .preferences import Preferences
 
 
@@ -80,14 +80,6 @@ class PgAdminModule(Blueprint):
         """
         return dict()
 
-    def get_own_javascripts(self):
-        """
-        Returns:
-            list: the javascripts used by this module, not including
-                any script needed by the submodules.
-        """
-        return []
-
     def get_own_menuitems(self):
         """
         Returns:
@@ -126,13 +118,6 @@ class PgAdminModule(Blueprint):
         return res
 
     @property
-    def javascripts(self):
-        javascripts = self.get_own_javascripts()
-        for module in self.submodules:
-            javascripts.extend(module.javascripts)
-        return javascripts
-
-    @property
     def menu_items(self):
         menu_items = self.get_own_menuitems()
         for module in self.submodules:
@@ -151,9 +136,34 @@ class PgAdminModule(Blueprint):
 
         return res
 
+    def get_javascript_entries(self, _for):
+        """
+        Override the function to return the javascript module enteries as an
+        array of dictionary (having name, url, dependencies) for the particular
+        modules specified by '_for'.
 
-import os
-import sys
+        Returns:
+            list: the javascript modules entries load during the particular
+            entires including entries of the submodules.
+        """
+        res = []
+
+        for module in self.submodules:
+            try:
+                res += module.get_javascript_entries(_for)
+            except Exception as ex:
+                current_app.logger.warning(
+                    ("Failed to get the javascript entries for the module"
+                     " - {0} with error message: {1}").format(
+                        module, ex
+                    )
+                )
+                current_app.exception(ex)
+
+                pass
+
+        return res
+
 
 IS_PY2 = (sys.version_info[0] == 2)
 IS_WIN = (os.name == 'nt')
@@ -199,7 +209,7 @@ if IS_WIN:
             if n == 0:
                 return None
 
-            buf= ctypes.create_unicode_buffer(u'\0'*n)
+            buf = ctypes.create_unicode_buffer(u'\0'*n)
             ctypes.windll.kernel32.GetEnvironmentVariableW(name, buf, n)
 
             return buf.value

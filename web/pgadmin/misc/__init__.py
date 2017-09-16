@@ -21,19 +21,6 @@ MODULE_NAME = 'misc'
 
 
 class MiscModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.misc.explain',
-            'path': url_for('misc.index') + 'explain/explain',
-            'preloaded': False
-        }, {
-            'name': 'snap.svg',
-            'path': url_for(
-                'misc.static', filename='explain/vendor/snap.svg/' + (
-                    'snap.svg' if config.DEBUG else 'snap.svg-min'
-                )),
-            'preloaded': False
-        }]
 
     def get_own_stylesheets(self):
         stylesheets = []

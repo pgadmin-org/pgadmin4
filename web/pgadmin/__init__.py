@@ -159,6 +159,17 @@ class PgAdmin(Flask):
                           for key, value in menu_items.items())
         return menu_items
 
+    def get_javascript_entries(self, _for):
+        """
+        Returns:
+            list: javascript module entries to be loaded specified by '_for' in
+            format of dictionary (name: ..., url: ...)
+        """
+        res = []
+        for module in self.submodules:
+            res += module.get_javascript_entries(_for)
+        return res
+
 
 def _find_blueprint():
     if request.blueprint:

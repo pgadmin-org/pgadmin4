@@ -13,7 +13,7 @@ import simplejson as json
 import re
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, request, jsonify, url_for
+from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader, VacuumSettings
@@ -72,17 +72,6 @@ class TableModule(SchemaChildModule):
         initialized.
         """
         return database.DatabaseModule.NODE_TYPE
-
-    def get_own_javascripts(self):
-        scripts = SchemaChildModule.get_own_javascripts(self)
-
-        scripts.append({
-            'name': 'pgadmin.browser.table.partition.utils',
-            'path': url_for('browser.index') + 'table/static/js/partition.utils',
-            'when': 'database', 'is_template': False
-        })
-
-        return scripts
 
 
 blueprint = TableModule(__name__)

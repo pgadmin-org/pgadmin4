@@ -2,7 +2,8 @@ define(
     ['underscore', 'sources/pgadmin', 'wcdocker'],
 function(_, pgAdmin) {
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+      wcDocker = window.wcDocker;
 
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [

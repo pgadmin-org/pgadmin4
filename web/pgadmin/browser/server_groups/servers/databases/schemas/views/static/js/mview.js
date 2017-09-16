@@ -1,8 +1,11 @@
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'underscore.string', 'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser', 'codemirror',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.alertifyjs',
+  'pgadmin.browser', 'sources/generated/codemirror',
   'pgadmin.browser.server.privilege'
-], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, CodeMirror) {
+], function(gettext, url_for, $, _, S, pgAdmin, alertify, pgBrowser, codemirror) {
+
+  var CodeMirror = codemirror.default;
 
   /**
     Create and add a view collection into nodes

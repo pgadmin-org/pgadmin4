@@ -14,7 +14,7 @@ import simplejson as json
 import pickle
 import random
 
-from flask import Response, url_for, session, request, make_response
+from flask import Response, session, request, make_response
 from werkzeug.useragents import UserAgent
 from flask import current_app as app
 from flask_babel import gettext
@@ -36,19 +36,6 @@ class DataGridModule(PgAdminModule):
     """
 
     LABEL = "Data Grid"
-
-    def get_own_menuitems(self):
-        return {}
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.datagrid',
-            'path': url_for('datagrid.index') + "datagrid",
-            'when': None
-        }]
-
-    def get_panels(self):
-        return []
 
     def get_exposed_url_endpoints(self):
         """

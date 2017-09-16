@@ -12,8 +12,7 @@
 import simplejson as json
 import re
 
-from flask import render_template, request, \
-    url_for, Response, abort
+from flask import render_template, request, Response, abort
 from flask_babel import gettext as _
 from flask_security import login_required, roles_required, current_user
 from flask_security.utils import encrypt_password
@@ -41,22 +40,6 @@ class UserManagementModule(PgAdminModule):
     """
 
     LABEL = _('Users')
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.user_management',
-            'path': url_for('user_management.index') + 'user_management',
-            'when': None
-        },{
-            'name': 'pgadmin.user_management.current_user',
-            'path': url_for('user_management.index') + 'current_user',
-            'when': None,
-            'is_template': True
-        }]
 
     def show_system_objects(self):
         """

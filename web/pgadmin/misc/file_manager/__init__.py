@@ -125,15 +125,6 @@ class FileManagerModule(PgAdminModule):
 
     LABEL = gettext("Storage")
 
-    def get_own_javascripts(self):
-        return [
-            {
-                'name': 'pgadmin.file_manager',
-                'path': url_for('file_manager.index') + 'file_manager',
-                'when': None
-            },
-        ]
-
     def get_own_stylesheets(self):
         return [
             url_for('static', filename='vendor/jquery.dropzone/dropzone.css'),

@@ -12,7 +12,7 @@
 import simplejson as json
 import os
 
-from flask import url_for, Response, render_template, request, current_app
+from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
@@ -34,24 +34,12 @@ class ImportExportModule(PgAdminModule):
 
     Methods:
     -------
-    * get_own_javascripts(self)
-      - Method is used to load the required javascript files for import module
+    * get_exposed_url_endpoints(self)
+      - Returns list of the URLs, which are exposed through the client side
+      implementation of url_for.
     """
 
     LABEL = _('Import/Export')
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.import_export', 'js/import_export']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('import_export.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def get_exposed_url_endpoints(self):
         """

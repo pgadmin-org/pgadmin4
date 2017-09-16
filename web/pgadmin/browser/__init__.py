@@ -11,8 +11,7 @@ import json
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import six
-from flask import current_app, render_template, url_for, make_response, flash,\
-    Response
+from flask import current_app, render_template, make_response, flash, Response
 from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
@@ -35,159 +34,6 @@ MODULE_NAME = 'browser'
 
 class BrowserModule(PgAdminModule):
     LABEL = gettext('Browser')
-
-    def get_own_stylesheets(self):
-        stylesheets = []
-        # Add browser stylesheets
-        for (endpoint, filename) in [
-            ('static', 'vendor/codemirror/codemirror.css'),
-            ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
-            ('static', 'vendor/jQuery-contextMenu/jquery.contextMenu.css' if current_app.debug
-            else 'vendor/jQuery-contextMenu/jquery.contextMenu.min.css'),
-            ('static', 'vendor/wcDocker/wcDocker.css' if current_app.debug
-            else 'vendor/wcDocker/wcDocker.min.css'),
-            ('browser.static', 'css/browser.css'),
-            ('browser.static', 'vendor/aciTree/css/aciTree.css')
-        ]:
-            stylesheets.append(url_for(endpoint, filename=filename))
-        stylesheets.append(url_for('browser.browser_css'))
-        return stylesheets
-
-    def get_own_javascripts(self):
-        scripts = list()
-        scripts.append({
-            'name': 'alertify',
-            'path': url_for(
-                'static',
-                filename='vendor/alertifyjs/alertify' if current_app.debug
-                else 'vendor/alertifyjs/alertify.min'
-            ),
-            'exports': 'alertify',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jqueryui.position',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.ui.position' if \
-                    current_app.debug else \
-                    'vendor/jQuery-contextMenu/jquery.ui.position.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'jQuery.ui.position',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.contextmenu',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if \
-                    current_app.debug else \
-                    'vendor/jQuery-contextMenu/jquery.contextMenu.min'
-            ),
-            'deps': ['jquery', 'jqueryui.position'],
-            'exports': 'jQuery.contextMenu',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.aciplugin',
-            'path': url_for(
-                'browser.static',
-                filename='vendor/aciTree/jquery.aciPlugin.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'aciPluginClass',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acitree',
-            'path': url_for(
-                'browser.static',
-                filename='vendor/aciTree/jquery.aciTree' if
-                current_app.debug else 'vendor/aciTree/jquery.aciTree.min'
-            ),
-            'deps': ['jquery', 'jquery.aciplugin'],
-            'exports': 'aciPluginClass.plugins.aciTree',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acisortable',
-            'path': url_for(
-                'browser.static',
-                filename='vendor/aciTree/jquery.aciSortable.min'
-            ),
-            'deps': ['jquery', 'jquery.aciplugin'],
-            'exports': 'aciPluginClass.plugins.aciSortable',
-            'when': None,
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acifragment',
-            'path': url_for(
-                'browser.static',
-                filename='vendor/aciTree/jquery.aciFragment.min'
-            ),
-            'deps': ['jquery', 'jquery.aciplugin'],
-            'exports': 'aciPluginClass.plugins.aciFragment',
-            'when': None,
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'wcdocker',
-            'path': url_for(
-                'static',
-                filename='vendor/wcDocker/wcDocker' if current_app.debug
-                else 'vendor/wcDocker/wcDocker.min'
-            ),
-            'deps': ['jquery.contextmenu'],
-            'exports': '',
-            'preloaded': True
-        })
-
-        scripts.append({
-            'name': 'pgadmin.browser.datamodel',
-            'path': url_for('browser.static', filename='js/datamodel'),
-            'preloaded': True
-        })
-
-        for name, script in [
-            ['pgadmin.browser', 'js/browser'],
-            ['pgadmin.browser.endpoints', 'js/endpoints'],
-            ['pgadmin.browser.error', 'js/error']]:
-            scripts.append({
-                'name': name,
-                'path': url_for('browser.index') + script,
-                'preloaded': True
-            })
-
-        for name, script in [
-            ['pgadmin.browser.node', 'js/node'],
-            ['pgadmin.browser.messages', 'js/messages'],
-            ['pgadmin.browser.collection', 'js/collection']]:
-            scripts.append({
-                'name': name,
-                'path': url_for('browser.index') + script,
-                'preloaded': True,
-                'deps': ['pgadmin.browser.datamodel']
-            })
-
-        for name, end in [
-            ['pgadmin.browser.menu', 'js/menu'],
-            ['pgadmin.browser.panel', 'js/panel'],
-            ['pgadmin.browser.frame', 'js/frame']]:
-            scripts.append({
-                'name': name, 'path': url_for('browser.static', filename=end),
-                'preloaded': True})
-
-        scripts.append({
-            'name': 'pgadmin.browser.node.ui',
-            'path': url_for('browser.static', filename='js/node.ui'),
-            'when': 'server_group'
-        })
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-        return scripts
 
     def register_preferences(self):
         self.show_system_objects = self.preference.register(
@@ -266,49 +112,6 @@ class BrowserPluginModule(PgAdminModule):
         module.
         """
         return False
-
-    def get_own_javascripts(self):
-        """
-        Returns the list of javascripts information used by the module.
-
-        Each javascripts information must contain name, path of the script.
-
-        The name must be unique for each module, hence - in order to refer them
-        properly, we do use 'pgadmin.node.<type>' as norm.
-
-        That can also refer to when to load the script.
-
-        i.e.
-        We may not need to load the javascript of table node, when we're
-        not yet connected to a server, and no database is loaded. Hence - it
-        make sense to load them when a database is loaded.
-
-        We may also add 'deps', which also refers to the list of javascripts,
-        it may depends on.
-        """
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for('browser.index') + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for(
-                    '%s.static'% self.name, filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
 
     def generate_browser_node(
             self, node_id, parent_id, label, icon, inode, node_type, **kwargs
@@ -395,14 +198,6 @@ class BrowserPluginModule(PgAdminModule):
         Defines the url path prefix for this submodule.
         """
         return self.browser_url_prefix + self.node_type
-
-    @property
-    def javascripts(self):
-        """
-        Override the javascript of PgAdminModule, so that - we don't return
-        javascripts from the get_own_javascripts itself.
-        """
-        return []
 
     @property
     def label(self):
@@ -506,7 +301,8 @@ def index():
         MODULE_NAME + "/index.html",
         username=current_user.email,
         is_admin=current_user.has_role("Administrator"),
-        _=gettext
+        _=gettext,
+        jsentries=current_app.get_javascript_entries('browser')
     ))
 
     # Set the language cookie after login, so next time the user will have that

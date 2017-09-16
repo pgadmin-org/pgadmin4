@@ -1,6 +1,7 @@
 define('pgadmin.node.server_group', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
-  'backbone', 'pgadmin.browser', 'pgadmin.browser.node'
+  'backbone', 'pgadmin.browser', 'pgadmin.browser.node',
+  'pgadmin.backform', 'pgadmin.backgrid'
 ], function(gettext, url_for, $, _, pgAdmin, Backbone) {
 
   if (!pgAdmin.Browser.Nodes['server_group']) {

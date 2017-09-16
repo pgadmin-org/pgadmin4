@@ -10,7 +10,7 @@
 from abc import ABCMeta, abstractmethod
 
 import six
-from flask import url_for, render_template
+from flask import render_template
 from flask_babel import gettext
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import PGChildModule
@@ -52,32 +52,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         module.
         """
         return True
-
-
-    def get_own_javascripts(self):
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for('browser.index') + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for(
-                    '%s.static'% self.name, filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
 
     def generate_browser_node(
             self, node_id, parent_id, label, icon, **kwargs
@@ -198,10 +172,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     @property
     def node_path(self):
         return self.browser_url_prefix + self.node_type
-
-    @property
-    def javascripts(self):
-        return []
 
     @property
     def show_node(self):

@@ -1,9 +1,11 @@
 define('pgadmin.node.view', [
-  'sources/gettext',
-  'sources/url_for', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-  'pgadmin.browser', 'codemirror', 'pgadmin.browser.server.privilege',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'underscore.string', 'sources/pgadmin', 'pgadmin.browser',
+  'sources/generated/codemirror', 'pgadmin.browser.server.privilege',
   'pgadmin.node.rule'
-], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, CodeMirror) {
+], function(gettext, url_for, $, _, S, pgAdmin, pgBrowser, codemirror) {
+
+  var CodeMirror = codemirror.default;
 
   /**
     Create and add a view collection into nodes

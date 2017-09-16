@@ -13,8 +13,7 @@ from __future__ import unicode_literals
 import simplejson as json
 import os
 
-from flask import render_template, request, current_app, \
-    url_for, Response
+from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
@@ -40,17 +39,6 @@ class BackupModule(PgAdminModule):
     """
 
     LABEL = _('Backup')
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.backup',
-            'path': url_for('backup.index') + 'backup',
-            'when': None
-        }]
 
     def show_system_objects(self):
         """

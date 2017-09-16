@@ -1,9 +1,12 @@
 define(
   'pgadmin.browser.node', [
-    'sources/gettext', 'jquery', 'underscore', 'underscore.string', 'sources/pgadmin',
-    'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
-    'backform', 'sources/browser/generate_url', 'pgadmin.browser.utils', 'pgadmin.backform'
-], function(gettext, $, _, S, pgAdmin, Menu, Backbone, Alertify, pgBrowser, Backform, generateUrl) {
+    'sources/gettext', 'jquery', 'underscore', 'underscore.string',
+    'sources/pgadmin', 'sources/browser/generate_url', 'backbone',
+    'pgadmin.backform', 'pgadmin.alertifyjs', 'pgadmin.browser.menu',
+    'pgadmin.browser.datamodel'
+], function(
+  gettext, $, _, S, pgAdmin, generateUrl, Backbone, Backform, Alertify, Menu
+) {
 
   var wcDocker = window.wcDocker,
     keyCode = {
@@ -12,12 +15,33 @@ define(
       F1: 112
     };
 
+  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+    pgNodeModule = function(_child, _parent) {
+      this.child = _child;
+      this.parent = _parent;
+
+      return this;
+    };
+
   // It has already been defined.
   // Avoid running this script again.
-  if (pgBrowser.Node)
+  if (pgBrowser.Node) {
     return pgBrowser.Node;
+  }
 
   pgBrowser.Nodes = pgBrowser.Nodes || {};
+
+  pgNodeModule.prototype.Init = function() {
+    if (this.child) {
+      if (typeof this.child.Init == 'function') {
+        this.child.Init.apply(this.child);
+      }
+      // Initialize the parent
+      if (this.parent && typeof this.parent.Init == 'function') {
+        this.parent.Init.apply(this.child);
+      }
+    }
+  };
 
   // A helper (base) class for all the nodes, this has basic
   // operations/callbacks defined for basic operation.
@@ -29,8 +53,7 @@ define(
   // It is unlikely - we will instantiate an object for this class.
   // (Inspired by Backbone.extend function)
   pgBrowser.Node.extend = function(props) {
-    var parent = this;
-    var child;
+    var parent = this, child, idx = 0;
 
     // The constructor function for the new subclass is defined to simply call
     // the parent's constructor.
@@ -43,18 +66,15 @@ define(
     child.callbacks = _.extend({}, parent.callbacks, props.callbacks);
 
     var bindToChild = function(cb) {
-          if (typeof(child.callbacks[cb]) == 'function') {
+          if (typeof(child.callbacks[cb]) === 'function') {
             child.callbacks[cb] = child.callbacks[cb].bind(child);
           }
         },
         callbacks = _.keys(child.callbacks);
-    for(var idx = 0; idx < callbacks.length; idx++) bindToChild(callbacks[idx]);
+    for(; idx < callbacks.length; idx++) bindToChild(callbacks[idx]);
 
-    // Registering the node by calling child.Init(...) function
-    child.Init.apply(child);
-
-    // Initialize the parent
-    this.Init.apply(child);
+    // Registering the node with the browser entry.
+    pgAdmin.register_module('browser', new pgNodeModule(child, parent));
 
     return child;
   };

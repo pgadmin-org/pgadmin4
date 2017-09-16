@@ -1,19 +1,34 @@
 {% extends "base.html" %}
 {% block title %}{{ config.APP_NAME }}{% endblock %}
 {% block init_script %}
-try {
-require(
-['sources/generated/app.bundle'],
-function() {
+require(['require', 'app'], function(require, pgAdmin) {
+{% if jsentries is defined %}
+  var entryFailedToLoad = function() {
+    pgAdmin.report_error(
+      'Attention: Failed to load the javascript entry: ' + this.name
+    );
+    console.warn()
+  };
+{% for entry in jsentries %}
+
+  // Loading the module - {{ entry.name }}
+  require(
+    ['{{ entry.url  }}'],
+    function() { /* Do nothing */ },
+    entryFailedToLoad.bind({
+      'name': '{{ entry.name }}',
+      'url': '{{ entry.url  }}'
+    })
+  );{% endfor %}
+{% endif %}
 },
-function() {
-/* TODO:: Show proper error dialog */
-console.log(arguments);
+function(err) {
+  if (console) {
+    console.warn(err);
+    if (err.stack)
+      console.warn(err.stack);
+  }
 });
-} catch (err) {
-/* Show proper error dialog */
-console.log(err);
-}
 
 /*
  * Show loading spinner till every js module is loaded completely

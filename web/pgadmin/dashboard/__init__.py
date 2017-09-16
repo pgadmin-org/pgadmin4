@@ -33,13 +33,6 @@ class DashboardModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.dashboard',
-            'path': url_for('dashboard.index') + 'dashboard',
-            'when': None
-        }]
-
     def get_own_stylesheets(self):
         """
         Returns:

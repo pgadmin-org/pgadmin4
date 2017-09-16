@@ -22,12 +22,6 @@ MODULE_NAME = 'bgprocess'
 
 
 class BGProcessModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.bgprocess',
-            'path': url_for('bgprocess.static', filename='js/bgprocess'),
-            'when': None
-        }]
 
     def get_own_stylesheets(self):
         """

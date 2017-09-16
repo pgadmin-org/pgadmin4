@@ -39,26 +39,13 @@ class DebuggerModule(PgAdminModule):
 
     Methods:
     -------
-    * get_own_javascripts(self)
-      - Method is used to load the required javascript files for debugger module
+    * register_preferences(self)
+      - Method to register the preferences related to the debugger
 
+    * register_preferences(self)
+      - Returns the url exposed through client side implementation of 'url_for'
     """
     LABEL = gettext("Debugger")
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.debugger.controller', 'js/debugger'],
-            ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
-            ['pgadmin.tools.debugger.direct', 'js/direct']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('debugger.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def register_preferences(self):
         self.open_in_new_tab = self.preference.register(
@@ -176,7 +163,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     # Get the server version, server type and user information
     server_type = manager.server_type
-    user = manager.user_info
 
     # Check server type is ppas or not
     ppas_server = False
@@ -648,10 +634,14 @@ def restart_debugging(trans_id):
 
         return make_json_response(data={'status': True, 'restart_debug': True, 'result': function_data})
     else:
-        status = False
-        result = gettext('Not connected to server or connection with the server has been closed.')
-
-    return make_json_response(data={'status': status})
+        return make_json_response(
+            data={
+                'status': False,
+                'result': gettext(
+                    "Not connected to server or connection with the server has been closed."
+                )
+            }
+        )
 
 
 @blueprint.route(
@@ -1169,8 +1159,6 @@ def clear_all_breakpoint(trans_id):
     else:
         template_path = 'debugger/sql/v2'
 
-    query_type = ''
-
     if conn.connected():
         # get the data sent through post from client
         if request.form['breakpoint_list']:
@@ -1222,8 +1210,6 @@ def deposit_parameter_value(trans_id):
         template_path = 'debugger/sql/v1'
     else:
         template_path = 'debugger/sql/v2'
-
-    query_type = ''
 
     if conn.connected():
         # get the data sent through post from client

@@ -10,8 +10,7 @@
 import simplejson as json
 import re
 import pgadmin.browser.server_groups as sg
-from flask import render_template, request, make_response, jsonify, \
-    current_app, url_for
+from flask import render_template, request, make_response, jsonify, current_app
 from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.browser.server_groups.servers.types import ServerType
@@ -123,30 +122,6 @@ class ServerModule(sg.ServerGroupPluginModule):
             snippets.extend(st.csssnippets)
 
         return snippets
-
-    def get_own_javascripts(self):
-        scripts = []
-
-        scripts.extend([{
-            'name': 'pgadmin.browser.server.privilege',
-            'path': url_for('%s.static'% self.name, filename='js/privilege'),
-            'when': self.node_type,
-            'is_template': False,
-            'deps': ['pgadmin.browser.node.ui']
-        }, {
-            'name': 'pgadmin.browser.server.variable',
-            'path': url_for('%s.static'% self.name, filename='js/variable'),
-            'when': self.node_type,
-            'is_template': False
-        },{
-            'name': 'pgadmin.server.supported_servers',
-            'path': url_for('browser.index') + 'server/supported_servers',
-            'is_template': True,
-            'when': self.node_type
-        }])
-        scripts.extend(sg.ServerGroupPluginModule.get_own_javascripts(self))
-
-        return scripts
 
     def register(self, app, options, first_registration=False):
         """

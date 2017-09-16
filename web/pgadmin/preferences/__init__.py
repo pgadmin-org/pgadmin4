@@ -33,13 +33,6 @@ class PreferencesModule(PgAdminModule):
     And, allows the user to modify (not add/remove) as per their requirement.
     """
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.preferences',
-            'path': url_for('preferences.index') + 'preferences',
-            'when': None
-        }]
-
     def get_own_stylesheets(self):
         return [url_for('preferences.static', filename='css/preferences.css')]
 

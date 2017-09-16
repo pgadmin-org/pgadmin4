@@ -12,8 +12,7 @@
 import simplejson as json
 import os
 
-from flask import render_template, request, current_app, \
-    url_for, Response
+from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
@@ -39,17 +38,6 @@ class RestoreModule(PgAdminModule):
     """
 
     LABEL = _('Restore')
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.restore',
-            'path': url_for('restore.index') + 'restore',
-            'when': None
-        }]
 
     def get_exposed_url_endpoints(self):
         """

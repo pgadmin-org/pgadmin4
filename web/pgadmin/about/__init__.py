@@ -12,7 +12,7 @@ MODULE_NAME = 'about'
 
 import sys
 
-from flask import Response, render_template, __version__, url_for
+from flask import Response, render_template, __version__
 from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
@@ -39,13 +39,6 @@ class AboutModule(PgAdminModule):
                          )
             ]
         }
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.about',
-            'path': url_for('about.index') + 'about',
-            'when': None
-        }]
 
     def get_exposed_url_endpoints(self):
         return ['about.index']
