@@ -63,5 +63,54 @@
     return 0;
   };
 
+  // List of modules, registered with the browser.
+  var __entry_modules_map = {};
+
+  pgAdmin.register_module = function(_entry, _module) {
+    var entry = __entry_modules_map[_entry] = __entry_modules_map[_entry] || {
+      'callback': null, 'modules': []
+    };
+    if (entry.callback && typeof entry.callback === 'function') {
+      try {
+        entry.callback(_module);
+      } catch (e) {
+        if (console && console.warn) {
+          console.warn(`Failed to load the module - ${JSON.stringify(_module)} from the browser.`);
+          e.stack && console.warn(e.stack);
+        }
+      }
+    }
+    entry.modules.push(_module);
+  };
+
+  pgAdmin.register_module_initializer = function(_entry, _callback) {
+    var entry = __entry_modules_map[_entry] = __entry_modules_map[_entry] || {
+      'callback': null, 'modules': []
+    };
+    if (entry.callback !== null) {
+      if (console && console.warn) {
+        console.warn(`Entry callback is already defined for '${_entry}'!`);
+      }
+      return false;
+    }
+    entry.callback = _callback;
+    if (entry.callback && typeof entry.callback === 'function') {
+      var idx = 0;
+      for (;idx < entry.modules.length; idx++) {
+        try {
+          entry.callback(entry.modules[idx]);
+        } catch (e) {
+          if (console && console.warn) {
+            console.warn(
+              `Failed to load the module - ${JSON.stringify(entry.modules[idx])} from the ${_entry}.`
+            );
+            e.stack && console.warn(e.stack);
+          }
+        }
+      }
+    }
+    return true;
+  };
+
   return pgAdmin;
 }));
