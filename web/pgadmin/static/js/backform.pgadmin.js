@@ -1,36 +1,13 @@
-(function(root, factory) {
+define('pgadmin.backform', [
+  'sources/gettext', 'underscore', 'underscore.string', 'jquery',
+  'backbone', 'backform', 'backgrid', 'sources/generated/codemirror',
+  'pgadmin.backgrid', 'select2'
 
-  // Set up Backform appropriately for the environment. Start with AMD.
-  if (typeof define === 'function' && define.amd) {
-    define([
-      'sources/gettext', 'underscore', 'underscore.string', 'jquery',
-      'backbone', 'backform', 'backgrid', 'codemirror', 'pgadmin.backgrid',
-      'select2'
-      ],
-     function(gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
-      // Export global even in AMD case in case this script is loaded with
-      // others that may still expect a global Backform.
-      return factory(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
-    });
+],
+function(gettext, _, S, $, Backbone, Backform, Backgrid, codemirror) {
 
-  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
-  } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore') || root._,
-      $ = root.jQuery || root.$ || root.Zepto || root.ender,
-      Backbone = require('backbone') || root.Backbone,
-      Backform = require('backform') || root.Backform,
-      Backgrid = require('backgrid') || root.Backgrid,
-      CodeMirror = require('codemirror') || root.CodeMirror,
-      S = require('underscore.string'),
-      gettext = require('sources/gettext');
-    factory(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror);
-  // Finally, as a browser global.
-  } else {
-    factory(root, root.gettext, root._, root.s, (root.jQuery || root.Zepto || root.ender || root.$), root.Backbone, root.Backform, root.Backgrid, root.CodeMirror);
-  }
-}(this, function(root, gettext, _, S, $, Backbone, Backform, Backgrid, CodeMirror) {
-
-  var pgAdmin = (window.pgAdmin = window.pgAdmin || {});
+  var pgAdmin = window.pgAdmin = window.pgAdmin || {},
+    CodeMirror = codemirror.default;
 
   pgAdmin.editableCell = function() {
     if (this.attributes && !_.isUndefined(this.attributes.disabled) &&
@@ -2350,4 +2327,4 @@
   });
 
   return Backform;
-}));
+});

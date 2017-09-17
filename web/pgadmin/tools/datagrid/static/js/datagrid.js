@@ -469,7 +469,7 @@ define('pgadmin.datagrid', [
             }
 
             var baseUrl = url_for('datagrid.panel', url_params) +
-              '?query_url=" + encodeURI(sURL) + "&server_type=" +
+              "?query_url=" + encodeURI(sURL) + "&server_type=" +
               encodeURIComponent(parentData.server.server_type);
 
             // Create title for CREATE/DELETE scripts

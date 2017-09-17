@@ -25,7 +25,7 @@
     "karma-sourcemap-loader": "~0.3.7",
     "karma-webpack": "^2.0.4",
     "node-sass": "^4.5.3",
-    "optimize-css-assets-webpack-plugin": "^2.0.0",
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
     "phantomjs-prebuilt": "^2.1.15",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "~15.4.2",
@@ -56,7 +56,7 @@
     "bowser": "1.6.1",
     "browserify": "~14.1.0",
     "codemirror": "^5.29.0",
-    "css-loader": "0.14.0",
+    "css-loader": "0.28.7",
     "cssnano": "^3.10.0",
     "dropzone": "^5.1.1",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
@@ -86,14 +86,16 @@
   },
   "scripts": {
     "linter": "yarn run eslint pgadmin/static/jsx/**/*.jsx pgadmin/static/js/selection/*.js regression/javascript/**/*.jsx regression/javascript/**/*.js *.js",
-    "webpacker": "yarn run webpack -- --config webpack.config.js --progress",
-    "webpacker:watch": "yarn run webpack -- --config webpack.config.js --progress --watch",
-    "bundle:watch": "yarn run linter && yarn run webpacker:watch",
+    "webpacker": "node webpack/build.js",
+    "webpacker:verbose": "node wepack/build.js --verbose",
+    "webpacker:prod": "yarn run linter && node webpack/build.js --production --nodebug",
+    "webpacker:module": "node_modules/webpack/bin/webpack.js --config webpack.config.js",
+    "webpacker:module:wait": "node node_modules/webpack/bin/webpack.js --config webpack.config.js -w",
     "bundle:dev": "yarn run linter && yarn run webpacker",
-    "bundle": "cross-env NODE_ENV=production yarn run bundle:dev",
+    "bundle:prod": "yarn run linter && yarn run webpacker:prod",
     "test:karma-once": "yarn run linter && yarn run karma start -- --single-run",
     "test:karma": "yarn run linter && yarn run karma start",
-    "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
-    "test": "yarn run test:karma-once && yarn run bundle && python regression/runtests.py"
+    "test:feature": "yarn run webpacker && python regression/runtests.py --pkg feature_tests",
+    "test": "yarn run test:karma-once && yarn run webpacker && python regression/runtests.py"
   }
 }

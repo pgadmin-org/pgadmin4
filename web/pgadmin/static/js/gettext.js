@@ -9,7 +9,7 @@ define(["translations"], function (translations) {
    * @param {String} text
    * @param {Object} substitutions
    */
-  return function gettext(text, substitutions) {
+  window.gettext = function (text, substitutions) {
 
     var rawTranslation = translations[text] ? translations[text] : text;
 
@@ -29,4 +29,5 @@ define(["translations"], function (translations) {
     return interpolated;
   };
 
+  return window.gettext;
 });

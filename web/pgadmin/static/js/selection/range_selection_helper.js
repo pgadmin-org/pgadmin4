@@ -1,4 +1,4 @@
-define(['slickgrid'], function () {
+define(['sources/generated/slickgrid'], function () {
   var Slick = window.Slick;
 
   var isSameRange = function (range, otherRange) {

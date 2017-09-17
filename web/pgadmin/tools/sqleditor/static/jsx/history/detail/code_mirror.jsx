@@ -9,7 +9,7 @@
 
 import React from 'react';
 import $ from 'jquery';
-import code_mirror from 'sources/../bundle/codemirror';
+import code_mirror from 'webpack_bundle/codemirror';
 
 export default class CodeMirror extends React.Component {
 

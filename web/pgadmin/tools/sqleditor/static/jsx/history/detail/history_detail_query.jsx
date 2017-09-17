@@ -12,7 +12,7 @@ import 'codemirror/mode/sql/sql';
 
 import CodeMirror from './code_mirror';
 import Shapes from '../../react_shapes';
-import clipboard from '../../../js/selection/clipboard';
+import clipboard from 'sources/selection/clipboard';
 
 export default class HistoryDetailQuery extends React.Component {
 

@@ -2,8 +2,7 @@ define([
   'jquery',
   'underscore',
   'sources/selection/range_selection_helper',
-
-  'slickgrid',
+  'sources/generated/slickgrid',
 ], function ($, _, RangeSelectionHelper) {
   var XCellSelectionModel = function (options) {
 

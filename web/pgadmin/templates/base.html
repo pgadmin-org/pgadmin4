@@ -19,12 +19,11 @@
     <link rel="shortcut icon" href="{{ url_for('redirects.favicon') }}"/>
 
     <!-- Base template stylesheets -->
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/backgrid/backgrid.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/generated/vendor.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/generated/core.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.css')}}"/>
 
-     <!--View specified stylesheets-->
+    <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
 
     <!-- Base template scripts -->
@@ -34,26 +33,32 @@
             require.config({
                 baseUrl: '',
                 waitSeconds: 0,
-                shim: {},
+                shim: {
+                  {% block require_shim %}{% endblock %}
+                },
                 paths: {
-                    sources: "{{ url_for('static', filename='js') }}",
-                    slickgrid: "{{ url_for('static', filename='js/generated/slickgrid') }}",
-                    codemirror: "{{ url_for('static', filename='js/generated/codemirror') }}",
-                    datagrid: "{{ url_for('static', filename='js/generated/datagrid') }}",
-                    sqleditor: "{{ url_for('static', filename='js/generated/sqleditor') }}",
+                    'vendor': '{{ url_for("static", filename="js/generated/vendor") }}',
+                    'codemirror': '{{ url_for("static", filename="js/generated/codemirror") }}',
+                    'slickgrid': '{{ url_for("static", filename="js/generated/slickgrid") }}',
+                    'react': '{{ url_for("static", filename="js/generated/react") }}',
+                    'core': '{{ url_for("static", filename="js/generated/core") }}',
+                    'nodes': '{{ url_for("static", filename="js/generated/nodes") }}',
+                    'tools': '{{ url_for("static", filename="js/generated/tools") }}',
+                    'app': '{{ url_for("static", filename="js/generated/app") }}',
+                    'sources': '{{ url_for("static", filename="js") }}',
                     'pgadmin.browser.utils': "{{ url_for('browser.index') }}" + "js/utils",
                     'pgadmin.browser.endpoints': "{{ url_for('browser.index') }}" + "js/endpoints",
                     'pgadmin.browser.messages': "{{ url_for('browser.index') }}" + "js/messages",
                     'pgadmin.server.supported_servers': "{{ url_for('browser.index') }}" + "server/supported_servers",
                     'pgadmin.user_management.current_user': "{{ url_for('user_management.index') }}" + "current_user",
-                    'translations': "{{ url_for('tools.index') }}" + "translations"
+                    'translations': "{{ url_for('tools.index') }}" + "translations",{% block require_paths %}{% endblock %}
                 }
             });
 
     </script>
-    <!-- View specified scripts -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.js') }}" ></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+
+    <!--View specified scripts -->
+    {% block scripts %}{% endblock %}
 
 
 </head>

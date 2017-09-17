@@ -1,7 +1,7 @@
 define([
   'jquery',
   'sources/selection/range_selection_helper',
-  'slickgrid',
+  'sources/generated/slickgrid',
 ], function ($, RangeSelectionHelper) {
   var ColumnSelector = function () {
     var Slick = window.Slick,

@@ -1,43 +1,36 @@
 define('tools.querytool', [
-    'babel-polyfill', 'sources/gettext','sources/url_for', 'jquery',
-    'underscore', 'underscore.string', 'pgadmin.alertifyjs',
-    'sources/pgadmin', 'backbone', 'sources/../bundle/codemirror',
-    'pgadmin.misc.explain',
-    'sources/selection/grid_selector',
-    'sources/selection/active_cell_capture',
-    'sources/selection/clipboard',
-    'sources/selection/copy_data',
-    'sources/selection/range_selection_helper',
-    'sources/slickgrid/event_handlers/handle_query_output_keyboard_event',
-    'sources/selection/xcell_selection_model',
-    'sources/selection/set_staged_rows',
-    'sources/sqleditor_utils',
-    'sources/history/index.js',
-    'sources/../jsx/history/query_history',
-    'react', 'react-dom',
-    'sources/sqleditor/keyboard_shortcuts',
-    'sources/sqleditor/query_tool_actions',
-  'sources/../bundle/slickgrid',
-    'pgadmin.file_manager',
-    'backgrid.sizeable.columns',
-    'slick.pgadmin.formatters',
-    'slick.pgadmin.editors',
-    'pgadmin.browser'
+  'babel-polyfill', 'sources/gettext','sources/url_for', 'jquery',
+  'underscore', 'underscore.string', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'backbone', 'sources/generated/codemirror',
+  'pgadmin.misc.explain', 'sources/selection/grid_selector',
+  'sources/selection/active_cell_capture', 'sources/selection/clipboard',
+  'sources/selection/copy_data', 'sources/selection/range_selection_helper',
+  'sources/slickgrid/event_handlers/handle_query_output_keyboard_event',
+  'sources/selection/xcell_selection_model',
+  'sources/selection/set_staged_rows', 'sources/sqleditor_utils',
+  'pga_sqleditor/js/history/index.js', 'react', 'react-dom',
+  'pgadmin.sqleditor.query_history', 'sources/sqleditor/keyboard_shortcuts',
+  'sources/sqleditor/query_tool_actions',
+  'sources/generated/slickgrid', 'pgadmin.file_manager',
+  'backgrid.sizeable.columns', 'sources/slickgrid/formatters',
+  'sources/slickgrid/editors', 'pgadmin.browser'
 ], function(
   babelPollyfill,gettext, url_for, $, _, S, alertify, pgAdmin, Backbone, codemirror,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-  XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, queryHistory, React, ReactDOM,
-  keyboardShortcuts
-, queryToolActions) {
+  XCellSelectionModel, setStagedRows,  SqlEditorUtils, HistoryBundle, React, ReactDOM, queryHistory,
+  keyboardShortcuts, queryToolActions
+  ) {
     /* Return back, this has been called more than once */
-    if (pgAdmin.SqlEditor)
+    if (pgAdmin.SqlEditor) {
       return pgAdmin.SqlEditor;
+    }
 
     // Some scripts do export their object in the window only.
     // Generally the one, which do no have AMD support.
     var wcDocker = window.wcDocker,
-        pgBrowser = pgAdmin.Browser,
-        CodeMirror = codemirror.default,Slick = window.Slick;
+      pgBrowser = pgAdmin.Browser,
+      CodeMirror = codemirror.default,
+      Slick = window.Slick;
 
   var is_query_running = false;
 
