@@ -52,8 +52,7 @@
                     'translations': "{{ url_for('tools.index') }}" + "translations",{% if jsentries is defined %}{% for entry in jsentries %}{% if entry.external is defined and entry.external %}
 
                     '{{ entry.name }}': "{{ entry.url }}",{% endif %}{% endfor %}{% endif %}{% block require_paths %}{% endblock %}
-
-                }
+                },
             });
 
     </script>

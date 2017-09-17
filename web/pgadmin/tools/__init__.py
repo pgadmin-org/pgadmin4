@@ -10,6 +10,7 @@
 """A blueprint module container for keeping all submodule of type tool."""
 
 from flask import render_template, Response
+from flask import url_for
 from flask_babel import get_translations, gettext
 
 from pgadmin.utils import PgAdminModule
@@ -35,7 +36,7 @@ class ToolsModule(PgAdminModule):
         return res
 
 # Initialise the module
-blueprint = PgAdminModule(MODULE_NAME, __name__)
+blueprint = ToolsModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/")

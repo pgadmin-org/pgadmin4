@@ -20,7 +20,7 @@ var core = {
     'pgadmin.browser.collection', 'pgadmin.browser.menu',
     'pgadmin.misc.explain', 'pgadmin.misc.file_manager',
     'pgadmin.browser.node.ui', 'pgadmin.browser.tool',
-    'pgadmin.about'
+    'pgadmin.about',
   ],
   stylesheets: [
     'pgadmin/static/css/style.css', 'pgadmin/static/scss/pgadmin.scss',
@@ -57,7 +57,7 @@ var core = {
       'pgadmin.browser.wizard': 'pgadmin/browser/static/js/wizard',
       'pgadmin.misc.explain': 'pgadmin/misc/static/explain/js/explain',
       'pgadmin.misc.file_manager': 'pgadmin/misc/file_manager/static/js/file_manager',
-      'pgadmin.about': 'pgadmin/about/static/js/about'
+      'pgadmin.about': 'pgadmin/about/static/js/about',
     }
   }
 };
