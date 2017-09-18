@@ -97,7 +97,7 @@ define([
                 if(m instanceof Backbone.Collection) {
                   return true;
                 }
-                if (m.get("id") == userInfo['user_id']){
+                if (m.get("id") == userInfo['id']){
                     return false;
                 } else {
                     return true;
@@ -111,7 +111,7 @@ define([
                 if(m instanceof Backbone.Collection) {
                   return true;
                 }
-                if (m.get("id") == userInfo['user_id']){
+                if (m.get("id") == userInfo['id']){
                     return false;
                 } else {
                     return true;
@@ -284,7 +284,7 @@ define([
               self = this;
               e.preventDefault();
 
-              if (self.model.get("id") == userInfo['user_id']) {
+              if (self.model.get("id") == userInfo['id']) {
                 alertify.alert(
                   gettext('Cannot delete user.'),
                   gettext('Cannot delete currently logged in user.'),
@@ -395,6 +395,15 @@ define([
                   footerTpl = _.template([
                     '<div class="pg-prop-footer">',
                       '<div class="pg-prop-status-bar" style="visibility:hidden">',
+                        '<div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">',
+                          '<div class="media-body media-middle">',
+                            '<div class="alert-icon error-icon">',
+                              '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
+                            '</div>',
+                            '<div class="alert-text">',
+                            '</div>',
+                          '</div>',
+                        '</div>',
                       '</div>',
                     '</div>'].join("\n")),
                   $footer = $(footerTpl()),
@@ -431,7 +440,8 @@ define([
                       self.on('pgadmin-session:model:invalid', function(msg, m, c) {
                         self.invalidUsers[m.cid] = msg;
                         m.trigger('pgadmin:user:invalid', m);
-                        $statusBar.html(msg).css("visibility", "visible");
+                        $statusBar.find('.alert-text').html(msg);
+                        $statusBar.css("visibility", "visible");
                       });
                       self.on('pgadmin-session:model:valid', function(m, c) {
                         delete self.invalidUsers[m.cid];
@@ -460,9 +470,11 @@ define([
                       }
 
                       if(msg){
-                        $statusBar.html(msg).css("visibility", "visible");
+                        $statusBar.find('.alert-text').html(msg);
+                        $statusBar.css("visibility", "visible");
                       } else {
-                        $statusBar.empty().css("visibility", "hidden");
+                        $statusBar.find('.alert-text').empty();
+                        $statusBar.css("visibility", "hidden");
                       }
                     },
                     saveUser: function(m) {
