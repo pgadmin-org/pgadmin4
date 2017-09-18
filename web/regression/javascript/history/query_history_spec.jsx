@@ -14,13 +14,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
 
-import QueryHistory from '../../../pgadmin/static/jsx/history/query_history';
-import QueryHistoryEntry from '../../../pgadmin/static/jsx/history/query_history_entry';
-import QueryHistoryEntryDateGroup from '../../../pgadmin/static/jsx/history/query_history_entry_date_group';
-import QueryHistoryEntries from '../../../pgadmin/static/jsx/history/query_history_entries';
-import QueryHistoryDetail from '../../../pgadmin/static/jsx/history/query_history_detail';
-import HistoryCollection from '../../../pgadmin/static/js/history/history_collection';
-import clipboard from '../../../pgadmin/static/js/selection/clipboard';
+import QueryHistory from 'pga_sqleditor/jsx/history/query_history';
+import QueryHistoryEntry from 'pga_sqleditor/jsx/history/query_history_entry';
+import QueryHistoryEntryDateGroup from 'pga_sqleditor/jsx/history/query_history_entry_date_group';
+import QueryHistoryEntries from 'pga_sqleditor/jsx/history/query_history_entries';
+import QueryHistoryDetail from 'pga_sqleditor/jsx/history/query_history_detail';
+import HistoryCollection from 'pga_sqleditor/js/history/history_collection';
+import clipboard from 'sources/selection/clipboard';
 
 import {mount} from 'enzyme';
 

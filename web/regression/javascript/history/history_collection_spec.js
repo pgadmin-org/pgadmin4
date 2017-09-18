@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import HistoryCollection from '../../../pgadmin/static/js/history/history_collection';
+import HistoryCollection from 'pga_sqleditor/js/history/history_collection';
 
 describe('historyCollection', function () {
   let historyCollection, historyModel, onChangeSpy, onResetSpy;

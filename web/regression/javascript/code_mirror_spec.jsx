@@ -9,7 +9,7 @@
 
 import React from 'react';
 import $ from 'jquery';
-import CodeMirror from '../../pgadmin/static/jsx/history/detail/code_mirror';
+import CodeMirror from 'pga_sqleditor/jsx/history/detail/code_mirror';
 import jasmineEnzyme from 'jasmine-enzyme';
 
 import {shallow} from 'enzyme';

@@ -18,13 +18,13 @@ module.exports = function (config) {
       {pattern: 'pgadmin/browser/static/js/**/*.js', included: false},
       'regression/javascript/**/*.jsx',
       'regression/javascript/**/*.js',
-      'pgadmin/static/bundle/slickgrid.js',
     ],
 
     // list of files to exclude
     exclude: [
       'pgadmin/static/vendor/**/*[Tt]est.js',
       'pgadmin/static/vendor/**/*[Ss]pec.js',
+      'pgadmin/**/generated/*.js',
     ],
 
     // preprocess matching files before serving them to the browser
@@ -32,7 +32,6 @@ module.exports = function (config) {
     preprocessors: {
       'regression/javascript/**/*.js': ['webpack'],
       'regression/javascript/**/*.jsx': ['webpack'],
-      'pgadmin/static/bundle/slickgrid.js': ['webpack'],
     },
 
     webpack: webpackConfig,

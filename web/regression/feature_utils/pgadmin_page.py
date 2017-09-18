@@ -10,7 +10,7 @@
 import time
 
 from selenium.common.exceptions import NoSuchElementException, \
-    WebDriverException
+    WebDriverException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -272,5 +272,10 @@ class PgadminPage:
     def _wait_for(self, waiting_for_message, condition_met_function, timeout = None):
         if timeout is None:
             timeout = self.timeout
-        return WebDriverWait(self.driver, timeout, 0.01).until(condition_met_function,
-                                                                    "Timed out waiting for " + waiting_for_message)
+        try:
+            return WebDriverWait(self.driver, timeout, 0.01).until(
+                condition_met_function,
+                "Timed out waiting for " + waiting_for_message
+            )
+        except TimeoutException:
+            assert False, "Time out exception - {0}!".format(waiting_for_message)
