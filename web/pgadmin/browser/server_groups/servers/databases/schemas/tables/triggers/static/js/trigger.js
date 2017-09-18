@@ -100,11 +100,11 @@ define('pgadmin.node.trigger', [
       callbacks: {
         /* Enable trigger */
         enable_trigger: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -122,7 +122,7 @@ define('pgadmin.node.trigger', [
                 data.icon = 'icon-trigger';
                 t.addIcon(i, {icon: data.icon});
                 t.unload(i);
-                t.setInode(i);
+                t.setInode(false);
                 t.deselect(i);
                 // Fetch updated data from server
                 setTimeout(function() {
@@ -143,11 +143,11 @@ define('pgadmin.node.trigger', [
         },
         /* Disable trigger */
         disable_trigger: function(args) {
-          var input = args || {};
-          obj = this,
-          t = pgBrowser.tree,
-          i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -165,7 +165,7 @@ define('pgadmin.node.trigger', [
                 data.icon = 'icon-trigger-bad';
                 t.addIcon(i, {icon: data.icon});
                 t.unload(i);
-                t.setInode(i);
+                t.setInode(false);
                 t.deselect(i);
                 // Fetch updated data from server
                 setTimeout(function() {
