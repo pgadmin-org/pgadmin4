@@ -598,13 +598,13 @@ define('tools.querytool', [
         else if (c.cell == 'Json') {
           options['editor'] = is_editable ? Slick.Editors.JsonText
             : Slick.Editors.ReadOnlyJsonText;
-          options['formatter'] = Slick.Formatters.JsonString;
+          options['formatter'] = c.is_array ? Slick.Formatters.JsonStringArray : Slick.Formatters.JsonString;
         } else if (c.cell == 'number' ||
           $.inArray(c.type, ['oid', 'xid', 'real']) !== -1
         ) {
           options['editor'] = is_editable ? Slick.Editors.CustomNumber
             : Slick.Editors.ReadOnlyText;
-          options['formatter'] = Slick.Formatters.Numbers;
+          options['formatter'] = c.is_array ? Slick.Formatters.NumbersArray : Slick.Formatters.Numbers;
         } else if (c.cell == 'boolean') {
           options['editor'] = is_editable ? Slick.Editors.Checkbox
             : Slick.Editors.ReadOnlyCheckbox;
@@ -615,7 +615,7 @@ define('tools.querytool', [
         }else {
           options['editor'] = is_editable ? Slick.Editors.pgText
             : Slick.Editors.ReadOnlypgText;
-          options['formatter'] = Slick.Formatters.Text;
+          options['formatter'] = c.is_array ? Slick.Formatters.TextArray : Slick.Formatters.Text;
         }
 
         grid_columns.push(options)
