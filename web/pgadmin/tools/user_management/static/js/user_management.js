@@ -480,8 +480,8 @@ define([
               prepare: function() {
                 var self = this,
                   footerTpl = _.template([
-                    '<div class="pg-prop-footer" style="visibility:hidden;">',
-                      '<div class="pg-prop-status-bar">',
+                    '<div class="pg-prop-footer">',
+                      '<div class="pg-prop-status-bar" style="visibility:hidden">',
                         '<div class="media error-in-footer bg-red-1 border-red-2 font-red-3 text-14">',
                           '<div class="media-body media-middle">',
                             '<div class="alert-icon error-icon">',
@@ -489,7 +489,6 @@ define([
                             '</div>',
                             '<div class="alert-text">',
                             '</div>',
-                            '<div class="close-error-bar"><a class="close-error">x</a></div>',
                           '</div>',
                         '</div>',
                       '</div>',
