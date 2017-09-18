@@ -328,7 +328,7 @@ def create_app(app_name=None):
     app.config.update(dict(SECRET_KEY=config.SECRET_KEY))
     app.config.update(dict(SECURITY_PASSWORD_SALT=config.SECURITY_PASSWORD_SALT))
 
-    security.init_app(app)
+    security.init_app(app, user_datastore)
 
     app.session_interface = create_session_interface(app)
 
