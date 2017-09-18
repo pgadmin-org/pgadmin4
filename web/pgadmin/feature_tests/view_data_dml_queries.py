@@ -67,6 +67,13 @@ CREATE TABLE public.defaults
     json_null json,
     boolean_defaults boolean DEFAULT true,
     boolean_null boolean,
+    text_arr text[],
+    text_arr_empty text[],
+    text_arr_null text[],
+    int_arr integer[],
+    int_arr_empty integer[],
+    boolean_arr boolean[],
+    boolean_arr_null boolean[],
     CONSTRAINT defaults_pkey PRIMARY KEY (id)
 )
 """
@@ -169,17 +176,16 @@ CREATE TABLE public.defaults
         ActionChains(self.driver).move_to_element(cell_el).double_click(
             cell_el
         ).perform()
-
         cell_type = data[2]
         value = data[0]
 
-        if cell_type == 'int':
+        if cell_type in ['int', 'int[]']:
             if value == 'clear':
                 cell_el.find_element_by_css_selector('input').clear()
             else:
                 ActionChains(self.driver).send_keys(value).perform()
 
-        elif cell_type in ['text', 'json']:
+        elif cell_type in ['text', 'json', 'text[]', 'boolean[]']:
             self.page.find_by_xpath(
                 "//*[contains(@class, 'pg_textarea')]").click()
             ActionChains(self.driver).send_keys(value).perform()
@@ -231,7 +237,6 @@ CREATE TABLE public.defaults
         self.page.find_by_xpath(row0_cell0_xpath).click()
         self.page.find_by_xpath("//*[@id='btn-copy-row']").click()
         self.page.find_by_xpath("//*[@id='btn-paste-row']").click()
-
         # Update primary key of copied cell
         self._update_cell(row1_cell1_xpath, [2, "", "int"])
         self.page.find_by_xpath(
@@ -261,13 +266,12 @@ CREATE TABLE public.defaults
         self._verify_row_data(False)
 
     def _add_row(self):
-        for idx in range(1, len(config_data.keys())):
+        for idx in range(1, len(config_data.keys()) + 1):
             cell_xpath = CheckForViewDataTest._get_cell_xpath(
                 'r'+str(idx), 1
             )
             time.sleep(0.2)
             self._update_cell(cell_xpath, config_data[str(idx)])
-
         self.page.find_by_id("btn-save").click()  # Save data
         # There should be some delay after save button is clicked, as it
         # takes some time to complete save ajax call otherwise discard unsaved
@@ -290,12 +294,9 @@ CREATE TABLE public.defaults
 
         # List of row values in an array
         cells = [el.text for el in result_row.find_elements_by_tag_name('div')]
-
-        for idx in range(1, len(config_data.keys())):
+        for idx in range(1, len(config_data.keys()) + 1):
             # after copy & paste row, the first cell of row 1 and
             # row 2(being primary keys) won't match
             # see if cell values matched to actual value
-            if idx != 1 and not is_new_row:
-                self.assertEquals(cells[idx], config_data[str(idx)][1])
-            elif is_new_row:
+            if (idx != 1 and not is_new_row) or is_new_row:
                 self.assertEquals(cells[idx], config_data[str(idx)][1])

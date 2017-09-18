@@ -570,7 +570,8 @@ define('tools.querytool', [
           column_type: c.column_type,
           column_type_internal: c.column_type_internal,
           not_null: c.not_null,
-          has_default_val: c.has_default_val
+          has_default_val: c.has_default_val,
+          is_array: c.is_array
         };
 
         // Get the columns width based on longer string among data type or
@@ -585,26 +586,28 @@ define('tools.querytool', [
         else {
           options['width'] = column_size[table_name][c.name];
         }
-
         // If grid is editable then add editor else make it readonly
         if (c.cell == 'Json') {
           options['editor'] = is_editable ? Slick.Editors.JsonText
             : Slick.Editors.ReadOnlyJsonText;
-          options['formatter'] = Slick.Formatters.JsonString;
+          options['formatter'] = c.is_array ? Slick.Formatters.JsonStringArray : Slick.Formatters.JsonString;
         } else if (c.cell == 'number' ||
           $.inArray(c.type, ['oid', 'xid', 'real']) !== -1
         ) {
           options['editor'] = is_editable ? Slick.Editors.CustomNumber
             : Slick.Editors.ReadOnlyText;
-          options['formatter'] = Slick.Formatters.Numbers;
+          options['formatter'] = c.is_array ? Slick.Formatters.NumbersArray : Slick.Formatters.Numbers;
         } else if (c.cell == 'boolean') {
           options['editor'] = is_editable ? Slick.Editors.Checkbox
             : Slick.Editors.ReadOnlyCheckbox;
-          options['formatter'] = Slick.Formatters.Checkmark;
-        } else {
+          options['formatter'] = c.is_array ? Slick.Formatters.CheckmarkArray : Slick.Formatters.Checkmark;
+        } else if (c.cell == 'binary') {
+          // We do not support editing binary data in SQL editor and data grid.
+          options['formatter'] =  Slick.Formatters.Binary;
+        }else {
           options['editor'] = is_editable ? Slick.Editors.pgText
             : Slick.Editors.ReadOnlypgText;
-          options['formatter'] = Slick.Formatters.Text;
+          options['formatter'] = c.is_array ? Slick.Formatters.TextArray : Slick.Formatters.Text;
         }
 
         grid_columns.push(options)
@@ -1995,7 +1998,6 @@ define('tools.querytool', [
               ',' + c.scale + ')' :
               ')';
           }
-
           // Identify cell type of column.
           switch (type) {
             case "json":
@@ -2005,12 +2007,19 @@ define('tools.querytool', [
               col_cell = 'Json';
               break;
             case "smallint":
+            case "smallint[]":
             case "integer":
+            case "integer[]":
             case "bigint":
+            case "bigint[]":
             case "decimal":
+            case "decimal[]":
             case "numeric":
+            case "numeric[]":
             case "real":
+            case "real[]":
             case "double precision":
+            case "double precision[]":
               col_cell = 'number';
               break;
             case "boolean":
@@ -2018,6 +2027,8 @@ define('tools.querytool', [
               break;
             case "character":
             case "character[]":
+            case "\"char\"":
+            case "\"char\"[]":
             case "character varying":
             case "character varying[]":
               if (c.internal_size && c.internal_size >= 0 && c.internal_size != 65535) {
@@ -2026,25 +2037,31 @@ define('tools.querytool', [
               }
               col_cell = 'string';
               break;
+            case "bytea":
+            case "bytea[]":
+              col_cell = 'binary';
+              break;
             default:
               col_cell = 'string';
           }
 
           column_label = c.display_name + '<br>' + col_type;
 
-          var col = {
-            'name': c.name,
-            'display_name': c.display_name,
-            'column_type': col_type,
-            'column_type_internal': type,
-            'pos': c.pos,
-            'label': column_label,
-            'cell': col_cell,
-            'can_edit': self.can_edit,
-            'type': type,
-            'not_null': c.not_null,
-            'has_default_val': c.has_default_val
-          };
+          var array_type_bracket_index = type.lastIndexOf('[]'),
+            col = {
+              'name': c.name,
+              'display_name': c.display_name,
+              'column_type': col_type,
+              'column_type_internal': type,
+              'pos': c.pos,
+              'label': column_label,
+              'cell': col_cell,
+              'can_edit': self.can_edit,
+              'type': type,
+              'not_null': c.not_null,
+              'has_default_val': c.has_default_val,
+              'is_array': array_type_bracket_index > -1 && array_type_bracket_index + 2 == type.length
+            };
           columns.push(col);
         });
 
@@ -2974,7 +2991,15 @@ define('tools.querytool', [
           ),
           copied_rows = rows.map(function (rowIndex) {
             return data[rowIndex];
-          });
+          }),
+          array_types = [];
+
+        // for quick look up create list of array data types
+        for (var k in self.columns) {
+          if (self.columns[k].is_array) {
+            array_types.push(self.columns[k].name);
+          }
+        }
 
         rows = rows.length == 0 ? self.last_copied_rows : rows
 
@@ -2993,7 +3018,8 @@ define('tools.querytool', [
 
             _.each(arr, function (val, i) {
               if (arr[i] !== undefined) {
-                if (_.isObject(arr[i])) {
+                // Do not stringify array types.
+                if (_.isObject(arr[i]) && array_types.indexOf(i) == -1) {
                   obj[String(i)] = JSON.stringify(arr[i]);
                 } else {
                   obj[String(i)] = arr[i];
